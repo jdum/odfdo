@@ -1,8 +1,8 @@
 # odfdo
 python library for OpenDocument format (ODF)
 
-odfdo
-=====
+
+![logo](./odfdo.png)
 
 odfdo is a Python3 library implementing the ISO/IEC 26300 OpenDocument Format
 standard.
@@ -21,24 +21,31 @@ odfdo is a derivative work of the lpod-python project.
 installation
 ============
 
-    `sudo python setup.py install`
+
+    sudo python setup.py install
 
 
 after installation you can check everything is working:
-    `cd test`
-    `python test.py`
-
+    
+    
+    cd test
+    
+    python test.py
+    
+    
 test should run for a few seconds and issue not errors.
 
 
 usage
 =====
 
-`from odfdo import Document, Paragraph`
-``
-`doc = Document('text')`
-`doc.body.append(Paragraph("Hello world!"))`
-`doc.save("hello.odt")`
+
+    from odfdo import Document, Paragraph
+
+    doc = Document('text')
+    doc.body.append(Paragraph("Hello world!"))
+    doc.save("hello.odt")
+
 
 documentation
 =============
