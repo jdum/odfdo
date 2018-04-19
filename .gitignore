@@ -1,0 +1,13 @@
+*.pyc
+*.pyo
+.DS_Store
+.Spotlight-V100
+.Trashes
+.svn
+__pycache__
+*~
+*.orig
+build/
+dist/
+*.log
+*egg-info/

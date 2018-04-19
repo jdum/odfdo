@@ -1,0 +1,7 @@
+This software contains in the "recipes" directory files derived from the
+"lpod-python recipes".  The Recipes are only submitted  as educational
+material, not as effective useable code, the files of the recipes directory are
+licensed under the  Creative Common Attribution 3.0.
+
+This software contains code derived from the lpod-python project developped by
+Ars Aperta, Itaapy, Pierlis, Talend. Code used with the Apache 2.0 license.
