@@ -43,6 +43,7 @@ setup(
     url='https://github.com/jdul/odfdo',
     author="Jérôme Dumonteil",
     author_email="jerome.dumonteil@gmail.com",
+    zip_safe=False,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
