@@ -218,7 +218,7 @@ OTHER_STYLES = set(('style:default-style style:header-style'
                     ' text:list-level-style-number').split())
 SUBCLASS_STYLES = {'background-image'}
 
-FAMILY_MAPPING = {**_BASE_FAMILY_MAP, **_FALSE_FAMILY_MAP}
+FAMILY_MAPPING = dict(list(_BASE_FAMILY_MAP.items()) + list(_FALSE_FAMILY_MAP.items()))
 
 FALSE_FAMILY_MAP_REVERSE = {v: k for k, v in _FALSE_FAMILY_MAP.items()}
 SUBCLASSED_STYLES = {'style:background-image'}
