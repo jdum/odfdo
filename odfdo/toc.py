@@ -134,7 +134,7 @@ def default_toc_level_style(level):
     tab_stop = TabStopStyle(
         style_type="right", leader_style="dotted", leader_text=".")
     position = 17.5 - (0.5 * level)
-    tab_stop.style_position = f'{position}cm'
+    tab_stop.style_position = '%scm' % position
     tab_stops = Element.from_tag('style:tab-stops')
     tab_stops.append(tab_stop)
     properties = Element.from_tag('style:paragraph-properties')
@@ -142,7 +142,7 @@ def default_toc_level_style(level):
     toc_style_level = Style(
         family='paragraph',
         name=TOC_ENTRY_STYLE_PATTERN % level,
-        parent=f'Contents_20_{level}')
+        parent='Contents_20_%s' % level)
     toc_style_level.append(properties)
     return toc_style_level
 

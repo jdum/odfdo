@@ -897,7 +897,7 @@ class Style(Element):
         self.name = name
         if family is None:
             family = name
-        self.svg_font_family = f'"{family}"'
+        self.svg_font_family = '"%s"' % family
         if family_generic is not None:
             self.font_family_generic = family_generic
         self.font_pitch = pitch

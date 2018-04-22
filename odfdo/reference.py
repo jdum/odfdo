@@ -211,9 +211,9 @@ class ReferenceMarkEnd(Element):
         """
         name = self.name
         request = (
-            f"//text()"
-            f"[preceding::text:reference-mark-start[@text:name='{name}'] "
-            f"and following::text:reference-mark-end[@text:name='{name}']]")
+            "//text()"
+            "[preceding::text:reference-mark-start[@text:name='%s'] "
+            "and following::text:reference-mark-end[@text:name='%s']]" % (name,name))
         result = ' '.join(self.xpath(request))
         return result
 
@@ -246,9 +246,10 @@ class ReferenceMarkStart(Element):
         """
         name = self.name
         request = (
-            f"//text()"
-            f"[preceding::text:reference-mark-start[@text:name='{name}'] "
-            f"and following::text:reference-mark-end[@text:name='{name}']]")
+            "//text()"
+            "[preceding::text:reference-mark-start[@text:name='%s'] "
+            "and following::text:reference-mark-end[@text:name='%s']]" % (
+                name, name))
         result = ' '.join(self.xpath(request))
         return result
 

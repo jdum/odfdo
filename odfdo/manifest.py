@@ -76,9 +76,10 @@ class Manifest(XmlPart):
 
     @staticmethod
     def make_file_entry(full_path, media_type):
-        data = (f'<manifest:file-entry '
-                f'manifest:media-type="{to_str(media_type)}" '
-                f'manifest:full-path="{to_str(full_path)}"/>')
+        data = ('<manifest:file-entry '
+                'manifest:media-type="%s" '
+                'manifest:full-path="%s"/>' % (
+                    to_str(media_type), to_str(full_path)))
         return Element.from_tag(data)
 
     def add_full_path(self, full_path, media_type=b''):

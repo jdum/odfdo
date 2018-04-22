@@ -58,7 +58,7 @@ class Container:
         if isinstance(path_or_file, (str, bytes, Path)):
             self.path = path_or_file
             if not exists(self.path):
-                raise OSError(f'File not found: {self.path}')
+                raise OSError('File not found: %s' % self.path)
         else:
             self.path = None
         if is_zipfile(path_or_file):
@@ -75,7 +75,7 @@ class Container:
                 return self.__read_folder()
         # last try, flat xml either by path or file
         # self._read_flat() # FIXME: not implemented
-        raise ValueError(f'Document format not managed by this tool.')
+        raise ValueError('Document format not managed by this tool.')
 
     @classmethod
     def new(cls, path_or_file):
@@ -102,7 +102,7 @@ class Container:
         with ZipFile(self.__path_like) as zf:
             mimetype = zf.read('mimetype').decode('utf-8', 'ignore')
             if mimetype not in ODF_MIMETYPES:
-                raise ValueError(f'Document of unknown type {mimetype}')
+                raise ValueError('Document of unknown type %s' % mimetype)
             self.__parts['mimetype'] = to_bytes(mimetype)
         if self.path is None:
             # read the full file at once and forget file
@@ -120,8 +120,8 @@ class Container:
             mimetype = b''
             timestamp = None
         if to_str(mimetype) not in ODF_MIMETYPES:
-            message = (f'Document of unknown type {mimetype}, '
-                       'try with ODF Text.')
+            message = ('Document of unknown type , '
+                       'try with ODF Text.' % mimetype)
             printwarn(message)
             mimetype = to_bytes(ODF_EXTENSIONS['odt'])
             self.__parts['mimetype'] = mimetype
@@ -270,7 +270,7 @@ class Container:
         if path in self.__parts:
             part = self.__parts[path]
             if part is None:
-                raise ValueError(f'part "{path}" is deleted')
+                raise ValueError('part "%s" is deleted' % path)
             if self.__packaging == 'folder':
                 cache_ts = self.__parts_ts.get(path, -1)
                 current_ts = self.__get_folder_part_timestamp(path)

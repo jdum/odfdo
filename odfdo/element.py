@@ -113,7 +113,7 @@ def _get_prefixed_name(tag):
     """
     uri, name = to_str(tag).split('}', 1)
     prefix = _uri_to_prefix(uri[1:])
-    return f'{prefix}:{name}'
+    return '%s:%s' % (prefix,name)
 
 
 def _get_lxml_tag(qname):
@@ -331,7 +331,7 @@ class Element:
                     property(
                         cls._generic_attrib_getter(attr, family),
                         cls._generic_attrib_setter(attr, family), None,
-                        f'Get /set the attribute {attr}'))
+                        'Get /set the attribute %s' % attr))
 
     def _insert(self,
                 element,
@@ -2426,10 +2426,10 @@ class Element:
         """
         name = to_str(name)
         if name:
-            request = (f'descendant::text:reference-mark-start'
-                       f'[@text:name="{name}"] '
-                       f'| descendant::text:reference-mark'
-                       f'[@text:name="{name}"]')
+            request = ('descendant::text:reference-mark-start'
+                       '[@text:name="%s"] '
+                       '| descendant::text:reference-mark'
+                       '[@text:name="%s"]' % (name, name))
             return _get_element(self, request, position=0)
         else:
             request = ('descendant::text:reference-mark-start '
