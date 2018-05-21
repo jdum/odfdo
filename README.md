@@ -26,14 +26,13 @@ installation
 
 
 after installation you can check everything is working:
-    
-    
-    cd test
-    
-    python test.py
-    
+
     
-test should run for a few seconds and issue not errors.
+    cd test
+    
+    python test.py
+
+test should run for a few seconds and issue no errors.
 
 
 usage
@@ -51,7 +50,7 @@ documentation
 =============
 
  - the "recipes" folder contains more than 50 working sample scripts,
- - the "scripts" folder contains usefull scripts (like style management),
+ - the "scripts" folder contains useful scripts (like style management),
  - the "doc" folder contains auto generated documentation.
 
 styles: the best way to apply style is by merging styles from a template
@@ -78,5 +77,5 @@ The most recent version of lpod-python is there:
 
     https://github.com/lpod/lpod-python
 
-Architect: Jean-Marie Gouarné <jean-marie.gouarne@arsaperta.com>
+Architect: Jean-Marie Gouarné <jean-marie.gouarne@arsaperta.com>  
 Coordinator: Luis Belmar-Letelier <luis@itaapy.com>
