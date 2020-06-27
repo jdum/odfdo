@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,9 +18,8 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
-"""Implementation of SMIL
-
-We can find more informations here: http://www.w3.org/TR/SMIL20/
+"""Classes for ODF implementation of SMIL (Synchronized Multimedia
+Integration Language)
 """
 from .element import Element, register_element_class
 
@@ -83,7 +82,8 @@ class AnimTransFilter(Element):
     Arguments:
       smil_dur -- XXX complete me
 
-      smil_type and smil_subtype -- see  http://www.w3.org/TR/SMIL20/smil-transitions.html#TransitionEffects-Appendix
+      smil_type and smil_subtype -- see http://www.w3.org/TR/SMIL20/
+                    smil-transitions.html#TransitionEffects-Appendix
                                     to get a list of all types/subtypes
 
       smil_direction -- forward, reverse

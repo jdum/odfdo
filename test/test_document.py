@@ -24,13 +24,15 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 
-from io import StringIO, BytesIO
-from ftplib import FTP
+# from io import StringIO, BytesIO
+from io import BytesIO
+# from ftplib import FTP
 from unittest import TestCase, main
-from urllib.request import urlopen
+# from urllib.request import urlopen
+from os.path import join
 
-from odfdo.const import ODF_EXTENSIONS, ODF_CONTENT, ODF_MANIFEST, ODF_META
-from odfdo.const import ODF_STYLES
+from odfdo.const import (ODF_EXTENSIONS, ODF_CONTENT, ODF_MANIFEST, ODF_META,
+                         ODF_STYLES)
 from odfdo.content import Content
 from odfdo.document import Document
 from odfdo.manifest import Manifest
@@ -43,23 +45,23 @@ class NewDocumentFromTemplateTestCase(TestCase):
         self.assertRaises(IOError, Document, '../odfdo/templates/notexisting')
 
     def test_text_template(self):
-        path = '../odfdo/templates/text.ott'
+        path = join('..', 'odfdo', 'templates', 'text.ott')
         self.assertTrue(Document.new(path))
 
     def test_spreadsheet_template(self):
-        path = '../odfdo/templates/spreadsheet.ots'
+        path = join('..', 'odfdo', 'templates', 'spreadsheet.ots')
         self.assertTrue(Document.new(path))
 
     def test_presentation_template(self):
-        path = '../odfdo/templates/presentation.otp'
+        path = join('..', 'odfdo', 'templates', 'presentation.otp')
         self.assertTrue(Document.new(path))
 
     def test_drawing_template(self):
-        path = '../odfdo/templates/drawing.otg'
+        path = join('..', 'odfdo', 'templates', 'drawing.otg')
         self.assertTrue(Document.new(path))
 
     def test_mimetype(self):
-        path = '../odfdo/templates/drawing.otg'
+        path = join('..', 'odfdo', 'templates', 'drawing.otg')
         document = Document.new(path)
         mimetype = document.mimetype
         self.assertFalse('template' in mimetype)
@@ -91,7 +93,7 @@ class NewdocumentFromTypeTestCase(TestCase):
 
 class GetDocumentTestCase(TestCase):
     def test_filesystem(self):
-        path = 'samples/example.odt'
+        path = join('samples', 'example.odt')
         self.assertTrue(Document(path))
 
     # def test_odf_xml(self):
@@ -104,7 +106,7 @@ class GetDocumentTestCase(TestCase):
 
 class DocumentTestCase(TestCase):
     def setUp(self):
-        self.document = Document.new('samples/example.odt')
+        self.document = Document.new(join('samples', 'example.odt'))
 
     def test_get_mimetype(self):
         mimetype = self.document.mimetype
@@ -164,7 +166,8 @@ class DocumentTestCase(TestCase):
 
 class TestStyle(TestCase):
     def setUp(self):
-        self.document = Document.new('../odfdo/templates/lpod_styles.odt')
+        self.document = Document.new(
+            join('..', 'odfdo', 'templates', 'lpod_styles.odt'))
 
     def test_get_styles(self):
         document = self.document

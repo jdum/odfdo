@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,18 +21,19 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-
+"""Paragraph class for "text:p", Span class for "text:span"
+"""
 import re
 from functools import wraps  # for keeping trace of docstring with decorators
 
 from .bookmark import Bookmark, BookmarkStart, BookmarkEnd
-from .element import FIRST_CHILD, NEXT_SIBLING
-from .element import register_element_class, Element
+from .element import (FIRST_CHILD, NEXT_SIBLING, register_element_class,
+                      Element)
 from .paragraph_base import ParagraphBase, Spacer, Tab, LineBreak
 
 from .note import Note, Annotation, AnnotationEnd
-from .reference import Reference, ReferenceMark
-from .reference import ReferenceMarkStart, ReferenceMarkEnd
+from .reference import (Reference, ReferenceMark, ReferenceMarkStart,
+                        ReferenceMarkEnd)
 from .link import Link
 
 
@@ -126,7 +127,7 @@ def _by_regex_offset(method):
 
 
 class Paragraph(ParagraphBase):
-    """Specialised element for paragraphs <text:p>. The <text:p> element
+    """Specialised element for paragraphs "text:p". The "text:p" element
     represents a paragraph, which is the basic unit of text in an OpenDocument
     file.
     """
@@ -152,7 +153,6 @@ class Paragraph(ParagraphBase):
                 self.text = text_or_element
             if style is not None:
                 self.style = style
-            pass
 
     def insert_note(self,
                     note_element=None,
@@ -160,9 +160,7 @@ class Paragraph(ParagraphBase):
                     note_class='footnote',
                     note_id=None,
                     citation=None,
-                    body=None,
-                    *args,
-                    **kw):
+                    body=None):
         if note_element is None:
             note_element = Note(
                 note_class=note_class,
@@ -468,7 +466,7 @@ class Paragraph(ParagraphBase):
         if not isinstance(reference_mark, (ReferenceMark, ReferenceMarkStart)):
             raise ValueError("Not a ReferenceMark or ReferenceMarkStart")
         name = reference_mark.name
-        if type(reference_mark) is ReferenceMark:
+        if isinstance(reference_mark, ReferenceMark):
             # change it to a range reference:
             reference_mark.tag = ReferenceMarkStart._tag
 
@@ -582,9 +580,9 @@ class Paragraph(ParagraphBase):
                          position=0,
                          display=None):
         """Create and insert a reference to a content marked by a reference
-        mark. The Reference element (<text:reference-ref>) represents a
-        field that references a <text:reference-mark-start> or
-        <text:reference-mark> element. Its <text:reference-format> attribute
+        mark. The Reference element ("text:reference-ref") represents a
+        field that references a "text:reference-mark-start" or
+        "text:reference-mark" element. Its "text:reference-format" attribute
         specifies what is displayed from the referenced element. Default is
         'page'. Actual content is not automatically updated except for the 'text'
         format.
@@ -630,7 +628,7 @@ class Paragraph(ParagraphBase):
         if not display:
             display = ' '
         reference.text = display
-        if isinstance(after, odf_element):
+        if isinstance(after, Element):
             after.insert(reference, FIRST_CHILD)
         else:
             self._insert(
@@ -743,7 +741,7 @@ class Paragraph(ParagraphBase):
 
 
 class Span(Paragraph):
-    """Create a span element <text:span> of the given style containing the optional
+    """Create a span element "text:span" of the given style containing the optional
     given text.
     """
     _tag = 'text:span'

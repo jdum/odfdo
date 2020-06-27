@@ -106,14 +106,14 @@ if __name__ == "__main__":
             counter_added_note += 1
             paragraph.insert_note(
                 after=link,  # citation is inserted after current link
-                note_id="my_note_%s" % counter_added_note,
-                citation="1",  # The symbol the user sees to follow the footnote.
-                body=(  # The footnote itself, at the end of the page.
-                    '. %s, link: %s' % (text, url)))
+                note_id=f'my_note_{counter_added_note}',
+                citation='1',  # The symbol the user sees to follow the footnote.
+                # The footnote itself, at the end of the page:
+                body=(f'. {text}, link: {url}'))
         remove_links(paragraph)
 
-    print("links occurrences:", len(body.get_links()))
-    print("footnotes occurences:", len(body.get_notes()))
+    print('links occurrences:', len(body.get_links()))
+    print('footnotes occurences:', len(body.get_notes()))
 
     if not os.path.exists('test_output'):
         os.mkdir('test_output')

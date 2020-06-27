@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,8 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-
+"""User fields and variable fields classes
+"""
 from .datatype import Date, DateTime, Duration
 from .const import ODF_META
 from .utils import _set_value_and_type
@@ -153,7 +154,7 @@ UserFieldInput._define_attribut_property()
 
 
 class UserDefined(Element):
-    """Return a user defined field <text:user-defined>. If the current
+    """Return a user defined field "text:user-defined". If the current
     document is provided, try to extract the content of the meta user defined
     field of same name.
 

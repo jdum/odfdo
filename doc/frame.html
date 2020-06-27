@@ -1,0 +1,1723 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.3" />
+<title>odfdo.frame API documentation</title>
+<meta name="description" content="Frame class for &#34;draw:frame&#34;" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>odfdo.frame</code></h1>
+</header>
+<section id="section-intro">
+<p>Frame class for "draw:frame"</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+# Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
+#
+# Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an &#34;AS IS&#34; BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#
+# Authors (odfdo project): jerome.dumonteil@gmail.com
+# The odfdo project is a derivative work of the lpod-python project:
+# https://github.com/lpod/lpod-python
+# Authors: David Versmisse &lt;david.versmisse@itaapy.com&gt;
+#          Hervé Cauwelier &lt;herve@itaapy.com&gt;
+&#34;&#34;&#34;Frame class for &#34;draw:frame&#34;
+&#34;&#34;&#34;
+from .element import Element, register_element_class
+from .datatype import Unit
+from .image import DrawImage
+from .paragraph import Paragraph
+from .style import Style
+from .utils import isiterable, DPI
+
+
+def default_frame_position_style(name=&#34;FramePosition&#34;,
+                                 horizontal_pos=&#34;from-left&#34;,
+                                 vertical_pos=&#34;from-top&#34;,
+                                 horizontal_rel=&#34;paragraph&#34;,
+                                 vertical_rel=&#34;paragraph&#34;):
+    &#34;&#34;&#34;Helper style for positioning frames in desktop applications that need
+    it.
+
+    Default arguments should be enough.
+
+    Use the returned Style as the frame style or build a new graphic style
+    with this style as the parent.
+    &#34;&#34;&#34;
+    return Style(
+        family=&#39;graphic&#39;,
+        name=name,
+        horizontal_pos=horizontal_pos,
+        horizontal_rel=horizontal_rel,
+        vertical_pos=vertical_pos,
+        vertical_rel=vertical_rel)
+
+
+class AnchorMix:
+    &#34;&#34;&#34;Anchor parameter, how the element is attached to its environment.
+
+    value can be: &#39;page&#39;, &#39;frame&#39;, &#39;paragraph&#39;, &#39;char&#39; or &#39;as-char&#39;
+    &#34;&#34;&#34;
+    anchor_value_choice = {&#39;page&#39;, &#39;frame&#39;, &#39;paragraph&#39;, &#39;char&#39;, &#39;as-char&#39;}
+
+    @property
+    def anchor_type(self):
+        &#34;getter/setter&#34;
+        return self.get_attribute(&#39;text:anchor-type&#39;)
+
+    @anchor_type.setter
+    def anchor_type(self, anchor_type):
+        if anchor_type not in self.anchor_value_choice:
+            raise ValueError(&#39;anchor_type not valid: %s&#39; % anchor_type)
+        self.set_attribute(&#39;text:anchor-type&#39;, anchor_type)
+
+    @property
+    def anchor_page(self):
+        &#34;&#34;&#34;getter/setter for the number of the page when the anchor type is
+        &#39;page&#39;.
+
+        type : int or None
+        &#34;&#34;&#34;
+        anchor_page = self.get_attribute(&#39;text:anchor-page-number&#39;)
+        if anchor_page is None:
+            return None
+        return int(anchor_page)
+
+    @anchor_page.setter
+    def anchor_page(self, anchor_page):
+        self.set_attribute(&#39;text:anchor-page-number&#39;, anchor_page)
+
+
+class PosMix:
+    &#34;&#34;&#34;Position relative to anchor point.
+
+    Setting the position may require a specific style for actual display on
+    some graphical rendering softwares.
+
+    Position is a (left, top) tuple with items including the unit,
+    e.g. (&#39;10cm&#39;, &#39;15cm&#39;).
+    &#34;&#34;&#34;
+
+    @property
+    def position(self):
+        &#34;getter/setter&#34;
+        get_attr = self.get_attribute
+        return get_attr(&#39;svg:x&#39;), get_attr(&#39;svg:y&#39;)
+
+    @position.setter
+    def position(self, position):
+        self.pos_x = position[0]
+        self.pos_y = position[1]
+
+
+class ZMix:
+    &#34;&#34;&#34;z-index position
+
+    z-index is an integer
+    &#34;&#34;&#34;
+
+    @property
+    def z_index(self):
+        &#34;getter/setter&#34;
+        z_index = self.get_attribute(&#39;draw:z-index&#39;)
+        if z_index is None:
+            return None
+        return int(z_index)
+
+    @z_index.setter
+    def z_index(self, z_index):
+        self.set_attribute(&#39;draw:z-index&#39;, z_index)
+
+
+class SizeMix:
+    &#34;&#34;&#34;Size of the frame
+
+    Size is a (width, height) tuple with items including the unit,
+    e.g. (&#39;10cm&#39;, &#39;15cm&#39;).
+    &#34;&#34;&#34;
+
+    @property
+    def size(self):
+        &#34;getter/setter&#34;
+        return (self.width, self.height)
+
+    @size.setter
+    def size(self, size):
+        self.width = size[0]
+        self.height = size[1]
+
+
+class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
+    &#34;&#34;&#34;ODF Frame &#34;draw:frame&#34;
+
+    Frames are not useful by themselves. You should consider calling
+    Frame.image_frame() or Frame.text_frame directly.
+    &#34;&#34;&#34;
+    _tag = &#39;draw:frame&#39;
+    _properties = (
+        (&#39;name&#39;, &#39;draw:name&#39;),
+        (&#39;draw_id&#39;, &#39;draw:id&#39;),
+        (&#39;width&#39;, &#39;svg:width&#39;),
+        (&#39;height&#39;, &#39;svg:height&#39;),
+        (&#39;style&#39;, &#39;draw:style-name&#39;),
+        (&#39;pos_x&#39;, &#39;svg:x&#39;),
+        (&#39;pos_y&#39;, &#39;svg:y&#39;),
+        (&#39;presentation_class&#39;, &#39;presentation:class&#39;),
+        (&#39;layer&#39;, &#39;draw:layer&#39;),
+        (&#39;presentation_style&#39;, &#39;presentation:style-name&#39;),
+    )
+
+    def __init__(self,
+                 name=None,
+                 draw_id=None,
+                 style=None,
+                 position=None,
+                 size=(&#39;1cm&#39;, &#39;1cm&#39;),
+                 z_index=0,
+                 presentation_class=None,
+                 anchor_type=None,
+                 anchor_page=None,
+                 layer=None,
+                 presentation_style=None,
+                 **kwargs):
+        &#34;&#34;&#34;Create a frame element of the given size. Position is relative to the
+        context the frame is inserted in. If positioned by page, give the page
+        number and the x, y position.
+
+        Size is a (width, height) tuple and position is a (left, top) tuple; items
+        are strings including the unit, e.g. (&#39;10cm&#39;, &#39;15cm&#39;).
+
+        Frames are not useful by themselves. You should consider calling:
+            Frame.image_frame()
+        or
+            Frame.text_frame()
+
+
+        Arguments:
+
+            name -- str
+
+            draw_id -- str
+
+            style -- str
+
+            position -- (str, str)
+
+            size -- (str, str)
+
+            z_index -- int (default 0)
+
+            presentation_class -- str
+
+            anchor_type -- &#39;page&#39;, &#39;frame&#39;, &#39;paragraph&#39;, &#39;char&#39; or &#39;as-char&#39;
+
+            anchor_page -- int, page number is anchor_type is &#39;page&#39;
+
+            layer -- str
+
+            presentation_style -- str
+
+        Return: Frame
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+        if self._do_init:
+            self.size = size
+            self.z_index = z_index
+            if name:
+                self.name = name
+            if draw_id is not None:
+                self.draw_id = draw_id
+            if style is not None:
+                self.style = style
+            if position is not None:
+                self.position = position
+            if presentation_class is not None:
+                self.presentation_class = presentation_class
+            if anchor_type:
+                self.anchor_type = anchor_type
+            if position and not anchor_type:
+                self.anchor_type = &#39;paragraph&#39;
+            if anchor_page is not None:
+                self.anchor_page = anchor_page
+            if layer is not None:
+                self.layer = layer
+            if presentation_style is not None:
+                self.presentation_style = presentation_style
+
+    @classmethod
+    def image_frame(cls,
+                    image,
+                    text=None,
+                    name=None,
+                    draw_id=None,
+                    style=None,
+                    position=None,
+                    size=(&#39;1cm&#39;, &#39;1cm&#39;),
+                    z_index=0,
+                    presentation_class=None,
+                    anchor_type=None,
+                    anchor_page=None,
+                    layer=None,
+                    presentation_style=None,
+                    **kwargs):
+        &#34;&#34;&#34;Create a ready-to-use image, since image must be embedded in a
+        frame.
+
+        The optionnal text will appear above the image.
+
+        Arguments:
+
+            image -- DrawImage or str, DrawImage element or URL of the image
+
+            text -- str, text for the image
+
+            See Frame() initialization for the other arguments
+
+        Return: Frame
+        &#34;&#34;&#34;
+        frame = cls(
+            name=name,
+            draw_id=draw_id,
+            style=style,
+            position=position,
+            size=size,
+            z_index=z_index,
+            presentation_class=presentation_class,
+            anchor_type=anchor_type,
+            anchor_page=anchor_page,
+            layer=layer,
+            presentation_style=presentation_style,
+            **kwargs)
+        image_element = frame.set_image(image)
+        if text:
+            image_element.text_content = text
+        return frame
+
+    @classmethod
+    def text_frame(cls,
+                   text_or_element=None,
+                   text_style=None,
+                   name=None,
+                   draw_id=None,
+                   style=None,
+                   position=None,
+                   size=(&#39;1cm&#39;, &#39;1cm&#39;),
+                   z_index=0,
+                   presentation_class=None,
+                   anchor_type=None,
+                   anchor_page=None,
+                   layer=None,
+                   presentation_style=None,
+                   **kwargs):
+        &#34;&#34;&#34;Create a ready-to-use text box, since text box must be embedded in
+        a frame.
+
+        The optionnal text will appear above the image.
+
+        Arguments:
+
+            text_or_element -- str or Element, or list of them, text content
+                               of the text box.
+
+            text_style -- str, name of the style for the text
+
+            See Frame() initialization for the other arguments
+
+        Return: Frame
+        &#34;&#34;&#34;
+        frame = cls(
+            name=name,
+            draw_id=draw_id,
+            style=style,
+            position=position,
+            size=size,
+            z_index=z_index,
+            presentation_class=presentation_class,
+            anchor_type=anchor_type,
+            anchor_page=anchor_page,
+            layer=layer,
+            presentation_style=presentation_style,
+            **kwargs)
+        frame.set_text_box(text_or_element, text_style)
+        return frame
+
+    @property
+    def text_content(self):
+        text_box = self.get_element(&#39;draw:text-box&#39;)
+        if text_box is None:
+            return None
+        return text_box.text_content
+
+    @text_content.setter
+    def text_content(self, text_or_element):
+        text_box = self.get_element(&#39;draw:text-box&#39;)
+        if text_box is None:
+            text_box = Element.from_tag(&#39;draw:text-box&#39;)
+            self.append(text_box)
+        if isinstance(text_or_element, Element):
+            text_box.clear()
+            text_box.append(text_or_element)
+        else:
+            text_box.text_content = text_or_element
+
+    def get_image(self, position=0, name=None, url=None, content=None):
+        return self.get_element(&#39;draw:image&#39;)
+
+    def set_image(self, url_or_element):
+        image = self.get_image()
+        if image is None:
+            if isinstance(url_or_element, Element):
+                image = url_or_element
+                self.append(image)
+            else:
+                image = DrawImage(url_or_element)
+                self.append(image)
+        else:
+            if isinstance(url_or_element, Element):
+                image.delete()
+                image = url_or_element
+                self.append(image)
+            else:
+                image.set_url(url_or_element)
+        return image
+
+    def get_text_box(self):
+        return self.get_element(&#39;draw:text-box&#39;)
+
+    def set_text_box(self, text_or_element=None, text_style=None):
+        text_box = self.get_text_box()
+        if text_box is None:
+            text_box = Element.from_tag(&#39;draw:text-box&#39;)
+            self.append(text_box)
+        else:
+            text_box.clear()
+        if not isiterable(text_or_element):
+            text_or_element = [text_or_element]
+        for item in text_or_element:
+            if isinstance(item, str):
+                item = Paragraph(item, style=text_style)
+            text_box.append(item)
+        return text_box
+
+    def get_formatted_text(self, context):
+        result = []
+        for element in self.children:
+            tag = element.tag
+            if tag == &#39;draw:image&#39;:
+                if context[&#39;rst_mode&#39;]:
+                    filename = element.get_attribute(&#39;xlink:href&#39;)
+
+                    # Compute width and height
+                    width, height = self.size
+                    if width is not None:
+                        width = Unit(width)
+                        width = width.convert(&#39;px&#39;, DPI)
+                    if height is not None:
+                        height = Unit(height)
+                        height = height.convert(&#39;px&#39;, DPI)
+
+                    # Insert or not ?
+                    if context[&#39;no_img_level&#39;]:
+                        context[&#39;img_counter&#39;] += 1
+                        ref = &#39;|img%d|&#39; % context[&#39;img_counter&#39;]
+                        result.append(ref)
+                        context[&#39;images&#39;].append((ref, filename, (width,
+                                                                  height)))
+                    else:
+                        result.append(&#39;\n.. image:: %s\n&#39; % filename)
+                        if width is not None:
+                            result.append(&#39;   :width: %s\n&#39; % width)
+                        if height is not None:
+                            result.append(&#39;   :height: %s\n&#39; % height)
+                else:
+                    result.append(
+                        &#39;[Image %s]\n&#39; % element.get_attribute(&#39;xlink:href&#39;))
+            elif tag == &#39;draw:text-box&#39;:
+                subresult = [&#39;  &#39;]
+                for e in element.children:
+                    subresult.append(e.get_formatted_text(context))
+                subresult = &#39;&#39;.join(subresult)
+                subresult = subresult.replace(&#39;\n&#39;, &#39;\n  &#39;)
+                subresult.rstrip(&#39; &#39;)
+                result.append(subresult)
+            else:
+                result.append(element.get_formatted_text(context))
+        result.append(&#39;\n&#39;)
+        return &#39;&#39;.join(result)
+
+
+Frame._define_attribut_property()
+
+register_element_class(Frame)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="odfdo.frame.default_frame_position_style"><code class="name flex">
+<span>def <span class="ident">default_frame_position_style</span></span>(<span>name='FramePosition', horizontal_pos='from-left', vertical_pos='from-top', horizontal_rel='paragraph', vertical_rel='paragraph')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Helper style for positioning frames in desktop applications that need
+it.</p>
+<p>Default arguments should be enough.</p>
+<p>Use the returned Style as the frame style or build a new graphic style
+with this style as the parent.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def default_frame_position_style(name=&#34;FramePosition&#34;,
+                                 horizontal_pos=&#34;from-left&#34;,
+                                 vertical_pos=&#34;from-top&#34;,
+                                 horizontal_rel=&#34;paragraph&#34;,
+                                 vertical_rel=&#34;paragraph&#34;):
+    &#34;&#34;&#34;Helper style for positioning frames in desktop applications that need
+    it.
+
+    Default arguments should be enough.
+
+    Use the returned Style as the frame style or build a new graphic style
+    with this style as the parent.
+    &#34;&#34;&#34;
+    return Style(
+        family=&#39;graphic&#39;,
+        name=name,
+        horizontal_pos=horizontal_pos,
+        horizontal_rel=horizontal_rel,
+        vertical_pos=vertical_pos,
+        vertical_rel=vertical_rel)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="odfdo.frame.AnchorMix"><code class="flex name class">
+<span>class <span class="ident">AnchorMix</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Anchor parameter, how the element is attached to its environment.</p>
+<p>value can be: 'page', 'frame', 'paragraph', 'char' or 'as-char'</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AnchorMix:
+    &#34;&#34;&#34;Anchor parameter, how the element is attached to its environment.
+
+    value can be: &#39;page&#39;, &#39;frame&#39;, &#39;paragraph&#39;, &#39;char&#39; or &#39;as-char&#39;
+    &#34;&#34;&#34;
+    anchor_value_choice = {&#39;page&#39;, &#39;frame&#39;, &#39;paragraph&#39;, &#39;char&#39;, &#39;as-char&#39;}
+
+    @property
+    def anchor_type(self):
+        &#34;getter/setter&#34;
+        return self.get_attribute(&#39;text:anchor-type&#39;)
+
+    @anchor_type.setter
+    def anchor_type(self, anchor_type):
+        if anchor_type not in self.anchor_value_choice:
+            raise ValueError(&#39;anchor_type not valid: %s&#39; % anchor_type)
+        self.set_attribute(&#39;text:anchor-type&#39;, anchor_type)
+
+    @property
+    def anchor_page(self):
+        &#34;&#34;&#34;getter/setter for the number of the page when the anchor type is
+        &#39;page&#39;.
+
+        type : int or None
+        &#34;&#34;&#34;
+        anchor_page = self.get_attribute(&#39;text:anchor-page-number&#39;)
+        if anchor_page is None:
+            return None
+        return int(anchor_page)
+
+    @anchor_page.setter
+    def anchor_page(self, anchor_page):
+        self.set_attribute(&#39;text:anchor-page-number&#39;, anchor_page)</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="odfdo.frame.Frame" href="#odfdo.frame.Frame">Frame</a></li>
+<li><a title="odfdo.shapes.DrawGroup" href="shapes.html#odfdo.shapes.DrawGroup">DrawGroup</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="odfdo.frame.AnchorMix.anchor_value_choice"><code class="name">var <span class="ident">anchor_value_choice</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="odfdo.frame.AnchorMix.anchor_page"><code class="name">var <span class="ident">anchor_page</span></code></dt>
+<dd>
+<div class="desc"><p>getter/setter for the number of the page when the anchor type is
+'page'.</p>
+<p>type : int or None</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def anchor_page(self):
+    &#34;&#34;&#34;getter/setter for the number of the page when the anchor type is
+    &#39;page&#39;.
+
+    type : int or None
+    &#34;&#34;&#34;
+    anchor_page = self.get_attribute(&#39;text:anchor-page-number&#39;)
+    if anchor_page is None:
+        return None
+    return int(anchor_page)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.frame.AnchorMix.anchor_type"><code class="name">var <span class="ident">anchor_type</span></code></dt>
+<dd>
+<div class="desc"><p>getter/setter</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def anchor_type(self):
+    &#34;getter/setter&#34;
+    return self.get_attribute(&#39;text:anchor-type&#39;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="odfdo.frame.Frame"><code class="flex name class">
+<span>class <span class="ident">Frame</span></span>
+<span>(</span><span>name=None, draw_id=None, style=None, position=None, size=('1cm', '1cm'), z_index=0, presentation_class=None, anchor_type=None, anchor_page=None, layer=None, presentation_style=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>ODF Frame "draw:frame"</p>
+<p>Frames are not useful by themselves. You should consider calling
+Frame.image_frame() or Frame.text_frame directly.</p>
+<p>Create a frame element of the given size. Position is relative to the
+context the frame is inserted in. If positioned by page, give the page
+number and the x, y position.</p>
+<p>Size is a (width, height) tuple and position is a (left, top) tuple; items
+are strings including the unit, e.g. ('10cm', '15cm').</p>
+<p>Frames are not useful by themselves. You should consider calling:
+Frame.image_frame()
+or
+Frame.text_frame()</p>
+<h2 id="arguments">Arguments</h2>
+<p>name &ndash; str</p>
+<p>draw_id &ndash; str</p>
+<p>style &ndash; str</p>
+<p>position &ndash; (str, str)</p>
+<p>size &ndash; (str, str)</p>
+<p>z_index &ndash; int (default 0)</p>
+<p>presentation_class &ndash; str</p>
+<p>anchor_type &ndash; 'page', 'frame', 'paragraph', 'char' or 'as-char'</p>
+<p>anchor_page &ndash; int, page number is anchor_type is 'page'</p>
+<p>layer &ndash; str</p>
+<p>presentation_style &ndash; str</p>
+<p>Return: Frame</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
+    &#34;&#34;&#34;ODF Frame &#34;draw:frame&#34;
+
+    Frames are not useful by themselves. You should consider calling
+    Frame.image_frame() or Frame.text_frame directly.
+    &#34;&#34;&#34;
+    _tag = &#39;draw:frame&#39;
+    _properties = (
+        (&#39;name&#39;, &#39;draw:name&#39;),
+        (&#39;draw_id&#39;, &#39;draw:id&#39;),
+        (&#39;width&#39;, &#39;svg:width&#39;),
+        (&#39;height&#39;, &#39;svg:height&#39;),
+        (&#39;style&#39;, &#39;draw:style-name&#39;),
+        (&#39;pos_x&#39;, &#39;svg:x&#39;),
+        (&#39;pos_y&#39;, &#39;svg:y&#39;),
+        (&#39;presentation_class&#39;, &#39;presentation:class&#39;),
+        (&#39;layer&#39;, &#39;draw:layer&#39;),
+        (&#39;presentation_style&#39;, &#39;presentation:style-name&#39;),
+    )
+
+    def __init__(self,
+                 name=None,
+                 draw_id=None,
+                 style=None,
+                 position=None,
+                 size=(&#39;1cm&#39;, &#39;1cm&#39;),
+                 z_index=0,
+                 presentation_class=None,
+                 anchor_type=None,
+                 anchor_page=None,
+                 layer=None,
+                 presentation_style=None,
+                 **kwargs):
+        &#34;&#34;&#34;Create a frame element of the given size. Position is relative to the
+        context the frame is inserted in. If positioned by page, give the page
+        number and the x, y position.
+
+        Size is a (width, height) tuple and position is a (left, top) tuple; items
+        are strings including the unit, e.g. (&#39;10cm&#39;, &#39;15cm&#39;).
+
+        Frames are not useful by themselves. You should consider calling:
+            Frame.image_frame()
+        or
+            Frame.text_frame()
+
+
+        Arguments:
+
+            name -- str
+
+            draw_id -- str
+
+            style -- str
+
+            position -- (str, str)
+
+            size -- (str, str)
+
+            z_index -- int (default 0)
+
+            presentation_class -- str
+
+            anchor_type -- &#39;page&#39;, &#39;frame&#39;, &#39;paragraph&#39;, &#39;char&#39; or &#39;as-char&#39;
+
+            anchor_page -- int, page number is anchor_type is &#39;page&#39;
+
+            layer -- str
+
+            presentation_style -- str
+
+        Return: Frame
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+        if self._do_init:
+            self.size = size
+            self.z_index = z_index
+            if name:
+                self.name = name
+            if draw_id is not None:
+                self.draw_id = draw_id
+            if style is not None:
+                self.style = style
+            if position is not None:
+                self.position = position
+            if presentation_class is not None:
+                self.presentation_class = presentation_class
+            if anchor_type:
+                self.anchor_type = anchor_type
+            if position and not anchor_type:
+                self.anchor_type = &#39;paragraph&#39;
+            if anchor_page is not None:
+                self.anchor_page = anchor_page
+            if layer is not None:
+                self.layer = layer
+            if presentation_style is not None:
+                self.presentation_style = presentation_style
+
+    @classmethod
+    def image_frame(cls,
+                    image,
+                    text=None,
+                    name=None,
+                    draw_id=None,
+                    style=None,
+                    position=None,
+                    size=(&#39;1cm&#39;, &#39;1cm&#39;),
+                    z_index=0,
+                    presentation_class=None,
+                    anchor_type=None,
+                    anchor_page=None,
+                    layer=None,
+                    presentation_style=None,
+                    **kwargs):
+        &#34;&#34;&#34;Create a ready-to-use image, since image must be embedded in a
+        frame.
+
+        The optionnal text will appear above the image.
+
+        Arguments:
+
+            image -- DrawImage or str, DrawImage element or URL of the image
+
+            text -- str, text for the image
+
+            See Frame() initialization for the other arguments
+
+        Return: Frame
+        &#34;&#34;&#34;
+        frame = cls(
+            name=name,
+            draw_id=draw_id,
+            style=style,
+            position=position,
+            size=size,
+            z_index=z_index,
+            presentation_class=presentation_class,
+            anchor_type=anchor_type,
+            anchor_page=anchor_page,
+            layer=layer,
+            presentation_style=presentation_style,
+            **kwargs)
+        image_element = frame.set_image(image)
+        if text:
+            image_element.text_content = text
+        return frame
+
+    @classmethod
+    def text_frame(cls,
+                   text_or_element=None,
+                   text_style=None,
+                   name=None,
+                   draw_id=None,
+                   style=None,
+                   position=None,
+                   size=(&#39;1cm&#39;, &#39;1cm&#39;),
+                   z_index=0,
+                   presentation_class=None,
+                   anchor_type=None,
+                   anchor_page=None,
+                   layer=None,
+                   presentation_style=None,
+                   **kwargs):
+        &#34;&#34;&#34;Create a ready-to-use text box, since text box must be embedded in
+        a frame.
+
+        The optionnal text will appear above the image.
+
+        Arguments:
+
+            text_or_element -- str or Element, or list of them, text content
+                               of the text box.
+
+            text_style -- str, name of the style for the text
+
+            See Frame() initialization for the other arguments
+
+        Return: Frame
+        &#34;&#34;&#34;
+        frame = cls(
+            name=name,
+            draw_id=draw_id,
+            style=style,
+            position=position,
+            size=size,
+            z_index=z_index,
+            presentation_class=presentation_class,
+            anchor_type=anchor_type,
+            anchor_page=anchor_page,
+            layer=layer,
+            presentation_style=presentation_style,
+            **kwargs)
+        frame.set_text_box(text_or_element, text_style)
+        return frame
+
+    @property
+    def text_content(self):
+        text_box = self.get_element(&#39;draw:text-box&#39;)
+        if text_box is None:
+            return None
+        return text_box.text_content
+
+    @text_content.setter
+    def text_content(self, text_or_element):
+        text_box = self.get_element(&#39;draw:text-box&#39;)
+        if text_box is None:
+            text_box = Element.from_tag(&#39;draw:text-box&#39;)
+            self.append(text_box)
+        if isinstance(text_or_element, Element):
+            text_box.clear()
+            text_box.append(text_or_element)
+        else:
+            text_box.text_content = text_or_element
+
+    def get_image(self, position=0, name=None, url=None, content=None):
+        return self.get_element(&#39;draw:image&#39;)
+
+    def set_image(self, url_or_element):
+        image = self.get_image()
+        if image is None:
+            if isinstance(url_or_element, Element):
+                image = url_or_element
+                self.append(image)
+            else:
+                image = DrawImage(url_or_element)
+                self.append(image)
+        else:
+            if isinstance(url_or_element, Element):
+                image.delete()
+                image = url_or_element
+                self.append(image)
+            else:
+                image.set_url(url_or_element)
+        return image
+
+    def get_text_box(self):
+        return self.get_element(&#39;draw:text-box&#39;)
+
+    def set_text_box(self, text_or_element=None, text_style=None):
+        text_box = self.get_text_box()
+        if text_box is None:
+            text_box = Element.from_tag(&#39;draw:text-box&#39;)
+            self.append(text_box)
+        else:
+            text_box.clear()
+        if not isiterable(text_or_element):
+            text_or_element = [text_or_element]
+        for item in text_or_element:
+            if isinstance(item, str):
+                item = Paragraph(item, style=text_style)
+            text_box.append(item)
+        return text_box
+
+    def get_formatted_text(self, context):
+        result = []
+        for element in self.children:
+            tag = element.tag
+            if tag == &#39;draw:image&#39;:
+                if context[&#39;rst_mode&#39;]:
+                    filename = element.get_attribute(&#39;xlink:href&#39;)
+
+                    # Compute width and height
+                    width, height = self.size
+                    if width is not None:
+                        width = Unit(width)
+                        width = width.convert(&#39;px&#39;, DPI)
+                    if height is not None:
+                        height = Unit(height)
+                        height = height.convert(&#39;px&#39;, DPI)
+
+                    # Insert or not ?
+                    if context[&#39;no_img_level&#39;]:
+                        context[&#39;img_counter&#39;] += 1
+                        ref = &#39;|img%d|&#39; % context[&#39;img_counter&#39;]
+                        result.append(ref)
+                        context[&#39;images&#39;].append((ref, filename, (width,
+                                                                  height)))
+                    else:
+                        result.append(&#39;\n.. image:: %s\n&#39; % filename)
+                        if width is not None:
+                            result.append(&#39;   :width: %s\n&#39; % width)
+                        if height is not None:
+                            result.append(&#39;   :height: %s\n&#39; % height)
+                else:
+                    result.append(
+                        &#39;[Image %s]\n&#39; % element.get_attribute(&#39;xlink:href&#39;))
+            elif tag == &#39;draw:text-box&#39;:
+                subresult = [&#39;  &#39;]
+                for e in element.children:
+                    subresult.append(e.get_formatted_text(context))
+                subresult = &#39;&#39;.join(subresult)
+                subresult = subresult.replace(&#39;\n&#39;, &#39;\n  &#39;)
+                subresult.rstrip(&#39; &#39;)
+                result.append(subresult)
+            else:
+                result.append(element.get_formatted_text(context))
+        result.append(&#39;\n&#39;)
+        return &#39;&#39;.join(result)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.frame.AnchorMix" href="#odfdo.frame.AnchorMix">AnchorMix</a></li>
+<li><a title="odfdo.frame.PosMix" href="#odfdo.frame.PosMix">PosMix</a></li>
+<li><a title="odfdo.frame.ZMix" href="#odfdo.frame.ZMix">ZMix</a></li>
+<li><a title="odfdo.frame.SizeMix" href="#odfdo.frame.SizeMix">SizeMix</a></li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="odfdo.frame.Frame.image_frame"><code class="name flex">
+<span>def <span class="ident">image_frame</span></span>(<span>image, text=None, name=None, draw_id=None, style=None, position=None, size=('1cm', '1cm'), z_index=0, presentation_class=None, anchor_type=None, anchor_page=None, layer=None, presentation_style=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a ready-to-use image, since image must be embedded in a
+frame.</p>
+<p>The optionnal text will appear above the image.</p>
+<h2 id="arguments">Arguments</h2>
+<p>image &ndash; DrawImage or str, DrawImage element or URL of the image</p>
+<p>text &ndash; str, text for the image</p>
+<p>See Frame() initialization for the other arguments</p>
+<p>Return: Frame</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def image_frame(cls,
+                image,
+                text=None,
+                name=None,
+                draw_id=None,
+                style=None,
+                position=None,
+                size=(&#39;1cm&#39;, &#39;1cm&#39;),
+                z_index=0,
+                presentation_class=None,
+                anchor_type=None,
+                anchor_page=None,
+                layer=None,
+                presentation_style=None,
+                **kwargs):
+    &#34;&#34;&#34;Create a ready-to-use image, since image must be embedded in a
+    frame.
+
+    The optionnal text will appear above the image.
+
+    Arguments:
+
+        image -- DrawImage or str, DrawImage element or URL of the image
+
+        text -- str, text for the image
+
+        See Frame() initialization for the other arguments
+
+    Return: Frame
+    &#34;&#34;&#34;
+    frame = cls(
+        name=name,
+        draw_id=draw_id,
+        style=style,
+        position=position,
+        size=size,
+        z_index=z_index,
+        presentation_class=presentation_class,
+        anchor_type=anchor_type,
+        anchor_page=anchor_page,
+        layer=layer,
+        presentation_style=presentation_style,
+        **kwargs)
+    image_element = frame.set_image(image)
+    if text:
+        image_element.text_content = text
+    return frame</code></pre>
+</details>
+</dd>
+<dt id="odfdo.frame.Frame.text_frame"><code class="name flex">
+<span>def <span class="ident">text_frame</span></span>(<span>text_or_element=None, text_style=None, name=None, draw_id=None, style=None, position=None, size=('1cm', '1cm'), z_index=0, presentation_class=None, anchor_type=None, anchor_page=None, layer=None, presentation_style=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a ready-to-use text box, since text box must be embedded in
+a frame.</p>
+<p>The optionnal text will appear above the image.</p>
+<h2 id="arguments">Arguments</h2>
+<p>text_or_element &ndash; str or Element, or list of them, text content
+of the text box.</p>
+<p>text_style &ndash; str, name of the style for the text</p>
+<p>See Frame() initialization for the other arguments</p>
+<p>Return: Frame</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def text_frame(cls,
+               text_or_element=None,
+               text_style=None,
+               name=None,
+               draw_id=None,
+               style=None,
+               position=None,
+               size=(&#39;1cm&#39;, &#39;1cm&#39;),
+               z_index=0,
+               presentation_class=None,
+               anchor_type=None,
+               anchor_page=None,
+               layer=None,
+               presentation_style=None,
+               **kwargs):
+    &#34;&#34;&#34;Create a ready-to-use text box, since text box must be embedded in
+    a frame.
+
+    The optionnal text will appear above the image.
+
+    Arguments:
+
+        text_or_element -- str or Element, or list of them, text content
+                           of the text box.
+
+        text_style -- str, name of the style for the text
+
+        See Frame() initialization for the other arguments
+
+    Return: Frame
+    &#34;&#34;&#34;
+    frame = cls(
+        name=name,
+        draw_id=draw_id,
+        style=style,
+        position=position,
+        size=size,
+        z_index=z_index,
+        presentation_class=presentation_class,
+        anchor_type=anchor_type,
+        anchor_page=anchor_page,
+        layer=layer,
+        presentation_style=presentation_style,
+        **kwargs)
+    frame.set_text_box(text_or_element, text_style)
+    return frame</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="odfdo.frame.Frame.draw_id"><code class="name">var <span class="ident">draw_id</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute draw:id</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.frame.Frame.height"><code class="name">var <span class="ident">height</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute svg:height</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.frame.Frame.layer"><code class="name">var <span class="ident">layer</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute draw:layer</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.frame.Frame.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute draw:name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.frame.Frame.pos_x"><code class="name">var <span class="ident">pos_x</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute svg:x</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.frame.Frame.pos_y"><code class="name">var <span class="ident">pos_y</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute svg:y</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.frame.Frame.presentation_class"><code class="name">var <span class="ident">presentation_class</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute presentation:class</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.frame.Frame.presentation_style"><code class="name">var <span class="ident">presentation_style</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute presentation:style-name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.frame.Frame.style"><code class="name">var <span class="ident">style</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute draw:style-name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.frame.Frame.width"><code class="name">var <span class="ident">width</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute svg:width</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="odfdo.frame.Frame.get_text_box"><code class="name flex">
+<span>def <span class="ident">get_text_box</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_text_box(self):
+    return self.get_element(&#39;draw:text-box&#39;)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.frame.Frame.set_image"><code class="name flex">
+<span>def <span class="ident">set_image</span></span>(<span>self, url_or_element)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_image(self, url_or_element):
+    image = self.get_image()
+    if image is None:
+        if isinstance(url_or_element, Element):
+            image = url_or_element
+            self.append(image)
+        else:
+            image = DrawImage(url_or_element)
+            self.append(image)
+    else:
+        if isinstance(url_or_element, Element):
+            image.delete()
+            image = url_or_element
+            self.append(image)
+        else:
+            image.set_url(url_or_element)
+    return image</code></pre>
+</details>
+</dd>
+<dt id="odfdo.frame.Frame.set_text_box"><code class="name flex">
+<span>def <span class="ident">set_text_box</span></span>(<span>self, text_or_element=None, text_style=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_text_box(self, text_or_element=None, text_style=None):
+    text_box = self.get_text_box()
+    if text_box is None:
+        text_box = Element.from_tag(&#39;draw:text-box&#39;)
+        self.append(text_box)
+    else:
+        text_box.clear()
+    if not isiterable(text_or_element):
+        text_or_element = [text_or_element]
+    for item in text_or_element:
+        if isinstance(item, str):
+            item = Paragraph(item, style=text_style)
+        text_box.append(item)
+    return text_box</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></b></code>:
+<ul class="hlist">
+<li><code><a title="odfdo.element.Element.append" href="element.html#odfdo.element.Element.append">append</a></code></li>
+<li><code><a title="odfdo.element.Element.append_named_range" href="element.html#odfdo.element.Element.append_named_range">append_named_range</a></code></li>
+<li><code><a title="odfdo.element.Element.clear" href="element.html#odfdo.element.Element.clear">clear</a></code></li>
+<li><code><a title="odfdo.element.Element.dc_creator" href="element.html#odfdo.element.Element.dc_creator">dc_creator</a></code></li>
+<li><code><a title="odfdo.element.Element.dc_date" href="element.html#odfdo.element.Element.dc_date">dc_date</a></code></li>
+<li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
+<li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
+<li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
+<li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_ends" href="element.html#odfdo.element.Element.get_bookmark_ends">get_bookmark_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_start" href="element.html#odfdo.element.Element.get_bookmark_start">get_bookmark_start</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_starts" href="element.html#odfdo.element.Element.get_bookmark_starts">get_bookmark_starts</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmarks" href="element.html#odfdo.element.Element.get_bookmarks">get_bookmarks</a></code></li>
+<li><code><a title="odfdo.element.Element.get_changes_ids" href="element.html#odfdo.element.Element.get_changes_ids">get_changes_ids</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_connector" href="element.html#odfdo.element.Element.get_draw_connector">get_draw_connector</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_connectors" href="element.html#odfdo.element.Element.get_draw_connectors">get_draw_connectors</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_ellipse" href="element.html#odfdo.element.Element.get_draw_ellipse">get_draw_ellipse</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_ellipses" href="element.html#odfdo.element.Element.get_draw_ellipses">get_draw_ellipses</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_line" href="element.html#odfdo.element.Element.get_draw_line">get_draw_line</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_lines" href="element.html#odfdo.element.Element.get_draw_lines">get_draw_lines</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_page" href="element.html#odfdo.element.Element.get_draw_page">get_draw_page</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_pages" href="element.html#odfdo.element.Element.get_draw_pages">get_draw_pages</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_rectangle" href="element.html#odfdo.element.Element.get_draw_rectangle">get_draw_rectangle</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_rectangles" href="element.html#odfdo.element.Element.get_draw_rectangles">get_draw_rectangles</a></code></li>
+<li><code><a title="odfdo.element.Element.get_formatted_text" href="element.html#odfdo.element.Element.get_formatted_text">get_formatted_text</a></code></li>
+<li><code><a title="odfdo.element.Element.get_frame" href="element.html#odfdo.element.Element.get_frame">get_frame</a></code></li>
+<li><code><a title="odfdo.element.Element.get_frames" href="element.html#odfdo.element.Element.get_frames">get_frames</a></code></li>
+<li><code><a title="odfdo.element.Element.get_header" href="element.html#odfdo.element.Element.get_header">get_header</a></code></li>
+<li><code><a title="odfdo.element.Element.get_headers" href="element.html#odfdo.element.Element.get_headers">get_headers</a></code></li>
+<li><code><a title="odfdo.element.Element.get_image" href="element.html#odfdo.element.Element.get_image">get_image</a></code></li>
+<li><code><a title="odfdo.element.Element.get_images" href="element.html#odfdo.element.Element.get_images">get_images</a></code></li>
+<li><code><a title="odfdo.element.Element.get_link" href="element.html#odfdo.element.Element.get_link">get_link</a></code></li>
+<li><code><a title="odfdo.element.Element.get_links" href="element.html#odfdo.element.Element.get_links">get_links</a></code></li>
+<li><code><a title="odfdo.element.Element.get_list" href="element.html#odfdo.element.Element.get_list">get_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_lists" href="element.html#odfdo.element.Element.get_lists">get_lists</a></code></li>
+<li><code><a title="odfdo.element.Element.get_named_range" href="element.html#odfdo.element.Element.get_named_range">get_named_range</a></code></li>
+<li><code><a title="odfdo.element.Element.get_named_ranges" href="element.html#odfdo.element.Element.get_named_ranges">get_named_ranges</a></code></li>
+<li><code><a title="odfdo.element.Element.get_note" href="element.html#odfdo.element.Element.get_note">get_note</a></code></li>
+<li><code><a title="odfdo.element.Element.get_notes" href="element.html#odfdo.element.Element.get_notes">get_notes</a></code></li>
+<li><code><a title="odfdo.element.Element.get_office_names" href="element.html#odfdo.element.Element.get_office_names">get_office_names</a></code></li>
+<li><code><a title="odfdo.element.Element.get_orphan_draw_connectors" href="element.html#odfdo.element.Element.get_orphan_draw_connectors">get_orphan_draw_connectors</a></code></li>
+<li><code><a title="odfdo.element.Element.get_paragraph" href="element.html#odfdo.element.Element.get_paragraph">get_paragraph</a></code></li>
+<li><code><a title="odfdo.element.Element.get_paragraphs" href="element.html#odfdo.element.Element.get_paragraphs">get_paragraphs</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark" href="element.html#odfdo.element.Element.get_reference_mark">get_reference_mark</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_end" href="element.html#odfdo.element.Element.get_reference_mark_end">get_reference_mark_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_ends" href="element.html#odfdo.element.Element.get_reference_mark_ends">get_reference_mark_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_single" href="element.html#odfdo.element.Element.get_reference_mark_single">get_reference_mark_single</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_start" href="element.html#odfdo.element.Element.get_reference_mark_start">get_reference_mark_start</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_starts" href="element.html#odfdo.element.Element.get_reference_mark_starts">get_reference_mark_starts</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_marks" href="element.html#odfdo.element.Element.get_reference_marks">get_reference_marks</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_marks_single" href="element.html#odfdo.element.Element.get_reference_marks_single">get_reference_marks_single</a></code></li>
+<li><code><a title="odfdo.element.Element.get_references" href="element.html#odfdo.element.Element.get_references">get_references</a></code></li>
+<li><code><a title="odfdo.element.Element.get_section" href="element.html#odfdo.element.Element.get_section">get_section</a></code></li>
+<li><code><a title="odfdo.element.Element.get_sections" href="element.html#odfdo.element.Element.get_sections">get_sections</a></code></li>
+<li><code><a title="odfdo.element.Element.get_span" href="element.html#odfdo.element.Element.get_span">get_span</a></code></li>
+<li><code><a title="odfdo.element.Element.get_spans" href="element.html#odfdo.element.Element.get_spans">get_spans</a></code></li>
+<li><code><a title="odfdo.element.Element.get_style" href="element.html#odfdo.element.Element.get_style">get_style</a></code></li>
+<li><code><a title="odfdo.element.Element.get_styled_elements" href="element.html#odfdo.element.Element.get_styled_elements">get_styled_elements</a></code></li>
+<li><code><a title="odfdo.element.Element.get_table" href="element.html#odfdo.element.Element.get_table">get_table</a></code></li>
+<li><code><a title="odfdo.element.Element.get_tables" href="element.html#odfdo.element.Element.get_tables">get_tables</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change" href="element.html#odfdo.element.Element.get_text_change">get_text_change</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_deletion" href="element.html#odfdo.element.Element.get_text_change_deletion">get_text_change_deletion</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_deletions" href="element.html#odfdo.element.Element.get_text_change_deletions">get_text_change_deletions</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_end" href="element.html#odfdo.element.Element.get_text_change_end">get_text_change_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_ends" href="element.html#odfdo.element.Element.get_text_change_ends">get_text_change_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_start" href="element.html#odfdo.element.Element.get_text_change_start">get_text_change_start</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_starts" href="element.html#odfdo.element.Element.get_text_change_starts">get_text_change_starts</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_changes" href="element.html#odfdo.element.Element.get_text_changes">get_text_changes</a></code></li>
+<li><code><a title="odfdo.element.Element.get_toc" href="element.html#odfdo.element.Element.get_toc">get_toc</a></code></li>
+<li><code><a title="odfdo.element.Element.get_tocs" href="element.html#odfdo.element.Element.get_tocs">get_tocs</a></code></li>
+<li><code><a title="odfdo.element.Element.get_tracked_changes" href="element.html#odfdo.element.Element.get_tracked_changes">get_tracked_changes</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_defined" href="element.html#odfdo.element.Element.get_user_defined">get_user_defined</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_defined_list" href="element.html#odfdo.element.Element.get_user_defined_list">get_user_defined_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_defined_value" href="element.html#odfdo.element.Element.get_user_defined_value">get_user_defined_value</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_decl" href="element.html#odfdo.element.Element.get_user_field_decl">get_user_field_decl</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_decl_list" href="element.html#odfdo.element.Element.get_user_field_decl_list">get_user_field_decl_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_decls" href="element.html#odfdo.element.Element.get_user_field_decls">get_user_field_decls</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_value" href="element.html#odfdo.element.Element.get_user_field_value">get_user_field_value</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_decl" href="element.html#odfdo.element.Element.get_variable_decl">get_variable_decl</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_decl_list" href="element.html#odfdo.element.Element.get_variable_decl_list">get_variable_decl_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_decls" href="element.html#odfdo.element.Element.get_variable_decls">get_variable_decls</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_set" href="element.html#odfdo.element.Element.get_variable_set">get_variable_set</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_set_value" href="element.html#odfdo.element.Element.get_variable_set_value">get_variable_set_value</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_sets" href="element.html#odfdo.element.Element.get_variable_sets">get_variable_sets</a></code></li>
+<li><code><a title="odfdo.element.Element.index" href="element.html#odfdo.element.Element.index">index</a></code></li>
+<li><code><a title="odfdo.element.Element.insert" href="element.html#odfdo.element.Element.insert">insert</a></code></li>
+<li><code><a title="odfdo.element.Element.is_empty" href="element.html#odfdo.element.Element.is_empty">is_empty</a></code></li>
+<li><code><a title="odfdo.element.Element.match" href="element.html#odfdo.element.Element.match">match</a></code></li>
+<li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
+<li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
+<li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
+<li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
+<li><code><a title="odfdo.element.Element.tag" href="element.html#odfdo.element.Element.tag">tag</a></code></li>
+<li><code><a title="odfdo.element.Element.tail" href="element.html#odfdo.element.Element.tail">tail</a></code></li>
+<li><code><a title="odfdo.element.Element.text" href="element.html#odfdo.element.Element.text">text</a></code></li>
+<li><code><a title="odfdo.element.Element.text_content" href="element.html#odfdo.element.Element.text_content">text_content</a></code></li>
+<li><code><a title="odfdo.element.Element.xpath" href="element.html#odfdo.element.Element.xpath">xpath</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="odfdo.frame.AnchorMix" href="#odfdo.frame.AnchorMix">AnchorMix</a></b></code>:
+<ul class="hlist">
+<li><code><a title="odfdo.frame.AnchorMix.anchor_page" href="#odfdo.frame.AnchorMix.anchor_page">anchor_page</a></code></li>
+<li><code><a title="odfdo.frame.AnchorMix.anchor_type" href="#odfdo.frame.AnchorMix.anchor_type">anchor_type</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="odfdo.frame.PosMix" href="#odfdo.frame.PosMix">PosMix</a></b></code>:
+<ul class="hlist">
+<li><code><a title="odfdo.frame.PosMix.position" href="#odfdo.frame.PosMix.position">position</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="odfdo.frame.ZMix" href="#odfdo.frame.ZMix">ZMix</a></b></code>:
+<ul class="hlist">
+<li><code><a title="odfdo.frame.ZMix.z_index" href="#odfdo.frame.ZMix.z_index">z_index</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="odfdo.frame.SizeMix" href="#odfdo.frame.SizeMix">SizeMix</a></b></code>:
+<ul class="hlist">
+<li><code><a title="odfdo.frame.SizeMix.size" href="#odfdo.frame.SizeMix.size">size</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="odfdo.frame.PosMix"><code class="flex name class">
+<span>class <span class="ident">PosMix</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Position relative to anchor point.</p>
+<p>Setting the position may require a specific style for actual display on
+some graphical rendering softwares.</p>
+<p>Position is a (left, top) tuple with items including the unit,
+e.g. ('10cm', '15cm').</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PosMix:
+    &#34;&#34;&#34;Position relative to anchor point.
+
+    Setting the position may require a specific style for actual display on
+    some graphical rendering softwares.
+
+    Position is a (left, top) tuple with items including the unit,
+    e.g. (&#39;10cm&#39;, &#39;15cm&#39;).
+    &#34;&#34;&#34;
+
+    @property
+    def position(self):
+        &#34;getter/setter&#34;
+        get_attr = self.get_attribute
+        return get_attr(&#39;svg:x&#39;), get_attr(&#39;svg:y&#39;)
+
+    @position.setter
+    def position(self, position):
+        self.pos_x = position[0]
+        self.pos_y = position[1]</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="odfdo.frame.Frame" href="#odfdo.frame.Frame">Frame</a></li>
+<li><a title="odfdo.shapes.DrawGroup" href="shapes.html#odfdo.shapes.DrawGroup">DrawGroup</a></li>
+<li><a title="odfdo.shapes.ShapeBase" href="shapes.html#odfdo.shapes.ShapeBase">ShapeBase</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="odfdo.frame.PosMix.position"><code class="name">var <span class="ident">position</span></code></dt>
+<dd>
+<div class="desc"><p>getter/setter</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def position(self):
+    &#34;getter/setter&#34;
+    get_attr = self.get_attribute
+    return get_attr(&#39;svg:x&#39;), get_attr(&#39;svg:y&#39;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="odfdo.frame.SizeMix"><code class="flex name class">
+<span>class <span class="ident">SizeMix</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Size of the frame</p>
+<p>Size is a (width, height) tuple with items including the unit,
+e.g. ('10cm', '15cm').</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SizeMix:
+    &#34;&#34;&#34;Size of the frame
+
+    Size is a (width, height) tuple with items including the unit,
+    e.g. (&#39;10cm&#39;, &#39;15cm&#39;).
+    &#34;&#34;&#34;
+
+    @property
+    def size(self):
+        &#34;getter/setter&#34;
+        return (self.width, self.height)
+
+    @size.setter
+    def size(self, size):
+        self.width = size[0]
+        self.height = size[1]</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="odfdo.frame.Frame" href="#odfdo.frame.Frame">Frame</a></li>
+<li><a title="odfdo.shapes.ShapeBase" href="shapes.html#odfdo.shapes.ShapeBase">ShapeBase</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="odfdo.frame.SizeMix.size"><code class="name">var <span class="ident">size</span></code></dt>
+<dd>
+<div class="desc"><p>getter/setter</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def size(self):
+    &#34;getter/setter&#34;
+    return (self.width, self.height)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="odfdo.frame.ZMix"><code class="flex name class">
+<span>class <span class="ident">ZMix</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>z-index position</p>
+<p>z-index is an integer</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ZMix:
+    &#34;&#34;&#34;z-index position
+
+    z-index is an integer
+    &#34;&#34;&#34;
+
+    @property
+    def z_index(self):
+        &#34;getter/setter&#34;
+        z_index = self.get_attribute(&#39;draw:z-index&#39;)
+        if z_index is None:
+            return None
+        return int(z_index)
+
+    @z_index.setter
+    def z_index(self, z_index):
+        self.set_attribute(&#39;draw:z-index&#39;, z_index)</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="odfdo.frame.Frame" href="#odfdo.frame.Frame">Frame</a></li>
+<li><a title="odfdo.shapes.DrawGroup" href="shapes.html#odfdo.shapes.DrawGroup">DrawGroup</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="odfdo.frame.ZMix.z_index"><code class="name">var <span class="ident">z_index</span></code></dt>
+<dd>
+<div class="desc"><p>getter/setter</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def z_index(self):
+    &#34;getter/setter&#34;
+    z_index = self.get_attribute(&#39;draw:z-index&#39;)
+    if z_index is None:
+        return None
+    return int(z_index)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="odfdo" href="index.html">odfdo</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="odfdo.frame.default_frame_position_style" href="#odfdo.frame.default_frame_position_style">default_frame_position_style</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="odfdo.frame.AnchorMix" href="#odfdo.frame.AnchorMix">AnchorMix</a></code></h4>
+<ul class="">
+<li><code><a title="odfdo.frame.AnchorMix.anchor_page" href="#odfdo.frame.AnchorMix.anchor_page">anchor_page</a></code></li>
+<li><code><a title="odfdo.frame.AnchorMix.anchor_type" href="#odfdo.frame.AnchorMix.anchor_type">anchor_type</a></code></li>
+<li><code><a title="odfdo.frame.AnchorMix.anchor_value_choice" href="#odfdo.frame.AnchorMix.anchor_value_choice">anchor_value_choice</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="odfdo.frame.Frame" href="#odfdo.frame.Frame">Frame</a></code></h4>
+<ul class="two-column">
+<li><code><a title="odfdo.frame.Frame.draw_id" href="#odfdo.frame.Frame.draw_id">draw_id</a></code></li>
+<li><code><a title="odfdo.frame.Frame.get_text_box" href="#odfdo.frame.Frame.get_text_box">get_text_box</a></code></li>
+<li><code><a title="odfdo.frame.Frame.height" href="#odfdo.frame.Frame.height">height</a></code></li>
+<li><code><a title="odfdo.frame.Frame.image_frame" href="#odfdo.frame.Frame.image_frame">image_frame</a></code></li>
+<li><code><a title="odfdo.frame.Frame.layer" href="#odfdo.frame.Frame.layer">layer</a></code></li>
+<li><code><a title="odfdo.frame.Frame.name" href="#odfdo.frame.Frame.name">name</a></code></li>
+<li><code><a title="odfdo.frame.Frame.pos_x" href="#odfdo.frame.Frame.pos_x">pos_x</a></code></li>
+<li><code><a title="odfdo.frame.Frame.pos_y" href="#odfdo.frame.Frame.pos_y">pos_y</a></code></li>
+<li><code><a title="odfdo.frame.Frame.presentation_class" href="#odfdo.frame.Frame.presentation_class">presentation_class</a></code></li>
+<li><code><a title="odfdo.frame.Frame.presentation_style" href="#odfdo.frame.Frame.presentation_style">presentation_style</a></code></li>
+<li><code><a title="odfdo.frame.Frame.set_image" href="#odfdo.frame.Frame.set_image">set_image</a></code></li>
+<li><code><a title="odfdo.frame.Frame.set_text_box" href="#odfdo.frame.Frame.set_text_box">set_text_box</a></code></li>
+<li><code><a title="odfdo.frame.Frame.style" href="#odfdo.frame.Frame.style">style</a></code></li>
+<li><code><a title="odfdo.frame.Frame.text_frame" href="#odfdo.frame.Frame.text_frame">text_frame</a></code></li>
+<li><code><a title="odfdo.frame.Frame.width" href="#odfdo.frame.Frame.width">width</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="odfdo.frame.PosMix" href="#odfdo.frame.PosMix">PosMix</a></code></h4>
+<ul class="">
+<li><code><a title="odfdo.frame.PosMix.position" href="#odfdo.frame.PosMix.position">position</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="odfdo.frame.SizeMix" href="#odfdo.frame.SizeMix">SizeMix</a></code></h4>
+<ul class="">
+<li><code><a title="odfdo.frame.SizeMix.size" href="#odfdo.frame.SizeMix.size">size</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="odfdo.frame.ZMix" href="#odfdo.frame.ZMix">ZMix</a></code></h4>
+<ul class="">
+<li><code><a title="odfdo.frame.ZMix.z_index" href="#odfdo.frame.ZMix.z_index">z_index</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.3</a>.</p>
+</footer>
+</body>
+</html>

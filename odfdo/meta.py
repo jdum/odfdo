@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,15 +20,18 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-
-from datetime import timedelta, date, datetime
+"""Meta class for meta.xml part
+"""
+from datetime import timedelta, datetime
+from datetime import date as dtdate
 from decimal import Decimal
 from string import ascii_letters, digits
 
 from .datatype import DateTime, Duration, Boolean, Date
 from .element import Element
 from .xmlpart import XmlPart
-from .utils import to_bytes, to_str
+from .utils import to_str
+from .version import __version__
 
 
 class Meta(XmlPart):
@@ -337,8 +340,8 @@ class Meta(XmlPart):
 
             duration -- timedelta
         """
-        if type(duration) is not timedelta:
-            raise TypeError("duration must be a timedelta")
+        if not isinstance(duration, timedelta):
+            raise TypeError('duration must be a timedelta')
         element = self.get_element('//meta:editing-duration')
         if element is None:
             element = Element.from_tag('meta:editing-duration')
@@ -364,10 +367,10 @@ class Meta(XmlPart):
 
             cycles -- int
         """
-        if type(cycles) is not int:
-            raise TypeError("cycles must be an int")
+        if not isinstance(cycles, int):
+            raise TypeError('cycles must be an int')
         if cycles < 1:
-            raise ValueError("cycles must be a positive int")
+            raise ValueError('cycles must be a positive int')
         element = self.get_element('//meta:editing-cycles')
         if element is None:
             element = Element.from_tag('meta:editing-cycles')
@@ -406,6 +409,17 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = generator
         self._generator_modified = True
+
+    def set_generator_default(self):
+        """Set the signature of the software that generated this document
+        to ourself.
+
+        Example::
+
+            >>> document.set_generator_default()
+        """
+        if not self._generator_modified:
+            self.set_generator("odfdo %s" % __version__)
 
     def get_statistic(self):
         """Get the statistic from the software that generated this document.
@@ -450,14 +464,14 @@ class Meta(XmlPart):
                              'meta:character-count': 7}
             >>> document.set_statistic(statistic)
         """
-        if type(statistic) is not dict:
-            raise TypeError("statistic must be a dict")
+        if not isinstance(statistic, dict):
+            raise TypeError('statistic must be a dict')
         element = self.get_element('//meta:document-statistic')
         for key, value in statistic.items():
             try:
                 ivalue = int(value)
             except ValueError:
-                raise TypeError("statistic value must be a int")
+                raise TypeError('statistic value must be a int')
             element.set_attribute(to_str(key), str(ivalue))
 
     def get_user_defined_metadata(self):
@@ -499,24 +513,21 @@ class Meta(XmlPart):
         return result
 
     def set_user_defined_metadata(self, name, value):
-        if type(value) is bool:
+        if isinstance(value, bool):
             value_type = 'boolean'
             value = 'true' if value else 'false'
         elif isinstance(value, (int, float, Decimal)):
             value_type = 'float'
             value = str(value)
-        elif type(value) is date:
+        elif isinstance(value, dtdate):
             value_type = 'date'
             value = str(Date.encode(value))
-        elif type(value) is datetime:
+        elif isinstance(value, datetime):
             value_type = 'date'
             value = str(DateTime.encode(value))
-        elif type(value) is str:
+        elif isinstance(value, str):
             value_type = 'string'
-            value = str(value)
-        elif type(value) is str:
-            value_type = 'string'
-        elif type(value) is timedelta:
+        elif isinstance(value, timedelta):
             value_type = 'time'
             value = str(Duration.encode(value))
         else:
@@ -536,7 +547,7 @@ class Meta(XmlPart):
     def _get_meta_value(element, full=False):
         """get_value deicated to the meta data part, for one meta element.
         """
-        name = element.get_attribute('meta:name')
+        # name = element.get_attribute('meta:name')
         value_type = element.get_attribute('meta:value-type')
         if value_type is None:
             value_type = 'string'

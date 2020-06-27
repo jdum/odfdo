@@ -22,14 +22,14 @@
 
 import os
 from optparse import OptionParser
-from sys import exit
+import sys
 
 from odfdo import __version__
 from odfdo import Document
 
 if __name__ == '__main__':
-    usage = "%prog <input>"
-    description = "Convert standard ODF File to folder, and reverse."
+    usage = '%prog <input>'
+    description = 'Convert standard ODF File to folder, and reverse.'
     parser = OptionParser(usage, version=__version__, description=description)
 
     # Parse !
@@ -38,13 +38,13 @@ if __name__ == '__main__':
     # Go !
     if len(args) != 1:
         parser.print_help()
-        exit(0)
+        sys.exit(0)
 
     if os.path.isfile(args[0]):
         out_packaging = 'folder'
     elif os.path.isdir(args[0]):
         out_packaging = 'zip'
     else:
-        raise ValueError("no File or folder ?")
+        raise ValueError('no File or folder ?')
     doc = Document(args[0])
     doc.save(packaging=out_packaging, pretty=True)

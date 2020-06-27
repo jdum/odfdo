@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,14 +18,15 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-
+"""DrawPage class for "draw:page"
+"""
 from .element import register_element_class, Element
 from .shapes import registered_shapes
 from .smil import AnimPar, AnimTransFilter
 
 
 class DrawPage(Element):
-    """ODF draw page <draw:page>, for pages of presentation and drawings.
+    """ODF draw page "draw:page", for pages of presentation and drawings.
     """
     _tag = 'draw:page'
     _properties = (
@@ -72,13 +73,12 @@ class DrawPage(Element):
             if style:
                 self.style = style
 
-    def set_transition(self, type, subtype=None, dur='2s'):
+    def set_transition(self, smil_type, subtype=None, dur='2s'):
         # Create the new animation
-        anim_page = odf_create_anim_par(presentation_node_type="timing-root")
-        my_page_id = self.draw_id
-        anim_begin = odf_create_anim_par(smil_begin="%s.begin" % my_page_id)
-        transition = odf_create_anim_transitionFilter(
-            smil_dur=dur, smil_type=type, smil_subtype=subtype)
+        anim_page = AnimPar(presentation_node_type='timing-root')
+        anim_begin = AnimPar(smil_begin=f'{self.draw_id}.begin')
+        transition = AnimTransFilter(
+            smil_dur=dur, smil_type=smil_type, smil_subtype=subtype)
         anim_page.append(anim_begin)
         anim_begin.append(transition)
 

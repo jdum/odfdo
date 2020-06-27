@@ -25,7 +25,7 @@ from optparse import OptionParser
 from os import mkdir, makedirs
 from os.path import join, exists
 from shutil import rmtree
-from sys import exit, stdout
+import sys
 
 from odfdo import __version__
 # from odfdo.cleaner import test_document
@@ -48,7 +48,7 @@ def clean_filename(filename):
 def dump_pictures(document, target):
     for part_name in document.get_parts():
         if part_name.startswith('Pictures/'):
-            path = join(target, "Pictures")
+            path = join(target, 'Pictures')
             if not exists(path):
                 mkdir(path)
             data = document.get_part(part_name)
@@ -64,7 +64,7 @@ def spreadsheet_to_stdout(document):
         print(table.to_csv(None))
 
 
-def spreadsheet_to_csv(document, target):
+def spreadsheet_to_csv(document):
     body = document.get_body()
     for table in body.get_tables():
         name = table.get_name()
@@ -73,13 +73,13 @@ def spreadsheet_to_csv(document, target):
         table.to_csv(filename)
 
 
-if __name__ == '__main__':
+def main():
     # Options initialisation
     usage = ('%prog [--styles] [--meta] [--no-content] [--rst] <file>\n'
              '       %prog -o <DIR> [--rst] <file>')
-    description = ("Dump text from an OpenDocument file to the standard "
-                   "output, optionally styles and meta (and the Pictures/* in "
-                   '"-o <DIR>" mode)')
+    description = ('Dump text from an OpenDocument file to the standard '
+                   'output, optionally styles and meta (and the Pictures/* '
+                   'in "-o <DIR>" mode)')
     parser = OptionParser(usage, version=__version__, description=description)
     # --meta
     parser.add_option(
@@ -119,8 +119,8 @@ if __name__ == '__main__':
         exit(1)
     container_url = args[0]
     # Open it!
-    document = Document(container_url)
-    doc_type = document.get_type()
+    doc = Document(container_url)
+    doc_type = doc.get_type()
     # Test it! XXX for TEXT only
     #if doc_type == 'text':
     #    result = test_document(document)
@@ -129,35 +129,40 @@ if __name__ == '__main__':
     #        print('Please use lpod-clean.py to fix it')
     #        exit(1)
     if options.output:
-        target = options.output
-        check_target_directory(target)
-        if exists(target):
-            rmtree(target)
-        makedirs(target)
-        with open(join(target, 'meta.txt'), 'w') as f:
-            f.write(document.get_formated_meta())
-        with open(join(target, 'styles.txt'), 'w') as f:
-            f.write(document.show_styles())
-        dump_pictures(document, target)
+        output = options.output
+        check_target_directory(output)
+        if exists(output):
+            rmtree(output)
+        makedirs(output)
+        with open(join(output, 'meta.txt'), 'w') as f:
+            f.write(doc.get_formated_meta())
+        with open(join(output, 'styles.txt'), 'w') as f:
+            f.write(doc.show_styles())
+        dump_pictures(doc, output)
     else:
         if options.meta:
-            print(document.get_formated_meta())
+            print(doc.get_formated_meta())
         if options.styles:
-            print(document.show_styles())
+            print(doc.show_styles())
     # text
-    if doc_type in ('text', 'text-template', 'presentation',
-                    'presentation-template'):
+    if doc_type in {
+            'text', 'text-template', 'presentation', 'presentation-template'
+    }:
         if options.output:
-            with open(join(target, 'content.rst'), 'w') as f:
-                f.write(document.get_formatted_text(rst_mode=options.rst))
+            with open(join(output, 'content.rst'), 'w') as f:
+                f.write(doc.get_formatted_text(rst_mode=options.rst))
         elif not options.no_content:
-            print(document.get_formatted_text(rst_mode=options.rst))
+            print(doc.get_formatted_text(rst_mode=options.rst))
     # spreadsheet
-    elif doc_type in ('spreadsheet', 'spreadsheet-template'):
+    elif doc_type in {'spreadsheet', 'spreadsheet-template'}:
         if options.output:
-            spreadsheet_to_csv(document, target)
+            spreadsheet_to_csv(doc)
         elif not options.no_content:
-            spreadsheet_to_stdout(document)
+            spreadsheet_to_stdout(doc)
     else:
-        printerr("The OpenDocument format", doc_type, "is not supported yet.")
-        exit(1)
+        printerr('The OpenDocument format', doc_type, 'is not supported yet.')
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()

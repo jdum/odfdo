@@ -1,0 +1,3567 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.3" />
+<title>odfdo.style API documentation</title>
+<meta name="description" content="Style class for various style tags and BackgroundImage class" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>odfdo.style</code></h1>
+</header>
+<section id="section-intro">
+<p>Style class for various style tags and BackgroundImage class</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+# Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
+#
+# Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an &#34;AS IS&#34; BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#
+# Authors (odfdo project): jerome.dumonteil@gmail.com
+# The odfdo project is a derivative work of the lpod-python project:
+# https://github.com/lpod/lpod-python
+# Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
+&#34;&#34;&#34;Style class for various style tags and BackgroundImage class
+&#34;&#34;&#34;
+from .datatype import Boolean
+from .const import CSS3_COLORMAP
+from .element import register_element_class, Element
+
+from .image import DrawImage
+from .utils import (_expand_properties, _merge_dicts, _get_element, isiterable,
+                    to_str, FALSE_FAMILY_MAP_REVERSE, FAMILY_ODF_STD,
+                    FAMILY_MAPPING, SUBCLASSED_STYLES, STYLES_TO_REGISTER)
+from .paragraph import Paragraph
+
+
+def hex2rgb(color):
+    &#34;&#34;&#34;Turns a &#34;#RRGGBB&#34; hexadecimal color representation into a (R, G, B)
+    tuple.
+    Arguments:
+
+        color -- str
+
+    Return: tuple
+    &#34;&#34;&#34;
+    code = color[1:]
+    if not (len(color) == 7 and color[0] == &#39;#&#39; and code.isalnum()):
+        raise ValueError(&#39;&#34;%s&#34; is not a valid color&#39; % color)
+    red = int(code[:2], 16)
+    green = int(code[2:4], 16)
+    blue = int(code[4:6], 16)
+    return (red, green, blue)
+
+
+def rgb2hex(color):
+    &#34;&#34;&#34;Turns a color name or a (R, G, B) color tuple into a &#34;#RRGGBB&#34;
+    hexadecimal representation.
+    Arguments:
+
+        color -- str or tuple
+
+    Return: str
+
+    Examples::
+
+        &gt;&gt;&gt; rgb2hex(&#39;yellow&#39;)
+        &#39;#FFFF00&#39;
+        &gt;&gt;&gt; rgb2hex((238, 130, 238))
+        &#39;#EE82EE&#39;
+    &#34;&#34;&#34;
+    if isinstance(color, str):
+        try:
+            code = CSS3_COLORMAP[color.lower()]
+        except KeyError:
+            raise KeyError(&#39;color &#34;%s&#34; is unknown&#39; % color)
+    elif isinstance(color, tuple):
+        if len(color) != 3:
+            raise ValueError(&#34;color must be a 3-tuple&#34;)
+        code = color
+    else:
+        raise TypeError(&#34;invalid color&#34;)
+    for channel in code:
+        if channel &lt; 0 or channel &gt; 255:
+            raise ValueError(&#34;color code must be between 0 and 255&#34;)
+    return &#39;#%02X%02X%02X&#39; % code
+
+
+def __make_color_string(color=None):
+    color_default = &#34;#000000&#34;
+    if not color:
+        return color_default
+    if isinstance(color, tuple):
+        return rgb2hex(color)
+    color = to_str(color)
+    msg = &#34;Color must be None for default or color string, or RGB tuple&#34;
+    if not isinstance(color, str):
+        raise ValueError(msg)
+    color = color.strip()
+    if not color:
+        return color_default
+    if color.startswith(&#39;#&#39;):
+        return color
+    return rgb2hex(color)
+
+
+def __make_thick_string(thick):
+    thick_default = &#39;0.06pt&#39;
+    if thick is None:
+        return thick_default
+    if isinstance(thick, bytes):
+        thick = to_str(thick)
+    if isinstance(thick, str):
+        thick = thick.strip()
+        if thick:
+            return thick
+        return thick_default
+    if isinstance(thick, float):
+        return &#39;%.2fpt&#39; % thick
+    if isinstance(thick, int):
+        return &#39;%.2fpt&#39; % (thick / 100.0)
+    raise ValueError(&#39;Thickness must be None for default or float value (pt)&#39;)
+
+
+def __make_line_string(line):
+    line_default = &#39;solid&#39;
+    if line is None:
+        return line_default
+    if isinstance(line, bytes):
+        line = to_str(line)
+    if isinstance(line, str):
+        line = line.strip()
+        if line:
+            return line
+        return line_default
+    raise ValueError(&#39;Line style must be None for default or string&#39;)
+
+
+def make_table_cell_border_string(thick=None, line=None, color=None):
+    &#34;&#34;&#34;Returns a string for style:table-cell-properties fo:border,
+    with default : &#34;0.06pt solid #000000&#34;
+
+        thick -- str or float
+        line -- str
+        color -- str or rgb 3-tuple, str is &#39;black&#39;, &#39;grey&#39;, ... or &#39;#012345&#39;
+
+    Returns : str
+    &#34;&#34;&#34;
+    thick_string = __make_thick_string(thick)
+    line_string = __make_line_string(line)
+    color_string = __make_color_string(color)
+    return &#39; &#39;.join((thick_string, line_string, color_string))
+
+
+def create_table_cell_style(border=None,
+                            border_top=None,
+                            border_bottom=None,
+                            border_left=None,
+                            border_right=None,
+                            padding=None,
+                            padding_top=None,
+                            padding_bottom=None,
+                            padding_left=None,
+                            padding_right=None,
+                            background_color=None,
+                            shadow=None,
+                            color=None):
+    &#34;&#34;&#34;Return a cell style.
+
+    The borders arguments must be some style attribute strings or None, see the
+    method &#39;make_table_cell_border_string&#39; to generate them.
+    If the &#39;border&#39; argument as the value &#39;default&#39;, the default style
+    &#34;0.06pt solid #000000&#34; is used for the 4 borders.
+    If any value is used for border, it is used for the 4 borders, else any of
+    the 4 borders can be specified by it&#39;s own string. If all the border,
+    border_top, border_bottom, ... arguments are None, an empty border is used
+    (ODF value is fo:border=&#34;none&#34;).
+
+    Padding arguments are string specifying a length (e.g. &#34;0.5mm&#34;)&#34;. If
+    &#39;padding&#39; is provided, it is used for the 4 sides, else any of
+    the 4 sides padding can be specified by it&#39;s own string. Default padding is
+    no padding.
+
+    Arguments:
+
+        border -- str, style string for borders on four sides
+
+        border_top -- str, style string for top if no &#39;border&#39; argument
+
+        border_bottom -- str, style string for bottom if no &#39;border&#39; argument
+
+        border_left -- str, style string for left if no &#39;border&#39; argument
+
+        border_right -- str, style string for right if no &#39;border&#39; argument
+
+        padding -- str, style string for padding on four sides
+
+        padding_top -- str, style string for top if no &#39;padding&#39; argument
+
+        padding_bottom -- str, style string for bottom if no &#39;padding&#39; argument
+
+        padding_left -- str, style string for left if no &#39;padding&#39; argument
+
+        padding_right -- str, style string for right if no &#39;padding&#39; argument
+
+        background_color -- str or rgb 3-tuple, str is &#39;black&#39;, &#39;grey&#39;, ... or &#39;#012345&#39;
+
+        shadow -- str, e.g. &#34;#808080 0.176cm 0.176cm&#34;
+
+        color -- str or rgb 3-tuple, str is &#39;black&#39;, &#39;grey&#39;, ... or &#39;#012345&#39;
+
+    Return : Style
+    &#34;&#34;&#34;
+    if border == &#39;default&#39;:
+        border = make_table_cell_border_string()  # default border
+    if border is not None:
+        # use the border value for 4 sides.
+        border_bottom = border_top = border_left = border_right = None
+    if (border is None and border_bottom is None and border_top is None
+            and border_left is None and border_right is None):
+        border = &#39;none&#39;
+    if padding is not None:
+        # use the padding value for 4 sides.
+        padding_bottom = padding_top = padding_left = padding_right = None
+    if color:
+        color_string = __make_color_string(color)
+    if background_color:
+        bgcolor_string = __make_color_string(background_color)
+    else:
+        bgcolor_string = None
+    cell_style = Style(
+        &#39;table-cell&#39;,
+        area=&#39;table-cell&#39;,
+        border=border,
+        border_top=border_top,
+        border_bottom=border_bottom,
+        border_left=border_left,
+        border_right=border_right,
+        padding=padding,
+        padding_top=padding_top,
+        padding_bottom=padding_bottom,
+        padding_left=padding_left,
+        padding_right=padding_right,
+        background_color=bgcolor_string,
+        shadow=shadow)
+    if color:
+        cell_style.set_properties(area=&#39;text&#39;, color=color_string)
+    return cell_style
+
+
+class Style(Element):
+    &#34;&#34;&#34;Style class for all these tags:
+
+    &#39;style:style&#39;
+    &#39;number:date-style&#39;,
+    &#39;number:number-style&#39;,
+    &#39;number:percentage-style&#39;,
+    &#39;number:time-style&#39;
+    &#39;style:font-face&#39;,
+    &#39;style:master-page&#39;,
+    &#39;style:page-layout&#39;,
+    &#39;style:presentation-page-layout&#39;,
+    &#39;text:list-style&#39;,
+    &#39;text:outline-style&#39;,
+    &#39;style:tab-stops&#39;,
+    ...
+    &#34;&#34;&#34;
+    _properties = (
+        (&#39;page_layout&#39;, &#39;style:page-layout-name&#39;, &#39;master-page&#39;),
+        (&#39;next_style&#39;, &#39;style:next-style-name&#39;, &#39;master-page&#39;),
+        (&#39;name&#39;, &#39;style:name&#39;, None),
+        (&#39;parent_style&#39;, &#39;style:parent-style-name&#39;, None),
+        (&#39;display_name&#39;, &#39;style:display-name&#39;, None),
+        (&#39;svg_font_family&#39;, &#39;svg:font-family&#39;, None),
+        (&#39;font_family_generic&#39;, &#39;style:font-family-generic&#39;, None),
+        (&#39;font_pitch&#39;, &#39;style:font-pitch&#39;, None),
+        (&#39;text_style&#39;, &#39;text:style-name&#39;, None),
+        (&#39;master_page&#39;, &#39;style:master-page-name&#39;, &#39;paragraph&#39;),
+        (&#39;master_page&#39;, &#39;style:master-page-name&#39;, &#39;paragraph&#39;),
+        (&#39;master_page&#39;, &#39;style:master-page-name&#39;, &#39;paragraph&#39;),
+        # style:tab-stop
+        (&#39;style_type&#39;, &#39;style:type&#39;, None),
+        (&#39;leader_style&#39;, &#39;style:leader-style&#39;, None),
+        (&#39;leader_text&#39;, &#39;style:leader-text&#39;, None),
+        (&#39;style_position&#39;, &#39;style:position&#39;, None),
+        (&#39;leader_text&#39;, &#39;style:position&#39;, None),
+    )
+
+    def __init__(
+            self,
+            family=None,
+            name=None,
+            display_name=None,
+            parent_style=None,
+            # Where properties apply
+            area=None,
+            # For family &#39;text&#39;:
+            color=None,
+            background_color=None,
+            italic=False,
+            bold=False,
+            # For family &#39;paragraph&#39;
+            master_page=None,
+            # For family &#39;master-page&#39;
+            page_layout=None,
+            next_style=None,
+            # For family &#39;table-cell&#39;
+            data_style=None,  # unused
+            border=None,
+            border_top=None,
+            border_right=None,
+            border_bottom=None,
+            border_left=None,
+            padding=None,
+            padding_top=None,
+            padding_bottom=None,
+            padding_left=None,
+            padding_right=None,
+            shadow=None,
+            # For family &#39;table-row&#39;
+            height=None,
+            use_optimal_height=None,
+            # For family &#39;table-column&#39;
+            width=None,
+            break_before=None,
+            break_after=None,
+            # For family &#39;graphic&#39;
+            min_height=None,
+            # For family &#39;font-face&#39;
+            font_name=None,
+            font_family=None,
+            font_family_generic=None,
+            font_pitch=&#34;variable&#34;,
+            # Every other property
+            **kw):
+        &#34;&#34;&#34;Create a style of the given family. The name is not mandatory at this
+        point but will become required when inserting in a document as a common
+        style.
+
+        The display name is the name the user sees in an office application.
+
+        The parent_style is the name of the style this style will inherit from.
+
+        To set properties, pass them as keyword arguments. The area properties
+        apply to is optional and defaults to the family.
+
+        Arguments:
+
+            family -- &#39;paragraph&#39;, &#39;text&#39;, &#39;section&#39;, &#39;table&#39;, &#39;table-column&#39;,
+                      &#39;table-row&#39;, &#39;table-cell&#39;, &#39;table-page&#39;, &#39;chart&#39;,
+                      &#39;drawing-page&#39;, &#39;graphic&#39;, &#39;presentation&#39;,
+                      &#39;control&#39;, &#39;ruby&#39;, &#39;list&#39;, &#39;number&#39;, &#39;page-layout&#39;
+                      &#39;font-face&#39;, or &#39;master-page&#39;
+
+            name -- str
+
+            display_name -- str
+
+            parent_style -- str
+
+            area -- str
+
+        &#39;text&#39; Properties:
+
+            italic -- bool
+
+            bold -- bool
+
+        &#39;paragraph&#39; Properties:
+
+            master_page -- str
+
+        &#39;master-page&#39; Properties:
+
+            page_layout -- str
+
+            next_style -- str
+
+        &#39;table-cell&#39; Properties:
+
+            border, border_top, border_right, border_bottom, border_left -- str,
+            e.g. &#34;0.002cm solid #000000&#34; or &#39;none&#39;
+
+            padding, padding_top, padding_right, padding_bottom, padding_left -- str,
+            e.g. &#34;0.002cm&#34; or &#39;none&#39;
+
+            shadow -- str, e.g. &#34;#808080 0.176cm 0.176cm&#34;
+
+        &#39;table-row&#39; Properties:
+
+            height -- str, e.g. &#39;5cm&#39;
+
+            use_optimal_height -- bool
+
+        &#39;table-column&#39; Properties:
+
+            width -- str, e.g. &#39;5cm&#39;
+
+            break_before -- &#39;page&#39;, &#39;column&#39; or &#39;auto&#39;
+
+            break_after -- &#39;page&#39;, &#39;column&#39; or &#39;auto&#39;
+
+        Return: Style
+        &#34;&#34;&#34;
+        tag_or_elem = kw.get(&#39;tag_or_elem&#39;, None)
+        if tag_or_elem is None:
+            family = to_str(family)
+            if family not in FAMILY_MAPPING:
+                raise ValueError(&#39;Unknown family value: %s&#39; % family)
+            kw[&#39;tag&#39;] = FAMILY_MAPPING[family]
+        super().__init__(**kw)
+        if self._do_init and family not in SUBCLASSED_STYLES:
+            kw.pop(&#39;tag&#39;, None)
+            kw.pop(&#39;tag_or_elem&#39;, None)
+            self.family = family  # relevant test made by property
+            # Common attributes
+            if name:
+                self.name = name
+            if display_name:
+                self.display_name = display_name
+            if parent_style:
+                self.parent_style = parent_style
+            # Paragraph
+            if family == &#39;paragraph&#39;:
+                if master_page:
+                    self.master_page = master_page
+            # Master Page
+            elif family == &#39;master-page&#39;:
+                if page_layout:
+                    self.page_layout = page_layout
+                if next_style:
+                    self.next_style = next_style
+            # Font face
+            elif family == &#39;font-face&#39;:
+                self.set_font(
+                    font_name,
+                    family=font_family,
+                    family_generic=font_family_generic,
+                    pitch=font_pitch)
+            # Properties
+            if area is None:
+                area = family
+            area = to_str(area)
+            # Text
+            if area == &#39;text&#39;:
+                if color:
+                    kw[&#39;fo:color&#39;] = color
+                if background_color:
+                    kw[&#39;fo:background-color&#39;] = background_color
+                if italic:
+                    kw[&#39;fo:font-style&#39;] = &#39;italic&#39;
+                    kw[&#39;style:font-style-asian&#39;] = &#39;italic&#39;
+                    kw[&#39;style:font-style-complex&#39;] = &#39;italic&#39;
+                if bold:
+                    kw[&#39;fo:font-weight&#39;] = &#39;bold&#39;
+                    kw[&#39;style:font-weight-asian&#39;] = &#39;bold&#39;
+                    kw[&#39;style:font-weight-complex&#39;] = &#39;bold&#39;
+            # Table cell
+            elif area == &#39;table-cell&#39;:
+                if border:
+                    kw[&#39;fo:border&#39;] = border
+                elif border_top or border_right or border_bottom or border_left:
+                    kw[&#39;fo:border-top&#39;] = border_top or &#39;none&#39;
+                    kw[&#39;fo:border-right&#39;] = border_right or &#39;none&#39;
+                    kw[&#39;fo:border-bottom&#39;] = border_bottom or &#39;none&#39;
+                    kw[&#39;fo:border-left&#39;] = border_left or &#39;none&#39;
+                else:  # no border_top, ... neither border are defined
+                    pass  # left untouched
+                if padding:
+                    kw[&#39;fo:padding&#39;] = padding
+                elif padding_top or padding_right or padding_bottom or padding_left:
+                    kw[&#39;fo:padding-top&#39;] = padding_top or &#39;none&#39;
+                    kw[&#39;fo:padding-right&#39;] = padding_right or &#39;none&#39;
+                    kw[&#39;fo:padding-bottom&#39;] = padding_bottom or &#39;none&#39;
+                    kw[&#39;fo:padding-left&#39;] = padding_left or &#39;none&#39;
+                else:  # no border_top, ... neither border are defined
+                    pass  # left untouched
+                if shadow:
+                    kw[&#39;style:shadow&#39;] = shadow
+                if background_color:
+                    kw[&#39;fo:background-color&#39;] = background_color
+            # Table row
+            elif area == &#39;table-row&#39;:
+                if height:
+                    kw[&#39;style:row-height&#39;] = height
+                if use_optimal_height is not None:
+                    kw[&#39;style:use-optimal-row-height&#39;] = Boolean.encode(
+                        use_optimal_height)
+                if background_color:
+                    kw[&#39;fo:background-color&#39;] = background_color
+            # Table column
+            elif area == &#39;table-column&#39;:
+                if width:
+                    kw[&#39;style:column-width&#39;] = width
+                if break_before:
+                    kw[&#39;fo:break-before&#39;] = break_before
+                if break_after:
+                    kw[&#39;fo:break-after&#39;] = break_after
+            # Graphic
+            elif area == &#39;graphic&#39;:
+                if min_height:
+                    kw[&#39;fo:min-height&#39;] = min_height
+            # Every other properties
+            if kw:
+                self.set_properties(kw, area=area)
+
+    @property
+    def family(self):
+        try:
+            return self._family
+        except AttributeError:
+            self._family = FALSE_FAMILY_MAP_REVERSE.get(
+                self.tag, self.get_attribute(&#39;style:family&#39;))
+            return self._family
+
+    @family.setter
+    def family(self, family):
+        family = to_str(family)
+        self._family = family
+        if family in FAMILY_ODF_STD and self.tag == &#39;style:style&#39;:
+            self.set_attribute(&#39;style:family&#39;, family)
+
+    def get_properties(self, area=None):
+        &#34;&#34;&#34;Get the mapping of all properties of this style. By default the
+        properties of the same family, e.g. a paragraph style and its
+        paragraph properties. Specify the area to get the text properties of
+        a paragraph style for example.
+
+        Arguments:
+
+            area -- str
+
+        Return: dict
+        &#34;&#34;&#34;
+        if area is None:
+            area = self.family
+        element = self.get_element(&#39;style:%s-properties&#39; % area)
+        if element is None:
+            return None
+        properties = element.attributes
+        # Nested properties are nested dictionaries
+        for child in element.children:
+            properties[child.tag] = child.attributes
+        return properties
+
+    def set_properties(self, properties=None, style=None, area=None, **kw):
+        &#34;&#34;&#34;Set the properties of the &#34;area&#34; type of this style. Properties
+        are given either as a dict or as named arguments (or both). The area
+        is identical to the style family by default. If the properties
+        element is missing, it is created.
+
+        Instead of properties, you can pass a style with properties of the
+        same area. These will be copied.
+
+        Arguments:
+
+            properties -- dict
+
+            style -- Style
+
+            area -- &#39;paragraph&#39;, &#39;text&#39;...
+        &#34;&#34;&#34;
+        if properties is None:
+            properties = {}
+        if area is None:
+            area = self.family
+        element = self.get_element(&#39;style:%s-properties&#39; % area)
+        if element is None:
+            element = Element.from_tag(&#39;style:%s-properties&#39; % area)
+            self.append(element)
+        if properties or kw:
+            properties = _expand_properties(_merge_dicts(properties, kw))
+        elif style is not None:
+            properties = style.get_properties(area=area)
+            if properties is None:
+                return
+        for key, value in properties.items():
+            if value is None:
+                element.del_attribute(key)
+            else:
+                element.set_attribute(key, value)
+
+    def del_properties(self, properties=None, area=None):
+        &#34;&#34;&#34;Delete the given properties, either by list argument or
+        positional argument (or both). Remove only from the given area,
+        identical to the style family by default.
+
+        Arguments:
+
+            properties -- list
+
+            area -- str
+        &#34;&#34;&#34;
+        if properties is None:
+            properties = []
+        if area is None:
+            area = self.family
+        element = self.get_element(&#39;style:%s-properties&#39; % area)
+        if element is None:
+            raise ValueError(&#34;properties element is inexistent&#34;)
+        for key in _expand_properties(properties):
+            element.del_attribute(key)
+
+    def set_background(self,
+                       color=None,
+                       url=None,
+                       position=&#39;center&#39;,
+                       repeat=None,
+                       opacity=None,
+                       filter=None):
+        &#34;&#34;&#34;Set the background color of a text style, or the background color
+        or image of a paragraph style or page layout.
+
+        With no argument, remove any existing background.
+
+        The position is one or two of &#39;center&#39;, &#39;left&#39;, &#39;right&#39;, &#39;top&#39; or
+        &#39;bottom&#39;.
+
+        The repeat is &#39;no-repeat&#39;, &#39;repeat&#39; or &#39;stretch&#39;.
+
+        The opacity is a percentage integer (not a string with the &#39;%s&#39; sign)
+
+        The filter is an application-specific filter name defined elsewhere.
+
+        Though this method is defined on the base style class, it will raise
+        an error if the style type is not compatible.
+
+        Arguments:
+
+            color -- &#39;#rrggbb&#39;
+
+            url -- str
+
+            position -- str
+
+            repeat -- str
+
+            opacity -- int
+
+            filter -- str
+        &#34;&#34;&#34;
+        family = self.family
+        if family not in {
+                &#39;text&#39;, &#39;paragraph&#39;, &#39;page-layout&#39;, &#39;section&#39;, &#39;table&#39;,
+                &#39;table-row&#39;, &#39;table-cell&#39;, &#39;graphic&#39;
+        }:
+            raise TypeError(&#39;no background support for this family&#39;)
+        if url is not None and family == &#39;text&#39;:
+            raise TypeError(&#39;no background image for text styles&#39;)
+        properties = self.get_element(&#39;style:%s-properties&#39; % family)
+        if properties is None:
+            bg_image = None
+        else:
+            bg_image = properties.get_element(&#39;style:background-image&#39;)
+        # Erasing
+        if color is None and url is None:
+            if properties is None:
+                return
+            properties.del_attribute(&#39;fo:background-color&#39;)
+            if bg_image is not None:
+                properties.delete(bg_image)
+            return
+        # Add the properties if necessary
+        if properties is None:
+            properties = Element.from_tag(&#39;style:%s-properties&#39; % family)
+            self.append(properties)
+        # Add the color...
+        if color:
+            properties.set_attribute(&#39;fo:background-color&#39;, color)
+            if bg_image is not None:
+                properties.delete(bg_image)
+        # ... or the background
+        elif url:
+            properties.set_attribute(&#39;fo:background-color&#39;, &#39;transparent&#39;)
+            if bg_image is None:
+                bg_image = Element.from_tag(&#39;style:background-image&#39;)
+                properties.append(bg_image)
+            bg_image.url = url
+            if position:
+                bg_image.position = position
+            if repeat:
+                bg_image.repeat = repeat
+            if opacity:
+                bg_image.opacity = opacity
+            if filter:
+                bg_image.filter = filter
+
+    # list-style only:
+
+    def get_level_style(self, level):
+        if self.family != &#39;list&#39;:
+            return None
+        level_styles = (&#39;(text:list-level-style-number&#39;
+                        &#39;|text:list-level-style-bullet&#39;
+                        &#39;|text:list-level-style-image)&#39;)
+        return _get_element(self, level_styles, 0, level=level)
+
+    def set_level_style(self,
+                        level,
+                        num_format=None,
+                        bullet_char=None,
+                        url=None,
+                        display_levels=None,
+                        prefix=None,
+                        suffix=None,
+                        start_value=None,
+                        style=None,
+                        clone=None):
+        &#34;&#34;&#34;
+        Arguments:
+
+            level -- int
+
+            num_format (for number) -- int
+
+            bullet_char (for bullet) -- str
+
+            url (for image) -- str
+
+            display_levels -- int
+
+            prefix -- str
+
+            suffix -- str
+
+            start_value -- int
+
+            style -- str
+
+            clone -- List Style
+
+        Return:
+            level_style created
+        &#34;&#34;&#34;
+        if self.family != &#39;list&#39;:
+            return None
+        # Expected name
+        if num_format is not None:
+            level_style_name = &#39;text:list-level-style-number&#39;
+        elif bullet_char is not None:
+            level_style_name = &#39;text:list-level-style-bullet&#39;
+        elif url is not None:
+            level_style_name = &#39;text:list-level-style-image&#39;
+        elif clone is not None:
+            level_style_name = clone.tag
+        else:
+            raise ValueError(&#34;unknown level style type&#34;)
+        was_created = False
+        # Cloning or reusing an existing element
+        if clone is not None:
+            level_style = clone.clone
+            was_created = True
+        else:
+            level_style = self.get_level_style(level)
+            if level_style is None:
+                level_style = Element.from_tag(level_style_name)
+                was_created = True
+        # Transmute if the type changed
+        if level_style.tag != level_style_name:
+            print(&#39;warn: different style&#39;, level_style_name, level_style.tag)
+            level_style.tag = level_style_name
+        # Set the level
+        level_style.set_attribute(&#39;text:level&#39;, str(level))
+        # Set the main attribute
+        if num_format is not None:
+            level_style.set_attribute(&#39;fo:num-format&#39;, num_format)
+        elif bullet_char is not None:
+            level_style.set_attribute(&#39;text:bullet-char&#39;, bullet_char)
+        elif url is not None:
+            level_style.set_attribute(&#39;xlink:href&#39;, url)
+        # Set attributes
+        if prefix:
+            level_style.set_attribute(&#39;style:num-prefix&#39;, prefix)
+        if suffix:
+            level_style.set_attribute(&#39;style:num-suffix&#39;, suffix)
+        if display_levels:
+            level_style.set_attribute(&#39;text:display-levels&#39;,
+                                      str(display_levels))
+        if start_value:
+            level_style.set_attribute(&#39;text:start-value&#39;, str(start_value))
+        if style:
+            level_style.text_style = style
+        # Commit the creation
+        if was_created:
+            self.append(level_style)
+        return level_style
+
+    # page-layout only:
+
+    def get_header_style(self):
+        if self.family != &#39;page-layout&#39;:
+            return None
+        return self.get_element(&#39;style:header-style&#39;)
+
+    def set_header_style(self, new_style):
+        if self.family != &#39;page-layout&#39;:
+            return
+        header_style = self.get_header_style()
+        if header_style is not None:
+            self.delete(header_style)
+        self.append(new_style)
+
+    def get_footer_style(self):
+        if self.family != &#39;page-layout&#39;:
+            return None
+        return self.get_element(&#39;style:footer-style&#39;)
+
+    def set_footer_style(self, new_style):
+        if self.family != &#39;page-layout&#39;:
+            return
+        footer_style = self.get_footer_style()
+        if footer_style is not None:
+            self.delete(footer_style)
+        self.append(new_style)
+
+    # master-page only:
+
+    def __set_header_or_footer(self,
+                               text_or_element,
+                               name=&#39;header&#39;,
+                               style=&#34;Header&#34;):
+        if name == &#39;header&#39;:
+            header_or_footer = self.get_page_header()
+        else:
+            header_or_footer = self.get_page_footer()
+        if header_or_footer is None:
+            header_or_footer = Element.from_tag(&#39;style:&#39; + name)
+            self.append(header_or_footer)
+        else:
+            header_or_footer.clear()
+        if not isiterable(text_or_element):
+            # Already a header or footer?
+            if (isinstance(text_or_element, Element)
+                    and text_or_element.tag == &#39;style:%s&#39; % to_str(name)):
+                self.delete(header_or_footer)
+                self.append(text_or_element)
+                return
+            text_or_element = [text_or_element]
+        # FIXME cyclic import
+        for item in text_or_element:
+            if isinstance(item, str):
+                paragraph = Paragraph(item, style=style)
+                header_or_footer.append(paragraph)
+            elif isinstance(item, Element):
+                header_or_footer.append(item)
+
+    def get_page_header(self):
+        &#34;&#34;&#34;Get the element that contains the header contents.
+
+        If None, no header was set.
+        &#34;&#34;&#34;
+        if self.family != &#39;master-page&#39;:
+            return None
+        return self.get_element(&#39;style:header&#39;)
+
+    def set_page_header(self, text_or_element):
+        &#34;&#34;&#34;Create or replace the header by the given content. It can already
+        be a complete header.
+
+        If you only want to update the existing header, get it and use the
+        API.
+
+        Arguments:
+
+            text_or_element -- str or Element or a list of them
+        &#34;&#34;&#34;
+        if self.family != &#39;master-page&#39;:
+            return None
+        return self.__set_header_or_footer(text_or_element)
+
+    def get_page_footer(self):
+        &#34;&#34;&#34;Get the element that contains the footer contents.
+
+        If None, no footer was set.
+        &#34;&#34;&#34;
+        if self.family != &#39;master-page&#39;:
+            return None
+        return self.get_element(&#39;style:footer&#39;)
+
+    def set_page_footer(self, text_or_element):
+        &#34;&#34;&#34;Create or replace the footer by the given content. It can already
+        be a complete footer.
+
+        If you only want to update the existing footer, get it and use the
+        API.
+
+        Arguments:
+
+            text_or_element -- str or Element or a list of them
+        &#34;&#34;&#34;
+        if self.family != &#39;master-page&#39;:
+            return None
+        return self.__set_header_or_footer(
+            text_or_element, name=&#39;footer&#39;, style=&#34;Footer&#34;)
+
+    # font-face only:
+
+    def set_font(self,
+                 name,
+                 family=None,
+                 family_generic=None,
+                 pitch=&#34;variable&#34;):
+        if self.family != &#39;font-face&#39;:
+            return
+        self.name = name
+        if family is None:
+            family = name
+        self.svg_font_family = f&#39;&#34;{family}&#34;&#39;
+        if family_generic is not None:
+            self.font_family_generic = family_generic
+        self.font_pitch = pitch
+
+
+Style._define_attribut_property()
+
+
+class BackgroundImage(Style, DrawImage):
+    _tag = &#39;style:background-image&#39;
+    _properties = (
+        (&#39;name&#39;, &#39;style:name&#39;, None),
+        (&#39;display_name&#39;, &#39;style:display-name&#39;, None),
+        (&#39;svg_font_family&#39;, &#39;svg:font-family&#39;, None),
+        (&#39;font_family_generic&#39;, &#39;style:font-family-generic&#39;, None),
+        (&#39;font_pitch&#39;, &#39;style:font-pitch&#39;, None),
+        (&#39;position&#39;, &#39;style:position&#39;, &#39;background-image&#39;),
+        (&#39;repeat&#39;, &#39;style:repeat&#39;, &#39;background-image&#39;),
+        (&#39;opacity&#39;, &#39;draw:opacity&#39;, &#39;background-image&#39;),
+        (&#39;filter&#39;, &#39;style:filter-name&#39;, &#39;background-image&#39;),
+        (&#39;text_style&#39;, &#39;text:style-name&#39;, None),
+    )
+
+    def __init__(
+            self,
+            name=None,
+            display_name=None,
+            position=None,
+            repeat=None,
+            opacity=None,
+            filter=None,
+            # Every other property
+            **kw):
+        kw[&#39;family&#39;] = &#39;background-image&#39;
+        super().__init__(**kw)
+        if self._do_init:
+            kw.pop(&#39;tag&#39;, None)
+            kw.pop(&#39;tag_or_elem&#39;, None)
+            self.family = &#39;background-image&#39;
+            if name:
+                self.name = name
+            if display_name:
+                self.display_name = display_name
+            if position:
+                self.position = position
+            if repeat:
+                self.position = repeat
+            if opacity:
+                self.position = opacity
+            if filter:
+                self.position = filter
+            # Every other properties
+            for p in BackgroundImage._properties:
+                k = p[0]
+                attr = p[1]
+                if k in kw:
+                    self.set_style_attribute(attr, kw[k])
+
+
+BackgroundImage._define_attribut_property()
+
+
+# Some predefined styles
+def default_number_style():
+    return Element.from_tag(
+        &#34;&#34;&#34;&lt;number:number-style style:name=&#34;lpod-default-number-style&#34;&gt;
+           &lt;number:number number:decimal-places=&#34;2&#34;
+            number:min-integer-digits=&#34;1&#34;/&gt;
+           &lt;/number:number-style&gt;&#34;&#34;&#34;)
+
+
+def default_percentage_style():
+    return Element.from_tag(&#34;&#34;&#34;&lt;number:percentage-style
+                  style:name=&#34;lpod-default-percentage-style&#34;&gt;
+                  &lt;number:number number:decimal-places=&#34;2&#34;
+                   number:min-integer-digits=&#34;1&#34;/&gt;
+                  &lt;number:text&gt;%&lt;/number:text&gt;
+                  &lt;/number:percentage-style&gt;&#34;&#34;&#34;)
+
+
+def default_time_style():
+    return Element.from_tag(
+        &#34;&#34;&#34;&lt;number:time-style style:name=&#34;lpod-default-time-style&#34;&gt;
+             &lt;number:hours number:style=&#34;long&#34;/&gt;
+             &lt;number:text&gt;:&lt;/number:text&gt;
+             &lt;number:minutes number:style=&#34;long&#34;/&gt;
+             &lt;number:text&gt;:&lt;/number:text&gt;
+             &lt;number:seconds number:style=&#34;long&#34;/&gt;
+           &lt;/number:time-style&gt;&#34;&#34;&#34;)
+
+
+def default_date_style():
+    return Element.from_tag(
+        &#34;&#34;&#34;&lt;number:date-style style:name=&#34;lpod-default-date-style&#34;&gt;
+             &lt;number:year number:style=&#34;long&#34;/&gt;
+             &lt;number:text&gt;-&lt;/number:text&gt;
+             &lt;number:month number:style=&#34;long&#34;/&gt;
+             &lt;number:text&gt;-&lt;/number:text&gt;
+             &lt;number:day number:style=&#34;long&#34;/&gt;
+           &lt;/number:date-style&gt;&#34;&#34;&#34;)
+
+
+def default_boolean_style():
+    return Element.from_tag(
+        &#34;&#34;&#34;&lt;number:boolean-style style:name=&#34;lpod-default-boolean-style&#34;&gt;
+             &lt;number:boolean/&gt;
+           &lt;/number:boolean-style&gt;&#34;&#34;&#34;)
+
+
+def default_currency_style():
+    return Element.from_tag(
+        &#34;&#34;&#34;&lt;number:currency-style style:name=&#34;lpod-default-currency-style&#34;&gt;
+            &lt;number:text&gt;-&lt;/number:text&gt;
+            &lt;number:number number:decimal-places=&#34;2&#34;
+             number:min-integer-digits=&#34;1&#34;
+             number:grouping=&#34;true&#34;/&gt;
+            &lt;number:text&gt; &lt;/number:text&gt;
+            &lt;number:currency-symbol
+             number:language=&#34;fr&#34;
+             number:country=&#34;FR&#34;&gt;€&lt;/number:currency-symbol&gt;
+           &lt;/number:currency-style&gt;&#34;&#34;&#34;)
+
+
+register_element_class(BackgroundImage)
+register_element_class(Style, STYLES_TO_REGISTER)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="odfdo.style.create_table_cell_style"><code class="name flex">
+<span>def <span class="ident">create_table_cell_style</span></span>(<span>border=None, border_top=None, border_bottom=None, border_left=None, border_right=None, padding=None, padding_top=None, padding_bottom=None, padding_left=None, padding_right=None, background_color=None, shadow=None, color=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a cell style.</p>
+<p>The borders arguments must be some style attribute strings or None, see the
+method 'make_table_cell_border_string' to generate them.
+If the 'border' argument as the value 'default', the default style
+"0.06pt solid #000000" is used for the 4 borders.
+If any value is used for border, it is used for the 4 borders, else any of
+the 4 borders can be specified by it's own string. If all the border,
+border_top, border_bottom, &hellip; arguments are None, an empty border is used
+(ODF value is fo:border="none").</p>
+<p>Padding arguments are string specifying a length (e.g. "0.5mm")". If
+'padding' is provided, it is used for the 4 sides, else any of
+the 4 sides padding can be specified by it's own string. Default padding is
+no padding.</p>
+<h2 id="arguments">Arguments</h2>
+<p>border &ndash; str, style string for borders on four sides</p>
+<p>border_top &ndash; str, style string for top if no 'border' argument</p>
+<p>border_bottom &ndash; str, style string for bottom if no 'border' argument</p>
+<p>border_left &ndash; str, style string for left if no 'border' argument</p>
+<p>border_right &ndash; str, style string for right if no 'border' argument</p>
+<p>padding &ndash; str, style string for padding on four sides</p>
+<p>padding_top &ndash; str, style string for top if no 'padding' argument</p>
+<p>padding_bottom &ndash; str, style string for bottom if no 'padding' argument</p>
+<p>padding_left &ndash; str, style string for left if no 'padding' argument</p>
+<p>padding_right &ndash; str, style string for right if no 'padding' argument</p>
+<p>background_color &ndash; str or rgb 3-tuple, str is 'black', 'grey', &hellip; or '#012345'</p>
+<p>shadow &ndash; str, e.g. "#808080 0.176cm 0.176cm"</p>
+<p>color &ndash; str or rgb 3-tuple, str is 'black', 'grey', &hellip; or '#012345'</p>
+<p>Return : Style</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_table_cell_style(border=None,
+                            border_top=None,
+                            border_bottom=None,
+                            border_left=None,
+                            border_right=None,
+                            padding=None,
+                            padding_top=None,
+                            padding_bottom=None,
+                            padding_left=None,
+                            padding_right=None,
+                            background_color=None,
+                            shadow=None,
+                            color=None):
+    &#34;&#34;&#34;Return a cell style.
+
+    The borders arguments must be some style attribute strings or None, see the
+    method &#39;make_table_cell_border_string&#39; to generate them.
+    If the &#39;border&#39; argument as the value &#39;default&#39;, the default style
+    &#34;0.06pt solid #000000&#34; is used for the 4 borders.
+    If any value is used for border, it is used for the 4 borders, else any of
+    the 4 borders can be specified by it&#39;s own string. If all the border,
+    border_top, border_bottom, ... arguments are None, an empty border is used
+    (ODF value is fo:border=&#34;none&#34;).
+
+    Padding arguments are string specifying a length (e.g. &#34;0.5mm&#34;)&#34;. If
+    &#39;padding&#39; is provided, it is used for the 4 sides, else any of
+    the 4 sides padding can be specified by it&#39;s own string. Default padding is
+    no padding.
+
+    Arguments:
+
+        border -- str, style string for borders on four sides
+
+        border_top -- str, style string for top if no &#39;border&#39; argument
+
+        border_bottom -- str, style string for bottom if no &#39;border&#39; argument
+
+        border_left -- str, style string for left if no &#39;border&#39; argument
+
+        border_right -- str, style string for right if no &#39;border&#39; argument
+
+        padding -- str, style string for padding on four sides
+
+        padding_top -- str, style string for top if no &#39;padding&#39; argument
+
+        padding_bottom -- str, style string for bottom if no &#39;padding&#39; argument
+
+        padding_left -- str, style string for left if no &#39;padding&#39; argument
+
+        padding_right -- str, style string for right if no &#39;padding&#39; argument
+
+        background_color -- str or rgb 3-tuple, str is &#39;black&#39;, &#39;grey&#39;, ... or &#39;#012345&#39;
+
+        shadow -- str, e.g. &#34;#808080 0.176cm 0.176cm&#34;
+
+        color -- str or rgb 3-tuple, str is &#39;black&#39;, &#39;grey&#39;, ... or &#39;#012345&#39;
+
+    Return : Style
+    &#34;&#34;&#34;
+    if border == &#39;default&#39;:
+        border = make_table_cell_border_string()  # default border
+    if border is not None:
+        # use the border value for 4 sides.
+        border_bottom = border_top = border_left = border_right = None
+    if (border is None and border_bottom is None and border_top is None
+            and border_left is None and border_right is None):
+        border = &#39;none&#39;
+    if padding is not None:
+        # use the padding value for 4 sides.
+        padding_bottom = padding_top = padding_left = padding_right = None
+    if color:
+        color_string = __make_color_string(color)
+    if background_color:
+        bgcolor_string = __make_color_string(background_color)
+    else:
+        bgcolor_string = None
+    cell_style = Style(
+        &#39;table-cell&#39;,
+        area=&#39;table-cell&#39;,
+        border=border,
+        border_top=border_top,
+        border_bottom=border_bottom,
+        border_left=border_left,
+        border_right=border_right,
+        padding=padding,
+        padding_top=padding_top,
+        padding_bottom=padding_bottom,
+        padding_left=padding_left,
+        padding_right=padding_right,
+        background_color=bgcolor_string,
+        shadow=shadow)
+    if color:
+        cell_style.set_properties(area=&#39;text&#39;, color=color_string)
+    return cell_style</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.default_boolean_style"><code class="name flex">
+<span>def <span class="ident">default_boolean_style</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def default_boolean_style():
+    return Element.from_tag(
+        &#34;&#34;&#34;&lt;number:boolean-style style:name=&#34;lpod-default-boolean-style&#34;&gt;
+             &lt;number:boolean/&gt;
+           &lt;/number:boolean-style&gt;&#34;&#34;&#34;)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.default_currency_style"><code class="name flex">
+<span>def <span class="ident">default_currency_style</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def default_currency_style():
+    return Element.from_tag(
+        &#34;&#34;&#34;&lt;number:currency-style style:name=&#34;lpod-default-currency-style&#34;&gt;
+            &lt;number:text&gt;-&lt;/number:text&gt;
+            &lt;number:number number:decimal-places=&#34;2&#34;
+             number:min-integer-digits=&#34;1&#34;
+             number:grouping=&#34;true&#34;/&gt;
+            &lt;number:text&gt; &lt;/number:text&gt;
+            &lt;number:currency-symbol
+             number:language=&#34;fr&#34;
+             number:country=&#34;FR&#34;&gt;€&lt;/number:currency-symbol&gt;
+           &lt;/number:currency-style&gt;&#34;&#34;&#34;)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.default_date_style"><code class="name flex">
+<span>def <span class="ident">default_date_style</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def default_date_style():
+    return Element.from_tag(
+        &#34;&#34;&#34;&lt;number:date-style style:name=&#34;lpod-default-date-style&#34;&gt;
+             &lt;number:year number:style=&#34;long&#34;/&gt;
+             &lt;number:text&gt;-&lt;/number:text&gt;
+             &lt;number:month number:style=&#34;long&#34;/&gt;
+             &lt;number:text&gt;-&lt;/number:text&gt;
+             &lt;number:day number:style=&#34;long&#34;/&gt;
+           &lt;/number:date-style&gt;&#34;&#34;&#34;)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.default_number_style"><code class="name flex">
+<span>def <span class="ident">default_number_style</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def default_number_style():
+    return Element.from_tag(
+        &#34;&#34;&#34;&lt;number:number-style style:name=&#34;lpod-default-number-style&#34;&gt;
+           &lt;number:number number:decimal-places=&#34;2&#34;
+            number:min-integer-digits=&#34;1&#34;/&gt;
+           &lt;/number:number-style&gt;&#34;&#34;&#34;)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.default_percentage_style"><code class="name flex">
+<span>def <span class="ident">default_percentage_style</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def default_percentage_style():
+    return Element.from_tag(&#34;&#34;&#34;&lt;number:percentage-style
+                  style:name=&#34;lpod-default-percentage-style&#34;&gt;
+                  &lt;number:number number:decimal-places=&#34;2&#34;
+                   number:min-integer-digits=&#34;1&#34;/&gt;
+                  &lt;number:text&gt;%&lt;/number:text&gt;
+                  &lt;/number:percentage-style&gt;&#34;&#34;&#34;)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.default_time_style"><code class="name flex">
+<span>def <span class="ident">default_time_style</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def default_time_style():
+    return Element.from_tag(
+        &#34;&#34;&#34;&lt;number:time-style style:name=&#34;lpod-default-time-style&#34;&gt;
+             &lt;number:hours number:style=&#34;long&#34;/&gt;
+             &lt;number:text&gt;:&lt;/number:text&gt;
+             &lt;number:minutes number:style=&#34;long&#34;/&gt;
+             &lt;number:text&gt;:&lt;/number:text&gt;
+             &lt;number:seconds number:style=&#34;long&#34;/&gt;
+           &lt;/number:time-style&gt;&#34;&#34;&#34;)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.hex2rgb"><code class="name flex">
+<span>def <span class="ident">hex2rgb</span></span>(<span>color)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Turns a "#RRGGBB" hexadecimal color representation into a (R, G, B)
+tuple.</p>
+<h2 id="arguments">Arguments</h2>
+<p>color &ndash; str</p>
+<p>Return: tuple</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def hex2rgb(color):
+    &#34;&#34;&#34;Turns a &#34;#RRGGBB&#34; hexadecimal color representation into a (R, G, B)
+    tuple.
+    Arguments:
+
+        color -- str
+
+    Return: tuple
+    &#34;&#34;&#34;
+    code = color[1:]
+    if not (len(color) == 7 and color[0] == &#39;#&#39; and code.isalnum()):
+        raise ValueError(&#39;&#34;%s&#34; is not a valid color&#39; % color)
+    red = int(code[:2], 16)
+    green = int(code[2:4], 16)
+    blue = int(code[4:6], 16)
+    return (red, green, blue)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.make_table_cell_border_string"><code class="name flex">
+<span>def <span class="ident">make_table_cell_border_string</span></span>(<span>thick=None, line=None, color=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns a string for style:table-cell-properties fo:border,
+with default : "0.06pt solid #000000"</p>
+<pre><code>thick -- str or float
+line -- str
+color -- str or rgb 3-tuple, str is 'black', 'grey', ... or '#012345'
+</code></pre>
+<p>Returns : str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_table_cell_border_string(thick=None, line=None, color=None):
+    &#34;&#34;&#34;Returns a string for style:table-cell-properties fo:border,
+    with default : &#34;0.06pt solid #000000&#34;
+
+        thick -- str or float
+        line -- str
+        color -- str or rgb 3-tuple, str is &#39;black&#39;, &#39;grey&#39;, ... or &#39;#012345&#39;
+
+    Returns : str
+    &#34;&#34;&#34;
+    thick_string = __make_thick_string(thick)
+    line_string = __make_line_string(line)
+    color_string = __make_color_string(color)
+    return &#39; &#39;.join((thick_string, line_string, color_string))</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.rgb2hex"><code class="name flex">
+<span>def <span class="ident">rgb2hex</span></span>(<span>color)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Turns a color name or a (R, G, B) color tuple into a "#RRGGBB"
+hexadecimal representation.</p>
+<h2 id="arguments">Arguments</h2>
+<p>color &ndash; str or tuple</p>
+<p>Return: str</p>
+<p>Examples::</p>
+<pre><code>&gt;&gt;&gt; rgb2hex('yellow')
+'#FFFF00'
+&gt;&gt;&gt; rgb2hex((238, 130, 238))
+'#EE82EE'
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rgb2hex(color):
+    &#34;&#34;&#34;Turns a color name or a (R, G, B) color tuple into a &#34;#RRGGBB&#34;
+    hexadecimal representation.
+    Arguments:
+
+        color -- str or tuple
+
+    Return: str
+
+    Examples::
+
+        &gt;&gt;&gt; rgb2hex(&#39;yellow&#39;)
+        &#39;#FFFF00&#39;
+        &gt;&gt;&gt; rgb2hex((238, 130, 238))
+        &#39;#EE82EE&#39;
+    &#34;&#34;&#34;
+    if isinstance(color, str):
+        try:
+            code = CSS3_COLORMAP[color.lower()]
+        except KeyError:
+            raise KeyError(&#39;color &#34;%s&#34; is unknown&#39; % color)
+    elif isinstance(color, tuple):
+        if len(color) != 3:
+            raise ValueError(&#34;color must be a 3-tuple&#34;)
+        code = color
+    else:
+        raise TypeError(&#34;invalid color&#34;)
+    for channel in code:
+        if channel &lt; 0 or channel &gt; 255:
+            raise ValueError(&#34;color code must be between 0 and 255&#34;)
+    return &#39;#%02X%02X%02X&#39; % code</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="odfdo.style.BackgroundImage"><code class="flex name class">
+<span>class <span class="ident">BackgroundImage</span></span>
+<span>(</span><span>name=None, display_name=None, position=None, repeat=None, opacity=None, filter=None, **kw)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Style class for all these tags:</p>
+<p>'style:style'
+'number:date-style',
+'number:number-style',
+'number:percentage-style',
+'number:time-style'
+'style:font-face',
+'style:master-page',
+'style:page-layout',
+'style:presentation-page-layout',
+'text:list-style',
+'text:outline-style',
+'style:tab-stops',
+&hellip;</p>
+<p>Create a style of the given family. The name is not mandatory at this
+point but will become required when inserting in a document as a common
+style.</p>
+<p>The display name is the name the user sees in an office application.</p>
+<p>The parent_style is the name of the style this style will inherit from.</p>
+<p>To set properties, pass them as keyword arguments. The area properties
+apply to is optional and defaults to the family.</p>
+<h2 id="arguments">Arguments</h2>
+<p>family &ndash; 'paragraph', 'text', 'section', 'table', 'table-column',
+'table-row', 'table-cell', 'table-page', 'chart',
+'drawing-page', 'graphic', 'presentation',
+'control', 'ruby', 'list', 'number', 'page-layout'
+'font-face', or 'master-page'</p>
+<p>name &ndash; str</p>
+<p>display_name &ndash; str</p>
+<p>parent_style &ndash; str</p>
+<p>area &ndash; str</p>
+<p>'text' Properties:</p>
+<pre><code>italic -- bool
+
+bold -- bool
+</code></pre>
+<p>'paragraph' Properties:</p>
+<pre><code>master_page -- str
+</code></pre>
+<p>'master-page' Properties:</p>
+<pre><code>page_layout -- str
+
+next_style -- str
+</code></pre>
+<p>'table-cell' Properties:</p>
+<pre><code>border, border_top, border_right, border_bottom, border_left -- str,
+e.g. "0.002cm solid #000000" or 'none'
+
+padding, padding_top, padding_right, padding_bottom, padding_left -- str,
+e.g. "0.002cm" or 'none'
+
+shadow -- str, e.g. "#808080 0.176cm 0.176cm"
+</code></pre>
+<p>'table-row' Properties:</p>
+<pre><code>height -- str, e.g. '5cm'
+
+use_optimal_height -- bool
+</code></pre>
+<p>'table-column' Properties:</p>
+<pre><code>width -- str, e.g. '5cm'
+
+break_before -- 'page', 'column' or 'auto'
+
+break_after -- 'page', 'column' or 'auto'
+</code></pre>
+<p>Return: Style</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BackgroundImage(Style, DrawImage):
+    _tag = &#39;style:background-image&#39;
+    _properties = (
+        (&#39;name&#39;, &#39;style:name&#39;, None),
+        (&#39;display_name&#39;, &#39;style:display-name&#39;, None),
+        (&#39;svg_font_family&#39;, &#39;svg:font-family&#39;, None),
+        (&#39;font_family_generic&#39;, &#39;style:font-family-generic&#39;, None),
+        (&#39;font_pitch&#39;, &#39;style:font-pitch&#39;, None),
+        (&#39;position&#39;, &#39;style:position&#39;, &#39;background-image&#39;),
+        (&#39;repeat&#39;, &#39;style:repeat&#39;, &#39;background-image&#39;),
+        (&#39;opacity&#39;, &#39;draw:opacity&#39;, &#39;background-image&#39;),
+        (&#39;filter&#39;, &#39;style:filter-name&#39;, &#39;background-image&#39;),
+        (&#39;text_style&#39;, &#39;text:style-name&#39;, None),
+    )
+
+    def __init__(
+            self,
+            name=None,
+            display_name=None,
+            position=None,
+            repeat=None,
+            opacity=None,
+            filter=None,
+            # Every other property
+            **kw):
+        kw[&#39;family&#39;] = &#39;background-image&#39;
+        super().__init__(**kw)
+        if self._do_init:
+            kw.pop(&#39;tag&#39;, None)
+            kw.pop(&#39;tag_or_elem&#39;, None)
+            self.family = &#39;background-image&#39;
+            if name:
+                self.name = name
+            if display_name:
+                self.display_name = display_name
+            if position:
+                self.position = position
+            if repeat:
+                self.position = repeat
+            if opacity:
+                self.position = opacity
+            if filter:
+                self.position = filter
+            # Every other properties
+            for p in BackgroundImage._properties:
+                k = p[0]
+                attr = p[1]
+                if k in kw:
+                    self.set_style_attribute(attr, kw[k])</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="odfdo.style.Style" href="#odfdo.style.Style">Style</a></li>
+<li><a title="odfdo.image.DrawImage" href="image.html#odfdo.image.DrawImage">DrawImage</a></li>
+<li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="odfdo.style.BackgroundImage.filter"><code class="name">var <span class="ident">filter</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute style:filter-name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.BackgroundImage.opacity"><code class="name">var <span class="ident">opacity</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute draw:opacity</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.BackgroundImage.position"><code class="name">var <span class="ident">position</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute style:position</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.BackgroundImage.repeat"><code class="name">var <span class="ident">repeat</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute style:repeat</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="odfdo.style.Style" href="#odfdo.style.Style">Style</a></b></code>:
+<ul class="hlist">
+<li><code><a title="odfdo.style.Style.append" href="element.html#odfdo.element.Element.append">append</a></code></li>
+<li><code><a title="odfdo.style.Style.append_named_range" href="element.html#odfdo.element.Element.append_named_range">append_named_range</a></code></li>
+<li><code><a title="odfdo.style.Style.clear" href="element.html#odfdo.element.Element.clear">clear</a></code></li>
+<li><code><a title="odfdo.style.Style.dc_creator" href="element.html#odfdo.element.Element.dc_creator">dc_creator</a></code></li>
+<li><code><a title="odfdo.style.Style.dc_date" href="element.html#odfdo.element.Element.dc_date">dc_date</a></code></li>
+<li><code><a title="odfdo.style.Style.del_properties" href="#odfdo.style.Style.del_properties">del_properties</a></code></li>
+<li><code><a title="odfdo.style.Style.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
+<li><code><a title="odfdo.style.Style.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
+<li><code><a title="odfdo.style.Style.display_name" href="#odfdo.style.Style.display_name">display_name</a></code></li>
+<li><code><a title="odfdo.style.Style.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.style.Style.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
+<li><code><a title="odfdo.style.Style.font_family_generic" href="#odfdo.style.Style.font_family_generic">font_family_generic</a></code></li>
+<li><code><a title="odfdo.style.Style.font_pitch" href="#odfdo.style.Style.font_pitch">font_pitch</a></code></li>
+<li><code><a title="odfdo.style.Style.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
+<li><code><a title="odfdo.style.Style.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
+<li><code><a title="odfdo.style.Style.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
+<li><code><a title="odfdo.style.Style.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
+<li><code><a title="odfdo.style.Style.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.style.Style.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
+<li><code><a title="odfdo.style.Style.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
+<li><code><a title="odfdo.style.Style.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
+<li><code><a title="odfdo.style.Style.get_bookmark_ends" href="element.html#odfdo.element.Element.get_bookmark_ends">get_bookmark_ends</a></code></li>
+<li><code><a title="odfdo.style.Style.get_bookmark_start" href="element.html#odfdo.element.Element.get_bookmark_start">get_bookmark_start</a></code></li>
+<li><code><a title="odfdo.style.Style.get_bookmark_starts" href="element.html#odfdo.element.Element.get_bookmark_starts">get_bookmark_starts</a></code></li>
+<li><code><a title="odfdo.style.Style.get_bookmarks" href="element.html#odfdo.element.Element.get_bookmarks">get_bookmarks</a></code></li>
+<li><code><a title="odfdo.style.Style.get_changes_ids" href="element.html#odfdo.element.Element.get_changes_ids">get_changes_ids</a></code></li>
+<li><code><a title="odfdo.style.Style.get_draw_connector" href="element.html#odfdo.element.Element.get_draw_connector">get_draw_connector</a></code></li>
+<li><code><a title="odfdo.style.Style.get_draw_connectors" href="element.html#odfdo.element.Element.get_draw_connectors">get_draw_connectors</a></code></li>
+<li><code><a title="odfdo.style.Style.get_draw_ellipse" href="element.html#odfdo.element.Element.get_draw_ellipse">get_draw_ellipse</a></code></li>
+<li><code><a title="odfdo.style.Style.get_draw_ellipses" href="element.html#odfdo.element.Element.get_draw_ellipses">get_draw_ellipses</a></code></li>
+<li><code><a title="odfdo.style.Style.get_draw_line" href="element.html#odfdo.element.Element.get_draw_line">get_draw_line</a></code></li>
+<li><code><a title="odfdo.style.Style.get_draw_lines" href="element.html#odfdo.element.Element.get_draw_lines">get_draw_lines</a></code></li>
+<li><code><a title="odfdo.style.Style.get_draw_page" href="element.html#odfdo.element.Element.get_draw_page">get_draw_page</a></code></li>
+<li><code><a title="odfdo.style.Style.get_draw_pages" href="element.html#odfdo.element.Element.get_draw_pages">get_draw_pages</a></code></li>
+<li><code><a title="odfdo.style.Style.get_draw_rectangle" href="element.html#odfdo.element.Element.get_draw_rectangle">get_draw_rectangle</a></code></li>
+<li><code><a title="odfdo.style.Style.get_draw_rectangles" href="element.html#odfdo.element.Element.get_draw_rectangles">get_draw_rectangles</a></code></li>
+<li><code><a title="odfdo.style.Style.get_formatted_text" href="element.html#odfdo.element.Element.get_formatted_text">get_formatted_text</a></code></li>
+<li><code><a title="odfdo.style.Style.get_frame" href="element.html#odfdo.element.Element.get_frame">get_frame</a></code></li>
+<li><code><a title="odfdo.style.Style.get_frames" href="element.html#odfdo.element.Element.get_frames">get_frames</a></code></li>
+<li><code><a title="odfdo.style.Style.get_header" href="element.html#odfdo.element.Element.get_header">get_header</a></code></li>
+<li><code><a title="odfdo.style.Style.get_headers" href="element.html#odfdo.element.Element.get_headers">get_headers</a></code></li>
+<li><code><a title="odfdo.style.Style.get_image" href="element.html#odfdo.element.Element.get_image">get_image</a></code></li>
+<li><code><a title="odfdo.style.Style.get_images" href="element.html#odfdo.element.Element.get_images">get_images</a></code></li>
+<li><code><a title="odfdo.style.Style.get_link" href="element.html#odfdo.element.Element.get_link">get_link</a></code></li>
+<li><code><a title="odfdo.style.Style.get_links" href="element.html#odfdo.element.Element.get_links">get_links</a></code></li>
+<li><code><a title="odfdo.style.Style.get_list" href="element.html#odfdo.element.Element.get_list">get_list</a></code></li>
+<li><code><a title="odfdo.style.Style.get_lists" href="element.html#odfdo.element.Element.get_lists">get_lists</a></code></li>
+<li><code><a title="odfdo.style.Style.get_named_range" href="element.html#odfdo.element.Element.get_named_range">get_named_range</a></code></li>
+<li><code><a title="odfdo.style.Style.get_named_ranges" href="element.html#odfdo.element.Element.get_named_ranges">get_named_ranges</a></code></li>
+<li><code><a title="odfdo.style.Style.get_note" href="element.html#odfdo.element.Element.get_note">get_note</a></code></li>
+<li><code><a title="odfdo.style.Style.get_notes" href="element.html#odfdo.element.Element.get_notes">get_notes</a></code></li>
+<li><code><a title="odfdo.style.Style.get_office_names" href="element.html#odfdo.element.Element.get_office_names">get_office_names</a></code></li>
+<li><code><a title="odfdo.style.Style.get_orphan_draw_connectors" href="element.html#odfdo.element.Element.get_orphan_draw_connectors">get_orphan_draw_connectors</a></code></li>
+<li><code><a title="odfdo.style.Style.get_page_footer" href="#odfdo.style.Style.get_page_footer">get_page_footer</a></code></li>
+<li><code><a title="odfdo.style.Style.get_page_header" href="#odfdo.style.Style.get_page_header">get_page_header</a></code></li>
+<li><code><a title="odfdo.style.Style.get_paragraph" href="element.html#odfdo.element.Element.get_paragraph">get_paragraph</a></code></li>
+<li><code><a title="odfdo.style.Style.get_paragraphs" href="element.html#odfdo.element.Element.get_paragraphs">get_paragraphs</a></code></li>
+<li><code><a title="odfdo.style.Style.get_properties" href="#odfdo.style.Style.get_properties">get_properties</a></code></li>
+<li><code><a title="odfdo.style.Style.get_reference_mark" href="element.html#odfdo.element.Element.get_reference_mark">get_reference_mark</a></code></li>
+<li><code><a title="odfdo.style.Style.get_reference_mark_end" href="element.html#odfdo.element.Element.get_reference_mark_end">get_reference_mark_end</a></code></li>
+<li><code><a title="odfdo.style.Style.get_reference_mark_ends" href="element.html#odfdo.element.Element.get_reference_mark_ends">get_reference_mark_ends</a></code></li>
+<li><code><a title="odfdo.style.Style.get_reference_mark_single" href="element.html#odfdo.element.Element.get_reference_mark_single">get_reference_mark_single</a></code></li>
+<li><code><a title="odfdo.style.Style.get_reference_mark_start" href="element.html#odfdo.element.Element.get_reference_mark_start">get_reference_mark_start</a></code></li>
+<li><code><a title="odfdo.style.Style.get_reference_mark_starts" href="element.html#odfdo.element.Element.get_reference_mark_starts">get_reference_mark_starts</a></code></li>
+<li><code><a title="odfdo.style.Style.get_reference_marks" href="element.html#odfdo.element.Element.get_reference_marks">get_reference_marks</a></code></li>
+<li><code><a title="odfdo.style.Style.get_reference_marks_single" href="element.html#odfdo.element.Element.get_reference_marks_single">get_reference_marks_single</a></code></li>
+<li><code><a title="odfdo.style.Style.get_references" href="element.html#odfdo.element.Element.get_references">get_references</a></code></li>
+<li><code><a title="odfdo.style.Style.get_section" href="element.html#odfdo.element.Element.get_section">get_section</a></code></li>
+<li><code><a title="odfdo.style.Style.get_sections" href="element.html#odfdo.element.Element.get_sections">get_sections</a></code></li>
+<li><code><a title="odfdo.style.Style.get_span" href="element.html#odfdo.element.Element.get_span">get_span</a></code></li>
+<li><code><a title="odfdo.style.Style.get_spans" href="element.html#odfdo.element.Element.get_spans">get_spans</a></code></li>
+<li><code><a title="odfdo.style.Style.get_style" href="element.html#odfdo.element.Element.get_style">get_style</a></code></li>
+<li><code><a title="odfdo.style.Style.get_styled_elements" href="element.html#odfdo.element.Element.get_styled_elements">get_styled_elements</a></code></li>
+<li><code><a title="odfdo.style.Style.get_table" href="element.html#odfdo.element.Element.get_table">get_table</a></code></li>
+<li><code><a title="odfdo.style.Style.get_tables" href="element.html#odfdo.element.Element.get_tables">get_tables</a></code></li>
+<li><code><a title="odfdo.style.Style.get_text_change" href="element.html#odfdo.element.Element.get_text_change">get_text_change</a></code></li>
+<li><code><a title="odfdo.style.Style.get_text_change_deletion" href="element.html#odfdo.element.Element.get_text_change_deletion">get_text_change_deletion</a></code></li>
+<li><code><a title="odfdo.style.Style.get_text_change_deletions" href="element.html#odfdo.element.Element.get_text_change_deletions">get_text_change_deletions</a></code></li>
+<li><code><a title="odfdo.style.Style.get_text_change_end" href="element.html#odfdo.element.Element.get_text_change_end">get_text_change_end</a></code></li>
+<li><code><a title="odfdo.style.Style.get_text_change_ends" href="element.html#odfdo.element.Element.get_text_change_ends">get_text_change_ends</a></code></li>
+<li><code><a title="odfdo.style.Style.get_text_change_start" href="element.html#odfdo.element.Element.get_text_change_start">get_text_change_start</a></code></li>
+<li><code><a title="odfdo.style.Style.get_text_change_starts" href="element.html#odfdo.element.Element.get_text_change_starts">get_text_change_starts</a></code></li>
+<li><code><a title="odfdo.style.Style.get_text_changes" href="element.html#odfdo.element.Element.get_text_changes">get_text_changes</a></code></li>
+<li><code><a title="odfdo.style.Style.get_toc" href="element.html#odfdo.element.Element.get_toc">get_toc</a></code></li>
+<li><code><a title="odfdo.style.Style.get_tocs" href="element.html#odfdo.element.Element.get_tocs">get_tocs</a></code></li>
+<li><code><a title="odfdo.style.Style.get_tracked_changes" href="element.html#odfdo.element.Element.get_tracked_changes">get_tracked_changes</a></code></li>
+<li><code><a title="odfdo.style.Style.get_user_defined" href="element.html#odfdo.element.Element.get_user_defined">get_user_defined</a></code></li>
+<li><code><a title="odfdo.style.Style.get_user_defined_list" href="element.html#odfdo.element.Element.get_user_defined_list">get_user_defined_list</a></code></li>
+<li><code><a title="odfdo.style.Style.get_user_defined_value" href="element.html#odfdo.element.Element.get_user_defined_value">get_user_defined_value</a></code></li>
+<li><code><a title="odfdo.style.Style.get_user_field_decl" href="element.html#odfdo.element.Element.get_user_field_decl">get_user_field_decl</a></code></li>
+<li><code><a title="odfdo.style.Style.get_user_field_decl_list" href="element.html#odfdo.element.Element.get_user_field_decl_list">get_user_field_decl_list</a></code></li>
+<li><code><a title="odfdo.style.Style.get_user_field_decls" href="element.html#odfdo.element.Element.get_user_field_decls">get_user_field_decls</a></code></li>
+<li><code><a title="odfdo.style.Style.get_user_field_value" href="element.html#odfdo.element.Element.get_user_field_value">get_user_field_value</a></code></li>
+<li><code><a title="odfdo.style.Style.get_variable_decl" href="element.html#odfdo.element.Element.get_variable_decl">get_variable_decl</a></code></li>
+<li><code><a title="odfdo.style.Style.get_variable_decl_list" href="element.html#odfdo.element.Element.get_variable_decl_list">get_variable_decl_list</a></code></li>
+<li><code><a title="odfdo.style.Style.get_variable_decls" href="element.html#odfdo.element.Element.get_variable_decls">get_variable_decls</a></code></li>
+<li><code><a title="odfdo.style.Style.get_variable_set" href="element.html#odfdo.element.Element.get_variable_set">get_variable_set</a></code></li>
+<li><code><a title="odfdo.style.Style.get_variable_set_value" href="element.html#odfdo.element.Element.get_variable_set_value">get_variable_set_value</a></code></li>
+<li><code><a title="odfdo.style.Style.get_variable_sets" href="element.html#odfdo.element.Element.get_variable_sets">get_variable_sets</a></code></li>
+<li><code><a title="odfdo.style.Style.index" href="element.html#odfdo.element.Element.index">index</a></code></li>
+<li><code><a title="odfdo.style.Style.insert" href="element.html#odfdo.element.Element.insert">insert</a></code></li>
+<li><code><a title="odfdo.style.Style.is_empty" href="element.html#odfdo.element.Element.is_empty">is_empty</a></code></li>
+<li><code><a title="odfdo.style.Style.leader_style" href="#odfdo.style.Style.leader_style">leader_style</a></code></li>
+<li><code><a title="odfdo.style.Style.leader_text" href="#odfdo.style.Style.leader_text">leader_text</a></code></li>
+<li><code><a title="odfdo.style.Style.master_page" href="#odfdo.style.Style.master_page">master_page</a></code></li>
+<li><code><a title="odfdo.style.Style.match" href="element.html#odfdo.element.Element.match">match</a></code></li>
+<li><code><a title="odfdo.style.Style.name" href="#odfdo.style.Style.name">name</a></code></li>
+<li><code><a title="odfdo.style.Style.next_style" href="#odfdo.style.Style.next_style">next_style</a></code></li>
+<li><code><a title="odfdo.style.Style.page_layout" href="#odfdo.style.Style.page_layout">page_layout</a></code></li>
+<li><code><a title="odfdo.style.Style.parent_style" href="#odfdo.style.Style.parent_style">parent_style</a></code></li>
+<li><code><a title="odfdo.style.Style.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
+<li><code><a title="odfdo.style.Style.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
+<li><code><a title="odfdo.style.Style.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.style.Style.set_background" href="#odfdo.style.Style.set_background">set_background</a></code></li>
+<li><code><a title="odfdo.style.Style.set_level_style" href="#odfdo.style.Style.set_level_style">set_level_style</a></code></li>
+<li><code><a title="odfdo.style.Style.set_page_footer" href="#odfdo.style.Style.set_page_footer">set_page_footer</a></code></li>
+<li><code><a title="odfdo.style.Style.set_page_header" href="#odfdo.style.Style.set_page_header">set_page_header</a></code></li>
+<li><code><a title="odfdo.style.Style.set_properties" href="#odfdo.style.Style.set_properties">set_properties</a></code></li>
+<li><code><a title="odfdo.style.Style.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
+<li><code><a title="odfdo.style.Style.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
+<li><code><a title="odfdo.style.Style.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
+<li><code><a title="odfdo.style.Style.style_position" href="#odfdo.style.Style.style_position">style_position</a></code></li>
+<li><code><a title="odfdo.style.Style.style_type" href="#odfdo.style.Style.style_type">style_type</a></code></li>
+<li><code><a title="odfdo.style.Style.svg_font_family" href="#odfdo.style.Style.svg_font_family">svg_font_family</a></code></li>
+<li><code><a title="odfdo.style.Style.tag" href="element.html#odfdo.element.Element.tag">tag</a></code></li>
+<li><code><a title="odfdo.style.Style.tail" href="element.html#odfdo.element.Element.tail">tail</a></code></li>
+<li><code><a title="odfdo.style.Style.text" href="element.html#odfdo.element.Element.text">text</a></code></li>
+<li><code><a title="odfdo.style.Style.text_content" href="element.html#odfdo.element.Element.text_content">text_content</a></code></li>
+<li><code><a title="odfdo.style.Style.text_style" href="#odfdo.style.Style.text_style">text_style</a></code></li>
+<li><code><a title="odfdo.style.Style.xpath" href="element.html#odfdo.element.Element.xpath">xpath</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="odfdo.image.DrawImage" href="image.html#odfdo.image.DrawImage">DrawImage</a></b></code>:
+<ul class="hlist">
+<li><code><a title="odfdo.image.DrawImage.actuate" href="image.html#odfdo.image.DrawImage.actuate">actuate</a></code></li>
+<li><code><a title="odfdo.image.DrawImage.filter_name" href="image.html#odfdo.image.DrawImage.filter_name">filter_name</a></code></li>
+<li><code><a title="odfdo.image.DrawImage.show" href="image.html#odfdo.image.DrawImage.show">show</a></code></li>
+<li><code><a title="odfdo.image.DrawImage.type" href="image.html#odfdo.image.DrawImage.type">type</a></code></li>
+<li><code><a title="odfdo.image.DrawImage.url" href="image.html#odfdo.image.DrawImage.url">url</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="odfdo.style.Style"><code class="flex name class">
+<span>class <span class="ident">Style</span></span>
+<span>(</span><span>family=None, name=None, display_name=None, parent_style=None, area=None, color=None, background_color=None, italic=False, bold=False, master_page=None, page_layout=None, next_style=None, data_style=None, border=None, border_top=None, border_right=None, border_bottom=None, border_left=None, padding=None, padding_top=None, padding_bottom=None, padding_left=None, padding_right=None, shadow=None, height=None, use_optimal_height=None, width=None, break_before=None, break_after=None, min_height=None, font_name=None, font_family=None, font_family_generic=None, font_pitch='variable', **kw)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Style class for all these tags:</p>
+<p>'style:style'
+'number:date-style',
+'number:number-style',
+'number:percentage-style',
+'number:time-style'
+'style:font-face',
+'style:master-page',
+'style:page-layout',
+'style:presentation-page-layout',
+'text:list-style',
+'text:outline-style',
+'style:tab-stops',
+&hellip;</p>
+<p>Create a style of the given family. The name is not mandatory at this
+point but will become required when inserting in a document as a common
+style.</p>
+<p>The display name is the name the user sees in an office application.</p>
+<p>The parent_style is the name of the style this style will inherit from.</p>
+<p>To set properties, pass them as keyword arguments. The area properties
+apply to is optional and defaults to the family.</p>
+<h2 id="arguments">Arguments</h2>
+<p>family &ndash; 'paragraph', 'text', 'section', 'table', 'table-column',
+'table-row', 'table-cell', 'table-page', 'chart',
+'drawing-page', 'graphic', 'presentation',
+'control', 'ruby', 'list', 'number', 'page-layout'
+'font-face', or 'master-page'</p>
+<p>name &ndash; str</p>
+<p>display_name &ndash; str</p>
+<p>parent_style &ndash; str</p>
+<p>area &ndash; str</p>
+<p>'text' Properties:</p>
+<pre><code>italic -- bool
+
+bold -- bool
+</code></pre>
+<p>'paragraph' Properties:</p>
+<pre><code>master_page -- str
+</code></pre>
+<p>'master-page' Properties:</p>
+<pre><code>page_layout -- str
+
+next_style -- str
+</code></pre>
+<p>'table-cell' Properties:</p>
+<pre><code>border, border_top, border_right, border_bottom, border_left -- str,
+e.g. "0.002cm solid #000000" or 'none'
+
+padding, padding_top, padding_right, padding_bottom, padding_left -- str,
+e.g. "0.002cm" or 'none'
+
+shadow -- str, e.g. "#808080 0.176cm 0.176cm"
+</code></pre>
+<p>'table-row' Properties:</p>
+<pre><code>height -- str, e.g. '5cm'
+
+use_optimal_height -- bool
+</code></pre>
+<p>'table-column' Properties:</p>
+<pre><code>width -- str, e.g. '5cm'
+
+break_before -- 'page', 'column' or 'auto'
+
+break_after -- 'page', 'column' or 'auto'
+</code></pre>
+<p>Return: Style</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Style(Element):
+    &#34;&#34;&#34;Style class for all these tags:
+
+    &#39;style:style&#39;
+    &#39;number:date-style&#39;,
+    &#39;number:number-style&#39;,
+    &#39;number:percentage-style&#39;,
+    &#39;number:time-style&#39;
+    &#39;style:font-face&#39;,
+    &#39;style:master-page&#39;,
+    &#39;style:page-layout&#39;,
+    &#39;style:presentation-page-layout&#39;,
+    &#39;text:list-style&#39;,
+    &#39;text:outline-style&#39;,
+    &#39;style:tab-stops&#39;,
+    ...
+    &#34;&#34;&#34;
+    _properties = (
+        (&#39;page_layout&#39;, &#39;style:page-layout-name&#39;, &#39;master-page&#39;),
+        (&#39;next_style&#39;, &#39;style:next-style-name&#39;, &#39;master-page&#39;),
+        (&#39;name&#39;, &#39;style:name&#39;, None),
+        (&#39;parent_style&#39;, &#39;style:parent-style-name&#39;, None),
+        (&#39;display_name&#39;, &#39;style:display-name&#39;, None),
+        (&#39;svg_font_family&#39;, &#39;svg:font-family&#39;, None),
+        (&#39;font_family_generic&#39;, &#39;style:font-family-generic&#39;, None),
+        (&#39;font_pitch&#39;, &#39;style:font-pitch&#39;, None),
+        (&#39;text_style&#39;, &#39;text:style-name&#39;, None),
+        (&#39;master_page&#39;, &#39;style:master-page-name&#39;, &#39;paragraph&#39;),
+        (&#39;master_page&#39;, &#39;style:master-page-name&#39;, &#39;paragraph&#39;),
+        (&#39;master_page&#39;, &#39;style:master-page-name&#39;, &#39;paragraph&#39;),
+        # style:tab-stop
+        (&#39;style_type&#39;, &#39;style:type&#39;, None),
+        (&#39;leader_style&#39;, &#39;style:leader-style&#39;, None),
+        (&#39;leader_text&#39;, &#39;style:leader-text&#39;, None),
+        (&#39;style_position&#39;, &#39;style:position&#39;, None),
+        (&#39;leader_text&#39;, &#39;style:position&#39;, None),
+    )
+
+    def __init__(
+            self,
+            family=None,
+            name=None,
+            display_name=None,
+            parent_style=None,
+            # Where properties apply
+            area=None,
+            # For family &#39;text&#39;:
+            color=None,
+            background_color=None,
+            italic=False,
+            bold=False,
+            # For family &#39;paragraph&#39;
+            master_page=None,
+            # For family &#39;master-page&#39;
+            page_layout=None,
+            next_style=None,
+            # For family &#39;table-cell&#39;
+            data_style=None,  # unused
+            border=None,
+            border_top=None,
+            border_right=None,
+            border_bottom=None,
+            border_left=None,
+            padding=None,
+            padding_top=None,
+            padding_bottom=None,
+            padding_left=None,
+            padding_right=None,
+            shadow=None,
+            # For family &#39;table-row&#39;
+            height=None,
+            use_optimal_height=None,
+            # For family &#39;table-column&#39;
+            width=None,
+            break_before=None,
+            break_after=None,
+            # For family &#39;graphic&#39;
+            min_height=None,
+            # For family &#39;font-face&#39;
+            font_name=None,
+            font_family=None,
+            font_family_generic=None,
+            font_pitch=&#34;variable&#34;,
+            # Every other property
+            **kw):
+        &#34;&#34;&#34;Create a style of the given family. The name is not mandatory at this
+        point but will become required when inserting in a document as a common
+        style.
+
+        The display name is the name the user sees in an office application.
+
+        The parent_style is the name of the style this style will inherit from.
+
+        To set properties, pass them as keyword arguments. The area properties
+        apply to is optional and defaults to the family.
+
+        Arguments:
+
+            family -- &#39;paragraph&#39;, &#39;text&#39;, &#39;section&#39;, &#39;table&#39;, &#39;table-column&#39;,
+                      &#39;table-row&#39;, &#39;table-cell&#39;, &#39;table-page&#39;, &#39;chart&#39;,
+                      &#39;drawing-page&#39;, &#39;graphic&#39;, &#39;presentation&#39;,
+                      &#39;control&#39;, &#39;ruby&#39;, &#39;list&#39;, &#39;number&#39;, &#39;page-layout&#39;
+                      &#39;font-face&#39;, or &#39;master-page&#39;
+
+            name -- str
+
+            display_name -- str
+
+            parent_style -- str
+
+            area -- str
+
+        &#39;text&#39; Properties:
+
+            italic -- bool
+
+            bold -- bool
+
+        &#39;paragraph&#39; Properties:
+
+            master_page -- str
+
+        &#39;master-page&#39; Properties:
+
+            page_layout -- str
+
+            next_style -- str
+
+        &#39;table-cell&#39; Properties:
+
+            border, border_top, border_right, border_bottom, border_left -- str,
+            e.g. &#34;0.002cm solid #000000&#34; or &#39;none&#39;
+
+            padding, padding_top, padding_right, padding_bottom, padding_left -- str,
+            e.g. &#34;0.002cm&#34; or &#39;none&#39;
+
+            shadow -- str, e.g. &#34;#808080 0.176cm 0.176cm&#34;
+
+        &#39;table-row&#39; Properties:
+
+            height -- str, e.g. &#39;5cm&#39;
+
+            use_optimal_height -- bool
+
+        &#39;table-column&#39; Properties:
+
+            width -- str, e.g. &#39;5cm&#39;
+
+            break_before -- &#39;page&#39;, &#39;column&#39; or &#39;auto&#39;
+
+            break_after -- &#39;page&#39;, &#39;column&#39; or &#39;auto&#39;
+
+        Return: Style
+        &#34;&#34;&#34;
+        tag_or_elem = kw.get(&#39;tag_or_elem&#39;, None)
+        if tag_or_elem is None:
+            family = to_str(family)
+            if family not in FAMILY_MAPPING:
+                raise ValueError(&#39;Unknown family value: %s&#39; % family)
+            kw[&#39;tag&#39;] = FAMILY_MAPPING[family]
+        super().__init__(**kw)
+        if self._do_init and family not in SUBCLASSED_STYLES:
+            kw.pop(&#39;tag&#39;, None)
+            kw.pop(&#39;tag_or_elem&#39;, None)
+            self.family = family  # relevant test made by property
+            # Common attributes
+            if name:
+                self.name = name
+            if display_name:
+                self.display_name = display_name
+            if parent_style:
+                self.parent_style = parent_style
+            # Paragraph
+            if family == &#39;paragraph&#39;:
+                if master_page:
+                    self.master_page = master_page
+            # Master Page
+            elif family == &#39;master-page&#39;:
+                if page_layout:
+                    self.page_layout = page_layout
+                if next_style:
+                    self.next_style = next_style
+            # Font face
+            elif family == &#39;font-face&#39;:
+                self.set_font(
+                    font_name,
+                    family=font_family,
+                    family_generic=font_family_generic,
+                    pitch=font_pitch)
+            # Properties
+            if area is None:
+                area = family
+            area = to_str(area)
+            # Text
+            if area == &#39;text&#39;:
+                if color:
+                    kw[&#39;fo:color&#39;] = color
+                if background_color:
+                    kw[&#39;fo:background-color&#39;] = background_color
+                if italic:
+                    kw[&#39;fo:font-style&#39;] = &#39;italic&#39;
+                    kw[&#39;style:font-style-asian&#39;] = &#39;italic&#39;
+                    kw[&#39;style:font-style-complex&#39;] = &#39;italic&#39;
+                if bold:
+                    kw[&#39;fo:font-weight&#39;] = &#39;bold&#39;
+                    kw[&#39;style:font-weight-asian&#39;] = &#39;bold&#39;
+                    kw[&#39;style:font-weight-complex&#39;] = &#39;bold&#39;
+            # Table cell
+            elif area == &#39;table-cell&#39;:
+                if border:
+                    kw[&#39;fo:border&#39;] = border
+                elif border_top or border_right or border_bottom or border_left:
+                    kw[&#39;fo:border-top&#39;] = border_top or &#39;none&#39;
+                    kw[&#39;fo:border-right&#39;] = border_right or &#39;none&#39;
+                    kw[&#39;fo:border-bottom&#39;] = border_bottom or &#39;none&#39;
+                    kw[&#39;fo:border-left&#39;] = border_left or &#39;none&#39;
+                else:  # no border_top, ... neither border are defined
+                    pass  # left untouched
+                if padding:
+                    kw[&#39;fo:padding&#39;] = padding
+                elif padding_top or padding_right or padding_bottom or padding_left:
+                    kw[&#39;fo:padding-top&#39;] = padding_top or &#39;none&#39;
+                    kw[&#39;fo:padding-right&#39;] = padding_right or &#39;none&#39;
+                    kw[&#39;fo:padding-bottom&#39;] = padding_bottom or &#39;none&#39;
+                    kw[&#39;fo:padding-left&#39;] = padding_left or &#39;none&#39;
+                else:  # no border_top, ... neither border are defined
+                    pass  # left untouched
+                if shadow:
+                    kw[&#39;style:shadow&#39;] = shadow
+                if background_color:
+                    kw[&#39;fo:background-color&#39;] = background_color
+            # Table row
+            elif area == &#39;table-row&#39;:
+                if height:
+                    kw[&#39;style:row-height&#39;] = height
+                if use_optimal_height is not None:
+                    kw[&#39;style:use-optimal-row-height&#39;] = Boolean.encode(
+                        use_optimal_height)
+                if background_color:
+                    kw[&#39;fo:background-color&#39;] = background_color
+            # Table column
+            elif area == &#39;table-column&#39;:
+                if width:
+                    kw[&#39;style:column-width&#39;] = width
+                if break_before:
+                    kw[&#39;fo:break-before&#39;] = break_before
+                if break_after:
+                    kw[&#39;fo:break-after&#39;] = break_after
+            # Graphic
+            elif area == &#39;graphic&#39;:
+                if min_height:
+                    kw[&#39;fo:min-height&#39;] = min_height
+            # Every other properties
+            if kw:
+                self.set_properties(kw, area=area)
+
+    @property
+    def family(self):
+        try:
+            return self._family
+        except AttributeError:
+            self._family = FALSE_FAMILY_MAP_REVERSE.get(
+                self.tag, self.get_attribute(&#39;style:family&#39;))
+            return self._family
+
+    @family.setter
+    def family(self, family):
+        family = to_str(family)
+        self._family = family
+        if family in FAMILY_ODF_STD and self.tag == &#39;style:style&#39;:
+            self.set_attribute(&#39;style:family&#39;, family)
+
+    def get_properties(self, area=None):
+        &#34;&#34;&#34;Get the mapping of all properties of this style. By default the
+        properties of the same family, e.g. a paragraph style and its
+        paragraph properties. Specify the area to get the text properties of
+        a paragraph style for example.
+
+        Arguments:
+
+            area -- str
+
+        Return: dict
+        &#34;&#34;&#34;
+        if area is None:
+            area = self.family
+        element = self.get_element(&#39;style:%s-properties&#39; % area)
+        if element is None:
+            return None
+        properties = element.attributes
+        # Nested properties are nested dictionaries
+        for child in element.children:
+            properties[child.tag] = child.attributes
+        return properties
+
+    def set_properties(self, properties=None, style=None, area=None, **kw):
+        &#34;&#34;&#34;Set the properties of the &#34;area&#34; type of this style. Properties
+        are given either as a dict or as named arguments (or both). The area
+        is identical to the style family by default. If the properties
+        element is missing, it is created.
+
+        Instead of properties, you can pass a style with properties of the
+        same area. These will be copied.
+
+        Arguments:
+
+            properties -- dict
+
+            style -- Style
+
+            area -- &#39;paragraph&#39;, &#39;text&#39;...
+        &#34;&#34;&#34;
+        if properties is None:
+            properties = {}
+        if area is None:
+            area = self.family
+        element = self.get_element(&#39;style:%s-properties&#39; % area)
+        if element is None:
+            element = Element.from_tag(&#39;style:%s-properties&#39; % area)
+            self.append(element)
+        if properties or kw:
+            properties = _expand_properties(_merge_dicts(properties, kw))
+        elif style is not None:
+            properties = style.get_properties(area=area)
+            if properties is None:
+                return
+        for key, value in properties.items():
+            if value is None:
+                element.del_attribute(key)
+            else:
+                element.set_attribute(key, value)
+
+    def del_properties(self, properties=None, area=None):
+        &#34;&#34;&#34;Delete the given properties, either by list argument or
+        positional argument (or both). Remove only from the given area,
+        identical to the style family by default.
+
+        Arguments:
+
+            properties -- list
+
+            area -- str
+        &#34;&#34;&#34;
+        if properties is None:
+            properties = []
+        if area is None:
+            area = self.family
+        element = self.get_element(&#39;style:%s-properties&#39; % area)
+        if element is None:
+            raise ValueError(&#34;properties element is inexistent&#34;)
+        for key in _expand_properties(properties):
+            element.del_attribute(key)
+
+    def set_background(self,
+                       color=None,
+                       url=None,
+                       position=&#39;center&#39;,
+                       repeat=None,
+                       opacity=None,
+                       filter=None):
+        &#34;&#34;&#34;Set the background color of a text style, or the background color
+        or image of a paragraph style or page layout.
+
+        With no argument, remove any existing background.
+
+        The position is one or two of &#39;center&#39;, &#39;left&#39;, &#39;right&#39;, &#39;top&#39; or
+        &#39;bottom&#39;.
+
+        The repeat is &#39;no-repeat&#39;, &#39;repeat&#39; or &#39;stretch&#39;.
+
+        The opacity is a percentage integer (not a string with the &#39;%s&#39; sign)
+
+        The filter is an application-specific filter name defined elsewhere.
+
+        Though this method is defined on the base style class, it will raise
+        an error if the style type is not compatible.
+
+        Arguments:
+
+            color -- &#39;#rrggbb&#39;
+
+            url -- str
+
+            position -- str
+
+            repeat -- str
+
+            opacity -- int
+
+            filter -- str
+        &#34;&#34;&#34;
+        family = self.family
+        if family not in {
+                &#39;text&#39;, &#39;paragraph&#39;, &#39;page-layout&#39;, &#39;section&#39;, &#39;table&#39;,
+                &#39;table-row&#39;, &#39;table-cell&#39;, &#39;graphic&#39;
+        }:
+            raise TypeError(&#39;no background support for this family&#39;)
+        if url is not None and family == &#39;text&#39;:
+            raise TypeError(&#39;no background image for text styles&#39;)
+        properties = self.get_element(&#39;style:%s-properties&#39; % family)
+        if properties is None:
+            bg_image = None
+        else:
+            bg_image = properties.get_element(&#39;style:background-image&#39;)
+        # Erasing
+        if color is None and url is None:
+            if properties is None:
+                return
+            properties.del_attribute(&#39;fo:background-color&#39;)
+            if bg_image is not None:
+                properties.delete(bg_image)
+            return
+        # Add the properties if necessary
+        if properties is None:
+            properties = Element.from_tag(&#39;style:%s-properties&#39; % family)
+            self.append(properties)
+        # Add the color...
+        if color:
+            properties.set_attribute(&#39;fo:background-color&#39;, color)
+            if bg_image is not None:
+                properties.delete(bg_image)
+        # ... or the background
+        elif url:
+            properties.set_attribute(&#39;fo:background-color&#39;, &#39;transparent&#39;)
+            if bg_image is None:
+                bg_image = Element.from_tag(&#39;style:background-image&#39;)
+                properties.append(bg_image)
+            bg_image.url = url
+            if position:
+                bg_image.position = position
+            if repeat:
+                bg_image.repeat = repeat
+            if opacity:
+                bg_image.opacity = opacity
+            if filter:
+                bg_image.filter = filter
+
+    # list-style only:
+
+    def get_level_style(self, level):
+        if self.family != &#39;list&#39;:
+            return None
+        level_styles = (&#39;(text:list-level-style-number&#39;
+                        &#39;|text:list-level-style-bullet&#39;
+                        &#39;|text:list-level-style-image)&#39;)
+        return _get_element(self, level_styles, 0, level=level)
+
+    def set_level_style(self,
+                        level,
+                        num_format=None,
+                        bullet_char=None,
+                        url=None,
+                        display_levels=None,
+                        prefix=None,
+                        suffix=None,
+                        start_value=None,
+                        style=None,
+                        clone=None):
+        &#34;&#34;&#34;
+        Arguments:
+
+            level -- int
+
+            num_format (for number) -- int
+
+            bullet_char (for bullet) -- str
+
+            url (for image) -- str
+
+            display_levels -- int
+
+            prefix -- str
+
+            suffix -- str
+
+            start_value -- int
+
+            style -- str
+
+            clone -- List Style
+
+        Return:
+            level_style created
+        &#34;&#34;&#34;
+        if self.family != &#39;list&#39;:
+            return None
+        # Expected name
+        if num_format is not None:
+            level_style_name = &#39;text:list-level-style-number&#39;
+        elif bullet_char is not None:
+            level_style_name = &#39;text:list-level-style-bullet&#39;
+        elif url is not None:
+            level_style_name = &#39;text:list-level-style-image&#39;
+        elif clone is not None:
+            level_style_name = clone.tag
+        else:
+            raise ValueError(&#34;unknown level style type&#34;)
+        was_created = False
+        # Cloning or reusing an existing element
+        if clone is not None:
+            level_style = clone.clone
+            was_created = True
+        else:
+            level_style = self.get_level_style(level)
+            if level_style is None:
+                level_style = Element.from_tag(level_style_name)
+                was_created = True
+        # Transmute if the type changed
+        if level_style.tag != level_style_name:
+            print(&#39;warn: different style&#39;, level_style_name, level_style.tag)
+            level_style.tag = level_style_name
+        # Set the level
+        level_style.set_attribute(&#39;text:level&#39;, str(level))
+        # Set the main attribute
+        if num_format is not None:
+            level_style.set_attribute(&#39;fo:num-format&#39;, num_format)
+        elif bullet_char is not None:
+            level_style.set_attribute(&#39;text:bullet-char&#39;, bullet_char)
+        elif url is not None:
+            level_style.set_attribute(&#39;xlink:href&#39;, url)
+        # Set attributes
+        if prefix:
+            level_style.set_attribute(&#39;style:num-prefix&#39;, prefix)
+        if suffix:
+            level_style.set_attribute(&#39;style:num-suffix&#39;, suffix)
+        if display_levels:
+            level_style.set_attribute(&#39;text:display-levels&#39;,
+                                      str(display_levels))
+        if start_value:
+            level_style.set_attribute(&#39;text:start-value&#39;, str(start_value))
+        if style:
+            level_style.text_style = style
+        # Commit the creation
+        if was_created:
+            self.append(level_style)
+        return level_style
+
+    # page-layout only:
+
+    def get_header_style(self):
+        if self.family != &#39;page-layout&#39;:
+            return None
+        return self.get_element(&#39;style:header-style&#39;)
+
+    def set_header_style(self, new_style):
+        if self.family != &#39;page-layout&#39;:
+            return
+        header_style = self.get_header_style()
+        if header_style is not None:
+            self.delete(header_style)
+        self.append(new_style)
+
+    def get_footer_style(self):
+        if self.family != &#39;page-layout&#39;:
+            return None
+        return self.get_element(&#39;style:footer-style&#39;)
+
+    def set_footer_style(self, new_style):
+        if self.family != &#39;page-layout&#39;:
+            return
+        footer_style = self.get_footer_style()
+        if footer_style is not None:
+            self.delete(footer_style)
+        self.append(new_style)
+
+    # master-page only:
+
+    def __set_header_or_footer(self,
+                               text_or_element,
+                               name=&#39;header&#39;,
+                               style=&#34;Header&#34;):
+        if name == &#39;header&#39;:
+            header_or_footer = self.get_page_header()
+        else:
+            header_or_footer = self.get_page_footer()
+        if header_or_footer is None:
+            header_or_footer = Element.from_tag(&#39;style:&#39; + name)
+            self.append(header_or_footer)
+        else:
+            header_or_footer.clear()
+        if not isiterable(text_or_element):
+            # Already a header or footer?
+            if (isinstance(text_or_element, Element)
+                    and text_or_element.tag == &#39;style:%s&#39; % to_str(name)):
+                self.delete(header_or_footer)
+                self.append(text_or_element)
+                return
+            text_or_element = [text_or_element]
+        # FIXME cyclic import
+        for item in text_or_element:
+            if isinstance(item, str):
+                paragraph = Paragraph(item, style=style)
+                header_or_footer.append(paragraph)
+            elif isinstance(item, Element):
+                header_or_footer.append(item)
+
+    def get_page_header(self):
+        &#34;&#34;&#34;Get the element that contains the header contents.
+
+        If None, no header was set.
+        &#34;&#34;&#34;
+        if self.family != &#39;master-page&#39;:
+            return None
+        return self.get_element(&#39;style:header&#39;)
+
+    def set_page_header(self, text_or_element):
+        &#34;&#34;&#34;Create or replace the header by the given content. It can already
+        be a complete header.
+
+        If you only want to update the existing header, get it and use the
+        API.
+
+        Arguments:
+
+            text_or_element -- str or Element or a list of them
+        &#34;&#34;&#34;
+        if self.family != &#39;master-page&#39;:
+            return None
+        return self.__set_header_or_footer(text_or_element)
+
+    def get_page_footer(self):
+        &#34;&#34;&#34;Get the element that contains the footer contents.
+
+        If None, no footer was set.
+        &#34;&#34;&#34;
+        if self.family != &#39;master-page&#39;:
+            return None
+        return self.get_element(&#39;style:footer&#39;)
+
+    def set_page_footer(self, text_or_element):
+        &#34;&#34;&#34;Create or replace the footer by the given content. It can already
+        be a complete footer.
+
+        If you only want to update the existing footer, get it and use the
+        API.
+
+        Arguments:
+
+            text_or_element -- str or Element or a list of them
+        &#34;&#34;&#34;
+        if self.family != &#39;master-page&#39;:
+            return None
+        return self.__set_header_or_footer(
+            text_or_element, name=&#39;footer&#39;, style=&#34;Footer&#34;)
+
+    # font-face only:
+
+    def set_font(self,
+                 name,
+                 family=None,
+                 family_generic=None,
+                 pitch=&#34;variable&#34;):
+        if self.family != &#39;font-face&#39;:
+            return
+        self.name = name
+        if family is None:
+            family = name
+        self.svg_font_family = f&#39;&#34;{family}&#34;&#39;
+        if family_generic is not None:
+            self.font_family_generic = family_generic
+        self.font_pitch = pitch</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="odfdo.style.BackgroundImage" href="#odfdo.style.BackgroundImage">BackgroundImage</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="odfdo.style.Style.display_name"><code class="name">var <span class="ident">display_name</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute style:display-name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.family"><code class="name">var <span class="ident">family</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def family(self):
+    try:
+        return self._family
+    except AttributeError:
+        self._family = FALSE_FAMILY_MAP_REVERSE.get(
+            self.tag, self.get_attribute(&#39;style:family&#39;))
+        return self._family</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.font_family_generic"><code class="name">var <span class="ident">font_family_generic</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute style:font-family-generic</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.font_pitch"><code class="name">var <span class="ident">font_pitch</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute style:font-pitch</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.leader_style"><code class="name">var <span class="ident">leader_style</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute style:leader-style</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.leader_text"><code class="name">var <span class="ident">leader_text</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute style:position</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.master_page"><code class="name">var <span class="ident">master_page</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute style:master-page-name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute style:name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.next_style"><code class="name">var <span class="ident">next_style</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute style:next-style-name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.page_layout"><code class="name">var <span class="ident">page_layout</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute style:page-layout-name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.parent_style"><code class="name">var <span class="ident">parent_style</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute style:parent-style-name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.style_position"><code class="name">var <span class="ident">style_position</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute style:position</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.style_type"><code class="name">var <span class="ident">style_type</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute style:type</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.svg_font_family"><code class="name">var <span class="ident">svg_font_family</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute svg:font-family</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.text_style"><code class="name">var <span class="ident">text_style</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute text:style-name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="odfdo.style.Style.del_properties"><code class="name flex">
+<span>def <span class="ident">del_properties</span></span>(<span>self, properties=None, area=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Delete the given properties, either by list argument or
+positional argument (or both). Remove only from the given area,
+identical to the style family by default.</p>
+<h2 id="arguments">Arguments</h2>
+<p>properties &ndash; list</p>
+<p>area &ndash; str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def del_properties(self, properties=None, area=None):
+    &#34;&#34;&#34;Delete the given properties, either by list argument or
+    positional argument (or both). Remove only from the given area,
+    identical to the style family by default.
+
+    Arguments:
+
+        properties -- list
+
+        area -- str
+    &#34;&#34;&#34;
+    if properties is None:
+        properties = []
+    if area is None:
+        area = self.family
+    element = self.get_element(&#39;style:%s-properties&#39; % area)
+    if element is None:
+        raise ValueError(&#34;properties element is inexistent&#34;)
+    for key in _expand_properties(properties):
+        element.del_attribute(key)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.get_footer_style"><code class="name flex">
+<span>def <span class="ident">get_footer_style</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_footer_style(self):
+    if self.family != &#39;page-layout&#39;:
+        return None
+    return self.get_element(&#39;style:footer-style&#39;)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.get_header_style"><code class="name flex">
+<span>def <span class="ident">get_header_style</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_header_style(self):
+    if self.family != &#39;page-layout&#39;:
+        return None
+    return self.get_element(&#39;style:header-style&#39;)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.get_level_style"><code class="name flex">
+<span>def <span class="ident">get_level_style</span></span>(<span>self, level)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_level_style(self, level):
+    if self.family != &#39;list&#39;:
+        return None
+    level_styles = (&#39;(text:list-level-style-number&#39;
+                    &#39;|text:list-level-style-bullet&#39;
+                    &#39;|text:list-level-style-image)&#39;)
+    return _get_element(self, level_styles, 0, level=level)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.get_page_footer"><code class="name flex">
+<span>def <span class="ident">get_page_footer</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the element that contains the footer contents.</p>
+<p>If None, no footer was set.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_page_footer(self):
+    &#34;&#34;&#34;Get the element that contains the footer contents.
+
+    If None, no footer was set.
+    &#34;&#34;&#34;
+    if self.family != &#39;master-page&#39;:
+        return None
+    return self.get_element(&#39;style:footer&#39;)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.get_page_header"><code class="name flex">
+<span>def <span class="ident">get_page_header</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the element that contains the header contents.</p>
+<p>If None, no header was set.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_page_header(self):
+    &#34;&#34;&#34;Get the element that contains the header contents.
+
+    If None, no header was set.
+    &#34;&#34;&#34;
+    if self.family != &#39;master-page&#39;:
+        return None
+    return self.get_element(&#39;style:header&#39;)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.get_properties"><code class="name flex">
+<span>def <span class="ident">get_properties</span></span>(<span>self, area=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the mapping of all properties of this style. By default the
+properties of the same family, e.g. a paragraph style and its
+paragraph properties. Specify the area to get the text properties of
+a paragraph style for example.</p>
+<h2 id="arguments">Arguments</h2>
+<p>area &ndash; str</p>
+<p>Return: dict</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_properties(self, area=None):
+    &#34;&#34;&#34;Get the mapping of all properties of this style. By default the
+    properties of the same family, e.g. a paragraph style and its
+    paragraph properties. Specify the area to get the text properties of
+    a paragraph style for example.
+
+    Arguments:
+
+        area -- str
+
+    Return: dict
+    &#34;&#34;&#34;
+    if area is None:
+        area = self.family
+    element = self.get_element(&#39;style:%s-properties&#39; % area)
+    if element is None:
+        return None
+    properties = element.attributes
+    # Nested properties are nested dictionaries
+    for child in element.children:
+        properties[child.tag] = child.attributes
+    return properties</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.set_background"><code class="name flex">
+<span>def <span class="ident">set_background</span></span>(<span>self, color=None, url=None, position='center', repeat=None, opacity=None, filter=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the background color of a text style, or the background color
+or image of a paragraph style or page layout.</p>
+<p>With no argument, remove any existing background.</p>
+<p>The position is one or two of 'center', 'left', 'right', 'top' or
+'bottom'.</p>
+<p>The repeat is 'no-repeat', 'repeat' or 'stretch'.</p>
+<p>The opacity is a percentage integer (not a string with the '%s' sign)</p>
+<p>The filter is an application-specific filter name defined elsewhere.</p>
+<p>Though this method is defined on the base style class, it will raise
+an error if the style type is not compatible.</p>
+<h2 id="arguments">Arguments</h2>
+<p>color &ndash; '#rrggbb'</p>
+<p>url &ndash; str</p>
+<p>position &ndash; str</p>
+<p>repeat &ndash; str</p>
+<p>opacity &ndash; int</p>
+<p>filter &ndash; str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_background(self,
+                   color=None,
+                   url=None,
+                   position=&#39;center&#39;,
+                   repeat=None,
+                   opacity=None,
+                   filter=None):
+    &#34;&#34;&#34;Set the background color of a text style, or the background color
+    or image of a paragraph style or page layout.
+
+    With no argument, remove any existing background.
+
+    The position is one or two of &#39;center&#39;, &#39;left&#39;, &#39;right&#39;, &#39;top&#39; or
+    &#39;bottom&#39;.
+
+    The repeat is &#39;no-repeat&#39;, &#39;repeat&#39; or &#39;stretch&#39;.
+
+    The opacity is a percentage integer (not a string with the &#39;%s&#39; sign)
+
+    The filter is an application-specific filter name defined elsewhere.
+
+    Though this method is defined on the base style class, it will raise
+    an error if the style type is not compatible.
+
+    Arguments:
+
+        color -- &#39;#rrggbb&#39;
+
+        url -- str
+
+        position -- str
+
+        repeat -- str
+
+        opacity -- int
+
+        filter -- str
+    &#34;&#34;&#34;
+    family = self.family
+    if family not in {
+            &#39;text&#39;, &#39;paragraph&#39;, &#39;page-layout&#39;, &#39;section&#39;, &#39;table&#39;,
+            &#39;table-row&#39;, &#39;table-cell&#39;, &#39;graphic&#39;
+    }:
+        raise TypeError(&#39;no background support for this family&#39;)
+    if url is not None and family == &#39;text&#39;:
+        raise TypeError(&#39;no background image for text styles&#39;)
+    properties = self.get_element(&#39;style:%s-properties&#39; % family)
+    if properties is None:
+        bg_image = None
+    else:
+        bg_image = properties.get_element(&#39;style:background-image&#39;)
+    # Erasing
+    if color is None and url is None:
+        if properties is None:
+            return
+        properties.del_attribute(&#39;fo:background-color&#39;)
+        if bg_image is not None:
+            properties.delete(bg_image)
+        return
+    # Add the properties if necessary
+    if properties is None:
+        properties = Element.from_tag(&#39;style:%s-properties&#39; % family)
+        self.append(properties)
+    # Add the color...
+    if color:
+        properties.set_attribute(&#39;fo:background-color&#39;, color)
+        if bg_image is not None:
+            properties.delete(bg_image)
+    # ... or the background
+    elif url:
+        properties.set_attribute(&#39;fo:background-color&#39;, &#39;transparent&#39;)
+        if bg_image is None:
+            bg_image = Element.from_tag(&#39;style:background-image&#39;)
+            properties.append(bg_image)
+        bg_image.url = url
+        if position:
+            bg_image.position = position
+        if repeat:
+            bg_image.repeat = repeat
+        if opacity:
+            bg_image.opacity = opacity
+        if filter:
+            bg_image.filter = filter</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.set_font"><code class="name flex">
+<span>def <span class="ident">set_font</span></span>(<span>self, name, family=None, family_generic=None, pitch='variable')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_font(self,
+             name,
+             family=None,
+             family_generic=None,
+             pitch=&#34;variable&#34;):
+    if self.family != &#39;font-face&#39;:
+        return
+    self.name = name
+    if family is None:
+        family = name
+    self.svg_font_family = f&#39;&#34;{family}&#34;&#39;
+    if family_generic is not None:
+        self.font_family_generic = family_generic
+    self.font_pitch = pitch</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.set_footer_style"><code class="name flex">
+<span>def <span class="ident">set_footer_style</span></span>(<span>self, new_style)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_footer_style(self, new_style):
+    if self.family != &#39;page-layout&#39;:
+        return
+    footer_style = self.get_footer_style()
+    if footer_style is not None:
+        self.delete(footer_style)
+    self.append(new_style)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.set_header_style"><code class="name flex">
+<span>def <span class="ident">set_header_style</span></span>(<span>self, new_style)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_header_style(self, new_style):
+    if self.family != &#39;page-layout&#39;:
+        return
+    header_style = self.get_header_style()
+    if header_style is not None:
+        self.delete(header_style)
+    self.append(new_style)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.set_level_style"><code class="name flex">
+<span>def <span class="ident">set_level_style</span></span>(<span>self, level, num_format=None, bullet_char=None, url=None, display_levels=None, prefix=None, suffix=None, start_value=None, style=None, clone=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="arguments">Arguments</h2>
+<p>level &ndash; int</p>
+<p>num_format (for number) &ndash; int</p>
+<p>bullet_char (for bullet) &ndash; str</p>
+<p>url (for image) &ndash; str</p>
+<p>display_levels &ndash; int</p>
+<p>prefix &ndash; str</p>
+<p>suffix &ndash; str</p>
+<p>start_value &ndash; int</p>
+<p>style &ndash; str</p>
+<p>clone &ndash; List Style</p>
+<h2 id="return">Return</h2>
+<p>level_style created</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_level_style(self,
+                    level,
+                    num_format=None,
+                    bullet_char=None,
+                    url=None,
+                    display_levels=None,
+                    prefix=None,
+                    suffix=None,
+                    start_value=None,
+                    style=None,
+                    clone=None):
+    &#34;&#34;&#34;
+    Arguments:
+
+        level -- int
+
+        num_format (for number) -- int
+
+        bullet_char (for bullet) -- str
+
+        url (for image) -- str
+
+        display_levels -- int
+
+        prefix -- str
+
+        suffix -- str
+
+        start_value -- int
+
+        style -- str
+
+        clone -- List Style
+
+    Return:
+        level_style created
+    &#34;&#34;&#34;
+    if self.family != &#39;list&#39;:
+        return None
+    # Expected name
+    if num_format is not None:
+        level_style_name = &#39;text:list-level-style-number&#39;
+    elif bullet_char is not None:
+        level_style_name = &#39;text:list-level-style-bullet&#39;
+    elif url is not None:
+        level_style_name = &#39;text:list-level-style-image&#39;
+    elif clone is not None:
+        level_style_name = clone.tag
+    else:
+        raise ValueError(&#34;unknown level style type&#34;)
+    was_created = False
+    # Cloning or reusing an existing element
+    if clone is not None:
+        level_style = clone.clone
+        was_created = True
+    else:
+        level_style = self.get_level_style(level)
+        if level_style is None:
+            level_style = Element.from_tag(level_style_name)
+            was_created = True
+    # Transmute if the type changed
+    if level_style.tag != level_style_name:
+        print(&#39;warn: different style&#39;, level_style_name, level_style.tag)
+        level_style.tag = level_style_name
+    # Set the level
+    level_style.set_attribute(&#39;text:level&#39;, str(level))
+    # Set the main attribute
+    if num_format is not None:
+        level_style.set_attribute(&#39;fo:num-format&#39;, num_format)
+    elif bullet_char is not None:
+        level_style.set_attribute(&#39;text:bullet-char&#39;, bullet_char)
+    elif url is not None:
+        level_style.set_attribute(&#39;xlink:href&#39;, url)
+    # Set attributes
+    if prefix:
+        level_style.set_attribute(&#39;style:num-prefix&#39;, prefix)
+    if suffix:
+        level_style.set_attribute(&#39;style:num-suffix&#39;, suffix)
+    if display_levels:
+        level_style.set_attribute(&#39;text:display-levels&#39;,
+                                  str(display_levels))
+    if start_value:
+        level_style.set_attribute(&#39;text:start-value&#39;, str(start_value))
+    if style:
+        level_style.text_style = style
+    # Commit the creation
+    if was_created:
+        self.append(level_style)
+    return level_style</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.set_page_footer"><code class="name flex">
+<span>def <span class="ident">set_page_footer</span></span>(<span>self, text_or_element)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create or replace the footer by the given content. It can already
+be a complete footer.</p>
+<p>If you only want to update the existing footer, get it and use the
+API.</p>
+<h2 id="arguments">Arguments</h2>
+<p>text_or_element &ndash; str or Element or a list of them</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_page_footer(self, text_or_element):
+    &#34;&#34;&#34;Create or replace the footer by the given content. It can already
+    be a complete footer.
+
+    If you only want to update the existing footer, get it and use the
+    API.
+
+    Arguments:
+
+        text_or_element -- str or Element or a list of them
+    &#34;&#34;&#34;
+    if self.family != &#39;master-page&#39;:
+        return None
+    return self.__set_header_or_footer(
+        text_or_element, name=&#39;footer&#39;, style=&#34;Footer&#34;)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.set_page_header"><code class="name flex">
+<span>def <span class="ident">set_page_header</span></span>(<span>self, text_or_element)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create or replace the header by the given content. It can already
+be a complete header.</p>
+<p>If you only want to update the existing header, get it and use the
+API.</p>
+<h2 id="arguments">Arguments</h2>
+<p>text_or_element &ndash; str or Element or a list of them</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_page_header(self, text_or_element):
+    &#34;&#34;&#34;Create or replace the header by the given content. It can already
+    be a complete header.
+
+    If you only want to update the existing header, get it and use the
+    API.
+
+    Arguments:
+
+        text_or_element -- str or Element or a list of them
+    &#34;&#34;&#34;
+    if self.family != &#39;master-page&#39;:
+        return None
+    return self.__set_header_or_footer(text_or_element)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.style.Style.set_properties"><code class="name flex">
+<span>def <span class="ident">set_properties</span></span>(<span>self, properties=None, style=None, area=None, **kw)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the properties of the "area" type of this style. Properties
+are given either as a dict or as named arguments (or both). The area
+is identical to the style family by default. If the properties
+element is missing, it is created.</p>
+<p>Instead of properties, you can pass a style with properties of the
+same area. These will be copied.</p>
+<h2 id="arguments">Arguments</h2>
+<p>properties &ndash; dict</p>
+<p>style &ndash; Style</p>
+<p>area &ndash; 'paragraph', 'text'&hellip;</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_properties(self, properties=None, style=None, area=None, **kw):
+    &#34;&#34;&#34;Set the properties of the &#34;area&#34; type of this style. Properties
+    are given either as a dict or as named arguments (or both). The area
+    is identical to the style family by default. If the properties
+    element is missing, it is created.
+
+    Instead of properties, you can pass a style with properties of the
+    same area. These will be copied.
+
+    Arguments:
+
+        properties -- dict
+
+        style -- Style
+
+        area -- &#39;paragraph&#39;, &#39;text&#39;...
+    &#34;&#34;&#34;
+    if properties is None:
+        properties = {}
+    if area is None:
+        area = self.family
+    element = self.get_element(&#39;style:%s-properties&#39; % area)
+    if element is None:
+        element = Element.from_tag(&#39;style:%s-properties&#39; % area)
+        self.append(element)
+    if properties or kw:
+        properties = _expand_properties(_merge_dicts(properties, kw))
+    elif style is not None:
+        properties = style.get_properties(area=area)
+        if properties is None:
+            return
+    for key, value in properties.items():
+        if value is None:
+            element.del_attribute(key)
+        else:
+            element.set_attribute(key, value)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></b></code>:
+<ul class="hlist">
+<li><code><a title="odfdo.element.Element.append" href="element.html#odfdo.element.Element.append">append</a></code></li>
+<li><code><a title="odfdo.element.Element.append_named_range" href="element.html#odfdo.element.Element.append_named_range">append_named_range</a></code></li>
+<li><code><a title="odfdo.element.Element.clear" href="element.html#odfdo.element.Element.clear">clear</a></code></li>
+<li><code><a title="odfdo.element.Element.dc_creator" href="element.html#odfdo.element.Element.dc_creator">dc_creator</a></code></li>
+<li><code><a title="odfdo.element.Element.dc_date" href="element.html#odfdo.element.Element.dc_date">dc_date</a></code></li>
+<li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
+<li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
+<li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
+<li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_ends" href="element.html#odfdo.element.Element.get_bookmark_ends">get_bookmark_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_start" href="element.html#odfdo.element.Element.get_bookmark_start">get_bookmark_start</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_starts" href="element.html#odfdo.element.Element.get_bookmark_starts">get_bookmark_starts</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmarks" href="element.html#odfdo.element.Element.get_bookmarks">get_bookmarks</a></code></li>
+<li><code><a title="odfdo.element.Element.get_changes_ids" href="element.html#odfdo.element.Element.get_changes_ids">get_changes_ids</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_connector" href="element.html#odfdo.element.Element.get_draw_connector">get_draw_connector</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_connectors" href="element.html#odfdo.element.Element.get_draw_connectors">get_draw_connectors</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_ellipse" href="element.html#odfdo.element.Element.get_draw_ellipse">get_draw_ellipse</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_ellipses" href="element.html#odfdo.element.Element.get_draw_ellipses">get_draw_ellipses</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_line" href="element.html#odfdo.element.Element.get_draw_line">get_draw_line</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_lines" href="element.html#odfdo.element.Element.get_draw_lines">get_draw_lines</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_page" href="element.html#odfdo.element.Element.get_draw_page">get_draw_page</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_pages" href="element.html#odfdo.element.Element.get_draw_pages">get_draw_pages</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_rectangle" href="element.html#odfdo.element.Element.get_draw_rectangle">get_draw_rectangle</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_rectangles" href="element.html#odfdo.element.Element.get_draw_rectangles">get_draw_rectangles</a></code></li>
+<li><code><a title="odfdo.element.Element.get_formatted_text" href="element.html#odfdo.element.Element.get_formatted_text">get_formatted_text</a></code></li>
+<li><code><a title="odfdo.element.Element.get_frame" href="element.html#odfdo.element.Element.get_frame">get_frame</a></code></li>
+<li><code><a title="odfdo.element.Element.get_frames" href="element.html#odfdo.element.Element.get_frames">get_frames</a></code></li>
+<li><code><a title="odfdo.element.Element.get_header" href="element.html#odfdo.element.Element.get_header">get_header</a></code></li>
+<li><code><a title="odfdo.element.Element.get_headers" href="element.html#odfdo.element.Element.get_headers">get_headers</a></code></li>
+<li><code><a title="odfdo.element.Element.get_image" href="element.html#odfdo.element.Element.get_image">get_image</a></code></li>
+<li><code><a title="odfdo.element.Element.get_images" href="element.html#odfdo.element.Element.get_images">get_images</a></code></li>
+<li><code><a title="odfdo.element.Element.get_link" href="element.html#odfdo.element.Element.get_link">get_link</a></code></li>
+<li><code><a title="odfdo.element.Element.get_links" href="element.html#odfdo.element.Element.get_links">get_links</a></code></li>
+<li><code><a title="odfdo.element.Element.get_list" href="element.html#odfdo.element.Element.get_list">get_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_lists" href="element.html#odfdo.element.Element.get_lists">get_lists</a></code></li>
+<li><code><a title="odfdo.element.Element.get_named_range" href="element.html#odfdo.element.Element.get_named_range">get_named_range</a></code></li>
+<li><code><a title="odfdo.element.Element.get_named_ranges" href="element.html#odfdo.element.Element.get_named_ranges">get_named_ranges</a></code></li>
+<li><code><a title="odfdo.element.Element.get_note" href="element.html#odfdo.element.Element.get_note">get_note</a></code></li>
+<li><code><a title="odfdo.element.Element.get_notes" href="element.html#odfdo.element.Element.get_notes">get_notes</a></code></li>
+<li><code><a title="odfdo.element.Element.get_office_names" href="element.html#odfdo.element.Element.get_office_names">get_office_names</a></code></li>
+<li><code><a title="odfdo.element.Element.get_orphan_draw_connectors" href="element.html#odfdo.element.Element.get_orphan_draw_connectors">get_orphan_draw_connectors</a></code></li>
+<li><code><a title="odfdo.element.Element.get_paragraph" href="element.html#odfdo.element.Element.get_paragraph">get_paragraph</a></code></li>
+<li><code><a title="odfdo.element.Element.get_paragraphs" href="element.html#odfdo.element.Element.get_paragraphs">get_paragraphs</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark" href="element.html#odfdo.element.Element.get_reference_mark">get_reference_mark</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_end" href="element.html#odfdo.element.Element.get_reference_mark_end">get_reference_mark_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_ends" href="element.html#odfdo.element.Element.get_reference_mark_ends">get_reference_mark_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_single" href="element.html#odfdo.element.Element.get_reference_mark_single">get_reference_mark_single</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_start" href="element.html#odfdo.element.Element.get_reference_mark_start">get_reference_mark_start</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_starts" href="element.html#odfdo.element.Element.get_reference_mark_starts">get_reference_mark_starts</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_marks" href="element.html#odfdo.element.Element.get_reference_marks">get_reference_marks</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_marks_single" href="element.html#odfdo.element.Element.get_reference_marks_single">get_reference_marks_single</a></code></li>
+<li><code><a title="odfdo.element.Element.get_references" href="element.html#odfdo.element.Element.get_references">get_references</a></code></li>
+<li><code><a title="odfdo.element.Element.get_section" href="element.html#odfdo.element.Element.get_section">get_section</a></code></li>
+<li><code><a title="odfdo.element.Element.get_sections" href="element.html#odfdo.element.Element.get_sections">get_sections</a></code></li>
+<li><code><a title="odfdo.element.Element.get_span" href="element.html#odfdo.element.Element.get_span">get_span</a></code></li>
+<li><code><a title="odfdo.element.Element.get_spans" href="element.html#odfdo.element.Element.get_spans">get_spans</a></code></li>
+<li><code><a title="odfdo.element.Element.get_style" href="element.html#odfdo.element.Element.get_style">get_style</a></code></li>
+<li><code><a title="odfdo.element.Element.get_styled_elements" href="element.html#odfdo.element.Element.get_styled_elements">get_styled_elements</a></code></li>
+<li><code><a title="odfdo.element.Element.get_table" href="element.html#odfdo.element.Element.get_table">get_table</a></code></li>
+<li><code><a title="odfdo.element.Element.get_tables" href="element.html#odfdo.element.Element.get_tables">get_tables</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change" href="element.html#odfdo.element.Element.get_text_change">get_text_change</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_deletion" href="element.html#odfdo.element.Element.get_text_change_deletion">get_text_change_deletion</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_deletions" href="element.html#odfdo.element.Element.get_text_change_deletions">get_text_change_deletions</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_end" href="element.html#odfdo.element.Element.get_text_change_end">get_text_change_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_ends" href="element.html#odfdo.element.Element.get_text_change_ends">get_text_change_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_start" href="element.html#odfdo.element.Element.get_text_change_start">get_text_change_start</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_starts" href="element.html#odfdo.element.Element.get_text_change_starts">get_text_change_starts</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_changes" href="element.html#odfdo.element.Element.get_text_changes">get_text_changes</a></code></li>
+<li><code><a title="odfdo.element.Element.get_toc" href="element.html#odfdo.element.Element.get_toc">get_toc</a></code></li>
+<li><code><a title="odfdo.element.Element.get_tocs" href="element.html#odfdo.element.Element.get_tocs">get_tocs</a></code></li>
+<li><code><a title="odfdo.element.Element.get_tracked_changes" href="element.html#odfdo.element.Element.get_tracked_changes">get_tracked_changes</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_defined" href="element.html#odfdo.element.Element.get_user_defined">get_user_defined</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_defined_list" href="element.html#odfdo.element.Element.get_user_defined_list">get_user_defined_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_defined_value" href="element.html#odfdo.element.Element.get_user_defined_value">get_user_defined_value</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_decl" href="element.html#odfdo.element.Element.get_user_field_decl">get_user_field_decl</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_decl_list" href="element.html#odfdo.element.Element.get_user_field_decl_list">get_user_field_decl_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_decls" href="element.html#odfdo.element.Element.get_user_field_decls">get_user_field_decls</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_value" href="element.html#odfdo.element.Element.get_user_field_value">get_user_field_value</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_decl" href="element.html#odfdo.element.Element.get_variable_decl">get_variable_decl</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_decl_list" href="element.html#odfdo.element.Element.get_variable_decl_list">get_variable_decl_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_decls" href="element.html#odfdo.element.Element.get_variable_decls">get_variable_decls</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_set" href="element.html#odfdo.element.Element.get_variable_set">get_variable_set</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_set_value" href="element.html#odfdo.element.Element.get_variable_set_value">get_variable_set_value</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_sets" href="element.html#odfdo.element.Element.get_variable_sets">get_variable_sets</a></code></li>
+<li><code><a title="odfdo.element.Element.index" href="element.html#odfdo.element.Element.index">index</a></code></li>
+<li><code><a title="odfdo.element.Element.insert" href="element.html#odfdo.element.Element.insert">insert</a></code></li>
+<li><code><a title="odfdo.element.Element.is_empty" href="element.html#odfdo.element.Element.is_empty">is_empty</a></code></li>
+<li><code><a title="odfdo.element.Element.match" href="element.html#odfdo.element.Element.match">match</a></code></li>
+<li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
+<li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
+<li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
+<li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
+<li><code><a title="odfdo.element.Element.tag" href="element.html#odfdo.element.Element.tag">tag</a></code></li>
+<li><code><a title="odfdo.element.Element.tail" href="element.html#odfdo.element.Element.tail">tail</a></code></li>
+<li><code><a title="odfdo.element.Element.text" href="element.html#odfdo.element.Element.text">text</a></code></li>
+<li><code><a title="odfdo.element.Element.text_content" href="element.html#odfdo.element.Element.text_content">text_content</a></code></li>
+<li><code><a title="odfdo.element.Element.xpath" href="element.html#odfdo.element.Element.xpath">xpath</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="odfdo" href="index.html">odfdo</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="odfdo.style.create_table_cell_style" href="#odfdo.style.create_table_cell_style">create_table_cell_style</a></code></li>
+<li><code><a title="odfdo.style.default_boolean_style" href="#odfdo.style.default_boolean_style">default_boolean_style</a></code></li>
+<li><code><a title="odfdo.style.default_currency_style" href="#odfdo.style.default_currency_style">default_currency_style</a></code></li>
+<li><code><a title="odfdo.style.default_date_style" href="#odfdo.style.default_date_style">default_date_style</a></code></li>
+<li><code><a title="odfdo.style.default_number_style" href="#odfdo.style.default_number_style">default_number_style</a></code></li>
+<li><code><a title="odfdo.style.default_percentage_style" href="#odfdo.style.default_percentage_style">default_percentage_style</a></code></li>
+<li><code><a title="odfdo.style.default_time_style" href="#odfdo.style.default_time_style">default_time_style</a></code></li>
+<li><code><a title="odfdo.style.hex2rgb" href="#odfdo.style.hex2rgb">hex2rgb</a></code></li>
+<li><code><a title="odfdo.style.make_table_cell_border_string" href="#odfdo.style.make_table_cell_border_string">make_table_cell_border_string</a></code></li>
+<li><code><a title="odfdo.style.rgb2hex" href="#odfdo.style.rgb2hex">rgb2hex</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="odfdo.style.BackgroundImage" href="#odfdo.style.BackgroundImage">BackgroundImage</a></code></h4>
+<ul class="">
+<li><code><a title="odfdo.style.BackgroundImage.filter" href="#odfdo.style.BackgroundImage.filter">filter</a></code></li>
+<li><code><a title="odfdo.style.BackgroundImage.opacity" href="#odfdo.style.BackgroundImage.opacity">opacity</a></code></li>
+<li><code><a title="odfdo.style.BackgroundImage.position" href="#odfdo.style.BackgroundImage.position">position</a></code></li>
+<li><code><a title="odfdo.style.BackgroundImage.repeat" href="#odfdo.style.BackgroundImage.repeat">repeat</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="odfdo.style.Style" href="#odfdo.style.Style">Style</a></code></h4>
+<ul class="two-column">
+<li><code><a title="odfdo.style.Style.del_properties" href="#odfdo.style.Style.del_properties">del_properties</a></code></li>
+<li><code><a title="odfdo.style.Style.display_name" href="#odfdo.style.Style.display_name">display_name</a></code></li>
+<li><code><a title="odfdo.style.Style.family" href="#odfdo.style.Style.family">family</a></code></li>
+<li><code><a title="odfdo.style.Style.font_family_generic" href="#odfdo.style.Style.font_family_generic">font_family_generic</a></code></li>
+<li><code><a title="odfdo.style.Style.font_pitch" href="#odfdo.style.Style.font_pitch">font_pitch</a></code></li>
+<li><code><a title="odfdo.style.Style.get_footer_style" href="#odfdo.style.Style.get_footer_style">get_footer_style</a></code></li>
+<li><code><a title="odfdo.style.Style.get_header_style" href="#odfdo.style.Style.get_header_style">get_header_style</a></code></li>
+<li><code><a title="odfdo.style.Style.get_level_style" href="#odfdo.style.Style.get_level_style">get_level_style</a></code></li>
+<li><code><a title="odfdo.style.Style.get_page_footer" href="#odfdo.style.Style.get_page_footer">get_page_footer</a></code></li>
+<li><code><a title="odfdo.style.Style.get_page_header" href="#odfdo.style.Style.get_page_header">get_page_header</a></code></li>
+<li><code><a title="odfdo.style.Style.get_properties" href="#odfdo.style.Style.get_properties">get_properties</a></code></li>
+<li><code><a title="odfdo.style.Style.leader_style" href="#odfdo.style.Style.leader_style">leader_style</a></code></li>
+<li><code><a title="odfdo.style.Style.leader_text" href="#odfdo.style.Style.leader_text">leader_text</a></code></li>
+<li><code><a title="odfdo.style.Style.master_page" href="#odfdo.style.Style.master_page">master_page</a></code></li>
+<li><code><a title="odfdo.style.Style.name" href="#odfdo.style.Style.name">name</a></code></li>
+<li><code><a title="odfdo.style.Style.next_style" href="#odfdo.style.Style.next_style">next_style</a></code></li>
+<li><code><a title="odfdo.style.Style.page_layout" href="#odfdo.style.Style.page_layout">page_layout</a></code></li>
+<li><code><a title="odfdo.style.Style.parent_style" href="#odfdo.style.Style.parent_style">parent_style</a></code></li>
+<li><code><a title="odfdo.style.Style.set_background" href="#odfdo.style.Style.set_background">set_background</a></code></li>
+<li><code><a title="odfdo.style.Style.set_font" href="#odfdo.style.Style.set_font">set_font</a></code></li>
+<li><code><a title="odfdo.style.Style.set_footer_style" href="#odfdo.style.Style.set_footer_style">set_footer_style</a></code></li>
+<li><code><a title="odfdo.style.Style.set_header_style" href="#odfdo.style.Style.set_header_style">set_header_style</a></code></li>
+<li><code><a title="odfdo.style.Style.set_level_style" href="#odfdo.style.Style.set_level_style">set_level_style</a></code></li>
+<li><code><a title="odfdo.style.Style.set_page_footer" href="#odfdo.style.Style.set_page_footer">set_page_footer</a></code></li>
+<li><code><a title="odfdo.style.Style.set_page_header" href="#odfdo.style.Style.set_page_header">set_page_header</a></code></li>
+<li><code><a title="odfdo.style.Style.set_properties" href="#odfdo.style.Style.set_properties">set_properties</a></code></li>
+<li><code><a title="odfdo.style.Style.style_position" href="#odfdo.style.Style.style_position">style_position</a></code></li>
+<li><code><a title="odfdo.style.Style.style_type" href="#odfdo.style.Style.style_type">style_type</a></code></li>
+<li><code><a title="odfdo.style.Style.svg_font_family" href="#odfdo.style.Style.svg_font_family">svg_font_family</a></code></li>
+<li><code><a title="odfdo.style.Style.text_style" href="#odfdo.style.Style.text_style">text_style</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.3</a>.</p>
+</footer>
+</body>
+</html>

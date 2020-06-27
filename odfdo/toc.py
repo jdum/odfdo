@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,9 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-
+"""TOC class for "text:table-of-content" and IndexTitle, TabStopStyle,
+IndexTitleTemplate, TocEntryTemplate related classes
+"""
 from .element import FIRST_CHILD
 from .element import register_element_class, Element
 from .paragraph import Paragraph
@@ -26,7 +28,7 @@ from .style import Style
 
 
 class IndexTitle(Element):
-    """The <text:index-title> element contains the title of an index.
+    """The "text:index-title" element contains the title of an index.
 
     The element has the following attributes:
     text:name, text:protected, text:protection-key,
@@ -72,7 +74,7 @@ TOC_ENTRY_STYLE_PATTERN = 'odfto_toc_level_%s'
 
 
 class TabStopStyle(Element):
-    """ODF <style:tab-stop>
+    """ODF "style:tab-stop"
     Base style for a TOC entryBase style for a TOC entry
 
     Return: TabStopStyle
@@ -149,7 +151,7 @@ def default_toc_level_style(level):
 
 class TOC(Element):
     """Table of content.
-    The <text:table-of-content> element represents a table of contents for a
+    The "text:table-of-content" element represents a table of contents for a
     document. The items that can be listed in a table of contents are:
       - Headings (as defined by the outline structure of the document), up to
         a selected level.
@@ -165,7 +167,7 @@ class TOC(Element):
     given. Provide one in case of a conflict with other TOCs in the same
     document.
 
-    The <text:table-of-content> element has the following attributes:
+    The "text:table-of-content" element has the following attributes:
     text:name, text:protected, text:protection-key,
     text:protection-key-digest-algorithm, text:style-name and xml:id.
 
@@ -251,8 +253,8 @@ class TOC(Element):
         result = []
         for element in index_body.children:
             if element.tag == 'text:index-title':
-                for element in element.children:
-                    result.append(element.get_formatted_text(context))
+                for e in element.children:
+                    result.append(e.get_formatted_text(context))
                 result.append('\n')
             else:
                 result.append(element.get_formatted_text(context))
@@ -397,7 +399,7 @@ TOC._define_attribut_property()
 
 
 class IndexTitleTemplate(Element):
-    """ODF <text:index-title-template>
+    """ODF "text:index-title-template"
 
     Arguments:
 
@@ -419,7 +421,7 @@ IndexTitleTemplate._define_attribut_property()
 
 
 class TocEntryTemplate(Element):
-    """ODF <text:table-of-content-entry-template>
+    """ODF "text:table-of-content-entry-template"
 
     Arguments:
 

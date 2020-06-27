@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,15 +19,16 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-
-from .element import register_element_class, Element
-from .element import FIRST_CHILD, PREV_SIBLING, NEXT_SIBLING
+"""List class for "text:list"
+"""
+from .element import (register_element_class, Element, FIRST_CHILD,
+                      PREV_SIBLING, NEXT_SIBLING)
 from .paragraph import Paragraph
 from .utils import _get_element, _get_elements, isiterable
 
 
 class ListItem(Element):
-    """ODF element <text:list-item>, item of a List.
+    """ODF element "text:list-item", item of a List.
     """
     _tag = 'text:list-item'
 
@@ -52,7 +53,7 @@ class ListItem(Element):
 
 
 class List(Element):
-    """ODF List <text:list>.
+    """ODF List "text:list".
     """
     _tag = 'text:list'
     _properties = (('style', 'text:style-name'), )
@@ -125,7 +126,7 @@ class List(Element):
         for element in self.get_elements('text:p'):
             self.delete(element)
         for paragraph in reversed(text_or_element):
-            if type(paragraph) is str:
+            if isinstance(paragraph, str):
                 paragraph = Paragraph(paragraph)
             self.insert(paragraph, FIRST_CHILD)
 
@@ -161,11 +162,10 @@ class List(Element):
                 if tag == 'text:h':
                     # A title in a list is a bug
                     return text
-                elif tag == 'text:list':
-                    if not text.lstrip().startswith('-'):
-                        # If the list didn't indent, don't either
-                        # (inner title)
-                        return text
+                if tag == 'text:list' and not text.lstrip().startswith('-'):
+                    # If the list didn't indent, don't either
+                    # (inner title)
+                    return text
                 textbuf.append(text)
             textbuf = ''.join(textbuf)
             textbuf = textbuf.strip('\n')

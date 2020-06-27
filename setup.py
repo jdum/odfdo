@@ -21,10 +21,9 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 
-from setuptools import setup, find_packages
 import os
 from os.path import join, abspath, dirname
-import sys
+from setuptools import setup, find_packages
 
 here = abspath(dirname(__file__))
 exec(open(join(here, 'odfdo', 'version.py')).read())
@@ -36,25 +35,23 @@ scripts = [
 
 setup(
     name='odfdo',
-    version=__version__,
+    version='3.1.0',
     description='Python library for OpenDocument format',
     long_description=long_description,
     long_description_content_type='text/plain;charset=UTF-8',
-    url='https://github.com/jdul/odfdo',
-    author="Jérôme Dumonteil",
-    author_email="jerome.dumonteil@gmail.com",
+    url='https://github.com/jdum/odfdo',
+    author='Jérôme Dumonteil',
+    author_email='jerome.dumonteil@gmail.com',
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Environment :: Console',
-        'Intended Audience :: Developers',
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console', 'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3.6',
         'Operating System :: OS Independent',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-        'License :: OSI Approved :: MIT License',
+        'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     license='Apache v2',
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     scripts=scripts,
     keywords='python library ODF OpenDocument',
     packages=find_packages(exclude=['contrib', 'docs', 'test']),

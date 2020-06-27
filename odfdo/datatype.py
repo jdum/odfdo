@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,8 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-
+"""Data types (Boolean, Date, DateTime, Duration, Unit)
+"""
 from datetime import datetime, timedelta
 from decimal import Decimal
 from functools import total_ordering
@@ -38,7 +39,7 @@ class Boolean:
             return True
         elif data == 'false':
             return False
-        raise ValueError('boolean "%s" is invalid' % data)
+        raise ValueError(f'boolean "{data}" is invalid')
 
     @staticmethod
     def encode(value):
@@ -46,7 +47,7 @@ class Boolean:
             return "true"
         elif value is False or str(value).lower() == "false":
             return "false"
-        raise TypeError('"%s" is not a boolean' % value)
+        raise TypeError(f'"{value}" is not a boolean')
 
 
 class Date:
@@ -87,7 +88,7 @@ class Duration:
         elif data.startswith('-P'):
             sign = -1
         else:
-            raise ValueError("duration not valid")
+            raise ValueError('duration not valid')
 
         days = 0
         hours = 0
@@ -112,7 +113,7 @@ class Duration:
                 buffer = ''
                 break
         if buffer != '':
-            raise ValueError("duration not valid")
+            raise ValueError('duration not valid')
 
         return timedelta(
             days=sign * days,
@@ -122,8 +123,8 @@ class Duration:
 
     @staticmethod
     def encode(value):
-        if type(value) is not timedelta:
-            raise TypeError("duration must be a timedelta")
+        if not isinstance(value, timedelta):
+            raise TypeError('duration must be a timedelta')
 
         days = value.days
         if days < 0:

@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2012 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,9 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-
+"""Table class for "table:table" and HeaderRows, Cell, Row, Column,
+NamedRange related classes
+"""
 from io import StringIO
 from csv import reader, Sniffer, writer
 from textwrap import wrap
@@ -65,7 +67,7 @@ _forbidden_in_named_range = {
 def _alpha_to_digit(alpha):
     """Translates A to 0, B to 1, etc. So "AB" is value 27.
     """
-    if type(alpha) is int:
+    if isinstance(alpha, int):
         return alpha
     if not alpha.isalpha():
         raise ValueError('column name "%s" is malformed' % alpha)
@@ -77,7 +79,7 @@ def _alpha_to_digit(alpha):
 
 
 def _digit_to_alpha(digit):
-    if type(digit) is str and digit.isalpha():
+    if isinstance(digit, str) and digit.isalpha():
         return digit
     if not isinstance(digit, int):
         raise ValueError('column number "%s" is invalid' % digit)
@@ -271,24 +273,24 @@ def _set_item_in_vault(position,
     # update cache
     # remove existing
     idx = odf_idx
-    map = _erase_map_once(vault_map, idx)
+    emap = _erase_map_once(vault_map, idx)
     # add before if any:
     if repeated_before >= 1:
-        map = _insert_map_once(map, idx, repeated_before)
+        emap = _insert_map_once(emap, idx, repeated_before)
         idx += 1
     # add our slot
-    map = _insert_map_once(map, idx, repeated)
+    emap = _insert_map_once(emap, idx, repeated)
     # add after if any::
     if repeated_after >= 1:
         idx += 1
-        map = _insert_map_once(map, idx, repeated_after)
+        emap = _insert_map_once(emap, idx, repeated_after)
     if repeated_after < 0:
         idx += 1
         while repeated_after < 0:
-            if idx < len(map):
-                map = _erase_map_once(map, idx)
+            if idx < len(emap):
+                emap = _erase_map_once(emap, idx)
             repeated_after += 1
-    setattr(vault, vault_map_name, map)
+    setattr(vault, vault_map_name, emap)
     return new_item
 
 
@@ -327,11 +329,11 @@ def _insert_item_in_vault(position, item, vault, vault_scheme, vault_map_name):
         vault.insert(new_item, position=target_idx)
     # update cache
     if repeated_before >= 1:
-        map = _erase_map_once(vault_map, odf_idx)
-        map = _insert_map_once(map, odf_idx, repeated_before)
-        map = _insert_map_once(map, odf_idx + 1, repeated)
+        emap = _erase_map_once(vault_map, odf_idx)
+        emap = _insert_map_once(emap, odf_idx, repeated_before)
+        emap = _insert_map_once(emap, odf_idx + 1, repeated)
         setattr(vault, vault_map_name,
-                _insert_map_once(map, odf_idx + 2, repeated_after))
+                _insert_map_once(emap, odf_idx + 2, repeated_after))
     else:
         setattr(vault, vault_map_name,
                 _insert_map_once(vault_map, odf_idx, repeated))
@@ -355,7 +357,7 @@ def _delete_item_in_vault(position, vault, vault_scheme, vault_map_name):
         before_cache = vault_map[odf_idx - 1]
     else:
         before_cache = -1
-    current_pos = before_cache + 1
+    # current_pos = before_cache + 1
     current_repeated = current_cache - before_cache
     new_repeated = current_repeated - 1
     if new_repeated >= 1:
@@ -365,12 +367,12 @@ def _delete_item_in_vault(position, vault, vault_scheme, vault_map_name):
     else:
         # actual erase
         vault.delete(current_item)
-        setattr(vault, vault_map_name,
-                vault_map[:odf_idx] + [(x - 1)
-                                       for x in vault_map[odf_idx + 1:]])
+        setattr(
+            vault, vault_map_name,
+            vault_map[:odf_idx] + [(x - 1) for x in vault_map[odf_idx + 1:]])
 
 
-def _insert_map_once(map, odf_idx, repeated):
+def _insert_map_once(emap, odf_idx, repeated):
     """Add an item (cell or row) to the map
 
             map  --  cache map
@@ -382,55 +384,55 @@ def _insert_map_once(map, odf_idx, repeated):
         odf_idx is NOT position (col or row), neither raw XML position, but ODF index
     """
     repeated = repeated or 1
-    if odf_idx > len(map):
+    if odf_idx > len(emap):
         raise IndexError
     if odf_idx > 0:
-        before = map[odf_idx - 1]
+        before = emap[odf_idx - 1]
     else:
         before = -1
     juska = before + repeated  # aka max position value for item
-    if odf_idx == len(map):
-        insort(map, juska)
-        return map
-    new_map = map[:odf_idx]
+    if odf_idx == len(emap):
+        insort(emap, juska)
+        return emap
+    new_map = emap[:odf_idx]
     new_map.append(juska)
-    new_map.extend([(x + repeated) for x in map[odf_idx:]])
+    new_map.extend([(x + repeated) for x in emap[odf_idx:]])
     return new_map
 
 
-def _erase_map_once(map, odf_idx):
+def _erase_map_once(emap, odf_idx):
     """Remove an item (cell or row) from the map
 
             map  --  cache map
 
             odf_idx  --  index in ODF XML
     """
-    if odf_idx >= len(map):
+    if odf_idx >= len(emap):
         raise IndexError
     if odf_idx > 0:
-        before = map[odf_idx - 1]
+        before = emap[odf_idx - 1]
     else:
         before = -1
-    current = map[odf_idx]
+    current = emap[odf_idx]
     repeated = current - before
-    map = map[:odf_idx] + [(x - repeated) for x in map[odf_idx + 1:]]
-    return map
+    emap = emap[:odf_idx] + [(x - repeated) for x in emap[odf_idx + 1:]]
+    return emap
 
 
 def _make_cache_map(idx_repeated_seq):
     """Build the initial cache map of the table.
     """
-    map = []
+    emap = []
     for odf_idx, repeated in idx_repeated_seq:
-        map = _insert_map_once(map, odf_idx, repeated)
-    return map
+        emap = _insert_map_once(emap, odf_idx, repeated)
+    return emap
 
 
-def _find_odf_idx(map, position):
+def _find_odf_idx(emap, position):
     """Find odf_idx in the map from the position (col or row).
     """
-    odf_idx = bisect_left(map, position)
-    if odf_idx < len(map):
+    odf_idx = bisect_left(emap, position)
+    if odf_idx < len(emap):
         return odf_idx
     return None
 
@@ -441,7 +443,7 @@ class HeaderRows(Element):
 
 
 class Cell(Element):
-    """<table:table-cell> table cell element.
+    """"table:table-cell" table cell element.
     """
     _tag = 'table:table-cell'
     _caching = True
@@ -517,31 +519,28 @@ class Cell(Element):
         value_type = self.get_attribute('office:value-type')
         if value_type == 'boolean':
             return self.get_attribute('office:boolean-value')
-        elif value_type in {'float', 'percentage', 'currency'}:
+        if value_type in {'float', 'percentage', 'currency'}:
             value = dec(self.get_attribute('office:value'))
             # Return 3 instead of 3.0 if possible
             if int(value) == value:
                 return int(value)
-            else:
-                return value
-        elif value_type == 'date':
+            return value
+        if value_type == 'date':
             value = self.get_attribute('office:date-value')
             if 'T' in value:
                 return DateTime.decode(value)
-            else:
-                return Date.decode(value)
-        elif value_type == 'time':
+            return Date.decode(value)
+        if value_type == 'time':
             return Duration.decode(self.get_attribute('office:time-value'))
-        elif value_type == 'string':
+        if value_type == 'string':
             value = self.get_attribute('office:string-value')
             if value is not None:
                 return value
             value = []
-            for para in element.get_elements('text:p'):
+            for para in self.get_elements('text:p'):
                 value.append(para.text_recursive)
             return '\n'.join(value)
-        else:
-            return None
+        return None
 
     @value.setter
     def value(self, value):
@@ -566,7 +565,7 @@ class Cell(Element):
             self.set_attribute('office:value', value)
             self.text = value
             return
-        raise ('Unknown value type, try with set_value() : %s' % value)
+        raise f'Unknown value type, try with set_value() : {value}'
 
     @property
     def float(self):
@@ -778,7 +777,7 @@ class Cell(Element):
 
 
 class Row(Element):
-    """ODF table row <table:table-row>
+    """ODF table row "table:table-row"
     """
     _tag = 'table:table-row'
     _caching = True
@@ -813,7 +812,7 @@ class Row(Element):
                 self._cmap = []
         if self._do_init:
             if width is not None:
-                for i in range(width):
+                for _i in range(width):
                     self.append(Cell())
             if repeated:
                 self.repeated = repeated
@@ -965,7 +964,7 @@ class Row(Element):
                     self._indexes['_rmap'][idx] = cell
                 repeated = juska - before
                 before = juska
-                for i in range(repeated or 1):
+                for _i in range(repeated or 1):
                     # Return a copy without the now obsolete repetition
                     if cell is None:
                         cell = Cell()
@@ -1003,7 +1002,7 @@ class Row(Element):
                     self._indexes['_rmap'][idx] = cell
                 repeated = juska - before
                 before = juska
-                for i in range(repeated or 1):
+                for _i in range(repeated or 1):
                     if x <= end:
                         if cell is None:
                             cell = Cell()
@@ -1113,12 +1112,11 @@ class Row(Element):
             if cell is None:
                 return (None, None)
             return cell.get_value(get_type=get_type)
-        else:
-            x = self._translate_x_from_any(x)
-            cell = self._get_cell2_base(x)
-            if cell is None:
-                return None
-            return cell.get_value()
+        x = self._translate_x_from_any(x)
+        cell = self._get_cell2_base(x)
+        if cell is None:
+            return None
+        return cell.get_value()
 
     def set_cell(self, x, cell=None, clone=True, _get_repeat=False):
         """Push the cell back in the row at position "x" starting from 0.
@@ -1212,7 +1210,9 @@ class Row(Element):
             cell_back = self.append_cell(cell, clone=clone)
         return cell_back
 
-    def extend_cells(self, cells=[]):
+    def extend_cells(self, cells=None):
+        if cells is None:
+            cells = []
         self.extend(cells)
         self._compute_row_cache()
 
@@ -1324,7 +1324,7 @@ class Row(Element):
                 for cell in self.traverse(start=x, end=z)
             ]
 
-    def set_cells(self, cells=[], start=0, clone=True):
+    def set_cells(self, cells=None, start=0, clone=True):
         """Set the cells in the row, from the 'start' column.
         This method does not clear the row, use row.clear() before to start
         with an empty row.
@@ -1335,11 +1335,13 @@ class Row(Element):
 
             start -- int or str
         """
+        if cells is None:
+            cells = []
         if start is None:
             start = 0
         else:
             start = self._translate_x_from_any(start)
-        if start == 0 and clone == False and (len(cells) >= self.width):
+        if start == 0 and clone is False and (len(cells) >= self.width):
             self.clear()
             self.extend_cells(cells)
         else:
@@ -1433,7 +1435,7 @@ class Row(Element):
 
 
 class RowGroup(Element):
-    """<table:table-row-group> group rows with common properties.
+    """"table:table-row-group" group rows with common properties.
     """
     # TODO
     _tag = 'table:table-row-group'
@@ -1456,13 +1458,13 @@ class RowGroup(Element):
         super().__init__(**kwargs)
         if self._do_init:
             if height is not None:
-                for i in range(height):
+                for _i in range(height):
                     row = Row(width=width)
                     self.append(row)
 
 
 class Column(Element):
-    """ODF table column <table:table-column>
+    """ODF table column "table:table-column"
     """
     _tag = 'table:table-column'
     _caching = True
@@ -1584,7 +1586,7 @@ class Column(Element):
 
 
 class Table(Element):
-    """ODF table <table:table>
+    """ODF table "table:table"
     """
     _tag = 'table:table'
     _caching = True
@@ -1670,7 +1672,7 @@ class Table(Element):
                 # Column groups for style information
                 columns = Column(repeated=width)
                 self._append(columns)
-                for i in range(height):
+                for _i in range(height):
                     row = Row(width)
                     self._append(row)
         self._compute_table_cache()
@@ -1757,10 +1759,10 @@ class Table(Element):
                 # It is a column range, not a cell, because context is table
                 x = coord[0]
                 if x and x < 0:
-                    x = _increment(y, width)
-                t = coord[1]
+                    x = _increment(x, width)
+                z = coord[1]
                 if z and z < 0:
-                    z = _increment(t, width)
+                    z = _increment(z, width)
                 return (x, None, z, None)
             # should be 4 int
             x, y, z, t = coord
@@ -1982,13 +1984,12 @@ class Table(Element):
     def append(self, something):
         """Dispatch .append() call to append_row() or append_column().
         """
-        if type(something) == Row:
+        if isinstance(something, Row):
             return self.append_row(something)
-        elif type(something) == Column:
+        if isinstance(something, Column):
             return self.append_column(something)
-        else:
-            # probably still an error
-            return self._append(something)
+        # probably still an error
+        return self._append(something)
 
     @property
     def height(self):
@@ -2066,7 +2067,7 @@ class Table(Element):
 
     @protection_key.setter
     def protection_key(self, key):
-        self.set_attribute('table:protection-key', protect)
+        self.set_attribute('table:protection-key', key)
 
     @property
     def displayed(self):
@@ -2113,8 +2114,7 @@ class Table(Element):
     def get_formatted_text(self, context):
         if context["rst_mode"]:
             return self.__get_formatted_text_rst(context)
-        else:
-            return self.__get_formatted_text_normal(context)
+        return self.__get_formatted_text_normal(context)
 
     def get_values(self,
                    coord=None,
@@ -2166,11 +2166,10 @@ class Table(Element):
                 width = min(z + 1, self.width)
             if x is not None:
                 width -= x
-            values = row.get_values(
-                (x, z),
-                cell_type=cell_type,
-                complete=complete,
-                get_type=get_type)
+            values = row.get_values((x, z),
+                                    cell_type=cell_type,
+                                    complete=complete,
+                                    get_type=get_type)
             # complete row to match request width
             if complete:
                 if get_type:
@@ -2220,11 +2219,10 @@ class Table(Element):
                 width = min(z + 1, self.width)
             if x is not None:
                 width -= x
-            values = row.get_values(
-                (x, z),
-                cell_type=cell_type,
-                complete=complete,
-                get_type=get_type)
+            values = row.get_values((x, z),
+                                    cell_type=cell_type,
+                                    complete=complete,
+                                    get_type=get_type)
             # complete row to match column width
             if complete:
                 if get_type:
@@ -2358,7 +2356,7 @@ class Table(Element):
                 data.append([cell for cell in row.traverse()])
             transposed_data = zip_longest(*data)
             self.clear()
-            new_rows = []
+            # new_rows = []
             for row_cells in transposed_data:
                 if not isiterable(row_cells):
                     row_cells = (row_cells, )
@@ -2451,7 +2449,7 @@ class Table(Element):
                     self._indexes['_tmap'][idx] = row
                 repeated = juska - before
                 before = juska
-                for i in range(repeated or 1):
+                for _i in range(repeated or 1):
                     # Return a copy without the now obsolete repetition
                     row = row.clone
                     row.y = y
@@ -2485,7 +2483,7 @@ class Table(Element):
                     self._indexes['_tmap'][idx] = row
                 repeated = juska - before
                 before = juska
-                for i in range(repeated or 1):
+                for _i in range(repeated or 1):
                     if y <= end:
                         row = row.clone
                         row.y = y
@@ -2529,12 +2527,10 @@ class Table(Element):
         if y >= self.height:
             if create:
                 return Row()
-            else:
-                return None
+            return None
         if clone:
             return self._get_row2_base(y).clone
-        else:
-            return self._get_row2_base(y)
+        return self._get_row2_base(y)
 
     def _get_row2_base(self, y):
         idx = _find_odf_idx(self._tmap, y)
@@ -2640,7 +2636,7 @@ class Table(Element):
         self.__update_width(row_back)
         return row_back
 
-    def extend_rows(self, rows=[]):
+    def extend_rows(self, rows=None):
         """Append a list of rows at the end of the table.
 
         Arguments:
@@ -2648,6 +2644,8 @@ class Table(Element):
             rows -- list of Row
 
         """
+        if rows is None:
+            rows = []
         self.extend(rows)
         self._compute_table_cache()
         # Update width if necessary
@@ -2780,7 +2778,7 @@ class Table(Element):
             values, style=style, cell_type=cell_type, currency=currency)
         return self.set_row(y, row)  # needed if clones rows
 
-    def set_row_cells(self, y, cells=[]):
+    def set_row_cells(self, y, cells=None):
         """Shortcut to set *all* the cells of the row at the given
         "y" position.
 
@@ -2796,6 +2794,8 @@ class Table(Element):
 
         returns the row, with updated row.y
         """
+        if cells is None:
+            cells = []
         row = Row()  # needed if clones rows
         row.extend_cells(cells)
         return self.set_row(y, row)  # needed if clones rows
@@ -2920,16 +2920,14 @@ class Table(Element):
         if y >= self.height:
             if get_type:
                 return (None, None)
-            else:
-                return None
+            return None
         else:
             # Inside the defined table
             cell = self._get_row2_base(y)._get_cell2_base(x)
             if cell is None:
                 if get_type:
                     return (None, None)
-                else:
-                    return None
+                return None
             return cell.get_value(get_type=get_type)
 
     def set_cell(self, coord, cell=None, clone=True):
@@ -3043,7 +3041,7 @@ class Table(Element):
             Cell(value, cell_type=cell_type, currency=currency, style=style),
             clone=False)
 
-    def set_cell_image(self, coord, image_frame, type=None):
+    def set_cell_image(self, coord, image_frame, doc_type=None):
         """Do all the magic to display an image in the cell at the given
         coordinates.
 
@@ -3062,19 +3060,19 @@ class Table(Element):
 
             image_frame -- Frame including an image
 
-            type -- 'spreadsheet' or 'text'
+            doc_type -- 'spreadsheet' or 'text'
         """
         # Test document type
-        if type is None:
+        if doc_type is None:
             body = self.document_body
             if body is None:
-                raise ValueError("document type not found")
-            type = {
+                raise ValueError('document type not found')
+            doc_type = {
                 'office:spreadsheet': 'spreadsheet',
                 'office:text': 'text'
             }.get(body.tag)
-            if type is None:
-                raise ValueError("document type not supported for images")
+            if doc_type is None:
+                raise ValueError('document type not supported for images')
         # We need the end address of the image
         x, y = self._translate_cell_coordinates(coord)
         cell = self.get_cell((x, y))
@@ -3083,7 +3081,7 @@ class Table(Element):
         for child in cell.children:
             cell.delete(child)
         # Now it all depends on the document type
-        if type == 'spreadsheet':
+        if doc_type == 'spreadsheet':
             image_frame.set_anchor_type(None)
             # The frame needs end coordinates
             width, height = image_frame.size
@@ -3094,9 +3092,9 @@ class Table(Element):
             image_frame.set_attribute('table:end-cell-address', address)
             # The frame is directly in the cell
             cell.append(image_frame)
-        elif type == 'text':
+        elif doc_type == 'text':
             # The frame must be in a paragraph
-            cell.set_value("")
+            cell.set_value('')
             paragraph = cell.get_element('text:p')
             paragraph.append(image_frame)
         self.set_cell(coord, cell)
@@ -3216,7 +3214,7 @@ class Table(Element):
                     self._indexes['_cmap'][idx] = column
                 repeated = juska - before
                 before = juska
-                for i in range(repeated or 1):
+                for _i in range(repeated or 1):
                     # Return a copy without the now obsolete repetition
                     column = column.clone
                     column.x = x
@@ -3250,7 +3248,7 @@ class Table(Element):
                     self._indexes['_cmap'][idx] = column
                 repeated = juska - before
                 before = juska
-                for i in range(repeated or 1):
+                for _i in range(repeated or 1):
                     if x <= end:
                         column = column.clone
                         column.x = x
@@ -3407,7 +3405,7 @@ class Table(Element):
             column = Column()
         else:
             column = column.clone
-        if len(self._cmap) == 0:
+        if not self._cmap:
             position = 0
         else:
             odf_idx = len(self._cmap) - 1
@@ -3896,15 +3894,14 @@ class Table(Element):
             w = writer(out, dialect=dialect)
             write_content(w)
             return out.getvalue()
-        else:
-            with open(path_or_file, 'w') as f:
-                w = csv.writer(f, dialect=dialect)
-                write_content(w)
-            return None
+        with open(path_or_file, 'w') as f:
+            w = writer(f, dialect=dialect)
+            write_content(w)
+        return None
 
 
 class NamedRange(Element):
-    """ODF Named Range <table:named-range>. Identifies inside the spreadsheet
+    """ODF Named Range "table:named-range". Identifies inside the spreadsheet
     a range of cells of a table by a name and the name of the table.
 
     Name Ranges have the following attributes:
@@ -4095,9 +4092,8 @@ class NamedRange(Element):
             name = self.table_name
         if self.start == self.end:
             return self._make_base_cell_address()
-        return '$%s.$%s$%s:.$%s$%s' % (name, _digit_to_alpha(self.start[0]),
-                                       self.start[1] + 1,
-                                       _digit_to_alpha(self.end[0]),
+        return '$%s.$%s$%s:.$%s$%s' % (name, _digit_to_alpha(
+            self.start[0]), self.start[1] + 1, _digit_to_alpha(self.end[0]),
                                        self.end[1] + 1)
 
     def get_values(self,
@@ -4190,10 +4186,9 @@ def import_from_csv(path_or_file,
     # Load the data
     # XXX Load the entire file in memory
     # Alternative: a file-wrapper returning the sample then the rest
-    if type(path_or_file) is str:
-        file = open(path_or_file, 'rb')
-        data = file.read().splitlines(True)
-        file.close()
+    if isinstance(path_or_file, str):
+        with open(path_or_file, 'rb') as f:
+            data = f.read().splitlines(True)
     else:
         # Leave the file we were given open
         data = path_or_file.read().splitlines(True)

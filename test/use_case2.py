@@ -23,7 +23,7 @@
 
 from datetime import date, time, timedelta
 from os import mkdir
-from os.path import exists
+from os.path import exists, join
 from sys import version_info
 
 from PIL import Image
@@ -35,7 +35,7 @@ from odfdo import VarPageNumber, VarPageCount, VarDate, VarTime, VarChapter
 
 # Hello messages
 print('odfdo installation test')
-print(' Version           : %s' % __version__)
+print(f'version     : {__version__}')
 print()
 print('Generating test_output/use_case2.odt ...')
 
@@ -45,24 +45,20 @@ body = document.body
 
 # 0- The image
 # ------------
-image = Image.open('samples/image.png')
+path = join('samples', 'image.png')
+image = Image.open(path)
 width, height = image.size
-paragraph = Paragraph(style="Standard")
-# 72 ppp
-frame = Frame('frame1', 'Graphics',
-              str(int(width / 72.0)) + 'in',
-              str(int(height / 72.0)) + 'in')
-internal_name = 'Pictures/image.png'
-image = DrawImage(internal_name)
-frame.append(image)
-paragraph.append(frame)
+# Add the image
+image_uri = document.add_file(path)
+draw_size = (f'{width/100:.2f}cm', f'{height/100:.2f}cm')
+image_frame = Frame.image_frame(
+    image_uri,
+    size=draw_size,
+    position=('0cm', '0cm'))
+paragraph = Paragraph('', style='Standard')
+paragraph.append(image_frame)
 body.append(paragraph)
-
-# And store the data
-container = document.container
-with open('samples/image.png', 'rb') as f:
-    content = f.read()
-container.set_part(internal_name, content)
+body.append(Paragraph())
 
 # 1- Congratulations (=> style on paragraph)
 # ------------------------------------------
@@ -133,7 +129,7 @@ document.insert_style(style)
 text = ('The office document file format OpenDocument Format (ODF) '
         'is an ISO standard ISO 26300 used by many applications.')
 paragraph = Paragraph(text, "Standard")
-paragraph.set_span("style2", regex="ISO standard")
+paragraph.set_span('style2', regex='ISO standard')
 body.append(paragraph)
 
 # 4- A variable

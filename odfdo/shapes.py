@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,9 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-
+"""Drawing classes ShapeBase, LineShape, RectangleShape, EllipseShape,
+ConnectorShape and DrawGroup
+"""
 from .element import Element, register_element_class
 from .frame import AnchorMix, ZMix, PosMix, SizeMix
 
@@ -290,31 +292,31 @@ ConnectorShape._define_attribut_property()
 
 
 class DrawGroup(Element, AnchorMix, ZMix, PosMix):
-    """The DrawGroup <draw:g> element represents a group of drawing shapes.
+    """The DrawGroup "draw:g" element represents a group of drawing shapes.
 
         Warning: implementation is currently minimal.
 
-        Drawing shapes contained by a <draw:g> element that is itself
-        contained by a <draw:a> element, act as hyperlinks using the
-        xlink:href attribute of the containing <draw:a> element. If the
-        included drawing shapes are themselves contained within <draw:a>
-        elements, then the xlink:href attributes of those <draw:a> elements
+        Drawing shapes contained by a "draw:g" element that is itself
+        contained by a "draw:a" element, act as hyperlinks using the
+        xlink:href attribute of the containing "draw:a" element. If the
+        included drawing shapes are themselves contained within "draw:a"
+        elements, then the xlink:href attributes of those "draw:a" elements
         act as the hyperlink information for the shapes they contain.
 
-        The <draw:g> element has the following attributes: draw:caption-id,
+        The "draw:g" element has the following attributes: draw:caption-id,
         draw:class-names, draw:id, draw:name, draw:style-name, draw:z-index,
         presentation:class-names, presentation:style-name, svg:y,
         table:end-cell-address, table:end-x, table:end-y,
         table:table-background, text:anchor-page-number, text:anchor-type,
         and xml:id.
 
-        The <draw:g> element has the following child elements: <dr3d:scene>,
-        <draw:a>, <draw:caption>, <draw:circle>, <draw:connector>,
-        <draw:control>, <draw:custom-shape>, <draw:ellipse>, <draw:frame>,
-        <draw:g>, <draw:glue-point>, <draw:line>, <draw:measure>,
-        <draw:page-thumbnail>, <draw:path>, <draw:polygon>, <draw:polyline>,
-        <draw:rect>, <draw:regular-polygon>, <office:event-listeners>,
-        <svg:desc> and <svg:title>.
+        The "draw:g" element has the following child elements: "dr3d:scene",
+        "draw:a", "draw:caption", "draw:circle", "draw:connector",
+        "draw:control", "draw:custom-shape", "draw:ellipse", "draw:frame",
+        "draw:g", "draw:glue-point", "draw:line", "draw:measure",
+        "draw:page-thumbnail", "draw:path", "draw:polygon", "draw:polyline",
+        "draw:rect", "draw:regular-polygon", "office:event-listeners",
+        "svg:desc" and "svg:title".
     """
     _tag = 'draw:g'
     _properties = (

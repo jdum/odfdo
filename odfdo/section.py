@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,12 +19,13 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
-
+"""Section class for "text:section"
+"""
 from .element import register_element_class, Element
 
 
 class Section(Element):
-    """ODF section <text:section>
+    """ODF section "text:section"
 
     Arguments:
 

@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +19,10 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-
+"""Styles class for styles.xml part
+"""
 from .xmlpart import XmlPart
-from .utils import _get_elements, _get_element  #, obsolete
-from .utils import to_bytes, to_str
+from .utils import _get_elements, _get_element
 
 CONTEXT_MAPPING = {
     'paragraph': ('//office:styles', '//office:automatic-styles'),
@@ -54,7 +54,7 @@ class Styles(XmlPart):
     def _get_style_contexts(self, family, automatic=False):
         if automatic is True:
             return (self.get_element('//office:automatic-styles'), )
-        elif family is None:
+        if family is None:
             # All possibilities
             return (self.get_element('//office:automatic-styles'),
                     self.get_element('//office:styles'),

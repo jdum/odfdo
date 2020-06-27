@@ -50,4 +50,5 @@ if __name__ == "__main__":
         os.mkdir('test_output')
 
     output = "my_span_styled_" + source
+    #document.save(target=os.path.join('test_output', output), pretty=True, packaging='folder')
     document.save(target=os.path.join('test_output', output), pretty=True)

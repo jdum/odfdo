@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,9 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-
+"""TrackedChanges class for "text:tracked-changes" and related classes
+(ChangeInfo, TextInsertion, TextChange...)
+"""
 from datetime import datetime
 from .datatype import DateTime
 
@@ -31,8 +33,8 @@ from .utils import _get_elements, _get_element
 
 
 class ChangeInfo(Element):
-    """The <office:change-info> element represents who made a change and when.
-       It may also contain a comment (one or more Paragrah <text:p> elements)
+    """The "office:change-info" element represents who made a change and when.
+       It may also contain a comment (one or more Paragrah "text:p" elements)
        on the change.
 
        The comments available in the ChangeInfo are available through:
@@ -101,8 +103,7 @@ class ChangeInfo(Element):
         text = [para.get_formatted_text(simple=True) for para in content]
         if joined:
             return '\n'.join(text)
-        else:
-            return text
+        return text
 
     def set_comments(self, text='', replace=True):
         """Set the text content of the comments. If replace is True (default),
@@ -123,14 +124,14 @@ class ChangeInfo(Element):
 
 
 class TextInsertion(Element):
-    """The TextInsertion <text:insertion> element contains the information
+    """The TextInsertion "text:insertion" element contains the information
        that identifies the person responsible for a change and the date of
-       that change. This information may also contain one or more <text:p>
+       that change. This information may also contain one or more "text:p"
        Paragraph which contain a comment on the insertion. The
-       TextInsertion element's parent <text:changed-region> element has an
+       TextInsertion element's parent "text:changed-region" element has an
        xml:id or text:id attribute, the value of which binds that parent
-       element to the text:change-id attribute on the <text:change-start>
-       and <text:change-end> elements.
+       element to the text:change-id attribute on the "text:change-start"
+       and "text:change-end" elements.
     """
     _tag = 'text:insertion'
 
@@ -221,29 +222,29 @@ class TextInsertion(Element):
 
 
 class TextDeletion(TextInsertion):
-    """The TextDeletion <text:deletion> contains information that identifies
+    """The TextDeletion "text:deletion" contains information that identifies
        the person responsible for a deletion and the date of that deletion.
        This information may also contain one or more Paragraph which contains
        a comment on the deletion. The TextDeletion element may also contain
        content that was deleted while change tracking was enabled. The position
-       where the text was deleted is marked by a <text:change> element. Deleted
+       where the text was deleted is marked by a "text:change" element. Deleted
        text is contained in a paragraph element. To reconstruct the original
        text, the paragraph containing the deleted text is merged with its
        surrounding paragraph or heading element. To reconstruct the text before
        a deletion took place:
          - If the change mark is inside a paragraph, insert the content that was
          deleted, but remove all leading start tags up to and including the
-         first <text:p> element and all trailing end tags up to and including
-         the last </text:p> or </text:h> element. If the last trailing element
-         is a </text:h>, change the end tag </text:p> following this insertion
-         to a </text:h> element.
+         first "text:p" element and all trailing end tags up to and including
+         the last "/text:p" or "/text:h" element. If the last trailing element
+         is a "/text:h", change the end tag "/text:p" following this insertion
+         to a "/text:h" element.
          - If the change mark is inside a heading, insert the content that was
          deleted, but remove all leading start tags up to and including the
-         first <text:h> element and all trailing end tags up to and including
-         the last </text:h> or </text:p> element. If the last trailing element
-         is a </text:p>, change the end tag </text:h> following this insertion
-         to a </text:p> element.
-         - Otherwise, copy the text content of the <text:deletion> element in
+         first "text:h" element and all trailing end tags up to and including
+         the last "/text:h" or "/text:p" element. If the last trailing element
+         is a "/text:p", change the end tag "/text:h" following this insertion
+         to a "/text:p" element.
+         - Otherwise, copy the text content of the "text:deletion" element in
          place of the change mark.
     """
     _tag = 'text:deletion'
@@ -280,8 +281,7 @@ class TextDeletion(TextInsertion):
         if as_text:
             return '\n'.join(
                 [e.get_formatted_text(context=None) for e in inner])
-        else:
-            return inner
+        return inner
 
     def set_deleted(self, paragraph_or_list):
         """Set the deleted informations stored in the TextDeletion. An
@@ -308,9 +308,9 @@ class TextDeletion(TextInsertion):
 
 
 class TextFormatChange(TextInsertion):
-    """The TextFormatChange <text:format-change> element represents any change
+    """The TextFormatChange "text:format-change" element represents any change
        in formatting attributes. The region where the change took place is
-       marked by <text:change-start>, <text:change-end> or <text:change>
+       marked by "text:change-start", "text:change-end" or "text:change"
        elements.
 
        Note: This element does not contain formatting changes that have taken
@@ -320,19 +320,19 @@ class TextFormatChange(TextInsertion):
 
 
 class TextChangedRegion(Element):
-    """Each TextChangedRegion <text:changed-region> element contains a single
+    """Each TextChangedRegion "text:changed-region" element contains a single
        element, one of TextInsertion, TextDeletion or TextFormatChange that
        corresponds to a change being tracked within the scope of the
-       <text:tracked-changes> element that contains the <text:changed-region>
+       "text:tracked-changes" element that contains the "text:changed-region"
        instance.
        The xml:id attribute of the TextChangedRegion is referenced
-       from the <text:change>, <text:change-start> and <text:change-end>
+       from the "text:change", "text:change-start" and "text:change-end"
        elements that identify where the change applies to markup in the scope of
-       the <text:tracked-changes> element.
+       the "text:tracked-changes" element.
 
        Warning : for this implementation, text:change should be referenced only
                  once in the scope, which is different from ODF 1.2 requirement:
-                " A <text:changed-region> can be referenced by more than one
+                " A "text:changed-region" can be referenced by more than one
                 change, but the corresponding referencing change mark elements
                 shall be of the same change type - insertion, format change or
                 deletion. "
@@ -386,21 +386,21 @@ class TextChangedRegion(Element):
         return self.set_attribute('xml:id', xml_id)
 
     def get_id(self):
-        """Get the <text:id> attribute.
+        """Get the "text:id" attribute.
 
         Return: str
         """
         return self._get_text_id()
 
     def set_id(self, idx):
-        """Set both the <text:id> and <xml:id> attributes.
+        """Set both the "text:id" and "xml:id" attributes.
         """
         self._set_text_id(idx)
         self._set_xml_id(idx)
 
 
 class TrackedChanges(Element):
-    """The TrackedChanges <text:tracked-changes> element acts as a container
+    """The TrackedChanges "text:tracked-changes" element acts as a container
        for TextChangedRegion elements that represent changes in a certain
        scope of an OpenDocument document. This scope is the element in which
        the TrackedChanges element occurs. Changes in this scope shall be
@@ -451,7 +451,7 @@ class TrackedChanges(Element):
 
 
 class TextChange(Element):
-    """The TextChange <text:change> element marks a position in an empty
+    """The TextChange "text:change" element marks a position in an empty
        region where text has been deleted.
     """
     _tag = 'text:change'
@@ -511,7 +511,7 @@ class TextChange(Element):
 
 
 class TextChangeEnd(TextChange):
-    """The TextChangeEnd <text:change-end> element marks the end of a region
+    """The TextChangeEnd "text:change-end" element marks the end of a region
        with content where text has been inserted or the format has been
        changed.
     """
@@ -576,7 +576,7 @@ class TextChangeEnd(TextChange):
 
 
 class TextChangeStart(TextChangeEnd):
-    """The TextChangeStart <text:change-start> element marks the start of a
+    """The TextChangeStart "text:change-start" element marks the start of a
        region with content where text has been inserted or the format has
        been changed.
     """

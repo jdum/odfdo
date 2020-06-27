@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,97 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
+"""# odfdo
+python library for OpenDocument format (ODF)
 
+
+![logo](./odfdo.png)
+
+odfdo is a Python3 library implementing the ISO/IEC 26300 OpenDocument Format
+standard.
+
+project:
+    https://github.com/jdum/odfdo
+
+author:
+    jerome.dumonteil@gmail.com
+
+licence:
+    Apache License, Version 2.0
+
+odfdo is a derivative work of the lpod-python project.
+
+
+installation
+============
+
+
+    sudo python setup.py install
+
+
+after installation you can check everything is working:
+    
+    
+    `cd test && python test.py`
+    
+
+test should run for a few seconds and issue no error.
+
+
+usage
+=====
+
+
+    from odfdo import Document, Paragraph
+
+    doc = Document('text')
+    doc.body.append(Paragraph("Hello world!"))
+    doc.save("hello.odt")
+
+
+tl;dr
+=====
+
+'Intended Audience :: Developers'
+
+
+documentation
+=============
+
+ - the "recipes" folder contains more than 50 working sample scripts,
+ - the "scripts" folder contains some useful scripts (like style management),
+ - the "doc" folder contains auto generated documentation.
+
+styles: the best way to apply style is by merging styles from a template
+document into your generated document. See odfdo-style.py in "scripts" folder.
+
+
+limitations
+===========
+
+odfdo is intended to facilitate the generation of ODF documents,
+nevertheless a basic knowledge of the ODF format is necessary.
+
+ODF document rendering can vary greatly from software to software. In
+particular the "styles" of the document allow an adaptation of the rendering
+for a particular software.
+
+the best (only ?) way to apply style is by merging styles from a template
+document into your generated document. See odfdo-style.py in "scripts" folder.
+
+
+changes from former lpod library
+================================
+lpod-python was written in 2009-2010 as a python2 library,
+see: https://github.com/lpod/lpod-python
+
+odfdo main changes from lpod:
+
+ - odfdo requires python version >= 3.6
+ - API change: more pythonic
+ - include recipes
+ - use only Apache 2.0 license
+"""
 __all__ = (
     'Bookmark BookmarkStart BookmarkEnd Container Content Content '
     'Document DrawPage Element Text FIRST_CHILD LAST_CHILD NEXT_SIBLING '
@@ -47,11 +137,10 @@ from .version import __version__
 from .bookmark import Bookmark, BookmarkStart, BookmarkEnd
 from .container import Container
 from .content import Content
-from .content import Content
 from .document import Document
 from .draw_page import DrawPage
-from .element import Element, Text
-from .element import FIRST_CHILD, LAST_CHILD, NEXT_SIBLING, PREV_SIBLING
+from .element import (Element, Text, FIRST_CHILD, LAST_CHILD, NEXT_SIBLING,
+                      PREV_SIBLING)
 from .frame import Frame, default_frame_position_style
 from .header import Header
 from .image import DrawImage, DrawFillImage
@@ -60,30 +149,30 @@ from .list import ListItem, List
 from .manifest import Manifest
 from .meta import Meta
 from .note import Note, Annotation, AnnotationEnd
-from .paragraph import Spacer, Tab, LineBreak, Span, Paragraph
-from .reference import Reference, ReferenceMark, ReferenceMarkStart
-from .reference import ReferenceMarkEnd
+from .paragraph import Span, Paragraph, Spacer, Tab, LineBreak
+from .reference import (Reference, ReferenceMark, ReferenceMarkStart,
+                        ReferenceMarkEnd)
 from .section import Section
-from .shapes import ConnectorShape, DrawGroup, LineShape, RectangleShape
-from .shapes import EllipseShape
+from .shapes import (ConnectorShape, DrawGroup, LineShape, RectangleShape,
+                     EllipseShape)
 from .smil import AnimPar, AnimSeq, AnimTransFilter
-from .style import default_boolean_style, default_currency_style
-from .style import default_number_style, default_percentage_style
-from .style import default_time_style, default_date_style
-from .style import make_table_cell_border_string, create_table_cell_style
-from .style import Style, BackgroundImage, rgb2hex, hex2rgb
+from .style import (Style, default_boolean_style, default_currency_style,
+                    default_number_style, default_percentage_style,
+                    default_time_style, default_date_style,
+                    make_table_cell_border_string, create_table_cell_style,
+                    BackgroundImage, rgb2hex, hex2rgb)
 from .styles import Styles
-from .tracked_changes import ChangeInfo, TextInsertion, TextDeletion
-from .tracked_changes import TextFormatChange, TextChangedRegion
-from .tracked_changes import TrackedChanges, TextChange, TextChangeEnd
-from .tracked_changes import TextChangeStart
+from .tracked_changes import (ChangeInfo, TextInsertion, TextDeletion,
+                              TextFormatChange, TextChangedRegion,
+                              TrackedChanges, TextChange, TextChangeEnd,
+                              TextChangeStart)
 from .table import Cell, Row, Column, Table, HeaderRows, RowGroup, NamedRange
-from .toc import IndexTitleTemplate, default_toc_level_style
-from .toc import TOC, IndexTitle, TocEntryTemplate, TabStopStyle
-from .variable import UserFieldDecl, UserFieldGet, UserFieldInput, UserDefined
-from .variable import VarChapter, VarFileName, VarInitialCreator
-from .variable import VarCreationDate, VarCreationTime, VarDescription
-from .variable import VarDecls, VarDecl, VarSet, VarGet, UserFieldDecls
-from .variable import VarPageNumber, VarPageCount, VarDate, VarTime
-from .variable import VarTitle, VarSubject, VarKeywords
+from .toc import (TOC, IndexTitleTemplate, default_toc_level_style, IndexTitle,
+                  TocEntryTemplate, TabStopStyle)
+from .variable import (UserFieldDecl, UserFieldGet, UserFieldInput,
+                       UserDefined, VarChapter, VarFileName, VarInitialCreator,
+                       VarCreationDate, VarCreationTime, VarDescription,
+                       VarDecls, VarDecl, VarSet, VarGet, UserFieldDecls,
+                       VarPageNumber, VarPageCount, VarDate, VarTime, VarTitle,
+                       VarSubject, VarKeywords)
 from .xmlpart import XmlPart

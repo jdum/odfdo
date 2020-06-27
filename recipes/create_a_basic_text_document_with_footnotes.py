@@ -38,12 +38,10 @@ for p in range(3):
     # choosing the 4th word of the paragraph to insert the note
     paragraph.insert_note(
         after=some_word,  # The word after what the “¹” citation is inserted.
-        note_id='note%s' %
-        p,  # The unique identifier of the note in the document.
-        citation="1",  # The symbol the user sees to follow the footnote.
+        note_id=f'note{p}',  # The unique identifier of the note in the document.
+        citation='1',  # The symbol the user sees to follow the footnote.
         body=(
-            'Author%s, A. (2007). "How to cite references", Sample Editions.' %
-            p
+            f'Author{p}, A. (2007). "How to cite references", Sample Editions.'
             # The footnote itself, at the end of the page.
         ))
 

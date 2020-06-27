@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,14 +18,17 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-
+"""Style class for various style tags and BackgroundImage class
+"""
 from .datatype import Boolean
 from .const import CSS3_COLORMAP
-from .element import register_element_class, Element, _class_registry, _get_lxml_tag
+from .element import register_element_class, Element
+
 from .image import DrawImage
-from .utils import _family_style_tagname, _expand_properties, _merge_dicts
-from .utils import _get_element, isiterable, to_str, OTHER_STYLES
-from .utils import FALSE_FAMILY_MAP_REVERSE, FAMILY_ODF_STD, FAMILY_MAPPING, SUBCLASSED_STYLES, STYLES_TO_REGISTER
+from .utils import (_expand_properties, _merge_dicts, _get_element, isiterable,
+                    to_str, FALSE_FAMILY_MAP_REVERSE, FAMILY_ODF_STD,
+                    FAMILY_MAPPING, SUBCLASSED_STYLES, STYLES_TO_REGISTER)
+from .paragraph import Paragraph
 
 
 def hex2rgb(color):
@@ -33,7 +36,7 @@ def hex2rgb(color):
     tuple.
     Arguments:
 
-        color: str
+        color -- str
 
     Return: tuple
     """
@@ -94,8 +97,7 @@ def __make_color_string(color=None):
         return color_default
     if color.startswith('#'):
         return color
-    else:
-        return rgb2hex(color)
+    return rgb2hex(color)
 
 
 def __make_thick_string(thick):
@@ -108,13 +110,12 @@ def __make_thick_string(thick):
         thick = thick.strip()
         if thick:
             return thick
-        else:
-            return thick_default
+        return thick_default
     if isinstance(thick, float):
         return '%.2fpt' % thick
     if isinstance(thick, int):
         return '%.2fpt' % (thick / 100.0)
-    raise ValueError("Thickness must be None for default or float value (pt)")
+    raise ValueError('Thickness must be None for default or float value (pt)')
 
 
 def __make_line_string(line):
@@ -127,9 +128,8 @@ def __make_line_string(line):
         line = line.strip()
         if line:
             return line
-        else:
-            return line_default
-    raise ValueError("Line style must be None for default or string")
+        return line_default
+    raise ValueError('Line style must be None for default or string')
 
 
 def make_table_cell_border_string(thick=None, line=None, color=None):
@@ -161,7 +161,7 @@ def create_table_cell_style(border=None,
                             background_color=None,
                             shadow=None,
                             color=None):
-    """Returns a cell style.
+    """Return a cell style.
 
     The borders arguments must be some style attribute strings or None, see the
     method 'make_table_cell_border_string' to generate them.
@@ -205,7 +205,7 @@ def create_table_cell_style(border=None,
 
         color -- str or rgb 3-tuple, str is 'black', 'grey', ... or '#012345'
 
-    Returns : Style
+    Return : Style
     """
     if border == 'default':
         border = make_table_cell_border_string()  # default border
@@ -301,7 +301,7 @@ class Style(Element):
             page_layout=None,
             next_style=None,
             # For family 'table-cell'
-            data_style=None,
+            data_style=None,  # unused
             border=None,
             border_top=None,
             border_right=None,
@@ -539,7 +539,7 @@ class Style(Element):
             properties[child.tag] = child.attributes
         return properties
 
-    def set_properties(self, properties={}, style=None, area=None, **kw):
+    def set_properties(self, properties=None, style=None, area=None, **kw):
         """Set the properties of the "area" type of this style. Properties
         are given either as a dict or as named arguments (or both). The area
         is identical to the style family by default. If the properties
@@ -556,6 +556,8 @@ class Style(Element):
 
             area -- 'paragraph', 'text'...
         """
+        if properties is None:
+            properties = {}
         if area is None:
             area = self.family
         element = self.get_element('style:%s-properties' % area)
@@ -574,7 +576,7 @@ class Style(Element):
             else:
                 element.set_attribute(key, value)
 
-    def del_properties(self, properties=[], area=None, *args):
+    def del_properties(self, properties=None, area=None):
         """Delete the given properties, either by list argument or
         positional argument (or both). Remove only from the given area,
         identical to the style family by default.
@@ -585,6 +587,8 @@ class Style(Element):
 
             area -- str
         """
+        if properties is None:
+            properties = []
         if area is None:
             area = self.family
         element = self.get_element('style:%s-properties' % area)
@@ -786,7 +790,7 @@ class Style(Element):
 
     def set_header_style(self, new_style):
         if self.family != 'page-layout':
-            return None
+            return
         header_style = self.get_header_style()
         if header_style is not None:
             self.delete(header_style)
@@ -799,7 +803,7 @@ class Style(Element):
 
     def set_footer_style(self, new_style):
         if self.family != 'page-layout':
-            return None
+            return
         footer_style = self.get_footer_style()
         if footer_style is not None:
             self.delete(footer_style)
@@ -830,7 +834,7 @@ class Style(Element):
             text_or_element = [text_or_element]
         # FIXME cyclic import
         for item in text_or_element:
-            if type(item) is str:
+            if isinstance(item, str):
                 paragraph = Paragraph(item, style=style)
                 header_or_footer.append(paragraph)
             elif isinstance(item, Element):
@@ -893,7 +897,7 @@ class Style(Element):
                  family_generic=None,
                  pitch="variable"):
         if self.family != 'font-face':
-            return None
+            return
         self.name = name
         if family is None:
             family = name

@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,8 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
-
+"""Frame class for "draw:frame"
+"""
 from .element import Element, register_element_class
 from .datatype import Unit
 from .image import DrawImage
@@ -51,25 +52,27 @@ def default_frame_position_style(name="FramePosition",
 
 
 class AnchorMix:
+    """Anchor parameter, how the element is attached to its environment.
+
+    value can be: 'page', 'frame', 'paragraph', 'char' or 'as-char'
+    """
     anchor_value_choice = {'page', 'frame', 'paragraph', 'char', 'as-char'}
 
     @property
     def anchor_type(self):
-        """Get /set how the element is attached to its environment.
-
-        value can be: 'page', 'frame', 'paragraph', 'char' or 'as-char'
-        """
+        "getter/setter"
         return self.get_attribute('text:anchor-type')
 
     @anchor_type.setter
-    def anchor_type(self, anchor_type, page_number=None):
+    def anchor_type(self, anchor_type):
         if anchor_type not in self.anchor_value_choice:
             raise ValueError('anchor_type not valid: %s' % anchor_type)
         self.set_attribute('text:anchor-type', anchor_type)
 
     @property
     def anchor_page(self):
-        """Get / set the number of the page when the anchor type is 'page'.
+        """getter/setter for the number of the page when the anchor type is
+        'page'.
 
         type : int or None
         """
@@ -84,15 +87,18 @@ class AnchorMix:
 
 
 class PosMix:
+    """Position relative to anchor point.
+
+    Setting the position may require a specific style for actual display on
+    some graphical rendering softwares.
+
+    Position is a (left, top) tuple with items including the unit,
+    e.g. ('10cm', '15cm').
+    """
+
     @property
     def position(self):
-        """Get the position relative to anchor point.
-
-        Position is a (left, top) tuple with items including the unit,
-        e.g. ('10cm', '15cm').
-
-        Return: (str, str)
-        """
+        "getter/setter"
         get_attr = self.get_attribute
         return get_attr('svg:x'), get_attr('svg:y')
 
@@ -103,9 +109,14 @@ class PosMix:
 
 
 class ZMix:
+    """z-index position
+
+    z-index is an integer
+    """
+
     @property
     def z_index(self):
-        "Get / set the z-index position."
+        "getter/setter"
         z_index = self.get_attribute('draw:z-index')
         if z_index is None:
             return None
@@ -117,13 +128,15 @@ class ZMix:
 
 
 class SizeMix:
+    """Size of the frame
+
+    Size is a (width, height) tuple with items including the unit,
+    e.g. ('10cm', '15cm').
+    """
+
     @property
     def size(self):
-        """Get / set the size.
-
-        Size is a (width, height) tuple with items including the unit,
-        e.g. ('10cm', '15cm').
-        """
+        "getter/setter"
         return (self.width, self.height)
 
     @size.setter
@@ -133,7 +146,7 @@ class SizeMix:
 
 
 class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
-    """ODF Frame <draw:frame>
+    """ODF Frame "draw:frame"
 
     Frames are not useful by themselves. You should consider calling
     Frame.image_frame() or Frame.text_frame directly.
@@ -220,6 +233,8 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
                 self.presentation_class = presentation_class
             if anchor_type:
                 self.anchor_type = anchor_type
+            if position and not anchor_type:
+                self.anchor_type = 'paragraph'
             if anchor_page is not None:
                 self.anchor_page = anchor_page
             if layer is not None:
@@ -292,8 +307,8 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
                    layer=None,
                    presentation_style=None,
                    **kwargs):
-        """Create a ready-to-use text box, since text box must be embedded in a
-        frame.
+        """Create a ready-to-use text box, since text box must be embedded in
+        a frame.
 
         The optionnal text will appear above the image.
 
@@ -343,10 +358,10 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
         else:
             text_box.text_content = text_or_element
 
-    def get_image(self):
+    def get_image(self, position=0, name=None, url=None, content=None):
         return self.get_element('draw:image')
 
-    def set_image(self, url_or_element, text=None):
+    def set_image(self, url_or_element):
         image = self.get_image()
         if image is None:
             if isinstance(url_or_element, Element):
@@ -417,8 +432,8 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
                         '[Image %s]\n' % element.get_attribute('xlink:href'))
             elif tag == 'draw:text-box':
                 subresult = ['  ']
-                for element in element.children:
-                    subresult.append(element.get_formatted_text(context))
+                for e in element.children:
+                    subresult.append(e.get_formatted_text(context))
                 subresult = ''.join(subresult)
                 subresult = subresult.replace('\n', '\n  ')
                 subresult.rstrip(' ')

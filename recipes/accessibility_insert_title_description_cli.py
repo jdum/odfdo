@@ -64,11 +64,8 @@ def set_infos(path, chk_footprint, title, description):
         try:
             image_content = document.get_part(image_url)
         except KeyError:
-            print(
-                "- not found inside document:",
-                path,
-            )
-            print("  image URL:", image_url)
+            print('- not found inside document:', path)
+            print('  image URI:', image_url)
             continue
         counter_image += 1
         footprint = make_footprint(image_content)
@@ -76,7 +73,7 @@ def set_infos(path, chk_footprint, title, description):
             counter_hit += 1
             frame = image.parent
             frame.svg_title = title
-            frame.description = description
+            frame.svg_description = description
             document_changed = True
     if document_changed:
         lst = path.split('.')
@@ -86,48 +83,47 @@ def set_infos(path, chk_footprint, title, description):
         document.save(new_name)
 
 
-if __name__ == '__main__':
-
-    usage = "usage: %prog -i IMAGE -t TITLE -d DESCRIPTION  ODF_sources"
-    description = "Insert a TITLE and DESCRIPTION to any instance of the image."
+def main():
+    usage = 'usage: %prog -i IMAGE -t TITLE -d DESCRIPTION  ODF_sources'
+    description = ('Insert a TITLE and DESCRIPTION to any instance of '
+                   'the image.')
     parser = optparse.OptionParser(usage, description=description)
     parser.add_option(
-        "-i",
-        "--image",
-        dest="image",
-        help="Image to look for in documents",
-        action="store",
-        type="string")
+        '-i',
+        '--image',
+        dest='image',
+        help='Image to look for in documents',
+        action='store',
+        type='string')
     parser.add_option(
-        "-t",
-        "--title",
-        dest="title",
-        help="Title of the image",
-        action="store",
-        type="string")
+        '-t',
+        '--title',
+        dest='title',
+        help='Title of the image',
+        action='store',
+        type='string')
     parser.add_option(
-        "-d",
-        "--description",
-        dest="description",
-        help="Description of the image",
-        action="store",
-        type="string")
-
+        '-d',
+        '--description',
+        dest='description',
+        help='Description of the image',
+        action='store',
+        type='string')
     options, sources = parser.parse_args()
     if not options.image:
-        print("Need some image !")
+        print('Need some image !')
         parser.print_help()
         exit(0)
     if not options.title:
-        print("Need some title !")
+        print('Need some title !')
         parser.print_help()
         exit(0)
     if not options.description:
-        print("Need some description !")
+        print('Need some description !')
         parser.print_help()
         exit(0)
     if not sources:
-        print("Need some ODF source !")
+        print('Need some ODF source !')
         parser.print_help()
         exit(0)
 
@@ -145,6 +141,11 @@ if __name__ == '__main__':
         else:
             set_infos(source, content_footprint, options.title,
                       options.description)
+
     elapsed = int(time.time() - t0)
-    print("%s images updated from %s images in %s ODF files in %s sec." %
-          (counter_hit, counter_image, counter_odf, elapsed))
+    print(f'{counter_hit} images updated from {counter_image} images '
+          f'in {counter_odf} ODF files in {elapsed} sec.')
+
+
+if __name__ == '__main__':
+    main()

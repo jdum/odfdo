@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,14 +20,14 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-
+"""get_value() and other utilities
+"""
 from datetime import date, datetime, timedelta
 from decimal import Decimal as dec
 from os import getcwd
 from os.path import splitdrive, join, sep
 from re import search
 from sys import _getframe, modules
-from warnings import warn
 from .const import ODF_PROPERTIES
 
 from .datatype import Boolean, Date, DateTime, Duration
@@ -52,16 +52,12 @@ DPI = 640 * dec('2.54') / 17
 
 
 def to_bytes(value):
-    if isinstance(value, bytes):
-        return value
     if isinstance(value, str):
         return value.encode('utf-8')
     return value
 
 
 def to_str(value):
-    if isinstance(value, str):
-        return value
     if isinstance(value, bytes):
         return value.decode('utf-8')
     return value
@@ -73,7 +69,7 @@ def _get_abspath(local_path):
 
     mname = _getframe(1).f_globals.get('__name__')
 
-    if mname == '__main__' or mname == '__init__':
+    if mname in ('__main__', '__init__'):
         mpath = getcwd()
     else:
         module = modules[mname]
@@ -233,7 +229,7 @@ def _family_style_tagname(family):
 
 
 def _get_style_family(name):
-    for family, (tagname, famattr) in FAMILY_MAPPING.items():
+    for family, (tagname, _famattr) in FAMILY_MAPPING.items():
         if tagname == name:
             return family
     return None
@@ -289,7 +285,7 @@ def _expand_properties(properties):
             return key
         return None
 
-    if type(properties) is dict:
+    if isinstance(properties, dict):
         expanded = {}
         for key in sorted(properties.keys()):
             prop_key = map_key(key)
@@ -297,7 +293,7 @@ def _expand_properties(properties):
                 continue
             expanded[prop_key] = to_str(properties[key])
 
-    elif type(properties) is list:
+    elif isinstance(properties, list):
         expanded = list(filter(None, (map_key(key) for key in properties)))
     return expanded
 
@@ -387,7 +383,7 @@ def _set_value_and_type(element,
             pass
         element._erase_text_content()
         return text
-    if type(value) is bool:
+    if isinstance(value, bool):
         if value_type is None:
             value_type = 'boolean'
         if text is None:
@@ -401,29 +397,24 @@ def _set_value_and_type(element,
         if text is None:
             text = str(value)
         value = str(value)
-    elif type(value) is date:
-        if value_type is None:
-            value_type = 'date'
-        if text is None:
-            text = str(Date.encode(value))
-        value = Date.encode(value)
-    elif type(value) is datetime:
+    elif isinstance(value, datetime):
         if value_type is None:
             value_type = 'date'
         if text is None:
             text = str(DateTime.encode(value))
         value = DateTime.encode(value)
-    elif type(value) is str:
+    elif isinstance(value, date):
+        if value_type is None:
+            value_type = 'date'
+        if text is None:
+            text = str(Date.encode(value))
+        value = Date.encode(value)
+    elif isinstance(value, str):
         if value_type is None:
             value_type = 'string'
         if text is None:
             text = str(value)
-    elif type(value) is str:
-        if value_type is None:
-            value_type = 'string'
-        if text is None:
-            text = value
-    elif type(value) is timedelta:
+    elif isinstance(value, timedelta):
         if value_type is None:
             value_type = 'time'
         if text is None:
@@ -466,7 +457,7 @@ def get_value(element, value_type=None, try_get_text=True, get_type=False):
         if get_type:
             return (value, value_type)
         return value  # value is already decoded by get_attribute for booleans
-    elif value_type in {'float', 'percentage', 'currency'}:
+    if value_type in {'float', 'percentage', 'currency'}:
         value = dec(element.get_attribute('office:value'))
         # Return 3 instead of 3.0 if possible
         if int(value) == value:
@@ -476,17 +467,16 @@ def get_value(element, value_type=None, try_get_text=True, get_type=False):
         if get_type:
             return (value, value_type)
         return value
-    elif value_type == 'date':
+    if value_type == 'date':
         value = element.get_attribute('office:date-value')
         if 'T' in value:
             if get_type:
                 return (DateTime.decode(value), value_type)
             return DateTime.decode(value)
-        else:
-            if get_type:
-                return (Date.decode(value), value_type)
-            return Date.decode(value)
-    elif value_type == 'string':
+        if get_type:
+            return (Date.decode(value), value_type)
+        return Date.decode(value)
+    if value_type == 'string':
         value = element.get_attribute('office:string-value')
         if value is not None:
             if get_type:
@@ -503,12 +493,12 @@ def get_value(element, value_type=None, try_get_text=True, get_type=False):
         if get_type:
             return (None, value_type)
         return None
-    elif value_type == 'time':
+    if value_type == 'time':
         value = Duration.decode(element.get_attribute('office:time-value'))
         if get_type:
             return (value, value_type)
         return value
-    elif value_type is None:
+    if value_type is None:
         if get_type:
             return (None, None)
         return None

@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,8 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-
+"""Reference related classes for "text:reference-..." tags
+"""
 from .element import Element, register_element_class
 
 
@@ -43,8 +44,8 @@ def _get_referenced(body, start, end, no_header, clean, as_xml, as_list):
 
 class Reference(Element):
     """A reference to a content marked by a reference mark.
-    The odf_reference element (<text:reference-ref>) represents a field that
-    references a <text:reference-mark-start> or <text:reference-mark> element.
+    The odf_reference element ("text:reference-ref") represents a field that
+    references a "text:reference-mark-start" or "text:reference-mark" element.
     Its text:reference-format attribute specifies what is displayed from the
     referenced element. Default is 'page'
     Actual content is not updated except for the 'text' format by the
@@ -102,8 +103,8 @@ class Reference(Element):
 
         Consider using: odfdo.paragraph.insert_reference()
 
-        The text:ref-name attribute identifies a <text:reference-mark> or
-        <text:referencemark-start> element by the value of that element's
+        The text:ref-name attribute identifies a "text:reference-mark" or
+        "text:referencemark-start" element by the value of that element's
         text:name attribute.
         If ref_format is 'text', the current text content of the reference_mark
         is retrieved.
@@ -163,14 +164,14 @@ Reference._define_attribut_property()
 class ReferenceMark(Element):
     """A point reference.
     A point reference marks a position in text and is represented by a single
-    <text:reference-mark> element.
+    "text:reference-mark" element.
     """
     _tag = 'text:reference-mark'
     _properties = (('name', 'text:name'), )
 
     def __init__(self, name='', **kwargs):
         """A point reference. A point reference marks a position in text and is
-        represented by a single <text:reference-mark> element.
+        represented by a single "text:reference-mark" element.
         Consider using the wrapper: odfdo.paragraph.set_reference_mark()
 
         Arguments:
@@ -186,14 +187,14 @@ ReferenceMark._define_attribut_property()
 
 
 class ReferenceMarkEnd(Element):
-    """The <text:reference-mark-end> element represents the end of a range
+    """The "text:reference-mark-end" element represents the end of a range
     reference.
     """
     _tag = 'text:reference-mark-end'
     _properties = (('name', 'text:name'), )
 
     def __init__(self, name='', **kwargs):
-        """The <text:reference-mark-end> element represent the end of a range
+        """The "text:reference-mark-end" element represent the end of a range
         reference.
         Consider using the wrappers: odfdo.paragraph.set_reference_mark() and
         odfdo.paragraph.set_reference_mark_end()
@@ -222,14 +223,14 @@ ReferenceMarkEnd._define_attribut_property()
 
 
 class ReferenceMarkStart(Element):
-    """The <text:reference-mark-start> element represents the start of a
+    """The "text:reference-mark-start" element represents the start of a
     range reference.
     """
     _tag = 'text:reference-mark-start'
     _properties = (('name', 'text:name'), )
 
     def __init__(self, name='', **kwargs):
-        """The <text:reference-mark-start> element represent the start of a range
+        """The "text:reference-mark-start" element represent the start of a range
         reference.
         Consider using the wrapper: odfdo.paragraph.set_reference_mark()
 
@@ -260,13 +261,13 @@ class ReferenceMarkStart(Element):
         """Return the document content between the start and end tags of the
         reference. The content returned by this method can spread over several
         headers and paragraphs.
-        By default, the content is returned as an <office:text> odf element.
+        By default, the content is returned as an "office:text" odf element.
 
 
         Arguments:
 
             no_header -- boolean (default to False), translate existing headers
-                         tags <text:h> into paragraphs <text:p>.
+                         tags "text:h" into paragraphs "text:p".
 
             clean -- boolean (default to True), suppress unwanted tags. Striped
                      tags are : 'text:change', 'text:change-start',
@@ -277,7 +278,7 @@ class ReferenceMarkStart(Element):
                       a XML string (serialization).
 
             as_list -- boolean (default to False), do not embed the returned
-                       content in a <office:text'> element, instead simply
+                       content in a "office:text'" element, instead simply
                        return a raw list of odf elements.
         """
         name = self.name

@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,13 +19,14 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-
-from .element import Element, register_element_class
+"""Link class for "text:a"
+"""
+from .element import register_element_class
 from .paragraph_base import ParagraphBase
 
 
 class Link(ParagraphBase):
-    """Link class, <text:a> odf_element.
+    """Link class, "text:a" ODF element.
     """
     _tag = 'text:a'
     _properties = (('url', 'xlink:href'), ('name',

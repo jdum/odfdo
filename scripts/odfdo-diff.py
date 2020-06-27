@@ -22,7 +22,7 @@
 
 from difflib import unified_diff, ndiff
 from optparse import OptionParser
-from sys import exit, stdout
+import sys
 from time import ctime
 from os import stat
 
@@ -30,8 +30,8 @@ from odfdo import __version__
 from odfdo import Document
 
 if __name__ == '__main__':
-    usage = "%prog <doc1.odt> <doc2.odt>"
-    description = "Show a diff between doc1.odt and doc2.odt"
+    usage = '%prog <doc1.odt> <doc2.odt>'
+    description = 'Show a diff between doc1.odt and doc2.odt'
     parser = OptionParser(usage, version=__version__, description=description)
 
     # --ndiff
@@ -48,14 +48,14 @@ if __name__ == '__main__':
     # Go !
     if len(args) != 2:
         parser.print_help()
-        exit(1)
+        sys.exit(1)
 
     # Open the 2 documents, diff only for ODT
     doc1 = Document(args[0])
     doc2 = Document(args[1])
     if doc1.get_type() != 'text' or doc2.get_type() != 'text':
         parser.print_help()
-        exit(1)
+        sys.exit(1)
 
     # Convert in text before the diff
     text1 = doc1.get_formatted_text(True).splitlines(True)

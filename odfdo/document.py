@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,22 +21,21 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-
-import sys
+"""Document class, root of the ODF document
+"""
 import os
+import posixpath
 from copy import deepcopy
 from mimetypes import guess_type
 from operator import itemgetter
 from uuid import uuid4
 
-from .version import __version__
-from .const import ODF_CONTENT, ODF_META, ODF_SETTINGS, ODF_STYLES, ODF_TEMPLATES
-from .const import ODF_MANIFEST
+from .const import (ODF_CONTENT, ODF_META, ODF_SETTINGS, ODF_STYLES,
+                    ODF_TEMPLATES, ODF_MANIFEST)
 from .container import Container
 from .content import Content
 from .manifest import Manifest
 from .meta import Meta
-from .style import Style
 #from .style import registered_styles
 from .styles import Styles
 #from utils import obsolete
@@ -129,7 +128,7 @@ class Document:
         self.container.open(target)
 
     @classmethod
-    def new(self, target='text'):
+    def new(cls, target='text'):
         doc = Document()
         doc.container = Container.new(target)
         return doc
@@ -149,6 +148,8 @@ class Document:
         'content', 'meta', 'settings', 'styles' and 'manifest' are shortcuts
         to the real path, e.g. content.xml, and return a dedicated object with
         its own API.
+
+        path formated as URI, so always use '/' separator
         """
         # "./ObjectReplacements/Object 1"
         path = path.lstrip('./')
@@ -168,6 +169,8 @@ class Document:
     def set_part(self, path, data):
         """Set the bytes of the given part. The path is relative to the
         archive, e.g. "Pictures/1003200258912EB1C3.jpg".
+
+        path formated as URI, so always use '/' separator
         """
         # "./ObjectReplacements/Object 1"
         path = path.lstrip('./')
@@ -214,7 +217,7 @@ class Document:
     @property
     def body(self):
         """Return the body element of the content part, where actual content
-        is inserted.
+        is stored.
         """
         if self.__body is None:
             content = self.get_part(ODF_CONTENT)
@@ -222,12 +225,16 @@ class Document:
         return self.__body
 
     def get_formatted_text(self, rst_mode=False):
+        """Return content as text, with some formatting.
+        """
         # For the moment, only "type='text'"
-        type = self.get_type()
-        if type not in ('text', 'text-template', 'presentation',
-                        'presentation-template'):
+        doc_type = self.get_type()
+        if doc_type not in {
+                'text', 'text-template', 'presentation',
+                'presentation-template'
+        }:
             raise NotImplementedError('Type of document "%s" not '
-                                      'supported yet' % type)
+                                      'supported yet' % doc_type)
         # Initialize an empty context
         context = {
             'document': self,
@@ -305,6 +312,8 @@ class Document:
         return ''.join(result)
 
     def get_formated_meta(self):
+        """Return meta informations as text, with some formatting.
+        """
         result = []
 
         meta = self.get_part(ODF_META)
@@ -329,8 +338,8 @@ class Document:
         result.append("Statistic:")
         statistic = meta.get_statistic()
         for name, value in statistic.items():
-            result.append("  - %s: %s" %
-                          (name[5:].replace('-', ' ').capitalize(), value))
+            result.append("  - %s: %s" % (name[5:].replace(
+                '-', ' ').capitalize(), value))
 
         # User defined metadata
         result.append("User defined metadata:")
@@ -341,7 +350,7 @@ class Document:
         # And the description
         print_info("Description", meta.get_description())
 
-        return "\n".join(result) + '\n'
+        return '\n'.join(result) + '\n'
 
     def add_file(self, path_or_file):
         """Insert a file from a path or a fike-like object in the container.
@@ -351,7 +360,7 @@ class Document:
 
             path_or_file -- str or file-like
 
-        Return: str
+        Return: str (URI)
         """
         name = None
         close_after = False
@@ -359,14 +368,13 @@ class Document:
         manifest = self.get_part(ODF_MANIFEST)
         medias = manifest.get_paths()
 
-        if type(path_or_file) is str or type(path_or_file) is str:
-            path_or_file = path_or_file
+        if isinstance(path_or_file, str):
             handler = open(path_or_file, 'rb')
             name = path_or_file
             close_after = True
         else:
             handler = path_or_file
-            name = getattr(_file, 'name')
+            name = getattr(path_or_file, 'name', None)
         name = os.path.basename(name)
         # Generate a safe portable name
         uuid = str(uuid4())
@@ -377,18 +385,17 @@ class Document:
             root, extension = os.path.splitext(name)
             extension = extension.lower()
             name = root + extension
-            media_type, encoding = guess_type(name)
+            media_type, _encoding = guess_type(name)
             # Check this name is already used in the document
-            fullpath = 'Pictures/%s' % name
-            if fullpath in medias:
+            if posixpath.join('Pictures', name) in medias:
                 root = '%s_%s' % (root, uuid)
                 name = root + extension
-                media_type, encoding = guess_type(name)
+                media_type, _encoding = guess_type(name)
 
         if manifest.get_media_type('Pictures/') is None:
             manifest.add_full_path('Pictures/')
 
-        full_path = os.path.join('Pictures', name)
+        full_path = posixpath.join('Pictures', name)
         self.container.set_part(full_path, handler.read())
 
         # Update manifest
@@ -414,22 +421,21 @@ class Document:
                     xmlparts[key] = value.clone
                 setattr(clone, name, xmlparts)
             else:
-                value = getattr(self, name)
-                value = deepcopy(value)
+                value = deepcopy(getattr(self, name))
                 setattr(clone, name, value)
         return clone
 
     def save(self, target=None, packaging=None, pretty=False, backup=False):
         """Save the document, at the same place it was opened or at the given
         target path. Target can also be a file-like object. It can be saved
-        as a Zip file (default) or a flat XML file (unimplemented). XML parts
-        can be pretty printed.
+        as a Zip file (default) or as files in a folder (for debugging
+        purpose). XML parts can be pretty printed.
 
         Arguments:
 
             target -- str or file-like object
 
-            packaging -- 'zip' or 'flat', or for debugging purpose 'folder'
+            packaging -- 'zip' or 'folder'
 
             pretty -- bool
 
@@ -437,8 +443,7 @@ class Document:
         """
         # Some advertising
         meta = self.get_part(ODF_META)
-        if not meta._generator_modified:
-            meta.set_generator("odfdo %s" % __version__)
+        meta.set_generator_default()
         # Synchronize data with container
         container = self.container
         for path, part in self.__xmlparts.items():
@@ -453,8 +458,8 @@ class Document:
         content = self.get_part(ODF_CONTENT)
         styles = self.get_part(ODF_STYLES)
         family = to_str(family)
-        return (content.get_styles(family=family) +
-                styles.get_styles(family=family, automatic=automatic))
+        return (content.get_styles(family=family) + styles.get_styles(
+            family=family, automatic=automatic))
 
     def get_style(self, family, name_or_element=None, display_name=None):
         """Return the style uniquely identified by the name/family pair. If
@@ -665,18 +670,18 @@ class Document:
         infos.sort(key=itemgetter('type', 'used'), reverse=True)
         max_family = str(max([len(x['family']) for x in infos]))
         max_parent = str(max([len(x['parent']) for x in infos]))
-        format = ("%(type)s used:%(used)s family:%(family)-0" + max_family +
-                  "s parent:%(parent)-0" + max_parent + "s name:%(name)s")
+        formater = ("%(type)s used:%(used)s family:%(family)-0" + max_family +
+                    "s parent:%(parent)-0" + max_parent + "s name:%(name)s")
         output = []
         for info in infos:
-            line = format % info
+            line = formater % info
             if info['display_name']:
                 line += ' display_name:' + info['display_name']
             output.append(line)
             if info['properties']:
                 for name, value in info['properties'].items():
                     output.append("   - %s: %s" % (name, value))
-        output.append("")
+        output.append('')
         return '\n'.join(output)
 
     def delete_styles(self):
@@ -731,10 +736,10 @@ class Document:
             else:
                 raise NotImplementedError(partname)
             # Implemented containers
-            if container_name not in ('office:styles',
-                                      'office:automatic-styles',
-                                      'office:master-styles',
-                                      'office:font-face-decls'):
+            if container_name not in {
+                    'office:styles', 'office:automatic-styles',
+                    'office:master-styles', 'office:font-face-decls'
+            }:
                 raise NotImplementedError(container_name)
             dest = part.get_element('//%s' % container_name)
             # Implemented style types

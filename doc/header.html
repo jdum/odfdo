@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.3" />
+<title>odfdo.header API documentation</title>
+<meta name="description" content="Header class for &#34;text:h&#34;" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>odfdo.header</code></h1>
+</header>
+<section id="section-intro">
+<p>Header class for "text:h"</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+# Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
+#
+# Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an &#34;AS IS&#34; BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#
+# Authors (odfdo project): jerome.dumonteil@gmail.com
+# The odfdo project is a derivative work of the lpod-python project:
+# https://github.com/lpod/lpod-python
+# Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
+&#34;&#34;&#34;Header class for &#34;text:h&#34;
+&#34;&#34;&#34;
+from re import sub
+
+from .paragraph import Paragraph
+from .element import register_element_class
+
+
+class Header(Paragraph):
+    &#34;&#34;&#34;Specialised paragraph for headings &#34;text:h&#34;.
+    &#34;&#34;&#34;
+    _tag = &#39;text:h&#39;
+    _properties = (
+        (&#39;level&#39;, &#39;text:outline-level&#39;),
+        (&#39;restart_numbering&#39;, &#39;text:restart-numbering&#39;),
+        (&#39;start_value&#39;, &#39;text:start-value&#39;),
+        (&#39;suppress_numbering&#39;, &#39;text:suppress-numbering&#39;),
+    )
+
+    def __init__(self,
+                 level=1,
+                 text=None,
+                 restart_numbering=False,
+                 start_value=None,
+                 suppress_numbering=False,
+                 style=None,
+                 **kwargs):
+        &#34;&#34;&#34;Create a header element of the given style and level, containing the
+        optional given text.
+
+        Level count begins at 1.
+
+        Arguments:
+
+            level -- int
+
+            text -- str
+
+            restart_numbering -- bool
+
+            start_value -- int
+
+            style -- str
+
+        Return: Header
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+        if self._do_init:
+            self.level = int(level)
+            if text:
+                self.text = text
+            if restart_numbering:
+                self.restart_numbering = True
+            if start_value:
+                self.start_value = start_value
+            if suppress_numbering:
+                self.suppress_numbering = True
+            if style:
+                self.style = style
+
+    def get_formatted_text(self, context=None, simple=False):
+        if not context:
+            context = {
+                &#39;document&#39;: None,
+                &#39;footnotes&#39;: [],
+                &#39;endnotes&#39;: [],
+                &#39;annotations&#39;: [],
+                &#39;rst_mode&#39;: False,
+                &#39;img_counter&#39;: 0,
+                &#39;images&#39;: [],
+                &#39;no_img_level&#39;: 0
+            }
+        context[&#39;no_img_level&#39;] += 1
+        title = super().get_formatted_text(context)
+        context[&#39;no_img_level&#39;] -= 1
+        title = title.strip()
+        title = sub(r&#39;\s+&#39;, &#39; &#39;, title)
+
+        # No rst_mode ?
+        if not context[&#34;rst_mode&#34;]:
+            return title
+        # If here in rst_mode!
+
+        # Get the level, max 5!
+        LEVEL_STYLES = &#34;#=-~`+^°&#39;.&#34;
+        level = int(self.level)
+        if level &gt; len(LEVEL_STYLES):
+            raise ValueError(&#34;Too many levels of heading&#34;)
+
+        # And return the result
+        result = [
+            &#39;\n&#39;, title, &#39;\n&#39;, LEVEL_STYLES[level - 1] * len(title), &#39;\n&#39;
+        ]
+        return &#39;&#39;.join(result)
+
+
+Header._define_attribut_property()
+
+register_element_class(Header)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="odfdo.header.Header"><code class="flex name class">
+<span>class <span class="ident">Header</span></span>
+<span>(</span><span>level=1, text=None, restart_numbering=False, start_value=None, suppress_numbering=False, style=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Specialised paragraph for headings "text:h".</p>
+<p>Create a header element of the given style and level, containing the
+optional given text.</p>
+<p>Level count begins at 1.</p>
+<h2 id="arguments">Arguments</h2>
+<p>level &ndash; int</p>
+<p>text &ndash; str</p>
+<p>restart_numbering &ndash; bool</p>
+<p>start_value &ndash; int</p>
+<p>style &ndash; str</p>
+<p>Return: Header</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Header(Paragraph):
+    &#34;&#34;&#34;Specialised paragraph for headings &#34;text:h&#34;.
+    &#34;&#34;&#34;
+    _tag = &#39;text:h&#39;
+    _properties = (
+        (&#39;level&#39;, &#39;text:outline-level&#39;),
+        (&#39;restart_numbering&#39;, &#39;text:restart-numbering&#39;),
+        (&#39;start_value&#39;, &#39;text:start-value&#39;),
+        (&#39;suppress_numbering&#39;, &#39;text:suppress-numbering&#39;),
+    )
+
+    def __init__(self,
+                 level=1,
+                 text=None,
+                 restart_numbering=False,
+                 start_value=None,
+                 suppress_numbering=False,
+                 style=None,
+                 **kwargs):
+        &#34;&#34;&#34;Create a header element of the given style and level, containing the
+        optional given text.
+
+        Level count begins at 1.
+
+        Arguments:
+
+            level -- int
+
+            text -- str
+
+            restart_numbering -- bool
+
+            start_value -- int
+
+            style -- str
+
+        Return: Header
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+        if self._do_init:
+            self.level = int(level)
+            if text:
+                self.text = text
+            if restart_numbering:
+                self.restart_numbering = True
+            if start_value:
+                self.start_value = start_value
+            if suppress_numbering:
+                self.suppress_numbering = True
+            if style:
+                self.style = style
+
+    def get_formatted_text(self, context=None, simple=False):
+        if not context:
+            context = {
+                &#39;document&#39;: None,
+                &#39;footnotes&#39;: [],
+                &#39;endnotes&#39;: [],
+                &#39;annotations&#39;: [],
+                &#39;rst_mode&#39;: False,
+                &#39;img_counter&#39;: 0,
+                &#39;images&#39;: [],
+                &#39;no_img_level&#39;: 0
+            }
+        context[&#39;no_img_level&#39;] += 1
+        title = super().get_formatted_text(context)
+        context[&#39;no_img_level&#39;] -= 1
+        title = title.strip()
+        title = sub(r&#39;\s+&#39;, &#39; &#39;, title)
+
+        # No rst_mode ?
+        if not context[&#34;rst_mode&#34;]:
+            return title
+        # If here in rst_mode!
+
+        # Get the level, max 5!
+        LEVEL_STYLES = &#34;#=-~`+^°&#39;.&#34;
+        level = int(self.level)
+        if level &gt; len(LEVEL_STYLES):
+            raise ValueError(&#34;Too many levels of heading&#34;)
+
+        # And return the result
+        result = [
+            &#39;\n&#39;, title, &#39;\n&#39;, LEVEL_STYLES[level - 1] * len(title), &#39;\n&#39;
+        ]
+        return &#39;&#39;.join(result)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="odfdo.paragraph.Paragraph" href="paragraph.html#odfdo.paragraph.Paragraph">Paragraph</a></li>
+<li><a title="odfdo.paragraph_base.ParagraphBase" href="paragraph_base.html#odfdo.paragraph_base.ParagraphBase">ParagraphBase</a></li>
+<li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="odfdo.header.Header.level"><code class="name">var <span class="ident">level</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute text:outline-level</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.header.Header.restart_numbering"><code class="name">var <span class="ident">restart_numbering</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute text:restart-numbering</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.header.Header.start_value"><code class="name">var <span class="ident">start_value</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute text:start-value</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.header.Header.suppress_numbering"><code class="name">var <span class="ident">suppress_numbering</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute text:suppress-numbering</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#39;true&#39;, &#39;false&#39;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="odfdo.paragraph.Paragraph" href="paragraph.html#odfdo.paragraph.Paragraph">Paragraph</a></b></code>:
+<ul class="hlist">
+<li><code><a title="odfdo.paragraph.Paragraph.append" href="element.html#odfdo.element.Element.append">append</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.append_named_range" href="element.html#odfdo.element.Element.append_named_range">append_named_range</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.append_plain_text" href="paragraph_base.html#odfdo.paragraph_base.ParagraphBase.append_plain_text">append_plain_text</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.clear" href="element.html#odfdo.element.Element.clear">clear</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.dc_creator" href="element.html#odfdo.element.Element.dc_creator">dc_creator</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.dc_date" href="element.html#odfdo.element.Element.dc_date">dc_date</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_bookmark_ends" href="element.html#odfdo.element.Element.get_bookmark_ends">get_bookmark_ends</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_bookmark_start" href="element.html#odfdo.element.Element.get_bookmark_start">get_bookmark_start</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_bookmark_starts" href="element.html#odfdo.element.Element.get_bookmark_starts">get_bookmark_starts</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_bookmarks" href="element.html#odfdo.element.Element.get_bookmarks">get_bookmarks</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_changes_ids" href="element.html#odfdo.element.Element.get_changes_ids">get_changes_ids</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_draw_connector" href="element.html#odfdo.element.Element.get_draw_connector">get_draw_connector</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_draw_connectors" href="element.html#odfdo.element.Element.get_draw_connectors">get_draw_connectors</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_draw_ellipse" href="element.html#odfdo.element.Element.get_draw_ellipse">get_draw_ellipse</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_draw_ellipses" href="element.html#odfdo.element.Element.get_draw_ellipses">get_draw_ellipses</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_draw_line" href="element.html#odfdo.element.Element.get_draw_line">get_draw_line</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_draw_lines" href="element.html#odfdo.element.Element.get_draw_lines">get_draw_lines</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_draw_page" href="element.html#odfdo.element.Element.get_draw_page">get_draw_page</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_draw_pages" href="element.html#odfdo.element.Element.get_draw_pages">get_draw_pages</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_draw_rectangle" href="element.html#odfdo.element.Element.get_draw_rectangle">get_draw_rectangle</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_draw_rectangles" href="element.html#odfdo.element.Element.get_draw_rectangles">get_draw_rectangles</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_formatted_text" href="element.html#odfdo.element.Element.get_formatted_text">get_formatted_text</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_frame" href="element.html#odfdo.element.Element.get_frame">get_frame</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_frames" href="element.html#odfdo.element.Element.get_frames">get_frames</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_header" href="element.html#odfdo.element.Element.get_header">get_header</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_headers" href="element.html#odfdo.element.Element.get_headers">get_headers</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_image" href="element.html#odfdo.element.Element.get_image">get_image</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_images" href="element.html#odfdo.element.Element.get_images">get_images</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_link" href="element.html#odfdo.element.Element.get_link">get_link</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_links" href="element.html#odfdo.element.Element.get_links">get_links</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_list" href="element.html#odfdo.element.Element.get_list">get_list</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_lists" href="element.html#odfdo.element.Element.get_lists">get_lists</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_named_range" href="element.html#odfdo.element.Element.get_named_range">get_named_range</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_named_ranges" href="element.html#odfdo.element.Element.get_named_ranges">get_named_ranges</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_note" href="element.html#odfdo.element.Element.get_note">get_note</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_notes" href="element.html#odfdo.element.Element.get_notes">get_notes</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_office_names" href="element.html#odfdo.element.Element.get_office_names">get_office_names</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_orphan_draw_connectors" href="element.html#odfdo.element.Element.get_orphan_draw_connectors">get_orphan_draw_connectors</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_paragraph" href="element.html#odfdo.element.Element.get_paragraph">get_paragraph</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_paragraphs" href="element.html#odfdo.element.Element.get_paragraphs">get_paragraphs</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_reference_mark" href="element.html#odfdo.element.Element.get_reference_mark">get_reference_mark</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_reference_mark_end" href="element.html#odfdo.element.Element.get_reference_mark_end">get_reference_mark_end</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_reference_mark_ends" href="element.html#odfdo.element.Element.get_reference_mark_ends">get_reference_mark_ends</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_reference_mark_single" href="element.html#odfdo.element.Element.get_reference_mark_single">get_reference_mark_single</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_reference_mark_start" href="element.html#odfdo.element.Element.get_reference_mark_start">get_reference_mark_start</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_reference_mark_starts" href="element.html#odfdo.element.Element.get_reference_mark_starts">get_reference_mark_starts</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_reference_marks" href="element.html#odfdo.element.Element.get_reference_marks">get_reference_marks</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_reference_marks_single" href="element.html#odfdo.element.Element.get_reference_marks_single">get_reference_marks_single</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_references" href="element.html#odfdo.element.Element.get_references">get_references</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_section" href="element.html#odfdo.element.Element.get_section">get_section</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_sections" href="element.html#odfdo.element.Element.get_sections">get_sections</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_span" href="element.html#odfdo.element.Element.get_span">get_span</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_spans" href="element.html#odfdo.element.Element.get_spans">get_spans</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_style" href="element.html#odfdo.element.Element.get_style">get_style</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_styled_elements" href="element.html#odfdo.element.Element.get_styled_elements">get_styled_elements</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_table" href="element.html#odfdo.element.Element.get_table">get_table</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_tables" href="element.html#odfdo.element.Element.get_tables">get_tables</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_text_change" href="element.html#odfdo.element.Element.get_text_change">get_text_change</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_text_change_deletion" href="element.html#odfdo.element.Element.get_text_change_deletion">get_text_change_deletion</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_text_change_deletions" href="element.html#odfdo.element.Element.get_text_change_deletions">get_text_change_deletions</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_text_change_end" href="element.html#odfdo.element.Element.get_text_change_end">get_text_change_end</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_text_change_ends" href="element.html#odfdo.element.Element.get_text_change_ends">get_text_change_ends</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_text_change_start" href="element.html#odfdo.element.Element.get_text_change_start">get_text_change_start</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_text_change_starts" href="element.html#odfdo.element.Element.get_text_change_starts">get_text_change_starts</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_text_changes" href="element.html#odfdo.element.Element.get_text_changes">get_text_changes</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_toc" href="element.html#odfdo.element.Element.get_toc">get_toc</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_tocs" href="element.html#odfdo.element.Element.get_tocs">get_tocs</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_tracked_changes" href="element.html#odfdo.element.Element.get_tracked_changes">get_tracked_changes</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_user_defined" href="element.html#odfdo.element.Element.get_user_defined">get_user_defined</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_user_defined_list" href="element.html#odfdo.element.Element.get_user_defined_list">get_user_defined_list</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_user_defined_value" href="element.html#odfdo.element.Element.get_user_defined_value">get_user_defined_value</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_user_field_decl" href="element.html#odfdo.element.Element.get_user_field_decl">get_user_field_decl</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_user_field_decl_list" href="element.html#odfdo.element.Element.get_user_field_decl_list">get_user_field_decl_list</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_user_field_decls" href="element.html#odfdo.element.Element.get_user_field_decls">get_user_field_decls</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_user_field_value" href="element.html#odfdo.element.Element.get_user_field_value">get_user_field_value</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_variable_decl" href="element.html#odfdo.element.Element.get_variable_decl">get_variable_decl</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_variable_decl_list" href="element.html#odfdo.element.Element.get_variable_decl_list">get_variable_decl_list</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_variable_decls" href="element.html#odfdo.element.Element.get_variable_decls">get_variable_decls</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_variable_set" href="element.html#odfdo.element.Element.get_variable_set">get_variable_set</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_variable_set_value" href="element.html#odfdo.element.Element.get_variable_set_value">get_variable_set_value</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_variable_sets" href="element.html#odfdo.element.Element.get_variable_sets">get_variable_sets</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.index" href="element.html#odfdo.element.Element.index">index</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.insert" href="element.html#odfdo.element.Element.insert">insert</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.insert_annotation" href="paragraph.html#odfdo.paragraph.Paragraph.insert_annotation">insert_annotation</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.insert_annotation_end" href="paragraph.html#odfdo.paragraph.Paragraph.insert_annotation_end">insert_annotation_end</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.insert_reference" href="paragraph.html#odfdo.paragraph.Paragraph.insert_reference">insert_reference</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.is_empty" href="element.html#odfdo.element.Element.is_empty">is_empty</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.match" href="element.html#odfdo.element.Element.match">match</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.remove_link" href="paragraph.html#odfdo.paragraph.Paragraph.remove_link">remove_link</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.remove_links" href="paragraph.html#odfdo.paragraph.Paragraph.remove_links">remove_links</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.remove_span" href="paragraph.html#odfdo.paragraph.Paragraph.remove_span">remove_span</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.remove_spans" href="paragraph.html#odfdo.paragraph.Paragraph.remove_spans">remove_spans</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.set_bookmark" href="paragraph.html#odfdo.paragraph.Paragraph.set_bookmark">set_bookmark</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.set_link" href="paragraph.html#odfdo.paragraph.Paragraph.set_link">set_link</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.set_reference_mark" href="paragraph.html#odfdo.paragraph.Paragraph.set_reference_mark">set_reference_mark</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.set_reference_mark_end" href="paragraph.html#odfdo.paragraph.Paragraph.set_reference_mark_end">set_reference_mark_end</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.set_span" href="paragraph.html#odfdo.paragraph.Paragraph.set_span">set_span</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.style" href="paragraph_base.html#odfdo.paragraph_base.ParagraphBase.style">style</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.tag" href="element.html#odfdo.element.Element.tag">tag</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.tail" href="element.html#odfdo.element.Element.tail">tail</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.text" href="element.html#odfdo.element.Element.text">text</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.text_content" href="element.html#odfdo.element.Element.text_content">text_content</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.xpath" href="element.html#odfdo.element.Element.xpath">xpath</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="odfdo" href="index.html">odfdo</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="odfdo.header.Header" href="#odfdo.header.Header">Header</a></code></h4>
+<ul class="">
+<li><code><a title="odfdo.header.Header.level" href="#odfdo.header.Header.level">level</a></code></li>
+<li><code><a title="odfdo.header.Header.restart_numbering" href="#odfdo.header.Header.restart_numbering">restart_numbering</a></code></li>
+<li><code><a title="odfdo.header.Header.start_value" href="#odfdo.header.Header.start_value">start_value</a></code></li>
+<li><code><a title="odfdo.header.Header.suppress_numbering" href="#odfdo.header.Header.suppress_numbering">suppress_numbering</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.3</a>.</p>
+</footer>
+</body>
+</html>

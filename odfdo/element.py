@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,8 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-
+"""Element, super class of all ODF classes
+"""
 import sys
 from copy import deepcopy
 import re
@@ -312,7 +313,7 @@ class Element:
                 except KeyError:
                     pass
                 return
-            if type(value) is bool:
+            if isinstance(value, bool):
                 value = Boolean.encode(value)
             self.__element.set(name, str(value))
 
@@ -327,11 +328,12 @@ class Element:
                 family = tpl[2]
             else:
                 family = None
-            setattr(cls, name,
-                    property(
-                        cls._generic_attrib_getter(attr, family),
-                        cls._generic_attrib_setter(attr, family), None,
-                        f'Get /set the attribute {attr}'))
+            setattr(
+                cls, name,
+                property(
+                    cls._generic_attrib_getter(attr, family),
+                    cls._generic_attrib_setter(attr, family), None,
+                    f'Get/set the attribute {attr}'))
 
     def _insert(self,
                 element,
@@ -543,7 +545,7 @@ class Element:
 
     @property
     def tag(self):
-        """Get /set the underlying xml tag with the given qualified name.
+        """Get/set the underlying xml tag with the given qualified name.
 
         Warning: direct change of tag does not change the element class.
 
@@ -651,7 +653,7 @@ class Element:
         if uri is not None:
             name = '{%s}%s' % (uri, name)
 
-        if type(value) is bool:
+        if isinstance(value, bool):
             value = Boolean.encode(value)
         elif value is None:
             try:
@@ -1064,7 +1066,7 @@ class Element:
 
             position -- int
         """
-        child_tag = element.tag
+        # child_tag = element.tag
         current = self.__element
         element = element.__element
         if start:
@@ -1093,7 +1095,7 @@ class Element:
             index = parent.index(current)
             parent.insert(index, element)
         else:
-            raise ValueError("(xml)position must be defined")
+            raise ValueError('(xml)position must be defined')
 
     def extend(self, odf_elements):
         """Fast append elements at the end of ourself using extend.
@@ -1230,7 +1232,7 @@ class Element:
         element, modified = Element._strip_tags(self, strip, protect,
                                                 protected)
         if modified:
-            if type(element) == list and default:
+            if isinstance(element, list) and default:
                 new = Element.from_tag(default)
                 for content in element:
                     if isinstance(content, Element):
@@ -1256,7 +1258,7 @@ class Element:
                 child, strip, protect, protect_below)
             if is_modified:
                 modified = True
-            if type(striped_child) == list:
+            if isinstance(striped_child, list):
                 children.extend(striped_child)
             else:
                 children.append(striped_child)
@@ -1279,7 +1281,7 @@ class Element:
         for child in children:
             element.append(child)
         if tail is not None:
-            if type(element) == list:
+            if isinstance(element, list):
                 element.append(tail)
             else:
                 element.tail = tail
@@ -1294,9 +1296,9 @@ class Element:
         elements = xpath_instance(element)
         result = []
         for obj in elements:
-            if type(obj) in (_ElementStringResult, _ElementUnicodeResult):
+            if isinstance(obj, (_ElementStringResult, _ElementUnicodeResult)):
                 result.append(Text(obj))
-            elif type(obj) is _Element:
+            elif isinstance(obj, _Element):
                 result.append(Element.from_tag(obj))
             else:
                 result.append(obj)
@@ -2431,10 +2433,9 @@ class Element:
                        f'| descendant::text:reference-mark'
                        f'[@text:name="{name}"]')
             return _get_element(self, request, position=0)
-        else:
-            request = ('descendant::text:reference-mark-start '
-                       '| descendant::text:reference-mark')
-            return _get_element(self, request, position)
+        request = ('descendant::text:reference-mark-start '
+                   '| descendant::text:reference-mark')
+        return _get_element(self, request, position)
 
     def get_references(self, name=None):
         """Return all the references (text:reference-ref). If name is
@@ -2792,10 +2793,9 @@ class Element:
                        '| descendant::text:change[@text:change-id="%s"]') % (
                            idx, idx)
             return _get_element(self, request, position=0)
-        else:
-            request = ('descendant::text:change-start '
-                       '| descendant::text:change')
-            return _get_element(self, request, position)
+        request = ('descendant::text:change-start '
+                   '| descendant::text:change')
+        return _get_element(self, request, position)
 
     # Table Of Content
 

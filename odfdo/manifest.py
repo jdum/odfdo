@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +19,11 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
-
+"""Manifest class for manifest.xml part
+"""
 from .element import Element
 from .xmlpart import XmlPart
-from .utils import to_bytes, to_str
+from .utils import to_str
 
 
 class Manifest(XmlPart):

@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,17 +18,18 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-
+"""DrawImage class for "draw:image"
+"""
 from .element import Element, register_element_class
 
 
 class DrawImage(Element):
-    """The <draw:image> element represents an image. An image can be
+    """The "draw:image" element represents an image. An image can be
     either:
     - A link to an external resource or
     - Embedded in the document (Not implemented in this version)
 
-    Warning: image elements must be stored in a frame <draw:frame>,
+    Warning: image elements must be stored in a frame "draw:frame",
     see Frame().
     """
     _tag = 'draw:image'
@@ -38,7 +39,7 @@ class DrawImage(Element):
 
     def __init__(self,
                  url='',
-                 type='simple',
+                 xlink_type='simple',
                  show='embed',
                  actuate='onLoad',
                  filter_name=None,
@@ -62,9 +63,10 @@ class DrawImage(Element):
         super().__init__(**kw)
         if self._do_init:
             self.url = url
-            self.type = type
+            self.type = xlink_type
             self.show = show
             self.actuate = actuate
+            self.filter_name = filter_name
 
 
 DrawImage._define_attribut_property()
@@ -82,10 +84,10 @@ class DrawFillImage(DrawImage):
                  height=None,
                  width=None,
                  **kw):
-        """The <draw:fill-image> element specifies a link to a bitmap
+        """The "draw:fill-image" element specifies a link to a bitmap
         resource. Fill image are not available as automatic styles.
-        The <draw:fill-image> element is usable within the following element:
-        <office:styles>
+        The "draw:fill-image" element is usable within the following element:
+        "office:styles"
 
         Arguments:
 

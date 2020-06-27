@@ -22,36 +22,36 @@
 #          Romain Gauthier <romain@itaapy.com>
 
 from optparse import OptionParser
-from sys import exit, stdout
+import sys
 
 from odfdo import __version__
 from odfdo.const import ODF_CLASSES
 from odfdo import Document
-from odfdo.scriptutils import add_option_output, StdoutWriter, printinfo
-from odfdo.scriptutils import check_target_file, printerr
+from odfdo.scriptutils import (add_option_output, StdoutWriter, printinfo,
+                               check_target_file, printerr)
 
 
 def show_styles(document,
-                target,
+                target=None,
                 automatic=True,
                 common=True,
                 properties=False):
     """Show the different styles of a document and their properties.
     """
-    output =         document.show_styles(
-            automatic=automatic, common=common, properties=properties)
+    output = document.show_styles(
+        automatic=automatic, common=common, properties=properties)
     # Print the output
     if target is None:
         print(output)
         return
-    target.write(output)
-    target.flush()
-    tatget.close()
+    with open(target, 'wb') as f:
+        f.write(output)
+
 
 def delete_styles(document, target, pretty=True):
     n = document.delete_styles()
     document.save(target=target, pretty=pretty)
-    printinfo(n, "styles removed (0 error, 0 warning).")
+    printinfo(n, 'styles removed (0 error, 0 warning).')
 
 
 def find_presentation_list_style(body):
@@ -70,7 +70,7 @@ def merge_presentation_styles(document, source):
     master_page_name = first_page.master_page
     print(master_page_name)
     first_master_page = document.get_style('master-page', master_page_name)
-    printinfo("master page used:", first_master_page.display_name)
+    printinfo('master page used:', first_master_page.display_name)
     body = document.get_body
     for page in body.get_draw_pages():
         page.set_style_attribute(first_page.get_style())
@@ -101,30 +101,28 @@ def merge_presentation_styles(document, source):
             list_style = find_presentation_list_style(source_body)
             for page in body.get_draw_pages():
                 for frame in page.get_frames(presentation_class='outline'):
-                    for list in frame.get_lists():
-                        list.set_style_attribute(list_style)
+                    for lst in frame.get_lists():
+                        lst.set_style_attribute(list_style)
 
 
 def merge_styles(document, from_file, target=None, pretty=True):
     source = Document(from_file)
     document.delete_styles()
     document.merge_styles_from(source)
-    type = document.get_type()
+    doc_type = document.get_type()
     # Enhance Presentation merge
-    if type in ('presentation', 'presentation-template'):
-        printinfo("merging presentation styles...")
+    if doc_type in {'presentation', 'presentation-template'}:
+        printinfo('merging presentation styles...')
         merge_presentation_styles(document, source)
     document.save(target=target, pretty=pretty)
-    printinfo("Done (0 error, 0 warning).")
+    printinfo('Done (0 error, 0 warning).')
 
 
-if __name__ == '__main__':
+def main():
     # Options initialisation
     usage = '%prog [options] <file>'
-    description = ("A command line interface to manipulate styles of "
-                   "OpenDocument files.")
-    #" By default prints all the styles to the "
-    #"standard output.")
+    description = ('A command line interface to manipulate styles of '
+                   'OpenDocument files.')
     parser = OptionParser(usage, version=__version__, description=description)
     # --automatic
     parser.add_option(
@@ -132,62 +130,62 @@ if __name__ == '__main__':
         '--automatic',
         action='store_true',
         default=False,
-        help="show automatic styles only")
+        help='show automatic styles only')
     # --common
     parser.add_option(
         '-c',
         '--common',
         action='store_true',
         default=False,
-        help="show common styles only")
+        help='show common styles only')
     # --properties
     parser.add_option(
         '-p',
         '--properties',
         action='store_true',
-        help="show properties of styles")
+        help='show properties of styles')
     # --delete
-    help = ("return a copy with all styles (except default) deleted from "
-            "<file>")
-    parser.add_option('-d', '--delete', action='store_true', help=help)
+    msg = ('return a copy with all styles (except default) deleted from '
+           '<file>')
+    parser.add_option('-d', '--delete', action='store_true', help=msg)
     # --merge
-    help = ('copy styles from FILE to <file>. Any style with the same name '
-            'will be replaced.')
+    msg = ('copy styles from FILE to <file>. Any style with the same '
+           'name will be replaced.')
     parser.add_option(
-        '-m', '--merge-styles-from', dest='merge', metavar='FILE', help=help)
+        '-m', '--merge-styles-from', dest='merge', metavar='FILE', help=msg)
     # --output
     add_option_output(parser)
-    #Parse options
+    # Parse options
     options, args = parser.parse_args()
     if len(args) != 1:
         parser.print_help()
-        exit(1)
-    document = Document(args[0])
+        sys.exit(1)
+    doc = Document(args[0])
     if options.delete:
         target = options.output
         if target is None:
-            printerr("Will not delete in-place: ",
+            printerr('Will not delete in-place: ',
                      'output file needed or "-" for stdout')
-            exit(1)
-        elif target == "-":
+            sys.exit(1)
+        elif target == '-':
             target = StdoutWriter()
         else:
             check_target_file(target)
-        delete_styles(document, target)
+        delete_styles(doc, target)
     elif options.merge:
-        merge_styles(document, options.merge, target=options.output)
+        merge_styles(doc, options.merge, target=options.output)
     else:
         automatic = options.automatic
         common = options.common
         if not automatic ^ common:
             automatic, common = True, True
-        target = options.output
-        target = None
-        if target is not None:
-            target = open(target, 'wb')
         show_styles(
-            document,
-            target,
+            doc,
+            options.output,
             automatic=automatic,
             common=common,
             properties=options.properties)
+
+
+if __name__ == '__main__':
+    main()

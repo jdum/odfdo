@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,11 +21,12 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-
+"""Base class ParagraphBase and Spacer "text:s", Tab "text:tab", LineBreak
+"text:line-break"
+"""
 import re
 
-from .element import Element, register_element_class, to_str
-from .element import Text
+from .element import Element, register_element_class, to_str, Text
 
 _rsplitter = re.compile('(\n|\t|  +)')
 _rspace = re.compile('^  +$')

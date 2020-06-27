@@ -4,13 +4,16 @@ just for testing
 """
 
 import os
+from os.path import exists, join
 import subprocess
-
-if not os.path.exists('test_output'):
+import shutil
+if not exists('test_output'):
     os.mkdir('test_output')
+odp = 'presentation_logo.odp'
+dest = join('test_output', odp)
+shutil.copyfile(odp, dest)
 
-command = ('cp -f presentation_logo.odp test_output ; '
-           'python ./add_logo_on_presentation.py'
-           ' -i newlogo.png -r 1-8 -s 4.00 test_output/presentation_logo.odp')
+command = (f'python add_logo_on_presentation.py'
+           f' -i newlogo.png -r 1-8 -s 4.00 {dest}')
 
 subprocess.call(command, shell=True)

@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,12 +18,13 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""Utilities shared by the scripts.
+"""Utilities shared by the scripts
 """
+import sys
+from sys import stdin, stdout, stderr
 from mimetypes import guess_type
 from os.path import exists, isfile
 from io import StringIO
-from sys import stdin, stdout, stderr
 
 
 def check_target_file(path, kind="file"):
@@ -57,9 +58,9 @@ def get_mimetype(filename):
     return 'application/octet-stream'
 
 
-def add_option_output(parser, metavar="FILE", complement=""):
-    help = "dump the output into %s %s" % (metavar, complement)
-    parser.add_option("-o", "--output", metavar=metavar, help=help)
+def add_option_output(parser, metavar='FILE', complement=''):
+    msg = f'dump the output into {metavar} {complement}'
+    parser.add_option('-o', '--output', metavar=metavar, help=msg)
 
 
 def eprint(*args, **kwargs):

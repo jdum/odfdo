@@ -29,12 +29,12 @@ from mimetypes import guess_type
 from PIL import Image
 
 from odfdo import __version__
-from odfdo import Document, Frame, Header, DrawImage, Paragraph, Cell, Row
+from odfdo import Document, Frame, Header, Paragraph, Cell, Row
 from odfdo import Table, Column, FIRST_CHILD
 
 # Hello messages
 print('odfdo installation test')
-print(' Version           : %s' % __version__)
+print(f'version     : {__version__}')
 print()
 print('Generating test_output/use_case1.odt ...')
 
@@ -52,26 +52,19 @@ for numero, filename in enumerate(listdir('samples')):
         mimetype = 'application/octet-stream'
     if mimetype.startswith('image/'):
         # Add the image
-        internal_name = 'Pictures/' + filename
+        image_uri = document.add_file(path)
+        # compute size
         image = Image.open(path)
         width, height = image.size
-        paragraph = Paragraph('Standard')
-        # 72 ppp
-        frame = Frame('frame_%d' % numero, 'Graphics',
-                      str(int(width / 72.0)) + 'in',
-                      str(int(height / 72.0)) + 'in')
-        image = DrawImage(internal_name)
-        frame.append(image)
-        paragraph.append(frame)
+        draw_size = (f'{width/400:.2f}in', f'{height/400:.2f}in')
+        image_frame = Frame.image_frame(
+            image_uri, size=draw_size, anchor_type='char')
+        paragraph = Paragraph('')
+        paragraph.append(image_frame)
         body.append(paragraph)
-
-        # And store the data
-        container = document.container
-        with open(path, 'rb') as f:
-            content = f.read()
-        container.set_part(internal_name, content)
+        body.append(Paragraph(''))
     elif mimetype in ('text/csv', 'text/comma-separated-values'):
-        table = Table("table %d" % numero, style="Standard")
+        table = Table(f'table {numero}', style='Standard')
         csv = reader(open(path))
         for line in csv:
             size = len(line)
@@ -81,11 +74,11 @@ for numero, filename in enumerate(listdir('samples')):
                 row.append_cell(cell)
             table.append_row(row)
         for i in range(size):
-            column = Column(style="Standard")
+            column = Column(style='Standard')
             table.insert(column, FIRST_CHILD)
         body.append(table)
     else:
-        paragraph = Paragraph("Not image / csv", style="Standard")
+        paragraph = Paragraph('Not image / csv', style='Standard')
         body.append(paragraph)
 
 if not exists('test_output'):

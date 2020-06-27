@@ -1,4 +1,4 @@
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2020 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,15 +18,16 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-
+"""Header class for "text:h"
+"""
 from re import sub
 
 from .paragraph import Paragraph
-from .element import register_element_class, Element
+from .element import register_element_class
 
 
 class Header(Paragraph):
-    """Specialised paragraph for headings.
+    """Specialised paragraph for headings "text:h".
     """
     _tag = 'text:h'
     _properties = (
@@ -77,7 +78,7 @@ class Header(Paragraph):
             if style:
                 self.style = style
 
-    def get_formatted_text(self, context=None):
+    def get_formatted_text(self, context=None, simple=False):
         if not context:
             context = {
                 'document': None,
