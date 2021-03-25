@@ -55,6 +55,8 @@ ODF_NAMESPACES = {
     "ooo": "http://openoffice.org/2004/office",
     "oooc": "http://openoffice.org/2004/calc",
     "ooow": "http://openoffice.org/2004/writer",
+    "calcext": "urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0",
+    "loext": "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
     "presentation": "urn:oasis:names:tc:opendocument:xmlns:presentation:1.0",
     "rdfa": "http://docs.oasis-open.org/opendocument/meta/rdfa#",
     "rpt": "http://openoffice.org/2005/report",

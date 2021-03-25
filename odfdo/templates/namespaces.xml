@@ -17,6 +17,8 @@
   xmlns:ooo="http://openoffice.org/2004/office"
   xmlns:oooc="http://openoffice.org/2004/calc"
   xmlns:ooow="http://openoffice.org/2004/writer"
+  xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0"
+  xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0"
   xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"
   xmlns:rdfa="http://docs.oasis-open.org/opendocument/meta/rdfa#"
   xmlns:rpt="http://openoffice.org/2005/report"

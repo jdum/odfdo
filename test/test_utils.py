@@ -95,6 +95,7 @@ class Set_Get_ValueTestCase(TestCase):
         set_value(cell, ZOE)
         expected = (
             '<table:table-cell office:value-type="string" '
+            'calcext:value-type="string" '
             'office:string-value="%s">'
             "<text:p>"
             "%s"
@@ -108,6 +109,7 @@ class Set_Get_ValueTestCase(TestCase):
         set_value(variable_set, ZOE)
         expected = (
             '<text:variable-set office:value-type="string" '
+            'calcext:value-type="string" '
             'office:string-value="%s" text:name="%s" '
             'text:display="none">'
             "%s"
@@ -120,6 +122,7 @@ class Set_Get_ValueTestCase(TestCase):
         set_value(user_field_decl, ZOE)
         expected = (
             '<text:user-field-decl office:value-type="string" '
+            'calcext:value-type="string" '
             'office:string-value="%s" text:name="%s"/>'
         ) % ((ZOE,) * 2)
         self.assertEqual(user_field_decl.serialize(), expected)

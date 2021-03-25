@@ -381,6 +381,8 @@ def _set_value_and_type(element, value=None, value_type=None, text=None, currenc
         "office:time-value",
         "table:formula",
         "office:currency",
+        "calcext:value-type",
+        "loext:value-type",
     ):
         try:
             element.del_attribute(name)
@@ -439,7 +441,7 @@ def _set_value_and_type(element, value=None, value_type=None, text=None, currenc
 
     if value_type is not None:
         element.set_attribute("office:value-type", value_type)
-
+        element.set_attribute("calcext:value-type", value_type)
     if value_type == "boolean":
         element.set_attribute("office:boolean-value", value)
     elif value_type == "currency":
@@ -449,6 +451,7 @@ def _set_value_and_type(element, value=None, value_type=None, text=None, currenc
         element.set_attribute("office:date-value", value)
     elif value_type in ("float", "percentage"):
         element.set_attribute("office:value", value)
+        element.set_attribute("calcext:value", value)
     elif value_type == "string":
         element.set_attribute("office:string-value", value)
     elif value_type == "time":

@@ -565,7 +565,7 @@ class Document:
             container = part.get_element("office:automatic-styles")
             existing = part.get_style(family, name)
         # Common style
-        elif family in FAMILY_ODF_STD:
+        elif family in FAMILY_ODF_STD or family in {"number"}:
             # Common style
             if name and automatic is False and default is False:
                 part = self.get_part(ODF_STYLES)
@@ -621,7 +621,9 @@ class Document:
                 raise AttributeError("invalid combination of arguments")
         # Invalid style
         else:
-            raise ValueError("invalid style: %s" % style)
+            raise ValueError(
+                f"invalid style: {style}, tag:{style.tag}, family:{family}"
+            )
 
         # Insert it!
         if existing is not None:

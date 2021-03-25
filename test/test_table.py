@@ -135,6 +135,7 @@ class TestCreateCell(TestCase):
         cell = Cell(True)
         expected = (
             '<table:table-cell office:value-type="boolean" '
+            'calcext:value-type="boolean" '
             'office:boolean-value="true">'
             "<text:p>true</text:p>"
             "</table:table-cell>"
@@ -145,6 +146,7 @@ class TestCreateCell(TestCase):
         cell = Cell(True, text="VRAI")
         expected = (
             '<table:table-cell office:value-type="boolean" '
+            'calcext:value-type="boolean" '
             'office:boolean-value="true">'
             "<text:p>VRAI</text:p>"
             "</table:table-cell>"
@@ -155,7 +157,8 @@ class TestCreateCell(TestCase):
         cell = Cell(23)
         expected = (
             '<table:table-cell office:value-type="float" '
-            'office:value="23">'
+            'calcext:value-type="float" '
+            'office:value="23" calcext:value="23">'
             "<text:p>23</text:p>"
             "</table:table-cell>"
         )
@@ -165,7 +168,8 @@ class TestCreateCell(TestCase):
         cell = Cell(23, text="00023")
         expected = (
             '<table:table-cell office:value-type="float" '
-            'office:value="23">'
+            'calcext:value-type="float" '
+            'office:value="23" calcext:value="23">'
             "<text:p>00023</text:p>"
             "</table:table-cell>"
         )
@@ -175,7 +179,8 @@ class TestCreateCell(TestCase):
         cell = Cell(3.141592654)
         expected = (
             '<table:table-cell office:value-type="float" '
-            'office:value="3.141592654">'
+            'calcext:value-type="float" '
+            'office:value="3.141592654" calcext:value="3.141592654">'
             "<text:p>3.141592654</text:p>"
             "</table:table-cell>"
         )
@@ -185,7 +190,8 @@ class TestCreateCell(TestCase):
         cell = Cell(3.141592654, text="3,14")
         expected = (
             '<table:table-cell office:value-type="float" '
-            'office:value="3.141592654">'
+            'calcext:value-type="float" '
+            'office:value="3.141592654" calcext:value="3.141592654">'
             "<text:p>3,14</text:p>"
             "</table:table-cell>"
         )
@@ -195,7 +201,8 @@ class TestCreateCell(TestCase):
         cell = Cell(dec("2.718281828"))
         expected = (
             '<table:table-cell office:value-type="float" '
-            'office:value="2.718281828">'
+            'calcext:value-type="float" '
+            'office:value="2.718281828" calcext:value="2.718281828">'
             "<text:p>2.718281828</text:p>"
             "</table:table-cell>"
         )
@@ -205,7 +212,8 @@ class TestCreateCell(TestCase):
         cell = Cell(dec("2.718281828"), text="2,72")
         expected = (
             '<table:table-cell office:value-type="float" '
-            'office:value="2.718281828">'
+            'calcext:value-type="float" '
+            'office:value="2.718281828" calcext:value="2.718281828">'
             "<text:p>2,72</text:p>"
             "</table:table-cell>"
         )
@@ -215,6 +223,7 @@ class TestCreateCell(TestCase):
         cell = Cell(date(2009, 6, 30))
         expected = (
             '<table:table-cell office:value-type="date" '
+            'calcext:value-type="date" '
             'office:date-value="2009-06-30">'
             "<text:p>2009-06-30</text:p>"
             "</table:table-cell>"
@@ -225,6 +234,7 @@ class TestCreateCell(TestCase):
         cell = Cell(date(2009, 6, 30), text="30/6/2009")
         expected = (
             '<table:table-cell office:value-type="date" '
+            'calcext:value-type="date" '
             'office:date-value="2009-06-30">'
             "<text:p>30/6/2009</text:p>"
             "</table:table-cell>"
@@ -235,6 +245,7 @@ class TestCreateCell(TestCase):
         cell = Cell(datetime(2009, 6, 30, 17, 33, 18))
         expected = (
             '<table:table-cell office:value-type="date" '
+            'calcext:value-type="date" '
             'office:date-value="2009-06-30T17:33:18">'
             "<text:p>2009-06-30T17:33:18</text:p>"
             "</table:table-cell>"
@@ -245,6 +256,7 @@ class TestCreateCell(TestCase):
         cell = Cell(datetime(2009, 6, 30, 17, 33, 18), text="30/6/2009 17:33")
         expected = (
             '<table:table-cell office:value-type="date" '
+            'calcext:value-type="date" '
             'office:date-value="2009-06-30T17:33:18">'
             "<text:p>30/6/2009 17:33</text:p>"
             "</table:table-cell>"
@@ -255,6 +267,7 @@ class TestCreateCell(TestCase):
         cell = Cell("red")
         expected = (
             '<table:table-cell office:value-type="string" '
+            'calcext:value-type="string" '
             'office:string-value="red">'
             "<text:p>red</text:p>"
             "</table:table-cell>"
@@ -265,6 +278,7 @@ class TestCreateCell(TestCase):
         cell = Cell("red", text="Red")
         expected = (
             '<table:table-cell office:value-type="string" '
+            'calcext:value-type="string" '
             'office:string-value="red">'
             "<text:p>Red</text:p>"
             "</table:table-cell>"
@@ -275,6 +289,7 @@ class TestCreateCell(TestCase):
         cell = Cell("Plato")
         expected = (
             '<table:table-cell office:value-type="string" '
+            'calcext:value-type="string" '
             'office:string-value="Plato">'
             "<text:p>Plato</text:p>"
             "</table:table-cell>"
@@ -285,6 +300,7 @@ class TestCreateCell(TestCase):
         cell = Cell("Plato", text="P.")
         expected = (
             '<table:table-cell office:value-type="string" '
+            'calcext:value-type="string" '
             'office:string-value="Plato">'
             "<text:p>P.</text:p>"
             "</table:table-cell>"
@@ -295,6 +311,7 @@ class TestCreateCell(TestCase):
         cell = Cell(timedelta(0, 8))
         expected = (
             '<table:table-cell office:value-type="time" '
+            'calcext:value-type="time" '
             'office:time-value="PT00H00M08S">'
             "<text:p>PT00H00M08S</text:p>"
             "</table:table-cell>"
@@ -305,6 +322,7 @@ class TestCreateCell(TestCase):
         cell = Cell(timedelta(0, 8), text="00:00:08")
         expected = (
             '<table:table-cell office:value-type="time" '
+            'calcext:value-type="time" '
             'office:time-value="PT00H00M08S">'
             "<text:p>00:00:08</text:p>"
             "</table:table-cell>"
@@ -315,7 +333,8 @@ class TestCreateCell(TestCase):
         cell = Cell(90, cell_type="percentage")
         expected = (
             '<table:table-cell office:value-type="percentage" '
-            'office:value="90">'
+            'calcext:value-type="percentage" '
+            'office:value="90" calcext:value="90">'
             "<text:p>9000 %</text:p>"
             "</table:table-cell>"
         )
@@ -325,7 +344,8 @@ class TestCreateCell(TestCase):
         cell = Cell(90, text="9000 %", cell_type="percentage")
         expected = (
             '<table:table-cell office:value-type="percentage" '
-            'office:value="90">'
+            'calcext:value-type="percentage" '
+            'office:value="90" calcext:value="90">'
             "<text:p>9000 %</text:p>"
             "</table:table-cell>"
         )
@@ -335,6 +355,7 @@ class TestCreateCell(TestCase):
         cell = Cell(1.54, cell_type="currency", currency="EUR")
         expected = (
             '<table:table-cell office:value-type="currency" '
+            'calcext:value-type="currency" '
             'office:value="1.54" office:currency="EUR">'
             "<text:p>1.54</text:p>"
             "</table:table-cell>"
@@ -353,6 +374,7 @@ class TestCreateCell(TestCase):
         cell = Cell(1.54, text="1,54 €", cell_type="currency", currency="EUR")
         expected = (
             '<table:table-cell office:value-type="currency" '
+            'calcext:value-type="currency" '
             'office:value="1.54" office:currency="EUR">'
             "<text:p>1,54 €</text:p>"
             "</table:table-cell>"
@@ -4351,20 +4373,24 @@ class TestCSV(TestCase):
             'table:number-columns-repeated="2"/>'
             "<table:table-row>"
             '<table:table-cell office:value-type="string" '
+            'calcext:value-type="string" '
             'office:string-value="A float">'
             "<text:p>A float</text:p>"
             "</table:table-cell>"
             '<table:table-cell office:value-type="float" '
-            'office:value="3.14">'
+            'calcext:value-type="float" '
+            'office:value="3.14" calcext:value="3.14">'
             "<text:p>3.14</text:p>"
             "</table:table-cell>"
             "</table:table-row>"
             "<table:table-row>"
             '<table:table-cell office:value-type="string" '
+            'calcext:value-type="string" '
             'office:string-value="A date">'
             "<text:p>A date</text:p>"
             "</table:table-cell>"
             '<table:table-cell office:value-type="date" '
+            'calcext:value-type="date" '
             'office:date-value="1975-05-07T00:00:00">'
             "<text:p>1975-05-07T00:00:00</text:p>"
             "</table:table-cell>"

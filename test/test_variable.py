@@ -63,7 +63,8 @@ class TestVariables(TestCase):
         variable_set = VarSet(ZOE, value=42)
         expected = (
             '<text:variable-set text:name="%s" '
-            'office:value-type="float" office:value="42" '
+            'office:value-type="float" calcext:value-type="float" '
+            'office:value="42" calcext:value="42" '
             'text:display="none"/>'
         ) % ZOE
         self.assertEqual(variable_set.serialize(), expected)
@@ -73,7 +74,7 @@ class TestVariables(TestCase):
         variable_set = VarSet(ZOE, value=date, display=True)
         expected = (
             '<text:variable-set text:name="%s" '
-            'office:value-type="date" '
+            'office:value-type="date" calcext:value-type="date" '
             'office:date-value="2009-05-17T23:23:00">'
             "2009-05-17T23:23:00"
             "</text:variable-set>"
@@ -84,7 +85,8 @@ class TestVariables(TestCase):
         variable_get = VarGet(ZOE, value=42)
         expected = (
             '<text:variable-get text:name="%s" '
-            'office:value-type="float" office:value="42">'
+            'office:value-type="float" calcext:value-type="float" '
+            'office:value="42" calcext:value="42">'
             "42"
             "</text:variable-get>"
         ) % ZOE
@@ -126,16 +128,18 @@ class TestUserFields(TestCase):
     def test_create_user_field_decl(self):
         user_field_decl = UserFieldDecl(ZOE, 42)
         expected = (
-            '<text:user-field-decl text:name="%s" '
-            'office:value-type="float" office:value="42"/>'
-        ) % ZOE
+            f'<text:user-field-decl text:name="{ZOE}" '
+            'office:value-type="float" calcext:value-type="float" '
+            'office:value="42" calcext:value="42"/>'
+        )
         self.assertEqual(user_field_decl.serialize(), expected)
 
     def test_create_user_field_get(self):
         user_field_get = UserFieldGet(ZOE, value=42)
         expected = (
             '<text:user-field-get text:name="%s" '
-            'office:value-type="float" office:value="42">'
+            'office:value-type="float" calcext:value-type="float" '
+            'office:value="42" calcext:value="42">'
             "42"
             "</text:user-field-get>"
         ) % ZOE
@@ -145,7 +149,8 @@ class TestUserFields(TestCase):
         user_field_input = UserFieldInput(ZOE, value=42)
         expected = (
             '<text:user-field-input text:name="%s" '
-            'office:value-type="float" office:value="42">'
+            'office:value-type="float" calcext:value-type="float" '
+            'office:value="42" calcext:value="42">'
             "42"
             "</text:user-field-input>"
         ) % ZOE
@@ -184,8 +189,9 @@ class TestUserDefined(TestCase):
         )
         expected = (
             '<text:user-defined text:name="unknown_in_meta" '
-            'office:value-type="float" '
-            'office:value="42">42</text:user-defined>'
+            'office:value-type="float" calcext:value-type="float" '
+            'office:value="42" calcext:value="42">42'
+            "</text:user-defined>"
         )
         self.assertEqual(element.serialize(), expected)
 
@@ -200,7 +206,7 @@ class TestUserDefined(TestCase):
         )
         expected = (
             '<text:user-defined text:name="unknown_in_meta2" '
-            'office:value-type="date" '
+            'office:value-type="date" calcext:value-type="date" '
             'office:date-value="2013-12-30T00:00:00">2013-12-30'
             "</text:user-defined>"
         )
@@ -217,7 +223,7 @@ class TestUserDefined(TestCase):
         )
         expected = (
             '<text:user-defined text:name="unknown_in_meta2" '
-            'office:value-type="date" '
+            'office:value-type="date" calcext:value-type="date" '
             'office:date-value="2013-12-30T00:00:00">2013-12-30'
             "</text:user-defined>"
         )
@@ -227,9 +233,8 @@ class TestUserDefined(TestCase):
         element = UserDefined("Référence", from_document=self.document)
         expected = (
             '<text:user-defined text:name="%s" '
-            'office:value-type="boolean" '
-            'office:boolean-value="true">'
-            "true</text:user-defined>"
+            'office:value-type="boolean" calcext:value-type="boolean" '
+            'office:boolean-value="true">true</text:user-defined>'
         ) % "Référence"
         self.assertEqual(element.serialize(), expected)
 
@@ -242,9 +247,8 @@ class TestUserDefined(TestCase):
         )
         expected = (
             '<text:user-defined text:name="%s" '
-            'office:value-type="boolean" '
-            'office:boolean-value="true">'
-            "true</text:user-defined>"
+            'office:value-type="boolean" calcext:value-type="boolean" '
+            'office:boolean-value="true">true</text:user-defined>'
         ) % "Référence"
         self.assertEqual(element.serialize(), expected)
 
@@ -257,9 +261,8 @@ class TestUserDefined(TestCase):
         )
         expected = (
             '<text:user-defined text:name="%s" '
-            'office:value-type="boolean" '
-            'office:boolean-value="false">'
-            "false</text:user-defined>"
+            'office:value-type="boolean" calcext:value-type="boolean" '
+            'office:boolean-value="false">false</text:user-defined>'
         ) % "Référence"
         self.assertEqual(element.serialize(), expected)
 
@@ -276,9 +279,8 @@ class TestUserDefined(TestCase):
         user_defined = body.get_user_defined("Référence")
         expected = (
             '<text:user-defined text:name="%s" '
-            'office:value-type="boolean" '
-            'office:boolean-value="true">'
-            "true</text:user-defined>"
+            'office:value-type="boolean" calcext:value-type="boolean" '
+            'office:boolean-value="true">true</text:user-defined>'
         ) % "Référence"
         self.assertEqual(user_defined.serialize(), expected)
 
