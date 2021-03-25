@@ -33,7 +33,7 @@ scripts = [join("scripts", f) for f in os.listdir("scripts") if f.endswith(".py"
 
 setup(
     name="odfdo",
-    version="3.1.0",
+    version=__version__,
     description="Python library for OpenDocument format",
     long_description=long_description,
     long_description_content_type="text/plain;charset=UTF-8",
