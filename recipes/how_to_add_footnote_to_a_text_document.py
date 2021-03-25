@@ -1,20 +1,19 @@
 from odfdo import Document, Paragraph
 
-document = Document('text')
+document = Document("text")
 body = document.body
 
-paragraph = Paragraph(('A paragraph with a footnote '
-                       'about references in it.'))
+paragraph = Paragraph(("A paragraph with a footnote " "about references in it."))
 body.append(paragraph)
 
 # Notes are quite complex so they deserve a dedicated API on paragraphs:
 
 paragraph.insert_note(
-    after='graph',
-    note_id='note1',
-    citation='1',
-    body=('Author, A. (2007). "How to cite references", '
-          'New York: McGraw-Hill.'))
+    after="graph",
+    note_id="note1",
+    citation="1",
+    body=('Author, A. (2007). "How to cite references", ' "New York: McGraw-Hill."),
+)
 
 # That looks complex so we detail the arguments:
 #

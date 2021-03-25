@@ -35,14 +35,14 @@ from odfdo.content import Content
 class XmlPartTestCase(TestCase):
     def setUp(self):
         self.container = Container()
-        self.container.open('samples/example.odt')
+        self.container.open("samples/example.odt")
 
     def tearDown(self):
         del self.container
 
     def test_get_element_list(self):
         content_part = XmlPart(ODF_CONTENT, self.container)
-        elements = content_part.get_elements('//text:p')
+        elements = content_part.get_elements("//text:p")
         # The annotation paragraph is counted
         self.assertEqual(len(elements), 8)
 
@@ -70,9 +70,9 @@ class XmlPartTestCase(TestCase):
 
     def test_pretty_serialize(self):
         # With pretty = True
-        element = Element.from_tag('<root><a>spam</a><b/></root>')
+        element = Element.from_tag("<root><a>spam</a><b/></root>")
         serialized = element.serialize(pretty=True)
-        expected = ('<root>\n' '  <a>spam</a>\n' '  <b/>\n' '</root>\n')
+        expected = "<root>\n" "  <a>spam</a>\n" "  <b/>\n" "</root>\n"
         self.assertEqual(serialized, expected)
 
     def test_clone(self):
@@ -87,12 +87,12 @@ class XmlPartTestCase(TestCase):
     def test_delete(self):
         container = self.container
         content = XmlPart(ODF_CONTENT, container)
-        paragraphs = content.get_elements('//text:p')
+        paragraphs = content.get_elements("//text:p")
         for paragraph in paragraphs:
             content.delete_element(paragraph)
         serialized = content.serialize()
-        self.assertEqual(serialized.count(b'<text:p'), 0)
+        self.assertEqual(serialized.count(b"<text:p"), 0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

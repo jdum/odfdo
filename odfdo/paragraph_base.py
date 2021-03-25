@@ -28,17 +28,17 @@ import re
 
 from .element import Element, register_element_class, to_str, Text
 
-_rsplitter = re.compile('(\n|\t|  +)')
-_rspace = re.compile('^  +$')
+_rsplitter = re.compile("(\n|\t|  +)")
+_rspace = re.compile("^  +$")
 
 
 def _get_formatted_text(element, context, with_text=True):
-    document = context.get('document', None)
-    rst_mode = context.get('rst_mode', False)
+    document = context.get("document", None)
+    rst_mode = context.get("rst_mode", False)
 
     result = []
     if with_text:
-        objects = element.xpath('*|text()')
+        objects = element.xpath("*|text()")
     else:
         objects = element.children
     for obj in objects:
@@ -47,11 +47,11 @@ def _get_formatted_text(element, context, with_text=True):
             continue
         tag = obj.tag
         # Good tags with text
-        if tag in ('text:a', 'text:p'):
+        if tag in ("text:a", "text:p"):
             result.append(_get_formatted_text(obj, context, with_text=True))
             continue
         # Try to convert some styles in rst_mode
-        if tag == 'text:span':
+        if tag == "text:span":
             text = _get_formatted_text(obj, context, with_text=True)
             if not rst_mode:
                 result.append(text)
@@ -64,7 +64,7 @@ def _get_formatted_text(element, context, with_text=True):
                 result.append(text)
                 continue
             if document:
-                style = document.get_style('text', style)
+                style = document.get_style("text", style)
                 properties = style.get_properties()
             else:
                 properties = None
@@ -72,13 +72,13 @@ def _get_formatted_text(element, context, with_text=True):
                 result.append(text)
                 continue
             # Compute before, text and after
-            before = ''
+            before = ""
             for c in text:
                 if c.isspace():
                     before += c
                 else:
                     break
-            after = ''
+            after = ""
             for c in reversed(text):
                 if c.isspace():
                     after = c + after
@@ -86,19 +86,19 @@ def _get_formatted_text(element, context, with_text=True):
                     break
             text = text.strip()
             # Bold ?
-            if properties.get('fo:font-weight') == 'bold':
+            if properties.get("fo:font-weight") == "bold":
                 result.append(before)
-                result.append('**')
+                result.append("**")
                 result.append(text)
-                result.append('**')
+                result.append("**")
                 result.append(after)
                 continue
             # Italic ?
-            if properties.get('fo:font-style') == 'italic':
+            if properties.get("fo:font-style") == "italic":
                 result.append(before)
-                result.append('*')
+                result.append("*")
                 result.append(text)
-                result.append('*')
+                result.append("*")
                 result.append(after)
                 continue
             # Unknown style, ...
@@ -107,11 +107,11 @@ def _get_formatted_text(element, context, with_text=True):
             result.append(after)
             continue
         # Footnote or endnote
-        if tag == 'text:note':
+        if tag == "text:note":
             note_class = obj.note_class
             container = {
-                'footnote': context['footnotes'],
-                'endnote': context['endnotes']
+                "footnote": context["footnotes"],
+                "endnote": context["endnotes"],
             }[note_class]
             citation = obj.citation
             if not citation:
@@ -120,39 +120,35 @@ def _get_formatted_text(element, context, with_text=True):
             body = obj.note_body
             container.append((citation, body))
             if rst_mode:
-                marker = {
-                    'footnote': " [#]_ ",
-                    'endnote': " [*]_ "
-                }[note_class]
+                marker = {"footnote": " [#]_ ", "endnote": " [*]_ "}[note_class]
             else:
-                marker = {
-                    'footnote': "[{citation}]",
-                    'endnote': "({citation})"
-                }[note_class]
+                marker = {"footnote": "[{citation}]", "endnote": "({citation})"}[
+                    note_class
+                ]
             result.append(marker.format(citation=citation))
             continue
         # Annotations
-        if tag == 'office:annotation':
-            context['annotations'].append(obj.note_body)
+        if tag == "office:annotation":
+            context["annotations"].append(obj.note_body)
             if rst_mode:
-                result.append(' [#]_ ')
+                result.append(" [#]_ ")
             else:
-                result.append('[*]')
+                result.append("[*]")
             continue
         # Tabulation
-        if tag == 'text:tab':
-            result.append('\t')
+        if tag == "text:tab":
+            result.append("\t")
             continue
         # Line break
-        if tag == 'text:line-break':
+        if tag == "text:line-break":
             if rst_mode:
-                result.append('\n|')
+                result.append("\n|")
             else:
-                result.append('\n')
+                result.append("\n")
             continue
         # other cases:
         result.append(obj.get_formatted_text(context))
-    return ''.join(result)
+    return "".join(result)
 
 
 class Spacer(Element):
@@ -162,8 +158,9 @@ class Spacer(Element):
     white space character, but it is good practice to use this element only for
     the second and all following SPACE characters in a sequence.
     """
-    _tag = 'text:s'
-    _properties = (('number', 'text:c'), )
+
+    _tag = "text:s"
+    _properties = (("number", "text:c"),)
 
     def __init__(self, number=1, **kwargs):
         """
@@ -192,8 +189,9 @@ class Tab(Element):
     oriented consumers should determine the tab positions based on the style
     information
     """
-    _tag = 'text:tab'
-    _properties = (('position', 'text:tab-ref'), )
+
+    _tag = "text:tab"
+    _properties = (("position", "text:tab-ref"),)
 
     def __init__(self, position=None, **kwargs):
         """
@@ -218,17 +216,18 @@ class LineBreak(Element):
 
     Return: LineBreak
     """
-    _tag = 'text:line-break'
+
+    _tag = "text:line-break"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
 
 class ParagraphBase(Element):
-    """Base class for Paragraph like classes.
-    """
-    _tag = 'text:p-odfdo-notodf'
-    _properties = (('style', 'text:style-name'), )
+    """Base class for Paragraph like classes."""
+
+    _tag = "text:p-odfdo-notodf"
+    _properties = (("style", "text:style-name"),)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -236,39 +235,39 @@ class ParagraphBase(Element):
     def get_formatted_text(self, context=None, simple=False):
         if not context:
             context = {
-                'document': None,
-                'footnotes': [],
-                'endnotes': [],
-                'annotations': [],
-                'rst_mode': False,
-                'img_counter': 0,
-                'images': [],
-                'no_img_level': 0
+                "document": None,
+                "footnotes": [],
+                "endnotes": [],
+                "annotations": [],
+                "rst_mode": False,
+                "img_counter": 0,
+                "images": [],
+                "no_img_level": 0,
             }
         content = _get_formatted_text(self, context, with_text=True)
         if simple:
             return content
         else:
-            return content + '\n\n'
+            return content + "\n\n"
 
-    def append_plain_text(self, text=''):
+    def append_plain_text(self, text=""):
         """Append plain text to the paragraph, replacing <CR>, <TAB>
-           and multiple spaces by ODF corresponding tags.
+        and multiple spaces by ODF corresponding tags.
         """
         text = to_str(text)
         blocs = _rsplitter.split(text)
         for b in blocs:
             if not b:
                 continue
-            if b == '\n':
+            if b == "\n":
                 self.append(LineBreak())
                 continue
-            if b == '\t':
+            if b == "\t":
                 self.append(Tab())
                 continue
             if _rspace.match(b):
                 # follow ODF standard : n spaces => one space + spacer(n-1)
-                self.append(' ')
+                self.append(" ")
                 self.append(Spacer(len(b) - 1))
                 continue
             # standard piece of text:

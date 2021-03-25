@@ -14,8 +14,8 @@ def get_default_doc():
 
 
 def remove_text_span(element):
-    tag = 'text:span'
-    keep_inside_tag = 'text:h'
+    tag = "text:span"
+    keep_inside_tag = "text:h"
     context = (tag, keep_inside_tag, False)
     element, is_modified = _tree_remove_tag(element, context)
     return is_modified
@@ -37,7 +37,8 @@ def _tree_remove_tag(element, context):
         protect_below = False
     for child in buffer.children:
         striped, is_modified = _tree_remove_tag(
-            child, (tag, keep_inside_tag, protect_below))
+            child, (tag, keep_inside_tag, protect_below)
+        )
         if is_modified:
             modified = True
         if type(striped) == type([]):
@@ -88,9 +89,9 @@ if __name__ == "__main__":
 
     print("'text:span' occurrences after removal:", len(body.get_spans()))
 
-    if not os.path.exists('test_output'):
-        os.mkdir('test_output')
+    if not os.path.exists("test_output"):
+        os.mkdir("test_output")
 
-    output = os.path.join('test_output', "my_RS_" + source)
+    output = os.path.join("test_output", "my_RS_" + source)
 
     document.save(target=output, pretty=True)

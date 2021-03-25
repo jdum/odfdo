@@ -20,12 +20,12 @@ if __name__ == "__main__":
         source = get_default_doc()
 
     document_source = Document(source)
-    spreadsheet = Document('spreadsheet')
+    spreadsheet = Document("spreadsheet")
 
     print("Word frequency analysis of", source)
     text = document_source.body.text_recursive
     for c in "():;!.,[]{}#@/\\=-_+*#@`\"'":
-        text = text.replace(c, ' ')  # slow algorithm
+        text = text.replace(c, " ")  # slow algorithm
     words = text.split()
     print("nb of words:", len(words))
 
@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     # one solution :
 
-    #for value, key in sorted:
+    # for value, key in sorted:
     #    row = Row()
     #    row.set_value(0, key)
     #    row.set_value(1, value) # Cell type is guessed.
@@ -64,8 +64,7 @@ if __name__ == "__main__":
     print("Words corresponding to the regex:", regex_query)
     result = table.get_rows(content=regex_query)
     for row in result:
-        print("word: %-20s  occurences: %s" % (row.get_value(0),
-                                               row.get_value(1)))
+        print("word: %-20s  occurences: %s" % (row.get_value(0), row.get_value(1)))
 
     # list of words of frequecy = 15
     found = []
@@ -74,10 +73,10 @@ if __name__ == "__main__":
             found.append(word)
     print("list of words of frequency 15:", ", ".join(found))
 
-    if not os.path.exists('test_output'):
-        os.mkdir('test_output')
+    if not os.path.exists("test_output"):
+        os.mkdir("test_output")
 
-    output = os.path.join('test_output', "my_frequency_spreadsheet.ods")
+    output = os.path.join("test_output", "my_frequency_spreadsheet.ods")
 
     spreadsheet.save(target=output, pretty=True)
 

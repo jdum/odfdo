@@ -25,15 +25,15 @@ from .element import Element, register_element_class
 
 
 def _get_referenced(body, start, end, no_header, clean, as_xml, as_list):
-    """Retrieve data from body between some start and end.
-    """
+    """Retrieve data from body between some start and end."""
     if body is None or start is None or end is None:
         return None
     content_list = body.get_between(
-        start, end, as_text=False, no_header=no_header, clean=clean)
+        start, end, as_text=False, no_header=no_header, clean=clean
+    )
     if as_list:
         return content_list
-    referenced = Element.from_tag('office:text')
+    referenced = Element.from_tag("office:text")
     for chunk in content_list:
         referenced.append(chunk)
     if as_xml:
@@ -91,13 +91,23 @@ class Reference(Element):
           - 'number-no-superior': displays the contents of the list label of
             the referenced item.
     """
-    _tag = 'text:reference-ref'
-    _properties = (('name', 'text:ref-name'), )
-    format_allowed = ('chapter', 'direction', 'page', 'text', 'caption',
-                      'category-and-value', 'value', 'number',
-                      'number-all-superior', 'number-no-superior')
 
-    def __init__(self, name='', ref_format='', **kwargs):
+    _tag = "text:reference-ref"
+    _properties = (("name", "text:ref-name"),)
+    format_allowed = (
+        "chapter",
+        "direction",
+        "page",
+        "text",
+        "caption",
+        "category-and-value",
+        "value",
+        "number",
+        "number-all-superior",
+        "number-no-superior",
+    )
+
+    def __init__(self, name="", ref_format="", **kwargs):
         """Create a reference to a content marked by a reference mark. An
         actual reference mark with the provided name should exist.
 
@@ -125,7 +135,7 @@ class Reference(Element):
 
     @property
     def ref_format(self):
-        return self.get_attribute('text:reference-format')
+        return self.get_attribute("text:reference-format")
 
     @ref_format.setter
     def ref_format(self, ref_format):
@@ -136,8 +146,8 @@ class Reference(Element):
             ref_format -- str
         """
         if not ref_format or ref_format not in self.format_allowed:
-            ref_format = 'page'
-        self.set_attribute('text:reference-format', ref_format)
+            ref_format = "page"
+        self.set_attribute("text:reference-format", ref_format)
 
     def update(self):
         """Update the content of the reference text field. Currently only
@@ -145,7 +155,7 @@ class Reference(Element):
         field, may need to be refreshed through a visual ODF parser.
         """
         ref_format = self.ref_format
-        if ref_format != 'text':
+        if ref_format != "text":
             # only 'text' is implemented
             return
         body = self.document_body
@@ -166,10 +176,11 @@ class ReferenceMark(Element):
     A point reference marks a position in text and is represented by a single
     "text:reference-mark" element.
     """
-    _tag = 'text:reference-mark'
-    _properties = (('name', 'text:name'), )
 
-    def __init__(self, name='', **kwargs):
+    _tag = "text:reference-mark"
+    _properties = (("name", "text:name"),)
+
+    def __init__(self, name="", **kwargs):
         """A point reference. A point reference marks a position in text and is
         represented by a single "text:reference-mark" element.
         Consider using the wrapper: odfdo.paragraph.set_reference_mark()
@@ -190,10 +201,11 @@ class ReferenceMarkEnd(Element):
     """The "text:reference-mark-end" element represents the end of a range
     reference.
     """
-    _tag = 'text:reference-mark-end'
-    _properties = (('name', 'text:name'), )
 
-    def __init__(self, name='', **kwargs):
+    _tag = "text:reference-mark-end"
+    _properties = (("name", "text:name"),)
+
+    def __init__(self, name="", **kwargs):
         """The "text:reference-mark-end" element represent the end of a range
         reference.
         Consider using the wrappers: odfdo.paragraph.set_reference_mark() and
@@ -208,14 +220,14 @@ class ReferenceMarkEnd(Element):
             self.name = name
 
     def referenced_text(self):
-        """Return the text between reference-mark-start and reference-mark-end.
-        """
+        """Return the text between reference-mark-start and reference-mark-end."""
         name = self.name
         request = (
             f"//text()"
             f"[preceding::text:reference-mark-start[@text:name='{name}'] "
-            f"and following::text:reference-mark-end[@text:name='{name}']]")
-        result = ' '.join(self.xpath(request))
+            f"and following::text:reference-mark-end[@text:name='{name}']]"
+        )
+        result = " ".join(self.xpath(request))
         return result
 
 
@@ -226,10 +238,11 @@ class ReferenceMarkStart(Element):
     """The "text:reference-mark-start" element represents the start of a
     range reference.
     """
-    _tag = 'text:reference-mark-start'
-    _properties = (('name', 'text:name'), )
 
-    def __init__(self, name='', **kwargs):
+    _tag = "text:reference-mark-start"
+    _properties = (("name", "text:name"),)
+
+    def __init__(self, name="", **kwargs):
         """The "text:reference-mark-start" element represent the start of a range
         reference.
         Consider using the wrapper: odfdo.paragraph.set_reference_mark()
@@ -243,21 +256,17 @@ class ReferenceMarkStart(Element):
             self.name = name
 
     def referenced_text(self):
-        """Return the text between reference-mark-start and reference-mark-end.
-        """
+        """Return the text between reference-mark-start and reference-mark-end."""
         name = self.name
         request = (
             f"//text()"
             f"[preceding::text:reference-mark-start[@text:name='{name}'] "
-            f"and following::text:reference-mark-end[@text:name='{name}']]")
-        result = ' '.join(self.xpath(request))
+            f"and following::text:reference-mark-end[@text:name='{name}']]"
+        )
+        result = " ".join(self.xpath(request))
         return result
 
-    def get_referenced(self,
-                       no_header=False,
-                       clean=True,
-                       as_xml=False,
-                       as_list=False):
+    def get_referenced(self, no_header=False, clean=True, as_xml=False, as_list=False):
         """Return the document content between the start and end tags of the
         reference. The content returned by this method can spread over several
         headers and paragraphs.
@@ -290,8 +299,7 @@ class ReferenceMarkStart(Element):
             body = parent
         end = body.get_reference_mark_end(name=name)
         start = self
-        return _get_referenced(body, start, end, no_header, clean, as_xml,
-                               as_list)
+        return _get_referenced(body, start, end, no_header, clean, as_xml, as_list)
 
     def delete(self, child=None, keep_tail=True):
         """Delete the given element from the XML tree. If no element is given,
@@ -330,7 +338,7 @@ def strip_references(element):
     sub elements (for example the referenced value if format is 'text').
     Nota : using the .delete() on the reference mark will delete inner content.
     """
-    strip = ('text:reference-ref', )
+    strip = ("text:reference-ref",)
     return element.strip_tags(strip)
 
 
@@ -339,8 +347,11 @@ def remove_all_reference_marks(element):
     'text:reference-mark-end' tags of the element, keeping inner sub elements.
     Nota : using the .delete() on the reference mark will delete inner content.
     """
-    strip = ('text:reference-mark', 'text:reference-mark-start',
-             'text:reference-mark-end')
+    strip = (
+        "text:reference-mark",
+        "text:reference-mark-start",
+        "text:reference-mark-end",
+    )
     return element.strip_tags(strip)
 
 

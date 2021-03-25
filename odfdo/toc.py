@@ -38,20 +38,26 @@ class IndexTitle(Element):
 
     Return: IndexTitle
     """
-    _tag = 'text:index-title'
-    _properties = (('name', 'text:name'), ('style', 'text:style-name'),
-                   ('xml_id', 'xml:id'), ('protected', 'text:protected'),
-                   ('protection_key', 'text:protection-key'),
-                   ('protection_key_digest_algorithm',
-                    'text:protection-key-digest-algorithm'))
 
-    def __init__(self,
-                 name=None,
-                 style=None,
-                 title_text=None,
-                 title_text_style=None,
-                 xml_id=None,
-                 **kw):
+    _tag = "text:index-title"
+    _properties = (
+        ("name", "text:name"),
+        ("style", "text:style-name"),
+        ("xml_id", "xml:id"),
+        ("protected", "text:protected"),
+        ("protection_key", "text:protection-key"),
+        ("protection_key_digest_algorithm", "text:protection-key-digest-algorithm"),
+    )
+
+    def __init__(
+        self,
+        name=None,
+        style=None,
+        title_text=None,
+        title_text_style=None,
+        xml_id=None,
+        **kw,
+    ):
         super().__init__(**kw)
         if self._do_init:
             if name:
@@ -70,7 +76,7 @@ class IndexTitle(Element):
 
 IndexTitle._define_attribut_property()
 
-TOC_ENTRY_STYLE_PATTERN = 'odfto_toc_level_%s'
+TOC_ENTRY_STYLE_PATTERN = "odfto_toc_level_%s"
 
 
 class TabStopStyle(Element):
@@ -81,30 +87,33 @@ class TabStopStyle(Element):
 
        9, style:position 19.508.3, style:type 19.515.3.
     """
-    _tag = 'style:tab-stop'
+
+    _tag = "style:tab-stop"
     _properties = (
-        ('style_char', 'style:char'),
-        ('leader_color', 'style:leader-color'),
-        ('leader_style', 'style:leader-style'),
-        ('leader_text', 'style:leader-text'),
-        ('leader_text_style', 'style:leader-text-style'),
-        ('leader_type', 'style:leader-type'),
-        ('leader_width', 'style:leader-width'),
-        ('style_position', 'style:position'),
-        ('style_type', 'style:type'),
+        ("style_char", "style:char"),
+        ("leader_color", "style:leader-color"),
+        ("leader_style", "style:leader-style"),
+        ("leader_text", "style:leader-text"),
+        ("leader_text_style", "style:leader-text-style"),
+        ("leader_type", "style:leader-type"),
+        ("leader_width", "style:leader-width"),
+        ("style_position", "style:position"),
+        ("style_type", "style:type"),
     )
 
-    def __init__(self,
-                 style_char=None,
-                 leader_color=None,
-                 leader_style=None,
-                 leader_text=None,
-                 leader_text_style=None,
-                 leader_type=None,
-                 leader_width=None,
-                 style_position=None,
-                 style_type=None,
-                 **kw):
+    def __init__(
+        self,
+        style_char=None,
+        leader_color=None,
+        leader_style=None,
+        leader_text=None,
+        leader_text_style=None,
+        leader_type=None,
+        leader_width=None,
+        style_position=None,
+        style_type=None,
+        **kw,
+    ):
         super().__init__(**kw)
         if self._do_init:
             if style_char:
@@ -131,20 +140,19 @@ TabStopStyle._define_attribut_property()
 
 
 def default_toc_level_style(level):
-    """Generate an automatic default style for the given TOC level.
-    """
-    tab_stop = TabStopStyle(
-        style_type="right", leader_style="dotted", leader_text=".")
+    """Generate an automatic default style for the given TOC level."""
+    tab_stop = TabStopStyle(style_type="right", leader_style="dotted", leader_text=".")
     position = 17.5 - (0.5 * level)
-    tab_stop.style_position = f'{position}cm'
-    tab_stops = Element.from_tag('style:tab-stops')
+    tab_stop.style_position = f"{position}cm"
+    tab_stops = Element.from_tag("style:tab-stops")
     tab_stops.append(tab_stop)
-    properties = Element.from_tag('style:paragraph-properties')
+    properties = Element.from_tag("style:paragraph-properties")
     properties.append(tab_stops)
     toc_style_level = Style(
-        family='paragraph',
+        family="paragraph",
         name=TOC_ENTRY_STYLE_PATTERN % level,
-        parent=f'Contents_20_{level}')
+        parent=f"Contents_20_{level}",
+    )
     toc_style_level.append(properties)
     return toc_style_level
 
@@ -189,22 +197,28 @@ class TOC(Element):
 
     Return: TOC
     """
-    _tag = 'text:table-of-content'
-    _properties = (('name', 'text:name'), ('style', 'text:style-name'),
-                   ('xml_id', 'xml:id'), ('protected', 'text:protected'),
-                   ('protection_key', 'text:protection-key'),
-                   ('protection_key_digest_algorithm',
-                    'text:protection-key-digest-algorithm'))
 
-    def __init__(self,
-                 title="Table of Contents",
-                 name=None,
-                 protected=True,
-                 outline_level=None,
-                 style=None,
-                 title_style="Contents_20_Heading",
-                 entry_style="Contents_20_%d",
-                 **kw):
+    _tag = "text:table-of-content"
+    _properties = (
+        ("name", "text:name"),
+        ("style", "text:style-name"),
+        ("xml_id", "xml:id"),
+        ("protected", "text:protected"),
+        ("protection_key", "text:protection-key"),
+        ("protection_key_digest_algorithm", "text:protection-key-digest-algorithm"),
+    )
+
+    def __init__(
+        self,
+        title="Table of Contents",
+        name=None,
+        protected=True,
+        outline_level=None,
+        style=None,
+        title_style="Contents_20_Heading",
+        entry_style="Contents_20_%d",
+        **kw,
+    ):
         super().__init__(**kw)
         if self._do_init:
             if style:
@@ -215,8 +229,9 @@ class TOC(Element):
                 name = "%s1" % title
                 self.name = name
             # Create the source template
-            toc_source = self.create_toc_source(title, outline_level,
-                                                title_style, entry_style)
+            toc_source = self.create_toc_source(
+                title, outline_level, title_style, entry_style
+            )
             self.append(toc_source)
             # Create the index body automatically with the index title
             if title:
@@ -225,8 +240,8 @@ class TOC(Element):
 
     @staticmethod
     def create_toc_source(title, outline_level, title_style, entry_style):
-        toc_source = Element.from_tag('text:table-of-content-source')
-        toc_source.set_attribute('text:outline-level', outline_level)
+        toc_source = Element.from_tag("text:table-of-content-source")
+        toc_source.set_attribute("text:outline-level", outline_level)
         if title:
             title_template = IndexTitleTemplate()
             if title_style:
@@ -242,43 +257,43 @@ class TOC(Element):
         return toc_source
 
     def get_formatted_text(self, context):
-        index_body = self.get_element('text:index-body')
+        index_body = self.get_element("text:index-body")
 
         if index_body is None:
-            return ''
+            return ""
 
         if context["rst_mode"]:
             return "\n.. contents::\n\n"
 
         result = []
         for element in index_body.children:
-            if element.tag == 'text:index-title':
+            if element.tag == "text:index-title":
                 for e in element.children:
                     result.append(e.get_formatted_text(context))
-                result.append('\n')
+                result.append("\n")
             else:
                 result.append(element.get_formatted_text(context))
-        result.append('\n')
-        return ''.join(result)
+        result.append("\n")
+        return "".join(result)
 
     @property
     def outline_level(self):
-        source = self.get_element('text:table-of-content-source')
+        source = self.get_element("text:table-of-content-source")
         if source is None:
             return None
-        return source.get_attribute_integer('text:outline-level')
+        return source.get_attribute_integer("text:outline-level")
 
     @outline_level.setter
     def outline_level(self, level):
-        source = self.get_element('text:table-of-content-source')
+        source = self.get_element("text:table-of-content-source")
         if source is None:
-            source = Element.from_tag('text:table-of-content-source')
+            source = Element.from_tag("text:table-of-content-source")
             self.insert(source, FIRST_CHILD)
-        source.set_attribute('text:outline-level', level)
+        source.set_attribute("text:outline-level", level)
 
     @property
     def body(self):
-        return self.get_element('text:index-body')
+        return self.get_element("text:index-body")
 
     @body.setter
     def body(self, body=None):
@@ -286,7 +301,7 @@ class TOC(Element):
         if old_body is not None:
             self.delete(old_body)
         if body is None:
-            body = Element.from_tag('text:index-body')
+            body = Element.from_tag("text:index-body")
         self.append(body)
         return body
 
@@ -308,10 +323,8 @@ class TOC(Element):
         if index_title is None:
             name = "%s_Head" % self.name
             index_title = IndexTitle(
-                name=name,
-                style=style,
-                title_text=title,
-                text_style=text_style)
+                name=name, style=style, title_text=title, text_style=text_style
+            )
             index_body.append(index_title)
         else:
             if style:
@@ -348,7 +361,7 @@ class TOC(Element):
 
         # Save the title
         index_body = self.body
-        title = index_body.get_element('text:index-title')
+        title = index_body.get_element("text:index-title")
 
         # Clean the old index-body
         self.body = None
@@ -359,10 +372,14 @@ class TOC(Element):
 
         # Insert default TOC style
         if use_default_styles:
-            automatic_styles = body.get_element('//office:automatic-styles')
+            automatic_styles = body.get_element("//office:automatic-styles")
             for level in range(1, 11):
-                if automatic_styles.get_style(
-                        'paragraph', TOC_ENTRY_STYLE_PATTERN % level) is None:
+                if (
+                    automatic_styles.get_style(
+                        "paragraph", TOC_ENTRY_STYLE_PATTERN % level
+                    )
+                    is None
+                ):
                     level_style = default_toc_level_style(level)
                     automatic_styles.append(level_style)
 
@@ -370,7 +387,7 @@ class TOC(Element):
         outline_level = self.outline_level or 10
         level_indexes = {}
         for header in body.get_headers():
-            level = header.get_attribute_integer('text:outline-level')
+            level = header.get_attribute_integer("text:outline-level")
             if level is None or level > outline_level:
                 continue
             number = []
@@ -386,7 +403,7 @@ class TOC(Element):
             for l in range(level + 1, 11):
                 if l in level_indexes:
                     del level_indexes[l]
-            number = '.'.join(number) + '.'
+            number = ".".join(number) + "."
             # Make the title with "1.2.3. Title" format
             title = "%s %s" % (number, header.text)
             paragraph = Paragraph(title)
@@ -407,8 +424,9 @@ class IndexTitleTemplate(Element):
 
     Return: IndexTitleTemplate
     """
-    _tag = 'text:index-title-template'
-    _properties = (('style', 'text:style-name'), )
+
+    _tag = "text:index-title-template"
+    _properties = (("style", "text:style-name"),)
 
     def __init__(self, style=None, **kw):
         super().__init__(**kw)
@@ -429,8 +447,9 @@ class TocEntryTemplate(Element):
 
     Return: TocEntryTemplate
     """
-    _tag = 'text:table-of-content-entry-template'
-    _properties = (('style', 'text:style-name'), )
+
+    _tag = "text:table-of-content-entry-template"
+    _properties = (("style", "text:style-name"),)
 
     def __init__(self, style=None, outline_level=None, **kw):
         super().__init__(**kw)
@@ -442,21 +461,21 @@ class TocEntryTemplate(Element):
 
     @property
     def outline_level(self):
-        return self.get_attribute_integer('text:outline-level')
+        return self.get_attribute_integer("text:outline-level")
 
     @outline_level.setter
     def outline_level(self, level):
-        self.set_attribute('text:outline-level', level)
+        self.set_attribute("text:outline-level", level)
 
     def complete_defaults(self):
-        self.append(Element.from_tag('text:index-entry-chapter'))
-        self.append(Element.from_tag('text:index-entry-text'))
-        self.append(Element.from_tag('text:index-entry-text'))
-        ts = Element.from_tag('text:index-entry-text')
-        ts.set_style_attribute('style:type', 'right')
-        ts.set_style_attribute('style:leader-char', '.')
+        self.append(Element.from_tag("text:index-entry-chapter"))
+        self.append(Element.from_tag("text:index-entry-text"))
+        self.append(Element.from_tag("text:index-entry-text"))
+        ts = Element.from_tag("text:index-entry-text")
+        ts.set_style_attribute("style:type", "right")
+        ts.set_style_attribute("style:leader-char", ".")
         self.append(ts)
-        self.append(Element.from_tag('text:index-entry-page-number'))
+        self.append(Element.from_tag("text:index-entry-page-number"))
 
 
 TocEntryTemplate._define_attribut_property()

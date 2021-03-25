@@ -18,7 +18,7 @@ body = doc.body
 print("- Content of the first footnote:")
 print(body.get_note(position=0).text_recursive)
 print("- Content of the paragraph with the word 'Fish'")
-print(body.get_paragraph(content='Fish').text_recursive)
+print(body.get_paragraph(content="Fish").text_recursive)
 print("- Content of the first Title:")
 print(body.get_header(position=0).text_recursive)
 print("- Content of the last Title:")

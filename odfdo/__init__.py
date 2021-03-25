@@ -112,26 +112,27 @@ odfdo main changes from lpod:
  - use only Apache 2.0 license
 """
 __all__ = (
-    'Bookmark BookmarkStart BookmarkEnd Container Content Content '
-    'Document DrawPage Element Text FIRST_CHILD LAST_CHILD NEXT_SIBLING '
-    'PREV_SIBLING Frame default_frame_position_style Header DrawImage '
-    'DrawFillImage Link ListItem List Manifest Meta Note Annotation '
-    'AnnotationEnd Spacer Tab LineBreak Span Paragraph Reference '
-    'ReferenceMark ReferenceMarkStart ReferenceMarkEnd Section '
-    'ConnectorShape DrawGroup LineShape RectangleShape EllipseShape '
-    'AnimPar AnimSeq AnimTransFilter default_boolean_style '
-    'default_currency_style default_number_style default_percentage_style '
-    'default_time_style default_date_style make_table_cell_border_string '
-    'create_table_cell_style Style BackgroundImage rgb2hex hex2rgb Styles '
-    'ChangeInfo TextInsertion TextDeletion TextFormatChange '
-    'TextChangedRegion TrackedChanges TextChange TextChangeEnd '
-    'TextChangeStart Cell Row Column Table HeaderRows RowGroup NamedRange '
-    'IndexTitleTemplate default_toc_level_style TOC IndexTitle '
-    'TocEntryTemplate TabStopStyle UserFieldDecl UserFieldGet '
-    'UserFieldInput UserDefined VarChapter VarFileName VarInitialCreator '
-    'VarCreationDate VarCreationTime VarDescription VarDecls VarDecl '
-    'VarSet VarGet UserFieldDecls VarPageNumber VarPageCount VarDate '
-    'VarTime VarTitle VarSubject VarKeywords XmlPart').split()
+    "Bookmark BookmarkStart BookmarkEnd Container Content Content "
+    "Document DrawPage Element Text FIRST_CHILD LAST_CHILD NEXT_SIBLING "
+    "PREV_SIBLING Frame default_frame_position_style Header DrawImage "
+    "DrawFillImage Link ListItem List Manifest Meta Note Annotation "
+    "AnnotationEnd Spacer Tab LineBreak Span Paragraph Reference "
+    "ReferenceMark ReferenceMarkStart ReferenceMarkEnd Section "
+    "ConnectorShape DrawGroup LineShape RectangleShape EllipseShape "
+    "AnimPar AnimSeq AnimTransFilter default_boolean_style "
+    "default_currency_style default_number_style default_percentage_style "
+    "default_time_style default_date_style make_table_cell_border_string "
+    "create_table_cell_style Style BackgroundImage rgb2hex hex2rgb Styles "
+    "ChangeInfo TextInsertion TextDeletion TextFormatChange "
+    "TextChangedRegion TrackedChanges TextChange TextChangeEnd "
+    "TextChangeStart Cell Row Column Table HeaderRows RowGroup NamedRange "
+    "IndexTitleTemplate default_toc_level_style TOC IndexTitle "
+    "TocEntryTemplate TabStopStyle UserFieldDecl UserFieldGet "
+    "UserFieldInput UserDefined VarChapter VarFileName VarInitialCreator "
+    "VarCreationDate VarCreationTime VarDescription VarDecls VarDecl "
+    "VarSet VarGet UserFieldDecls VarPageNumber VarPageCount VarDate "
+    "VarTime VarTitle VarSubject VarKeywords XmlPart"
+).split()
 
 from .version import __version__
 from .bookmark import Bookmark, BookmarkStart, BookmarkEnd
@@ -139,8 +140,7 @@ from .container import Container
 from .content import Content
 from .document import Document
 from .draw_page import DrawPage
-from .element import (Element, Text, FIRST_CHILD, LAST_CHILD, NEXT_SIBLING,
-                      PREV_SIBLING)
+from .element import Element, Text, FIRST_CHILD, LAST_CHILD, NEXT_SIBLING, PREV_SIBLING
 from .frame import Frame, default_frame_position_style
 from .header import Header
 from .image import DrawImage, DrawFillImage
@@ -150,29 +150,67 @@ from .manifest import Manifest
 from .meta import Meta
 from .note import Note, Annotation, AnnotationEnd
 from .paragraph import Span, Paragraph, Spacer, Tab, LineBreak
-from .reference import (Reference, ReferenceMark, ReferenceMarkStart,
-                        ReferenceMarkEnd)
+from .reference import Reference, ReferenceMark, ReferenceMarkStart, ReferenceMarkEnd
 from .section import Section
-from .shapes import (ConnectorShape, DrawGroup, LineShape, RectangleShape,
-                     EllipseShape)
+from .shapes import ConnectorShape, DrawGroup, LineShape, RectangleShape, EllipseShape
 from .smil import AnimPar, AnimSeq, AnimTransFilter
-from .style import (Style, default_boolean_style, default_currency_style,
-                    default_number_style, default_percentage_style,
-                    default_time_style, default_date_style,
-                    make_table_cell_border_string, create_table_cell_style,
-                    BackgroundImage, rgb2hex, hex2rgb)
+from .style import (
+    Style,
+    default_boolean_style,
+    default_currency_style,
+    default_number_style,
+    default_percentage_style,
+    default_time_style,
+    default_date_style,
+    make_table_cell_border_string,
+    create_table_cell_style,
+    BackgroundImage,
+    rgb2hex,
+    hex2rgb,
+)
 from .styles import Styles
-from .tracked_changes import (ChangeInfo, TextInsertion, TextDeletion,
-                              TextFormatChange, TextChangedRegion,
-                              TrackedChanges, TextChange, TextChangeEnd,
-                              TextChangeStart)
+from .tracked_changes import (
+    ChangeInfo,
+    TextInsertion,
+    TextDeletion,
+    TextFormatChange,
+    TextChangedRegion,
+    TrackedChanges,
+    TextChange,
+    TextChangeEnd,
+    TextChangeStart,
+)
 from .table import Cell, Row, Column, Table, HeaderRows, RowGroup, NamedRange
-from .toc import (TOC, IndexTitleTemplate, default_toc_level_style, IndexTitle,
-                  TocEntryTemplate, TabStopStyle)
-from .variable import (UserFieldDecl, UserFieldGet, UserFieldInput,
-                       UserDefined, VarChapter, VarFileName, VarInitialCreator,
-                       VarCreationDate, VarCreationTime, VarDescription,
-                       VarDecls, VarDecl, VarSet, VarGet, UserFieldDecls,
-                       VarPageNumber, VarPageCount, VarDate, VarTime, VarTitle,
-                       VarSubject, VarKeywords)
+from .toc import (
+    TOC,
+    IndexTitleTemplate,
+    default_toc_level_style,
+    IndexTitle,
+    TocEntryTemplate,
+    TabStopStyle,
+)
+from .variable import (
+    UserFieldDecl,
+    UserFieldGet,
+    UserFieldInput,
+    UserDefined,
+    VarChapter,
+    VarFileName,
+    VarInitialCreator,
+    VarCreationDate,
+    VarCreationTime,
+    VarDescription,
+    VarDecls,
+    VarDecl,
+    VarSet,
+    VarGet,
+    UserFieldDecls,
+    VarPageNumber,
+    VarPageCount,
+    VarDate,
+    VarTime,
+    VarTitle,
+    VarSubject,
+    VarKeywords,
+)
 from .xmlpart import XmlPart

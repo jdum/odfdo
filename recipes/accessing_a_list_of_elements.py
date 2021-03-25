@@ -14,7 +14,7 @@ body = doc.body
 # Accessing a list of elements
 # Should you need to access all elements of a kind, there are the
 # get_xxxs methods, where xxx can be paragraph, heading, list, table, etc.
-print("%s get methods are available" % (' '.join(dir(body)).count('get_')))
+print("%s get methods are available" % (" ".join(dir(body)).count("get_")))
 # Some examples, that you cant check against actual content of the odt file:
 # See how complex is our wikipedia documents:
 print("number of headings:", len(body.get_headers()))
@@ -29,10 +29,11 @@ print("number of tables:", len(body.get_tables()))
 # For example headings can be listed by level, annotations by creator, etc.
 # Almost all of them accept filtering by style and content using a regular
 # expressions.
-print("Paragraphs with 'Fish':", len(body.get_paragraphs(content=r'Fish')))
+print("Paragraphs with 'Fish':", len(body.get_paragraphs(content=r"Fish")))
 print(
     "Paragraphs with 'answer' and '42':",
-    len(body.get_paragraphs(content=r'answer.*42')))
+    len(body.get_paragraphs(content=r"answer.*42")),
+)
 
 Expected_result = """
 95 get methods are available

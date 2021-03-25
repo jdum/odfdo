@@ -28,14 +28,12 @@ from odfdo.paragraph import Span
 
 class TestSpan(TestCase):
     def setUp(self):
-        self.document = document = Document('samples/span_style.odt')
+        self.document = document = Document("samples/span_style.odt")
         self.body = document.body
 
     def test_create_span(self):
-        span = Span('my text', style='my_style')
-        expected = ('<text:span text:style-name="my_style">'
-                    'my text'
-                    '</text:span>')
+        span = Span("my text", style="my_style")
+        expected = '<text:span text:style-name="my_style">' "my text" "</text:span>"
         self.assertEqual(span.serialize(), expected)
 
     def test_get_span_list(self):
@@ -43,31 +41,29 @@ class TestSpan(TestCase):
         result = body.get_spans()
         self.assertEqual(len(result), 2)
         element = result[0]
-        expected = ('<text:span text:style-name="T1">'
-                    'moustache'
-                    '</text:span>')
+        expected = '<text:span text:style-name="T1">' "moustache" "</text:span>"
         self.assertEqual(element.serialize(), expected)
 
     def test_get_span_list_style(self):
         body = self.body
-        result = body.get_spans(style='T2')
+        result = body.get_spans(style="T2")
         self.assertEqual(len(result), 1)
         element = result[0]
-        expected = ('<text:span text:style-name="T2">' 'rouge' '</text:span>')
+        expected = '<text:span text:style-name="T2">' "rouge" "</text:span>"
         self.assertEqual(element.serialize(), expected)
 
     def test_get_span(self):
         body = self.body
         span = body.get_span(position=1)
-        expected = ('<text:span text:style-name="T2">' 'rouge' '</text:span>')
+        expected = '<text:span text:style-name="T2">' "rouge" "</text:span>"
         self.assertEqual(span.serialize(), expected)
 
     def test_insert_span(self):
         body = self.body.clone
-        span = Span('my_style', 'my text')
+        span = Span("my_style", "my text")
         paragraph = body.get_paragraph(position=0)
         paragraph.append(span)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

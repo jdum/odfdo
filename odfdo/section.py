@@ -35,10 +35,11 @@ class Section(Element):
 
     Return: Section
     """
-    _tag = 'text:section'
+
+    _tag = "text:section"
     _properties = (
-        ('style', 'text:style-name'),
-        ('name', 'text:name'),
+        ("style", "text:style-name"),
+        ("name", "text:name"),
     )
 
     def __init__(self, style=None, name=None, **kw):
@@ -53,8 +54,8 @@ class Section(Element):
         result = []
         for element in self.children:
             result.append(element.get_formatted_text(context))
-        result.append('\n')
-        return ''.join(result)
+        result.append("\n")
+        return "".join(result)
 
 
 Section._define_attribut_property()

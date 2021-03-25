@@ -13,7 +13,7 @@ from hashlib import sha1
 
 from odfdo import Document
 
-modified_file_suffix = 'new'
+modified_file_suffix = "new"
 counter_image = 0
 counter_odf = 0
 counter_hit = 0
@@ -24,14 +24,14 @@ def make_footprint(content):
 
 
 def replace_odf_pics(path, old_footprint, new_content):
-    """ Using odfdo for:
-            - open possible ODF document: Document
-            - find images inside the document: get_images
-            - replace images matching old_image by the new one
+    """Using odfdo for:
+    - open possible ODF document: Document
+    - find images inside the document: get_images
+    - replace images matching old_image by the new one
     """
     lst = os.path.basename(path).split(".")
     suffix = lst[-1].lower()
-    if not suffix.startswith('od'):
+    if not suffix.startswith("od"):
         return
     try:
         document = Document(path)
@@ -50,7 +50,7 @@ def replace_odf_pics(path, old_footprint, new_content):
         try:
             image_content = document.get_part(image_url)
         except KeyError:
-            print("- not found inside document:", path, end=' ')
+            print("- not found inside document:", path, end=" ")
             print("  image URL:", image_url)
             continue
         counter_image += 1
@@ -60,14 +60,14 @@ def replace_odf_pics(path, old_footprint, new_content):
             document.set_part(image_url, new_content)
             document_changed = True
     if document_changed:
-        lst = path.split('.')
+        lst = path.split(".")
         lst.insert(-1, modified_file_suffix)
-        new_name = '.'.join(lst)
+        new_name = ".".join(lst)
         print(new_name)
         document.save(new_name)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     usage = "usage: %prog -o OLD_IMAGE -n NEW_IMAGE  ODF_sources"
     description = "Replace 'OLD' picture by 'NEW' picture in ODF sources."
@@ -78,14 +78,16 @@ if __name__ == '__main__':
         dest="old_img",
         help="Old picture file name",
         action="store",
-        type="string")
+        type="string",
+    )
     parser.add_option(
         "-n",
         "--new",
         dest="new_img",
         help="New picture file name",
         action="store",
-        type="string")
+        type="string",
+    )
 
     options, sources = parser.parse_args()
     if not options.old_img:
@@ -102,10 +104,10 @@ if __name__ == '__main__':
         exit(0)
 
     t0 = time.time()
-    with open(options.old_img, 'rb') as f:
+    with open(options.old_img, "rb") as f:
         old_content_footprint = make_footprint(f.read())
     # making the new image content :
-    buffer = Document('text')
+    buffer = Document("text")
     url = buffer.add_file(options.new_img)
     new_content = buffer.get_part(url)
 
@@ -114,10 +116,12 @@ if __name__ == '__main__':
             for root, dirs, files in os.walk(source):
                 for name in files:
                     replace_odf_pics(
-                        os.path.join(root, name), old_content_footprint,
-                        new_content)
+                        os.path.join(root, name), old_content_footprint, new_content
+                    )
         else:
             replace_odf_pics(source, old_content_footprint, new_content)
     elapsed = int(time.time() - t0)
-    print("%s images updated from %s images in %s ODF files in %s sec." %
-          (counter_hit, counter_image, counter_odf, elapsed))
+    print(
+        "%s images updated from %s images in %s ODF files in %s sec."
+        % (counter_hit, counter_image, counter_odf, elapsed)
+    )

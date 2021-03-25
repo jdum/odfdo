@@ -29,18 +29,19 @@ from os import stat
 from odfdo import __version__
 from odfdo import Document
 
-if __name__ == '__main__':
-    usage = '%prog <doc1.odt> <doc2.odt>'
-    description = 'Show a diff between doc1.odt and doc2.odt'
+if __name__ == "__main__":
+    usage = "%prog <doc1.odt> <doc2.odt>"
+    description = "Show a diff between doc1.odt and doc2.odt"
     parser = OptionParser(usage, version=__version__, description=description)
 
     # --ndiff
     parser.add_option(
-        '-n',
-        '--ndiff',
-        action='store_true',
+        "-n",
+        "--ndiff",
+        action="store_true",
         default=False,
-        help='use a contextual "ndiff" format to show the output')
+        help='use a contextual "ndiff" format to show the output',
+    )
 
     # Parse !
     options, args = parser.parse_args()
@@ -53,7 +54,7 @@ if __name__ == '__main__':
     # Open the 2 documents, diff only for ODT
     doc1 = Document(args[0])
     doc2 = Document(args[1])
-    if doc1.get_type() != 'text' or doc2.get_type() != 'text':
+    if doc1.get_type() != "text" or doc2.get_type() != "text":
         parser.print_help()
         sys.exit(1)
 
@@ -64,9 +65,9 @@ if __name__ == '__main__':
     # Make the diff !
     if options.ndiff:
         result = ndiff(text1, text2, None, None)
-        result = [line for line in result if not line.startswith(' ')]
+        result = [line for line in result if not line.startswith(" ")]
     else:
         fromdate = ctime(stat(args[0]).st_mtime)
         todate = ctime(stat(args[1]).st_mtime)
         result = unified_diff(text1, text2, args[0], args[1], fromdate, todate)
-    print(''.join(result))
+    print("".join(result))

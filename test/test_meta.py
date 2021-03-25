@@ -32,7 +32,7 @@ from odfdo.datatype import DateTime, Duration
 
 class TestMetadata(TestCase):
     def setUp(self):
-        document = Document('samples/meta.odt')
+        document = Document("samples/meta.odt")
         self.meta = document.get_part(ODF_META)
 
     def tearDown(self):
@@ -86,20 +86,20 @@ class TestMetadata(TestCase):
     def test_set_language(self):
         meta = self.meta
         clone = meta.clone
-        language = 'en-US'
+        language = "en-US"
         clone.set_language(language)
         self.assertEqual(clone.get_language(), language)
 
     def test_set_bad_language(self):
         meta = self.meta
         clone = meta.clone
-        language = 'English'
+        language = "English"
         self.assertRaises(TypeError, clone.set_language, language)
 
     def test_get_modification_date(self):
         meta = self.meta
         date = meta.get_modification_date()
-        expected = DateTime.decode('2009-07-31T15:59:13')
+        expected = DateTime.decode("2009-07-31T15:59:13")
         self.assertEqual(date, expected)
 
     def test_set_modification_date(self):
@@ -112,7 +112,7 @@ class TestMetadata(TestCase):
     def test_set_bad_modication_date(self):
         meta = self.meta
         clone = meta.clone
-        date = '2009-06-29T14:15:45'
+        date = "2009-06-29T14:15:45"
         self.assertRaises(AttributeError, clone.set_modification_date, date)
 
     def test_get_creation_date(self):
@@ -131,7 +131,7 @@ class TestMetadata(TestCase):
     def test_set_bad_creation_date(self):
         meta = self.meta
         clone = meta.clone
-        date = '2009-06-29T14:15:45'
+        date = "2009-06-29T14:15:45"
         self.assertRaises(AttributeError, clone.set_creation_date, date)
 
     def test_get_initial_creator(self):
@@ -163,7 +163,7 @@ class TestMetadata(TestCase):
     def test_get_editing_duration(self):
         meta = self.meta
         duration = meta.get_editing_duration()
-        expected = Duration.decode('PT00H05M30S')
+        expected = Duration.decode("PT00H05M30S")
         self.assertEqual(duration, expected)
 
     def test_set_editing_duration(self):
@@ -176,7 +176,7 @@ class TestMetadata(TestCase):
     def test_set_bad_editing_duration(self):
         meta = self.meta
         clone = meta.clone
-        duration = 'PT00H01M27S'
+        duration = "PT00H01M27S"
         self.assertRaises(TypeError, clone.set_editing_duration, duration)
 
     def test_get_editing_cycles(self):
@@ -195,15 +195,16 @@ class TestMetadata(TestCase):
     def test_set_bad_editing_cycles(self):
         meta = self.meta
         clone = meta.clone
-        cycles = '3'
+        cycles = "3"
         self.assertRaises(TypeError, clone.set_editing_duration, cycles)
 
     def test_get_generator(self):
         meta = self.meta
         generator = meta.get_generator()
         expected = (
-            'LibreOffice/6.0.3.2$MacOSX_X86_64 '
-            'LibreOffice_project/8f48d515416608e3a835360314dac7e47fd0b821')
+            "LibreOffice/6.0.3.2$MacOSX_X86_64 "
+            "LibreOffice_project/8f48d515416608e3a835360314dac7e47fd0b821"
+        )
         self.assertEqual(generator, expected)
 
     def test_set_generator(self):
@@ -217,14 +218,14 @@ class TestMetadata(TestCase):
         meta = self.meta
         statistic = meta.get_statistic()
         expected = {
-            'meta:table-count': 0,
-            'meta:image-count': 0,
-            'meta:object-count': 0,
-            'meta:page-count': 1,
-            'meta:paragraph-count': 1,
-            'meta:word-count': 4,
-            'meta:character-count': 27,
-            'meta:non-whitespace-character-count': 24
+            "meta:table-count": 0,
+            "meta:image-count": 0,
+            "meta:object-count": 0,
+            "meta:page-count": 1,
+            "meta:paragraph-count": 1,
+            "meta:word-count": 4,
+            "meta:character-count": 27,
+            "meta:non-whitespace-character-count": 24,
         }
         self.assertEqual(statistic, expected)
 
@@ -232,14 +233,14 @@ class TestMetadata(TestCase):
         meta = self.meta
         clone = meta.clone
         statistic = {
-            'meta:table-count': 1,
-            'meta:image-count': 2,
-            'meta:object-count': 3,
-            'meta:page-count': 4,
-            'meta:paragraph-count': 5,
-            'meta:word-count': 6,
-            'meta:character-count': 7,
-            'meta:non-whitespace-character-count': 24
+            "meta:table-count": 1,
+            "meta:image-count": 2,
+            "meta:object-count": 3,
+            "meta:page-count": 4,
+            "meta:paragraph-count": 5,
+            "meta:word-count": 6,
+            "meta:character-count": 7,
+            "meta:non-whitespace-character-count": 24,
         }
         clone.set_statistic(statistic)
         self.assertEqual(clone.get_statistic(), statistic)
@@ -251,7 +252,7 @@ class TestMetadata(TestCase):
             "Achevé à la date": datetime(2009, 7, 31),
             "Numéro du document": Decimal("3"),
             "Référence": True,
-            "Vérifié par": "Moi-même"
+            "Vérifié par": "Moi-même",
         }
         self.assertEqual(metadata, expected)
 
@@ -259,7 +260,7 @@ class TestMetadata(TestCase):
         meta = self.meta
         clone = meta.clone
         # A new value
-        meta.set_user_defined_metadata('Prop5', 1)
+        meta.set_user_defined_metadata("Prop5", 1)
         # Change a value
         meta.set_user_defined_metadata("Référence", False)
         expected = {
@@ -267,23 +268,18 @@ class TestMetadata(TestCase):
             "Numéro du document": Decimal("3"),
             "Référence": False,
             "Vérifié par": "Moi-même",
-            'Prop5': Decimal('1')
+            "Prop5": Decimal("1"),
         }
         metadata = meta.get_user_defined_metadata()
         self.assertEqual(metadata, expected)
 
     def test_get_user_defined_metadata_of_name(self):
         meta = self.meta
-        ref = 'Référence'
+        ref = "Référence"
         metadata = meta.get_user_defined_metadata_of_name(ref)
-        expected = {
-            'name': ref,
-            'text': 'true',
-            'value': True,
-            'value_type': 'boolean'
-        }
+        expected = {"name": ref, "text": "true", "value": True, "value_type": "boolean"}
         self.assertEqual(metadata, expected)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

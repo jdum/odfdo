@@ -19,7 +19,7 @@ def random_text(sentences):
 from odfdo import Document, Header, Paragraph, TOC
 
 # Create the document
-my_document = Document('text')
+my_document = Document("text")
 body = my_document.body
 
 # Create the Table Of Content
@@ -43,10 +43,10 @@ for p in range(3):
 # the reader will need to "update the table of content" later.
 toc.fill()
 
-if not os.path.exists('test_output'):
-    os.mkdir('test_output')
+if not os.path.exists("test_output"):
+    os.mkdir("test_output")
 
-output = os.path.join('test_output', 'my_document_with_toc.odt')
+output = os.path.join("test_output", "my_document_with_toc.odt")
 
 # And finally save the document.
 my_document.save(target=output, pretty=True)

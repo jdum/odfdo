@@ -38,7 +38,7 @@ class Meta(XmlPart):
     _generator_modified = False
 
     def get_meta_body(self):
-        return self.get_element('//office:meta')
+        return self.get_element("//office:meta")
 
     def get_title(self):
         """Get the title of the document.
@@ -47,7 +47,7 @@ class Meta(XmlPart):
 
         Return: str (or None if inexistant)
         """
-        element = self.get_element('//dc:title')
+        element = self.get_element("//dc:title")
         if element is None:
             return None
         return element.text
@@ -61,9 +61,9 @@ class Meta(XmlPart):
 
             title -- str
         """
-        element = self.get_element('//dc:title')
+        element = self.get_element("//dc:title")
         if element is None:
-            element = Element.from_tag('dc:title')
+            element = Element.from_tag("dc:title")
             self.get_meta_body().append(element)
         element.text = title
 
@@ -72,7 +72,7 @@ class Meta(XmlPart):
 
         Return: str (or None if inexistant)
         """
-        element = self.get_element('//dc:description')
+        element = self.get_element("//dc:description")
         if element is None:
             return None
         return element.text
@@ -87,9 +87,9 @@ class Meta(XmlPart):
 
             description -- str
         """
-        element = self.get_element('//dc:description')
+        element = self.get_element("//dc:description")
         if element is None:
-            element = Element.from_tag('dc:description')
+            element = Element.from_tag("dc:description")
             self.get_meta_body().append(element)
         element.text = description
 
@@ -100,7 +100,7 @@ class Meta(XmlPart):
 
         Return: str (or None if inexistant)
         """
-        element = self.get_element('//dc:subject')
+        element = self.get_element("//dc:subject")
         if element is None:
             return None
         return element.text
@@ -112,9 +112,9 @@ class Meta(XmlPart):
 
             subject -- str
         """
-        element = self.get_element('//dc:subject')
+        element = self.get_element("//dc:subject")
         if element is None:
-            element = Element.from_tag('dc:subject')
+            element = Element.from_tag("dc:subject")
             self.get_meta_body().append(element)
         element.text = subject
 
@@ -128,7 +128,7 @@ class Meta(XmlPart):
             >>> document.get_language()
             fr-FR
         """
-        element = self.get_element('//dc:language')
+        element = self.get_element("//dc:language")
         if element is None:
             return None
         return element.text
@@ -146,11 +146,10 @@ class Meta(XmlPart):
         """
         language = to_str(language)
         if not self._is_RFC3066(language):
-            raise TypeError(
-                'language must be "xx-YY" lang-COUNTRY code (RFC3066)')
-        element = self.get_element('//dc:language')
+            raise TypeError('language must be "xx-YY" lang-COUNTRY code (RFC3066)')
+        element = self.get_element("//dc:language")
         if element is None:
-            element = Element.from_tag('dc:language')
+            element = Element.from_tag("dc:language")
             self.get_meta_body().append(element)
         element.text = language
 
@@ -172,9 +171,9 @@ class Meta(XmlPart):
 
         if not lang or not isinstance(lang, str):
             return False
-        if '-' not in lang:
+        if "-" not in lang:
             return test_part1(lang)
-        parts = lang.split('-')
+        parts = lang.split("-")
         if len(parts) > 3:
             return False
         if not test_part1(parts[0]):
@@ -189,7 +188,7 @@ class Meta(XmlPart):
 
         Return: datetime (or None if inexistant)
         """
-        element = self.get_element('//dc:date')
+        element = self.get_element("//dc:date")
         if element is None:
             return None
         modification_date = element.text
@@ -202,9 +201,9 @@ class Meta(XmlPart):
 
             date -- datetime
         """
-        element = self.get_element('//dc:date')
+        element = self.get_element("//dc:date")
         if element is None:
-            element = Element.from_tag('dc:date')
+            element = Element.from_tag("dc:date")
             self.get_meta_body().append(element)
         element.text = DateTime.encode(date)
 
@@ -213,7 +212,7 @@ class Meta(XmlPart):
 
         Return: datetime (or None if inexistant)
         """
-        element = self.get_element('//meta:creation-date')
+        element = self.get_element("//meta:creation-date")
         if element is None:
             return None
         creation_date = element.text
@@ -226,9 +225,9 @@ class Meta(XmlPart):
 
             date -- datetime
         """
-        element = self.get_element('//meta:creation-date')
+        element = self.get_element("//meta:creation-date")
         if element is None:
-            element = Element.from_tag('meta:creation-date')
+            element = Element.from_tag("meta:creation-date")
             self.get_meta_body().append(element)
         element.text = DateTime.encode(date)
 
@@ -242,7 +241,7 @@ class Meta(XmlPart):
             >>> document.get_initial_creator()
             Unknown
         """
-        element = self.get_element('//meta:initial-creator')
+        element = self.get_element("//meta:initial-creator")
         if element is None:
             return None
         return element.text
@@ -258,9 +257,9 @@ class Meta(XmlPart):
 
             >>> document.set_initial_creator(u"Plato")
         """
-        element = self.get_element('//meta:initial-creator')
+        element = self.get_element("//meta:initial-creator")
         if element is None:
-            element = Element.from_tag('meta:initial-creator')
+            element = Element.from_tag("meta:initial-creator")
             self.get_meta_body().append(element)
         element.text = creator
 
@@ -274,7 +273,7 @@ class Meta(XmlPart):
             >>> document.get_creator()
             Unknown
         """
-        element = self.get_element('//dc:creator')
+        element = self.get_element("//dc:creator")
         if element is None:
             return None
         return element.text
@@ -290,9 +289,9 @@ class Meta(XmlPart):
 
             >>> document.set_creator(u"Plato")
         """
-        element = self.get_element('//dc:creator')
+        element = self.get_element("//dc:creator")
         if element is None:
-            element = Element.from_tag('dc:creator')
+            element = Element.from_tag("dc:creator")
             self.get_meta_body().append(element)
         element.text = creator
 
@@ -302,7 +301,7 @@ class Meta(XmlPart):
 
         Return: str (or None if inexistant)
         """
-        element = self.get_element('//meta:keyword')
+        element = self.get_element("//meta:keyword")
         if element is None:
             return None
         return element.text
@@ -315,9 +314,9 @@ class Meta(XmlPart):
 
             keywords -- str
         """
-        element = self.get_element('//meta:keyword')
+        element = self.get_element("//meta:keyword")
         if element is None:
-            element = Element.from_tag('meta:keyword')
+            element = Element.from_tag("meta:keyword")
             self.get_meta_body().append(element)
         element.text = keywords
 
@@ -327,7 +326,7 @@ class Meta(XmlPart):
 
         Return: timedelta (or None if inexistant)
         """
-        element = self.get_element('//meta:editing-duration')
+        element = self.get_element("//meta:editing-duration")
         if element is None:
             return None
         duration = element.text
@@ -341,10 +340,10 @@ class Meta(XmlPart):
             duration -- timedelta
         """
         if not isinstance(duration, timedelta):
-            raise TypeError('duration must be a timedelta')
-        element = self.get_element('//meta:editing-duration')
+            raise TypeError("duration must be a timedelta")
+        element = self.get_element("//meta:editing-duration")
         if element is None:
-            element = Element.from_tag('meta:editing-duration')
+            element = Element.from_tag("meta:editing-duration")
             self.get_meta_body().append(element)
         element.text = Duration.encode(duration)
 
@@ -354,7 +353,7 @@ class Meta(XmlPart):
 
         Return: int (or None if inexistant)
         """
-        element = self.get_element('//meta:editing-cycles')
+        element = self.get_element("//meta:editing-cycles")
         if element is None:
             return None
         cycles = element.text
@@ -368,12 +367,12 @@ class Meta(XmlPart):
             cycles -- int
         """
         if not isinstance(cycles, int):
-            raise TypeError('cycles must be an int')
+            raise TypeError("cycles must be an int")
         if cycles < 1:
-            raise ValueError('cycles must be a positive int')
-        element = self.get_element('//meta:editing-cycles')
+            raise ValueError("cycles must be a positive int")
+        element = self.get_element("//meta:editing-cycles")
         if element is None:
-            element = Element.from_tag('meta:editing-cycles')
+            element = Element.from_tag("meta:editing-cycles")
             self.get_meta_body().append(element)
         element.text = str(cycles)
 
@@ -387,7 +386,7 @@ class Meta(XmlPart):
             >>> document.get_generator()
             KOffice/2.0.0
         """
-        element = self.get_element('//meta:generator')
+        element = self.get_element("//meta:generator")
         if element is None:
             return None
         return element.text
@@ -403,9 +402,9 @@ class Meta(XmlPart):
 
             >>> document.set_generator(u"lpOD Project")
         """
-        element = self.get_element('//meta:generator')
+        element = self.get_element("//meta:generator")
         if element is None:
-            element = Element.from_tag('meta:generator')
+            element = Element.from_tag("meta:generator")
             self.get_meta_body().append(element)
         element.text = generator
         self._generator_modified = True
@@ -437,7 +436,7 @@ class Meta(XmlPart):
              'meta:word-count': 6,
              'meta:character-count': 7}
         """
-        element = self.get_element('//meta:document-statistic')
+        element = self.get_element("//meta:document-statistic")
         if element is None:
             return None
         statistic = {}
@@ -465,13 +464,13 @@ class Meta(XmlPart):
             >>> document.set_statistic(statistic)
         """
         if not isinstance(statistic, dict):
-            raise TypeError('statistic must be a dict')
-        element = self.get_element('//meta:document-statistic')
+            raise TypeError("statistic must be a dict")
+        element = self.get_element("//meta:document-statistic")
         for key, value in statistic.items():
             try:
                 ivalue = int(value)
             except ValueError:
-                raise TypeError('statistic value must be a int')
+                raise TypeError("statistic value must be a int")
             element.set_attribute(to_str(key), str(ivalue))
 
     def get_user_defined_metadata(self):
@@ -480,9 +479,9 @@ class Meta(XmlPart):
         Value types can be: Decimal, date, time, boolean or str.
         """
         result = {}
-        for item in self.get_elements('//meta:user-defined'):
+        for item in self.get_elements("//meta:user-defined"):
             # Read the values
-            name = item.get_attribute('meta:name')
+            name = item.get_attribute("meta:name")
             value = self._get_meta_value(item)
             result[name] = value
         return result
@@ -497,74 +496,73 @@ class Meta(XmlPart):
         """
         result = {}
         found = False
-        for item in self.get_elements('//meta:user-defined'):
+        for item in self.get_elements("//meta:user-defined"):
             # Read the values
-            name = item.get_attribute('meta:name')
+            name = item.get_attribute("meta:name")
             if name == keyname:
                 found = True
                 break
         if not found:
             return None
-        result['name'] = name
+        result["name"] = name
         value, value_type, text = self._get_meta_value(item, full=True)
-        result['value'] = value
-        result['value_type'] = value_type
-        result['text'] = text
+        result["value"] = value
+        result["value_type"] = value_type
+        result["text"] = text
         return result
 
     def set_user_defined_metadata(self, name, value):
         if isinstance(value, bool):
-            value_type = 'boolean'
-            value = 'true' if value else 'false'
+            value_type = "boolean"
+            value = "true" if value else "false"
         elif isinstance(value, (int, float, Decimal)):
-            value_type = 'float'
+            value_type = "float"
             value = str(value)
         elif isinstance(value, dtdate):
-            value_type = 'date'
+            value_type = "date"
             value = str(Date.encode(value))
         elif isinstance(value, datetime):
-            value_type = 'date'
+            value_type = "date"
             value = str(DateTime.encode(value))
         elif isinstance(value, str):
-            value_type = 'string'
+            value_type = "string"
         elif isinstance(value, timedelta):
-            value_type = 'time'
+            value_type = "time"
             value = str(Duration.encode(value))
         else:
             raise TypeError('unexpected type "%s" for value' % type(value))
         # Already the same element ?
-        for metadata in self.get_elements('//meta:user-defined'):
-            if metadata.get_attribute('meta:name') == name:
+        for metadata in self.get_elements("//meta:user-defined"):
+            if metadata.get_attribute("meta:name") == name:
                 break
         else:
-            metadata = Element.from_tag('meta:user-defined')
-            metadata.set_attribute('meta:name', name)
+            metadata = Element.from_tag("meta:user-defined")
+            metadata.set_attribute("meta:name", name)
             self.get_meta_body().append(metadata)
-        metadata.set_attribute('meta:value-type', value_type)
+        metadata.set_attribute("meta:value-type", value_type)
         metadata.text = value
 
     @staticmethod
     def _get_meta_value(element, full=False):
-        """get_value deicated to the meta data part, for one meta element.
-        """
+        """get_value deicated to the meta data part, for one meta element."""
         # name = element.get_attribute('meta:name')
-        value_type = element.get_attribute('meta:value-type')
+        value_type = element.get_attribute("meta:value-type")
         if value_type is None:
-            value_type = 'string'
+            value_type = "string"
         text = element.text
         # Interpretation
-        if value_type == 'boolean':
+        if value_type == "boolean":
             value = Boolean.decode(text)
-        elif value_type in ('float', 'percentage', 'currency'):
+        elif value_type in ("float", "percentage", "currency"):
             value = Decimal(text)
-        elif value_type == 'date':
-            if 'T' in text:
+        elif value_type == "date":
+            if "T" in text:
                 value = DateTime.decode(text)
             else:
                 value = Date.decode(text)
-        elif value_type == 'string':
+        elif value_type == "string":
             value = text
-        elif value_type == 'time':
+        elif value_type == "time":
             value = Duration.decode(text)
         if full:
             return (value, value_type, text)

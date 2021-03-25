@@ -32,7 +32,7 @@ class Manifest(XmlPart):
 
         Return: list of str
         """
-        expr = '//manifest:file-entry/attribute::manifest:full-path'
+        expr = "//manifest:file-entry/attribute::manifest:full-path"
         return self.xpath(expr)
 
     def get_path_medias(self):
@@ -40,11 +40,15 @@ class Manifest(XmlPart):
 
         Return: list of str tuples
         """
-        expr = '//manifest:file-entry'
+        expr = "//manifest:file-entry"
         result = []
         for file_entry in self.xpath(expr):
-            result.append((file_entry.get_attribute('manifest:full-path'),
-                           file_entry.get_attribute('manifest:media-type')))
+            result.append(
+                (
+                    file_entry.get_attribute("manifest:full-path"),
+                    file_entry.get_attribute("manifest:media-type"),
+                )
+            )
         return result
 
     def get_media_type(self, full_path):
@@ -52,8 +56,10 @@ class Manifest(XmlPart):
 
         Return: str
         """
-        expr = ('//manifest:file-entry[attribute::manifest:full-path="%s"]'
-                '/attribute::manifest:media-type')
+        expr = (
+            '//manifest:file-entry[attribute::manifest:full-path="%s"]'
+            "/attribute::manifest:media-type"
+        )
         result = self.xpath(expr % to_str(full_path))
         if not result:
             return None
@@ -73,16 +79,18 @@ class Manifest(XmlPart):
         if not result:
             raise KeyError('path "%s" not found' % full_path)
         file_entry = result[0]
-        file_entry.set_attribute('manifest:media-type', media_type)
+        file_entry.set_attribute("manifest:media-type", media_type)
 
     @staticmethod
     def make_file_entry(full_path, media_type):
-        data = (f'<manifest:file-entry '
-                f'manifest:media-type="{to_str(media_type)}" '
-                f'manifest:full-path="{to_str(full_path)}"/>')
+        data = (
+            f"<manifest:file-entry "
+            f'manifest:media-type="{to_str(media_type)}" '
+            f'manifest:full-path="{to_str(full_path)}"/>'
+        )
         return Element.from_tag(data)
 
-    def add_full_path(self, full_path, media_type=b''):
+    def add_full_path(self, full_path, media_type=b""):
         # Existing?
         existing = self.get_media_type(full_path)
         if existing is not None:

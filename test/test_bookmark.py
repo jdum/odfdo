@@ -26,12 +26,12 @@ from odfdo.document import Document
 from odfdo.bookmark import Bookmark, BookmarkStart, BookmarkEnd
 from odfdo.paragraph import Paragraph
 
-ZOE = '你好 Zoé'
+ZOE = "你好 Zoé"
 
 
 class BookmarkTest(TestCase):
     def setUp(self):
-        document = Document('samples/bookmark.odt')
+        document = Document("samples/bookmark.odt")
         self.body = document.body
 
     def test_create_bookmark(self):
@@ -113,11 +113,13 @@ class BookmarkTest(TestCase):
         paragraph.set_span(style="style", regex="bb aa aa")
         paragraph.set_span(style="style", regex="dd")
         paragraph.set_bookmark("bookmark", after="aa")
-        expected = ('<text:p>aa<text:bookmark text:name="bookmark"/> '
-                    '<text:span text:style-name="style">bb aa aa'
-                    '</text:span>'
-                    ' cc aa <text:span text:style-name="style">dd</text:span>'
-                    '</text:p>')
+        expected = (
+            '<text:p>aa<text:bookmark text:name="bookmark"/> '
+            '<text:span text:style-name="style">bb aa aa'
+            "</text:span>"
+            ' cc aa <text:span text:style-name="style">dd</text:span>'
+            "</text:p>"
+        )
         self.assertEqual(paragraph.serialize(), expected)
 
     def test_set_bookmark_with_before(self):
@@ -125,12 +127,14 @@ class BookmarkTest(TestCase):
         paragraph.set_span(style="style", regex="bb aa aa")
         paragraph.set_span(style="style", regex="dd")
         paragraph.set_bookmark("bookmark", before="aa", position=1)
-        expected = ('<text:p>aa '
-                    '<text:span text:style-name="style">bb '
-                    '<text:bookmark text:name="bookmark"/>aa aa'
-                    '</text:span>'
-                    ' cc aa <text:span text:style-name="style">dd</text:span>'
-                    '</text:p>')
+        expected = (
+            "<text:p>aa "
+            '<text:span text:style-name="style">bb '
+            '<text:bookmark text:name="bookmark"/>aa aa'
+            "</text:span>"
+            ' cc aa <text:span text:style-name="style">dd</text:span>'
+            "</text:p>"
+        )
         self.assertEqual(paragraph.serialize(), expected)
 
     def test_set_bookmark_with_after(self):
@@ -138,12 +142,14 @@ class BookmarkTest(TestCase):
         paragraph.set_span(style="style", regex="bb aa aa")
         paragraph.set_span(style="style", regex="dd")
         paragraph.set_bookmark("bookmark", after="aa", position=1)
-        expected = ('<text:p>aa '
-                    '<text:span text:style-name="style">bb '
-                    'aa<text:bookmark text:name="bookmark"/> aa'
-                    '</text:span>'
-                    ' cc aa <text:span text:style-name="style">dd</text:span>'
-                    '</text:p>')
+        expected = (
+            "<text:p>aa "
+            '<text:span text:style-name="style">bb '
+            'aa<text:bookmark text:name="bookmark"/> aa'
+            "</text:span>"
+            ' cc aa <text:span text:style-name="style">dd</text:span>'
+            "</text:p>"
+        )
         self.assertEqual(paragraph.serialize(), expected)
 
     def test_set_bookmark_with_position(self):
@@ -152,14 +158,15 @@ class BookmarkTest(TestCase):
         paragraph.set_span(style="style", regex="dd")
         paragraph.set_bookmark("bookmark1", position=0)
         paragraph.set_bookmark("bookmark2", position=2)
-        paragraph.set_bookmark(
-            "bookmark3", position=len("aa bb aa aa cc aa dd"))
-        expected = ('<text:p><text:bookmark text:name="bookmark1"/>aa'
-                    '<text:bookmark text:name="bookmark2"/> '
-                    '<text:span text:style-name="style">bb aa aa</text:span>'
-                    ' cc aa <text:span text:style-name="style">dd'
-                    '<text:bookmark text:name="bookmark3"/></text:span>'
-                    '</text:p>')
+        paragraph.set_bookmark("bookmark3", position=len("aa bb aa aa cc aa dd"))
+        expected = (
+            '<text:p><text:bookmark text:name="bookmark1"/>aa'
+            '<text:bookmark text:name="bookmark2"/> '
+            '<text:span text:style-name="style">bb aa aa</text:span>'
+            ' cc aa <text:span text:style-name="style">dd'
+            '<text:bookmark text:name="bookmark3"/></text:span>'
+            "</text:p>"
+        )
         self.assertEqual(paragraph.serialize(), expected)
 
     def test_set_bookmark_with_end(self):
@@ -168,49 +175,57 @@ class BookmarkTest(TestCase):
         paragraph.set_span(style="style", regex="dd")
         paragraph.set_bookmark("bookmark1", after="cc", position=-1)
         paragraph.set_bookmark("bookmark2", position=-1)
-        expected = ('<text:p>aa '
-                    '<text:span text:style-name="style">'
-                    'bb aa aa'
-                    '</text:span>'
-                    ' cc<text:bookmark text:name="bookmark1"/> aa '
-                    '<text:span text:style-name="style">dd</text:span>'
-                    '<text:bookmark text:name="bookmark2"/>'
-                    '</text:p>')
+        expected = (
+            "<text:p>aa "
+            '<text:span text:style-name="style">'
+            "bb aa aa"
+            "</text:span>"
+            ' cc<text:bookmark text:name="bookmark1"/> aa '
+            '<text:span text:style-name="style">dd</text:span>'
+            '<text:bookmark text:name="bookmark2"/>'
+            "</text:p>"
+        )
         self.assertEqual(paragraph.serialize(), expected)
 
     def test_set_bookmark_with_role(self):
         paragraph = Paragraph("aa")
         paragraph.set_bookmark("bookmark", role="start")
         paragraph.set_bookmark("bookmark", role="end", position=-1)
-        expected = ('<text:p>'
-                    '<text:bookmark-start text:name="bookmark"/>'
-                    'aa'
-                    '<text:bookmark-end text:name="bookmark"/>'
-                    '</text:p>')
+        expected = (
+            "<text:p>"
+            '<text:bookmark-start text:name="bookmark"/>'
+            "aa"
+            '<text:bookmark-end text:name="bookmark"/>'
+            "</text:p>"
+        )
         self.assertEqual(paragraph.serialize(), expected)
 
     def test_set_bookmark_with_content(self):
         paragraph = Paragraph("aa bb bb aa")
         paragraph.set_bookmark("bookmark", content="bb", position=1)
-        expected = ('<text:p>aa bb '
-                    '<text:bookmark-start text:name="bookmark"/>'
-                    'bb'
-                    '<text:bookmark-end text:name="bookmark"/>'
-                    ' aa'
-                    '</text:p>')
+        expected = (
+            "<text:p>aa bb "
+            '<text:bookmark-start text:name="bookmark"/>'
+            "bb"
+            '<text:bookmark-end text:name="bookmark"/>'
+            " aa"
+            "</text:p>"
+        )
         self.assertEqual(paragraph.serialize(), expected)
 
     def test_set_bookmark_with_limits(self):
         paragraph = Paragraph("aa bb bb aa")
         paragraph.set_bookmark("bookmark", position=(6, 8))
-        expected = ('<text:p>aa bb '
-                    '<text:bookmark-start text:name="bookmark"/>'
-                    'bb'
-                    '<text:bookmark-end text:name="bookmark"/>'
-                    ' aa'
-                    '</text:p>')
+        expected = (
+            "<text:p>aa bb "
+            '<text:bookmark-start text:name="bookmark"/>'
+            "bb"
+            '<text:bookmark-end text:name="bookmark"/>'
+            " aa"
+            "</text:p>"
+        )
         self.assertEqual(paragraph.serialize(), expected)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

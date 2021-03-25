@@ -20,7 +20,7 @@ def random_text(sentences):
 from odfdo import Document, Header, Paragraph
 
 # Create the document
-my_document = Document('text')
+my_document = Document("text")
 body = my_document.body
 
 # Add content (See Create_a_basic_document.py)
@@ -38,19 +38,20 @@ for p in range(3):
     # choosing the 4th word of the paragraph to insert the note
     paragraph.insert_note(
         after=some_word,  # The word after what the “¹” citation is inserted.
-        note_id=f'note{p}',  # The unique identifier of the note in the document.
-        citation='1',  # The symbol the user sees to follow the footnote.
+        note_id=f"note{p}",  # The unique identifier of the note in the document.
+        citation="1",  # The symbol the user sees to follow the footnote.
         body=(
             f'Author{p}, A. (2007). "How to cite references", Sample Editions.'
             # The footnote itself, at the end of the page.
-        ))
+        ),
+    )
 
     body.append(paragraph)
 
-if not os.path.exists('test_output'):
-    os.mkdir('test_output')
+if not os.path.exists("test_output"):
+    os.mkdir("test_output")
 
-output = os.path.join('test_output', 'my_document_with_footnote.odt')
+output = os.path.join("test_output", "my_document_with_footnote.odt")
 
 # And finally save the document.
 my_document.save(target=output, pretty=True)

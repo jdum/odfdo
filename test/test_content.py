@@ -31,7 +31,7 @@ from odfdo.document import Document
 
 class ContentTestCase(TestCase):
     def setUp(self):
-        self.document = document = Document('samples/base_text.odt')
+        self.document = document = Document("samples/base_text.odt")
         self.content = document.get_part(ODF_CONTENT)
 
     def test_get_content(self):
@@ -39,21 +39,21 @@ class ContentTestCase(TestCase):
 
     def test_get_body(self):
         body = self.content.body
-        self.assertEqual(body.tag, 'office:text')
+        self.assertEqual(body.tag, "office:text")
 
     def test_get_styles(self):
         result = self.content.get_styles()
         self.assertEqual(len(result), 5)
 
     def test_get_styles_family(self):
-        result = self.content.get_styles('font-face')
+        result = self.content.get_styles("font-face")
         self.assertEqual(len(result), 3)
 
     def test_get_style(self):
-        style = self.content.get_style('section', 'Sect1')
-        self.assertEqual(style.name, 'Sect1')
-        self.assertEqual(style.family, 'section')
+        style = self.content.get_style("section", "Sect1")
+        self.assertEqual(style.name, "Sect1")
+        self.assertEqual(style.family, "section")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

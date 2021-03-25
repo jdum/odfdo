@@ -15,10 +15,11 @@ default_concat_filename = "my_concat_presentation.odp"
 known_files = set()
 counter_odp = 0
 
+
 def check_known(path):
     "remember already seen document with sha1 footprint"
     try:
-        with open(path, 'rb') as f:
+        with open(path, "rb") as f:
             content = f.read()
     except OSError:
         return False
@@ -28,14 +29,15 @@ def check_known(path):
     known_files.add(footprint)
     return True
 
+
 def parse_odp(path, dest_presentation):
-    """ Using odfdo for:
-            - open possible ODP document: Document
-            - copy content and merge styles
+    """Using odfdo for:
+    - open possible ODP document: Document
+    - copy content and merge styles
     """
-    lst = os.path.basename(path).split('.')
+    lst = os.path.basename(path).split(".")
     suffix = lst[-1].lower()
-    if suffix != 'odp' :
+    if suffix != "odp":
         return
     # Check the document unicity
     if not check_known(path):
@@ -50,8 +52,8 @@ def parse_odp(path, dest_presentation):
     dest_presentation.merge_styles_from(document)
     # add all slides
     dest_body = dest_presentation.body
-    dest_manifest = dest_presentation.get_part('manifest')
-    manifest = document.get_part('manifest')
+    dest_manifest = dest_presentation.get_part("manifest")
+    manifest = document.get_part("manifest")
     slides = document.body.get_draw_pages()
     for slide in slides:
         slide = slide.clone
@@ -64,13 +66,20 @@ def parse_odp(path, dest_presentation):
         # append slide, expecting nothing good about its final style
         dest_body.append(slide)
 
-if  __name__ == '__main__':
+
+if __name__ == "__main__":
 
     usage = "usage: %prog [options] <ODP dirs>"
     description = "Concatenate the odp files in the path. Result for style may vary."
     parser = optparse.OptionParser(usage, description=description)
-    parser.add_option("-o", "--output", dest="output", help="write output presentation to OUTPUT.",
-                      action="store", type="string")
+    parser.add_option(
+        "-o",
+        "--output",
+        dest="output",
+        help="write output presentation to OUTPUT.",
+        action="store",
+        type="string",
+    )
     options, sources = parser.parse_args()
     if not sources:
         print("need presentations sources !")
@@ -83,7 +92,7 @@ if  __name__ == '__main__':
 
     t0 = time.time()
     # prepare destination file
-    concat_presentation = Document('presentation')
+    concat_presentation = Document("presentation")
     concat_presentation.delete_styles()
 
     for source in sources:
@@ -97,5 +106,7 @@ if  __name__ == '__main__':
     concat_presentation.save(target=concat_filename, pretty=True)
     elapsed = int(time.time() - t0)
     nb_slides = len(concat_presentation.body.get_draw_pages())
-    print("%s presentations concatenated in %s (%s slides) in %ss." % (
-        counter_odp, concat_filename, nb_slides, elapsed))
+    print(
+        "%s presentations concatenated in %s (%s slides) in %ss."
+        % (counter_odp, concat_filename, nb_slides, elapsed)
+    )

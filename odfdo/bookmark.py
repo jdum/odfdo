@@ -31,10 +31,11 @@ class Bookmark(Element):
 
         name -- str
     """
-    _tag = 'text:bookmark'
-    _properties = (('name', 'text:name'), )
 
-    def __init__(self, name='', **kwargs):
+    _tag = "text:bookmark"
+    _properties = (("name", "text:name"),)
+
+    def __init__(self, name="", **kwargs):
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
@@ -51,10 +52,11 @@ class BookmarkStart(Element):
 
         name -- str
     """
-    _tag = 'text:bookmark-start'
-    _properties = (('name', 'text:name'), )
 
-    def __init__(self, name='', **kwargs):
+    _tag = "text:bookmark-start"
+    _properties = (("name", "text:name"),)
+
+    def __init__(self, name="", **kwargs):
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
@@ -71,10 +73,11 @@ class BookmarkEnd(Element):
 
         name -- str
     """
-    _tag = 'text:bookmark-end'
-    _properties = (('name', 'text:name'), )
 
-    def __init__(self, name='', **kwargs):
+    _tag = "text:bookmark-end"
+    _properties = (("name", "text:name"),)
+
+    def __init__(self, name="", **kwargs):
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name

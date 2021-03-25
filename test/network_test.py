@@ -33,37 +33,37 @@ from odfdo.container import odf_get_container
 # Tests requiring network moved from test_container and test_document
 class NetworkTest(TestCase):
     def test_http_container(self):
-        file = urlopen('http://ftp.odfdo-project.net/example.odt')
+        file = urlopen("http://ftp.odfdo-project.net/example.odt")
         container = odf_get_container(file)
-        mimetype = container.get_part('mimetype')
-        self.assertEqual(mimetype, ODF_EXTENSIONS['odt'])
+        mimetype = container.get_part("mimetype")
+        self.assertEqual(mimetype, ODF_EXTENSIONS["odt"])
 
     def test_ftp_container(self):
-        ftp = FTP('ftp.odfdo-project.net')
+        ftp = FTP("ftp.odfdo-project.net")
         ftp.login()
         file = StringIO()
-        ftp.retrbinary('RETR example.odt', file.write)
+        ftp.retrbinary("RETR example.odt", file.write)
         ftp.quit()
         file.seek(0)
         container = odf_get_container(file)
-        mimetype = container.get_part('mimetype')
-        self.assertEqual(mimetype, ODF_EXTENSIONS['odt'])
+        mimetype = container.get_part("mimetype")
+        self.assertEqual(mimetype, ODF_EXTENSIONS["odt"])
 
     def test_http_document(self):
-        file = urlopen('http://ftp.odfdo-project.net/example.odt')
+        file = urlopen("http://ftp.odfdo-project.net/example.odt")
         document = odf_get_document(file)
-        self.assertEqual(document.get_mimetype(), ODF_EXTENSIONS['odt'])
+        self.assertEqual(document.get_mimetype(), ODF_EXTENSIONS["odt"])
 
     def test_ftp_document(self):
-        ftp = FTP('ftp.odfdo-project.net')
+        ftp = FTP("ftp.odfdo-project.net")
         ftp.login()
         file = StringIO()
-        ftp.retrbinary('RETR example.odt', file.write)
+        ftp.retrbinary("RETR example.odt", file.write)
         ftp.quit()
         file.seek(0)
         document = odf_get_document(file)
-        self.assertEqual(document.get_mimetype(), ODF_EXTENSIONS['odt'])
+        self.assertEqual(document.get_mimetype(), ODF_EXTENSIONS["odt"])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -28,7 +28,7 @@ from odfdo.section import Section
 
 class TestSection(TestCase):
     def setUp(self):
-        self.document = document = Document('samples/base_text.odt')
+        self.document = document = Document("samples/base_text.odt")
         self.body = document.body
 
     def test_create_simple_section(self):
@@ -37,7 +37,7 @@ class TestSection(TestCase):
         test_xmlpart.
         """
         element = Section()
-        excepted = '<text:section/>'
+        excepted = "<text:section/>"
         self.assertEqual(element.serialize(), excepted)
 
     def test_create_complex_section(self):
@@ -45,7 +45,7 @@ class TestSection(TestCase):
         are contradictory or trigger different behaviours, test all those
         combinations separately.
         """
-        element = Section(style='Standard')
+        element = Section(style="Standard")
         excepted = '<text:section text:style-name="Standard"/>'
         self.assertEqual(element.serialize(), excepted)
 
@@ -59,7 +59,7 @@ class TestSection(TestCase):
 
     def test_get_section_list_style(self):
         body = self.body
-        sections = body.get_sections(style='Sect1')
+        sections = body.get_sections(style="Sect1")
         self.assertEqual(len(sections), 2)
         section = sections[0]
         name = section.name
@@ -72,5 +72,5 @@ class TestSection(TestCase):
         self.assertEqual(name, "Section2")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -32,18 +32,25 @@ class DrawImage(Element):
     Warning: image elements must be stored in a frame "draw:frame",
     see Frame().
     """
-    _tag = 'draw:image'
-    _properties = (('url', 'xlink:href'), ('type', 'xlink:type'),
-                   ('show', 'xlink:show'), ('actuate', 'xlink:actuate'),
-                   ('filter_name', 'draw:filter-name'))
 
-    def __init__(self,
-                 url='',
-                 xlink_type='simple',
-                 show='embed',
-                 actuate='onLoad',
-                 filter_name=None,
-                 **kw):
+    _tag = "draw:image"
+    _properties = (
+        ("url", "xlink:href"),
+        ("type", "xlink:type"),
+        ("show", "xlink:show"),
+        ("actuate", "xlink:actuate"),
+        ("filter_name", "draw:filter-name"),
+    )
+
+    def __init__(
+        self,
+        url="",
+        xlink_type="simple",
+        show="embed",
+        actuate="onLoad",
+        filter_name=None,
+        **kw
+    ):
         """Initialisation of an DrawImage.
 
         Arguments:
@@ -73,17 +80,15 @@ DrawImage._define_attribut_property()
 
 
 class DrawFillImage(DrawImage):
-    _tag = 'draw:fill-image'
-    _properties = (('display_name', 'draw:display-name'), ('name',
-                                                           'draw:name'),
-                   ('height', 'svg:height'), ('width', 'svg:width'))
+    _tag = "draw:fill-image"
+    _properties = (
+        ("display_name", "draw:display-name"),
+        ("name", "draw:name"),
+        ("height", "svg:height"),
+        ("width", "svg:width"),
+    )
 
-    def __init__(self,
-                 name=None,
-                 display_name=None,
-                 height=None,
-                 width=None,
-                 **kw):
+    def __init__(self, name=None, display_name=None, height=None, width=None, **kw):
         """The "draw:fill-image" element specifies a link to a bitmap
         resource. Fill image are not available as automatic styles.
         The "draw:fill-image" element is usable within the following element:

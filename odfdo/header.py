@@ -27,24 +27,26 @@ from .element import register_element_class
 
 
 class Header(Paragraph):
-    """Specialised paragraph for headings "text:h".
-    """
-    _tag = 'text:h'
+    """Specialised paragraph for headings "text:h"."""
+
+    _tag = "text:h"
     _properties = (
-        ('level', 'text:outline-level'),
-        ('restart_numbering', 'text:restart-numbering'),
-        ('start_value', 'text:start-value'),
-        ('suppress_numbering', 'text:suppress-numbering'),
+        ("level", "text:outline-level"),
+        ("restart_numbering", "text:restart-numbering"),
+        ("start_value", "text:start-value"),
+        ("suppress_numbering", "text:suppress-numbering"),
     )
 
-    def __init__(self,
-                 level=1,
-                 text=None,
-                 restart_numbering=False,
-                 start_value=None,
-                 suppress_numbering=False,
-                 style=None,
-                 **kwargs):
+    def __init__(
+        self,
+        level=1,
+        text=None,
+        restart_numbering=False,
+        start_value=None,
+        suppress_numbering=False,
+        style=None,
+        **kwargs
+    ):
         """Create a header element of the given style and level, containing the
         optional given text.
 
@@ -81,20 +83,20 @@ class Header(Paragraph):
     def get_formatted_text(self, context=None, simple=False):
         if not context:
             context = {
-                'document': None,
-                'footnotes': [],
-                'endnotes': [],
-                'annotations': [],
-                'rst_mode': False,
-                'img_counter': 0,
-                'images': [],
-                'no_img_level': 0
+                "document": None,
+                "footnotes": [],
+                "endnotes": [],
+                "annotations": [],
+                "rst_mode": False,
+                "img_counter": 0,
+                "images": [],
+                "no_img_level": 0,
             }
-        context['no_img_level'] += 1
+        context["no_img_level"] += 1
         title = super().get_formatted_text(context)
-        context['no_img_level'] -= 1
+        context["no_img_level"] -= 1
         title = title.strip()
-        title = sub(r'\s+', ' ', title)
+        title = sub(r"\s+", " ", title)
 
         # No rst_mode ?
         if not context["rst_mode"]:
@@ -108,10 +110,8 @@ class Header(Paragraph):
             raise ValueError("Too many levels of heading")
 
         # And return the result
-        result = [
-            '\n', title, '\n', LEVEL_STYLES[level - 1] * len(title), '\n'
-        ]
-        return ''.join(result)
+        result = ["\n", title, "\n", LEVEL_STYLES[level - 1] * len(title), "\n"]
+        return "".join(result)
 
 
 Header._define_attribut_property()

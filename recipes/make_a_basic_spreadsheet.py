@@ -9,7 +9,7 @@ from odfdo import Document, Table
 if __name__ == "__main__":
 
     # creating an empty spreadsheet document:
-    document = Document('spreadsheet')
+    document = Document("spreadsheet")
 
     # Each sheet of a spreadsheet is a table:
     # setting drom the beginning width (columns) and height (rows)
@@ -47,9 +47,9 @@ if __name__ == "__main__":
     print("Content of the table:")
     print(table.to_csv())
 
-    if not os.path.exists('test_output'):
-        os.mkdir('test_output')
+    if not os.path.exists("test_output"):
+        os.mkdir("test_output")
 
-    output = os.path.join('test_output', "my_basic_spreadsheet.ods")
+    output = os.path.join("test_output", "my_basic_spreadsheet.ods")
 
     document.save(target=output, pretty=True)

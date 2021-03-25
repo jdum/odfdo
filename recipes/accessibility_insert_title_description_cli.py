@@ -27,7 +27,7 @@ from hashlib import sha1
 
 from odfdo import Document
 
-modified_file_suffix = 'new'
+modified_file_suffix = "new"
 counter_image = 0
 counter_odf = 0
 counter_hit = 0
@@ -38,14 +38,14 @@ def make_footprint(content):
 
 
 def set_infos(path, chk_footprint, title, description):
-    """ Using odfdo for:
-            - open possible ODF document: Document
-            - find images inside the document: get_images
-            - set title and description if image matches
+    """Using odfdo for:
+    - open possible ODF document: Document
+    - find images inside the document: get_images
+    - set title and description if image matches
     """
-    lst = os.path.basename(path).split('.')
+    lst = os.path.basename(path).split(".")
     suffix = lst[-1].lower()
-    if not suffix.startswith('od'):
+    if not suffix.startswith("od"):
         return
     try:
         document = Document(path)
@@ -64,8 +64,8 @@ def set_infos(path, chk_footprint, title, description):
         try:
             image_content = document.get_part(image_url)
         except KeyError:
-            print('- not found inside document:', path)
-            print('  image URI:', image_url)
+            print("- not found inside document:", path)
+            print("  image URI:", image_url)
             continue
         counter_image += 1
         footprint = make_footprint(image_content)
@@ -76,59 +76,61 @@ def set_infos(path, chk_footprint, title, description):
             frame.svg_description = description
             document_changed = True
     if document_changed:
-        lst = path.split('.')
+        lst = path.split(".")
         lst.insert(-1, modified_file_suffix)
-        new_name = '.'.join(lst)
+        new_name = ".".join(lst)
         print(new_name)
         document.save(new_name)
 
 
 def main():
-    usage = 'usage: %prog -i IMAGE -t TITLE -d DESCRIPTION  ODF_sources'
-    description = ('Insert a TITLE and DESCRIPTION to any instance of '
-                   'the image.')
+    usage = "usage: %prog -i IMAGE -t TITLE -d DESCRIPTION  ODF_sources"
+    description = "Insert a TITLE and DESCRIPTION to any instance of " "the image."
     parser = optparse.OptionParser(usage, description=description)
     parser.add_option(
-        '-i',
-        '--image',
-        dest='image',
-        help='Image to look for in documents',
-        action='store',
-        type='string')
+        "-i",
+        "--image",
+        dest="image",
+        help="Image to look for in documents",
+        action="store",
+        type="string",
+    )
     parser.add_option(
-        '-t',
-        '--title',
-        dest='title',
-        help='Title of the image',
-        action='store',
-        type='string')
+        "-t",
+        "--title",
+        dest="title",
+        help="Title of the image",
+        action="store",
+        type="string",
+    )
     parser.add_option(
-        '-d',
-        '--description',
-        dest='description',
-        help='Description of the image',
-        action='store',
-        type='string')
+        "-d",
+        "--description",
+        dest="description",
+        help="Description of the image",
+        action="store",
+        type="string",
+    )
     options, sources = parser.parse_args()
     if not options.image:
-        print('Need some image !')
+        print("Need some image !")
         parser.print_help()
         exit(0)
     if not options.title:
-        print('Need some title !')
+        print("Need some title !")
         parser.print_help()
         exit(0)
     if not options.description:
-        print('Need some description !')
+        print("Need some description !")
         parser.print_help()
         exit(0)
     if not sources:
-        print('Need some ODF source !')
+        print("Need some ODF source !")
         parser.print_help()
         exit(0)
 
     t0 = time.time()
-    with open(options.image, 'rb') as f:
+    with open(options.image, "rb") as f:
         content_footprint = make_footprint(f.read())
 
     for source in sources:
@@ -136,16 +138,20 @@ def main():
             for root, dirs, files in os.walk(source):
                 for name in files:
                     set_infos(
-                        os.path.join(root, name), content_footprint,
-                        options.title, options.description)
+                        os.path.join(root, name),
+                        content_footprint,
+                        options.title,
+                        options.description,
+                    )
         else:
-            set_infos(source, content_footprint, options.title,
-                      options.description)
+            set_infos(source, content_footprint, options.title, options.description)
 
     elapsed = int(time.time() - t0)
-    print(f'{counter_hit} images updated from {counter_image} images '
-          f'in {counter_odf} ODF files in {elapsed} sec.')
+    print(
+        f"{counter_hit} images updated from {counter_image} images "
+        f"in {counter_odf} ODF files in {elapsed} sec."
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

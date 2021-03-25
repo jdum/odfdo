@@ -13,10 +13,10 @@ presentation_base = Document(filename)
 output_filename = "my_extracted_slides.odp"
 
 if __name__ == "__main__":
-    #extract = sys.argv[1:]
+    # extract = sys.argv[1:]
     extract = " 3 5 2 2"
 
-    extracted = Document('presentation')
+    extracted = Document("presentation")
 
     body_base = presentation_base.body
     body_extracted = extracted.body
@@ -38,9 +38,9 @@ if __name__ == "__main__":
 
         body_extracted.append(slide)
 
-    if not os.path.exists('test_output'):
-        os.mkdir('test_output')
+    if not os.path.exists("test_output"):
+        os.mkdir("test_output")
 
-    output = os.path.join('test_output', output_filename)
+    output = os.path.join("test_output", output_filename)
 
     extracted.save(target=output, pretty=True)

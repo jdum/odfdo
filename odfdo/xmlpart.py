@@ -82,9 +82,9 @@ class XmlPart:
     def clone(self):
         clone = object.__new__(self.__class__)
         for name in self.__dict__:
-            if name == 'container':
+            if name == "container":
                 setattr(clone, name, self.container.clone)
-            elif name in ('_XmlPart__tree', ):
+            elif name in ("_XmlPart__tree",):
                 setattr(clone, name, None)
             else:
                 value = getattr(self, name)
@@ -96,9 +96,9 @@ class XmlPart:
         tree = self.__get_tree()
         # Lxml declaration is too exotic to me
         data = [b'<?xml version="1.0" encoding="UTF-8"?>']
-        tree = tostring(tree, pretty_print=pretty, encoding='UTF-8')
+        tree = tostring(tree, pretty_print=pretty, encoding="UTF-8")
         # Lxml with pretty_print is adding a empty line
         if pretty:
             tree = tree.strip()
         data.append(tree)
-        return b'\n'.join(data)
+        return b"\n".join(data)

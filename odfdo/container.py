@@ -26,44 +26,52 @@ from os.path import join, dirname, exists
 from pathlib import PurePath, Path
 import shutil
 from copy import deepcopy
+
 # from io import BytesIO
 from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile, BadZipfile, is_zipfile
 
-from .const import (ODF_MIMETYPES, ODF_MANIFEST, ODF_TEMPLATES,
-                    ODF_TEMPLATES_DIR, ODF_CONTENT, ODF_META, ODF_SETTINGS,
-                    ODF_STYLES, ODF_EXTENSIONS)
+from .const import (
+    ODF_MIMETYPES,
+    ODF_MANIFEST,
+    ODF_TEMPLATES,
+    ODF_TEMPLATES_DIR,
+    ODF_CONTENT,
+    ODF_META,
+    ODF_SETTINGS,
+    ODF_STYLES,
+    ODF_EXTENSIONS,
+)
 from .manifest import Manifest
 from .scriptutils import printwarn
+
 # from .utils import _get_abspath
 from .utils import to_bytes, to_str
 
 
 class Container:
-    """Representation of the ODF file.
-    """
+    """Representation of the ODF file."""
 
     def __init__(self, path=None):
         self.__parts = {}
         self.__parts_ts = {}
         self.__packaging = None
         self.__path_like = None
-        self.__packaging = 'zip'
+        self.__packaging = "zip"
         self.path = None
         if path:
             self.open(path)
 
     def open(self, path_or_file):
-        """Load the content of an ODF file
-        """
+        """Load the content of an ODF file"""
         self.__path_like = path_or_file
         if isinstance(path_or_file, (str, bytes, Path)):
             self.path = path_or_file
             if not exists(self.path):
-                raise OSError(f'File not found: {self.path}')
+                raise OSError(f"File not found: {self.path}")
         else:
             self.path = None
         if is_zipfile(path_or_file):
-            self.__packaging = 'zip'
+            self.__packaging = "zip"
             return self.__read_zip()
         # to guess other packaging types
         if self.path:
@@ -72,39 +80,39 @@ class Container:
             except OSError:
                 is_folder = False
             if is_folder:
-                self.__packaging = 'folder'
+                self.__packaging = "folder"
                 return self.__read_folder()
         # last try, flat xml either by path or file
         # self._read_flat() # FIXME: not implemented
-        raise ValueError('Document format not managed by this tool.')
+        raise ValueError("Document format not managed by this tool.")
 
     @classmethod
     def new(cls, path_or_file):
-        """Return a Container instance based on template argument.
-        """
+        """Return a Container instance based on template argument."""
         test_file = to_str(path_or_file)
         if test_file in ODF_TEMPLATES:
             path_or_file = join(
-                dirname(__file__), ODF_TEMPLATES_DIR, ODF_TEMPLATES[test_file])
+                dirname(__file__), ODF_TEMPLATES_DIR, ODF_TEMPLATES[test_file]
+            )
         template_container = cls()
         template_container.open(path_or_file)
         # Return a copy of the template container
         clone = template_container.clone
         # Change type from template to regular
-        mimetype = clone.mimetype.replace('-template', '')
+        mimetype = clone.mimetype.replace("-template", "")
         clone.mimetype = mimetype
         # Update the manifest
         manifest = Manifest(ODF_MANIFEST, clone)
-        manifest.set_media_type('/', mimetype)
+        manifest.set_media_type("/", mimetype)
         clone.set_part(ODF_MANIFEST, manifest.serialize())
         return clone
 
     def __read_zip(self):
         with ZipFile(self.__path_like) as zf:
-            mimetype = zf.read('mimetype').decode('utf-8', 'ignore')
+            mimetype = zf.read("mimetype").decode("utf-8", "ignore")
             if mimetype not in ODF_MIMETYPES:
-                raise ValueError(f'Document of unknown type {mimetype}')
-            self.__parts['mimetype'] = to_bytes(mimetype)
+                raise ValueError(f"Document of unknown type {mimetype}")
+            self.__parts["mimetype"] = to_bytes(mimetype)
         if self.path is None:
             # read the full file at once and forget file
             with ZipFile(self.__path_like) as zf:
@@ -115,29 +123,26 @@ class Container:
 
     def __read_folder(self):
         try:
-            mimetype, timestamp = self.__get_folder_part('mimetype')
+            mimetype, timestamp = self.__get_folder_part("mimetype")
         except OSError:
-            printwarn('corrupted or not an OpenDocument folder '
-                      '(missing mimetype)')
-            mimetype = b''
+            printwarn("corrupted or not an OpenDocument folder " "(missing mimetype)")
+            mimetype = b""
             timestamp = None
         if to_str(mimetype) not in ODF_MIMETYPES:
-            message = (f'Document of unknown type {mimetype}, '
-                       'try with ODF Text.')
+            message = f"Document of unknown type {mimetype}, " "try with ODF Text."
             printwarn(message)
-            mimetype = to_bytes(ODF_EXTENSIONS['odt'])
-            self.__parts['mimetype'] = mimetype
-            self.__parts_ts['mimetype'] = timestamp
+            mimetype = to_bytes(ODF_EXTENSIONS["odt"])
+            self.__parts["mimetype"] = mimetype
+            self.__parts_ts["mimetype"] = timestamp
 
     def __get_folder_parts(self):
-        """Get the list of members in the ODF folder.
-        """
+        """Get the list of members in the ODF folder."""
 
         def parse_folder(folder):
             parts = []
             file_names = os.listdir(join(self.path, folder))
             for f in file_names:
-                if f.startswith('.'):  # no hidden files
+                if f.startswith("."):  # no hidden files
                     continue
                 if os.path.isfile(join(self.path, folder, f)):
                     part_name = PurePath(folder, f).as_posix()
@@ -149,19 +154,18 @@ class Container:
                         parts.extend(sub_parts)
                     else:
                         # store leaf directories
-                        parts.append(PurePath(sub_folder).as_posix() + '/')
+                        parts.append(PurePath(sub_folder).as_posix() + "/")
             return parts
 
-        return parse_folder('')
+        return parse_folder("")
 
     def __get_folder_part(self, name):
-        """Get bytes of a part from the ODF folder, with timestamp.
-        """
+        """Get bytes of a part from the ODF folder, with timestamp."""
         path = join(self.path, name)
         timestamp = os.stat(path).st_mtime
         if os.path.isdir(path):
-            return ('', timestamp)
-        with open(path, 'rb') as f:
+            return ("", timestamp)
+        with open(path, "rb") as f:
             part = f.read()
         return (part, timestamp)
 
@@ -174,12 +178,11 @@ class Container:
         return timestamp
 
     def __get_zip_part(self, name):
-        """Get bytes of a part from the Zip ODF file. No cache.
-        """
+        """Get bytes of a part from the Zip ODF file. No cache."""
         try:
             with ZipFile(self.path) as zf:
-                if name.endswith('/'):  # folder
-                    upath = PurePath(name[:-1]).as_posix() + '/'
+                if name.endswith("/"):  # folder
+                    upath = PurePath(name[:-1]).as_posix() + "/"
                 else:
                     upath = PurePath(name).as_posix()
                 self.__parts[upath] = zf.read(name)
@@ -188,13 +191,12 @@ class Container:
             return None
 
     def __get_all_zip_part(self):
-        """Read all parts. No cache.
-        """
+        """Read all parts. No cache."""
         try:
             with ZipFile(self.path) as zf:
                 for name in zf.namelist():
-                    if name.endswith('/'):  # folder
-                        upath = PurePath(name[:-1]).as_posix() + '/'
+                    if name.endswith("/"):  # folder
+                        upath = PurePath(name[:-1]).as_posix() + "/"
                     else:
                         upath = PurePath(name).as_posix()
                     self.__parts[upath] = zf.read(name)
@@ -202,11 +204,10 @@ class Container:
             pass
 
     def __save_zip(self, target):
-        """Save a Zip ODF from the available parts.
-        """
+        """Save a Zip ODF from the available parts."""
         parts = self.__parts
 
-        with ZipFile(target, 'w', compression=ZIP_DEFLATED) as filezip:
+        with ZipFile(target, "w", compression=ZIP_DEFLATED) as filezip:
             # Parts to save, except manifest at the end
             part_names = list(parts.keys())
             try:
@@ -216,8 +217,8 @@ class Container:
             # "Pretty-save" parts in some order
             # mimetype requires to be first and uncompressed
             try:
-                filezip.writestr('mimetype', parts['mimetype'], ZIP_STORED)
-                part_names.remove('mimetype')
+                filezip.writestr("mimetype", parts["mimetype"], ZIP_STORED)
+                part_names.remove("mimetype")
             except (ValueError, KeyError):
                 printwarn("missing 'mimetype'")
             # XML parts
@@ -241,11 +242,10 @@ class Container:
                 pass
 
     def __save_folder(self, folder):
-        """Save a folder ODF from the available parts.
-        """
+        """Save a folder ODF from the available parts."""
 
         def dump(path, content):
-            if path.endswith('/'):  # folder
+            if path.endswith("/"):  # folder
                 is_folder = True
                 file_name = PurePath(folder, path[:-1])
             else:
@@ -258,7 +258,7 @@ class Container:
                 if not os.path.isdir(file_name):
                     os.makedirs(file_name, 0o777)
             else:
-                with open(file_name, 'wb', 0o666) as f:
+                with open(file_name, "wb", 0o666) as f:
                     f.write(content)
 
         for path, data in self.__parts.items():
@@ -270,33 +270,31 @@ class Container:
     # Public API
 
     def get_parts(self):
-        """Get the list of members.
-        """
+        """Get the list of members."""
         if not self.path:
             # maybe a file like zip archive
             return list(self.__parts.keys())
-        if self.__packaging == 'zip':
+        if self.__packaging == "zip":
             parts = []
             with ZipFile(self.path) as zf:
                 for name in zf.namelist():
-                    if name.endswith('/'):
-                        parts.append(PurePath(name[:-1]).as_posix() + '/')
+                    if name.endswith("/"):
+                        parts.append(PurePath(name[:-1]).as_posix() + "/")
                     else:
                         parts.append(PurePath(name).as_posix())
             return parts
-        elif self.__packaging == 'folder':
+        elif self.__packaging == "folder":
             return self.__get_folder_parts()
         else:
-            raise ValueError('Unable to provide parts of the document.')
+            raise ValueError("Unable to provide parts of the document.")
 
     def get_part(self, path):
-        """Get the bytes of a part of the ODF.
-        """
+        """Get the bytes of a part of the ODF."""
         if path in self.__parts:
             part = self.__parts[path]
             if part is None:
                 raise ValueError(f'part "{path}" is deleted')
-            if self.__packaging == 'folder':
+            if self.__packaging == "folder":
                 cache_ts = self.__parts_ts.get(path, -1)
                 current_ts = self.__get_folder_part_timestamp(path)
                 if current_ts != cache_ts:
@@ -304,9 +302,9 @@ class Container:
                     self.__parts[path] = part
                     self.__parts_ts[path] = timestamp
             return part
-        if self.__packaging == 'zip':
+        if self.__packaging == "zip":
             return self.__get_zip_part(path)
-        if self.__packaging == 'folder':
+        if self.__packaging == "folder":
             part, timestamp = self.__get_folder_part(path)
             self.__parts[path] = part
             self.__parts_ts[path] = timestamp
@@ -315,42 +313,37 @@ class Container:
 
     @property
     def mimetype(self):
-        """Return unicode value of mimetype of the document.
-        """
-        return self.get_part('mimetype').decode('utf-8', 'ignore')
+        """Return unicode value of mimetype of the document."""
+        return self.get_part("mimetype").decode("utf-8", "ignore")
 
     @mimetype.setter
     def mimetype(self, m):
-        """Set mimetype value of the document.
-        """
-        self.__parts['mimetype'] = to_bytes(m)
+        """Set mimetype value of the document."""
+        self.__parts["mimetype"] = to_bytes(m)
 
     def set_part(self, path, data):
-        """Replace or add a new part.
-        """
+        """Replace or add a new part."""
         self.__parts[path] = data
 
     def del_part(self, path):
-        """Mark a part for deletion.
-        """
+        """Mark a part for deletion."""
         self.__parts[path] = None
 
     @property
     def clone(self):
-        """Make a copy of this container with no path.
-        """
-        if self.path and self.__packaging == 'zip':
+        """Make a copy of this container with no path."""
+        if self.path and self.__packaging == "zip":
             self.__get_all_zip_part()
         clone = deepcopy(self)
-        setattr(clone, 'path', None)
+        setattr(clone, "path", None)
         return clone
 
     @staticmethod
     def __do_backup(target):
         prefix, ext = os.path.splitext(target)
         if len(ext) <= 1:
-            ext = ''
-        back_file = prefix + '.backup' + ext
+            ext = ""
+        back_file = prefix + ".backup" + ext
         if exists(target):
             if os.path.isdir(back_file):
                 try:
@@ -383,10 +376,10 @@ class Container:
             if self.__packaging:
                 packaging = self.__packaging
             else:
-                packaging = 'zip'  # default
+                packaging = "zip"  # default
         packaging = packaging.strip().lower()
-        #if packaging not in ('zip', 'flat', 'folder'):
-        if packaging not in ('zip', 'folder'):
+        # if packaging not in ('zip', 'flat', 'folder'):
+        if packaging not in ("zip", "folder"):
             raise ValueError('packaging type "%s" not supported' % packaging)
         # Load parts else they will be considered deleted
         for path in self.get_parts():
@@ -399,18 +392,20 @@ class Container:
         if isinstance(target, str):
             while target.endswith(os.sep):
                 target = target[:-1]
-            while target.endswith('.folder'):
-                target = target.split('.folder', 1)[0]
-        if packaging == 'zip':
+            while target.endswith(".folder"):
+                target = target.split(".folder", 1)[0]
+        if packaging == "zip":
             if isinstance(target, str) and backup:
                 self.__do_backup(target)
             self.__save_zip(target)
-        if packaging == 'folder':
+        if packaging == "folder":
             if not isinstance(target, str):
-                raise ValueError("Saving in folder format requires a folder "
-                                 "name, not %s." % target)
-            if not target.endswith('.folder'):
-                target = target + '.folder'
+                raise ValueError(
+                    "Saving in folder format requires a folder "
+                    "name, not %s." % target
+                )
+            if not target.endswith(".folder"):
+                target = target + ".folder"
             if backup:
                 self.__do_backup(target)
             else:

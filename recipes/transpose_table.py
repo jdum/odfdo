@@ -9,7 +9,7 @@ import os
 from odfdo import Document, Table, Row
 
 if __name__ == "__main__":
-    spreadsheet = Document('spreadsheet')
+    spreadsheet = Document("spreadsheet")
 
     # Populate the table in the spreadsheet
     body = spreadsheet.body
@@ -45,9 +45,9 @@ if __name__ == "__main__":
 
     print("Size of symetric table 3 :", table3.size)
 
-    if not os.path.exists('test_output'):
-        os.mkdir('test_output')
+    if not os.path.exists("test_output"):
+        os.mkdir("test_output")
 
-    output = os.path.join('test_output', "my_transposed_spreadsheet.ods")
+    output = os.path.join("test_output", "my_transposed_spreadsheet.ods")
 
     spreadsheet.save(target=output, pretty=True)

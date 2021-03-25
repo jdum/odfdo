@@ -35,9 +35,12 @@ class AnimPar(Element):
 
         smil_begin -- indefinite, 10s, [id].click, [id].begin
     """
-    _tag = 'anim:par'
-    _properties = (('presentation_node_type', 'presentation:node-type'),
-                   ('smil_begin', 'smil:begin'))
+
+    _tag = "anim:par"
+    _properties = (
+        ("presentation_node_type", "presentation:node-type"),
+        ("smil_begin", "smil:begin"),
+    )
 
     def __init__(self, presentation_node_type=None, smil_begin=None, **kwargs):
         super().__init__(**kwargs)
@@ -62,8 +65,9 @@ class AnimSeq(Element):
                                   after-previous, timing-root, main-sequence
                                   and interactive-sequence
     """
-    _tag = 'anim:seq'
-    _properties = (('presentation_node_type', 'presentation:node-type'), )
+
+    _tag = "anim:seq"
+    _properties = (("presentation_node_type", "presentation:node-type"),)
 
     def __init__(self, presentation_node_type=None, **kwargs):
         super().__init__(**kwargs)
@@ -92,21 +96,27 @@ class AnimTransFilter(Element):
 
       smil_mode -- in, out
     """
-    _tag = 'anim:transitionFilter'
-    _properties = (('smil_dur', 'smil:dur'), ('smil_type', 'smil:type'),
-                   ('smil_subtype', 'smil:subtype'), ('smil_direction',
-                                                      'smil:direction'),
-                   ('smil_fadeColor', 'smil:fadeColor'), ('smil_mode',
-                                                          'smil:mode'))
 
-    def __init__(self,
-                 smil_dur=None,
-                 smil_type=None,
-                 smil_subtype=None,
-                 smil_direction=None,
-                 smil_fadeColor=None,
-                 smil_mode=None,
-                 **kwargs):
+    _tag = "anim:transitionFilter"
+    _properties = (
+        ("smil_dur", "smil:dur"),
+        ("smil_type", "smil:type"),
+        ("smil_subtype", "smil:subtype"),
+        ("smil_direction", "smil:direction"),
+        ("smil_fadeColor", "smil:fadeColor"),
+        ("smil_mode", "smil:mode"),
+    )
+
+    def __init__(
+        self,
+        smil_dur=None,
+        smil_type=None,
+        smil_subtype=None,
+        smil_direction=None,
+        smil_fadeColor=None,
+        smil_mode=None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         if self._do_init:
             if smil_dur:

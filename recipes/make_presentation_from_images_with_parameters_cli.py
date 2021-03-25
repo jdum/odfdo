@@ -16,6 +16,7 @@ from odfdo import Document, Frame, DrawPage
 # The standard PIL lib may have different modules names on different OS
 try:
     from PIL import Image
+
     PIL_ok = True
 except:
     PIL_ok = False
@@ -97,7 +98,7 @@ def collect_sources(args):
                     add_image_to_pool(full_path)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     usage = "usage: %prog -o FILE [options] <pict dir> <pict dir> ..."
     description = "Create a presentation from images."
     parser = OptionParser(usage, description=description)
@@ -107,26 +108,30 @@ if __name__ == '__main__':
         dest="output",
         help="write output to OUTPUT",
         action="store",
-        type="string")
+        type="string",
+    )
     parser.add_option(
         "-m",
         "--max",
         dest="crop",
         help="extend images on slide (default)",
-        action="store_false")
+        action="store_false",
+    )
     parser.add_option(
         "-s",
         "--size",
         dest="size",
         help="max width in cm of the images",
         action="store",
-        type="float")
+        type="float",
+    )
     parser.add_option(
         "-c",
         "--crop",
         dest="crop",
         help="crop images to use all space",
-        action="store_true")
+        action="store_true",
+    )
 
     options, sources = parser.parse_args()
     if not sources or not options.output:
@@ -152,7 +157,7 @@ if __name__ == '__main__':
 
     # Creation of the output Presentation document :
     # presentation = Document_from_type('presentation')  # 092
-    presentation = Document('presentation')
+    presentation = Document("presentation")
 
     # Presentation got a body in which content is stored
     presentation_body = presentation.body
@@ -172,10 +177,11 @@ if __name__ == '__main__':
             name=image.name,
             text="",  # Text over the image object
             size=(image.disp_w, image.disp_h),  # Display size of image
-            anchor_type='page',
+            anchor_type="page",
             page_number=None,
             position=(image.pos_x, image.pos_y),
-            style=None)
+            style=None,
+        )
 
         # Append all the component
         page.append(image_frame)

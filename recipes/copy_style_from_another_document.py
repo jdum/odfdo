@@ -24,12 +24,13 @@ document.delete_styles()
 document.merge_styles_from(style_document)
 
 
-if not os.path.exists('test_output'):
-    os.mkdir('test_output')
+if not os.path.exists("test_output"):
+    os.mkdir("test_output")
 
 # Saving the document (with a different name)
-document.save(target=os.path.join('test_output', "my_collection_styled.odt"),
-              pretty=True)
+document.save(
+    target=os.path.join("test_output", "my_collection_styled.odt"), pretty=True
+)
 
 ################################################################################
 # For more advanced version, see the odfdo-style.py script in scripts folder   #

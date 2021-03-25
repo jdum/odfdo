@@ -10,7 +10,7 @@ import time
 
 from odfdo import Document
 
-#encoding = "UTF8"
+# encoding = "UTF8"
 default_dest_dir = "my_collected_pictures"
 known_images = set()
 counter_image = 0
@@ -20,24 +20,25 @@ counter_outside = 0
 
 def store_image(path, name, content, dest_dir=default_dest_dir):
     "image new name is odffile_imagename"
-    dest_file = os.path.join(dest_dir, "%s_%s" %
-                             (os.path.basename(path).replace('.', '_'), name))
+    dest_file = os.path.join(
+        dest_dir, "%s_%s" % (os.path.basename(path).replace(".", "_"), name)
+    )
     while os.path.exists(dest_file):
         dest_file += "_"
-    with open(dest_file, 'wb') as f:
+    with open(dest_file, "wb") as f:
         f.write(content)
     global counter_image
     counter_image += 1
 
 
 def parse_odf_pics(path, dest_dir=default_dest_dir):
-    """ Using odfdo for:
-            - open possible ODF document: Document (including URI)
-            - find images inside the document: get_image_list, get_attribute
+    """Using odfdo for:
+    - open possible ODF document: Document (including URI)
+    - find images inside the document: get_image_list, get_attribute
     """
     lst = os.path.basename(path).split(".")
     suffix = lst[-1].lower()
-    if not suffix.startswith('od'):
+    if not suffix.startswith("od"):
         return
     try:
         document = Document(path)
@@ -57,7 +58,7 @@ def parse_odf_pics(path, dest_dir=default_dest_dir):
             print("  image URL:", image_url)
             counter_outside += 1
             continue
-        image_name = image_url.split('/')[-1]
+        image_name = image_url.split("/")[-1]
         if check_known(image_content):
             store_image(path, image_name, image_content, dest_dir)
 
@@ -71,7 +72,7 @@ def check_known(content):
     return True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     usage = "usage: %prog [options] <ODF documents dir>"
     description = "Retrieve images from several ODF sources."
@@ -82,7 +83,8 @@ if __name__ == '__main__':
         dest="directory",
         help="write images in DIRECTORY",
         action="store",
-        type="string")
+        type="string",
+    )
     options, sources = parser.parse_args()
     if not sources:
         print("Need some ODF source !")
@@ -104,6 +106,7 @@ if __name__ == '__main__':
         else:
             parse_odf_pics(source, output_directory)
     elapsed = int(time.time() - t0)
-    print("%s images copied (%s not found) from %s ODF files to %s in %ss." %
-          (counter_image, counter_outside, counter_odf, output_directory,
-           elapsed))
+    print(
+        "%s images copied (%s not found) from %s ODF files to %s in %ss."
+        % (counter_image, counter_outside, counter_odf, output_directory, elapsed)
+    )

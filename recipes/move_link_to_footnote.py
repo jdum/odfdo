@@ -16,8 +16,8 @@ def get_default_doc():
 
 
 def remove_links(element):
-    tag = 'text:a'
-    keep_inside_tag = 'None'
+    tag = "text:a"
+    keep_inside_tag = "None"
     context = (tag, keep_inside_tag, False)
     element, is_modified = _tree_remove_tag(element, context)
     return is_modified
@@ -37,7 +37,8 @@ def _tree_remove_tag(element, context):
         protect_below = False
     for child in buffer.children:
         striped, is_modified = _tree_remove_tag(
-            child, (tag, keep_inside_tag, protect_below))
+            child, (tag, keep_inside_tag, protect_below)
+        )
         if is_modified:
             modified = True
         if type(striped) == type([]):
@@ -106,18 +107,19 @@ if __name__ == "__main__":
             counter_added_note += 1
             paragraph.insert_note(
                 after=link,  # citation is inserted after current link
-                note_id=f'my_note_{counter_added_note}',
-                citation='1',  # The symbol the user sees to follow the footnote.
+                note_id=f"my_note_{counter_added_note}",
+                citation="1",  # The symbol the user sees to follow the footnote.
                 # The footnote itself, at the end of the page:
-                body=(f'. {text}, link: {url}'))
+                body=(f". {text}, link: {url}"),
+            )
         remove_links(paragraph)
 
-    print('links occurrences:', len(body.get_links()))
-    print('footnotes occurences:', len(body.get_notes()))
+    print("links occurrences:", len(body.get_links()))
+    print("footnotes occurences:", len(body.get_notes()))
 
-    if not os.path.exists('test_output'):
-        os.mkdir('test_output')
+    if not os.path.exists("test_output"):
+        os.mkdir("test_output")
 
-    output = os.path.join('test_output', "my_LN_" + source)
+    output = os.path.join("test_output", "my_LN_" + source)
 
     document.save(target=output, pretty=True)

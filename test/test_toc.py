@@ -34,12 +34,19 @@ class TOCTest(TestCase):
     def setUp(self):
         self.document = Document("samples/toc.odt")
         self.expected = [
-            "Table des matières", "1. Level 1 title 1", "1.1. Level 2 title 1",
-            "2. Level 1 title 2", "2.1.1. Level 3 title 1",
-            "2.2. Level 2 title 2", "3. Level 1 title 3",
-            "3.1. Level 2 title 1", "3.1.1. Level 3 title 1",
-            "3.1.2. Level 3 title 2", "3.2. Level 2 title 2",
-            "3.2.1. Level 3 title 1", "3.2.2. Level 3 title 2"
+            "Table des matières",
+            "1. Level 1 title 1",
+            "1.1. Level 2 title 1",
+            "2. Level 1 title 2",
+            "2.1.1. Level 3 title 1",
+            "2.2. Level 2 title 2",
+            "3. Level 1 title 3",
+            "3.1. Level 2 title 1",
+            "3.1.1. Level 3 title 1",
+            "3.1.2. Level 3 title 2",
+            "3.2. Level 2 title 2",
+            "3.2.1. Level 3 title 1",
+            "3.2.2. Level 3 title 2",
         ]
 
     def test_toc_fill_unattached(self):
@@ -61,5 +68,5 @@ class TOCTest(TestCase):
         self.assertEqual(toc_lines, self.expected)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

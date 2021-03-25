@@ -28,12 +28,12 @@ from .element import Element, register_element_class
 
 
 class VarDecls(Element):
-    _tag = 'text:variable-decls'
+    _tag = "text:variable-decls"
 
 
 class VarDecl(Element):
-    _tag = 'text:variable-decl'
-    _properties = (('name', 'text:name'), ('value_type', 'office:value-type'))
+    _tag = "text:variable-decl"
+    _properties = (("name", "text:name"), ("value_type", "office:value-type"))
 
     def __init__(self, name=None, value_type=None, **kw):
         super().__init__(**kw)
@@ -48,18 +48,23 @@ VarDecl._define_attribut_property()
 
 
 class VarSet(Element):
-    _tag = 'text:variable-set'
-    _properties = (('name', 'text:name'), ('style', 'style:data-style-name'),
-                   ('display', 'text:display'))
+    _tag = "text:variable-set"
+    _properties = (
+        ("name", "text:name"),
+        ("style", "style:data-style-name"),
+        ("display", "text:display"),
+    )
 
-    def __init__(self,
-                 name=None,
-                 value=None,
-                 value_type=None,
-                 display=False,
-                 text=None,
-                 style=None,
-                 **kw):
+    def __init__(
+        self,
+        name=None,
+        value=None,
+        value_type=None,
+        display=False,
+        text=None,
+        style=None,
+        **kw
+    ):
         super().__init__(**kw)
         if self._do_init:
             if name:
@@ -67,9 +72,10 @@ class VarSet(Element):
             if style:
                 self.style = style
             text = _set_value_and_type(
-                self, value=value, value_type=value_type, text=text)
+                self, value=value, value_type=value_type, text=text
+            )
             if not display:
-                self.display = 'none'
+                self.display = "none"
             else:
                 self.text = text
 
@@ -78,16 +84,12 @@ VarSet._define_attribut_property()
 
 
 class VarGet(Element):
-    _tag = 'text:variable-get'
-    _properties = (('name', 'text:name'), ('style', 'style:data-style-name'))
+    _tag = "text:variable-get"
+    _properties = (("name", "text:name"), ("style", "style:data-style-name"))
 
-    def __init__(self,
-                 name=None,
-                 value=None,
-                 value_type=None,
-                 text=None,
-                 style=None,
-                 **kw):
+    def __init__(
+        self, name=None, value=None, value_type=None, text=None, style=None, **kw
+    ):
         super().__init__(**kw)
         if self._do_init:
             if name:
@@ -95,7 +97,8 @@ class VarGet(Element):
             if style:
                 self.style = style
             text = _set_value_and_type(
-                self, value=value, value_type=value_type, text=text)
+                self, value=value, value_type=value_type, text=text
+            )
             self.text = text
 
 
@@ -103,12 +106,12 @@ VarGet._define_attribut_property()
 
 
 class UserFieldDecls(Element):
-    _tag = 'text:user-field-decls'
+    _tag = "text:user-field-decls"
 
 
 class UserFieldDecl(Element):
-    _tag = 'text:user-field-decl'
-    _properties = (('name', 'text:name'), )
+    _tag = "text:user-field-decl"
+    _properties = (("name", "text:name"),)
 
     def __init__(self, name=None, value=None, value_type=None, **kw):
         super().__init__(**kw)
@@ -122,22 +125,19 @@ UserFieldDecl._define_attribut_property()
 
 
 class UserFieldGet(Element):
-    _tag = 'text:user-field-get'
-    _properties = (('name', 'text:name'), ('style', 'style:data-style-name'))
+    _tag = "text:user-field-get"
+    _properties = (("name", "text:name"), ("style", "style:data-style-name"))
 
-    def __init__(self,
-                 name=None,
-                 value=None,
-                 value_type=None,
-                 text=None,
-                 style=None,
-                 **kw):
+    def __init__(
+        self, name=None, value=None, value_type=None, text=None, style=None, **kw
+    ):
         super().__init__(**kw)
         if self._do_init:
             if name:
                 self.name = name
             text = _set_value_and_type(
-                self, value=value, value_type=value_type, text=text)
+                self, value=value, value_type=value_type, text=text
+            )
             self.text = text
             if style:
                 self.style = style
@@ -147,7 +147,7 @@ UserFieldGet._define_attribut_property()
 
 
 class UserFieldInput(UserFieldGet):
-    _tag = 'text:user-field-input'
+    _tag = "text:user-field-input"
 
 
 UserFieldInput._define_attribut_property()
@@ -172,17 +172,20 @@ class UserDefined(Element):
 
         from_document -- ODF document
     """
-    _tag = 'text:user-defined'
-    _properties = (('name', 'text:name'), ('style', 'style:data-style-name'))
 
-    def __init__(self,
-                 name=None,
-                 value=None,
-                 value_type=None,
-                 text=None,
-                 style=None,
-                 from_document=None,
-                 **kw):
+    _tag = "text:user-defined"
+    _properties = (("name", "text:name"), ("style", "style:data-style-name"))
+
+    def __init__(
+        self,
+        name=None,
+        value=None,
+        value_type=None,
+        text=None,
+        style=None,
+        from_document=None,
+        **kw
+    ):
         super().__init__(**kw)
         if self._do_init:
             if name:
@@ -192,14 +195,14 @@ class UserDefined(Element):
             if from_document is not None:
                 meta_infos = from_document.get_part(ODF_META)
                 if meta_infos is not None:
-                    content = meta_infos.get_user_defined_metadata_of_name(
-                        name)
+                    content = meta_infos.get_user_defined_metadata_of_name(name)
                     if content is not None:
-                        value = content.get('value', None)
-                        value_type = content.get('value_type', None)
-                        text = content.get('text', None)
+                        value = content.get("value", None)
+                        value_type = content.get("value_type", None)
+                        text = content.get("text", None)
             text = _set_value_and_type(
-                self, value=value, value_type=value_type, text=text)
+                self, value=value, value_type=value_type, text=text
+            )
             self.text = text
 
 
@@ -212,15 +215,18 @@ class VarPageNumber(Element):
 
     page_adjust -- int (to add or subtract to the page number)
     """
-    _tag = 'text:page-number'
-    _properties = (('select_page', 'text:select-page'), ('page_adjust',
-                                                         'text:page-adjust'))
+
+    _tag = "text:page-number"
+    _properties = (
+        ("select_page", "text:select-page"),
+        ("page_adjust", "text:page-adjust"),
+    )
 
     def __init__(self, select_page=None, page_adjust=None, **kw):
         super().__init__(**kw)
         if self._do_init:
             if select_page is None:
-                select_page = 'current'
+                select_page = "current"
             self.select_page = select_page
             if page_adjust is not None:
                 self.page_adjust = page_adjust
@@ -230,22 +236,21 @@ VarPageNumber._define_attribut_property()
 
 
 class VarPageCount(Element):
-    _tag = 'text:page-count'
+    _tag = "text:page-count"
 
 
 class VarDate(Element):
-    _tag = 'text:date'
-    _properties = (('date', 'text:date-value'), ('fixed', 'text:fixed'),
-                   ('data_style', 'style:data-style-name'),
-                   ('date_adjust', 'text:date-adjust'))
+    _tag = "text:date"
+    _properties = (
+        ("date", "text:date-value"),
+        ("fixed", "text:fixed"),
+        ("data_style", "style:data-style-name"),
+        ("date_adjust", "text:date-adjust"),
+    )
 
-    def __init__(self,
-                 date=None,
-                 fixed=False,
-                 data_style=None,
-                 text=None,
-                 date_adjust=None,
-                 **kw):
+    def __init__(
+        self, date=None, fixed=False, data_style=None, text=None, date_adjust=None, **kw
+    ):
         super().__init__(**kw)
         if self._do_init:
             self.date = DateTime.encode(date)
@@ -264,18 +269,17 @@ VarDate._define_attribut_property()
 
 
 class VarTime(Element):
-    _tag = 'text:time'
-    _properties = (('time', 'text:time-value'), ('fixed', 'text:fixed'),
-                   ('data_style', 'style:data-style-name'),
-                   ('time_adjust', 'text:time-adjust'))
+    _tag = "text:time"
+    _properties = (
+        ("time", "text:time-value"),
+        ("fixed", "text:fixed"),
+        ("data_style", "style:data-style-name"),
+        ("time_adjust", "text:time-adjust"),
+    )
 
-    def __init__(self,
-                 time=None,
-                 fixed=False,
-                 data_style=None,
-                 text=None,
-                 time_adjust=None,
-                 **kw):
+    def __init__(
+        self, time=None, fixed=False, data_style=None, text=None, time_adjust=None, **kw
+    ):
         super().__init__(**kw)
         if self._do_init:
             self.time = DateTime.encode(time)
@@ -284,7 +288,7 @@ class VarTime(Element):
             if data_style is not None:
                 self.data_style = data_style
             if text is None:
-                text = time.strftime('%H:%M:%S')
+                text = time.strftime("%H:%M:%S")
             self.text = text
             if time_adjust is not None:
                 self.date_adjust = Duration.encode(time_adjust)
@@ -294,17 +298,19 @@ VarTime._define_attribut_property()
 
 
 class VarChapter(Element):
-    _tag = 'text:chapter'
-    _properties = (('display', 'text:display'), ('outline_level',
-                                                 'text:outline-level'))
+    _tag = "text:chapter"
+    _properties = (("display", "text:display"), ("outline_level", "text:outline-level"))
     display_value_choice = {
-        'number', 'name', 'number-and-name', 'plain-number',
-        'plain-number-and-name'
+        "number",
+        "name",
+        "number-and-name",
+        "plain-number",
+        "plain-number-and-name",
     }
 
-    def __init__(self, display='name', outline_level=None, **kw):
+    def __init__(self, display="name", outline_level=None, **kw):
         """display can be: 'number', 'name', 'number-and-name', 'plain-number' or
-                           'plain-number-and-name'
+        'plain-number-and-name'
         """
         super().__init__(**kw)
         if self._do_init:
@@ -319,13 +325,12 @@ VarChapter._define_attribut_property()
 
 
 class VarFileName(Element):
-    _tag = 'text:file-name'
-    _properties = (('display', 'text:display'), ('fixed', 'text:fixed'))
-    display_value_choice = {'full', 'path', 'name', 'name-and-extension'}
+    _tag = "text:file-name"
+    _properties = (("display", "text:display"), ("fixed", "text:fixed"))
+    display_value_choice = {"full", "path", "name", "name-and-extension"}
 
-    def __init__(self, display='full', fixed=False, **kw):
-        """display can be: 'full', 'path', 'name' or 'name-and-extension'
-        """
+    def __init__(self, display="full", fixed=False, **kw):
+        """display can be: 'full', 'path', 'name' or 'name-and-extension'"""
         super().__init__(**kw)
         if self._do_init:
             if display not in VarFileName.display_value_choice:
@@ -339,8 +344,8 @@ VarFileName._define_attribut_property()
 
 
 class VarInitialCreator(Element):
-    _tag = 'text:initial-creator'
-    _properties = (('fixed', 'text:fixed'), )
+    _tag = "text:initial-creator"
+    _properties = (("fixed", "text:fixed"),)
 
     def __init__(self, fixed=False, **kw):
         super().__init__(**kw)
@@ -353,9 +358,8 @@ VarInitialCreator._define_attribut_property()
 
 
 class VarCreationDate(Element):
-    _tag = 'text:creation-date'
-    _properties = (('fixed', 'text:fixed'), ('data_style',
-                                             'style:data-style-name'))
+    _tag = "text:creation-date"
+    _properties = (("fixed", "text:fixed"), ("data_style", "style:data-style-name"))
 
     def __init__(self, fixed=False, data_style=None, **kw):
         super().__init__(**kw)
@@ -370,9 +374,8 @@ VarCreationDate._define_attribut_property()
 
 
 class VarCreationTime(Element):
-    _tag = 'text:creation-time'
-    _properties = (('fixed', 'text:fixed'), ('data_style',
-                                             'style:data-style-name'))
+    _tag = "text:creation-time"
+    _properties = (("fixed", "text:fixed"), ("data_style", "style:data-style-name"))
 
     def __init__(self, fixed=False, data_style=None, **kw):
         super().__init__(**kw)
@@ -387,28 +390,28 @@ VarCreationTime._define_attribut_property()
 
 
 class VarDescription(VarInitialCreator):
-    _tag = 'text:description'
+    _tag = "text:description"
 
 
 VarDescription._define_attribut_property()
 
 
 class VarTitle(VarInitialCreator):
-    _tag = 'text:title'
+    _tag = "text:title"
 
 
 VarTitle._define_attribut_property()
 
 
 class VarSubject(VarInitialCreator):
-    _tag = 'text:subject'
+    _tag = "text:subject"
 
 
 VarSubject._define_attribut_property()
 
 
 class VarKeywords(VarInitialCreator):
-    _tag = 'text:keywords'
+    _tag = "text:keywords"
 
 
 VarKeywords._define_attribut_property()

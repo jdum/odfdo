@@ -17,7 +17,7 @@ body = doc.body
 print(body)
 
 # to further manipulate the document, you can access to whole xml content:
-content = doc.get_part('content.xml')
+content = doc.get_part("content.xml")
 print(content)
 
 # A quick way to get the text content:

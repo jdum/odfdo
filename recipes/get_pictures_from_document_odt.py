@@ -28,10 +28,10 @@ print()
 
 # we use the get_part function from odfdo to get the actual content
 # of the image, to copy the images out of the .odt file:
-if not os.path.exists('test_output'):
-    os.mkdir('test_output')
+if not os.path.exists("test_output"):
+    os.mkdir("test_output")
 
-new_dir = os.path.join('test_output', "my_document_pictures")
+new_dir = os.path.join("test_output", "my_document_pictures")
 try:
     os.mkdir(new_dir)
 except OSError:
@@ -41,7 +41,7 @@ for item in pics:
     uri = item.url
     image_content = doc.get_part(uri)
     image_filename = os.path.basename(uri)
-    with open(os.path.join(new_dir, image_filename), 'wb') as f:
+    with open(os.path.join(new_dir, image_filename), "wb") as f:
         f.write(image_content)
 
 print("Files copied in %s:" % new_dir, os.listdir(new_dir))

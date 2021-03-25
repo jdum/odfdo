@@ -20,7 +20,7 @@ def random_text(sentences):
 from odfdo import Document, Header, Paragraph
 
 # Create the document
-my_document = Document('text')
+my_document = Document("text")
 body = my_document.body
 
 # Add content (See Create_a_basic_document.py)
@@ -48,10 +48,10 @@ for p in range(3):
 
     body.append(paragraph)
 
-if not os.path.exists('test_output'):
-    os.mkdir('test_output')
+if not os.path.exists("test_output"):
+    os.mkdir("test_output")
 
-output = os.path.join('test_output', 'my_document_with_annotations.odt')
+output = os.path.join("test_output", "my_document_with_annotations.odt")
 
 # And finally save the document.
 my_document.save(target=output, pretty=True)

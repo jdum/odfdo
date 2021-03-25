@@ -2,14 +2,15 @@
 
 from odfdo import Document, Frame, DrawPage
 
-document = Document('presentation')
+document = Document("presentation")
 body = document.body
 
-page = DrawPage('page1', name="Page 1")
+page = DrawPage("page1", name="Page 1")
 body.append(page)
 text_frame = Frame(
     ["Hello", "World"],
-    size=('7cm', '5cm'),
-    position=('11cm', '8cm'),
+    size=("7cm", "5cm"),
+    position=("11cm", "8cm"),
     style="colored",
-    text_style="big")
+    text_style="big",
+)

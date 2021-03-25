@@ -52,16 +52,38 @@ import test_variable
 import test_xmlpart
 
 test_modules = [
-    test_bookmark, test_container, test_content, test_datatype, test_document,
-    test_draw_page, test_element, test_frame, test_header, test_image,
-    test_link, test_list, test_meta, test_note, test_paragraph, test_reference,
-    test_section, test_shapes, test_span, test_style, test_styles, test_table,
-    test_text, test_tracked_changes, test_utils, test_variable, test_xmlpart
+    test_bookmark,
+    test_container,
+    test_content,
+    test_datatype,
+    test_document,
+    test_draw_page,
+    test_element,
+    test_frame,
+    test_header,
+    test_image,
+    test_link,
+    test_list,
+    test_meta,
+    test_note,
+    test_paragraph,
+    test_reference,
+    test_section,
+    test_shapes,
+    test_span,
+    test_style,
+    test_styles,
+    test_table,
+    test_text,
+    test_tracked_changes,
+    test_utils,
+    test_variable,
+    test_xmlpart,
 ]
 
 loader = TestLoader()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     suite = TestSuite()
     for module in test_modules:
         suite.addTest(loader.loadTestsFromModule(module))

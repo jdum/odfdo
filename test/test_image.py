@@ -31,14 +31,16 @@ from odfdo.image import DrawImage
 
 class TestImage(TestCase):
     def setUp(self):
-        self.document = document = Document('samples/frame_image.odp')
+        self.document = document = Document("samples/frame_image.odp")
         self.body = document.body
-        self.path = 'Pictures/100002010000012C00000042188DCB81589D2C10.png'
+        self.path = "Pictures/100002010000012C00000042188DCB81589D2C10.png"
 
     def test_create_image(self):
         image = DrawImage(self.path)
-        expected = ('<draw:image xlink:href="%s" xlink:type="simple" '
-                    'xlink:show="embed" xlink:actuate="onLoad"/>' % self.path)
+        expected = (
+            '<draw:image xlink:href="%s" xlink:type="simple" '
+            'xlink:show="embed" xlink:actuate="onLoad"/>' % self.path
+        )
         self.assertEqual(image.serialize(), expected)
 
     def test_get_image_list(self):
@@ -60,22 +62,22 @@ class TestImage(TestCase):
 
     def test_get_image_by_path(self):
         body = self.body
-        element = body.get_image(url='.png')
+        element = body.get_image(url=".png")
         self.assertEqual(element.url, self.path)
 
     def test_insert_image(self):
         body = self.body.clone
-        path = 'a/path'
+        path = "a/path"
         image = DrawImage(path)
-        frame = Frame("Image Frame", size=('0cm', '0cm'), style='Graphics')
+        frame = Frame("Image Frame", size=("0cm", "0cm"), style="Graphics")
         frame.append(image)
         body.get_frame().parent.insert(frame, NEXT_SIBLING)
         element = body.get_image(name="Image Frame")
         self.assertEqual(element.url, path)
         element = body.get_image(position=1)
-        self.document.save(packaging='folder')
+        self.document.save(packaging="folder")
         self.assertEqual(element.url, path)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

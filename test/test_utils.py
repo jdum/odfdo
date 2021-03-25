@@ -30,44 +30,46 @@ from odfdo.utils import _make_xpath_query, isiterable
 from odfdo.utils import get_value, set_value, oooc_to_ooow
 from odfdo.variable import VarSet, UserFieldDecl
 
-ZOE = '你好 Zoé'
+ZOE = "你好 Zoé"
 
 
 class GenerateXPathTestCase(TestCase):
     def test_element(self):
-        query = _make_xpath_query('descendant::text:p')
-        self.assertEqual(query, 'descendant::text:p')
+        query = _make_xpath_query("descendant::text:p")
+        self.assertEqual(query, "descendant::text:p")
 
     def test_attribute(self):
-        query = _make_xpath_query('descendant::text:p', text_style="Standard")
-        self.assertEqual(query,
-                         'descendant::text:p[@text:style-name="Standard"]')
+        query = _make_xpath_query("descendant::text:p", text_style="Standard")
+        self.assertEqual(query, 'descendant::text:p[@text:style-name="Standard"]')
 
     def test_two_attributes(self):
         query = _make_xpath_query(
-            'descendant::text:h', text_style="Standard", outline_level=1)
-        expected = ('descendant::text:h[@text:outline-level="1"]'
-                    '[@text:style-name="Standard"]')
+            "descendant::text:h", text_style="Standard", outline_level=1
+        )
+        expected = (
+            'descendant::text:h[@text:outline-level="1"]'
+            '[@text:style-name="Standard"]'
+        )
         self.assertEqual(query, expected)
 
     def test_position(self):
-        query = _make_xpath_query('descendant::text:h', position=1)
-        self.assertEqual(query, '(descendant::text:h)[2]')
+        query = _make_xpath_query("descendant::text:h", position=1)
+        self.assertEqual(query, "(descendant::text:h)[2]")
 
     def test_attribute_position(self):
         query = _make_xpath_query(
-            'descendant::text:p', text_style="Standard", position=1)
-        self.assertEqual(
-            query, '(descendant::text:p[@text:style-name="Standard"])[2]')
+            "descendant::text:p", text_style="Standard", position=1
+        )
+        self.assertEqual(query, '(descendant::text:p[@text:style-name="Standard"])[2]')
 
     def test_two_attributes_position(self):
         query = _make_xpath_query(
-            'descendant::text:h',
-            text_style="Standard",
-            outline_level=1,
-            position=1)
-        expected = ('(descendant::text:h[@text:outline-level="1"]'
-                    '[@text:style-name="Standard"])[2]')
+            "descendant::text:h", text_style="Standard", outline_level=1, position=1
+        )
+        expected = (
+            '(descendant::text:h[@text:outline-level="1"]'
+            '[@text:style-name="Standard"])[2]'
+        )
         self.assertEqual(query, expected)
 
 
@@ -91,30 +93,35 @@ class Set_Get_ValueTestCase(TestCase):
     def test_with_cell(self):
         cell = Cell(42)
         set_value(cell, ZOE)
-        expected = ('<table:table-cell office:value-type="string" '
-                    'office:string-value="%s">'
-                    '<text:p>'
-                    '%s'
-                    '</text:p>'
-                    '</table:table-cell>') % (ZOE, ZOE)
+        expected = (
+            '<table:table-cell office:value-type="string" '
+            'office:string-value="%s">'
+            "<text:p>"
+            "%s"
+            "</text:p>"
+            "</table:table-cell>"
+        ) % (ZOE, ZOE)
         self.assertEqual(cell.serialize(), expected)
 
     def test_with_variable(self):
         variable_set = VarSet(ZOE, 42)
         set_value(variable_set, ZOE)
-        expected = ('<text:variable-set office:value-type="string" '
-                    'office:string-value="%s" text:name="%s" '
-                    'text:display="none">'
-                    '%s'
-                    '</text:variable-set>') % (ZOE, ZOE, ZOE)
+        expected = (
+            '<text:variable-set office:value-type="string" '
+            'office:string-value="%s" text:name="%s" '
+            'text:display="none">'
+            "%s"
+            "</text:variable-set>"
+        ) % (ZOE, ZOE, ZOE)
         self.assertEqual(variable_set.serialize(), expected)
 
     def test_with_user_field(self):
         user_field_decl = UserFieldDecl(ZOE, 42)
         set_value(user_field_decl, ZOE)
-        expected = (('<text:user-field-decl office:value-type="string" '
-                     'office:string-value="%s" text:name="%s"/>') %
-                    ((ZOE, ) * 2))
+        expected = (
+            '<text:user-field-decl office:value-type="string" '
+            'office:string-value="%s" text:name="%s"/>'
+        ) % ((ZOE,) * 2)
         self.assertEqual(user_field_decl.serialize(), expected)
 
 
@@ -158,7 +165,7 @@ class FormulaConvertTestCase(TestCase):
 
 class IsIterableTestCase(TestCase):
     def test_str(self):
-        self.assertFalse(isiterable('str'))
+        self.assertFalse(isiterable("str"))
 
     def test_unicode(self):
         self.assertFalse(isiterable("unicode"))
@@ -182,5 +189,5 @@ class IsIterableTestCase(TestCase):
         self.assertFalse(isiterable(int))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -14,6 +14,7 @@ from odfdo import Document, Frame, DrawPage
 # analysing embedded image need some special operation:
 try:
     from PIL import Image
+
     PIL_ok = True
 except:
     PIL_ok = False
@@ -26,9 +27,9 @@ if PIL_ok:
 # utilities
 def embedded_image_ratio(href, part):
     if PIL_ok:
-        image_suffix = '.' + href.split('.')[-1]
+        image_suffix = "." + href.split(".")[-1]
         fd, tmp_file = mkstemp(suffix=image_suffix)
-        tmp_file_handler = os.fdopen(fd, 'wb')
+        tmp_file_handler = os.fdopen(fd, "wb")
         tmp_file_handler.write(part)
         tmp_file_handler.close()
         w, l = Image.open(tmp_file).size
@@ -55,7 +56,7 @@ def embedded_image_ratio(href, part):
 # ODF export of Wikipedia article Hitchhiker's Guide to the Galaxy (CC-By-SA)
 filename = "collection.odt"
 # For convenience, take it from the remote URI:
-#filename="http://www.odfgr.org/wiki/example-wikipedia-article/;download"
+# filename="http://www.odfgr.org/wiki/example-wikipedia-article/;download"
 
 # We will copy all image from collection.odt, build a presentation with the
 # images and save it in this file:
@@ -66,17 +67,17 @@ output_filename = "my_presentation_of_text_picts.odp"
 doc_source = Document(filename)
 
 # Making of the output Presentation document :
-presentation_output = Document('presentation')
+presentation_output = Document("presentation")
 
 # Presentation got a body in which elements are stored
 presentation_body = presentation_output.body
-presentation_manifest = presentation_output.get_part('manifest')
+presentation_manifest = presentation_output.get_part("manifest")
 
 # For each image, we create a page in the presentation and display the image
 # and some text on this frame
 # First, get all image elements available in document:
 images_source = doc_source.body.get_images()
-manifest_source = doc_source.get_part('manifest')
+manifest_source = doc_source.get_part("manifest")
 
 for image in images_source:
     # we use the get_part function from odfdo to get the actual content
@@ -85,7 +86,7 @@ for image in images_source:
     # weight = len(doc_source.get_part(uri))  # only for info
     # print "image %s , size in bytes: %s" % (uri, weight)
     part = doc_source.get_part(uri)  # actual image content
-    name = uri.split('/')[-1]  # lets make a file name for image
+    name = uri.split("/")[-1]  # lets make a file name for image
 
     # Compute the display size of the image on the final page
     ratio = embedded_image_ratio(uri, part)
@@ -104,19 +105,21 @@ for image in images_source:
         image=uri,
         text="",  # Text over the image object
         size=("%scm" % a, "%scm" % b),  # Display size of image
-        anchor_type='page',
+        anchor_type="page",
         page_number=None,
-        position=('3.5cm', '3.5 cm'),
-        style=None)
+        position=("3.5cm", "3.5 cm"),
+        style=None,
+    )
 
     # Add some text object somehere on the frame, with a text frame
     legend = "Image %s from Wikipedia document / %s" % (name, filename)
     text_frame = Frame.text_frame(
         legend,
-        size=('26cm', '2cm'),
-        position=('0.5cm', '0.5cm'),
+        size=("26cm", "2cm"),
+        position=("0.5cm", "0.5cm"),
         style="Standard",
-        text_style="Standard")
+        text_style="Standard",
+    )
 
     # Append all the component, do not forget to add the actuel image file
     # into the Picture global directory of the presentation file with set_part
@@ -124,17 +127,17 @@ for image in images_source:
     page.append(image_frame)
     presentation_body.append(page)
     # for the same operation from a local filesystem image, just use:
-    #presentation_output.add_file(uri)
+    # presentation_output.add_file(uri)
     media_type = manifest_source.get_media_type(uri)
     presentation_manifest.add_full_path(uri, media_type)
     presentation_output.set_part(uri, doc_source.get_part(uri))
 
 # Finally save the result
 
-if not os.path.exists('test_output'):
-    os.mkdir('test_output')
+if not os.path.exists("test_output"):
+    os.mkdir("test_output")
 
-output = os.path.join('test_output', output_filename)
+output = os.path.join("test_output", output_filename)
 
 presentation_output.save(target=output, pretty=True)
 

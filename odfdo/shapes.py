@@ -27,30 +27,32 @@ from .frame import AnchorMix, ZMix, PosMix, SizeMix
 
 
 class ShapeBase(Element, SizeMix, PosMix):
-    """Base class for shapes
-    """
-    _tag = 'draw:shape-odfdo-notodf'
+    """Base class for shapes"""
+
+    _tag = "draw:shape-odfdo-notodf"
     _properties = (
-        ('draw_id', 'draw:id'),
-        ('layer', 'draw:layer'),
-        ('width', 'svg:width'),
-        ('height', 'svg:height'),
-        ('pos_x', 'svg:x'),
-        ('pos_y', 'svg:y'),
-        ('presentation_class', 'presentation:class'),
-        ('style', 'draw:style-name'),
-        ('text_style', 'draw:text-style-name'),
+        ("draw_id", "draw:id"),
+        ("layer", "draw:layer"),
+        ("width", "svg:width"),
+        ("height", "svg:height"),
+        ("pos_x", "svg:x"),
+        ("pos_y", "svg:y"),
+        ("presentation_class", "presentation:class"),
+        ("style", "draw:style-name"),
+        ("text_style", "draw:text-style-name"),
     )
 
-    def __init__(self,
-                 style=None,
-                 text_style=None,
-                 draw_id=None,
-                 layer=None,
-                 position=None,
-                 size=None,
-                 presentation_class=None,
-                 **kwargs):
+    def __init__(
+        self,
+        style=None,
+        text_style=None,
+        draw_id=None,
+        layer=None,
+        position=None,
+        size=None,
+        presentation_class=None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         if self._do_init:
             if style:
@@ -98,28 +100,33 @@ class LineShape(ShapeBase):
 
     Return: LineShape
     """
-    _tag = 'draw:line'
+
+    _tag = "draw:line"
     _properties = (
-        ('x1', 'svg:x1'),
-        ('y1', 'svg:y1'),
-        ('x2', 'svg:x2'),
-        ('y2', 'svg:y2'),
+        ("x1", "svg:x1"),
+        ("y1", "svg:y1"),
+        ("x2", "svg:x2"),
+        ("y2", "svg:y2"),
     )
 
-    def __init__(self,
-                 style=None,
-                 text_style=None,
-                 draw_id=None,
-                 layer=None,
-                 p1=None,
-                 p2=None,
-                 **kw):
-        kw.update({
-            'style': style,
-            'text_style': text_style,
-            'draw_id': draw_id,
-            'layer': layer
-        })
+    def __init__(
+        self,
+        style=None,
+        text_style=None,
+        draw_id=None,
+        layer=None,
+        p1=None,
+        p2=None,
+        **kw
+    ):
+        kw.update(
+            {
+                "style": style,
+                "text_style": text_style,
+                "draw_id": draw_id,
+                "layer": layer,
+            }
+        )
         super().__init__(**kw)
         if self._do_init:
             if p1:
@@ -152,25 +159,30 @@ class RectangleShape(ShapeBase):
 
     Return: RectangleShape
     """
-    _tag = 'draw:rect'
+
+    _tag = "draw:rect"
     _properties = ()
 
-    def __init__(self,
-                 style=None,
-                 text_style=None,
-                 draw_id=None,
-                 layer=None,
-                 size=None,
-                 position=None,
-                 **kw):
-        kw.update({
-            'style': style,
-            'text_style': text_style,
-            'draw_id': draw_id,
-            'layer': layer,
-            'size': size,
-            'position': position,
-        })
+    def __init__(
+        self,
+        style=None,
+        text_style=None,
+        draw_id=None,
+        layer=None,
+        size=None,
+        position=None,
+        **kw
+    ):
+        kw.update(
+            {
+                "style": style,
+                "text_style": text_style,
+                "draw_id": draw_id,
+                "layer": layer,
+                "size": size,
+                "position": position,
+            }
+        )
         super().__init__(**kw)
 
 
@@ -196,25 +208,30 @@ class EllipseShape(ShapeBase):
 
     Return: EllipseShape
     """
-    _tag = 'draw:ellipse'
+
+    _tag = "draw:ellipse"
     _properties = ()
 
-    def __init__(self,
-                 style=None,
-                 text_style=None,
-                 draw_id=None,
-                 layer=None,
-                 size=None,
-                 position=None,
-                 **kw):
-        kw.update({
-            'style': style,
-            'text_style': text_style,
-            'draw_id': draw_id,
-            'layer': layer,
-            'size': size,
-            'position': position,
-        })
+    def __init__(
+        self,
+        style=None,
+        text_style=None,
+        draw_id=None,
+        layer=None,
+        size=None,
+        position=None,
+        **kw
+    ):
+        kw.update(
+            {
+                "style": style,
+                "text_style": text_style,
+                "draw_id": draw_id,
+                "layer": layer,
+                "size": size,
+                "position": position,
+            }
+        )
         super().__init__(**kw)
 
 
@@ -244,34 +261,39 @@ class ConnectorShape(ShapeBase):
 
     Return: ConnectorShape
     """
-    _tag = 'draw:connector'
+
+    _tag = "draw:connector"
     _properties = (
-        ('start_shape', 'draw:start-shape'),
-        ('end_shape', 'draw:end-shape'),
-        ('start_glue_point', 'draw:start-glue-point'),
-        ('end_glue_point', 'draw:end-glue-point'),
-        ('x1', 'svg:x1'),
-        ('y1', 'svg:y1'),
-        ('x2', 'svg:x2'),
-        ('y2', 'svg:y2'),
+        ("start_shape", "draw:start-shape"),
+        ("end_shape", "draw:end-shape"),
+        ("start_glue_point", "draw:start-glue-point"),
+        ("end_glue_point", "draw:end-glue-point"),
+        ("x1", "svg:x1"),
+        ("y1", "svg:y1"),
+        ("x2", "svg:x2"),
+        ("y2", "svg:y2"),
     )
 
-    def __init__(self,
-                 style=None,
-                 text_style=None,
-                 draw_id=None,
-                 layer=None,
-                 connected_shapes=None,
-                 glue_points=None,
-                 p1=None,
-                 p2=None,
-                 **kw):
-        kw.update({
-            'style': style,
-            'text_style': text_style,
-            'draw_id': draw_id,
-            'layer': layer
-        })
+    def __init__(
+        self,
+        style=None,
+        text_style=None,
+        draw_id=None,
+        layer=None,
+        connected_shapes=None,
+        glue_points=None,
+        p1=None,
+        p2=None,
+        **kw
+    ):
+        kw.update(
+            {
+                "style": style,
+                "text_style": text_style,
+                "draw_id": draw_id,
+                "layer": layer,
+            }
+        )
         super().__init__(**kw)
         if self._do_init:
             if connected_shapes:
@@ -294,60 +316,64 @@ ConnectorShape._define_attribut_property()
 class DrawGroup(Element, AnchorMix, ZMix, PosMix):
     """The DrawGroup "draw:g" element represents a group of drawing shapes.
 
-        Warning: implementation is currently minimal.
+    Warning: implementation is currently minimal.
 
-        Drawing shapes contained by a "draw:g" element that is itself
-        contained by a "draw:a" element, act as hyperlinks using the
-        xlink:href attribute of the containing "draw:a" element. If the
-        included drawing shapes are themselves contained within "draw:a"
-        elements, then the xlink:href attributes of those "draw:a" elements
-        act as the hyperlink information for the shapes they contain.
+    Drawing shapes contained by a "draw:g" element that is itself
+    contained by a "draw:a" element, act as hyperlinks using the
+    xlink:href attribute of the containing "draw:a" element. If the
+    included drawing shapes are themselves contained within "draw:a"
+    elements, then the xlink:href attributes of those "draw:a" elements
+    act as the hyperlink information for the shapes they contain.
 
-        The "draw:g" element has the following attributes: draw:caption-id,
-        draw:class-names, draw:id, draw:name, draw:style-name, draw:z-index,
-        presentation:class-names, presentation:style-name, svg:y,
-        table:end-cell-address, table:end-x, table:end-y,
-        table:table-background, text:anchor-page-number, text:anchor-type,
-        and xml:id.
+    The "draw:g" element has the following attributes: draw:caption-id,
+    draw:class-names, draw:id, draw:name, draw:style-name, draw:z-index,
+    presentation:class-names, presentation:style-name, svg:y,
+    table:end-cell-address, table:end-x, table:end-y,
+    table:table-background, text:anchor-page-number, text:anchor-type,
+    and xml:id.
 
-        The "draw:g" element has the following child elements: "dr3d:scene",
-        "draw:a", "draw:caption", "draw:circle", "draw:connector",
-        "draw:control", "draw:custom-shape", "draw:ellipse", "draw:frame",
-        "draw:g", "draw:glue-point", "draw:line", "draw:measure",
-        "draw:page-thumbnail", "draw:path", "draw:polygon", "draw:polyline",
-        "draw:rect", "draw:regular-polygon", "office:event-listeners",
-        "svg:desc" and "svg:title".
+    The "draw:g" element has the following child elements: "dr3d:scene",
+    "draw:a", "draw:caption", "draw:circle", "draw:connector",
+    "draw:control", "draw:custom-shape", "draw:ellipse", "draw:frame",
+    "draw:g", "draw:glue-point", "draw:line", "draw:measure",
+    "draw:page-thumbnail", "draw:path", "draw:polygon", "draw:polyline",
+    "draw:rect", "draw:regular-polygon", "office:event-listeners",
+    "svg:desc" and "svg:title".
     """
-    _tag = 'draw:g'
-    _properties = (
-        ('draw_id', 'draw:id'),
-        ('caption_id', 'draw:caption-id'),
-        ('draw_class_names', 'draw:class-names'),
-        ('name', 'draw:name'),
-        ('style', 'draw:style-name'),
-        #('z_index', 'draw:z-index'),
-        ('presentation_class_names', 'presentation:class-names'),
-        ('presentation_style', 'presentation:style-name'),
-        ('table_end_cell', 'table:end-cell-address'),
-        ('table_end_x', 'table:end-x'),
-        ('table_end_y', 'table:end-y'),
-        ('table_background', 'table:table-background'),
-        #('anchor_page', 'text:anchor-page-number'),
-        #('anchor_type', 'text:anchor-type'),
-        ('xml_id', 'xml:id'),
-        ('pos_x', 'svg:x'),
-        ('pos_y', 'svg:y'))
 
-    def __init__(self,
-                 name=None,
-                 draw_id=None,
-                 style=None,
-                 position=None,
-                 z_index=0,
-                 anchor_type=None,
-                 anchor_page=None,
-                 presentation_style=None,
-                 **kwargs):
+    _tag = "draw:g"
+    _properties = (
+        ("draw_id", "draw:id"),
+        ("caption_id", "draw:caption-id"),
+        ("draw_class_names", "draw:class-names"),
+        ("name", "draw:name"),
+        ("style", "draw:style-name"),
+        # ('z_index', 'draw:z-index'),
+        ("presentation_class_names", "presentation:class-names"),
+        ("presentation_style", "presentation:style-name"),
+        ("table_end_cell", "table:end-cell-address"),
+        ("table_end_x", "table:end-x"),
+        ("table_end_y", "table:end-y"),
+        ("table_background", "table:table-background"),
+        # ('anchor_page', 'text:anchor-page-number'),
+        # ('anchor_type', 'text:anchor-type'),
+        ("xml_id", "xml:id"),
+        ("pos_x", "svg:x"),
+        ("pos_y", "svg:y"),
+    )
+
+    def __init__(
+        self,
+        name=None,
+        draw_id=None,
+        style=None,
+        position=None,
+        z_index=0,
+        anchor_type=None,
+        anchor_page=None,
+        presentation_style=None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         if self._do_init:
             if z_index is not None:

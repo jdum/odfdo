@@ -27,8 +27,8 @@ from odfdo.element import Text, Element
 
 class TextTestCase(TestCase):
     def setUp(self):
-        element = Element.from_tag('<text:p>text<text:span/>tail</text:p>')
-        self.results = element.xpath('descendant::text()')
+        element = Element.from_tag("<text:p>text<text:span/>tail</text:p>")
+        self.results = element.xpath("descendant::text()")
 
     def test_nodes(self):
         self.assertEqual(len(self.results), 2)
@@ -51,17 +51,17 @@ class TextTestCase(TestCase):
 
 class ParentTestCase(TestCase):
     def setUp(self):
-        element = Element.from_tag('<text:p>text<text:span/>tail</text:p>')
-        self.results = element.xpath('descendant::text()')
+        element = Element.from_tag("<text:p>text<text:span/>tail</text:p>")
+        self.results = element.xpath("descendant::text()")
 
     def test_text(self):
         text = self.results[0]
-        self.assertEqual(text.parent.tag, 'text:p')
+        self.assertEqual(text.parent.tag, "text:p")
 
     def test_tail(self):
         tail = self.results[1]
-        self.assertEqual(tail.parent.tag, 'text:span')
+        self.assertEqual(tail.parent.tag, "text:span")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

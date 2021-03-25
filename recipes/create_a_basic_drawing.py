@@ -23,12 +23,7 @@ class Vector:
         d = self.a + 2.0 / 3.0 * (self.b - self.a)
         m = 0.5 * (self.a + self.b)
         e = m + (d - c) * complex(0, -1)
-        return [
-            Vector(self.a, c),
-            Vector(c, e),
-            Vector(e, d),
-            Vector(d, self.b)
-        ]
+        return [Vector(self.a, c), Vector(c, e), Vector(e, d), Vector(d, self.b)]
 
     def in_cm(self, val):
         if val == 0:
@@ -45,7 +40,7 @@ def koch(vlist, cycle=2):
         new_vlist = []
         for v in vlist:
             new_vlist.extend(v.koch_split())
-        #del vlist
+        # del vlist
         return koch(new_vlist, cycle - 1)
 
 
@@ -61,18 +56,18 @@ def make_coords(side, vpos):
 
 if __name__ == "__main__":
 
-    document = Document('text')
+    document = Document("text")
     body = document.body
 
     print("Making some Koch fractal")
     title = Header(1, "Some Koch fractal")
     body.append(title)
 
-    style = document.get_style('graphic')
+    style = document.get_style("graphic")
     style.set_properties({"svg:stroke_color": "#0000ff"})
     style.set_properties(fill_color="#ffffcc")
 
-    para = Paragraph('')
+    para = Paragraph("")
     body.append(para)
 
     # some computation of oordinates
@@ -82,19 +77,20 @@ if __name__ == "__main__":
     rad = 8.0
     pos = center - complex(rad, rad)
     circle = EllipseShape(
-        size=('%.2fcm' % (rad * 2), '%.2fcm' % (rad * 2)),
-        position=('%.2fcm' % pos.real, '%.2fcm' % pos.imag))
+        size=("%.2fcm" % (rad * 2), "%.2fcm" % (rad * 2)),
+        position=("%.2fcm" % pos.real, "%.2fcm" % pos.imag),
+    )
     para.append(circle)
 
     # create a drawing with a lot of lines
-    para.append('number of lines: %s' % len(vlist))
+    para.append("number of lines: %s" % len(vlist))
     for v in vlist:
         line = LineShape(p1=v.in_cm(0), p2=v.in_cm(1))
         para.append(line)
 
-if not os.path.exists('test_output'):
-    os.mkdir('test_output')
+if not os.path.exists("test_output"):
+    os.mkdir("test_output")
 
-output = os.path.join('test_output', 'my_Koch_fractal.odt')
+output = os.path.join("test_output", "my_Koch_fractal.odt")
 
 document.save(target=output, pretty=True)

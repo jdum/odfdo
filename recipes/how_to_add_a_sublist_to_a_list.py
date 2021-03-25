@@ -1,9 +1,9 @@
 from odfdo import Document, List, ListItem
 
-document = Document('text')
+document = Document("text")
 body = document.body
 
-my_list = List(['chocolat', 'café'])
+my_list = List(["chocolat", "café"])
 body.append(my_list)
 
 item = ListItem("thé")

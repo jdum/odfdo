@@ -34,8 +34,8 @@ def check_target_file(path, kind="file"):
         stderr.flush()
         line = stdin.readline()
         line = line.strip().lower()
-        if line != 'y':
-            stderr.write('Operation aborted\n')
+        if line != "y":
+            stderr.write("Operation aborted\n")
             stderr.flush()
             exit(0)
 
@@ -44,23 +44,23 @@ def check_target_directory(path):
     return check_target_file(path, kind="directory")
 
 
-encoding_map = {'gzip': 'application/x-gzip', 'bzip2': 'application/x-bzip2'}
+encoding_map = {"gzip": "application/x-gzip", "bzip2": "application/x-bzip2"}
 
 
 def get_mimetype(filename):
     if not isfile(filename):
-        return 'application/x-directory'
+        return "application/x-directory"
     mimetype, encoding = guess_type(filename)
     if encoding is not None:
         return encoding_map.get(encoding, encoding)
     if mimetype is not None:
         return mimetype
-    return 'application/octet-stream'
+    return "application/octet-stream"
 
 
-def add_option_output(parser, metavar='FILE', complement=''):
-    msg = f'dump the output into {metavar} {complement}'
-    parser.add_option('-o', '--output', metavar=metavar, help=msg)
+def add_option_output(parser, metavar="FILE", complement=""):
+    msg = f"dump the output into {metavar} {complement}"
+    parser.add_option("-o", "--output", metavar=metavar, help=msg)
 
 
 def eprint(*args, **kwargs):
@@ -68,10 +68,10 @@ def eprint(*args, **kwargs):
 
 
 def printinfo(*args, **kw):
-    indent = kw.get('indent', 0)
+    indent = kw.get("indent", 0)
     if indent:
-        stderr.write(' ' * indent)
-    output = ' '.join(str(arg) for arg in args)
+        stderr.write(" " * indent)
+    output = " ".join(str(arg) for arg in args)
     eprint(output)
 
 

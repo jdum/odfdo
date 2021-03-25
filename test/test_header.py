@@ -28,7 +28,7 @@ from odfdo.header import Header
 
 class TestHeader(TestCase):
     def setUp(self):
-        self.document = document = Document('samples/base_text.odt')
+        self.document = document = Document("samples/base_text.odt")
         self.body = document.body
 
     def test_get_header_list(self):
@@ -37,15 +37,15 @@ class TestHeader(TestCase):
         self.assertEqual(len(headings), 3)
         second = headings[1]
         text = second.text
-        self.assertEqual(text, 'Level 2 Title')
+        self.assertEqual(text, "Level 2 Title")
 
     def test_get_header_list_style(self):
         body = self.body
-        headings = body.get_headers(style='Heading_20_2')
+        headings = body.get_headers(style="Heading_20_2")
         self.assertEqual(len(headings), 1)
         heading = headings[0]
         text = heading.text
-        self.assertEqual(text, 'Level 2 Title')
+        self.assertEqual(text, "Level 2 Title")
 
     def test_get_header_list_level(self):
         body = self.body
@@ -53,15 +53,15 @@ class TestHeader(TestCase):
         self.assertEqual(len(headings), 1)
         heading = headings[0]
         text = heading.text
-        self.assertEqual(text, 'Level 2 Title')
+        self.assertEqual(text, "Level 2 Title")
 
     def test_get_header_list_style_level(self):
         body = self.body
-        headings = body.get_headers(style='Heading_20_2', outline_level=2)
+        headings = body.get_headers(style="Heading_20_2", outline_level=2)
         self.assertEqual(len(headings), 1)
         heading = headings[0]
         text = heading.text
-        self.assertEqual(text, 'Level 2 Title')
+        self.assertEqual(text, "Level 2 Title")
 
     def test_get_header_list_context(self):
         body = self.body
@@ -81,21 +81,21 @@ class TestHeader(TestCase):
         body = self.body
         heading = body.get_header(position=1)
         text = heading.text
-        self.assertEqual(text, 'Level 2 Title')
+        self.assertEqual(text, "Level 2 Title")
 
     def test_get_header_level(self):
         body = self.body
         heading = body.get_header(outline_level=2)
         text = heading.text
-        self.assertEqual(text, 'Level 2 Title')
+        self.assertEqual(text, "Level 2 Title")
 
     def test_insert_heading(self):
         body = self.body.clone
-        heading = Header(2, 'An inserted heading', style='Heading_20_2')
+        heading = Header(2, "An inserted heading", style="Heading_20_2")
         body.append(heading)
         last_heading = body.get_headers()[-1]
-        self.assertEqual(last_heading.text, 'An inserted heading')
+        self.assertEqual(last_heading.text, "An inserted heading")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

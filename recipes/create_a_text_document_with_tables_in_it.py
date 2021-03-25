@@ -8,6 +8,7 @@ import os
 
 from odfdo import Document, Header, Paragraph, List, ListItem, Style
 from odfdo import Table, Row, Cell
+
 # for cell style
 from odfdo import create_table_cell_style, make_table_cell_border_string
 
@@ -29,10 +30,10 @@ def make_catalog():
     return cat_list
 
 
-tax_rate = .196
+tax_rate = 0.196
 
 if __name__ == "__main__":
-    commercial = Document('text')
+    commercial = Document("text")
     body = commercial.body
     catalog = make_catalog()
 
@@ -67,17 +68,15 @@ if __name__ == "__main__":
         prod = catalog[item]
         row = Row()
         row.set_value("A", prod.name)
-        #or : row.set_value(0, prod.name)
+        # or : row.set_value(0, prod.name)
         cell = Cell()
         cell.set_value(
-            prod.price,
-            text="%.2f €" % prod.price,
-            currency="EUR",
-            cell_type="float")
+            prod.price, text="%.2f €" % prod.price, currency="EUR", cell_type="float"
+        )
         row.set_cell("B", cell)
-        #or : row.set_cell(1, cell)
+        # or : row.set_cell(1, cell)
         row.set_value("C", quantity)
-        #row.set_value(2, quantity)
+        # row.set_value(2, quantity)
         p = prod.price * quantity
         cell = Cell()
         cell.set_value(p, text="%.2f €" % p, currency="EUR", cell_type="float")
@@ -99,33 +98,29 @@ if __name__ == "__main__":
     row.set_value(column - 1, "Total:")
     total = sum(table.get_column_values(column)[1:-1])
     cell = Cell()
-    cell.set_value(
-        total, text="%.2f €" % total, currency="EUR", cell_type="float")
+    cell.set_value(total, text="%.2f €" % total, currency="EUR", cell_type="float")
     row.set_cell(column, cell)
     row_number += 1
     table.set_row(row_number, row)
 
     # let merge some cells
-    table.set_span(
-        (column - 3, row_number, column - 1, row_number), merge=True)
+    table.set_span((column - 3, row_number, column - 1, row_number), merge=True)
 
     row = Row()
     row.set_value(column - 1, "Total with tax:")
-    total *= (1 + tax_rate)
+    total *= 1 + tax_rate
     cell = Cell()
-    cell.set_value(
-        total, text="%.2f €" % total, currency="EUR", cell_type="float")
+    cell.set_value(total, text="%.2f €" % total, currency="EUR", cell_type="float")
     row.set_cell(column, cell)
     row_number += 1
     table.set_row(row_number, row)
     # let merge some cells
-    table.set_span(
-        (column - 3, row_number, column - 1, row_number), merge=True)
+    table.set_span((column - 3, row_number, column - 1, row_number), merge=True)
 
     # Let's add some style on first row
-    border = make_table_cell_border_string(thick='0.03cm', color='black')
+    border = make_table_cell_border_string(thick="0.03cm", color="black")
     cell_style = create_table_cell_style(
-        color='black',
+        color="black",
         background_color=(210, 210, 210),
         border_right=border,
         border_left=border,
@@ -135,15 +130,15 @@ if __name__ == "__main__":
     style_name = commercial.insert_style(style=cell_style, automatic=True)
 
     row = table.get_row(0)
-    #for cell in row.get_cells(): #possible, but .traverse() is better
+    # for cell in row.get_cells(): #possible, but .traverse() is better
     for cell in row.traverse():
         cell.style = style_name
         row.set_cell(x=cell.x, cell=cell)
     table.set_row(row.y, row)
 
-    if not os.path.exists('test_output'):
-        os.mkdir('test_output')
+    if not os.path.exists("test_output"):
+        os.mkdir("test_output")
 
-    output = os.path.join('test_output', "my_commercial.odt")
+    output = os.path.join("test_output", "my_commercial.odt")
 
     commercial.save(target=output, pretty=True)

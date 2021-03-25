@@ -28,31 +28,39 @@ from odfdo.draw_page import DrawPage
 
 class TestDrawPage(TestCase):
     def setUp(self):
-        self.document = document = Document('samples/example.odp')
+        self.document = document = Document("samples/example.odp")
         self.body = document.body
 
     def test_create_simple_page(self):
-        element = DrawPage('id1')
+        element = DrawPage("id1")
         expected = '<draw:page draw:id="id1"/>'
         self.assertEqual(element.serialize(), expected)
 
     def test_create_complex_page(self):
         element = DrawPage(
-            'id1',
+            "id1",
             name="Introduction",
-            master_page='prs-novelty',
-            presentation_page_layout='AL1T0',
-            style='dp1')
+            master_page="prs-novelty",
+            presentation_page_layout="AL1T0",
+            style="dp1",
+        )
         self.assertIn(
             element.serialize(),
-            (('<draw:page draw:id="id1" draw:name="Introduction" '
-              'draw:master-page-name="prs-novelty" '
-              'presentation:presentation-page-layout-name="AL1T0" '
-              'draw:style-name="dp1"/>'),
-             ('<draw:page draw:id="id1" draw:name="Introduction" '
-              'draw:style-name="dp1" '
-              'draw:master-page-name="prs-novelty" '
-              'presentation:presentation-page-layout-name="AL1T0"/>')))
+            (
+                (
+                    '<draw:page draw:id="id1" draw:name="Introduction" '
+                    'draw:master-page-name="prs-novelty" '
+                    'presentation:presentation-page-layout-name="AL1T0" '
+                    'draw:style-name="dp1"/>'
+                ),
+                (
+                    '<draw:page draw:id="id1" draw:name="Introduction" '
+                    'draw:style-name="dp1" '
+                    'draw:master-page-name="prs-novelty" '
+                    'presentation:presentation-page-layout-name="AL1T0"/>'
+                ),
+            ),
+        )
 
     def test_get_draw_page_list(self):
         body = self.body
@@ -61,9 +69,9 @@ class TestDrawPage(TestCase):
 
     def test_get_draw_page_list_style(self):
         body = self.body.clone
-        result = body.get_draw_pages(style='dp1')
+        result = body.get_draw_pages(style="dp1")
         self.assertEqual(len(result), 2)
-        result = body.get_draw_pages(style='dp2')
+        result = body.get_draw_pages(style="dp2")
         self.assertEqual(len(result), 0)
 
     def test_odf_draw_page(self):
@@ -92,5 +100,5 @@ class TestDrawPage(TestCase):
         self.assertEqual(page.name, name)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

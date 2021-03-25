@@ -87,7 +87,7 @@ def test_append_rows(D):
     C.delta()
     print("Size of table :", table.size)
     if DEBUG and table.width <= MAXPRINT and table.height <= MAXPRINT:
-        print(table.to_csv(dialect='unix'))
+        print(table.to_csv(dialect="unix"))
     print("-" * 50)
 
 
@@ -103,12 +103,12 @@ def test_set_rows(D):
 
         table.set_row(D.rnd_line[line], row)
         if DEBUG and table.width <= MAXPRINT and table.height <= MAXPRINT:
-            print(table.to_csv(dialect='unix'))
+            print(table.to_csv(dialect="unix"))
 
     C.delta()
     print("Size of table :", table.size)
     if DEBUG and table.width <= MAXPRINT and table.height <= MAXPRINT:
-        print(table.to_csv(dialect='unix'))
+        print(table.to_csv(dialect="unix"))
     print("-" * 50)
     return table
 
@@ -123,14 +123,13 @@ def test_swap(D, table_ini):
     C.delta()
     print("Size of swapped table :", table.size)
     if DEBUG and table.width <= MAXPRINT and table.height <= MAXPRINT:
-        print(table.to_csv(dialect='unix'))
+        print(table.to_csv(dialect="unix"))
     print("-" * 50)
 
 
 def test_swap_transpose(D, table_ini):
-    print("Test swap rows/cols with transpose ", D.lines, "rows", D.cols,
-          "cols")
-    if not hasattr(table_ini, 'transpose'):
+    print("Test swap rows/cols with transpose ", D.lines, "rows", D.cols, "cols")
+    if not hasattr(table_ini, "transpose"):
         print("method not available")
         print("-" * 50)
         return
@@ -140,7 +139,7 @@ def test_swap_transpose(D, table_ini):
     C.delta()
     print("Size of swapped table :", table.size)
     if DEBUG and table.width <= MAXPRINT and table.height <= MAXPRINT:
-        print(table.to_csv(dialect='unix'))
+        print(table.to_csv(dialect="unix"))
     print("-" * 50)
 
 
@@ -157,7 +156,7 @@ def test_random_set_value(D):
     print(cpt, "values entered")
     print("Size of table :", table.size)
     if DEBUG and table.width <= MAXPRINT and table.height <= MAXPRINT:
-        print(table.to_csv(dialect='unix'))
+        print(table.to_csv(dialect="unix"))
     print("-" * 50)
     return table
 
@@ -184,13 +183,13 @@ def test_repeated(D):
         row = Row()
         row.set_values([(line * 10 + x) for x in range(D.cols)])
         row.repeated = line
-        #if DEBUG:
+        # if DEBUG:
         #    print D.rnd_line[line], "=>", row.get_values(), row.repeated
         table.set_row(D.rnd_line[line], row)
     C.delta()
     print("Size of table :", table.size)
     if DEBUG and table.width <= MAXPRINT and table.height <= MAXPRINT:
-        print(table.to_csv(dialect='unix'))
+        print(table.to_csv(dialect="unix"))
     print("-" * 50)
     return table
 
@@ -198,7 +197,7 @@ def test_repeated(D):
 if __name__ == "__main__":
     print(version)
     total = chrono()
-    #for r,c  in [(10,8)]:
+    # for r,c  in [(10,8)]:
     for r, c in [(10, 10), (100, 10), (100, 100), (1000, 10)]:
         D = initial_compute(lines=r, cols=c)
         test_append_rows(D)
@@ -208,5 +207,5 @@ if __name__ == "__main__":
         t = test_random_set_value(D)
         test_random_get_value(D, t)
         test_repeated(D)
-    print("Total", end=' ')
+    print("Total", end=" ")
     total.delta()

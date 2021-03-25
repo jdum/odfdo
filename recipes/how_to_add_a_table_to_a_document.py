@@ -1,6 +1,6 @@
 from odfdo import Document, Header, Paragraph, Table
 
-document = Document('text')
+document = Document("text")
 body = document.body
 
 # Let's add another section to make our document clear:

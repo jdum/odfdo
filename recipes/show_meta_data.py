@@ -6,11 +6,13 @@ import sys
 
 from odfdo import Document
 
+
 def get_default_doc():
     # ODF export of Wikipedia article Hitchhiker's Guide to the Galaxy (CC-By-SA)
     return "collection2.odt"
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     try:
         source = sys.argv[1]
     except IndexError:
@@ -20,7 +22,7 @@ if __name__=="__main__":
     document = Document(source)
 
     # Metadata are accessible through the meta part:
-    meta = document.get_part('meta.xml')
+    meta = document.get_part("meta.xml")
 
     # You then get access to various getters and setters. The getters return
     # Python types and the respective setters take the same Python type as
@@ -34,28 +36,28 @@ if __name__=="__main__":
     # Strings are always decoded as unicode, numeric values are always decoded
     # as Decimal (as they offer the best precision).
 
-    print('Meta data of %s' % source)
-    print('Title                :', meta.get_title())
-    print('creator              :', meta.get_creator())
-    print('creation date        :', meta.get_creation_date())
-    print('modification date    :', meta.get_modification_date())
-    print('initial creator      :', meta.get_initial_creator())
-    print('subject              :', meta.get_subject())
-    print('description          :', meta.get_description())
-    print('comments             :', meta.get_comments())
-    print('editing cycles       :', meta.get_editing_cycles())
-    print('editing duration     :', meta.get_editing_duration())
-    print('generator            :', meta.get_generator())
-    print('language             :', meta.get_language())
-    print('keywords             :', meta.get_keywords())
-    print('statistics    ')
+    print("Meta data of %s" % source)
+    print("Title                :", meta.get_title())
+    print("creator              :", meta.get_creator())
+    print("creation date        :", meta.get_creation_date())
+    print("modification date    :", meta.get_modification_date())
+    print("initial creator      :", meta.get_initial_creator())
+    print("subject              :", meta.get_subject())
+    print("description          :", meta.get_description())
+    print("comments             :", meta.get_comments())
+    print("editing cycles       :", meta.get_editing_cycles())
+    print("editing duration     :", meta.get_editing_duration())
+    print("generator            :", meta.get_generator())
+    print("language             :", meta.get_language())
+    print("keywords             :", meta.get_keywords())
+    print("statistics    ")
     if meta.get_statistic() is not None:
         for key, value in meta.get_statistic().items():
-            print('   %-18s: %s' % (key[5:], value))
+            print("   %-18s: %s" % (key[5:], value))
     if meta.get_user_defined_metadata() is not None:
-        print('user defined metadata')
+        print("user defined metadata")
         for key, value in meta.get_user_defined_metadata().items():
-            print('   %-18s: %s' % (key, value))
+            print("   %-18s: %s" % (key, value))
 
     # A quick way to have all of those informations:
     print("-" * 70)

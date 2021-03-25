@@ -25,45 +25,47 @@ from .xmlpart import XmlPart
 from .utils import _get_elements, _get_element
 
 CONTEXT_MAPPING = {
-    'paragraph': ('//office:styles', '//office:automatic-styles'),
-    'text': ('//office:styles', ),
-    'graphic': ('//office:styles', ),
-    'page-layout': ('//office:automatic-styles', ),
-    'master-page': ('//office:master-styles', ),
-    'font-face': ('//office:font-face-decls', ),
-    'outline': ('//office:styles', ),
-    'date': ('//office:automatic-styles', ),
-    'list': ('//office:styles', ),
-    'presentation': ('//office:styles', '//office:automatic-styles'),
-    'drawing-page': ('//office:automatic-styles', ),
-    'presentation-page-layout': ('//office:styles', ),
-    'marker': ('//office:styles', ),
-    'fill-image': ('//office:styles', ),
+    "paragraph": ("//office:styles", "//office:automatic-styles"),
+    "text": ("//office:styles",),
+    "graphic": ("//office:styles",),
+    "page-layout": ("//office:automatic-styles",),
+    "master-page": ("//office:master-styles",),
+    "font-face": ("//office:font-face-decls",),
+    "outline": ("//office:styles",),
+    "date": ("//office:automatic-styles",),
+    "list": ("//office:styles",),
+    "presentation": ("//office:styles", "//office:automatic-styles"),
+    "drawing-page": ("//office:automatic-styles",),
+    "presentation-page-layout": ("//office:styles",),
+    "marker": ("//office:styles",),
+    "fill-image": ("//office:styles",),
     # FIXME Do they?
-    'table': ('//office:automatic-styles', ),
-    'table-cell': ('//office:automatic-styles', ),
-    'table-row': ('//office:automatic-styles', ),
-    'table-column': ('//office:automatic-styles', ),
+    "table": ("//office:automatic-styles",),
+    "table-cell": ("//office:automatic-styles",),
+    "table-row": ("//office:automatic-styles",),
+    "table-column": ("//office:automatic-styles",),
     # FIXME: to test:
-    'section': ('//office:styles', '//office:automatic-styles'),
-    'chart': ('//office:styles', '//office:automatic-styles')
+    "section": ("//office:styles", "//office:automatic-styles"),
+    "chart": ("//office:styles", "//office:automatic-styles"),
 }
 
 
 class Styles(XmlPart):
     def _get_style_contexts(self, family, automatic=False):
         if automatic is True:
-            return (self.get_element('//office:automatic-styles'), )
+            return (self.get_element("//office:automatic-styles"),)
         if family is None:
             # All possibilities
-            return (self.get_element('//office:automatic-styles'),
-                    self.get_element('//office:styles'),
-                    self.get_element('//office:master-styles'),
-                    self.get_element('//office:font-face-decls'))
+            return (
+                self.get_element("//office:automatic-styles"),
+                self.get_element("//office:styles"),
+                self.get_element("//office:master-styles"),
+                self.get_element("//office:font-face-decls"),
+            )
         queries = CONTEXT_MAPPING.get(family)
         if queries is None:
             raise ValueError("unknown family: %s" % family)
-        #print('q:', queries)
+        # print('q:', queries)
         return [self.get_element(query) for query in queries]
 
     def get_styles(self, family=None, automatic=False):
@@ -82,10 +84,10 @@ class Styles(XmlPart):
         for context in self._get_style_contexts(family, automatic=automatic):
             if context is None:
                 continue
-            #print('-ctx----', automatic)
-            #print(context.tag)
-            #print(context.__class__)
-            #print(context.serialize())
+            # print('-ctx----', automatic)
+            # print(context.tag)
+            # print(context.__class__)
+            # print(context.serialize())
             result.extend(context.get_styles(family=family))
         return result
 
@@ -113,15 +115,14 @@ class Styles(XmlPart):
             if context is None:
                 continue
             style = context.get_style(
-                family,
-                name_or_element=name_or_element,
-                display_name=display_name)
+                family, name_or_element=name_or_element, display_name=display_name
+            )
             if style is not None:
                 return style
         return None
 
     def get_master_pages(self):
-        return _get_elements(self, 'descendant::style:master-page')
+        return _get_elements(self, "descendant::style:master-page")
 
     def get_master_page(self, position=0):
-        return _get_element(self, 'descendant::style:master-page', position)
+        return _get_element(self, "descendant::style:master-page", position)

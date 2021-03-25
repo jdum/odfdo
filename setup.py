@@ -26,34 +26,34 @@ from os.path import join, abspath, dirname
 from setuptools import setup, find_packages
 
 here = abspath(dirname(__file__))
-exec(open(join(here, 'odfdo', 'version.py')).read())
-with open(join(here, 'README.md'), encoding='utf-8') as f:
+exec(open(join(here, "odfdo", "version.py")).read())
+with open(join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
-scripts = [
-    join('scripts', f) for f in os.listdir('scripts') if f.endswith('.py')
-]
+scripts = [join("scripts", f) for f in os.listdir("scripts") if f.endswith(".py")]
 
 setup(
-    name='odfdo',
-    version='3.1.0',
-    description='Python library for OpenDocument format',
+    name="odfdo",
+    version="3.1.0",
+    description="Python library for OpenDocument format",
     long_description=long_description,
-    long_description_content_type='text/plain;charset=UTF-8',
-    url='https://github.com/jdum/odfdo',
-    author='Jérôme Dumonteil',
-    author_email='jerome.dumonteil@gmail.com',
+    long_description_content_type="text/plain;charset=UTF-8",
+    url="https://github.com/jdum/odfdo",
+    author="Jérôme Dumonteil",
+    author_email="jerome.dumonteil@gmail.com",
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Environment :: Console', 'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 3.6',
-        'Operating System :: OS Independent',
-        'Topic :: Software Development :: Libraries :: Python Modules'
+        "Development Status :: 5 - Production/Stable",
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: Apache Software License",
+        "Programming Language :: Python :: 3.6",
+        "Operating System :: OS Independent",
+        "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    license='Apache v2',
-    python_requires='>=3.6',
+    license="Apache v2",
+    python_requires=">=3.6",
     scripts=scripts,
-    keywords='python library ODF OpenDocument',
-    packages=find_packages(exclude=['contrib', 'docs', 'test']),
-    install_requires=['lxml'],
-    package_data={'odfdo': ['templates/*']})
+    keywords="python library ODF OpenDocument",
+    packages=find_packages(exclude=["contrib", "docs", "test"]),
+    install_requires=["lxml"],
+    package_data={"odfdo": ["templates/*"]},
+)

@@ -26,44 +26,48 @@ from .paragraph_base import ParagraphBase
 
 
 class Link(ParagraphBase):
-    """Link class, "text:a" ODF element.
-    """
-    _tag = 'text:a'
-    _properties = (('url', 'xlink:href'), ('name',
-                                           'office:name'), ('title',
-                                                            'office:title'),
-                   ('target_frame',
-                    'office:target-frame-name'), ('show', 'xlink:show'),
-                   ('visited_style',
-                    'text:visited-style-name'), ('style', 'text:style-name'))
+    """Link class, "text:a" ODF element."""
 
-    def __init__(self,
-                 url='',
-                 name=None,
-                 title=None,
-                 text=None,
-                 target_frame=None,
-                 style=None,
-                 visited_style=None,
-                 **kwargs):
+    _tag = "text:a"
+    _properties = (
+        ("url", "xlink:href"),
+        ("name", "office:name"),
+        ("title", "office:title"),
+        ("target_frame", "office:target-frame-name"),
+        ("show", "xlink:show"),
+        ("visited_style", "text:visited-style-name"),
+        ("style", "text:style-name"),
+    )
+
+    def __init__(
+        self,
+        url="",
+        name=None,
+        title=None,
+        text=None,
+        target_frame=None,
+        style=None,
+        visited_style=None,
+        **kwargs
+    ):
         """
-            Arguments:
+        Arguments:
 
-                url -- str
+            url -- str
 
-                name -- str
+            name -- str
 
-                title -- str
+            title -- str
 
-                text -- str
+            text -- str
 
-                target_frame -- '_self', '_blank', '_parent', '_top'
+            target_frame -- '_self', '_blank', '_parent', '_top'
 
-                style -- string
+            style -- string
 
-                visited_style -- string
+            visited_style -- string
 
-            return: Link
+        return: Link
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -77,10 +81,10 @@ class Link(ParagraphBase):
             if target_frame is not None:
                 self.target_frame = target_frame
                 # show can be: 'new' or 'replace'"
-                if target_frame == '_blank':
-                    self.show = 'new'
+                if target_frame == "_blank":
+                    self.show = "new"
                 else:
-                    self.show = 'replace'
+                    self.show = "replace"
             if style is not None:
                 self.style = style
             if visited_style is not None:

@@ -26,25 +26,26 @@ from .smil import AnimPar, AnimTransFilter
 
 
 class DrawPage(Element):
-    """ODF draw page "draw:page", for pages of presentation and drawings.
-    """
-    _tag = 'draw:page'
+    """ODF draw page "draw:page", for pages of presentation and drawings."""
+
+    _tag = "draw:page"
     _properties = (
-        ('name', 'draw:name'),
-        ('draw_id', 'draw:id'),
-        ('master_page', 'draw:master-page-name'),
-        ('presentation_page_layout',
-         'presentation:presentation-page-layout-name'),
-        ('style', 'draw:style-name'),
+        ("name", "draw:name"),
+        ("draw_id", "draw:id"),
+        ("master_page", "draw:master-page-name"),
+        ("presentation_page_layout", "presentation:presentation-page-layout-name"),
+        ("style", "draw:style-name"),
     )
 
-    def __init__(self,
-                 draw_id=None,
-                 name=None,
-                 master_page=None,
-                 presentation_page_layout=None,
-                 style=None,
-                 **kw):
+    def __init__(
+        self,
+        draw_id=None,
+        name=None,
+        master_page=None,
+        presentation_page_layout=None,
+        style=None,
+        **kw,
+    ):
         """
         Arguments:
 
@@ -73,12 +74,13 @@ class DrawPage(Element):
             if style:
                 self.style = style
 
-    def set_transition(self, smil_type, subtype=None, dur='2s'):
+    def set_transition(self, smil_type, subtype=None, dur="2s"):
         # Create the new animation
-        anim_page = AnimPar(presentation_node_type='timing-root')
-        anim_begin = AnimPar(smil_begin=f'{self.draw_id}.begin')
+        anim_page = AnimPar(presentation_node_type="timing-root")
+        anim_begin = AnimPar(smil_begin=f"{self.draw_id}.begin")
         transition = AnimTransFilter(
-            smil_dur=dur, smil_type=smil_type, smil_subtype=subtype)
+            smil_dur=dur, smil_type=smil_type, smil_subtype=subtype
+        )
         anim_page.append(anim_begin)
         anim_begin.append(transition)
 
@@ -86,20 +88,19 @@ class DrawPage(Element):
         #   anim:seq => After the frame's transition
         #   cf page 349 of OpenDocument-v1.0-os.pdf
         #   Conclusion: We must delete the first child 'anim:par'
-        existing = self.get_element('anim:par')
+        existing = self.get_element("anim:par")
         if existing:
             self.delete(existing)
         self.append(anim_page)
 
     def get_shapes(self):
-        query = (
-            '(descendant::' + '|descendant::'.join(registered_shapes) + ')')
+        query = "(descendant::" + "|descendant::".join(registered_shapes) + ")"
         return self.get_elements(query)
 
     def get_formatted_text(self, context):
         result = []
         for element in self.children:
-            if element.tag == 'presentation:notes':
+            if element.tag == "presentation:notes":
                 # No need for an advanced odf_notes.get_formatted_text()
                 # because the text seems to be only contained in paragraphs
                 # and frames, that we already handle

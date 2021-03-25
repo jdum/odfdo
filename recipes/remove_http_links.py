@@ -13,8 +13,8 @@ def get_default_doc():
 
 
 def remove_links(element):
-    tag = 'text:a'
-    keep_inside_tag = 'None'
+    tag = "text:a"
+    keep_inside_tag = "None"
     context = (tag, keep_inside_tag, False)
     element, is_modified = _tree_remove_tag(element, context)
     return is_modified
@@ -35,7 +35,8 @@ def _tree_remove_tag(element, context):
         protect_below = False
     for child in buffer.children:
         striped, is_modified = _tree_remove_tag(
-            child, (tag, keep_inside_tag, protect_below))
+            child, (tag, keep_inside_tag, protect_below)
+        )
         if is_modified:
             modified = True
         if type(striped) == type([]):
@@ -86,9 +87,9 @@ if __name__ == "__main__":
 
     print("'text:a' occurrences after removal:", len(body.get_links()))
 
-    if not os.path.exists('test_output'):
-        os.mkdir('test_output')
+    if not os.path.exists("test_output"):
+        os.mkdir("test_output")
 
-    output = os.path.join('test_output', "my_" + source)
+    output = os.path.join("test_output", "my_" + source)
 
     document.save(target=output, pretty=True)

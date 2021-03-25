@@ -7,25 +7,25 @@ import os
 from odfdo import Document, List, ListItem
 
 # Create the document
-my_document = Document('text')
+my_document = Document("text")
 body = my_document.body
 
 # Adding List
-my_list = List(['Arthur', 'Ford', 'Trillian'])
+my_list = List(["Arthur", "Ford", "Trillian"])
 # The list accepts a Python list of strings and list items.
 
 # The list can be written even though we will modify it afterwards:
 body.append(my_list)
 
 # Adding more List Item to the list
-item = ListItem('Marvin')
+item = ListItem("Marvin")
 my_list.append_item(item)
 
 
-if not os.path.exists('test_output'):
-    os.mkdir('test_output')
+if not os.path.exists("test_output"):
+    os.mkdir("test_output")
 
-output = os.path.join('test_output', 'my_document_with_list.odt')
+output = os.path.join("test_output", "my_document_with_list.odt")
 
 # And finally save the document.
 my_document.save(target=output, pretty=True)

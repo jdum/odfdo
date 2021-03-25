@@ -33,10 +33,12 @@ class Content(XmlPart):
     # The following two seem useless but they match styles API
 
     def _get_style_contexts(self, family):
-        if family == 'font-face':
-            return (self.get_element('//office:font-face-decls'), )
-        return (self.get_element('//office:font-face-decls'),
-                self.get_element('//office:automatic-styles'))
+        if family == "font-face":
+            return (self.get_element("//office:font-face-decls"),)
+        return (
+            self.get_element("//office:font-face-decls"),
+            self.get_element("//office:automatic-styles"),
+        )
 
     # Public API
 
@@ -81,9 +83,8 @@ class Content(XmlPart):
             if context is None:
                 continue
             style = context.get_style(
-                family,
-                name_or_element=name_or_element,
-                display_name=display_name)
+                family, name_or_element=name_or_element, display_name=display_name
+            )
             if style is not None:
                 return style
         return None

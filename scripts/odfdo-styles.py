@@ -27,35 +27,36 @@ import sys
 from odfdo import __version__
 from odfdo.const import ODF_CLASSES
 from odfdo import Document
-from odfdo.scriptutils import (add_option_output, StdoutWriter, printinfo,
-                               check_target_file, printerr)
+from odfdo.scriptutils import (
+    add_option_output,
+    StdoutWriter,
+    printinfo,
+    check_target_file,
+    printerr,
+)
 
 
-def show_styles(document,
-                target=None,
-                automatic=True,
-                common=True,
-                properties=False):
-    """Show the different styles of a document and their properties.
-    """
+def show_styles(document, target=None, automatic=True, common=True, properties=False):
+    """Show the different styles of a document and their properties."""
     output = document.show_styles(
-        automatic=automatic, common=common, properties=properties)
+        automatic=automatic, common=common, properties=properties
+    )
     # Print the output
     if target is None:
         print(output)
         return
-    with open(target, 'wb') as f:
+    with open(target, "wb") as f:
         f.write(output)
 
 
 def delete_styles(document, target, pretty=True):
     n = document.delete_styles()
     document.save(target=target, pretty=pretty)
-    printinfo(n, 'styles removed (0 error, 0 warning).')
+    printinfo(n, "styles removed (0 error, 0 warning).")
 
 
 def find_presentation_list_style(body):
-    for frame in body.get_frames(presentation_class='outline'):
+    for frame in body.get_frames(presentation_class="outline"):
         first_list = frame.get_list()
         if first_list is not None:
             return first_list.get_style()
@@ -69,19 +70,17 @@ def merge_presentation_styles(document, source):
     print(first_page.serialize())
     master_page_name = first_page.master_page
     print(master_page_name)
-    first_master_page = document.get_style('master-page', master_page_name)
-    printinfo('master page used:', first_master_page.display_name)
+    first_master_page = document.get_style("master-page", master_page_name)
+    printinfo("master page used:", first_master_page.display_name)
     body = document.get_body
     for page in body.get_draw_pages():
         page.set_style_attribute(first_page.get_style())
         page.set_master_page(first_page.get_master_page())
-        page.set_presentation_page_layout(
-            first_page.get_presentation_page_layout())
+        page.set_presentation_page_layout(first_page.get_presentation_page_layout())
     # Adjust layout -- will obviously work only if content is separated from
     # style: use of master pages, layout, etc.
     for presentation_class in ODF_CLASSES:
-        first_frame = source_body.get_frame(
-            presentation_class=presentation_class)
+        first_frame = source_body.get_frame(presentation_class=presentation_class)
         if first_frame is None:
             continue
         # Mimic frame style
@@ -90,17 +89,16 @@ def merge_presentation_styles(document, source):
         style = first_frame.style
         presentation_style = first_frame.get_presentation_style()
         for page in body.get_draw_pages():
-            for frame in page.get_frames(
-                    presentation_class=presentation_class):
+            for frame in page.get_frames(presentation_class=presentation_class):
                 frame.position = position
                 frame.size = size
                 frame.set_style_attribute(style)
                 frame.set_presentation_style(presentation_style)
         # Mimic list style (XXX only first level)
-        if presentation_class == 'outline':
+        if presentation_class == "outline":
             list_style = find_presentation_list_style(source_body)
             for page in body.get_draw_pages():
-                for frame in page.get_frames(presentation_class='outline'):
+                for frame in page.get_frames(presentation_class="outline"):
                     for lst in frame.get_lists():
                         lst.set_style_attribute(list_style)
 
@@ -111,48 +109,51 @@ def merge_styles(document, from_file, target=None, pretty=True):
     document.merge_styles_from(source)
     doc_type = document.get_type()
     # Enhance Presentation merge
-    if doc_type in {'presentation', 'presentation-template'}:
-        printinfo('merging presentation styles...')
+    if doc_type in {"presentation", "presentation-template"}:
+        printinfo("merging presentation styles...")
         merge_presentation_styles(document, source)
     document.save(target=target, pretty=pretty)
-    printinfo('Done (0 error, 0 warning).')
+    printinfo("Done (0 error, 0 warning).")
 
 
 def main():
     # Options initialisation
-    usage = '%prog [options] <file>'
-    description = ('A command line interface to manipulate styles of '
-                   'OpenDocument files.')
+    usage = "%prog [options] <file>"
+    description = (
+        "A command line interface to manipulate styles of " "OpenDocument files."
+    )
     parser = OptionParser(usage, version=__version__, description=description)
     # --automatic
     parser.add_option(
-        '-a',
-        '--automatic',
-        action='store_true',
+        "-a",
+        "--automatic",
+        action="store_true",
         default=False,
-        help='show automatic styles only')
+        help="show automatic styles only",
+    )
     # --common
     parser.add_option(
-        '-c',
-        '--common',
-        action='store_true',
+        "-c",
+        "--common",
+        action="store_true",
         default=False,
-        help='show common styles only')
+        help="show common styles only",
+    )
     # --properties
     parser.add_option(
-        '-p',
-        '--properties',
-        action='store_true',
-        help='show properties of styles')
+        "-p", "--properties", action="store_true", help="show properties of styles"
+    )
     # --delete
-    msg = ('return a copy with all styles (except default) deleted from '
-           '<file>')
-    parser.add_option('-d', '--delete', action='store_true', help=msg)
+    msg = "return a copy with all styles (except default) deleted from " "<file>"
+    parser.add_option("-d", "--delete", action="store_true", help=msg)
     # --merge
-    msg = ('copy styles from FILE to <file>. Any style with the same '
-           'name will be replaced.')
+    msg = (
+        "copy styles from FILE to <file>. Any style with the same "
+        "name will be replaced."
+    )
     parser.add_option(
-        '-m', '--merge-styles-from', dest='merge', metavar='FILE', help=msg)
+        "-m", "--merge-styles-from", dest="merge", metavar="FILE", help=msg
+    )
     # --output
     add_option_output(parser)
     # Parse options
@@ -164,10 +165,11 @@ def main():
     if options.delete:
         target = options.output
         if target is None:
-            printerr('Will not delete in-place: ',
-                     'output file needed or "-" for stdout')
+            printerr(
+                "Will not delete in-place: ", 'output file needed or "-" for stdout'
+            )
             sys.exit(1)
-        elif target == '-':
+        elif target == "-":
             target = StdoutWriter()
         else:
             check_target_file(target)
@@ -184,8 +186,9 @@ def main():
             options.output,
             automatic=automatic,
             common=common,
-            properties=options.properties)
+            properties=options.properties,
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

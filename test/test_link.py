@@ -30,182 +30,202 @@ from odfdo.link import Link
 
 class TestLinks(TestCase):
     def setUp(self):
-        document = Document('samples/base_text.odt')
+        document = Document("samples/base_text.odt")
         self.body = body = document.body.clone
         self.paragraph = body.get_paragraph()
 
     def test_create_link1(self):
-        link = Link('http://example.com/')
+        link = Link("http://example.com/")
         expected = '<text:a xlink:href="http://example.com/"/>'
         self.assertEqual(link.serialize(), expected)
 
     def test_create_link2(self):
         link = Link(
-            'http://example.com/',
-            name='link2',
-            target_frame='_blank',
-            style='style1',
-            visited_style='style2')
-        expected = ('<text:a xlink:href="http://example.com/" '
-                    'office:name="link2" office:target-frame-name="_blank" '
-                    'xlink:show="new" text:style-name="style1" '
-                    'text:visited-style-name="style2"/>')
+            "http://example.com/",
+            name="link2",
+            target_frame="_blank",
+            style="style1",
+            visited_style="style2",
+        )
+        expected = (
+            '<text:a xlink:href="http://example.com/" '
+            'office:name="link2" office:target-frame-name="_blank" '
+            'xlink:show="new" text:style-name="style1" '
+            'text:visited-style-name="style2"/>'
+        )
         self.assertEqual(link.serialize(), expected)
 
     def test_get_link(self):
-        link1 = Link('http://example.com/', name='link1')
-        link2 = Link('http://example.com/', name='link2')
+        link1 = Link("http://example.com/", name="link1")
+        link2 = Link("http://example.com/", name="link2")
         paragraph = self.paragraph
         paragraph.append(link1)
         paragraph.append(link2)
-        element = self.body.get_link(name='link2')
-        expected = ('<text:a xlink:href="http://example.com/" '
-                    'office:name="link2"/>')
+        element = self.body.get_link(name="link2")
+        expected = '<text:a xlink:href="http://example.com/" ' 'office:name="link2"/>'
         self.assertEqual(element.serialize(), expected)
 
     def test_get_link_list(self):
-        link1 = Link('http://example.com/', name='link1')
-        link2 = Link('http://example.com/', name='link2')
+        link1 = Link("http://example.com/", name="link1")
+        link2 = Link("http://example.com/", name="link2")
         paragraph = self.paragraph
         paragraph.append(link1)
         paragraph.append(link2)
         element = self.body.get_links()[1]
-        expected = ('<text:a xlink:href="http://example.com/" '
-                    'office:name="link2"/>')
+        expected = '<text:a xlink:href="http://example.com/" ' 'office:name="link2"/>'
         self.assertEqual(element.serialize(), expected)
 
     def test_get_link_list_name(self):
-        link1 = Link('http://example.com/', name='link1', title='title1')
-        link2 = Link('http://example.com/', name='link2', title='title2')
+        link1 = Link("http://example.com/", name="link1", title="title1")
+        link2 = Link("http://example.com/", name="link2", title="title2")
         paragraph = self.paragraph
         paragraph.append(link1)
         paragraph.append(link2)
         # name
-        element = self.body.get_links(name='link1')[0]
-        expected = ('<text:a xlink:href="http://example.com/" '
-                    'office:name="link1" office:title="title1"/>')
+        element = self.body.get_links(name="link1")[0]
+        expected = (
+            '<text:a xlink:href="http://example.com/" '
+            'office:name="link1" office:title="title1"/>'
+        )
         self.assertEqual(element.serialize(), expected)
 
     def test_get_link_list_title(self):
-        link1 = Link('http://example.com/', name='link1', title='title1')
-        link2 = Link('http://example.com/', name='link2', title='title2')
+        link1 = Link("http://example.com/", name="link1", title="title1")
+        link2 = Link("http://example.com/", name="link2", title="title2")
         paragraph = self.paragraph
         paragraph.append(link1)
         paragraph.append(link2)
         # title
-        element = self.body.get_links(title='title2')[0]
-        expected = ('<text:a xlink:href="http://example.com/" '
-                    'office:name="link2" office:title="title2"/>')
+        element = self.body.get_links(title="title2")[0]
+        expected = (
+            '<text:a xlink:href="http://example.com/" '
+            'office:name="link2" office:title="title2"/>'
+        )
         self.assertEqual(element.serialize(), expected)
 
     def test_get_link_list_href(self):
-        link1 = Link('http://example.com/', name='link1', title='title1')
-        link2 = Link('http://example.com/', name='link2', title='title2')
+        link1 = Link("http://example.com/", name="link1", title="title1")
+        link2 = Link("http://example.com/", name="link2", title="title2")
         paragraph = self.paragraph
         paragraph.append(link1)
         paragraph.append(link2)
         # url
-        elements = self.body.get_links(url=r'\.com')
+        elements = self.body.get_links(url=r"\.com")
         self.assertEqual(len(elements), 2)
 
     def test_href_from_existing_document(self):
         body = self.body
-        links = body.get_links(url=r'lpod')
+        links = body.get_links(url=r"lpod")
         self.assertEqual(len(links), 1)
 
     def test_get_link_list_name_and_title(self):
-        link1 = Link('http://example.com/', name='link1', title='title1')
-        link2 = Link('http://example.com/', name='link2', title='title2')
+        link1 = Link("http://example.com/", name="link1", title="title1")
+        link2 = Link("http://example.com/", name="link2", title="title2")
         paragraph = self.paragraph
         paragraph.append(link1)
         paragraph.append(link2)
         # name and title
-        element = self.body.get_links(name='link1', title='title1')[0]
-        expected = ('<text:a xlink:href="http://example.com/" '
-                    'office:name="link1" office:title="title1"/>')
+        element = self.body.get_links(name="link1", title="title1")[0]
+        expected = (
+            '<text:a xlink:href="http://example.com/" '
+            'office:name="link1" office:title="title1"/>'
+        )
         self.assertEqual(element.serialize(), expected)
 
     def test_get_link_by_href(self):
         body = self.body
-        link = body.get_link(url=r'lpod')
-        url = link.get_attribute('xlink:href')
-        self.assertEqual(url, 'http://lpod-project.net/')
+        link = body.get_link(url=r"lpod")
+        url = link.get_attribute("xlink:href")
+        self.assertEqual(url, "http://lpod-project.net/")
 
     def test_get_link_by_path_context(self):
         body = self.body
         section2 = body.get_section(position=1)
-        link = section2.get_link(url=r'\.net')
+        link = section2.get_link(url=r"\.net")
         url = link.url
-        self.assertEqual(url, 'http://lpod-project.net/')
+        self.assertEqual(url, "http://lpod-project.net/")
 
     def test_get_link_list_not_found(self):
-        link1 = Link('http://example.com/', name='link1', title='title1')
-        link2 = Link('http://example.com/', name='link2', title='title2')
+        link1 = Link("http://example.com/", name="link1", title="title1")
+        link2 = Link("http://example.com/", name="link2", title="title2")
         paragraph = self.paragraph
         paragraph.append(link1)
         paragraph.append(link2)
         # Not found
-        element = self.body.get_links(name='link1', title='title2')
+        element = self.body.get_links(name="link1", title="title2")
         self.assertEqual(element, [])
 
 
-class TestInsertLink(object):  #TestCase):
+class TestInsertLink(object):  # TestCase):
     def test_insert_link_simple(self):
-        paragraph = Element.from_tag('<text:p>toto tata titi</text:p>')
+        paragraph = Element.from_tag("<text:p>toto tata titi</text:p>")
         paragraph.insert_link("http://", from_="tata", to="tata")
-        expected = ('<text:p>toto '
-                    '<text:a xlink:href="http://">tata</text:a> '
-                    'titi</text:p>')
+        expected = (
+            "<text:p>toto "
+            '<text:a xlink:href="http://">tata</text:a> '
+            "titi</text:p>"
+        )
         self.assertEqual(paragraph.serialize(), expected)
 
     def test_insert_link_medium(self):
-        paragraph = Element.from_tag('<text:p><text:span>toto</text:span> '
-                                     'tata titi</text:p>')
+        paragraph = Element.from_tag(
+            "<text:p><text:span>toto</text:span> " "tata titi</text:p>"
+        )
         paragraph.insert_link("http://", from_="tata", to="tata")
-        expected = ('<text:p><text:span>toto</text:span> '
-                    '<text:a xlink:href="http://">tata</text:a> '
-                    'titi</text:p>')
+        expected = (
+            "<text:p><text:span>toto</text:span> "
+            '<text:a xlink:href="http://">tata</text:a> '
+            "titi</text:p>"
+        )
         self.assertEqual(paragraph.serialize(), expected)
 
     def test_insert_link_complex(self):
-        paragraph = Element.from_tag('<text:p>toto '
-                                     '<text:span> tata </text:span> '
-                                     'titi</text:p>')
+        paragraph = Element.from_tag(
+            "<text:p>toto " "<text:span> tata </text:span> " "titi</text:p>"
+        )
         paragraph.insert_link("http://", from_="tata", to="titi")
-        expected = ('<text:p>toto <text:span> </text:span>'
-                    '<text:a xlink:href="http://">'
-                    '<text:span>tata </text:span> titi'
-                    '</text:a>'
-                    '</text:p>')
+        expected = (
+            "<text:p>toto <text:span> </text:span>"
+            '<text:a xlink:href="http://">'
+            "<text:span>tata </text:span> titi"
+            "</text:a>"
+            "</text:p>"
+        )
         self.assertEqual(paragraph.serialize(), expected)
 
     def test_insert_link_horrible(self):
-        paragraph = Element.from_tag('<text:p>toto '
-                                     '<text:span>tata titi</text:span>'
-                                     ' tutu </text:p>')
+        paragraph = Element.from_tag(
+            "<text:p>toto " "<text:span>tata titi</text:span>" " tutu </text:p>"
+        )
         paragraph.insert_link("http://", from_="titi", to="tutu")
-        expected = ('<text:p>toto <text:span>tata </text:span>'
-                    '<text:a xlink:href="http://">'
-                    '<text:span>titi</text:span> tutu'
-                    '</text:a> '
-                    '</text:p>')
+        expected = (
+            "<text:p>toto <text:span>tata </text:span>"
+            '<text:a xlink:href="http://">'
+            "<text:span>titi</text:span> tutu"
+            "</text:a> "
+            "</text:p>"
+        )
         self.assertEqual(paragraph.serialize(), expected)
 
     def test_insert_link_hideous(self):
-        paragraph = Element.from_tag('<text:p>toto '
-                                     '<text:span>tata titi</text:span>'
-                                     ' <text:span>tutu tyty</text:span>'
-                                     '</text:p>')
+        paragraph = Element.from_tag(
+            "<text:p>toto "
+            "<text:span>tata titi</text:span>"
+            " <text:span>tutu tyty</text:span>"
+            "</text:p>"
+        )
         paragraph.insert_link("http://", from_="titi", to="tutu")
-        expected = ('<text:p>toto <text:span>tata </text:span>'
-                    '<text:a xlink:href="http://">'
-                    '<text:span>titi</text:span> '
-                    '<text:span>tutu</text:span>'
-                    '</text:a>'
-                    '<text:span> tyty</text:span>'
-                    '</text:p>')
+        expected = (
+            "<text:p>toto <text:span>tata </text:span>"
+            '<text:a xlink:href="http://">'
+            "<text:span>titi</text:span> "
+            "<text:span>tutu</text:span>"
+            "</text:a>"
+            "<text:span> tyty</text:span>"
+            "</text:p>"
+        )
         self.assertEqual(paragraph.serialize(), expected)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

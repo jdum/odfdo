@@ -1,6 +1,6 @@
 from odfdo import Document, Style
 
-document = Document('text')
+document = Document("text")
 body = document.body
 
 # Let's imagine the sample_styles.odt document contains an interesting style.
@@ -8,12 +8,13 @@ body = document.body
 # So let’s first fetch the style:
 
 try:
-    odfdo_styles = Document('sample_styles.odt')
-    highlight = odfdo_styles.get_style('text', display_name="Yellow Highlight")
+    odfdo_styles = Document("sample_styles.odt")
+    highlight = odfdo_styles.get_style("text", display_name="Yellow Highlight")
 except OSError:
     # let's create some *very simple* text style.
     highlight = Style(
-        'text', display_name="Yellow Highlight", color='blue', italic=True)
+        "text", display_name="Yellow Highlight", color="blue", italic=True
+    )
 
 # We made some assumptions here:
 #

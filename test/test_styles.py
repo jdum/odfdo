@@ -31,7 +31,7 @@ from odfdo.style import Style
 
 class TestStyle(TestCase):
     def setUp(self):
-        self.document = document = Document('samples/example.odt')
+        self.document = document = Document("samples/example.odt")
         self.styles = document.get_part(ODF_STYLES)
 
     def tearDown(self):
@@ -39,84 +39,90 @@ class TestStyle(TestCase):
         del self.document
 
     def test_create_style(self):
-        style = Style('paragraph', 'style1')
-        self.assertIn(style.serialize(),
-                      (('<style:style style:name="style1" '
-                        'style:family="paragraph"/>'),
-                       ('<style:style style:family="paragraph" '
-                        'style:name="style1"/>')))
+        style = Style("paragraph", "style1")
+        self.assertIn(
+            style.serialize(),
+            (
+                ('<style:style style:name="style1" ' 'style:family="paragraph"/>'),
+                ('<style:style style:family="paragraph" ' 'style:name="style1"/>'),
+            ),
+        )
 
     def test_get_styles(self):
         style_list = self.styles.get_styles()
         self.assertEqual(len(style_list), 20)
 
     def test_get_styles_paragraph(self):
-        style_list = self.styles.get_styles(family='paragraph')
+        style_list = self.styles.get_styles(family="paragraph")
         self.assertEqual(len(style_list), 10)
 
     def test_get_styles_master_page(self):
-        style_list = self.styles.get_styles(family='master-page')
+        style_list = self.styles.get_styles(family="master-page")
         self.assertEqual(len(style_list), 1)
 
     def test_get_style_automatic(self):
-        style = self.styles.get_style('page-layout', 'Mpm1')
+        style = self.styles.get_style("page-layout", "Mpm1")
         self.assertNotEqual(style, None)
 
     def test_get_style_named(self):
-        style = self.styles.get_style('paragraph', 'Heading_20_1')
+        style = self.styles.get_style("paragraph", "Heading_20_1")
         self.assertEqual(style.display_name, "Heading 1")
 
     def test_get_style_display_name(self):
-        style = self.styles.get_style('paragraph', display_name="Text body")
+        style = self.styles.get_style("paragraph", display_name="Text body")
         self.assertEqual(style.name, "Text_20_body")
 
     def test_insert_style(self):
         styles = self.styles.clone
         style = Style(
-            'paragraph',
-            name='style1',
-            area='text',
-            **{
-                'fo:color': '#0000ff',
-                'fo:background-color': '#ff0000'
-            })
-        context = styles.get_element('//office:styles')
+            "paragraph",
+            name="style1",
+            area="text",
+            **{"fo:color": "#0000ff", "fo:background-color": "#ff0000"}
+        )
+        context = styles.get_element("//office:styles")
         context.append(style)
-        get1 = styles.get_style('paragraph', 'style1')
+        get1 = styles.get_style("paragraph", "style1")
         self.assertIn(
             get1.serialize(),
-            (('<style:style style:name="style1" '
-              'style:family="paragraph">'
-              '<style:text-properties fo:background-color="#ff0000" '
-              'fo:color="#0000ff"/>'
-              '</style:style>'), '<style:style style:family="paragraph" '
-             'style:name="style1">'
-             '<style:text-properties '
-             'fo:background-color="#ff0000" '
-             'fo:color="#0000ff"/>'
-             '</style:style>'))
+            (
+                (
+                    '<style:style style:name="style1" '
+                    'style:family="paragraph">'
+                    '<style:text-properties fo:background-color="#ff0000" '
+                    'fo:color="#0000ff"/>'
+                    "</style:style>"
+                ),
+                '<style:style style:family="paragraph" '
+                'style:name="style1">'
+                "<style:text-properties "
+                'fo:background-color="#ff0000" '
+                'fo:color="#0000ff"/>'
+                "</style:style>",
+            ),
+        )
 
 
 class TestInsertStyleCase(TestCase):
     def setUp(self):
-        self.doc = Document('samples/example.odt')
+        self.doc = Document("samples/example.odt")
 
     def test_insert_common_style(self):
         doc = self.doc
 
-        style = Style('paragraph', 'MyStyle')
+        style = Style("paragraph", "MyStyle")
         doc.insert_style(style)
-        inserted_style = doc.get_style('paragraph', 'MyStyle')
+        inserted_style = doc.get_style("paragraph", "MyStyle")
 
         self.assertEqual(style.serialize(), inserted_style.serialize())
 
     def test_insert_default_style(self):
         doc = self.doc
 
-        style = Style('paragraph', 'MyStyle')
+        style = Style("paragraph", "MyStyle")
         doc.insert_style(style, default=True)
 
-        inserted_style = doc.get_style('paragraph')
+        inserted_style = doc.get_style("paragraph")
         expected = '<style:default-style style:family="paragraph"/>'
 
         self.assertEqual(inserted_style.serialize(), expected)
@@ -124,30 +130,27 @@ class TestInsertStyleCase(TestCase):
     def test_insert_automatic_style(self):
         doc = self.doc
 
-        style = Style('paragraph')
+        style = Style("paragraph")
         doc.insert_style(style, automatic=True)
         self.assertNotEqual(style.name, None)
 
     def test_insert_with_error(self):
         doc = self.doc
 
-        style = Style('paragraph', 'MyStyle')
+        style = Style("paragraph", "MyStyle")
         self.assertRaises(
-            AttributeError,
-            doc.insert_style,
-            style=style,
-            automatic=True,
-            default=True)
+            AttributeError, doc.insert_style, style=style, automatic=True, default=True
+        )
 
     def test_insert_master_page_style(self):
         doc = self.doc
 
-        style = Style('master-page', 'MyPageStyle')
+        style = Style("master-page", "MyPageStyle")
         doc.insert_style(style)
 
-        inserted_style = doc.get_style('master-page', 'MyPageStyle')
+        inserted_style = doc.get_style("master-page", "MyPageStyle")
         self.assertEqual(style.serialize(), inserted_style.serialize())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -29,11 +29,13 @@ from .style import Style
 from .utils import isiterable, DPI
 
 
-def default_frame_position_style(name="FramePosition",
-                                 horizontal_pos="from-left",
-                                 vertical_pos="from-top",
-                                 horizontal_rel="paragraph",
-                                 vertical_rel="paragraph"):
+def default_frame_position_style(
+    name="FramePosition",
+    horizontal_pos="from-left",
+    vertical_pos="from-top",
+    horizontal_rel="paragraph",
+    vertical_rel="paragraph",
+):
     """Helper style for positioning frames in desktop applications that need
     it.
 
@@ -43,12 +45,13 @@ def default_frame_position_style(name="FramePosition",
     with this style as the parent.
     """
     return Style(
-        family='graphic',
+        family="graphic",
         name=name,
         horizontal_pos=horizontal_pos,
         horizontal_rel=horizontal_rel,
         vertical_pos=vertical_pos,
-        vertical_rel=vertical_rel)
+        vertical_rel=vertical_rel,
+    )
 
 
 class AnchorMix:
@@ -56,18 +59,19 @@ class AnchorMix:
 
     value can be: 'page', 'frame', 'paragraph', 'char' or 'as-char'
     """
-    anchor_value_choice = {'page', 'frame', 'paragraph', 'char', 'as-char'}
+
+    anchor_value_choice = {"page", "frame", "paragraph", "char", "as-char"}
 
     @property
     def anchor_type(self):
         "getter/setter"
-        return self.get_attribute('text:anchor-type')
+        return self.get_attribute("text:anchor-type")
 
     @anchor_type.setter
     def anchor_type(self, anchor_type):
         if anchor_type not in self.anchor_value_choice:
-            raise ValueError('anchor_type not valid: %s' % anchor_type)
-        self.set_attribute('text:anchor-type', anchor_type)
+            raise ValueError("anchor_type not valid: %s" % anchor_type)
+        self.set_attribute("text:anchor-type", anchor_type)
 
     @property
     def anchor_page(self):
@@ -76,14 +80,14 @@ class AnchorMix:
 
         type : int or None
         """
-        anchor_page = self.get_attribute('text:anchor-page-number')
+        anchor_page = self.get_attribute("text:anchor-page-number")
         if anchor_page is None:
             return None
         return int(anchor_page)
 
     @anchor_page.setter
     def anchor_page(self, anchor_page):
-        self.set_attribute('text:anchor-page-number', anchor_page)
+        self.set_attribute("text:anchor-page-number", anchor_page)
 
 
 class PosMix:
@@ -100,7 +104,7 @@ class PosMix:
     def position(self):
         "getter/setter"
         get_attr = self.get_attribute
-        return get_attr('svg:x'), get_attr('svg:y')
+        return get_attr("svg:x"), get_attr("svg:y")
 
     @position.setter
     def position(self, position):
@@ -117,14 +121,14 @@ class ZMix:
     @property
     def z_index(self):
         "getter/setter"
-        z_index = self.get_attribute('draw:z-index')
+        z_index = self.get_attribute("draw:z-index")
         if z_index is None:
             return None
         return int(z_index)
 
     @z_index.setter
     def z_index(self, z_index):
-        self.set_attribute('draw:z-index', z_index)
+        self.set_attribute("draw:z-index", z_index)
 
 
 class SizeMix:
@@ -151,33 +155,36 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
     Frames are not useful by themselves. You should consider calling
     Frame.image_frame() or Frame.text_frame directly.
     """
-    _tag = 'draw:frame'
+
+    _tag = "draw:frame"
     _properties = (
-        ('name', 'draw:name'),
-        ('draw_id', 'draw:id'),
-        ('width', 'svg:width'),
-        ('height', 'svg:height'),
-        ('style', 'draw:style-name'),
-        ('pos_x', 'svg:x'),
-        ('pos_y', 'svg:y'),
-        ('presentation_class', 'presentation:class'),
-        ('layer', 'draw:layer'),
-        ('presentation_style', 'presentation:style-name'),
+        ("name", "draw:name"),
+        ("draw_id", "draw:id"),
+        ("width", "svg:width"),
+        ("height", "svg:height"),
+        ("style", "draw:style-name"),
+        ("pos_x", "svg:x"),
+        ("pos_y", "svg:y"),
+        ("presentation_class", "presentation:class"),
+        ("layer", "draw:layer"),
+        ("presentation_style", "presentation:style-name"),
     )
 
-    def __init__(self,
-                 name=None,
-                 draw_id=None,
-                 style=None,
-                 position=None,
-                 size=('1cm', '1cm'),
-                 z_index=0,
-                 presentation_class=None,
-                 anchor_type=None,
-                 anchor_page=None,
-                 layer=None,
-                 presentation_style=None,
-                 **kwargs):
+    def __init__(
+        self,
+        name=None,
+        draw_id=None,
+        style=None,
+        position=None,
+        size=("1cm", "1cm"),
+        z_index=0,
+        presentation_class=None,
+        anchor_type=None,
+        anchor_page=None,
+        layer=None,
+        presentation_style=None,
+        **kwargs
+    ):
         """Create a frame element of the given size. Position is relative to the
         context the frame is inserted in. If positioned by page, give the page
         number and the x, y position.
@@ -234,7 +241,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
             if anchor_type:
                 self.anchor_type = anchor_type
             if position and not anchor_type:
-                self.anchor_type = 'paragraph'
+                self.anchor_type = "paragraph"
             if anchor_page is not None:
                 self.anchor_page = anchor_page
             if layer is not None:
@@ -243,21 +250,23 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
                 self.presentation_style = presentation_style
 
     @classmethod
-    def image_frame(cls,
-                    image,
-                    text=None,
-                    name=None,
-                    draw_id=None,
-                    style=None,
-                    position=None,
-                    size=('1cm', '1cm'),
-                    z_index=0,
-                    presentation_class=None,
-                    anchor_type=None,
-                    anchor_page=None,
-                    layer=None,
-                    presentation_style=None,
-                    **kwargs):
+    def image_frame(
+        cls,
+        image,
+        text=None,
+        name=None,
+        draw_id=None,
+        style=None,
+        position=None,
+        size=("1cm", "1cm"),
+        z_index=0,
+        presentation_class=None,
+        anchor_type=None,
+        anchor_page=None,
+        layer=None,
+        presentation_style=None,
+        **kwargs
+    ):
         """Create a ready-to-use image, since image must be embedded in a
         frame.
 
@@ -285,28 +294,31 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
             anchor_page=anchor_page,
             layer=layer,
             presentation_style=presentation_style,
-            **kwargs)
+            **kwargs
+        )
         image_element = frame.set_image(image)
         if text:
             image_element.text_content = text
         return frame
 
     @classmethod
-    def text_frame(cls,
-                   text_or_element=None,
-                   text_style=None,
-                   name=None,
-                   draw_id=None,
-                   style=None,
-                   position=None,
-                   size=('1cm', '1cm'),
-                   z_index=0,
-                   presentation_class=None,
-                   anchor_type=None,
-                   anchor_page=None,
-                   layer=None,
-                   presentation_style=None,
-                   **kwargs):
+    def text_frame(
+        cls,
+        text_or_element=None,
+        text_style=None,
+        name=None,
+        draw_id=None,
+        style=None,
+        position=None,
+        size=("1cm", "1cm"),
+        z_index=0,
+        presentation_class=None,
+        anchor_type=None,
+        anchor_page=None,
+        layer=None,
+        presentation_style=None,
+        **kwargs
+    ):
         """Create a ready-to-use text box, since text box must be embedded in
         a frame.
 
@@ -335,22 +347,23 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
             anchor_page=anchor_page,
             layer=layer,
             presentation_style=presentation_style,
-            **kwargs)
+            **kwargs
+        )
         frame.set_text_box(text_or_element, text_style)
         return frame
 
     @property
     def text_content(self):
-        text_box = self.get_element('draw:text-box')
+        text_box = self.get_element("draw:text-box")
         if text_box is None:
             return None
         return text_box.text_content
 
     @text_content.setter
     def text_content(self, text_or_element):
-        text_box = self.get_element('draw:text-box')
+        text_box = self.get_element("draw:text-box")
         if text_box is None:
-            text_box = Element.from_tag('draw:text-box')
+            text_box = Element.from_tag("draw:text-box")
             self.append(text_box)
         if isinstance(text_or_element, Element):
             text_box.clear()
@@ -359,7 +372,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
             text_box.text_content = text_or_element
 
     def get_image(self, position=0, name=None, url=None, content=None):
-        return self.get_element('draw:image')
+        return self.get_element("draw:image")
 
     def set_image(self, url_or_element):
         image = self.get_image()
@@ -380,12 +393,12 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
         return image
 
     def get_text_box(self):
-        return self.get_element('draw:text-box')
+        return self.get_element("draw:text-box")
 
     def set_text_box(self, text_or_element=None, text_style=None):
         text_box = self.get_text_box()
         if text_box is None:
-            text_box = Element.from_tag('draw:text-box')
+            text_box = Element.from_tag("draw:text-box")
             self.append(text_box)
         else:
             text_box.clear()
@@ -401,47 +414,45 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
         result = []
         for element in self.children:
             tag = element.tag
-            if tag == 'draw:image':
-                if context['rst_mode']:
-                    filename = element.get_attribute('xlink:href')
+            if tag == "draw:image":
+                if context["rst_mode"]:
+                    filename = element.get_attribute("xlink:href")
 
                     # Compute width and height
                     width, height = self.size
                     if width is not None:
                         width = Unit(width)
-                        width = width.convert('px', DPI)
+                        width = width.convert("px", DPI)
                     if height is not None:
                         height = Unit(height)
-                        height = height.convert('px', DPI)
+                        height = height.convert("px", DPI)
 
                     # Insert or not ?
-                    if context['no_img_level']:
-                        context['img_counter'] += 1
-                        ref = '|img%d|' % context['img_counter']
+                    if context["no_img_level"]:
+                        context["img_counter"] += 1
+                        ref = "|img%d|" % context["img_counter"]
                         result.append(ref)
-                        context['images'].append((ref, filename, (width,
-                                                                  height)))
+                        context["images"].append((ref, filename, (width, height)))
                     else:
-                        result.append('\n.. image:: %s\n' % filename)
+                        result.append("\n.. image:: %s\n" % filename)
                         if width is not None:
-                            result.append('   :width: %s\n' % width)
+                            result.append("   :width: %s\n" % width)
                         if height is not None:
-                            result.append('   :height: %s\n' % height)
+                            result.append("   :height: %s\n" % height)
                 else:
-                    result.append(
-                        '[Image %s]\n' % element.get_attribute('xlink:href'))
-            elif tag == 'draw:text-box':
-                subresult = ['  ']
+                    result.append("[Image %s]\n" % element.get_attribute("xlink:href"))
+            elif tag == "draw:text-box":
+                subresult = ["  "]
                 for e in element.children:
                     subresult.append(e.get_formatted_text(context))
-                subresult = ''.join(subresult)
-                subresult = subresult.replace('\n', '\n  ')
-                subresult.rstrip(' ')
+                subresult = "".join(subresult)
+                subresult = subresult.replace("\n", "\n  ")
+                subresult.rstrip(" ")
                 result.append(subresult)
             else:
                 result.append(element.get_formatted_text(context))
-        result.append('\n')
-        return ''.join(result)
+        result.append("\n")
+        return "".join(result)
 
 
 Frame._define_attribut_property()

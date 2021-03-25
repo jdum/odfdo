@@ -38,38 +38,38 @@ from .utils import _family_style_tagname, get_value
 from .utils import to_bytes, to_str, FAMILY_ODF_STD
 
 ODF_NAMESPACES = {
-    'anim': "urn:oasis:names:tc:opendocument:xmlns:animation:1.0",
-    'chart': "urn:oasis:names:tc:opendocument:xmlns:chart:1.0",
-    'config': "urn:oasis:names:tc:opendocument:xmlns:config:1.0",
-    'dc': "http://purl.org/dc/elements/1.1/",
-    'dom': "http://www.w3.org/2001/xml-events",
-    'dr3d': "urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0",
-    'draw': "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0",
-    'fo': "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
-    'form': "urn:oasis:names:tc:opendocument:xmlns:form:1.0",
-    'math': "http://www.w3.org/1998/Math/MathML",
-    'meta': "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
-    'number': "urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0",
-    'of': "urn:oasis:names:tc:opendocument:xmlns:of:1.2",
-    'office': "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
-    'ooo': "http://openoffice.org/2004/office",
-    'oooc': "http://openoffice.org/2004/calc",
-    'ooow': "http://openoffice.org/2004/writer",
-    'presentation': "urn:oasis:names:tc:opendocument:xmlns:presentation:1.0",
-    'rdfa': "http://docs.oasis-open.org/opendocument/meta/rdfa#",
-    'rpt': "http://openoffice.org/2005/report",
-    'script': "urn:oasis:names:tc:opendocument:xmlns:script:1.0",
-    'smil': "urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0",
-    'style': "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
-    'svg': "urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0",
-    'table': "urn:oasis:names:tc:opendocument:xmlns:table:1.0",
-    'text': "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
-    'xforms': "http://www.w3.org/2002/xforms",
-    'xlink': "http://www.w3.org/1999/xlink",
-    'xsd': "http://www.w3.org/2001/XMLSchema",
-    'xsi': "http://www.w3.org/2001/XMLSchema-instance",
-    'manifest': "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0",
-    'xml': 'http://www.w3.org/XML/1998/namespace'
+    "anim": "urn:oasis:names:tc:opendocument:xmlns:animation:1.0",
+    "chart": "urn:oasis:names:tc:opendocument:xmlns:chart:1.0",
+    "config": "urn:oasis:names:tc:opendocument:xmlns:config:1.0",
+    "dc": "http://purl.org/dc/elements/1.1/",
+    "dom": "http://www.w3.org/2001/xml-events",
+    "dr3d": "urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0",
+    "draw": "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0",
+    "fo": "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
+    "form": "urn:oasis:names:tc:opendocument:xmlns:form:1.0",
+    "math": "http://www.w3.org/1998/Math/MathML",
+    "meta": "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
+    "number": "urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0",
+    "of": "urn:oasis:names:tc:opendocument:xmlns:of:1.2",
+    "office": "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
+    "ooo": "http://openoffice.org/2004/office",
+    "oooc": "http://openoffice.org/2004/calc",
+    "ooow": "http://openoffice.org/2004/writer",
+    "presentation": "urn:oasis:names:tc:opendocument:xmlns:presentation:1.0",
+    "rdfa": "http://docs.oasis-open.org/opendocument/meta/rdfa#",
+    "rpt": "http://openoffice.org/2005/report",
+    "script": "urn:oasis:names:tc:opendocument:xmlns:script:1.0",
+    "smil": "urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0",
+    "style": "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
+    "svg": "urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0",
+    "table": "urn:oasis:names:tc:opendocument:xmlns:table:1.0",
+    "text": "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
+    "xforms": "http://www.w3.org/2002/xforms",
+    "xlink": "http://www.w3.org/1999/xlink",
+    "xsd": "http://www.w3.org/2001/XMLSchema",
+    "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    "manifest": "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0",
+    "xml": "http://www.w3.org/XML/1998/namespace",
 }
 FIRST_CHILD = 0
 LAST_CHILD = 1
@@ -82,16 +82,15 @@ ns_stripper = re.compile(r' xmlns:\w*="[\w:\-\/\.#]*"')
 __xpath_query_cache = {}
 
 # An empty XML document with all namespaces declared
-with open(_get_abspath('templates/namespaces.xml'), 'rb') as __f:
+with open(_get_abspath("templates/namespaces.xml"), "rb") as __f:
     ns_document_data = __f.read()
 
 
 def _decode_qname(qname):
-    """Turn a prefixed qualified name to a (uri, name) pair.
-    """
+    """Turn a prefixed qualified name to a (uri, name) pair."""
     qname = to_str(qname)
-    if ':' in qname:
-        prefix, name = qname.split(':')
+    if ":" in qname:
+        prefix, name = qname.split(":")
         try:
             uri = ODF_NAMESPACES[prefix]
         except KeyError:
@@ -101,8 +100,7 @@ def _decode_qname(qname):
 
 
 def _uri_to_prefix(uri):
-    """Find the prefix associated to the given URI.
-    """
+    """Find the prefix associated to the given URI."""
     for key, value in ODF_NAMESPACES.items():
         if value == uri:
             return key
@@ -110,17 +108,15 @@ def _uri_to_prefix(uri):
 
 
 def _get_prefixed_name(tag):
-    """Replace lxml "{uri}name" syntax with "prefix:name" one.
-    """
-    uri, name = to_str(tag).split('}', 1)
+    """Replace lxml "{uri}name" syntax with "prefix:name" one."""
+    uri, name = to_str(tag).split("}", 1)
     prefix = _uri_to_prefix(uri[1:])
-    return f'{prefix}:{name}'
+    return f"{prefix}:{name}"
 
 
 def _get_lxml_tag(qname):
-    """Replace "prefix:name" syntax with lxml "{uri}name" one.
-    """
-    return '{%s}%s' % _decode_qname(qname)
+    """Replace "prefix:name" syntax with lxml "{uri}name" one."""
+    return "{%s}%s" % _decode_qname(qname)
 
 
 def _xpath_compile(path):
@@ -135,12 +131,12 @@ def _find_query_in_cache(query):
     return xpath
 
 
-_xpath_text = _find_query_in_cache('//text()')  #  descendant and self
-_xpath_text_descendant = _find_query_in_cache('descendant::text()')
-_xpath_text_main = _find_query_in_cache(
-    '//*[not (parent::office:annotation)]/text()')
+_xpath_text = _find_query_in_cache("//text()")  #  descendant and self
+_xpath_text_descendant = _find_query_in_cache("descendant::text()")
+_xpath_text_main = _find_query_in_cache("//*[not (parent::office:annotation)]/text()")
 _xpath_text_main_descendant = _find_query_in_cache(
-    'descendant::text()[not (parent::office:annotation)]')
+    "descendant::text()[not (parent::office:annotation)]"
+)
 
 _class_registry = {}
 
@@ -214,24 +210,24 @@ class Element:
     """Super class of all ODF classes. Representation of an XML element.
     Abstraction of the XML library behind.
     """
+
     _tag = None
     _caching = False
 
     def __init__(self, **kwargs):
-        tag_or_elem = kwargs.pop('tag_or_elem', None)
+        tag_or_elem = kwargs.pop("tag_or_elem", None)
         if tag_or_elem is None:
             # Instance for newly created object: create new lxml element and
             # continue by subclass __init__
             # If the tag key word exists, make a custom element
             self._do_init = True
-            tag = kwargs.pop('tag', self._tag)
+            tag = kwargs.pop("tag", self._tag)
             self.__element = self.make_etree_element(tag)
         else:
             # called with an existing lxml element, sould be a result of
             # from_tag() casting, do not execute the subclass __ini__
             if not isinstance(tag_or_elem, _Element):
-                raise TypeError(
-                    '"%s" is not an element node' % type(tag_or_elem))
+                raise TypeError('"%s" is not an element node' % type(tag_or_elem))
             self._do_init = False
             self.__element = tag_or_elem
 
@@ -272,11 +268,11 @@ class Element:
         tag = to_bytes(tag).strip()
         if not tag:
             raise ValueError("tag is empty")
-        if b'<' not in tag:
+        if b"<" not in tag:
             # Qualified name
             # XXX don't build the element from scratch or lxml will pollute with
             # repeated namespace declarations
-            tag = b'<%s/>' % tag
+            tag = b"<%s/>" % tag
         # XML fragment
         root = fromstring(ns_document_data % tag)
         return root[0]
@@ -294,7 +290,7 @@ class Element:
             value = self.__element.get(name)
             if value is None:
                 return None
-            elif value in ('true', 'false'):
+            elif value in ("true", "false"):
                 return Boolean.decode(value)
             return str(value)
 
@@ -329,18 +325,17 @@ class Element:
             else:
                 family = None
             setattr(
-                cls, name,
+                cls,
+                name,
                 property(
                     cls._generic_attrib_getter(attr, family),
-                    cls._generic_attrib_setter(attr, family), None,
-                    f'Get/set the attribute {attr}'))
+                    cls._generic_attrib_setter(attr, family),
+                    None,
+                    f"Get/set the attribute {attr}",
+                ),
+            )
 
-    def _insert(self,
-                element,
-                before=None,
-                after=None,
-                position=0,
-                main_text=False):
+    def _insert(self, element, before=None, after=None, position=0, main_text=False):
         """Insert an element before or after the characters in the text which
         match the regex before/after. When the regex matches more of one part
         of the text, position can be set to choice which part must be used. If
@@ -562,7 +557,7 @@ class Element:
     def elements_repeated_sequence(self, xpath_instance, name):
         uri, name = _decode_qname(name)
         if uri is not None:
-            name = '{%s}%s' % (uri, name)
+            name = "{%s}%s" % (uri, name)
         element = self.__element
         sub_elements = xpath_instance(element)
         result = []
@@ -587,8 +582,8 @@ class Element:
         else:
             new_xpath_query = _find_query_in_cache(to_bytes(xpath_query))
             result = new_xpath_query(element)
-        if hasattr(self, '_tmap'):
-            if hasattr(self, '_rmap'):
+        if hasattr(self, "_tmap"):
+            if hasattr(self, "_rmap"):
                 cache = (self._tmap, self._cmap, self._rmap)
             else:
                 cache = (self._tmap, self._cmap)
@@ -600,8 +595,7 @@ class Element:
 
     def get_element(self, xpath_query):
         element = self.__element
-        result = element.xpath(
-            "(%s)[1]" % xpath_query, namespaces=ODF_NAMESPACES)
+        result = element.xpath("(%s)[1]" % xpath_query, namespaces=ODF_NAMESPACES)
         if result:
             return Element.from_tag(result[0])
         return None
@@ -609,7 +603,8 @@ class Element:
     def _get_element_idx(self, xpath_query, idx):
         element = self.__element
         result = element.xpath(
-            "(%s)[%s]" % (xpath_query, idx + 1), namespaces=ODF_NAMESPACES)
+            "(%s)[%s]" % (xpath_query, idx + 1), namespaces=ODF_NAMESPACES
+        )
         if result:
             return Element.from_tag(result[0])
         return None
@@ -630,11 +625,11 @@ class Element:
         element = self.__element
         uri, name = _decode_qname(name)
         if uri is not None:
-            name = '{%s}%s' % (uri, name)
+            name = "{%s}%s" % (uri, name)
         value = element.get(name)
         if value is None:
             return None
-        elif value in ('true', 'false'):
+        elif value in ("true", "false"):
             return Boolean.decode(value)
         return str(value)
 
@@ -651,7 +646,7 @@ class Element:
         element = self.__element
         uri, name = _decode_qname(name)
         if uri is not None:
-            name = '{%s}%s' % (uri, name)
+            name = "{%s}%s" % (uri, name)
 
         if isinstance(value, bool):
             value = Boolean.encode(value)
@@ -664,8 +659,7 @@ class Element:
         element.set(name, str(value))
 
     def set_style_attribute(self, name, value):
-        """Shortcut to accept a style object as a value.
-        """
+        """Shortcut to accept a style object as a value."""
         if isinstance(value, Element):
             value = value.name
         return self.set_attribute(name, value)
@@ -674,19 +668,18 @@ class Element:
         element = self.__element
         uri, name = _decode_qname(name)
         if uri is not None:
-            name = '{%s}%s' % (uri, name)
+            name = "{%s}%s" % (uri, name)
         del element.attrib[name]
 
     @property
     def text(self):
-        """Get / set the text content of the element.
-        """
-        return self.__element.text or ''
+        """Get / set the text content of the element."""
+        return self.__element.text or ""
 
     @text.setter
     def text(self, text):
         if text is None:
-            text = ''
+            text = ""
         try:
             self.__element.text = to_str(text)
         except TypeError:
@@ -694,17 +687,16 @@ class Element:
 
     @property
     def text_recursive(self):
-        return ''.join(self.__element.itertext())
+        return "".join(self.__element.itertext())
 
     @property
     def tail(self):
-        """Get / set the text immediately following the element.
-        """
+        """Get / set the text immediately following the element."""
         return self.__element.tail
 
     @tail.setter
     def tail(self, text):
-        self.__element.tail = text or ''
+        self.__element.tail = text or ""
 
     def search(self, pattern):
         """Return the first position of the pattern in the text content of
@@ -760,7 +752,7 @@ class Element:
             pattern = str(pattern)
         cpattern = re.compile(pattern)
         count = 0
-        for text in self.xpath('descendant::text()'):
+        for text in self.xpath("descendant::text()"):
             if new is None:
                 count += len(cpattern.findall(text))
             else:
@@ -822,22 +814,22 @@ class Element:
 
         Set create a paragraph if missing
         """
-        return '\n'.join(
-            child.text_recursive
-            for child in self.get_elements('descendant::text:p'))
+        return "\n".join(
+            child.text_recursive for child in self.get_elements("descendant::text:p")
+        )
 
     @text_content.setter
     def text_content(self, text):
-        paragraphs = self.get_elements('text:p')
+        paragraphs = self.get_elements("text:p")
         if not paragraphs:
             # E.g., text:p in draw:text-box in draw:frame
-            paragraphs = self.get_elements('*/text:p')
+            paragraphs = self.get_elements("*/text:p")
         if paragraphs:
             paragraph = paragraphs.pop(0)
             for obsolete in paragraphs:
                 obsolete.delete()
         else:
-            paragraph = Element.from_tag('text:p')
+            paragraph = Element.from_tag("text:p")
             self.insert(paragraph, FIRST_CHILD)
         # As "text_content" returned all text nodes, "text_content"
         # will overwrite all text nodes and children that may contain them
@@ -847,10 +839,10 @@ class Element:
         element.text = text
 
     def _erase_text_content(self):
-        paragraphs = self.get_elements('text:p')
+        paragraphs = self.get_elements("text:p")
         if not paragraphs:
             # E.g., text:p in draw:text-box in draw:frame
-            paragraphs = self.get_elements('*/text:p')
+            paragraphs = self.get_elements("*/text:p")
         if paragraphs:
             paragraphs.pop(0)
             for obsolete in paragraphs:
@@ -883,12 +875,18 @@ class Element:
     def _get_between_base(self, tag1, tag2):
         def find_any_id(tag):
             stag = tag.tag
-            for attribute in ('text:id', 'text:change-id', 'text:name',
-                              'office:name', 'text:ref-name', 'xml:id'):
+            for attribute in (
+                "text:id",
+                "text:change-id",
+                "text:name",
+                "office:name",
+                "text:ref-name",
+                "xml:id",
+            ):
                 idx = tag.get_attribute(attribute)
                 if idx is not None:
                     return stag, attribute, idx
-            raise ValueError('No Id found in %s' % tag.serialize())
+            raise ValueError("No Id found in %s" % tag.serialize())
 
         def common_ancestor(t1, a1, v1, t2, a2, v2):
             root = self.root
@@ -896,14 +894,14 @@ class Element:
             request2 = 'descendant::%s[@%s="%s"]' % (t2, a2, v2)
             up = root.xpath(request1)[0]
             while True:
-                #print "up",
+                # print "up",
                 up = up.parent
                 has_tag2 = up.xpath(request2)
                 if not has_tag2:
                     continue
-                #print 'found'
+                # print 'found'
                 break
-            #print up.serialize()
+            # print up.serialize()
             return up
 
         t1, a1, v1 = find_any_id(tag1)
@@ -914,16 +912,16 @@ class Element:
         resu = ancestor.clone
         for child in resu.children:
             resu.delete(child)
-        resu.text = ''
-        resu.tail = ''
+        resu.text = ""
+        resu.tail = ""
         target = resu
         current = ancestor.children[0]
         state = 0
         while True:
-            #print 'current', state, current.serialize()
+            # print 'current', state, current.serialize()
             if state == 0:  # before tag 1
-                if current.xpath('descendant-or-self::%s' % r1):
-                    if current.xpath('self::%s' % r1):
+                if current.xpath("descendant-or-self::%s" % r1):
+                    if current.xpath("self::%s" % r1):
                         tail = current.tail
                         if tail:
                             # got a tail => the parent should be either t:p or t:h
@@ -935,8 +933,8 @@ class Element:
                     new_target = current.clone
                     for child in new_target.children:
                         new_target.delete(child)
-                    new_target.text = ''
-                    new_target.tail = ''
+                    new_target.text = ""
+                    new_target.tail = ""
                     target.append(new_target)
                     target = new_target
                     current = current.children[0]
@@ -947,8 +945,8 @@ class Element:
                     continue
             elif state == 1:  # collect elements
                 further = False
-                if current.xpath('descendant-or-self::%s' % r2):
-                    if current.xpath('self::%s' % r2):
+                if current.xpath("descendant-or-self::%s" % r2):
+                    if current.xpath("self::%s" % r2):
                         # end of trip
                         break
                     # got T2 in chidren, need further analysis
@@ -958,8 +956,8 @@ class Element:
                     new_target = current.clone
                     for child in new_target.children:
                         new_target.delete(child)
-                    new_target.text = ''
-                    new_target.tail = ''
+                    new_target.text = ""
+                    new_target.tail = ""
                     target.append(new_target)
                     target = new_target
                     current = current.children[0]
@@ -972,18 +970,13 @@ class Element:
         # - a text:h or text:p sigle item (simple case)
         # - a upper element, with some text:p, text:h in it => need to be
         #   stripped to have a list of text:p, text:h
-        if resu.tag in ('text:p', 'text:h'):
+        if resu.tag in ("text:p", "text:h"):
             inner = [resu]
         else:
             inner = resu.children
         return inner
 
-    def get_between(self,
-                    tag1,
-                    tag2,
-                    as_text=False,
-                    clean=True,
-                    no_header=True):
+    def get_between(self, tag1, tag2, as_text=False, clean=True, no_header=True):
         """Returns elements between tag1 and tag2, tag1 and tag2 shall
         be unique and having an id attribute.
         (WARN: buggy if tag1/tag2 defines a malformed odf xml.)
@@ -1017,13 +1010,17 @@ class Element:
         inner = self._get_between_base(tag1, tag2)
 
         if clean:
-            clean_tags = ('text:change', 'text:change-start',
-                          'text:change-end', 'text:reference-mark',
-                          'text:reference-mark-start',
-                          'text:reference-mark-end')
-            request_self = ' | '.join(['self::%s' % c for c in clean_tags])
+            clean_tags = (
+                "text:change",
+                "text:change-start",
+                "text:change-end",
+                "text:reference-mark",
+                "text:reference-mark-start",
+                "text:reference-mark-end",
+            )
+            request_self = " | ".join(["self::%s" % c for c in clean_tags])
             inner = [e for e in inner if not e.xpath(request_self)]
-            request = ' | '.join(['descendant::%s' % c for c in clean_tags])
+            request = " | ".join(["descendant::%s" % c for c in clean_tags])
             for element in inner:
                 to_del = element.xpath(request)
                 for e in to_del:
@@ -1031,10 +1028,10 @@ class Element:
         if no_header:  # crude replace t:h by t:p
             new_inner = []
             for element in inner:
-                if element.tag == 'text:h':
+                if element.tag == "text:h":
                     children = element.children
                     text = element.__element.text
-                    para = Element.from_tag('text:p')
+                    para = Element.from_tag("text:p")
                     para.text = text
                     for c in children:
                         para.append(c)
@@ -1043,7 +1040,7 @@ class Element:
                     new_inner.append(element)
             inner = new_inner
         if as_text:
-            return '\n'.join([e.get_formatted_text() for e in inner])
+            return "\n".join([e.get_formatted_text() for e in inner])
         else:
             return inner
 
@@ -1095,19 +1092,17 @@ class Element:
             index = parent.index(current)
             parent.insert(index, element)
         else:
-            raise ValueError('(xml)position must be defined')
+            raise ValueError("(xml)position must be defined")
 
     def extend(self, odf_elements):
-        """Fast append elements at the end of ourself using extend.
-        """
+        """Fast append elements at the end of ourself using extend."""
         if odf_elements:
             current = self.__element
             elements = [element.__element for element in odf_elements]
             current.extend(elements)
 
     def append(self, str_or_element):
-        """Insert element or text in the last position.
-        """
+        """Insert element or text in the last position."""
         current = self.__element
 
         # Unicode ?
@@ -1130,8 +1125,9 @@ class Element:
         elif isinstance(str_or_element, Element):
             current.append(str_or_element.__element)
         else:
-            raise TypeError('Element or unicode expected, not "%s"' %
-                            (type(str_or_element)))
+            raise TypeError(
+                'Element or unicode expected, not "%s"' % (type(str_or_element))
+            )
 
     def delete(self, child=None, keep_tail=True):
         """Delete the given element from the XML tree. If no element is given,
@@ -1194,14 +1190,14 @@ class Element:
         if not sub_elements:
             return self
         if isinstance(sub_elements, Element):
-            sub_elements = (sub_elements, )
-        replacer = to_bytes(_get_lxml_tag('text:this-will-be-removed'))
+            sub_elements = (sub_elements,)
+        replacer = to_bytes(_get_lxml_tag("text:this-will-be-removed"))
         for element in sub_elements:
             element.__element.tag = replacer
-        strip = ('text:this-will-be-removed', )
+        strip = ("text:this-will-be-removed",)
         return self.strip_tags(strip=strip, default=None)
 
-    def strip_tags(self, strip=None, protect=None, default='text:p'):
+    def strip_tags(self, strip=None, protect=None, default="text:p"):
         """Remove the tags listed in strip, recursively, keeping inner childs
         and text. Tags listed in protect stop the removal one level depth. If
         the first level element is stripped, default is used to embed the
@@ -1229,8 +1225,7 @@ class Element:
         if not protect:
             protect = ()
         protected = False
-        element, modified = Element._strip_tags(self, strip, protect,
-                                                protected)
+        element, modified = Element._strip_tags(self, strip, protect, protected)
         if modified:
             if isinstance(element, list) and default:
                 new = Element.from_tag(default)
@@ -1244,8 +1239,7 @@ class Element:
 
     @staticmethod
     def _strip_tags(element, strip, protect, protected):
-        """sub method for strip_tags()
-        """
+        """sub method for strip_tags()"""
         copy = element.clone
         modified = False
         children = []
@@ -1255,7 +1249,8 @@ class Element:
             protect_below = False
         for child in copy.children:
             striped_child, is_modified = Element._strip_tags(
-                child, strip, protect, protect_below)
+                child, strip, protect, protect_below
+            )
             if is_modified:
                 modified = True
             if isinstance(striped_child, list):
@@ -1305,67 +1300,66 @@ class Element:
         return result
 
     def clear(self):
-        """Remove text, children and attributes from the element.
-        """
+        """Remove text, children and attributes from the element."""
         self.__element.clear()
-        if hasattr(self, '_tmap'):
+        if hasattr(self, "_tmap"):
             self._tmap = []
-        if hasattr(self, '_cmap'):
+        if hasattr(self, "_cmap"):
             self._cmap = []
-        if hasattr(self, '_rmap'):
+        if hasattr(self, "_rmap"):
             self._rmap = []
-        if hasattr(self, '_indexes'):
+        if hasattr(self, "_indexes"):
             remember = False
-            if '_rmap' in self._indexes:
+            if "_rmap" in self._indexes:
                 remember = True
             self._indexes = {}
-            self._indexes['_cmap'] = {}
-            self._indexes['_tmap'] = {}
+            self._indexes["_cmap"] = {}
+            self._indexes["_tmap"] = {}
             if remember:
-                self._indexes['_rmap'] = {}
+                self._indexes["_rmap"] = {}
 
     @property
     def clone(self):
         clone = deepcopy(self.__element)
-        root = lxml_Element('ROOT', nsmap=ODF_NAMESPACES)
+        root = lxml_Element("ROOT", nsmap=ODF_NAMESPACES)
         root.append(clone)
         return self.from_tag(clone)
 
-        #slow data = tostring(self.__element, encoding='unicode')
-        #return self.from_tag(data)
+        # slow data = tostring(self.__element, encoding='unicode')
+        # return self.from_tag(data)
 
     def serialize(self, pretty=False, with_ns=False):
         # This copy bypasses serialization side-effects in lxml
         native = deepcopy(self.__element)
         data = tostring(
-            native, with_tail=False, pretty_print=pretty, encoding='unicode')
+            native, with_tail=False, pretty_print=pretty, encoding="unicode"
+        )
         if not with_ns:
             # Remove namespaces
-            data = ns_stripper.sub('', data)
+            data = ns_stripper.sub("", data)
         return data
 
     def serialize2(self, pretty=False, with_ns=False):
         # This copy bypasses serialization side-effects in lxml
         native = deepcopy(self.__element)
         data = tostring(
-            native, with_tail=False, pretty_print=pretty, encoding='unicode')
+            native, with_tail=False, pretty_print=pretty, encoding="unicode"
+        )
         if not with_ns:
             # Remove namespaces
-            data = ns_stripper.sub('', data)
+            data = ns_stripper.sub("", data)
         return data + str(len(data))
 
     # Element helpers usable from any context
 
     @property
     def document_body(self):
-        """Return the document body : 'office:body'
-        """
-        return self.get_element('//office:body/*[1]')
+        """Return the document body : 'office:body'"""
+        return self.get_element("//office:body/*[1]")
 
     @document_body.setter
     def document_body(self, new_body):
-        """Change in place the full document body content.
-        """
+        """Change in place the full document body content."""
         body = self.document_body
         tail = body.tail
         body.clear()
@@ -1375,11 +1369,10 @@ class Element:
             body.tail = tail
 
     def get_formatted_text(self, context):
-        """This function must return a beautiful version of the text
-        """
-        return ''
+        """This function must return a beautiful version of the text"""
+        return ""
 
-    def get_styled_elements(self, name=''):
+    def get_styled_elements(self, name=""):
         """Brute-force to find paragraphs, tables, etc. using the given style
         name (or all by default).
 
@@ -1390,13 +1383,15 @@ class Element:
         Return: list
         """
         # FIXME incomplete (and possibly inaccurate)
-        return (_get_elements(self, 'descendant::*', text_style=name) +
-                _get_elements(self, 'descendant::*', draw_style=name) +
-                _get_elements(self, 'descendant::*', draw_text_style=name) +
-                _get_elements(self, 'descendant::*', table_style=name) +
-                _get_elements(self, 'descendant::*', page_layout=name) +
-                _get_elements(self, 'descendant::*', master_page=name) +
-                _get_elements(self, 'descendant::*', parent_style=name))
+        return (
+            _get_elements(self, "descendant::*", text_style=name)
+            + _get_elements(self, "descendant::*", draw_style=name)
+            + _get_elements(self, "descendant::*", draw_text_style=name)
+            + _get_elements(self, "descendant::*", table_style=name)
+            + _get_elements(self, "descendant::*", page_layout=name)
+            + _get_elements(self, "descendant::*", master_page=name)
+            + _get_elements(self, "descendant::*", parent_style=name)
+        )
 
     # Common attributes
 
@@ -1421,7 +1416,7 @@ class Element:
 
         Return: str (or None if inexistant)
         """
-        return self._get_inner_text('dc:creator')
+        return self._get_inner_text("dc:creator")
 
     @dc_creator.setter
     def dc_creator(self, creator):
@@ -1431,7 +1426,7 @@ class Element:
 
             creator -- str
         """
-        self._set_inner_text('dc:creator', creator)
+        self._set_inner_text("dc:creator", creator)
 
     @property
     def dc_date(self):
@@ -1439,7 +1434,7 @@ class Element:
 
         Return: datetime (or None if inexistant)
         """
-        date = self._get_inner_text('dc:date')
+        date = self._get_inner_text("dc:date")
         if date is None:
             return None
         return DateTime.decode(date)
@@ -1452,25 +1447,25 @@ class Element:
 
             darz -- DateTime
         """
-        self._set_inner_text('dc:date', DateTime.encode(date))
+        self._set_inner_text("dc:date", DateTime.encode(date))
 
     # SVG
 
     @property
     def svg_title(self):
-        return self._get_inner_text('svg:title')
+        return self._get_inner_text("svg:title")
 
     @svg_title.setter
     def svg_title(self, title):
-        self._set_inner_text('svg:title', title)
+        self._set_inner_text("svg:title", title)
 
     @property
     def svg_description(self):
-        return self._get_inner_text('svg:desc')
+        return self._get_inner_text("svg:desc")
 
     @svg_description.setter
     def svg_description(self, description):
-        self._set_inner_text('svg:desc', description)
+        self._set_inner_text("svg:desc", description)
 
     # Sections
 
@@ -1485,8 +1480,7 @@ class Element:
 
         Return: list of Element
         """
-        return _get_elements(
-            self, 'text:section', text_style=style, content=content)
+        return _get_elements(self, "text:section", text_style=style, content=content)
 
     def get_section(self, position=0, content=None):
         """Return the section that matches the criteria.
@@ -1499,8 +1493,7 @@ class Element:
 
         Return: Element or None if not found
         """
-        return _get_element(
-            self, 'descendant::text:section', position, content=content)
+        return _get_element(self, "descendant::text:section", position, content=content)
 
     # Paragraphs
 
@@ -1516,7 +1509,8 @@ class Element:
         Return: list of Paragraph
         """
         return _get_elements(
-            self, 'descendant::text:p', text_style=style, content=content)
+            self, "descendant::text:p", text_style=style, content=content
+        )
 
     def get_paragraph(self, position=0, content=None):
         """Return the paragraph that matches the criteria.
@@ -1529,8 +1523,7 @@ class Element:
 
         Return: Paragraph or None if not found
         """
-        return _get_element(
-            self, 'descendant::text:p', position, content=content)
+        return _get_element(self, "descendant::text:p", position, content=content)
 
     # Span
 
@@ -1546,7 +1539,8 @@ class Element:
         Return: list of Span
         """
         return _get_elements(
-            self, 'descendant::text:span', text_style=style, content=content)
+            self, "descendant::text:span", text_style=style, content=content
+        )
 
     def get_span(self, position=0, content=None):
         """Return the span that matches the criteria.
@@ -1559,8 +1553,7 @@ class Element:
 
         Return: Span or None if not found
         """
-        return _get_element(
-            self, 'descendant::text:span', position, content=content)
+        return _get_element(self, "descendant::text:span", position, content=content)
 
     # Headers
 
@@ -1577,10 +1570,11 @@ class Element:
         """
         return _get_elements(
             self,
-            'descendant::text:h',
+            "descendant::text:h",
             text_style=style,
             outline_level=outline_level,
-            content=content)
+            content=content,
+        )
 
     def get_header(self, position=0, outline_level=None, content=None):
         """Return the Header that matches the criteria.
@@ -1595,10 +1589,11 @@ class Element:
         """
         return _get_element(
             self,
-            'descendant::text:h',
+            "descendant::text:h",
             position,
             outline_level=outline_level,
-            content=content)
+            content=content,
+        )
 
     # Lists
 
@@ -1614,7 +1609,8 @@ class Element:
         Return: list of List
         """
         return _get_elements(
-            self, 'descendant::text:list', text_style=style, content=content)
+            self, "descendant::text:list", text_style=style, content=content
+        )
 
     def get_list(self, position=0, content=None):
         """Return the list that matches the criteria.
@@ -1627,17 +1623,18 @@ class Element:
 
         Return: List or None if not found
         """
-        return _get_element(
-            self, 'descendant::text:list', position, content=content)
+        return _get_element(self, "descendant::text:list", position, content=content)
 
     # Frames
 
-    def get_frames(self,
-                   presentation_class=None,
-                   style=None,
-                   title=None,
-                   description=None,
-                   content=None):
+    def get_frames(
+        self,
+        presentation_class=None,
+        style=None,
+        title=None,
+        description=None,
+        content=None,
+    ):
         """Return all the frames that match the criteria.
 
         Arguments:
@@ -1654,20 +1651,23 @@ class Element:
         """
         return _get_elements(
             self,
-            'descendant::draw:frame',
+            "descendant::draw:frame",
             presentation_class=presentation_class,
             draw_style=style,
             svg_title=title,
             svg_desc=description,
-            content=content)
+            content=content,
+        )
 
-    def get_frame(self,
-                  position=0,
-                  name=None,
-                  presentation_class=None,
-                  title=None,
-                  description=None,
-                  content=None):
+    def get_frame(
+        self,
+        position=0,
+        name=None,
+        presentation_class=None,
+        title=None,
+        description=None,
+        content=None,
+    ):
         """Return the section that matches the criteria.
 
         Arguments:
@@ -1684,13 +1684,14 @@ class Element:
         """
         return _get_element(
             self,
-            'descendant::draw:frame',
+            "descendant::draw:frame",
             position,
             draw_name=name,
             presentation_class=presentation_class,
             svg_title=title,
             svg_desc=description,
-            content=content)
+            content=content,
+        )
 
     # Images
 
@@ -1708,11 +1709,8 @@ class Element:
         Return: list of Element
         """
         return _get_elements(
-            self,
-            'descendant::draw:image',
-            text_style=style,
-            url=url,
-            content=content)
+            self, "descendant::draw:image", text_style=style, url=url, content=content
+        )
 
     def get_image(self, position=0, name=None, url=None, content=None):
         """Return the image matching the criteria.
@@ -1728,16 +1726,15 @@ class Element:
         # The frame is holding the name
         if name is not None:
             frame = _get_element(
-                self,
-                'descendant::draw:frame',
-                position=position,
-                draw_name=name)
+                self, "descendant::draw:frame", position=position, draw_name=name
+            )
             if frame is None:
                 return None
             # The name is supposedly unique
-            return frame.get_element('draw:image')
+            return frame.get_element("draw:image")
         return _get_element(
-            self, 'descendant::draw:image', position, url=url, content=content)
+            self, "descendant::draw:image", position, url=url, content=content
+        )
 
     # Tables
 
@@ -1753,10 +1750,8 @@ class Element:
         Return: list of Table
         """
         return _get_elements(
-            self,
-            'descendant::table:table',
-            table_style=style,
-            content=content)
+            self, "descendant::table:table", table_style=style, content=content
+        )
 
     def get_table(self, position=0, name=None, content=None):
         """Return the table that matches the criteria.
@@ -1772,14 +1767,15 @@ class Element:
         Return: Table or None if not found
         """
         if name is None and content is None:
-            result = self._get_element_idx('descendant::table:table', position)
+            result = self._get_element_idx("descendant::table:table", position)
         else:
             result = _get_element(
                 self,
-                'descendant::table:table',
+                "descendant::table:table",
                 position,
                 table_name=name,
-                content=content)
+                content=content,
+            )
         return result
 
     # Named Range
@@ -1790,7 +1786,8 @@ class Element:
         Return: list of odf_named_range
         """
         named_ranges = self.get_elements(
-            'descendant::table:named-expressions/table:named-range')
+            "descendant::table:named-expressions/table:named-range"
+        )
         return named_ranges
 
     def get_named_range(self, name):
@@ -1804,7 +1801,8 @@ class Element:
         """
         named_range = self.get_elements(
             'descendant::table:named-expressions/table:named-range[@table:name="%s"][1]'
-            % name)
+            % name
+        )
         if named_range:
             return named_range[0]
         else:
@@ -1818,16 +1816,16 @@ class Element:
 
             named_range --  NamedRange
         """
-        if self.tag != 'office:spreadsheet':
-            raise ValueError(
-                "Element is no 'office:spreadsheet' : %s" % self.tag)
-        named_expressions = self.get_element('table:named-expressions')
+        if self.tag != "office:spreadsheet":
+            raise ValueError("Element is no 'office:spreadsheet' : %s" % self.tag)
+        named_expressions = self.get_element("table:named-expressions")
         if not named_expressions:
-            named_expressions = Element.from_tag('table:named-expressions')
+            named_expressions = Element.from_tag("table:named-expressions")
             self.append(named_expressions)
         # exists ?
         current = named_expressions.get_element(
-            'table:named-range[@table:name="%s"][1]' % named_range.name)
+            'table:named-range[@table:name="%s"][1]' % named_range.name
+        )
         if current:
             named_expressions.delete(current)
         named_expressions.append(named_range)
@@ -1839,14 +1837,13 @@ class Element:
 
             name -- str
         """
-        if self.tag != 'office:spreadsheet':
-            raise ValueError(
-                "Element is no 'office:spreadsheet' : %s" % self.tag)
+        if self.tag != "office:spreadsheet":
+            raise ValueError("Element is no 'office:spreadsheet' : %s" % self.tag)
         named_range = self.get_named_range(name)
         if not named_range:
             return
         named_range.delete()
-        named_expressions = self.get_element('table:named-expressions')
+        named_expressions = self.get_element("table:named-expressions")
         element = named_expressions.__element
         children = len(element.getchildren())
         if not children:
@@ -1866,13 +1863,10 @@ class Element:
         Return: list of Note
         """
         return _get_elements(
-            self,
-            'descendant::text:note',
-            note_class=note_class,
-            content=content)
+            self, "descendant::text:note", note_class=note_class, content=content
+        )
 
-    def get_note(self, position=0, note_id=None, note_class=None,
-                 content=None):
+    def get_note(self, position=0, note_id=None, note_class=None, content=None):
         """Return the note that matches the criteria.
 
         Arguments:
@@ -1889,19 +1883,18 @@ class Element:
         """
         return _get_element(
             self,
-            'descendant::text:note',
+            "descendant::text:note",
             position,
             text_id=note_id,
             note_class=note_class,
-            content=content)
+            content=content,
+        )
 
     # Annotations
 
-    def get_annotations(self,
-                        creator=None,
-                        start_date=None,
-                        end_date=None,
-                        content=None):
+    def get_annotations(
+        self, creator=None, start_date=None, end_date=None, content=None
+    ):
         """Return all the annotations that match the criteria.
 
         Arguments:
@@ -1918,8 +1911,9 @@ class Element:
         """
         annotations = []
         for annotation in _get_elements(
-                self, 'descendant::office:annotation', content=content):
-            if (creator is not None and creator != annotation.dc_creator):
+            self, "descendant::office:annotation", content=content
+        ):
+            if creator is not None and creator != annotation.dc_creator:
                 continue
             date = annotation.dc_date
             if start_date is not None and date < start_date:
@@ -1929,13 +1923,15 @@ class Element:
             annotations.append(annotation)
         return annotations
 
-    def get_annotation(self,
-                       position=0,
-                       creator=None,
-                       start_date=None,
-                       end_date=None,
-                       content=None,
-                       name=None):
+    def get_annotation(
+        self,
+        position=0,
+        creator=None,
+        start_date=None,
+        end_date=None,
+        content=None,
+        name=None,
+    ):
         """Return the annotation that matches the criteria.
 
         Arguments:
@@ -1956,12 +1952,11 @@ class Element:
         """
         if name is not None:
             return _get_element(
-                self, 'descendant::office:annotation', 0, office_name=name)
+                self, "descendant::office:annotation", 0, office_name=name
+            )
         annotations = self.get_annotations(
-            creator=creator,
-            start_date=start_date,
-            end_date=end_date,
-            content=content)
+            creator=creator, start_date=start_date, end_date=end_date, content=content
+        )
         if not annotations:
             return None
         try:
@@ -1974,7 +1969,7 @@ class Element:
 
         Return: list of Element
         """
-        return _get_elements(self, 'descendant::office:annotation-end')
+        return _get_elements(self, "descendant::office:annotation-end")
 
     def get_annotation_end(self, position=0, name=None):
         """Return the annotation end that matches the criteria.
@@ -1988,10 +1983,8 @@ class Element:
         Return: Element or None if not found
         """
         return _get_element(
-            self,
-            'descendant::office:annotation-end',
-            position,
-            office_name=name)
+            self, "descendant::office:annotation-end", position, office_name=name
+        )
 
     # office:names
 
@@ -2000,7 +1993,7 @@ class Element:
 
         Return: list of unique str
         """
-        name_xpath_query = _find_query_in_cache('//@office:name')
+        name_xpath_query = _find_query_in_cache("//@office:name")
         names = name_xpath_query(self.__element)
         uniq_names = list(set(names))
         return uniq_names
@@ -2013,11 +2006,11 @@ class Element:
 
         Return: Element
         """
-        variable_decls = self.get_element('//text:variable-decls')
+        variable_decls = self.get_element("//text:variable-decls")
         if variable_decls is None:
             body = self.document_body
-            body.insert(Element.from_tag('text:variable-decls'), FIRST_CHILD)
-            variable_decls = body.get_element('//text:variable-decls')
+            body.insert(Element.from_tag("text:variable-decls"), FIRST_CHILD)
+            variable_decls = body.get_element("//text:variable-decls")
 
         return variable_decls
 
@@ -2026,7 +2019,7 @@ class Element:
 
         Return: list of Element
         """
-        return _get_elements(self, 'descendant::text:variable-decl')
+        return _get_elements(self, "descendant::text:variable-decl")
 
     def get_variable_decl(self, name, position=0):
         """return the variable declaration for the given name.
@@ -2034,7 +2027,8 @@ class Element:
         return: Element or none if not found
         """
         return _get_element(
-            self, 'descendant::text:variable-decl', position, text_name=name)
+            self, "descendant::text:variable-decl", position, text_name=name
+        )
 
     def get_variable_sets(self, name=None):
         """Return all the variable sets that match the criteria.
@@ -2045,8 +2039,7 @@ class Element:
 
         Return: list of Element
         """
-        return _get_elements(
-            self, 'descendant::text:variable-set', text_name=name)
+        return _get_elements(self, "descendant::text:variable-set", text_name=name)
 
     def get_variable_set(self, name, position=-1):
         """Return the variable set for the given name (last one by default).
@@ -2060,7 +2053,8 @@ class Element:
         Return: Element or None if not found
         """
         return _get_element(
-            self, 'descendant::text:variable-set', position, text_name=name)
+            self, "descendant::text:variable-set", position, text_name=name
+        )
 
     def get_variable_set_value(self, name, value_type=None):
         """Return the last value of the given variable name.
@@ -2087,11 +2081,11 @@ class Element:
 
         Return: Element
         """
-        user_field_decls = self.get_element('//text:user-field-decls')
+        user_field_decls = self.get_element("//text:user-field-decls")
         if user_field_decls is None:
             body = self.document_body
-            body.insert(Element.from_tag('text:user-field-decls'), FIRST_CHILD)
-            user_field_decls = body.get_element('//text:user-field-decls')
+            body.insert(Element.from_tag("text:user-field-decls"), FIRST_CHILD)
+            user_field_decls = body.get_element("//text:user-field-decls")
 
         return user_field_decls
 
@@ -2100,7 +2094,7 @@ class Element:
 
         Return: list of Element
         """
-        return _get_elements(self, 'descendant::text:user-field-decl')
+        return _get_elements(self, "descendant::text:user-field-decl")
 
     def get_user_field_decl(self, name, position=0):
         """return the user field declaration for the given name.
@@ -2108,7 +2102,8 @@ class Element:
         return: Element or none if not found
         """
         return _get_element(
-            self, 'descendant::text:user-field-decl', position, text_name=name)
+            self, "descendant::text:user-field-decl", position, text_name=name
+        )
 
     def get_user_field_value(self, name, value_type=None):
         """Return the value of the given user field name.
@@ -2135,7 +2130,7 @@ class Element:
 
         Return: list of Element
         """
-        return _get_elements(self, 'descendant::text:user-defined')
+        return _get_elements(self, "descendant::text:user-defined")
 
     def get_user_defined(self, name, position=0):
         """return the user defined declaration for the given name.
@@ -2143,7 +2138,8 @@ class Element:
         return: Element or none if not found
         """
         return _get_element(
-            self, 'descendant::text:user-defined', position, text_name=name)
+            self, "descendant::text:user-defined", position, text_name=name
+        )
 
     def get_user_defined_value(self, name, value_type=None):
         """Return the value of the given user defined field name.
@@ -2176,7 +2172,8 @@ class Element:
         Return: list of DrawPage
         """
         return _get_elements(
-            self, 'descendant::draw:page', draw_style=style, content=content)
+            self, "descendant::draw:page", draw_style=style, content=content
+        )
 
     def get_draw_page(self, position=0, name=None, content=None):
         """Return the draw page that matches the criteria.
@@ -2192,11 +2189,8 @@ class Element:
         Return: DrawPage or None if not found
         """
         return _get_element(
-            self,
-            'descendant::draw:page',
-            position,
-            draw_name=name,
-            content=content)
+            self, "descendant::draw:page", position, draw_name=name, content=content
+        )
 
     # Links
 
@@ -2217,18 +2211,14 @@ class Element:
         """
         return _get_elements(
             self,
-            'descendant::text:a',
+            "descendant::text:a",
             office_name=name,
             office_title=title,
             url=url,
-            content=content)
+            content=content,
+        )
 
-    def get_link(self,
-                 position=0,
-                 name=None,
-                 title=None,
-                 url=None,
-                 content=None):
+    def get_link(self, position=0, name=None, title=None, url=None, content=None):
         """Return the link that matches the criteria.
 
         Arguments:
@@ -2247,12 +2237,13 @@ class Element:
         """
         return _get_element(
             self,
-            'descendant::text:a',
+            "descendant::text:a",
             position,
             office_name=name,
             office_title=title,
             url=url,
-            content=content)
+            content=content,
+        )
 
     # Bookmarks
 
@@ -2261,7 +2252,7 @@ class Element:
 
         Return: list of Element
         """
-        return _get_elements(self, 'descendant::text:bookmark')
+        return _get_elements(self, "descendant::text:bookmark")
 
     def get_bookmark(self, position=0, name=None):
         """Return the bookmark that matches the criteria.
@@ -2274,15 +2265,14 @@ class Element:
 
         Return: Bookmark or None if not found
         """
-        return _get_element(
-            self, 'descendant::text:bookmark', position, text_name=name)
+        return _get_element(self, "descendant::text:bookmark", position, text_name=name)
 
     def get_bookmark_starts(self):
         """Return all the bookmark starts.
 
         Return: list of Element
         """
-        return _get_elements(self, 'descendant::text:bookmark-start')
+        return _get_elements(self, "descendant::text:bookmark-start")
 
     def get_bookmark_start(self, position=0, name=None):
         """Return the bookmark start that matches the criteria.
@@ -2296,14 +2286,15 @@ class Element:
         Return: Element or None if not found
         """
         return _get_element(
-            self, 'descendant::text:bookmark-start', position, text_name=name)
+            self, "descendant::text:bookmark-start", position, text_name=name
+        )
 
     def get_bookmark_ends(self):
         """Return all the bookmark ends.
 
         Return: list of Element
         """
-        return _get_elements(self, 'descendant::text:bookmark-end')
+        return _get_elements(self, "descendant::text:bookmark-end")
 
     def get_bookmark_end(self, position=0, name=None):
         """Return the bookmark end that matches the criteria.
@@ -2317,7 +2308,8 @@ class Element:
         Return: Element or None if not found
         """
         return _get_element(
-            self, 'descendant::text:bookmark-end', position, text_name=name)
+            self, "descendant::text:bookmark-end", position, text_name=name
+        )
 
     # Reference marks
 
@@ -2328,7 +2320,7 @@ class Element:
 
         Return: list of Element
         """
-        return _get_elements(self, 'descendant::text:reference-mark')
+        return _get_elements(self, "descendant::text:reference-mark")
 
     def get_reference_mark_single(self, position=0, name=None):
         """Return the reference mark that matches the criteria. Search only the
@@ -2344,7 +2336,8 @@ class Element:
         Return: Element or None if not found
         """
         return _get_element(
-            self, 'descendant::text:reference-mark', position, text_name=name)
+            self, "descendant::text:reference-mark", position, text_name=name
+        )
 
     def get_reference_mark_starts(self):
         """Return all the reference mark starts. Search only the tags
@@ -2353,7 +2346,7 @@ class Element:
 
         Return: list of Element
         """
-        return _get_elements(self, 'descendant::text:reference-mark-start')
+        return _get_elements(self, "descendant::text:reference-mark-start")
 
     def get_reference_mark_start(self, position=0, name=None):
         """Return the reference mark start that matches the criteria. Search
@@ -2369,10 +2362,8 @@ class Element:
         Return: Element or None if not found
         """
         return _get_element(
-            self,
-            'descendant::text:reference-mark-start',
-            position,
-            text_name=name)
+            self, "descendant::text:reference-mark-start", position, text_name=name
+        )
 
     def get_reference_mark_ends(self):
         """Return all the reference mark ends. Search only the tags
@@ -2381,7 +2372,7 @@ class Element:
 
         Return: list of Element
         """
-        return _get_elements(self, 'descendant::text:reference-mark-end')
+        return _get_elements(self, "descendant::text:reference-mark-end")
 
     def get_reference_mark_end(self, position=0, name=None):
         """Return the reference mark end that matches the criteria. Search only
@@ -2397,10 +2388,8 @@ class Element:
         Return: Element or None if not found
         """
         return _get_element(
-            self,
-            'descendant::text:reference-mark-end',
-            position,
-            text_name=name)
+            self, "descendant::text:reference-mark-end", position, text_name=name
+        )
 
     def get_reference_marks(self):
         """Return all the reference marks, either single position reference
@@ -2409,8 +2398,9 @@ class Element:
 
         Return: list of Element
         """
-        request = ('descendant::text:reference-mark-start '
-                   '| descendant::text:reference-mark')
+        request = (
+            "descendant::text:reference-mark-start " "| descendant::text:reference-mark"
+        )
         return _get_elements(self, request)
 
     def get_reference_mark(self, position=0, name=None):
@@ -2428,13 +2418,16 @@ class Element:
         """
         name = to_str(name)
         if name:
-            request = (f'descendant::text:reference-mark-start'
-                       f'[@text:name="{name}"] '
-                       f'| descendant::text:reference-mark'
-                       f'[@text:name="{name}"]')
+            request = (
+                f"descendant::text:reference-mark-start"
+                f'[@text:name="{name}"] '
+                f"| descendant::text:reference-mark"
+                f'[@text:name="{name}"]'
+            )
             return _get_element(self, request, position=0)
-        request = ('descendant::text:reference-mark-start '
-                   '| descendant::text:reference-mark')
+        request = (
+            "descendant::text:reference-mark-start " "| descendant::text:reference-mark"
+        )
         return _get_element(self, request, position)
 
     def get_references(self, name=None):
@@ -2448,9 +2441,8 @@ class Element:
             name -- str or None
         """
         if name is None:
-            return _get_elements(self, 'descendant::text:reference-ref')
-        request = 'descendant::text:reference-ref[@text:ref-name="%s"]' % to_bytes(
-            name)
+            return _get_elements(self, "descendant::text:reference-ref")
+        request = 'descendant::text:reference-ref[@text:ref-name="%s"]' % to_bytes(name)
         return _get_elements(self, request)
 
     # Shapes elements
@@ -2460,32 +2452,28 @@ class Element:
     def get_draw_groups(self, title=None, description=None, content=None):
         return _get_elements(
             self,
-            'descendant::draw:g',
+            "descendant::draw:g",
             svg_title=title,
             svg_desc=description,
-            content=content)
+            content=content,
+        )
 
-    def get_draw_group(self,
-                       position=0,
-                       name=None,
-                       title=None,
-                       description=None,
-                       content=None):
+    def get_draw_group(
+        self, position=0, name=None, title=None, description=None, content=None
+    ):
         return _get_element(
             self,
-            'descendant::draw:g',
+            "descendant::draw:g",
             position,
             draw_name=name,
             svg_title=title,
             svg_desc=description,
-            content=content)
+            content=content,
+        )
 
     # Lines
 
-    def get_draw_lines(self,
-                       draw_style=None,
-                       draw_text_style=None,
-                       content=None):
+    def get_draw_lines(self, draw_style=None, draw_text_style=None, content=None):
         """Return all the draw lines that match the criteria.
 
         Arguments:
@@ -2500,10 +2488,11 @@ class Element:
         """
         return _get_elements(
             self,
-            'descendant::draw:line',
+            "descendant::draw:line",
             draw_style=draw_style,
             draw_text_style=draw_text_style,
-            content=content)
+            content=content,
+        )
 
     def get_draw_line(self, position=0, id=None, content=None):
         """Return the draw line that matches the criteria.
@@ -2519,18 +2508,12 @@ class Element:
         Return: odf_shape or None if not found
         """
         return _get_element(
-            self,
-            'descendant::draw:line',
-            position,
-            draw_id=id,
-            content=content)
+            self, "descendant::draw:line", position, draw_id=id, content=content
+        )
 
     # Rectangles
 
-    def get_draw_rectangles(self,
-                            draw_style=None,
-                            draw_text_style=None,
-                            content=None):
+    def get_draw_rectangles(self, draw_style=None, draw_text_style=None, content=None):
         """Return all the draw rectangles that match the criteria.
 
         Arguments:
@@ -2545,10 +2528,11 @@ class Element:
         """
         return _get_elements(
             self,
-            'descendant::draw:rect',
+            "descendant::draw:rect",
             draw_style=draw_style,
             draw_text_style=draw_text_style,
-            content=content)
+            content=content,
+        )
 
     def get_draw_rectangle(self, position=0, id=None, content=None):
         """Return the draw rectangle that matches the criteria.
@@ -2564,18 +2548,12 @@ class Element:
         Return: odf_shape or None if not found
         """
         return _get_element(
-            self,
-            'descendant::draw:rect',
-            position,
-            draw_id=id,
-            content=content)
+            self, "descendant::draw:rect", position, draw_id=id, content=content
+        )
 
     # Ellipse
 
-    def get_draw_ellipses(self,
-                          draw_style=None,
-                          draw_text_style=None,
-                          content=None):
+    def get_draw_ellipses(self, draw_style=None, draw_text_style=None, content=None):
         """Return all the draw ellipses that match the criteria.
 
         Arguments:
@@ -2590,10 +2568,11 @@ class Element:
         """
         return _get_elements(
             self,
-            'descendant::draw:ellipse',
+            "descendant::draw:ellipse",
             draw_style=draw_style,
             draw_text_style=draw_text_style,
-            content=content)
+            content=content,
+        )
 
     def get_draw_ellipse(self, position=0, id=None, content=None):
         """Return the draw ellipse that matches the criteria.
@@ -2609,18 +2588,12 @@ class Element:
         Return: odf_shape or None if not found
         """
         return _get_element(
-            self,
-            'descendant::draw:ellipse',
-            position,
-            draw_id=id,
-            content=content)
+            self, "descendant::draw:ellipse", position, draw_id=id, content=content
+        )
 
     # Connectors
 
-    def get_draw_connectors(self,
-                            draw_style=None,
-                            draw_text_style=None,
-                            content=None):
+    def get_draw_connectors(self, draw_style=None, draw_text_style=None, content=None):
         """Return all the draw connectors that match the criteria.
 
         Arguments:
@@ -2635,10 +2608,11 @@ class Element:
         """
         return _get_elements(
             self,
-            'descendant::draw:connector',
+            "descendant::draw:connector",
             draw_style=draw_style,
             draw_text_style=draw_text_style,
-            content=content)
+            content=content,
+        )
 
     def get_draw_connector(self, position=0, id=None, content=None):
         """Return the draw connector that matches the criteria.
@@ -2654,11 +2628,8 @@ class Element:
         Return: odf_shape or None if not found
         """
         return _get_element(
-            self,
-            'descendant::draw:connector',
-            position,
-            draw_id=id,
-            content=content)
+            self, "descendant::draw:connector", position, draw_id=id, content=content
+        )
 
     def get_orphan_draw_connectors(self):
         """Return a list of connectors which don't have any shape connected
@@ -2666,8 +2637,8 @@ class Element:
         """
         connectors = []
         for connector in self.get_draw_connectors():
-            start_shape = connector.get_attribute('draw:start-shape')
-            end_shape = connector.get_attribute('draw:end-shape')
+            start_shape = connector.get_attribute("draw:start-shape")
+            end_shape = connector.get_attribute("draw:end-shape")
             if start_shape is None and end_shape is None:
                 connectors.append(connector)
         return connectors
@@ -2675,18 +2646,17 @@ class Element:
     # Tracked changes and text change
 
     def get_tracked_changes(self):
-        """Return the tracked-changes part in the text body.
-        """
-        return self.get_element('//text:tracked-changes')
+        """Return the tracked-changes part in the text body."""
+        return self.get_element("//text:tracked-changes")
 
     def get_changes_ids(self):
         """Return a list of ids that refers to a change region in the tracked
         changes list.
         """
         # Insertion changes
-        xpath_query = 'descendant::text:change-start/@text:change-id'
+        xpath_query = "descendant::text:change-start/@text:change-id"
         # Deletion changes
-        xpath_query += ' | descendant::text:change/@text:change-id'
+        xpath_query += " | descendant::text:change/@text:change-id"
         return self.xpath(xpath_query)
 
     def get_text_change_deletions(self):
@@ -2695,7 +2665,7 @@ class Element:
 
         Return: list of Element
         """
-        return _get_elements(self, 'descendant::text:text:change')
+        return _get_elements(self, "descendant::text:text:change")
 
     def get_text_change_deletion(self, position=0, idx=None):
         """Return the text change of deletion kind that matches the criteria.
@@ -2710,8 +2680,7 @@ class Element:
 
         Return: Element or None if not found
         """
-        return _get_element(
-            self, 'descendant::text:change', position, change_id=idx)
+        return _get_element(self, "descendant::text:change", position, change_id=idx)
 
     def get_text_change_starts(self):
         """Return all the text change-start. Search only for the tags
@@ -2720,7 +2689,7 @@ class Element:
 
         Return: list of Element
         """
-        return _get_elements(self, 'descendant::text:change-start')
+        return _get_elements(self, "descendant::text:change-start")
 
     def get_text_change_start(self, position=0, idx=None):
         """Return the text change-start that matches the criteria. Search
@@ -2736,7 +2705,8 @@ class Element:
         Return: Element or None if not found
         """
         return _get_element(
-            self, 'descendant::text:change-start', position, change_id=idx)
+            self, "descendant::text:change-start", position, change_id=idx
+        )
 
     def get_text_change_ends(self):
         """Return all the text change-end. Search only the tags
@@ -2745,7 +2715,7 @@ class Element:
 
         Return: list of Element
         """
-        return _get_elements(self, 'descendant::text:change-end')
+        return _get_elements(self, "descendant::text:change-end")
 
     def get_text_change_end(self, position=0, idx=None):
         """Return the text change-end that matches the criteria. Search only
@@ -2761,7 +2731,8 @@ class Element:
         Return: Element or None if not found
         """
         return _get_element(
-            self, 'descendant::text:change-end', position, change_id=idx)
+            self, "descendant::text:change-end", position, change_id=idx
+        )
 
     def get_text_changes(self):
         """Return all the text changes, either single deletion
@@ -2769,8 +2740,7 @@ class Element:
 
         Return: list of Element
         """
-        request = ('descendant::text:change-start '
-                   '| descendant::text:change')
+        request = "descendant::text:change-start " "| descendant::text:change"
         return _get_elements(self, request)
 
     def get_text_change(self, position=0, idx=None):
@@ -2789,12 +2759,12 @@ class Element:
         Return: Element or None if not found
         """
         if idx:
-            request = ('descendant::text:change-start[@text:change-id="%s"] '
-                       '| descendant::text:change[@text:change-id="%s"]') % (
-                           idx, idx)
+            request = (
+                'descendant::text:change-start[@text:change-id="%s"] '
+                '| descendant::text:change[@text:change-id="%s"]'
+            ) % (idx, idx)
             return _get_element(self, request, position=0)
-        request = ('descendant::text:change-start '
-                   '| descendant::text:change')
+        request = "descendant::text:change-start " "| descendant::text:change"
         return _get_element(self, request, position)
 
     # Table Of Content
@@ -2804,7 +2774,7 @@ class Element:
 
         Return: list of odf_toc
         """
-        return _get_elements(self, 'text:table-of-content')
+        return _get_elements(self, "text:table-of-content")
 
     def get_toc(self, position=0, content=None):
         """Return the table of contents that matches the criteria.
@@ -2817,31 +2787,37 @@ class Element:
 
         Return: odf_toc or None if not found
         """
-        return _get_element(
-            self, 'text:table-of-content', position, content=content)
+        return _get_element(self, "text:table-of-content", position, content=content)
 
     # Styles
 
     @staticmethod
     def _get_style_tagname(family, is_default=False):
-        """Widely match possible tag names given the family (or not).
-        """
+        """Widely match possible tag names given the family (or not)."""
         if family is None:
-            tagname = '(' + '|'.join([
-                'style:default-style', '*[@style:name]', 'draw:fill-image',
-                'draw:marker'
-            ]) + ')'
+            tagname = (
+                "("
+                + "|".join(
+                    [
+                        "style:default-style",
+                        "*[@style:name]",
+                        "draw:fill-image",
+                        "draw:marker",
+                    ]
+                )
+                + ")"
+            )
         elif is_default is True:
             # Default style
-            tagname = 'style:default-style'
+            tagname = "style:default-style"
         else:
             tagname = _family_style_tagname(family)
-            #if famattr:
+            # if famattr:
             #    # Include family default style
             #    tagname = '(%s|style:default-style)' % tagname
             if family in FAMILY_ODF_STD:
                 # Include family default style
-                tagname = '(%s|style:default-style)' % tagname
+                tagname = "(%s|style:default-style)" % tagname
         return tagname
 
     def get_styles(self, family=None):
@@ -2868,11 +2844,11 @@ class Element:
         Return: odf_style or None if not found
         """
         if isinstance(name_or_element, Element):
-            name = self.get_attribute('style:name')
+            name = self.get_attribute("style:name")
             if name is not None:
                 return name_or_element
             else:
-                raise ValueError('Not a odf_style ?  %s' % name_or_element)
+                raise ValueError("Not a odf_style ?  %s" % name_or_element)
         style_name = name_or_element
         is_default = not (style_name or display_name)
         tagname = self._get_style_tagname(family, is_default=is_default)
@@ -2883,4 +2859,5 @@ class Element:
             0,
             style_name=style_name,
             display_name=display_name,
-            family=family)
+            family=family,
+        )

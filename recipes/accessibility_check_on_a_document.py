@@ -10,7 +10,7 @@ import os
 
 from odfdo import Document
 
-filename = 'planes.odt'
+filename = "planes.odt"
 
 doc = Document(filename)
 
@@ -25,8 +25,8 @@ nb_caption = 0
 
 for image in images:
     uri = image.url
-    filename = uri.split('/')[-1]
-    print('Image filename:', filename)
+    filename = uri.split("/")[-1]
+    print("Image filename:", filename)
     frame = image.parent
     name = frame.name
     title = frame.svg_title
@@ -35,19 +35,19 @@ for image in images:
         nb_title += 1
     if description:
         nb_description += 1
-    print(f'Name: {name}, title: {title}, description: {description}')
+    print(f"Name: {name}, title: {title}, description: {description}")
     link = frame.parent
     # this part requires some ODF know how:
-    if link.tag == 'draw:a':
-        caption = link.get_attribute('office:name')
+    if link.tag == "draw:a":
+        caption = link.get_attribute("office:name")
         if caption:
             nb_caption += 1
-            print('Caption: ', caption)
+            print("Caption: ", caption)
 print()
-print(f'The document displays {nb_images} pictures:')
-print(' - pictures with a title:', nb_title)
-print(' - pictures with a description:', nb_description)
-print(' - pictures with a caption:', nb_caption)
+print(f"The document displays {nb_images} pictures:")
+print(" - pictures with a title:", nb_title)
+print(" - pictures with a description:", nb_description)
+print(" - pictures with a caption:", nb_caption)
 
 expected_result = """
 Image filename: 100000000000013B000000D3AAA93FCC.jpg
