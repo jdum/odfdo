@@ -924,7 +924,7 @@ class Row(Element):
         """
         try:
             w = self._rmap[-1] + 1
-        except:
+        except Exception:
             w = 0
         return w
 
@@ -973,7 +973,7 @@ class Row(Element):
             if end is None:
                 try:
                     end = self._rmap[-1]
-                except:
+                except Exception:
                     end = -1
             start_map = _find_odf_idx(self._rmap, start)
             if start_map is None:
@@ -1973,7 +1973,7 @@ class Table(Element):
         """
         try:
             h = self._tmap[-1] + 1
-        except:
+        except Exception:
             h = 0
         return h
 
@@ -1990,7 +1990,7 @@ class Table(Element):
 
         try:
             w = self._cmap[-1] + 1
-        except:
+        except Exception:
             w = 0
 
         # columns = self._get_columns()
@@ -2419,7 +2419,7 @@ class Table(Element):
             if end is None:
                 try:
                     end = self._tmap[-1]
-                except:
+                except Exception:
                     end = -1
             start_map = _find_odf_idx(self._tmap, start)
             if start_map is None:
@@ -3168,7 +3168,7 @@ class Table(Element):
             if end is None:
                 try:
                     end = self._cmap[-1]
-                except:
+                except Exception:
                     end = -1
             start_map = _find_odf_idx(self._cmap, start)
             if start_map is None:
@@ -3954,7 +3954,7 @@ class NamedRange(Element):
             named_range = body.get_named_range(name)
             if named_range:
                 named_range.delete()
-        except:
+        except Exception:
             pass  # we are not on an inserted in a document.
         self.set_attribute("table:name", name)
 

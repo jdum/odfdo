@@ -248,12 +248,12 @@ class Annotation(Element):
             child -- Element
         """
         if child is not None:  # act like normal delete
-            return super(Annotation, self).delete(child)
+            return super().delete(child)
         end = self.end
         if end:
             end.delete()
         # act like normal delete
-        return super(Annotation, self).delete()
+        return super().delete()
 
     def check_validity(self):
         if not self.note_body:

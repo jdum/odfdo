@@ -570,7 +570,7 @@ class Element:
                 continue
             try:
                 value = int(value)
-            except:
+            except ValueError:
                 value = 1
             result.append((idx, max(value, 1)))
         return result
@@ -2399,7 +2399,7 @@ class Element:
         Return: list of Element
         """
         request = (
-            "descendant::text:reference-mark-start " "| descendant::text:reference-mark"
+            "descendant::text:reference-mark-start | descendant::text:reference-mark"
         )
         return _get_elements(self, request)
 
@@ -2426,7 +2426,7 @@ class Element:
             )
             return _get_element(self, request, position=0)
         request = (
-            "descendant::text:reference-mark-start " "| descendant::text:reference-mark"
+            "descendant::text:reference-mark-start | descendant::text:reference-mark"
         )
         return _get_element(self, request, position)
 
@@ -2740,7 +2740,7 @@ class Element:
 
         Return: list of Element
         """
-        request = "descendant::text:change-start " "| descendant::text:change"
+        request = "descendant::text:change-start | descendant::text:change"
         return _get_elements(self, request)
 
     def get_text_change(self, position=0, idx=None):
@@ -2764,7 +2764,7 @@ class Element:
                 '| descendant::text:change[@text:change-id="%s"]'
             ) % (idx, idx)
             return _get_element(self, request, position=0)
-        request = "descendant::text:change-start " "| descendant::text:change"
+        request = "descendant::text:change-start | descendant::text:change"
         return _get_element(self, request, position)
 
     # Table Of Content
