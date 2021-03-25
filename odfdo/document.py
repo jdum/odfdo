@@ -541,6 +541,7 @@ class Document:
 
         # Get family and name
         family = style.family
+
         if name is None:
             name = style.name
 
@@ -601,6 +602,7 @@ class Document:
                     existing = None
                 else:
                     existing = part.get_style(family, name)
+                    style.name = name
 
             # Default style
             elif automatic is False and default is True:

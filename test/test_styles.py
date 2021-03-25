@@ -134,6 +134,15 @@ class TestInsertStyleCase(TestCase):
         doc.insert_style(style, automatic=True)
         self.assertNotEqual(style.name, None)
 
+    def test_insert_style_name_as_argument(self):
+        doc = self.doc
+
+        style = Style("paragraph")
+        arg_name = "some_name"
+        returned_name = doc.insert_style(style, name=arg_name, automatic=True)
+        self.assertNotEqual(style.name, None)
+        self.assertEqual(returned_name, arg_name)
+
     def test_insert_with_error(self):
         doc = self.doc
 
