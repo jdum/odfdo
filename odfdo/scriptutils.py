@@ -37,7 +37,7 @@ def check_target_file(path, kind="file"):
         if line != "y":
             stderr.write("Operation aborted\n")
             stderr.flush()
-            exit(0)
+            sys.exit(0)
 
 
 def check_target_directory(path):
