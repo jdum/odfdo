@@ -44,7 +44,6 @@ from .const import (
 from .manifest import Manifest
 from .scriptutils import printwarn
 
-# from .utils import _get_abspath
 from .utils import to_bytes, to_str
 
 

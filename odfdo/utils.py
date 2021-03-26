@@ -63,32 +63,6 @@ def to_str(value):
     return value
 
 
-def _get_abspath(local_path):
-    """Returns the absolute path to the required file."""
-
-    mname = _getframe(1).f_globals.get("__name__")
-
-    if mname in ("__main__", "__init__"):
-        mpath = getcwd()
-    else:
-        module = modules[mname]
-        if hasattr(module, "__path__"):
-            mpath = module.__path__[0]
-        elif "." in mname:
-            mpath = modules[mname[: mname.rfind(".")]].__path__[0]
-        else:
-            mpath = mname
-
-    drive, mpath = splitdrive(mpath)
-    mpath = drive + join(mpath, local_path)
-
-    # Make it working with Windows. Internally we use always the "/".
-    if sep == "\\":
-        mpath = mpath.replace(sep, "/")
-
-    return mpath
-
-
 def _make_xpath_query(
     element_name,
     family=None,
