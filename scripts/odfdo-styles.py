@@ -43,9 +43,9 @@ def show_styles(document, target=None, automatic=True, common=True, properties=F
     )
     # Print the output
     if target is None:
-        print(output)
+        print(output, end="")
         return
-    with open(target, "wb") as f:
+    with open(target, "w") as f:
         f.write(output)
 
 
@@ -119,9 +119,7 @@ def merge_styles(document, from_file, target=None, pretty=True):
 def main():
     # Options initialisation
     usage = "%prog [options] <file>"
-    description = (
-        "A command line interface to manipulate styles of " "OpenDocument files."
-    )
+    description = "A command line interface to manipulate styles of OpenDocument files."
     parser = OptionParser(usage, version=__version__, description=description)
     # --automatic
     parser.add_option(
@@ -144,7 +142,7 @@ def main():
         "-p", "--properties", action="store_true", help="show properties of styles"
     )
     # --delete
-    msg = "return a copy with all styles (except default) deleted from " "<file>"
+    msg = "return a copy with all styles (except default) deleted from <file>"
     parser.add_option("-d", "--delete", action="store_true", help=msg)
     # --merge
     msg = (
