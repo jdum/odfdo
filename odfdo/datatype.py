@@ -63,14 +63,18 @@ class Date:
 class DateTime:
     @staticmethod
     def decode(data):
-        # XXX "Z" means a UTC datetime, convert it ??
-        # Cf http://en.wikipedia.org/wiki/ISO_8601
         if data.endswith("Z"):
-            data = data[:-1]
+            data = data[:-1] + "+0000"
+        try:
+            # fix for nanoseconds:
+            return datetime.strptime(data[0:26] + data[29:], DATETIME_FORMAT_MICRO)
+        except ValueError:
+            pass
         try:
             return datetime.strptime(data, DATETIME_FORMAT_MICRO)
         except ValueError:
-            return datetime.strptime(data, DATETIME_FORMAT)
+            pass
+        return datetime.strptime(data, DATETIME_FORMAT)
 
     @staticmethod
     def encode(value):
