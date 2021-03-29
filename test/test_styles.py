@@ -143,6 +143,48 @@ class TestInsertStyleCase(TestCase):
         self.assertNotEqual(style.name, None)
         self.assertEqual(returned_name, arg_name)
 
+    def test_insert_style_from_string(self):
+        doc = self.doc
+        style_str = (
+            '<style:style style:name="style_as_str" '
+            'style:family="paragraph">'
+            "<style:text-properties "
+            'fo:background-color="#ff0000" '
+            'fo:color="#0000ff"/>'
+            "</style:style>"
+        )
+        returned_name = doc.insert_style(style_str, automatic=True)
+        self.assertEqual(returned_name, "style_as_str")
+        get1 = doc.get_style("paragraph", "style_as_str")
+        self.assertIn(
+            get1.serialize(),
+            (
+                (
+                    '<style:style style:name="style_as_str" '
+                    'style:family="paragraph">'
+                    "<style:text-properties "
+                    'fo:background-color="#ff0000" '
+                    'fo:color="#0000ff"/>'
+                    "</style:style>"
+                ),
+                (
+                    '<style:style style:name="style_as_str" '
+                    'style:family="paragraph">'
+                    '<style:text-properties fo:color="#0000ff" '
+                    'fo:background-color="#ff0000"/>'
+                    "</style:style>"
+                ),
+                (
+                    '<style:style style:family="paragraph" '
+                    'style:name="style_as_str">'
+                    "<style:text-properties "
+                    'fo:background-color="#ff0000" '
+                    'fo:color="#0000ff"/>'
+                    "</style:style>"
+                ),
+            ),
+        )
+
     def test_insert_with_error(self):
         doc = self.doc
 

@@ -40,6 +40,7 @@ from .const import (
 )
 from .container import Container
 from .content import Content
+from .element import Element
 from .manifest import Manifest
 from .meta import Meta
 
@@ -528,7 +529,7 @@ class Document:
 
         Arguments:
 
-            style -- Style
+            style -- Style or str
 
             name -- str
 
@@ -538,6 +539,10 @@ class Document:
 
         Return : style name -- str
         """
+
+        # if style is a str, assume it is the Style definition
+        if isinstance(style, str):
+            style = Element.from_tag(style)
 
         # Get family and name
         family = style.family
