@@ -36,6 +36,7 @@ from os.path import join
 from odfdo.const import ODF_EXTENSIONS, ODF_CONTENT, ODF_MANIFEST, ODF_META, ODF_STYLES
 from odfdo.content import Content
 from odfdo.document import Document
+from odfdo.paragraph import Paragraph
 from odfdo.manifest import Manifest
 from odfdo.meta import Meta
 from odfdo.styles import Styles
@@ -133,17 +134,52 @@ class DocumentTestCase(TestCase):
         body = self.document.body
         self.assertEqual(body.tag, "office:text")
 
-    def test_clone(self):
+    def test_clone_body_none(self):
         document = self.document
-        document.get_part(ODF_CONTENT)
-        self.assertNotEqual(document._Document__xmlparts, {})
+        dummy = document.body
         clone = document.clone
-        self.assertNotEqual(clone._Document__xmlparts, {})
-        parts = clone._Document__xmlparts
-        self.assertEqual(len(parts), 1)
-        self.assertEqual(list(parts.keys()), ["content.xml"])
-        container = clone.container
-        self.assertEqual(container.path, None)
+        # new body cache should be empty
+        self.assertEqual(clone._Document__body, None)
+
+    def test_clone_xmlparts_empty(self):
+        document = self.document
+        content = self.document.get_part(ODF_CONTENT)
+        clone = document.clone
+        # new xmlparts cache should be empty
+        self.assertEqual(clone._Document__xmlparts, {})
+
+    def test_clone_same_content(self):
+        document = self.document
+        s_orig = document.body.serialize()
+        c = document.clone
+        s_clone = c.body.serialize()
+        self.assertEqual(s_clone, s_orig)
+
+    def test_clone_different_changes_1(self):
+        document = self.document
+        s_orig = document.body.serialize()
+        c = document.clone
+        c.body.append(Paragraph("some text"))
+        s_clone = c.body.serialize()
+        self.assertNotEqual(s_clone, s_orig)
+
+    def test_clone_different_unchanged_1(self):
+        document = self.document
+        s_orig = document.body.serialize()
+        c = document.clone
+        c.body.append(Paragraph("some text"))
+        s_after = document.body.serialize()
+        self.assertEqual(s_after, s_orig)
+
+    def test_clone_different_unchanged_2(self):
+        document = self.document
+        s_orig = document.body.serialize()
+        c = document.clone
+        c.body.append(Paragraph("some text"))
+        s_clone1 = c.body.serialize()
+        document.body.append(Paragraph("new text"))
+        s_clone2 = c.body.serialize()
+        self.assertEqual(s_clone1, s_clone2)
 
     def test_save_nogenerator(self):
         document = self.document

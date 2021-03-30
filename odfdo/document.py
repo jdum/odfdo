@@ -423,13 +423,12 @@ class Document:
         """
         clone = object.__new__(self.__class__)
         for name in self.__dict__:
-            if name == "container":
-                setattr(clone, name, self.container.clone)
+            if name == "_Document__body":
+                setattr(clone, name, None)
             elif name == "_Document__xmlparts":
-                xmlparts = {}
-                for key, value in self.__xmlparts.items():
-                    xmlparts[key] = value.clone
-                setattr(clone, name, xmlparts)
+                setattr(clone, name, {})
+            elif name == "container":
+                setattr(clone, name, self.container.clone)
             else:
                 value = deepcopy(getattr(self, name))
                 setattr(clone, name, value)
