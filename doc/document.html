@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.8.3" />
+<meta name="generator" content="pdoc 0.9.2" />
 <title>odfdo.document API documentation</title>
 <meta name="description" content="Document class, root of the ODF document" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
 <style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
 <style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
 </head>
 <body>
@@ -59,19 +59,28 @@ from mimetypes import guess_type
 from operator import itemgetter
 from uuid import uuid4
 
-from .const import (ODF_CONTENT, ODF_META, ODF_SETTINGS, ODF_STYLES,
-                    ODF_TEMPLATES, ODF_MANIFEST)
+from .const import (
+    ODF_CONTENT,
+    ODF_META,
+    ODF_SETTINGS,
+    ODF_STYLES,
+    ODF_TEMPLATES,
+    ODF_MANIFEST,
+)
 from .container import Container
 from .content import Content
+from .element import Element
 from .manifest import Manifest
 from .meta import Meta
-#from .style import registered_styles
+
+# from .style import registered_styles
 from .styles import Styles
-#from utils import obsolete
+
+# from utils import obsolete
 from .xmlpart import XmlPart
 from .utils import to_str, FAMILY_ODF_STD
 
-underline_lvl = [&#39;=&#39;, &#39;-&#39;, &#39;:&#39;, &#39;`&#39;, &#34;&#39;&#34;, &#39;&#34;&#39;, &#39;~&#39;, &#39;^&#39;, &#39;_&#39;, &#39;*&#39;, &#39;+&#39;]
+underline_lvl = [&#34;=&#34;, &#34;-&#34;, &#34;:&#34;, &#34;`&#34;, &#34;&#39;&#34;, &#39;&#34;&#39;, &#34;~&#34;, &#34;^&#34;, &#34;_&#34;, &#34;*&#34;, &#34;+&#34;]
 
 
 def _show_styles(element, level=0):
@@ -85,18 +94,18 @@ def _show_styles(element, level=0):
     output.append(tag_name)
     # Underline and Overline the name
     underline = underline_lvl[level] * len(tag_name)
-    underline = underline if level &lt; len(underline_lvl) else &#39;\n&#39;
+    underline = underline if level &lt; len(underline_lvl) else &#34;\n&#34;
     output.append(underline)
     # Add a separation between name and attributes
-    output[-1] += &#39;\n&#39;
+    output[-1] += &#34;\n&#34;
     attrs = []
     # Attributes
     for key, value in attributes.items():
-        attrs.append(&#39;%s: %s&#39; % (key, value))
+        attrs.append(&#34;%s: %s&#34; % (key, value))
     if attrs:
         attrs.sort()
         # Add a separation between attributes and children
-        attrs[-1] += &#39;\n&#39;
+        attrs[-1] += &#34;\n&#34;
         output.extend(attrs)
     # Children
     # Sort children according to their names
@@ -107,17 +116,17 @@ def _show_styles(element, level=0):
         child_output = _show_styles(child, level + 1)
         if child_output:
             output.append(child_output)
-    return &#39;\n&#39;.join(output)
+    return &#34;\n&#34;.join(output)
 
 
 # Transition to real path of XML parts
 def _get_part_path(path):
     return {
-        &#39;content&#39;: ODF_CONTENT,
-        &#39;meta&#39;: ODF_META,
-        &#39;settings&#39;: ODF_SETTINGS,
-        &#39;styles&#39;: ODF_STYLES,
-        &#39;manifest&#39;: ODF_MANIFEST
+        &#34;content&#34;: ODF_CONTENT,
+        &#34;meta&#34;: ODF_META,
+        &#34;settings&#34;: ODF_SETTINGS,
+        &#34;styles&#34;: ODF_STYLES,
+        &#34;manifest&#34;: ODF_MANIFEST,
     }.get(path, path)
 
 
@@ -127,15 +136,14 @@ def _get_part_class(path):
         ODF_META: Meta,
         ODF_SETTINGS: XmlPart,
         ODF_STYLES: Styles,
-        ODF_MANIFEST: Manifest
+        ODF_MANIFEST: Manifest,
     }.get(path)
 
 
 class Document:
-    &#34;&#34;&#34;Abstraction of the ODF document.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Abstraction of the ODF document.&#34;&#34;&#34;
 
-    def __init__(self, target=&#39;text&#39;):
+    def __init__(self, target=&#34;text&#34;):
         # Cache of XML parts
         self.__xmlparts = {}
         # Cache of the body
@@ -157,7 +165,7 @@ class Document:
         self.container.open(target)
 
     @classmethod
-    def new(cls, target=&#39;text&#39;):
+    def new(cls, target=&#34;text&#34;):
         doc = Document()
         doc.container = Container.new(target)
         return doc
@@ -181,7 +189,7 @@ class Document:
         path formated as URI, so always use &#39;/&#39; separator
         &#34;&#34;&#34;
         # &#34;./ObjectReplacements/Object 1&#34;
-        path = path.lstrip(&#39;./&#39;)
+        path = path.lstrip(&#34;./&#34;)
         path = _get_part_path(path)
         cls = _get_part_class(path)
         container = self.container
@@ -202,7 +210,7 @@ class Document:
         path formated as URI, so always use &#39;/&#39; separator
         &#34;&#34;&#34;
         # &#34;./ObjectReplacements/Object 1&#34;
-        path = path.lstrip(&#39;./&#39;)
+        path = path.lstrip(&#34;./&#34;)
         path = _get_part_path(path)
         cls = _get_part_class(path)
         # XML part overwritten
@@ -241,7 +249,7 @@ class Document:
         # application/vnd.oasis.opendocument.text
 
         # Isolate and return the last part
-        return self.mimetype.rsplit(&#39;.&#39;, 1)[-1]
+        return self.mimetype.rsplit(&#34;.&#34;, 1)[-1]
 
     @property
     def body(self):
@@ -254,95 +262,96 @@ class Document:
         return self.__body
 
     def get_formatted_text(self, rst_mode=False):
-        &#34;&#34;&#34;Return content as text, with some formatting.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return content as text, with some formatting.&#34;&#34;&#34;
         # For the moment, only &#34;type=&#39;text&#39;&#34;
         doc_type = self.get_type()
         if doc_type not in {
-                &#39;text&#39;, &#39;text-template&#39;, &#39;presentation&#39;,
-                &#39;presentation-template&#39;
+            &#34;text&#34;,
+            &#34;text-template&#34;,
+            &#34;presentation&#34;,
+            &#34;presentation-template&#34;,
         }:
-            raise NotImplementedError(&#39;Type of document &#34;%s&#34; not &#39;
-                                      &#39;supported yet&#39; % doc_type)
+            raise NotImplementedError(
+                &#39;Type of document &#34;%s&#34; not &#39; &#34;supported yet&#34; % doc_type
+            )
         # Initialize an empty context
         context = {
-            &#39;document&#39;: self,
-            &#39;footnotes&#39;: [],
-            &#39;endnotes&#39;: [],
-            &#39;annotations&#39;: [],
-            &#39;rst_mode&#39;: rst_mode,
-            &#39;img_counter&#39;: 0,
-            &#39;images&#39;: [],
-            &#39;no_img_level&#39;: 0
+            &#34;document&#34;: self,
+            &#34;footnotes&#34;: [],
+            &#34;endnotes&#34;: [],
+            &#34;annotations&#34;: [],
+            &#34;rst_mode&#34;: rst_mode,
+            &#34;img_counter&#34;: 0,
+            &#34;images&#34;: [],
+            &#34;no_img_level&#34;: 0,
         }
         body = self.body
         # Get the text
         result = []
         for element in body.children:
-            if element.tag == &#39;table:table&#39;:
+            if element.tag == &#34;table:table&#34;:
                 result.append(element.get_formatted_text(context))
             else:
                 result.append(element.get_formatted_text(context))
                 # Insert the notes
-                footnotes = context[&#39;footnotes&#39;]
+                footnotes = context[&#34;footnotes&#34;]
                 # Separate text from notes
                 if footnotes:
                     if rst_mode:
-                        result.append(&#39;\n&#39;)
+                        result.append(&#34;\n&#34;)
                     else:
-                        result.append(&#39;----\n&#39;)
+                        result.append(&#34;----\n&#34;)
                     for citation, body in footnotes:
                         if rst_mode:
-                            result.append(&#39;.. [#] %s\n&#39; % body)
+                            result.append(&#34;.. [#] %s\n&#34; % body)
                         else:
-                            result.append(&#39;[%s] %s\n&#39; % (citation, body))
+                            result.append(&#34;[%s] %s\n&#34; % (citation, body))
                     # Append a \n after the notes
-                    result.append(&#39;\n&#39;)
+                    result.append(&#34;\n&#34;)
                     # Reset for the next paragraph
-                    context[&#39;footnotes&#39;] = []
+                    context[&#34;footnotes&#34;] = []
                 # Insert the annotations
-                annotations = context[&#39;annotations&#39;]
+                annotations = context[&#34;annotations&#34;]
                 # With a separation
                 if annotations:
                     if rst_mode:
-                        result.append(&#39;\n&#39;)
+                        result.append(&#34;\n&#34;)
                     else:
-                        result.append(&#39;----\n&#39;)
+                        result.append(&#34;----\n&#34;)
                     for annotation in annotations:
                         if rst_mode:
-                            result.append(&#39;.. [#] %s\n&#39; % annotation)
+                            result.append(&#34;.. [#] %s\n&#34; % annotation)
                         else:
-                            result.append(&#39;[*] %s\n&#39; % annotation)
-                    context[&#39;annotations&#39;] = []
+                            result.append(&#34;[*] %s\n&#34; % annotation)
+                    context[&#34;annotations&#34;] = []
                 # Insert the images ref, only in rst mode
-                images = context[&#39;images&#39;]
+                images = context[&#34;images&#34;]
                 if images:
-                    result.append(&#39;\n&#39;)
+                    result.append(&#34;\n&#34;)
                     for ref, filename, (width, height) in images:
-                        result.append(&#39;.. %s image:: %s\n&#39; % (ref, filename))
+                        result.append(&#34;.. %s image:: %s\n&#34; % (ref, filename))
                         if width is not None:
-                            result.append(&#39;   :width: %s\n&#39; % width)
+                            result.append(&#34;   :width: %s\n&#34; % width)
                         if height is not None:
-                            result.append(&#39;   :height: %s\n&#39; % height)
-                        result.append(&#39;\n&#39;)
-                    context[&#39;images&#39;] = []
+                            result.append(&#34;   :height: %s\n&#34; % height)
+                        result.append(&#34;\n&#34;)
+                    context[&#34;images&#34;] = []
         # Append the end notes
-        endnotes = context[&#39;endnotes&#39;]
+        endnotes = context[&#34;endnotes&#34;]
         if endnotes:
             if rst_mode:
-                result.append(&#39;\n\n&#39;)
+                result.append(&#34;\n\n&#34;)
             else:
-                result.append(&#39;\n========\n&#39;)
+                result.append(&#34;\n========\n&#34;)
             for citation, body in endnotes:
                 if rst_mode:
-                    result.append(&#39;.. [*] %s\n&#39; % body)
+                    result.append(&#34;.. [*] %s\n&#34; % body)
                 else:
-                    result.append(&#39;(%s) %s\n&#39; % (citation, body))
-        return &#39;&#39;.join(result)
+                    result.append(&#34;(%s) %s\n&#34; % (citation, body))
+        return &#34;&#34;.join(result)
 
     def get_formated_meta(self):
-        &#34;&#34;&#34;Return meta informations as text, with some formatting.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return meta informations as text, with some formatting.&#34;&#34;&#34;
         result = []
 
         meta = self.get_part(ODF_META)
@@ -367,8 +376,9 @@ class Document:
         result.append(&#34;Statistic:&#34;)
         statistic = meta.get_statistic()
         for name, value in statistic.items():
-            result.append(&#34;  - %s: %s&#34; % (name[5:].replace(
-                &#39;-&#39;, &#39; &#39;).capitalize(), value))
+            result.append(
+                &#34;  - %s: %s&#34; % (name[5:].replace(&#34;-&#34;, &#34; &#34;).capitalize(), value)
+            )
 
         # User defined metadata
         result.append(&#34;User defined metadata:&#34;)
@@ -379,7 +389,7 @@ class Document:
         # And the description
         print_info(&#34;Description&#34;, meta.get_description())
 
-        return &#39;\n&#39;.join(result) + &#39;\n&#39;
+        return &#34;\n&#34;.join(result) + &#34;\n&#34;
 
     def add_file(self, path_or_file):
         &#34;&#34;&#34;Insert a file from a path or a fike-like object in the container.
@@ -398,33 +408,33 @@ class Document:
         medias = manifest.get_paths()
 
         if isinstance(path_or_file, str):
-            handler = open(path_or_file, &#39;rb&#39;)
+            handler = open(path_or_file, &#34;rb&#34;)
             name = path_or_file
             close_after = True
         else:
             handler = path_or_file
-            name = getattr(path_or_file, &#39;name&#39;, None)
+            name = getattr(path_or_file, &#34;name&#34;, None)
         name = os.path.basename(name)
         # Generate a safe portable name
         uuid = str(uuid4())
         if name is None:
             name = uuid
-            media_type = &#39;&#39;
+            media_type = &#34;&#34;
         else:
             root, extension = os.path.splitext(name)
             extension = extension.lower()
             name = root + extension
             media_type, _encoding = guess_type(name)
             # Check this name is already used in the document
-            if posixpath.join(&#39;Pictures&#39;, name) in medias:
-                root = &#39;%s_%s&#39; % (root, uuid)
+            if posixpath.join(&#34;Pictures&#34;, name) in medias:
+                root = &#34;%s_%s&#34; % (root, uuid)
                 name = root + extension
                 media_type, _encoding = guess_type(name)
 
-        if manifest.get_media_type(&#39;Pictures/&#39;) is None:
-            manifest.add_full_path(&#39;Pictures/&#39;)
+        if manifest.get_media_type(&#34;Pictures/&#34;) is None:
+            manifest.add_full_path(&#34;Pictures/&#34;)
 
-        full_path = posixpath.join(&#39;Pictures&#39;, name)
+        full_path = posixpath.join(&#34;Pictures&#34;, name)
         self.container.set_part(full_path, handler.read())
 
         # Update manifest
@@ -442,13 +452,12 @@ class Document:
         &#34;&#34;&#34;
         clone = object.__new__(self.__class__)
         for name in self.__dict__:
-            if name == &#39;container&#39;:
+            if name == &#34;_Document__body&#34;:
+                setattr(clone, name, None)
+            elif name == &#34;_Document__xmlparts&#34;:
+                setattr(clone, name, {})
+            elif name == &#34;container&#34;:
                 setattr(clone, name, self.container.clone)
-            elif name == &#39;_Document__xmlparts&#39;:
-                xmlparts = {}
-                for key, value in self.__xmlparts.items():
-                    xmlparts[key] = value.clone
-                setattr(clone, name, xmlparts)
             else:
                 value = deepcopy(getattr(self, name))
                 setattr(clone, name, value)
@@ -487,8 +496,9 @@ class Document:
         content = self.get_part(ODF_CONTENT)
         styles = self.get_part(ODF_STYLES)
         family = to_str(family)
-        return (content.get_styles(family=family) + styles.get_styles(
-            family=family, automatic=automatic))
+        return content.get_styles(family=family) + styles.get_styles(
+            family=family, automatic=automatic
+        )
 
     def get_style(self, family, name_or_element=None, display_name=None):
         &#34;&#34;&#34;Return the style uniquely identified by the name/family pair. If
@@ -514,13 +524,15 @@ class Document:
         family = to_str(family)
         content = self.get_part(ODF_CONTENT)
         element = content.get_style(
-            family, name_or_element=name_or_element, display_name=display_name)
+            family, name_or_element=name_or_element, display_name=display_name
+        )
         if element is not None:
             return element
         # 2. styles.xml
         styles = self.get_part(ODF_STYLES)
         return styles.get_style(
-            family, name_or_element=name_or_element, display_name=display_name)
+            family, name_or_element=name_or_element, display_name=display_name
+        )
 
     def insert_style(self, style, name=None, automatic=False, default=False):
         &#34;&#34;&#34;Insert the given style object in the document, as required by the
@@ -545,7 +557,7 @@ class Document:
 
         Arguments:
 
-            style -- Style
+            style -- Style or str
 
             name -- str
 
@@ -556,18 +568,23 @@ class Document:
         Return : style name -- str
         &#34;&#34;&#34;
 
+        # if style is a str, assume it is the Style definition
+        if isinstance(style, str):
+            style = Element.from_tag(style)
+
         # Get family and name
         family = style.family
+
         if name is None:
             name = style.name
 
         # Master page style
-        if family == &#39;master-page&#39;:
+        if family == &#34;master-page&#34;:
             part = self.get_part(ODF_STYLES)
             container = part.get_element(&#34;office:master-styles&#34;)
             existing = part.get_style(family, name)
         # Font face declarations
-        elif family == &#39;font-face&#39;:
+        elif family == &#34;font-face&#34;:
             if default:
                 part = self.get_part(ODF_STYLES)
             else:
@@ -575,13 +592,13 @@ class Document:
             container = part.get_element(&#34;office:font-face-decls&#34;)
             existing = part.get_style(family, name)
         # page layout style
-        elif family == &#39;page-layout&#39;:
+        elif family == &#34;page-layout&#34;:
             part = self.get_part(ODF_STYLES)
             # force to automatic
             container = part.get_element(&#34;office:automatic-styles&#34;)
             existing = part.get_style(family, name)
         # Common style
-        elif family in FAMILY_ODF_STD:
+        elif family in FAMILY_ODF_STD or family in {&#34;number&#34;}:
             # Common style
             if name and automatic is False and default is False:
                 part = self.get_part(ODF_STYLES)
@@ -591,19 +608,20 @@ class Document:
             # Automatic style
             elif automatic is True and default is False:
                 part = self.get_part(ODF_CONTENT)
-                container = part.get_element(&#39;office:automatic-styles&#39;)
+                container = part.get_element(&#34;office:automatic-styles&#34;)
 
                 # A name ?
                 if name is None:
                     # Make a beautiful name
 
                     # TODO: Use prefixes of Ooo: Mpm1, ...
-                    prefix = &#39;lpod_auto_&#39;
+                    prefix = &#34;lpod_auto_&#34;
 
                     styles = self.get_styles(family=family, automatic=True)
                     names = [s.name for s in styles]
                     numbers = [
-                        int(name[len(prefix):]) for name in names
+                        int(name[len(prefix) :])
+                        for name in names
                         if name and name.startswith(prefix)
                     ]
                     if numbers:
@@ -617,16 +635,17 @@ class Document:
                     existing = None
                 else:
                     existing = part.get_style(family, name)
+                    style.name = name
 
             # Default style
             elif automatic is False and default is True:
                 part = self.get_part(ODF_STYLES)
-                container = part.get_element(&#39;office:styles&#39;)
+                container = part.get_element(&#34;office:styles&#34;)
 
                 # Force default style
-                style.tag = &#39;style:default-style&#39;
+                style.tag = &#34;style:default-style&#34;
                 if name is not None:
-                    style.del_attribute(&#39;style:name&#39;)
+                    style.del_attribute(&#34;style:name&#34;)
 
                 existing = part.get_style(family)
 
@@ -635,7 +654,9 @@ class Document:
                 raise AttributeError(&#34;invalid combination of arguments&#34;)
         # Invalid style
         else:
-            raise ValueError(&#34;invalid style: %s&#34; % style)
+            raise ValueError(
+                f&#34;invalid style: {style}, tag:{style.tag}, family:{family}&#34;
+            )
 
         # Insert it!
         if existing is not None:
@@ -656,8 +677,9 @@ class Document:
         content = self.get_part(ODF_CONTENT)
         # Header, footer, etc. have styles too
         styles = self.get_part(ODF_STYLES)
-        return (content.root.get_styled_elements(name) +
-                styles.root.get_styled_elements(name))
+        return content.root.get_styled_elements(name) + styles.root.get_styled_elements(
+            name
+        )
 
     def show_styles(self, automatic=True, common=True, properties=False):
         infos = []
@@ -665,53 +687,52 @@ class Document:
             try:
                 name = style.name
             except AttributeError:
-                print(&#39;--------------&#39;)
+                print(&#34;--------------&#34;)
                 print(style.__class__)
                 print(style.serialize())
                 raise
             parent = style.parent
-            is_auto = (parent and parent.tag == &#39;office:automatic-styles&#39;)
-            if (is_auto and automatic is False
-                    or not is_auto and common is False):
+            is_auto = parent and parent.tag == &#34;office:automatic-styles&#34;
+            if is_auto and automatic is False or not is_auto and common is False:
                 continue
             is_used = bool(self.get_styled_elements(name))
-            infos.append({
-                &#39;type&#39;:
-                &#34;auto  &#34; if is_auto else &#34;common&#34;,
-                &#39;used&#39;:
-                &#34;y&#34; if is_used else &#34;n&#34;,
-                &#39;family&#39;:
-                style.family or &#34;&#34;,
-                &#39;parent&#39;:
-                style.parent_style or &#34;&#34;,
-                &#39;name&#39;:
-                name or &#34;&#34;,
-                &#39;display_name&#39;:
-                style.display_name,
-                &#39;properties&#39;:
-                style.get_properties() if properties else None
-            })
+            infos.append(
+                {
+                    &#34;type&#34;: &#34;auto  &#34; if is_auto else &#34;common&#34;,
+                    &#34;used&#34;: &#34;y&#34; if is_used else &#34;n&#34;,
+                    &#34;family&#34;: style.family or &#34;&#34;,
+                    &#34;parent&#34;: style.parent_style or &#34;&#34;,
+                    &#34;name&#34;: name or &#34;&#34;,
+                    &#34;display_name&#34;: style.display_name,
+                    &#34;properties&#34;: style.get_properties() if properties else None,
+                }
+            )
         if not infos:
-            return &#39;&#39;
+            return &#34;&#34;
         # Sort by family and name
-        infos.sort(key=itemgetter(&#39;family&#39;, &#39;name&#39;))
+        infos.sort(key=itemgetter(&#34;family&#34;, &#34;name&#34;))
         # Show common and used first
-        infos.sort(key=itemgetter(&#39;type&#39;, &#39;used&#39;), reverse=True)
-        max_family = str(max([len(x[&#39;family&#39;]) for x in infos]))
-        max_parent = str(max([len(x[&#39;parent&#39;]) for x in infos]))
-        formater = (&#34;%(type)s used:%(used)s family:%(family)-0&#34; + max_family +
-                    &#34;s parent:%(parent)-0&#34; + max_parent + &#34;s name:%(name)s&#34;)
+        infos.sort(key=itemgetter(&#34;type&#34;, &#34;used&#34;), reverse=True)
+        max_family = str(max([len(x[&#34;family&#34;]) for x in infos]))
+        max_parent = str(max([len(x[&#34;parent&#34;]) for x in infos]))
+        formater = (
+            &#34;%(type)s used:%(used)s family:%(family)-0&#34;
+            + max_family
+            + &#34;s parent:%(parent)-0&#34;
+            + max_parent
+            + &#34;s name:%(name)s&#34;
+        )
         output = []
         for info in infos:
             line = formater % info
-            if info[&#39;display_name&#39;]:
-                line += &#39; display_name:&#39; + info[&#39;display_name&#39;]
+            if info[&#34;display_name&#34;]:
+                line += &#34; display_name:&#34; + info[&#34;display_name&#34;]
             output.append(line)
-            if info[&#39;properties&#39;]:
-                for name, value in info[&#39;properties&#39;].items():
+            if info[&#34;properties&#34;]:
+                for name, value in info[&#34;properties&#34;].items():
                     output.append(&#34;   - %s: %s&#34; % (name, value))
-        output.append(&#39;&#39;)
-        return &#39;\n&#39;.join(output)
+        output.append(&#34;&#34;)
+        return &#34;\n&#34;.join(output)
 
     def delete_styles(self):
         &#34;&#34;&#34;Remove all style information from content and all styles.
@@ -720,9 +741,13 @@ class Document:
         &#34;&#34;&#34;
         # First remove references to styles
         for element in self.get_styled_elements():
-            for attribute in (&#39;text:style-name&#39;, &#39;draw:style-name&#39;,
-                              &#39;draw:text-style-name&#39;, &#39;table:style-name&#39;,
-                              &#39;style:page-layout-name&#39;):
+            for attribute in (
+                &#34;text:style-name&#34;,
+                &#34;draw:style-name&#34;,
+                &#34;draw:text-style-name&#34;,
+                &#34;table:style-name&#34;,
+                &#34;style:page-layout-name&#34;,
+            ):
                 try:
                     element.del_attribute(attribute)
                 except KeyError:
@@ -733,7 +758,7 @@ class Document:
             if style.name is None:
                 # Don&#39;t delete default styles
                 continue
-            #elif type(style) is odf_master_page:
+            # elif type(style) is odf_master_page:
             #    # Don&#39;t suppress header and footer, just styling was removed
             #    continue
             style.delete()
@@ -758,29 +783,31 @@ class Document:
             container_name = container.tag
             partname = container.parent.tag
             # The destination part
-            if partname == &#39;office:document-styles&#39;:
+            if partname == &#34;office:document-styles&#34;:
                 part = styles
-            elif partname == &#39;office:document-content&#39;:
+            elif partname == &#34;office:document-content&#34;:
                 part = content
             else:
                 raise NotImplementedError(partname)
             # Implemented containers
             if container_name not in {
-                    &#39;office:styles&#39;, &#39;office:automatic-styles&#39;,
-                    &#39;office:master-styles&#39;, &#39;office:font-face-decls&#39;
+                &#34;office:styles&#34;,
+                &#34;office:automatic-styles&#34;,
+                &#34;office:master-styles&#34;,
+                &#34;office:font-face-decls&#34;,
             }:
                 raise NotImplementedError(container_name)
-            dest = part.get_element(&#39;//%s&#39; % container_name)
+            dest = part.get_element(&#34;//%s&#34; % container_name)
             # Implemented style types
-            #if tagname not in registered_styles:
+            # if tagname not in registered_styles:
             #    raise NotImplementedError(tagname)
             duplicate = part.get_style(family, stylename)
             if duplicate is not None:
                 duplicate.delete()
             dest.append(style)
             # Copy images from the header/footer
-            if tagname == &#39;style:master-page&#39;:
-                query = &#39;descendant::draw:image&#39;
+            if tagname == &#34;style:master-page&#34;:
+                query = &#34;descendant::draw:image&#34;
                 for image in style.get_elements(query):
                     url = image.get_url()
                     part = document.get_part(url)
@@ -789,7 +816,7 @@ class Document:
                     media_type = document_manifest.get_media_type(url)
                     manifest.add_full_path(url, media_type)
             # Copy images from the fill-image
-            elif tagname == &#39;draw:fill-image&#39;:
+            elif tagname == &#34;draw:fill-image&#34;:
                 url = style.get_url()
                 part = document.get_part(url)
                 self.set_part(url, part)
@@ -817,10 +844,9 @@ class Document:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Document:
-    &#34;&#34;&#34;Abstraction of the ODF document.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Abstraction of the ODF document.&#34;&#34;&#34;
 
-    def __init__(self, target=&#39;text&#39;):
+    def __init__(self, target=&#34;text&#34;):
         # Cache of XML parts
         self.__xmlparts = {}
         # Cache of the body
@@ -842,7 +868,7 @@ class Document:
         self.container.open(target)
 
     @classmethod
-    def new(cls, target=&#39;text&#39;):
+    def new(cls, target=&#34;text&#34;):
         doc = Document()
         doc.container = Container.new(target)
         return doc
@@ -866,7 +892,7 @@ class Document:
         path formated as URI, so always use &#39;/&#39; separator
         &#34;&#34;&#34;
         # &#34;./ObjectReplacements/Object 1&#34;
-        path = path.lstrip(&#39;./&#39;)
+        path = path.lstrip(&#34;./&#34;)
         path = _get_part_path(path)
         cls = _get_part_class(path)
         container = self.container
@@ -887,7 +913,7 @@ class Document:
         path formated as URI, so always use &#39;/&#39; separator
         &#34;&#34;&#34;
         # &#34;./ObjectReplacements/Object 1&#34;
-        path = path.lstrip(&#39;./&#39;)
+        path = path.lstrip(&#34;./&#34;)
         path = _get_part_path(path)
         cls = _get_part_class(path)
         # XML part overwritten
@@ -926,7 +952,7 @@ class Document:
         # application/vnd.oasis.opendocument.text
 
         # Isolate and return the last part
-        return self.mimetype.rsplit(&#39;.&#39;, 1)[-1]
+        return self.mimetype.rsplit(&#34;.&#34;, 1)[-1]
 
     @property
     def body(self):
@@ -939,95 +965,96 @@ class Document:
         return self.__body
 
     def get_formatted_text(self, rst_mode=False):
-        &#34;&#34;&#34;Return content as text, with some formatting.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return content as text, with some formatting.&#34;&#34;&#34;
         # For the moment, only &#34;type=&#39;text&#39;&#34;
         doc_type = self.get_type()
         if doc_type not in {
-                &#39;text&#39;, &#39;text-template&#39;, &#39;presentation&#39;,
-                &#39;presentation-template&#39;
+            &#34;text&#34;,
+            &#34;text-template&#34;,
+            &#34;presentation&#34;,
+            &#34;presentation-template&#34;,
         }:
-            raise NotImplementedError(&#39;Type of document &#34;%s&#34; not &#39;
-                                      &#39;supported yet&#39; % doc_type)
+            raise NotImplementedError(
+                &#39;Type of document &#34;%s&#34; not &#39; &#34;supported yet&#34; % doc_type
+            )
         # Initialize an empty context
         context = {
-            &#39;document&#39;: self,
-            &#39;footnotes&#39;: [],
-            &#39;endnotes&#39;: [],
-            &#39;annotations&#39;: [],
-            &#39;rst_mode&#39;: rst_mode,
-            &#39;img_counter&#39;: 0,
-            &#39;images&#39;: [],
-            &#39;no_img_level&#39;: 0
+            &#34;document&#34;: self,
+            &#34;footnotes&#34;: [],
+            &#34;endnotes&#34;: [],
+            &#34;annotations&#34;: [],
+            &#34;rst_mode&#34;: rst_mode,
+            &#34;img_counter&#34;: 0,
+            &#34;images&#34;: [],
+            &#34;no_img_level&#34;: 0,
         }
         body = self.body
         # Get the text
         result = []
         for element in body.children:
-            if element.tag == &#39;table:table&#39;:
+            if element.tag == &#34;table:table&#34;:
                 result.append(element.get_formatted_text(context))
             else:
                 result.append(element.get_formatted_text(context))
                 # Insert the notes
-                footnotes = context[&#39;footnotes&#39;]
+                footnotes = context[&#34;footnotes&#34;]
                 # Separate text from notes
                 if footnotes:
                     if rst_mode:
-                        result.append(&#39;\n&#39;)
+                        result.append(&#34;\n&#34;)
                     else:
-                        result.append(&#39;----\n&#39;)
+                        result.append(&#34;----\n&#34;)
                     for citation, body in footnotes:
                         if rst_mode:
-                            result.append(&#39;.. [#] %s\n&#39; % body)
+                            result.append(&#34;.. [#] %s\n&#34; % body)
                         else:
-                            result.append(&#39;[%s] %s\n&#39; % (citation, body))
+                            result.append(&#34;[%s] %s\n&#34; % (citation, body))
                     # Append a \n after the notes
-                    result.append(&#39;\n&#39;)
+                    result.append(&#34;\n&#34;)
                     # Reset for the next paragraph
-                    context[&#39;footnotes&#39;] = []
+                    context[&#34;footnotes&#34;] = []
                 # Insert the annotations
-                annotations = context[&#39;annotations&#39;]
+                annotations = context[&#34;annotations&#34;]
                 # With a separation
                 if annotations:
                     if rst_mode:
-                        result.append(&#39;\n&#39;)
+                        result.append(&#34;\n&#34;)
                     else:
-                        result.append(&#39;----\n&#39;)
+                        result.append(&#34;----\n&#34;)
                     for annotation in annotations:
                         if rst_mode:
-                            result.append(&#39;.. [#] %s\n&#39; % annotation)
+                            result.append(&#34;.. [#] %s\n&#34; % annotation)
                         else:
-                            result.append(&#39;[*] %s\n&#39; % annotation)
-                    context[&#39;annotations&#39;] = []
+                            result.append(&#34;[*] %s\n&#34; % annotation)
+                    context[&#34;annotations&#34;] = []
                 # Insert the images ref, only in rst mode
-                images = context[&#39;images&#39;]
+                images = context[&#34;images&#34;]
                 if images:
-                    result.append(&#39;\n&#39;)
+                    result.append(&#34;\n&#34;)
                     for ref, filename, (width, height) in images:
-                        result.append(&#39;.. %s image:: %s\n&#39; % (ref, filename))
+                        result.append(&#34;.. %s image:: %s\n&#34; % (ref, filename))
                         if width is not None:
-                            result.append(&#39;   :width: %s\n&#39; % width)
+                            result.append(&#34;   :width: %s\n&#34; % width)
                         if height is not None:
-                            result.append(&#39;   :height: %s\n&#39; % height)
-                        result.append(&#39;\n&#39;)
-                    context[&#39;images&#39;] = []
+                            result.append(&#34;   :height: %s\n&#34; % height)
+                        result.append(&#34;\n&#34;)
+                    context[&#34;images&#34;] = []
         # Append the end notes
-        endnotes = context[&#39;endnotes&#39;]
+        endnotes = context[&#34;endnotes&#34;]
         if endnotes:
             if rst_mode:
-                result.append(&#39;\n\n&#39;)
+                result.append(&#34;\n\n&#34;)
             else:
-                result.append(&#39;\n========\n&#39;)
+                result.append(&#34;\n========\n&#34;)
             for citation, body in endnotes:
                 if rst_mode:
-                    result.append(&#39;.. [*] %s\n&#39; % body)
+                    result.append(&#34;.. [*] %s\n&#34; % body)
                 else:
-                    result.append(&#39;(%s) %s\n&#39; % (citation, body))
-        return &#39;&#39;.join(result)
+                    result.append(&#34;(%s) %s\n&#34; % (citation, body))
+        return &#34;&#34;.join(result)
 
     def get_formated_meta(self):
-        &#34;&#34;&#34;Return meta informations as text, with some formatting.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return meta informations as text, with some formatting.&#34;&#34;&#34;
         result = []
 
         meta = self.get_part(ODF_META)
@@ -1052,8 +1079,9 @@ class Document:
         result.append(&#34;Statistic:&#34;)
         statistic = meta.get_statistic()
         for name, value in statistic.items():
-            result.append(&#34;  - %s: %s&#34; % (name[5:].replace(
-                &#39;-&#39;, &#39; &#39;).capitalize(), value))
+            result.append(
+                &#34;  - %s: %s&#34; % (name[5:].replace(&#34;-&#34;, &#34; &#34;).capitalize(), value)
+            )
 
         # User defined metadata
         result.append(&#34;User defined metadata:&#34;)
@@ -1064,7 +1092,7 @@ class Document:
         # And the description
         print_info(&#34;Description&#34;, meta.get_description())
 
-        return &#39;\n&#39;.join(result) + &#39;\n&#39;
+        return &#34;\n&#34;.join(result) + &#34;\n&#34;
 
     def add_file(self, path_or_file):
         &#34;&#34;&#34;Insert a file from a path or a fike-like object in the container.
@@ -1083,33 +1111,33 @@ class Document:
         medias = manifest.get_paths()
 
         if isinstance(path_or_file, str):
-            handler = open(path_or_file, &#39;rb&#39;)
+            handler = open(path_or_file, &#34;rb&#34;)
             name = path_or_file
             close_after = True
         else:
             handler = path_or_file
-            name = getattr(path_or_file, &#39;name&#39;, None)
+            name = getattr(path_or_file, &#34;name&#34;, None)
         name = os.path.basename(name)
         # Generate a safe portable name
         uuid = str(uuid4())
         if name is None:
             name = uuid
-            media_type = &#39;&#39;
+            media_type = &#34;&#34;
         else:
             root, extension = os.path.splitext(name)
             extension = extension.lower()
             name = root + extension
             media_type, _encoding = guess_type(name)
             # Check this name is already used in the document
-            if posixpath.join(&#39;Pictures&#39;, name) in medias:
-                root = &#39;%s_%s&#39; % (root, uuid)
+            if posixpath.join(&#34;Pictures&#34;, name) in medias:
+                root = &#34;%s_%s&#34; % (root, uuid)
                 name = root + extension
                 media_type, _encoding = guess_type(name)
 
-        if manifest.get_media_type(&#39;Pictures/&#39;) is None:
-            manifest.add_full_path(&#39;Pictures/&#39;)
+        if manifest.get_media_type(&#34;Pictures/&#34;) is None:
+            manifest.add_full_path(&#34;Pictures/&#34;)
 
-        full_path = posixpath.join(&#39;Pictures&#39;, name)
+        full_path = posixpath.join(&#34;Pictures&#34;, name)
         self.container.set_part(full_path, handler.read())
 
         # Update manifest
@@ -1127,13 +1155,12 @@ class Document:
         &#34;&#34;&#34;
         clone = object.__new__(self.__class__)
         for name in self.__dict__:
-            if name == &#39;container&#39;:
+            if name == &#34;_Document__body&#34;:
+                setattr(clone, name, None)
+            elif name == &#34;_Document__xmlparts&#34;:
+                setattr(clone, name, {})
+            elif name == &#34;container&#34;:
                 setattr(clone, name, self.container.clone)
-            elif name == &#39;_Document__xmlparts&#39;:
-                xmlparts = {}
-                for key, value in self.__xmlparts.items():
-                    xmlparts[key] = value.clone
-                setattr(clone, name, xmlparts)
             else:
                 value = deepcopy(getattr(self, name))
                 setattr(clone, name, value)
@@ -1172,8 +1199,9 @@ class Document:
         content = self.get_part(ODF_CONTENT)
         styles = self.get_part(ODF_STYLES)
         family = to_str(family)
-        return (content.get_styles(family=family) + styles.get_styles(
-            family=family, automatic=automatic))
+        return content.get_styles(family=family) + styles.get_styles(
+            family=family, automatic=automatic
+        )
 
     def get_style(self, family, name_or_element=None, display_name=None):
         &#34;&#34;&#34;Return the style uniquely identified by the name/family pair. If
@@ -1199,13 +1227,15 @@ class Document:
         family = to_str(family)
         content = self.get_part(ODF_CONTENT)
         element = content.get_style(
-            family, name_or_element=name_or_element, display_name=display_name)
+            family, name_or_element=name_or_element, display_name=display_name
+        )
         if element is not None:
             return element
         # 2. styles.xml
         styles = self.get_part(ODF_STYLES)
         return styles.get_style(
-            family, name_or_element=name_or_element, display_name=display_name)
+            family, name_or_element=name_or_element, display_name=display_name
+        )
 
     def insert_style(self, style, name=None, automatic=False, default=False):
         &#34;&#34;&#34;Insert the given style object in the document, as required by the
@@ -1230,7 +1260,7 @@ class Document:
 
         Arguments:
 
-            style -- Style
+            style -- Style or str
 
             name -- str
 
@@ -1241,18 +1271,23 @@ class Document:
         Return : style name -- str
         &#34;&#34;&#34;
 
+        # if style is a str, assume it is the Style definition
+        if isinstance(style, str):
+            style = Element.from_tag(style)
+
         # Get family and name
         family = style.family
+
         if name is None:
             name = style.name
 
         # Master page style
-        if family == &#39;master-page&#39;:
+        if family == &#34;master-page&#34;:
             part = self.get_part(ODF_STYLES)
             container = part.get_element(&#34;office:master-styles&#34;)
             existing = part.get_style(family, name)
         # Font face declarations
-        elif family == &#39;font-face&#39;:
+        elif family == &#34;font-face&#34;:
             if default:
                 part = self.get_part(ODF_STYLES)
             else:
@@ -1260,13 +1295,13 @@ class Document:
             container = part.get_element(&#34;office:font-face-decls&#34;)
             existing = part.get_style(family, name)
         # page layout style
-        elif family == &#39;page-layout&#39;:
+        elif family == &#34;page-layout&#34;:
             part = self.get_part(ODF_STYLES)
             # force to automatic
             container = part.get_element(&#34;office:automatic-styles&#34;)
             existing = part.get_style(family, name)
         # Common style
-        elif family in FAMILY_ODF_STD:
+        elif family in FAMILY_ODF_STD or family in {&#34;number&#34;}:
             # Common style
             if name and automatic is False and default is False:
                 part = self.get_part(ODF_STYLES)
@@ -1276,19 +1311,20 @@ class Document:
             # Automatic style
             elif automatic is True and default is False:
                 part = self.get_part(ODF_CONTENT)
-                container = part.get_element(&#39;office:automatic-styles&#39;)
+                container = part.get_element(&#34;office:automatic-styles&#34;)
 
                 # A name ?
                 if name is None:
                     # Make a beautiful name
 
                     # TODO: Use prefixes of Ooo: Mpm1, ...
-                    prefix = &#39;lpod_auto_&#39;
+                    prefix = &#34;lpod_auto_&#34;
 
                     styles = self.get_styles(family=family, automatic=True)
                     names = [s.name for s in styles]
                     numbers = [
-                        int(name[len(prefix):]) for name in names
+                        int(name[len(prefix) :])
+                        for name in names
                         if name and name.startswith(prefix)
                     ]
                     if numbers:
@@ -1302,16 +1338,17 @@ class Document:
                     existing = None
                 else:
                     existing = part.get_style(family, name)
+                    style.name = name
 
             # Default style
             elif automatic is False and default is True:
                 part = self.get_part(ODF_STYLES)
-                container = part.get_element(&#39;office:styles&#39;)
+                container = part.get_element(&#34;office:styles&#34;)
 
                 # Force default style
-                style.tag = &#39;style:default-style&#39;
+                style.tag = &#34;style:default-style&#34;
                 if name is not None:
-                    style.del_attribute(&#39;style:name&#39;)
+                    style.del_attribute(&#34;style:name&#34;)
 
                 existing = part.get_style(family)
 
@@ -1320,7 +1357,9 @@ class Document:
                 raise AttributeError(&#34;invalid combination of arguments&#34;)
         # Invalid style
         else:
-            raise ValueError(&#34;invalid style: %s&#34; % style)
+            raise ValueError(
+                f&#34;invalid style: {style}, tag:{style.tag}, family:{family}&#34;
+            )
 
         # Insert it!
         if existing is not None:
@@ -1341,8 +1380,9 @@ class Document:
         content = self.get_part(ODF_CONTENT)
         # Header, footer, etc. have styles too
         styles = self.get_part(ODF_STYLES)
-        return (content.root.get_styled_elements(name) +
-                styles.root.get_styled_elements(name))
+        return content.root.get_styled_elements(name) + styles.root.get_styled_elements(
+            name
+        )
 
     def show_styles(self, automatic=True, common=True, properties=False):
         infos = []
@@ -1350,53 +1390,52 @@ class Document:
             try:
                 name = style.name
             except AttributeError:
-                print(&#39;--------------&#39;)
+                print(&#34;--------------&#34;)
                 print(style.__class__)
                 print(style.serialize())
                 raise
             parent = style.parent
-            is_auto = (parent and parent.tag == &#39;office:automatic-styles&#39;)
-            if (is_auto and automatic is False
-                    or not is_auto and common is False):
+            is_auto = parent and parent.tag == &#34;office:automatic-styles&#34;
+            if is_auto and automatic is False or not is_auto and common is False:
                 continue
             is_used = bool(self.get_styled_elements(name))
-            infos.append({
-                &#39;type&#39;:
-                &#34;auto  &#34; if is_auto else &#34;common&#34;,
-                &#39;used&#39;:
-                &#34;y&#34; if is_used else &#34;n&#34;,
-                &#39;family&#39;:
-                style.family or &#34;&#34;,
-                &#39;parent&#39;:
-                style.parent_style or &#34;&#34;,
-                &#39;name&#39;:
-                name or &#34;&#34;,
-                &#39;display_name&#39;:
-                style.display_name,
-                &#39;properties&#39;:
-                style.get_properties() if properties else None
-            })
+            infos.append(
+                {
+                    &#34;type&#34;: &#34;auto  &#34; if is_auto else &#34;common&#34;,
+                    &#34;used&#34;: &#34;y&#34; if is_used else &#34;n&#34;,
+                    &#34;family&#34;: style.family or &#34;&#34;,
+                    &#34;parent&#34;: style.parent_style or &#34;&#34;,
+                    &#34;name&#34;: name or &#34;&#34;,
+                    &#34;display_name&#34;: style.display_name,
+                    &#34;properties&#34;: style.get_properties() if properties else None,
+                }
+            )
         if not infos:
-            return &#39;&#39;
+            return &#34;&#34;
         # Sort by family and name
-        infos.sort(key=itemgetter(&#39;family&#39;, &#39;name&#39;))
+        infos.sort(key=itemgetter(&#34;family&#34;, &#34;name&#34;))
         # Show common and used first
-        infos.sort(key=itemgetter(&#39;type&#39;, &#39;used&#39;), reverse=True)
-        max_family = str(max([len(x[&#39;family&#39;]) for x in infos]))
-        max_parent = str(max([len(x[&#39;parent&#39;]) for x in infos]))
-        formater = (&#34;%(type)s used:%(used)s family:%(family)-0&#34; + max_family +
-                    &#34;s parent:%(parent)-0&#34; + max_parent + &#34;s name:%(name)s&#34;)
+        infos.sort(key=itemgetter(&#34;type&#34;, &#34;used&#34;), reverse=True)
+        max_family = str(max([len(x[&#34;family&#34;]) for x in infos]))
+        max_parent = str(max([len(x[&#34;parent&#34;]) for x in infos]))
+        formater = (
+            &#34;%(type)s used:%(used)s family:%(family)-0&#34;
+            + max_family
+            + &#34;s parent:%(parent)-0&#34;
+            + max_parent
+            + &#34;s name:%(name)s&#34;
+        )
         output = []
         for info in infos:
             line = formater % info
-            if info[&#39;display_name&#39;]:
-                line += &#39; display_name:&#39; + info[&#39;display_name&#39;]
+            if info[&#34;display_name&#34;]:
+                line += &#34; display_name:&#34; + info[&#34;display_name&#34;]
             output.append(line)
-            if info[&#39;properties&#39;]:
-                for name, value in info[&#39;properties&#39;].items():
+            if info[&#34;properties&#34;]:
+                for name, value in info[&#34;properties&#34;].items():
                     output.append(&#34;   - %s: %s&#34; % (name, value))
-        output.append(&#39;&#39;)
-        return &#39;\n&#39;.join(output)
+        output.append(&#34;&#34;)
+        return &#34;\n&#34;.join(output)
 
     def delete_styles(self):
         &#34;&#34;&#34;Remove all style information from content and all styles.
@@ -1405,9 +1444,13 @@ class Document:
         &#34;&#34;&#34;
         # First remove references to styles
         for element in self.get_styled_elements():
-            for attribute in (&#39;text:style-name&#39;, &#39;draw:style-name&#39;,
-                              &#39;draw:text-style-name&#39;, &#39;table:style-name&#39;,
-                              &#39;style:page-layout-name&#39;):
+            for attribute in (
+                &#34;text:style-name&#34;,
+                &#34;draw:style-name&#34;,
+                &#34;draw:text-style-name&#34;,
+                &#34;table:style-name&#34;,
+                &#34;style:page-layout-name&#34;,
+            ):
                 try:
                     element.del_attribute(attribute)
                 except KeyError:
@@ -1418,7 +1461,7 @@ class Document:
             if style.name is None:
                 # Don&#39;t delete default styles
                 continue
-            #elif type(style) is odf_master_page:
+            # elif type(style) is odf_master_page:
             #    # Don&#39;t suppress header and footer, just styling was removed
             #    continue
             style.delete()
@@ -1443,29 +1486,31 @@ class Document:
             container_name = container.tag
             partname = container.parent.tag
             # The destination part
-            if partname == &#39;office:document-styles&#39;:
+            if partname == &#34;office:document-styles&#34;:
                 part = styles
-            elif partname == &#39;office:document-content&#39;:
+            elif partname == &#34;office:document-content&#34;:
                 part = content
             else:
                 raise NotImplementedError(partname)
             # Implemented containers
             if container_name not in {
-                    &#39;office:styles&#39;, &#39;office:automatic-styles&#39;,
-                    &#39;office:master-styles&#39;, &#39;office:font-face-decls&#39;
+                &#34;office:styles&#34;,
+                &#34;office:automatic-styles&#34;,
+                &#34;office:master-styles&#34;,
+                &#34;office:font-face-decls&#34;,
             }:
                 raise NotImplementedError(container_name)
-            dest = part.get_element(&#39;//%s&#39; % container_name)
+            dest = part.get_element(&#34;//%s&#34; % container_name)
             # Implemented style types
-            #if tagname not in registered_styles:
+            # if tagname not in registered_styles:
             #    raise NotImplementedError(tagname)
             duplicate = part.get_style(family, stylename)
             if duplicate is not None:
                 duplicate.delete()
             dest.append(style)
             # Copy images from the header/footer
-            if tagname == &#39;style:master-page&#39;:
-                query = &#39;descendant::draw:image&#39;
+            if tagname == &#34;style:master-page&#34;:
+                query = &#34;descendant::draw:image&#34;
                 for image in style.get_elements(query):
                     url = image.get_url()
                     part = document.get_part(url)
@@ -1474,7 +1519,7 @@ class Document:
                     media_type = document_manifest.get_media_type(url)
                     manifest.add_full_path(url, media_type)
             # Copy images from the fill-image
-            elif tagname == &#39;draw:fill-image&#39;:
+            elif tagname == &#34;draw:fill-image&#34;:
                 url = style.get_url()
                 part = document.get_part(url)
                 self.set_part(url, part)
@@ -1493,7 +1538,7 @@ class Document:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@classmethod
-def new(cls, target=&#39;text&#39;):
+def new(cls, target=&#34;text&#34;):
     doc = Document()
     doc.container = Container.new(target)
     return doc</code></pre>
@@ -1537,13 +1582,12 @@ def clone(self):
     &#34;&#34;&#34;
     clone = object.__new__(self.__class__)
     for name in self.__dict__:
-        if name == &#39;container&#39;:
+        if name == &#34;_Document__body&#34;:
+            setattr(clone, name, None)
+        elif name == &#34;_Document__xmlparts&#34;:
+            setattr(clone, name, {})
+        elif name == &#34;container&#34;:
             setattr(clone, name, self.container.clone)
-        elif name == &#39;_Document__xmlparts&#39;:
-            xmlparts = {}
-            for key, value in self.__xmlparts.items():
-                xmlparts[key] = value.clone
-            setattr(clone, name, xmlparts)
         else:
             value = deepcopy(getattr(self, name))
             setattr(clone, name, value)
@@ -1595,33 +1639,33 @@ Return the full path to reference it in the content.</p>
     medias = manifest.get_paths()
 
     if isinstance(path_or_file, str):
-        handler = open(path_or_file, &#39;rb&#39;)
+        handler = open(path_or_file, &#34;rb&#34;)
         name = path_or_file
         close_after = True
     else:
         handler = path_or_file
-        name = getattr(path_or_file, &#39;name&#39;, None)
+        name = getattr(path_or_file, &#34;name&#34;, None)
     name = os.path.basename(name)
     # Generate a safe portable name
     uuid = str(uuid4())
     if name is None:
         name = uuid
-        media_type = &#39;&#39;
+        media_type = &#34;&#34;
     else:
         root, extension = os.path.splitext(name)
         extension = extension.lower()
         name = root + extension
         media_type, _encoding = guess_type(name)
         # Check this name is already used in the document
-        if posixpath.join(&#39;Pictures&#39;, name) in medias:
-            root = &#39;%s_%s&#39; % (root, uuid)
+        if posixpath.join(&#34;Pictures&#34;, name) in medias:
+            root = &#34;%s_%s&#34; % (root, uuid)
             name = root + extension
             media_type, _encoding = guess_type(name)
 
-    if manifest.get_media_type(&#39;Pictures/&#39;) is None:
-        manifest.add_full_path(&#39;Pictures/&#39;)
+    if manifest.get_media_type(&#34;Pictures/&#34;) is None:
+        manifest.add_full_path(&#34;Pictures/&#34;)
 
-    full_path = posixpath.join(&#39;Pictures&#39;, name)
+    full_path = posixpath.join(&#34;Pictures&#34;, name)
     self.container.set_part(full_path, handler.read())
 
     # Update manifest
@@ -1670,9 +1714,13 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
     &#34;&#34;&#34;
     # First remove references to styles
     for element in self.get_styled_elements():
-        for attribute in (&#39;text:style-name&#39;, &#39;draw:style-name&#39;,
-                          &#39;draw:text-style-name&#39;, &#39;table:style-name&#39;,
-                          &#39;style:page-layout-name&#39;):
+        for attribute in (
+            &#34;text:style-name&#34;,
+            &#34;draw:style-name&#34;,
+            &#34;draw:text-style-name&#34;,
+            &#34;table:style-name&#34;,
+            &#34;style:page-layout-name&#34;,
+        ):
             try:
                 element.del_attribute(attribute)
             except KeyError:
@@ -1683,7 +1731,7 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
         if style.name is None:
             # Don&#39;t delete default styles
             continue
-        #elif type(style) is odf_master_page:
+        # elif type(style) is odf_master_page:
         #    # Don&#39;t suppress header and footer, just styling was removed
         #    continue
         style.delete()
@@ -1701,8 +1749,7 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_formated_meta(self):
-    &#34;&#34;&#34;Return meta informations as text, with some formatting.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Return meta informations as text, with some formatting.&#34;&#34;&#34;
     result = []
 
     meta = self.get_part(ODF_META)
@@ -1727,8 +1774,9 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
     result.append(&#34;Statistic:&#34;)
     statistic = meta.get_statistic()
     for name, value in statistic.items():
-        result.append(&#34;  - %s: %s&#34; % (name[5:].replace(
-            &#39;-&#39;, &#39; &#39;).capitalize(), value))
+        result.append(
+            &#34;  - %s: %s&#34; % (name[5:].replace(&#34;-&#34;, &#34; &#34;).capitalize(), value)
+        )
 
     # User defined metadata
     result.append(&#34;User defined metadata:&#34;)
@@ -1739,7 +1787,7 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
     # And the description
     print_info(&#34;Description&#34;, meta.get_description())
 
-    return &#39;\n&#39;.join(result) + &#39;\n&#39;</code></pre>
+    return &#34;\n&#34;.join(result) + &#34;\n&#34;</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.get_formatted_text"><code class="name flex">
@@ -1752,91 +1800,93 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_formatted_text(self, rst_mode=False):
-    &#34;&#34;&#34;Return content as text, with some formatting.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Return content as text, with some formatting.&#34;&#34;&#34;
     # For the moment, only &#34;type=&#39;text&#39;&#34;
     doc_type = self.get_type()
     if doc_type not in {
-            &#39;text&#39;, &#39;text-template&#39;, &#39;presentation&#39;,
-            &#39;presentation-template&#39;
+        &#34;text&#34;,
+        &#34;text-template&#34;,
+        &#34;presentation&#34;,
+        &#34;presentation-template&#34;,
     }:
-        raise NotImplementedError(&#39;Type of document &#34;%s&#34; not &#39;
-                                  &#39;supported yet&#39; % doc_type)
+        raise NotImplementedError(
+            &#39;Type of document &#34;%s&#34; not &#39; &#34;supported yet&#34; % doc_type
+        )
     # Initialize an empty context
     context = {
-        &#39;document&#39;: self,
-        &#39;footnotes&#39;: [],
-        &#39;endnotes&#39;: [],
-        &#39;annotations&#39;: [],
-        &#39;rst_mode&#39;: rst_mode,
-        &#39;img_counter&#39;: 0,
-        &#39;images&#39;: [],
-        &#39;no_img_level&#39;: 0
+        &#34;document&#34;: self,
+        &#34;footnotes&#34;: [],
+        &#34;endnotes&#34;: [],
+        &#34;annotations&#34;: [],
+        &#34;rst_mode&#34;: rst_mode,
+        &#34;img_counter&#34;: 0,
+        &#34;images&#34;: [],
+        &#34;no_img_level&#34;: 0,
     }
     body = self.body
     # Get the text
     result = []
     for element in body.children:
-        if element.tag == &#39;table:table&#39;:
+        if element.tag == &#34;table:table&#34;:
             result.append(element.get_formatted_text(context))
         else:
             result.append(element.get_formatted_text(context))
             # Insert the notes
-            footnotes = context[&#39;footnotes&#39;]
+            footnotes = context[&#34;footnotes&#34;]
             # Separate text from notes
             if footnotes:
                 if rst_mode:
-                    result.append(&#39;\n&#39;)
+                    result.append(&#34;\n&#34;)
                 else:
-                    result.append(&#39;----\n&#39;)
+                    result.append(&#34;----\n&#34;)
                 for citation, body in footnotes:
                     if rst_mode:
-                        result.append(&#39;.. [#] %s\n&#39; % body)
+                        result.append(&#34;.. [#] %s\n&#34; % body)
                     else:
-                        result.append(&#39;[%s] %s\n&#39; % (citation, body))
+                        result.append(&#34;[%s] %s\n&#34; % (citation, body))
                 # Append a \n after the notes
-                result.append(&#39;\n&#39;)
+                result.append(&#34;\n&#34;)
                 # Reset for the next paragraph
-                context[&#39;footnotes&#39;] = []
+                context[&#34;footnotes&#34;] = []
             # Insert the annotations
-            annotations = context[&#39;annotations&#39;]
+            annotations = context[&#34;annotations&#34;]
             # With a separation
             if annotations:
                 if rst_mode:
-                    result.append(&#39;\n&#39;)
+                    result.append(&#34;\n&#34;)
                 else:
-                    result.append(&#39;----\n&#39;)
+                    result.append(&#34;----\n&#34;)
                 for annotation in annotations:
                     if rst_mode:
-                        result.append(&#39;.. [#] %s\n&#39; % annotation)
+                        result.append(&#34;.. [#] %s\n&#34; % annotation)
                     else:
-                        result.append(&#39;[*] %s\n&#39; % annotation)
-                context[&#39;annotations&#39;] = []
+                        result.append(&#34;[*] %s\n&#34; % annotation)
+                context[&#34;annotations&#34;] = []
             # Insert the images ref, only in rst mode
-            images = context[&#39;images&#39;]
+            images = context[&#34;images&#34;]
             if images:
-                result.append(&#39;\n&#39;)
+                result.append(&#34;\n&#34;)
                 for ref, filename, (width, height) in images:
-                    result.append(&#39;.. %s image:: %s\n&#39; % (ref, filename))
+                    result.append(&#34;.. %s image:: %s\n&#34; % (ref, filename))
                     if width is not None:
-                        result.append(&#39;   :width: %s\n&#39; % width)
+                        result.append(&#34;   :width: %s\n&#34; % width)
                     if height is not None:
-                        result.append(&#39;   :height: %s\n&#39; % height)
-                    result.append(&#39;\n&#39;)
-                context[&#39;images&#39;] = []
+                        result.append(&#34;   :height: %s\n&#34; % height)
+                    result.append(&#34;\n&#34;)
+                context[&#34;images&#34;] = []
     # Append the end notes
-    endnotes = context[&#39;endnotes&#39;]
+    endnotes = context[&#34;endnotes&#34;]
     if endnotes:
         if rst_mode:
-            result.append(&#39;\n\n&#39;)
+            result.append(&#34;\n\n&#34;)
         else:
-            result.append(&#39;\n========\n&#39;)
+            result.append(&#34;\n========\n&#34;)
         for citation, body in endnotes:
             if rst_mode:
-                result.append(&#39;.. [*] %s\n&#39; % body)
+                result.append(&#34;.. [*] %s\n&#34; % body)
             else:
-                result.append(&#39;(%s) %s\n&#39; % (citation, body))
-    return &#39;&#39;.join(result)</code></pre>
+                result.append(&#34;(%s) %s\n&#34; % (citation, body))
+    return &#34;&#34;.join(result)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.get_part"><code class="name flex">
@@ -1864,7 +1914,7 @@ its own API.</p>
     path formated as URI, so always use &#39;/&#39; separator
     &#34;&#34;&#34;
     # &#34;./ObjectReplacements/Object 1&#34;
-    path = path.lstrip(&#39;./&#39;)
+    path = path.lstrip(&#34;./&#34;)
     path = _get_part_path(path)
     cls = _get_part_class(path)
     container = self.container
@@ -1940,13 +1990,15 @@ desktop application, use display_name instead.</p>
     family = to_str(family)
     content = self.get_part(ODF_CONTENT)
     element = content.get_style(
-        family, name_or_element=name_or_element, display_name=display_name)
+        family, name_or_element=name_or_element, display_name=display_name
+    )
     if element is not None:
         return element
     # 2. styles.xml
     styles = self.get_part(ODF_STYLES)
     return styles.get_style(
-        family, name_or_element=name_or_element, display_name=display_name)</code></pre>
+        family, name_or_element=name_or_element, display_name=display_name
+    )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.get_styled_elements"><code class="name flex">
@@ -1975,8 +2027,9 @@ name (or all by default).</p>
     content = self.get_part(ODF_CONTENT)
     # Header, footer, etc. have styles too
     styles = self.get_part(ODF_STYLES)
-    return (content.root.get_styled_elements(name) +
-            styles.root.get_styled_elements(name))</code></pre>
+    return content.root.get_styled_elements(name) + styles.root.get_styled_elements(
+        name
+    )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.get_styles"><code class="name flex">
@@ -1992,8 +2045,9 @@ name (or all by default).</p>
     content = self.get_part(ODF_CONTENT)
     styles = self.get_part(ODF_STYLES)
     family = to_str(family)
-    return (content.get_styles(family=family) + styles.get_styles(
-        family=family, automatic=automatic))</code></pre>
+    return content.get_styles(family=family) + styles.get_styles(
+        family=family, automatic=automatic
+    )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.get_type"><code class="name flex">
@@ -2022,7 +2076,7 @@ name (or all by default).</p>
     # application/vnd.oasis.opendocument.text
 
     # Isolate and return the last part
-    return self.mimetype.rsplit(&#39;.&#39;, 1)[-1]</code></pre>
+    return self.mimetype.rsplit(&#34;.&#34;, 1)[-1]</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.insert_style"><code class="name flex">
@@ -2044,7 +2098,7 @@ allowed for the following families: paragraph, text, section, table,
 table-column, table-row, table-cell, table-page, chart, drawing-page,
 graphic, presentation, control and ruby.</p>
 <h2 id="arguments">Arguments</h2>
-<p>style &ndash; Style</p>
+<p>style &ndash; Style or str</p>
 <p>name &ndash; str</p>
 <p>automatic &ndash; bool</p>
 <p>default &ndash; bool</p>
@@ -2076,7 +2130,7 @@ graphic, presentation, control and ruby.</p>
 
     Arguments:
 
-        style -- Style
+        style -- Style or str
 
         name -- str
 
@@ -2087,18 +2141,23 @@ graphic, presentation, control and ruby.</p>
     Return : style name -- str
     &#34;&#34;&#34;
 
+    # if style is a str, assume it is the Style definition
+    if isinstance(style, str):
+        style = Element.from_tag(style)
+
     # Get family and name
     family = style.family
+
     if name is None:
         name = style.name
 
     # Master page style
-    if family == &#39;master-page&#39;:
+    if family == &#34;master-page&#34;:
         part = self.get_part(ODF_STYLES)
         container = part.get_element(&#34;office:master-styles&#34;)
         existing = part.get_style(family, name)
     # Font face declarations
-    elif family == &#39;font-face&#39;:
+    elif family == &#34;font-face&#34;:
         if default:
             part = self.get_part(ODF_STYLES)
         else:
@@ -2106,13 +2165,13 @@ graphic, presentation, control and ruby.</p>
         container = part.get_element(&#34;office:font-face-decls&#34;)
         existing = part.get_style(family, name)
     # page layout style
-    elif family == &#39;page-layout&#39;:
+    elif family == &#34;page-layout&#34;:
         part = self.get_part(ODF_STYLES)
         # force to automatic
         container = part.get_element(&#34;office:automatic-styles&#34;)
         existing = part.get_style(family, name)
     # Common style
-    elif family in FAMILY_ODF_STD:
+    elif family in FAMILY_ODF_STD or family in {&#34;number&#34;}:
         # Common style
         if name and automatic is False and default is False:
             part = self.get_part(ODF_STYLES)
@@ -2122,19 +2181,20 @@ graphic, presentation, control and ruby.</p>
         # Automatic style
         elif automatic is True and default is False:
             part = self.get_part(ODF_CONTENT)
-            container = part.get_element(&#39;office:automatic-styles&#39;)
+            container = part.get_element(&#34;office:automatic-styles&#34;)
 
             # A name ?
             if name is None:
                 # Make a beautiful name
 
                 # TODO: Use prefixes of Ooo: Mpm1, ...
-                prefix = &#39;lpod_auto_&#39;
+                prefix = &#34;lpod_auto_&#34;
 
                 styles = self.get_styles(family=family, automatic=True)
                 names = [s.name for s in styles]
                 numbers = [
-                    int(name[len(prefix):]) for name in names
+                    int(name[len(prefix) :])
+                    for name in names
                     if name and name.startswith(prefix)
                 ]
                 if numbers:
@@ -2148,16 +2208,17 @@ graphic, presentation, control and ruby.</p>
                 existing = None
             else:
                 existing = part.get_style(family, name)
+                style.name = name
 
         # Default style
         elif automatic is False and default is True:
             part = self.get_part(ODF_STYLES)
-            container = part.get_element(&#39;office:styles&#39;)
+            container = part.get_element(&#34;office:styles&#34;)
 
             # Force default style
-            style.tag = &#39;style:default-style&#39;
+            style.tag = &#34;style:default-style&#34;
             if name is not None:
-                style.del_attribute(&#39;style:name&#39;)
+                style.del_attribute(&#34;style:name&#34;)
 
             existing = part.get_style(family)
 
@@ -2166,7 +2227,9 @@ graphic, presentation, control and ruby.</p>
             raise AttributeError(&#34;invalid combination of arguments&#34;)
     # Invalid style
     else:
-        raise ValueError(&#34;invalid style: %s&#34; % style)
+        raise ValueError(
+            f&#34;invalid style: {style}, tag:{style.tag}, family:{family}&#34;
+        )
 
     # Insert it!
     if existing is not None:
@@ -2204,29 +2267,31 @@ styles will be preserved.</p></div>
         container_name = container.tag
         partname = container.parent.tag
         # The destination part
-        if partname == &#39;office:document-styles&#39;:
+        if partname == &#34;office:document-styles&#34;:
             part = styles
-        elif partname == &#39;office:document-content&#39;:
+        elif partname == &#34;office:document-content&#34;:
             part = content
         else:
             raise NotImplementedError(partname)
         # Implemented containers
         if container_name not in {
-                &#39;office:styles&#39;, &#39;office:automatic-styles&#39;,
-                &#39;office:master-styles&#39;, &#39;office:font-face-decls&#39;
+            &#34;office:styles&#34;,
+            &#34;office:automatic-styles&#34;,
+            &#34;office:master-styles&#34;,
+            &#34;office:font-face-decls&#34;,
         }:
             raise NotImplementedError(container_name)
-        dest = part.get_element(&#39;//%s&#39; % container_name)
+        dest = part.get_element(&#34;//%s&#34; % container_name)
         # Implemented style types
-        #if tagname not in registered_styles:
+        # if tagname not in registered_styles:
         #    raise NotImplementedError(tagname)
         duplicate = part.get_style(family, stylename)
         if duplicate is not None:
             duplicate.delete()
         dest.append(style)
         # Copy images from the header/footer
-        if tagname == &#39;style:master-page&#39;:
-            query = &#39;descendant::draw:image&#39;
+        if tagname == &#34;style:master-page&#34;:
+            query = &#34;descendant::draw:image&#34;
             for image in style.get_elements(query):
                 url = image.get_url()
                 part = document.get_part(url)
@@ -2235,7 +2300,7 @@ styles will be preserved.</p></div>
                 media_type = document_manifest.get_media_type(url)
                 manifest.add_full_path(url, media_type)
         # Copy images from the fill-image
-        elif tagname == &#39;draw:fill-image&#39;:
+        elif tagname == &#34;draw:fill-image&#34;:
             url = style.get_url()
             part = document.get_part(url)
             self.set_part(url, part)
@@ -2306,7 +2371,7 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
     path formated as URI, so always use &#39;/&#39; separator
     &#34;&#34;&#34;
     # &#34;./ObjectReplacements/Object 1&#34;
-    path = path.lstrip(&#39;./&#39;)
+    path = path.lstrip(&#34;./&#34;)
     path = _get_part_path(path)
     cls = _get_part_class(path)
     # XML part overwritten
@@ -2330,53 +2395,52 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
         try:
             name = style.name
         except AttributeError:
-            print(&#39;--------------&#39;)
+            print(&#34;--------------&#34;)
             print(style.__class__)
             print(style.serialize())
             raise
         parent = style.parent
-        is_auto = (parent and parent.tag == &#39;office:automatic-styles&#39;)
-        if (is_auto and automatic is False
-                or not is_auto and common is False):
+        is_auto = parent and parent.tag == &#34;office:automatic-styles&#34;
+        if is_auto and automatic is False or not is_auto and common is False:
             continue
         is_used = bool(self.get_styled_elements(name))
-        infos.append({
-            &#39;type&#39;:
-            &#34;auto  &#34; if is_auto else &#34;common&#34;,
-            &#39;used&#39;:
-            &#34;y&#34; if is_used else &#34;n&#34;,
-            &#39;family&#39;:
-            style.family or &#34;&#34;,
-            &#39;parent&#39;:
-            style.parent_style or &#34;&#34;,
-            &#39;name&#39;:
-            name or &#34;&#34;,
-            &#39;display_name&#39;:
-            style.display_name,
-            &#39;properties&#39;:
-            style.get_properties() if properties else None
-        })
+        infos.append(
+            {
+                &#34;type&#34;: &#34;auto  &#34; if is_auto else &#34;common&#34;,
+                &#34;used&#34;: &#34;y&#34; if is_used else &#34;n&#34;,
+                &#34;family&#34;: style.family or &#34;&#34;,
+                &#34;parent&#34;: style.parent_style or &#34;&#34;,
+                &#34;name&#34;: name or &#34;&#34;,
+                &#34;display_name&#34;: style.display_name,
+                &#34;properties&#34;: style.get_properties() if properties else None,
+            }
+        )
     if not infos:
-        return &#39;&#39;
+        return &#34;&#34;
     # Sort by family and name
-    infos.sort(key=itemgetter(&#39;family&#39;, &#39;name&#39;))
+    infos.sort(key=itemgetter(&#34;family&#34;, &#34;name&#34;))
     # Show common and used first
-    infos.sort(key=itemgetter(&#39;type&#39;, &#39;used&#39;), reverse=True)
-    max_family = str(max([len(x[&#39;family&#39;]) for x in infos]))
-    max_parent = str(max([len(x[&#39;parent&#39;]) for x in infos]))
-    formater = (&#34;%(type)s used:%(used)s family:%(family)-0&#34; + max_family +
-                &#34;s parent:%(parent)-0&#34; + max_parent + &#34;s name:%(name)s&#34;)
+    infos.sort(key=itemgetter(&#34;type&#34;, &#34;used&#34;), reverse=True)
+    max_family = str(max([len(x[&#34;family&#34;]) for x in infos]))
+    max_parent = str(max([len(x[&#34;parent&#34;]) for x in infos]))
+    formater = (
+        &#34;%(type)s used:%(used)s family:%(family)-0&#34;
+        + max_family
+        + &#34;s parent:%(parent)-0&#34;
+        + max_parent
+        + &#34;s name:%(name)s&#34;
+    )
     output = []
     for info in infos:
         line = formater % info
-        if info[&#39;display_name&#39;]:
-            line += &#39; display_name:&#39; + info[&#39;display_name&#39;]
+        if info[&#34;display_name&#34;]:
+            line += &#34; display_name:&#34; + info[&#34;display_name&#34;]
         output.append(line)
-        if info[&#39;properties&#39;]:
-            for name, value in info[&#39;properties&#39;].items():
+        if info[&#34;properties&#34;]:
+            for name, value in info[&#34;properties&#34;].items():
                 output.append(&#34;   - %s: %s&#34; % (name, value))
-    output.append(&#39;&#39;)
-    return &#39;\n&#39;.join(output)</code></pre>
+    output.append(&#34;&#34;)
+    return &#34;\n&#34;.join(output)</code></pre>
 </details>
 </dd>
 </dl>
@@ -2428,7 +2492,7 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.3</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
 </footer>
 </body>
 </html>

@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.8.3" />
+<meta name="generator" content="pdoc 0.9.2" />
 <title>odfdo.paragraph API documentation</title>
 <meta name="description" content="Paragraph class for &#34;text:p&#34;, Span class for &#34;text:span&#34;" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
 <style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
 <style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
 </head>
 <body>
@@ -56,13 +56,11 @@ import re
 from functools import wraps  # for keeping trace of docstring with decorators
 
 from .bookmark import Bookmark, BookmarkStart, BookmarkEnd
-from .element import (FIRST_CHILD, NEXT_SIBLING, register_element_class,
-                      Element)
+from .element import FIRST_CHILD, NEXT_SIBLING, register_element_class, Element
 from .paragraph_base import ParagraphBase, Spacer, Tab, LineBreak
 
 from .note import Note, Annotation, AnnotationEnd
-from .reference import (Reference, ReferenceMark, ReferenceMarkStart,
-                        ReferenceMarkEnd)
+from .reference import Reference, ReferenceMark, ReferenceMarkStart, ReferenceMarkEnd
 from .link import Link
 
 
@@ -84,10 +82,10 @@ def _by_regex_offset(method):
 
             length -- int
         &#34;&#34;&#34;
-        offset = kwargs.get(&#39;offset&#39;, None)
-        regex = kwargs.get(&#39;regex&#39;, None)
+        offset = kwargs.get(&#34;offset&#34;, None)
+        regex = kwargs.get(&#34;regex&#34;, None)
         if offset:
-            length = kwargs.get(&#39;length&#39;, 0)
+            length = kwargs.get(&#34;length&#34;, 0)
             counted = 0
             for text in element.xpath(&#34;//text()&#34;):
                 if len(text) + counted &lt;= offset:
@@ -124,7 +122,7 @@ def _by_regex_offset(method):
                 return
         if regex:
             pattern = re.compile(regex)
-            for text in element.xpath(&#39;descendant::text()&#39;):
+            for text in element.xpath(&#34;descendant::text()&#34;):
                 # Static information about the text node
                 container = text.parent
                 upper = container.parent
@@ -160,7 +158,8 @@ class Paragraph(ParagraphBase):
     represents a paragraph, which is the basic unit of text in an OpenDocument
     file.
     &#34;&#34;&#34;
-    _tag = &#39;text:p&#39;
+
+    _tag = &#34;text:p&#34;
 
     def __init__(self, text_or_element=None, style=None, **kwargs):
         &#34;&#34;&#34;Create a paragraph element of the given style containing the optional
@@ -183,19 +182,19 @@ class Paragraph(ParagraphBase):
             if style is not None:
                 self.style = style
 
-    def insert_note(self,
-                    note_element=None,
-                    after=None,
-                    note_class=&#39;footnote&#39;,
-                    note_id=None,
-                    citation=None,
-                    body=None):
+    def insert_note(
+        self,
+        note_element=None,
+        after=None,
+        note_class=&#34;footnote&#34;,
+        note_id=None,
+        citation=None,
+        body=None,
+    ):
         if note_element is None:
             note_element = Note(
-                note_class=note_class,
-                note_id=note_id,
-                citation=citation,
-                body=body)
+                note_class=note_class, note_id=note_id, citation=citation, body=body
+            )
         else:
             # XXX clone or modify the argument?
             if note_class:
@@ -214,15 +213,17 @@ class Paragraph(ParagraphBase):
         else:
             self.insert(note_element, FIRST_CHILD)
 
-    def insert_annotation(self,
-                          annotation_element=None,
-                          before=None,
-                          after=None,
-                          position=0,
-                          content=None,
-                          body=None,
-                          creator=None,
-                          date=None):
+    def insert_annotation(
+        self,
+        annotation_element=None,
+        before=None,
+        after=None,
+        position=0,
+        content=None,
+        body=None,
+        creator=None,
+        date=None,
+    ):
         &#34;&#34;&#34;Insert an annotation, at the position defined by the regex (before,
         after, content) or by positionnal argument (position). If content is
         provided, the annotation covers the full content regex. Else, the
@@ -260,7 +261,8 @@ class Paragraph(ParagraphBase):
 
         if annotation_element is None:
             annotation_element = Annotation(
-                text_or_element=body, creator=creator, date=date, parent=self)
+                text_or_element=body, creator=creator, date=date, parent=self
+            )
         else:
             # XXX clone or modify the argument?
             if body:
@@ -288,30 +290,33 @@ class Paragraph(ParagraphBase):
 
         # With &#34;content&#34; =&gt; automatically insert a &#34;start&#34; and an &#34;end&#34;
         # bookmark
-        if (before is None and after is None and content is not None
-                and isinstance(position, int)):
+        if (
+            before is None
+            and after is None
+            and content is not None
+            and isinstance(position, int)
+        ):
             # Start tag
             self._insert(
-                annotation_element,
-                before=content,
-                position=position,
-                main_text=True)
+                annotation_element, before=content, position=position, main_text=True
+            )
             # End tag
             annotation_end = AnnotationEnd(annotation_element)
             self._insert(
-                annotation_end,
-                after=content,
-                position=position,
-                main_text=True)
+                annotation_end, after=content, position=position, main_text=True
+            )
             return annotation_element
 
         # With &#34;(int, int)&#34; =&gt;  automatically insert a &#34;start&#34; and an &#34;end&#34;
         # bookmark
-        if (before is None and after is None and content is None
-                and isinstance(position, tuple)):
+        if (
+            before is None
+            and after is None
+            and content is None
+            and isinstance(position, tuple)
+        ):
             # Start
-            self._insert(
-                annotation_element, position=position[0], main_text=True)
+            self._insert(annotation_element, position=position[0], main_text=True)
             # End
             annotation_end = AnnotationEnd(annotation_element)
             self._insert(annotation_end, position=position[1], main_text=True)
@@ -327,14 +332,13 @@ class Paragraph(ParagraphBase):
             before=before,
             after=after,
             position=position,
-            main_text=True)
+            main_text=True,
+        )
         return annotation_element
 
-    def insert_annotation_end(self,
-                              annotation_element,
-                              before=None,
-                              after=None,
-                              position=0):
+    def insert_annotation_end(
+        self, annotation_element, before=None, after=None, position=0
+    ):
         &#34;&#34;&#34;Insert an annotation end tag for an existing annotation. If some end
         tag already exists, replace it. Annotation end tag is set at the
         position defined by the regex (before or after).
@@ -369,19 +373,13 @@ class Paragraph(ParagraphBase):
 
         # Insert
         self._insert(
-            end_tag,
-            before=before,
-            after=after,
-            position=position,
-            main_text=True)
+            end_tag, before=before, after=after, position=position, main_text=True
+        )
         return end_tag
 
-    def set_reference_mark(self,
-                           name,
-                           before=None,
-                           after=None,
-                           position=0,
-                           content=None):
+    def set_reference_mark(
+        self, name, before=None, after=None, position=0, content=None
+    ):
         &#34;&#34;&#34;Insert a reference mark, at the position defined by the regex
         (before, after, content) or by positionnal argument (position). If
         content is provided, the annotation covers the full range content regex
@@ -427,27 +425,31 @@ class Paragraph(ParagraphBase):
 
         # With &#34;content&#34; =&gt; automatically insert a &#34;start&#34; and an &#34;end&#34;
         # reference
-        if (before is None and after is None and content is not None
-                and isinstance(position, int)):
+        if (
+            before is None
+            and after is None
+            and content is not None
+            and isinstance(position, int)
+        ):
             # Start tag
             reference_start = ReferenceMarkStart(name)
             self._insert(
-                reference_start,
-                before=content,
-                position=position,
-                main_text=True)
+                reference_start, before=content, position=position, main_text=True
+            )
             # End tag
             reference_end = ReferenceMarkEnd(name)
             self._insert(
-                reference_end,
-                after=content,
-                position=position,
-                main_text=True)
+                reference_end, after=content, position=position, main_text=True
+            )
             return reference_start
 
         # With &#34;(int, int)&#34; =&gt;  automatically insert a &#34;start&#34; and an &#34;end&#34;
-        if (before is None and after is None and content is None
-                and isinstance(position, tuple)):
+        if (
+            before is None
+            and after is None
+            and content is None
+            and isinstance(position, tuple)
+        ):
             # Start
             reference_start = ReferenceMarkStart(name)
             self._insert(reference_start, position=position[0], main_text=True)
@@ -463,18 +465,13 @@ class Paragraph(ParagraphBase):
         # Insert a positional reference mark
         reference = ReferenceMark(name)
         self._insert(
-            reference,
-            before=before,
-            after=after,
-            position=position,
-            main_text=True)
+            reference, before=before, after=after, position=position, main_text=True
+        )
         return reference
 
-    def set_reference_mark_end(self,
-                               reference_mark,
-                               before=None,
-                               after=None,
-                               position=0):
+    def set_reference_mark_end(
+        self, reference_mark, before=None, after=None, position=0
+    ):
         &#34;&#34;&#34;Insert/move a ReferenceMarkEnd for an existing reference mark. If
         some end tag already exists, replace it. Reference tag is set at the
         position defined by the regex (before or after).
@@ -508,11 +505,8 @@ class Paragraph(ParagraphBase):
 
         # Insert
         self._insert(
-            end_tag,
-            before=before,
-            after=after,
-            position=position,
-            main_text=True)
+            end_tag, before=before, after=after, position=position, main_text=True
+        )
         return end_tag
 
     def insert_variable(self, variable_element, after):
@@ -546,9 +540,9 @@ class Paragraph(ParagraphBase):
         If keep_heading is True (default), the first level heading style is left
         unchanged.
         &#34;&#34;&#34;
-        strip = (Span._tag, )
+        strip = (Span._tag,)
         if keep_heading:
-            protect = (&#39;text:h&#39;, )
+            protect = (&#34;text:h&#34;,)
         else:
             protect = None
         return self.strip_tags(strip=strip, protect=protect)
@@ -586,9 +580,8 @@ class Paragraph(ParagraphBase):
         return link
 
     def remove_links(self):
-        &#34;&#34;&#34;Send back a copy of the element, without links tags.
-        &#34;&#34;&#34;
-        strip = (Link._tag, )
+        &#34;&#34;&#34;Send back a copy of the element, without links tags.&#34;&#34;&#34;
+        strip = (Link._tag,)
         return self.strip_tags(strip=strip)
 
     def remove_link(self, links):
@@ -601,13 +594,9 @@ class Paragraph(ParagraphBase):
         &#34;&#34;&#34;
         return self.strip_elements(links)
 
-    def insert_reference(self,
-                         name,
-                         ref_format=&#39;&#39;,
-                         before=None,
-                         after=None,
-                         position=0,
-                         display=None):
+    def insert_reference(
+        self, name, ref_format=&#34;&#34;, before=None, after=None, position=0, display=None
+    ):
         &#34;&#34;&#34;Create and insert a reference to a content marked by a reference
         mark. The Reference element (&#34;text:reference-ref&#34;) represents a
         field that references a &#34;text:reference-mark-start&#34; or
@@ -646,7 +635,7 @@ class Paragraph(ParagraphBase):
             display -- str or None
         &#34;&#34;&#34;
         reference = Reference(name, ref_format)
-        if display is None and ref_format == &#39;text&#39;:
+        if display is None and ref_format == &#34;text&#34;:
             # get reference content
             body = self.document_body
             if not body:
@@ -655,25 +644,18 @@ class Paragraph(ParagraphBase):
             if mark:
                 display = mark.referenced_text
         if not display:
-            display = &#39; &#39;
+            display = &#34; &#34;
         reference.text = display
         if isinstance(after, Element):
             after.insert(reference, FIRST_CHILD)
         else:
             self._insert(
-                reference,
-                before=before,
-                after=after,
-                position=position,
-                main_text=True)
+                reference, before=before, after=after, position=position, main_text=True
+            )
 
-    def set_bookmark(self,
-                     name,
-                     before=None,
-                     after=None,
-                     position=0,
-                     role=None,
-                     content=None):
+    def set_bookmark(
+        self, name, before=None, after=None, position=0, role=None, content=None
+    ):
         &#34;&#34;&#34;Insert a bookmark before or after the characters in the text which
         match the regex before/after. When the regex matches more of one part
         of the text, position can be set to choose which part must be used.
@@ -721,12 +703,16 @@ class Paragraph(ParagraphBase):
         &#34;&#34;&#34;
         # With &#34;content&#34; =&gt; automatically insert a &#34;start&#34; and an &#34;end&#34;
         # bookmark
-        if (before is None and after is None and role is None
-                and content is not None and isinstance(position, int)):
+        if (
+            before is None
+            and after is None
+            and role is None
+            and content is not None
+            and isinstance(position, int)
+        ):
             # Start
             start = BookmarkStart(name)
-            self._insert(
-                start, before=content, position=position, main_text=True)
+            self._insert(start, before=content, position=position, main_text=True)
             # End
             end = BookmarkEnd(name)
             self._insert(end, after=content, position=position, main_text=True)
@@ -734,8 +720,13 @@ class Paragraph(ParagraphBase):
 
         # With &#34;(int, int)&#34; =&gt;  automatically insert a &#34;start&#34; and an &#34;end&#34;
         # bookmark
-        if (before is None and after is None and role is None
-                and content is None and isinstance(position, tuple)):
+        if (
+            before is None
+            and after is None
+            and role is None
+            and content is None
+            and isinstance(position, tuple)
+        ):
             # Start
             start = BookmarkStart(name)
             self._insert(start, position=position[0], main_text=True)
@@ -760,11 +751,8 @@ class Paragraph(ParagraphBase):
 
         # Insert
         self._insert(
-            bookmark,
-            before=before,
-            after=after,
-            position=position,
-            main_text=True)
+            bookmark, before=before, after=after, position=position, main_text=True
+        )
 
         return bookmark
 
@@ -773,9 +761,9 @@ class Span(Paragraph):
     &#34;&#34;&#34;Create a span element &#34;text:span&#34; of the given style containing the optional
     given text.
     &#34;&#34;&#34;
-    _tag = &#39;text:span&#39;
-    _properties = ((&#39;style&#39;, &#39;text:style-name&#39;), (&#39;class_names&#39;,
-                                                  &#39;text:class-names&#39;))
+
+    _tag = &#34;text:span&#34;
+    _properties = ((&#34;style&#34;, &#34;text:style-name&#34;), (&#34;class_names&#34;, &#34;text:class-names&#34;))
 
     def __init__(self, text=None, style=None, **kwargs):
         &#34;&#34;&#34;
@@ -833,7 +821,8 @@ given text.</p>
     represents a paragraph, which is the basic unit of text in an OpenDocument
     file.
     &#34;&#34;&#34;
-    _tag = &#39;text:p&#39;
+
+    _tag = &#34;text:p&#34;
 
     def __init__(self, text_or_element=None, style=None, **kwargs):
         &#34;&#34;&#34;Create a paragraph element of the given style containing the optional
@@ -856,19 +845,19 @@ given text.</p>
             if style is not None:
                 self.style = style
 
-    def insert_note(self,
-                    note_element=None,
-                    after=None,
-                    note_class=&#39;footnote&#39;,
-                    note_id=None,
-                    citation=None,
-                    body=None):
+    def insert_note(
+        self,
+        note_element=None,
+        after=None,
+        note_class=&#34;footnote&#34;,
+        note_id=None,
+        citation=None,
+        body=None,
+    ):
         if note_element is None:
             note_element = Note(
-                note_class=note_class,
-                note_id=note_id,
-                citation=citation,
-                body=body)
+                note_class=note_class, note_id=note_id, citation=citation, body=body
+            )
         else:
             # XXX clone or modify the argument?
             if note_class:
@@ -887,15 +876,17 @@ given text.</p>
         else:
             self.insert(note_element, FIRST_CHILD)
 
-    def insert_annotation(self,
-                          annotation_element=None,
-                          before=None,
-                          after=None,
-                          position=0,
-                          content=None,
-                          body=None,
-                          creator=None,
-                          date=None):
+    def insert_annotation(
+        self,
+        annotation_element=None,
+        before=None,
+        after=None,
+        position=0,
+        content=None,
+        body=None,
+        creator=None,
+        date=None,
+    ):
         &#34;&#34;&#34;Insert an annotation, at the position defined by the regex (before,
         after, content) or by positionnal argument (position). If content is
         provided, the annotation covers the full content regex. Else, the
@@ -933,7 +924,8 @@ given text.</p>
 
         if annotation_element is None:
             annotation_element = Annotation(
-                text_or_element=body, creator=creator, date=date, parent=self)
+                text_or_element=body, creator=creator, date=date, parent=self
+            )
         else:
             # XXX clone or modify the argument?
             if body:
@@ -961,30 +953,33 @@ given text.</p>
 
         # With &#34;content&#34; =&gt; automatically insert a &#34;start&#34; and an &#34;end&#34;
         # bookmark
-        if (before is None and after is None and content is not None
-                and isinstance(position, int)):
+        if (
+            before is None
+            and after is None
+            and content is not None
+            and isinstance(position, int)
+        ):
             # Start tag
             self._insert(
-                annotation_element,
-                before=content,
-                position=position,
-                main_text=True)
+                annotation_element, before=content, position=position, main_text=True
+            )
             # End tag
             annotation_end = AnnotationEnd(annotation_element)
             self._insert(
-                annotation_end,
-                after=content,
-                position=position,
-                main_text=True)
+                annotation_end, after=content, position=position, main_text=True
+            )
             return annotation_element
 
         # With &#34;(int, int)&#34; =&gt;  automatically insert a &#34;start&#34; and an &#34;end&#34;
         # bookmark
-        if (before is None and after is None and content is None
-                and isinstance(position, tuple)):
+        if (
+            before is None
+            and after is None
+            and content is None
+            and isinstance(position, tuple)
+        ):
             # Start
-            self._insert(
-                annotation_element, position=position[0], main_text=True)
+            self._insert(annotation_element, position=position[0], main_text=True)
             # End
             annotation_end = AnnotationEnd(annotation_element)
             self._insert(annotation_end, position=position[1], main_text=True)
@@ -1000,14 +995,13 @@ given text.</p>
             before=before,
             after=after,
             position=position,
-            main_text=True)
+            main_text=True,
+        )
         return annotation_element
 
-    def insert_annotation_end(self,
-                              annotation_element,
-                              before=None,
-                              after=None,
-                              position=0):
+    def insert_annotation_end(
+        self, annotation_element, before=None, after=None, position=0
+    ):
         &#34;&#34;&#34;Insert an annotation end tag for an existing annotation. If some end
         tag already exists, replace it. Annotation end tag is set at the
         position defined by the regex (before or after).
@@ -1042,19 +1036,13 @@ given text.</p>
 
         # Insert
         self._insert(
-            end_tag,
-            before=before,
-            after=after,
-            position=position,
-            main_text=True)
+            end_tag, before=before, after=after, position=position, main_text=True
+        )
         return end_tag
 
-    def set_reference_mark(self,
-                           name,
-                           before=None,
-                           after=None,
-                           position=0,
-                           content=None):
+    def set_reference_mark(
+        self, name, before=None, after=None, position=0, content=None
+    ):
         &#34;&#34;&#34;Insert a reference mark, at the position defined by the regex
         (before, after, content) or by positionnal argument (position). If
         content is provided, the annotation covers the full range content regex
@@ -1100,27 +1088,31 @@ given text.</p>
 
         # With &#34;content&#34; =&gt; automatically insert a &#34;start&#34; and an &#34;end&#34;
         # reference
-        if (before is None and after is None and content is not None
-                and isinstance(position, int)):
+        if (
+            before is None
+            and after is None
+            and content is not None
+            and isinstance(position, int)
+        ):
             # Start tag
             reference_start = ReferenceMarkStart(name)
             self._insert(
-                reference_start,
-                before=content,
-                position=position,
-                main_text=True)
+                reference_start, before=content, position=position, main_text=True
+            )
             # End tag
             reference_end = ReferenceMarkEnd(name)
             self._insert(
-                reference_end,
-                after=content,
-                position=position,
-                main_text=True)
+                reference_end, after=content, position=position, main_text=True
+            )
             return reference_start
 
         # With &#34;(int, int)&#34; =&gt;  automatically insert a &#34;start&#34; and an &#34;end&#34;
-        if (before is None and after is None and content is None
-                and isinstance(position, tuple)):
+        if (
+            before is None
+            and after is None
+            and content is None
+            and isinstance(position, tuple)
+        ):
             # Start
             reference_start = ReferenceMarkStart(name)
             self._insert(reference_start, position=position[0], main_text=True)
@@ -1136,18 +1128,13 @@ given text.</p>
         # Insert a positional reference mark
         reference = ReferenceMark(name)
         self._insert(
-            reference,
-            before=before,
-            after=after,
-            position=position,
-            main_text=True)
+            reference, before=before, after=after, position=position, main_text=True
+        )
         return reference
 
-    def set_reference_mark_end(self,
-                               reference_mark,
-                               before=None,
-                               after=None,
-                               position=0):
+    def set_reference_mark_end(
+        self, reference_mark, before=None, after=None, position=0
+    ):
         &#34;&#34;&#34;Insert/move a ReferenceMarkEnd for an existing reference mark. If
         some end tag already exists, replace it. Reference tag is set at the
         position defined by the regex (before or after).
@@ -1181,11 +1168,8 @@ given text.</p>
 
         # Insert
         self._insert(
-            end_tag,
-            before=before,
-            after=after,
-            position=position,
-            main_text=True)
+            end_tag, before=before, after=after, position=position, main_text=True
+        )
         return end_tag
 
     def insert_variable(self, variable_element, after):
@@ -1219,9 +1203,9 @@ given text.</p>
         If keep_heading is True (default), the first level heading style is left
         unchanged.
         &#34;&#34;&#34;
-        strip = (Span._tag, )
+        strip = (Span._tag,)
         if keep_heading:
-            protect = (&#39;text:h&#39;, )
+            protect = (&#34;text:h&#34;,)
         else:
             protect = None
         return self.strip_tags(strip=strip, protect=protect)
@@ -1259,9 +1243,8 @@ given text.</p>
         return link
 
     def remove_links(self):
-        &#34;&#34;&#34;Send back a copy of the element, without links tags.
-        &#34;&#34;&#34;
-        strip = (Link._tag, )
+        &#34;&#34;&#34;Send back a copy of the element, without links tags.&#34;&#34;&#34;
+        strip = (Link._tag,)
         return self.strip_tags(strip=strip)
 
     def remove_link(self, links):
@@ -1274,13 +1257,9 @@ given text.</p>
         &#34;&#34;&#34;
         return self.strip_elements(links)
 
-    def insert_reference(self,
-                         name,
-                         ref_format=&#39;&#39;,
-                         before=None,
-                         after=None,
-                         position=0,
-                         display=None):
+    def insert_reference(
+        self, name, ref_format=&#34;&#34;, before=None, after=None, position=0, display=None
+    ):
         &#34;&#34;&#34;Create and insert a reference to a content marked by a reference
         mark. The Reference element (&#34;text:reference-ref&#34;) represents a
         field that references a &#34;text:reference-mark-start&#34; or
@@ -1319,7 +1298,7 @@ given text.</p>
             display -- str or None
         &#34;&#34;&#34;
         reference = Reference(name, ref_format)
-        if display is None and ref_format == &#39;text&#39;:
+        if display is None and ref_format == &#34;text&#34;:
             # get reference content
             body = self.document_body
             if not body:
@@ -1328,25 +1307,18 @@ given text.</p>
             if mark:
                 display = mark.referenced_text
         if not display:
-            display = &#39; &#39;
+            display = &#34; &#34;
         reference.text = display
         if isinstance(after, Element):
             after.insert(reference, FIRST_CHILD)
         else:
             self._insert(
-                reference,
-                before=before,
-                after=after,
-                position=position,
-                main_text=True)
+                reference, before=before, after=after, position=position, main_text=True
+            )
 
-    def set_bookmark(self,
-                     name,
-                     before=None,
-                     after=None,
-                     position=0,
-                     role=None,
-                     content=None):
+    def set_bookmark(
+        self, name, before=None, after=None, position=0, role=None, content=None
+    ):
         &#34;&#34;&#34;Insert a bookmark before or after the characters in the text which
         match the regex before/after. When the regex matches more of one part
         of the text, position can be set to choose which part must be used.
@@ -1394,12 +1366,16 @@ given text.</p>
         &#34;&#34;&#34;
         # With &#34;content&#34; =&gt; automatically insert a &#34;start&#34; and an &#34;end&#34;
         # bookmark
-        if (before is None and after is None and role is None
-                and content is not None and isinstance(position, int)):
+        if (
+            before is None
+            and after is None
+            and role is None
+            and content is not None
+            and isinstance(position, int)
+        ):
             # Start
             start = BookmarkStart(name)
-            self._insert(
-                start, before=content, position=position, main_text=True)
+            self._insert(start, before=content, position=position, main_text=True)
             # End
             end = BookmarkEnd(name)
             self._insert(end, after=content, position=position, main_text=True)
@@ -1407,8 +1383,13 @@ given text.</p>
 
         # With &#34;(int, int)&#34; =&gt;  automatically insert a &#34;start&#34; and an &#34;end&#34;
         # bookmark
-        if (before is None and after is None and role is None
-                and content is None and isinstance(position, tuple)):
+        if (
+            before is None
+            and after is None
+            and role is None
+            and content is None
+            and isinstance(position, tuple)
+        ):
             # Start
             start = BookmarkStart(name)
             self._insert(start, position=position[0], main_text=True)
@@ -1433,11 +1414,8 @@ given text.</p>
 
         # Insert
         self._insert(
-            bookmark,
-            before=before,
-            after=after,
-            position=position,
-            main_text=True)
+            bookmark, before=before, after=after, position=position, main_text=True
+        )
 
         return bookmark</code></pre>
 </details>
@@ -1482,15 +1460,17 @@ the annotation is created from the body, creator and optional date
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_annotation(self,
-                      annotation_element=None,
-                      before=None,
-                      after=None,
-                      position=0,
-                      content=None,
-                      body=None,
-                      creator=None,
-                      date=None):
+<pre><code class="python">def insert_annotation(
+    self,
+    annotation_element=None,
+    before=None,
+    after=None,
+    position=0,
+    content=None,
+    body=None,
+    creator=None,
+    date=None,
+):
     &#34;&#34;&#34;Insert an annotation, at the position defined by the regex (before,
     after, content) or by positionnal argument (position). If content is
     provided, the annotation covers the full content regex. Else, the
@@ -1528,7 +1508,8 @@ the annotation is created from the body, creator and optional date
 
     if annotation_element is None:
         annotation_element = Annotation(
-            text_or_element=body, creator=creator, date=date, parent=self)
+            text_or_element=body, creator=creator, date=date, parent=self
+        )
     else:
         # XXX clone or modify the argument?
         if body:
@@ -1556,30 +1537,33 @@ the annotation is created from the body, creator and optional date
 
     # With &#34;content&#34; =&gt; automatically insert a &#34;start&#34; and an &#34;end&#34;
     # bookmark
-    if (before is None and after is None and content is not None
-            and isinstance(position, int)):
+    if (
+        before is None
+        and after is None
+        and content is not None
+        and isinstance(position, int)
+    ):
         # Start tag
         self._insert(
-            annotation_element,
-            before=content,
-            position=position,
-            main_text=True)
+            annotation_element, before=content, position=position, main_text=True
+        )
         # End tag
         annotation_end = AnnotationEnd(annotation_element)
         self._insert(
-            annotation_end,
-            after=content,
-            position=position,
-            main_text=True)
+            annotation_end, after=content, position=position, main_text=True
+        )
         return annotation_element
 
     # With &#34;(int, int)&#34; =&gt;  automatically insert a &#34;start&#34; and an &#34;end&#34;
     # bookmark
-    if (before is None and after is None and content is None
-            and isinstance(position, tuple)):
+    if (
+        before is None
+        and after is None
+        and content is None
+        and isinstance(position, tuple)
+    ):
         # Start
-        self._insert(
-            annotation_element, position=position[0], main_text=True)
+        self._insert(annotation_element, position=position[0], main_text=True)
         # End
         annotation_end = AnnotationEnd(annotation_element)
         self._insert(annotation_end, position=position[1], main_text=True)
@@ -1595,7 +1579,8 @@ the annotation is created from the body, creator and optional date
         before=before,
         after=after,
         position=position,
-        main_text=True)
+        main_text=True,
+    )
     return annotation_element</code></pre>
 </details>
 </dd>
@@ -1617,11 +1602,9 @@ positions, the position value is the index of matching place to use.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_annotation_end(self,
-                          annotation_element,
-                          before=None,
-                          after=None,
-                          position=0):
+<pre><code class="python">def insert_annotation_end(
+    self, annotation_element, before=None, after=None, position=0
+):
     &#34;&#34;&#34;Insert an annotation end tag for an existing annotation. If some end
     tag already exists, replace it. Annotation end tag is set at the
     position defined by the regex (before or after).
@@ -1656,11 +1639,8 @@ positions, the position value is the index of matching place to use.</p>
 
     # Insert
     self._insert(
-        end_tag,
-        before=before,
-        after=after,
-        position=position,
-        main_text=True)
+        end_tag, before=before, after=after, position=position, main_text=True
+    )
     return end_tag</code></pre>
 </details>
 </dd>
@@ -1673,19 +1653,19 @@ positions, the position value is the index of matching place to use.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_note(self,
-                note_element=None,
-                after=None,
-                note_class=&#39;footnote&#39;,
-                note_id=None,
-                citation=None,
-                body=None):
+<pre><code class="python">def insert_note(
+    self,
+    note_element=None,
+    after=None,
+    note_class=&#34;footnote&#34;,
+    note_id=None,
+    citation=None,
+    body=None,
+):
     if note_element is None:
         note_element = Note(
-            note_class=note_class,
-            note_id=note_id,
-            citation=citation,
-            body=body)
+            note_class=note_class, note_id=note_id, citation=citation, body=body
+        )
     else:
         # XXX clone or modify the argument?
         if note_class:
@@ -1738,13 +1718,9 @@ this element.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_reference(self,
-                     name,
-                     ref_format=&#39;&#39;,
-                     before=None,
-                     after=None,
-                     position=0,
-                     display=None):
+<pre><code class="python">def insert_reference(
+    self, name, ref_format=&#34;&#34;, before=None, after=None, position=0, display=None
+):
     &#34;&#34;&#34;Create and insert a reference to a content marked by a reference
     mark. The Reference element (&#34;text:reference-ref&#34;) represents a
     field that references a &#34;text:reference-mark-start&#34; or
@@ -1783,7 +1759,7 @@ this element.</p>
         display -- str or None
     &#34;&#34;&#34;
     reference = Reference(name, ref_format)
-    if display is None and ref_format == &#39;text&#39;:
+    if display is None and ref_format == &#34;text&#34;:
         # get reference content
         body = self.document_body
         if not body:
@@ -1792,17 +1768,14 @@ this element.</p>
         if mark:
             display = mark.referenced_text
     if not display:
-        display = &#39; &#39;
+        display = &#34; &#34;
     reference.text = display
     if isinstance(after, Element):
         after.insert(reference, FIRST_CHILD)
     else:
         self._insert(
-            reference,
-            before=before,
-            after=after,
-            position=position,
-            main_text=True)</code></pre>
+            reference, before=before, after=after, position=position, main_text=True
+        )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.paragraph.Paragraph.insert_variable"><code class="name flex">
@@ -1851,9 +1824,8 @@ removed.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def remove_links(self):
-    &#34;&#34;&#34;Send back a copy of the element, without links tags.
-    &#34;&#34;&#34;
-    strip = (Link._tag, )
+    &#34;&#34;&#34;Send back a copy of the element, without links tags.&#34;&#34;&#34;
+    strip = (Link._tag,)
     return self.strip_tags(strip=strip)</code></pre>
 </details>
 </dd>
@@ -1894,9 +1866,9 @@ unchanged.</p></div>
     If keep_heading is True (default), the first level heading style is left
     unchanged.
     &#34;&#34;&#34;
-    strip = (Span._tag, )
+    strip = (Span._tag,)
     if keep_heading:
-        protect = (&#39;text:h&#39;, )
+        protect = (&#34;text:h&#34;,)
     else:
         protect = None
     return self.strip_tags(strip=strip, protect=protect)</code></pre>
@@ -1936,13 +1908,9 @@ paragraph.set_bookmark("bookmark", position=20, role="end")</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_bookmark(self,
-                 name,
-                 before=None,
-                 after=None,
-                 position=0,
-                 role=None,
-                 content=None):
+<pre><code class="python">def set_bookmark(
+    self, name, before=None, after=None, position=0, role=None, content=None
+):
     &#34;&#34;&#34;Insert a bookmark before or after the characters in the text which
     match the regex before/after. When the regex matches more of one part
     of the text, position can be set to choose which part must be used.
@@ -1990,12 +1958,16 @@ paragraph.set_bookmark("bookmark", position=20, role="end")</p>
     &#34;&#34;&#34;
     # With &#34;content&#34; =&gt; automatically insert a &#34;start&#34; and an &#34;end&#34;
     # bookmark
-    if (before is None and after is None and role is None
-            and content is not None and isinstance(position, int)):
+    if (
+        before is None
+        and after is None
+        and role is None
+        and content is not None
+        and isinstance(position, int)
+    ):
         # Start
         start = BookmarkStart(name)
-        self._insert(
-            start, before=content, position=position, main_text=True)
+        self._insert(start, before=content, position=position, main_text=True)
         # End
         end = BookmarkEnd(name)
         self._insert(end, after=content, position=position, main_text=True)
@@ -2003,8 +1975,13 @@ paragraph.set_bookmark("bookmark", position=20, role="end")</p>
 
     # With &#34;(int, int)&#34; =&gt;  automatically insert a &#34;start&#34; and an &#34;end&#34;
     # bookmark
-    if (before is None and after is None and role is None
-            and content is None and isinstance(position, tuple)):
+    if (
+        before is None
+        and after is None
+        and role is None
+        and content is None
+        and isinstance(position, tuple)
+    ):
         # Start
         start = BookmarkStart(name)
         self._insert(start, position=position[0], main_text=True)
@@ -2029,11 +2006,8 @@ paragraph.set_bookmark("bookmark", position=20, role="end")</p>
 
     # Insert
     self._insert(
-        bookmark,
-        before=before,
-        after=after,
-        position=position,
-        main_text=True)
+        bookmark, before=before, after=after, position=position, main_text=True
+    )
 
     return bookmark</code></pre>
 </details>
@@ -2107,12 +2081,9 @@ mark range.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_reference_mark(self,
-                       name,
-                       before=None,
-                       after=None,
-                       position=0,
-                       content=None):
+<pre><code class="python">def set_reference_mark(
+    self, name, before=None, after=None, position=0, content=None
+):
     &#34;&#34;&#34;Insert a reference mark, at the position defined by the regex
     (before, after, content) or by positionnal argument (position). If
     content is provided, the annotation covers the full range content regex
@@ -2158,27 +2129,31 @@ mark range.</p>
 
     # With &#34;content&#34; =&gt; automatically insert a &#34;start&#34; and an &#34;end&#34;
     # reference
-    if (before is None and after is None and content is not None
-            and isinstance(position, int)):
+    if (
+        before is None
+        and after is None
+        and content is not None
+        and isinstance(position, int)
+    ):
         # Start tag
         reference_start = ReferenceMarkStart(name)
         self._insert(
-            reference_start,
-            before=content,
-            position=position,
-            main_text=True)
+            reference_start, before=content, position=position, main_text=True
+        )
         # End tag
         reference_end = ReferenceMarkEnd(name)
         self._insert(
-            reference_end,
-            after=content,
-            position=position,
-            main_text=True)
+            reference_end, after=content, position=position, main_text=True
+        )
         return reference_start
 
     # With &#34;(int, int)&#34; =&gt;  automatically insert a &#34;start&#34; and an &#34;end&#34;
-    if (before is None and after is None and content is None
-            and isinstance(position, tuple)):
+    if (
+        before is None
+        and after is None
+        and content is None
+        and isinstance(position, tuple)
+    ):
         # Start
         reference_start = ReferenceMarkStart(name)
         self._insert(reference_start, position=position[0], main_text=True)
@@ -2194,11 +2169,8 @@ mark range.</p>
     # Insert a positional reference mark
     reference = ReferenceMark(name)
     self._insert(
-        reference,
-        before=before,
-        after=after,
-        position=position,
-        main_text=True)
+        reference, before=before, after=after, position=position, main_text=True
+    )
     return reference</code></pre>
 </details>
 </dd>
@@ -2220,11 +2192,9 @@ positions, the position value is the index of matching place to use.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_reference_mark_end(self,
-                           reference_mark,
-                           before=None,
-                           after=None,
-                           position=0):
+<pre><code class="python">def set_reference_mark_end(
+    self, reference_mark, before=None, after=None, position=0
+):
     &#34;&#34;&#34;Insert/move a ReferenceMarkEnd for an existing reference mark. If
     some end tag already exists, replace it. Reference tag is set at the
     position defined by the regex (before or after).
@@ -2258,11 +2228,8 @@ positions, the position value is the index of matching place to use.</p>
 
     # Insert
     self._insert(
-        end_tag,
-        before=before,
-        after=after,
-        position=position,
-        main_text=True)
+        end_tag, before=before, after=after, position=position, main_text=True
+    )
     return end_tag</code></pre>
 </details>
 </dd>
@@ -2444,9 +2411,9 @@ given text.</p>
     &#34;&#34;&#34;Create a span element &#34;text:span&#34; of the given style containing the optional
     given text.
     &#34;&#34;&#34;
-    _tag = &#39;text:span&#39;
-    _properties = ((&#39;style&#39;, &#39;text:style-name&#39;), (&#39;class_names&#39;,
-                                                  &#39;text:class-names&#39;))
+
+    _tag = &#34;text:span&#34;
+    _properties = ((&#34;style&#34;, &#34;text:style-name&#34;), (&#34;class_names&#34;, &#34;text:class-names&#34;))
 
     def __init__(self, text=None, style=None, **kwargs):
         &#34;&#34;&#34;
@@ -2486,7 +2453,7 @@ given text.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2668,7 +2635,7 @@ given text.</p>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.3</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
 </footer>
 </body>
 </html>

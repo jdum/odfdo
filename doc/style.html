@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.8.3" />
+<meta name="generator" content="pdoc 0.9.2" />
 <title>odfdo.style API documentation</title>
 <meta name="description" content="Style class for various style tags and BackgroundImage class" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
 <style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
 <style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
 </head>
 <body>
@@ -54,9 +54,18 @@ from .const import CSS3_COLORMAP
 from .element import register_element_class, Element
 
 from .image import DrawImage
-from .utils import (_expand_properties, _merge_dicts, _get_element, isiterable,
-                    to_str, FALSE_FAMILY_MAP_REVERSE, FAMILY_ODF_STD,
-                    FAMILY_MAPPING, SUBCLASSED_STYLES, STYLES_TO_REGISTER)
+from .utils import (
+    _expand_properties,
+    _merge_dicts,
+    _get_element,
+    isiterable,
+    to_str,
+    FALSE_FAMILY_MAP_REVERSE,
+    FAMILY_ODF_STD,
+    FAMILY_MAPPING,
+    SUBCLASSED_STYLES,
+    STYLES_TO_REGISTER,
+)
 from .paragraph import Paragraph
 
 
@@ -70,7 +79,7 @@ def hex2rgb(color):
     Return: tuple
     &#34;&#34;&#34;
     code = color[1:]
-    if not (len(color) == 7 and color[0] == &#39;#&#39; and code.isalnum()):
+    if not (len(color) == 7 and color[0] == &#34;#&#34; and code.isalnum()):
         raise ValueError(&#39;&#34;%s&#34; is not a valid color&#39; % color)
     red = int(code[:2], 16)
     green = int(code[2:4], 16)
@@ -108,7 +117,7 @@ def rgb2hex(color):
     for channel in code:
         if channel &lt; 0 or channel &gt; 255:
             raise ValueError(&#34;color code must be between 0 and 255&#34;)
-    return &#39;#%02X%02X%02X&#39; % code
+    return &#34;#%02X%02X%02X&#34; % code
 
 
 def __make_color_string(color=None):
@@ -124,13 +133,13 @@ def __make_color_string(color=None):
     color = color.strip()
     if not color:
         return color_default
-    if color.startswith(&#39;#&#39;):
+    if color.startswith(&#34;#&#34;):
         return color
     return rgb2hex(color)
 
 
 def __make_thick_string(thick):
-    thick_default = &#39;0.06pt&#39;
+    thick_default = &#34;0.06pt&#34;
     if thick is None:
         return thick_default
     if isinstance(thick, bytes):
@@ -141,14 +150,14 @@ def __make_thick_string(thick):
             return thick
         return thick_default
     if isinstance(thick, float):
-        return &#39;%.2fpt&#39; % thick
+        return &#34;%.2fpt&#34; % thick
     if isinstance(thick, int):
-        return &#39;%.2fpt&#39; % (thick / 100.0)
-    raise ValueError(&#39;Thickness must be None for default or float value (pt)&#39;)
+        return &#34;%.2fpt&#34; % (thick / 100.0)
+    raise ValueError(&#34;Thickness must be None for default or float value (pt)&#34;)
 
 
 def __make_line_string(line):
-    line_default = &#39;solid&#39;
+    line_default = &#34;solid&#34;
     if line is None:
         return line_default
     if isinstance(line, bytes):
@@ -158,7 +167,7 @@ def __make_line_string(line):
         if line:
             return line
         return line_default
-    raise ValueError(&#39;Line style must be None for default or string&#39;)
+    raise ValueError(&#34;Line style must be None for default or string&#34;)
 
 
 def make_table_cell_border_string(thick=None, line=None, color=None):
@@ -174,22 +183,24 @@ def make_table_cell_border_string(thick=None, line=None, color=None):
     thick_string = __make_thick_string(thick)
     line_string = __make_line_string(line)
     color_string = __make_color_string(color)
-    return &#39; &#39;.join((thick_string, line_string, color_string))
+    return &#34; &#34;.join((thick_string, line_string, color_string))
 
 
-def create_table_cell_style(border=None,
-                            border_top=None,
-                            border_bottom=None,
-                            border_left=None,
-                            border_right=None,
-                            padding=None,
-                            padding_top=None,
-                            padding_bottom=None,
-                            padding_left=None,
-                            padding_right=None,
-                            background_color=None,
-                            shadow=None,
-                            color=None):
+def create_table_cell_style(
+    border=None,
+    border_top=None,
+    border_bottom=None,
+    border_left=None,
+    border_right=None,
+    padding=None,
+    padding_top=None,
+    padding_bottom=None,
+    padding_left=None,
+    padding_right=None,
+    background_color=None,
+    shadow=None,
+    color=None,
+):
     &#34;&#34;&#34;Return a cell style.
 
     The borders arguments must be some style attribute strings or None, see the
@@ -236,14 +247,19 @@ def create_table_cell_style(border=None,
 
     Return : Style
     &#34;&#34;&#34;
-    if border == &#39;default&#39;:
+    if border == &#34;default&#34;:
         border = make_table_cell_border_string()  # default border
     if border is not None:
         # use the border value for 4 sides.
         border_bottom = border_top = border_left = border_right = None
-    if (border is None and border_bottom is None and border_top is None
-            and border_left is None and border_right is None):
-        border = &#39;none&#39;
+    if (
+        border is None
+        and border_bottom is None
+        and border_top is None
+        and border_left is None
+        and border_right is None
+    ):
+        border = &#34;none&#34;
     if padding is not None:
         # use the padding value for 4 sides.
         padding_bottom = padding_top = padding_left = padding_right = None
@@ -254,8 +270,8 @@ def create_table_cell_style(border=None,
     else:
         bgcolor_string = None
     cell_style = Style(
-        &#39;table-cell&#39;,
-        area=&#39;table-cell&#39;,
+        &#34;table-cell&#34;,
+        area=&#34;table-cell&#34;,
         border=border,
         border_top=border_top,
         border_bottom=border_bottom,
@@ -267,9 +283,10 @@ def create_table_cell_style(border=None,
         padding_left=padding_left,
         padding_right=padding_right,
         background_color=bgcolor_string,
-        shadow=shadow)
+        shadow=shadow,
+    )
     if color:
-        cell_style.set_properties(area=&#39;text&#39;, color=color_string)
+        cell_style.set_properties(area=&#34;text&#34;, color=color_string)
     return cell_style
 
 
@@ -290,74 +307,76 @@ class Style(Element):
     &#39;style:tab-stops&#39;,
     ...
     &#34;&#34;&#34;
+
     _properties = (
-        (&#39;page_layout&#39;, &#39;style:page-layout-name&#39;, &#39;master-page&#39;),
-        (&#39;next_style&#39;, &#39;style:next-style-name&#39;, &#39;master-page&#39;),
-        (&#39;name&#39;, &#39;style:name&#39;, None),
-        (&#39;parent_style&#39;, &#39;style:parent-style-name&#39;, None),
-        (&#39;display_name&#39;, &#39;style:display-name&#39;, None),
-        (&#39;svg_font_family&#39;, &#39;svg:font-family&#39;, None),
-        (&#39;font_family_generic&#39;, &#39;style:font-family-generic&#39;, None),
-        (&#39;font_pitch&#39;, &#39;style:font-pitch&#39;, None),
-        (&#39;text_style&#39;, &#39;text:style-name&#39;, None),
-        (&#39;master_page&#39;, &#39;style:master-page-name&#39;, &#39;paragraph&#39;),
-        (&#39;master_page&#39;, &#39;style:master-page-name&#39;, &#39;paragraph&#39;),
-        (&#39;master_page&#39;, &#39;style:master-page-name&#39;, &#39;paragraph&#39;),
+        (&#34;page_layout&#34;, &#34;style:page-layout-name&#34;, &#34;master-page&#34;),
+        (&#34;next_style&#34;, &#34;style:next-style-name&#34;, &#34;master-page&#34;),
+        (&#34;name&#34;, &#34;style:name&#34;, None),
+        (&#34;parent_style&#34;, &#34;style:parent-style-name&#34;, None),
+        (&#34;display_name&#34;, &#34;style:display-name&#34;, None),
+        (&#34;svg_font_family&#34;, &#34;svg:font-family&#34;, None),
+        (&#34;font_family_generic&#34;, &#34;style:font-family-generic&#34;, None),
+        (&#34;font_pitch&#34;, &#34;style:font-pitch&#34;, None),
+        (&#34;text_style&#34;, &#34;text:style-name&#34;, None),
+        (&#34;master_page&#34;, &#34;style:master-page-name&#34;, &#34;paragraph&#34;),
+        (&#34;master_page&#34;, &#34;style:master-page-name&#34;, &#34;paragraph&#34;),
+        (&#34;master_page&#34;, &#34;style:master-page-name&#34;, &#34;paragraph&#34;),
         # style:tab-stop
-        (&#39;style_type&#39;, &#39;style:type&#39;, None),
-        (&#39;leader_style&#39;, &#39;style:leader-style&#39;, None),
-        (&#39;leader_text&#39;, &#39;style:leader-text&#39;, None),
-        (&#39;style_position&#39;, &#39;style:position&#39;, None),
-        (&#39;leader_text&#39;, &#39;style:position&#39;, None),
+        (&#34;style_type&#34;, &#34;style:type&#34;, None),
+        (&#34;leader_style&#34;, &#34;style:leader-style&#34;, None),
+        (&#34;leader_text&#34;, &#34;style:leader-text&#34;, None),
+        (&#34;style_position&#34;, &#34;style:position&#34;, None),
+        (&#34;leader_text&#34;, &#34;style:position&#34;, None),
     )
 
     def __init__(
-            self,
-            family=None,
-            name=None,
-            display_name=None,
-            parent_style=None,
-            # Where properties apply
-            area=None,
-            # For family &#39;text&#39;:
-            color=None,
-            background_color=None,
-            italic=False,
-            bold=False,
-            # For family &#39;paragraph&#39;
-            master_page=None,
-            # For family &#39;master-page&#39;
-            page_layout=None,
-            next_style=None,
-            # For family &#39;table-cell&#39;
-            data_style=None,  # unused
-            border=None,
-            border_top=None,
-            border_right=None,
-            border_bottom=None,
-            border_left=None,
-            padding=None,
-            padding_top=None,
-            padding_bottom=None,
-            padding_left=None,
-            padding_right=None,
-            shadow=None,
-            # For family &#39;table-row&#39;
-            height=None,
-            use_optimal_height=None,
-            # For family &#39;table-column&#39;
-            width=None,
-            break_before=None,
-            break_after=None,
-            # For family &#39;graphic&#39;
-            min_height=None,
-            # For family &#39;font-face&#39;
-            font_name=None,
-            font_family=None,
-            font_family_generic=None,
-            font_pitch=&#34;variable&#34;,
-            # Every other property
-            **kw):
+        self,
+        family=None,
+        name=None,
+        display_name=None,
+        parent_style=None,
+        # Where properties apply
+        area=None,
+        # For family &#39;text&#39;:
+        color=None,
+        background_color=None,
+        italic=False,
+        bold=False,
+        # For family &#39;paragraph&#39;
+        master_page=None,
+        # For family &#39;master-page&#39;
+        page_layout=None,
+        next_style=None,
+        # For family &#39;table-cell&#39;
+        data_style=None,  # unused
+        border=None,
+        border_top=None,
+        border_right=None,
+        border_bottom=None,
+        border_left=None,
+        padding=None,
+        padding_top=None,
+        padding_bottom=None,
+        padding_left=None,
+        padding_right=None,
+        shadow=None,
+        # For family &#39;table-row&#39;
+        height=None,
+        use_optimal_height=None,
+        # For family &#39;table-column&#39;
+        width=None,
+        break_before=None,
+        break_after=None,
+        # For family &#39;graphic&#39;
+        min_height=None,
+        # For family &#39;font-face&#39;
+        font_name=None,
+        font_family=None,
+        font_family_generic=None,
+        font_pitch=&#34;variable&#34;,
+        # Every other property
+        **kw,
+    ):
         &#34;&#34;&#34;Create a style of the given family. The name is not mandatory at this
         point but will become required when inserting in a document as a common
         style.
@@ -427,16 +446,16 @@ class Style(Element):
 
         Return: Style
         &#34;&#34;&#34;
-        tag_or_elem = kw.get(&#39;tag_or_elem&#39;, None)
+        tag_or_elem = kw.get(&#34;tag_or_elem&#34;, None)
         if tag_or_elem is None:
             family = to_str(family)
             if family not in FAMILY_MAPPING:
-                raise ValueError(&#39;Unknown family value: %s&#39; % family)
-            kw[&#39;tag&#39;] = FAMILY_MAPPING[family]
+                raise ValueError(&#34;Unknown family value: %s&#34; % family)
+            kw[&#34;tag&#34;] = FAMILY_MAPPING[family]
         super().__init__(**kw)
         if self._do_init and family not in SUBCLASSED_STYLES:
-            kw.pop(&#39;tag&#39;, None)
-            kw.pop(&#39;tag_or_elem&#39;, None)
+            kw.pop(&#34;tag&#34;, None)
+            kw.pop(&#34;tag_or_elem&#34;, None)
             self.family = family  # relevant test made by property
             # Common attributes
             if name:
@@ -446,85 +465,87 @@ class Style(Element):
             if parent_style:
                 self.parent_style = parent_style
             # Paragraph
-            if family == &#39;paragraph&#39;:
+            if family == &#34;paragraph&#34;:
                 if master_page:
                     self.master_page = master_page
             # Master Page
-            elif family == &#39;master-page&#39;:
+            elif family == &#34;master-page&#34;:
                 if page_layout:
                     self.page_layout = page_layout
                 if next_style:
                     self.next_style = next_style
             # Font face
-            elif family == &#39;font-face&#39;:
+            elif family == &#34;font-face&#34;:
                 self.set_font(
                     font_name,
                     family=font_family,
                     family_generic=font_family_generic,
-                    pitch=font_pitch)
+                    pitch=font_pitch,
+                )
             # Properties
             if area is None:
                 area = family
             area = to_str(area)
             # Text
-            if area == &#39;text&#39;:
+            if area == &#34;text&#34;:
                 if color:
-                    kw[&#39;fo:color&#39;] = color
+                    kw[&#34;fo:color&#34;] = color
                 if background_color:
-                    kw[&#39;fo:background-color&#39;] = background_color
+                    kw[&#34;fo:background-color&#34;] = background_color
                 if italic:
-                    kw[&#39;fo:font-style&#39;] = &#39;italic&#39;
-                    kw[&#39;style:font-style-asian&#39;] = &#39;italic&#39;
-                    kw[&#39;style:font-style-complex&#39;] = &#39;italic&#39;
+                    kw[&#34;fo:font-style&#34;] = &#34;italic&#34;
+                    kw[&#34;style:font-style-asian&#34;] = &#34;italic&#34;
+                    kw[&#34;style:font-style-complex&#34;] = &#34;italic&#34;
                 if bold:
-                    kw[&#39;fo:font-weight&#39;] = &#39;bold&#39;
-                    kw[&#39;style:font-weight-asian&#39;] = &#39;bold&#39;
-                    kw[&#39;style:font-weight-complex&#39;] = &#39;bold&#39;
+                    kw[&#34;fo:font-weight&#34;] = &#34;bold&#34;
+                    kw[&#34;style:font-weight-asian&#34;] = &#34;bold&#34;
+                    kw[&#34;style:font-weight-complex&#34;] = &#34;bold&#34;
             # Table cell
-            elif area == &#39;table-cell&#39;:
+            elif area == &#34;table-cell&#34;:
                 if border:
-                    kw[&#39;fo:border&#39;] = border
+                    kw[&#34;fo:border&#34;] = border
                 elif border_top or border_right or border_bottom or border_left:
-                    kw[&#39;fo:border-top&#39;] = border_top or &#39;none&#39;
-                    kw[&#39;fo:border-right&#39;] = border_right or &#39;none&#39;
-                    kw[&#39;fo:border-bottom&#39;] = border_bottom or &#39;none&#39;
-                    kw[&#39;fo:border-left&#39;] = border_left or &#39;none&#39;
+                    kw[&#34;fo:border-top&#34;] = border_top or &#34;none&#34;
+                    kw[&#34;fo:border-right&#34;] = border_right or &#34;none&#34;
+                    kw[&#34;fo:border-bottom&#34;] = border_bottom or &#34;none&#34;
+                    kw[&#34;fo:border-left&#34;] = border_left or &#34;none&#34;
                 else:  # no border_top, ... neither border are defined
                     pass  # left untouched
                 if padding:
-                    kw[&#39;fo:padding&#39;] = padding
+                    kw[&#34;fo:padding&#34;] = padding
                 elif padding_top or padding_right or padding_bottom or padding_left:
-                    kw[&#39;fo:padding-top&#39;] = padding_top or &#39;none&#39;
-                    kw[&#39;fo:padding-right&#39;] = padding_right or &#39;none&#39;
-                    kw[&#39;fo:padding-bottom&#39;] = padding_bottom or &#39;none&#39;
-                    kw[&#39;fo:padding-left&#39;] = padding_left or &#39;none&#39;
+                    kw[&#34;fo:padding-top&#34;] = padding_top or &#34;none&#34;
+                    kw[&#34;fo:padding-right&#34;] = padding_right or &#34;none&#34;
+                    kw[&#34;fo:padding-bottom&#34;] = padding_bottom or &#34;none&#34;
+                    kw[&#34;fo:padding-left&#34;] = padding_left or &#34;none&#34;
                 else:  # no border_top, ... neither border are defined
                     pass  # left untouched
                 if shadow:
-                    kw[&#39;style:shadow&#39;] = shadow
+                    kw[&#34;style:shadow&#34;] = shadow
                 if background_color:
-                    kw[&#39;fo:background-color&#39;] = background_color
+                    kw[&#34;fo:background-color&#34;] = background_color
             # Table row
-            elif area == &#39;table-row&#39;:
+            elif area == &#34;table-row&#34;:
                 if height:
-                    kw[&#39;style:row-height&#39;] = height
+                    kw[&#34;style:row-height&#34;] = height
                 if use_optimal_height is not None:
-                    kw[&#39;style:use-optimal-row-height&#39;] = Boolean.encode(
-                        use_optimal_height)
+                    kw[&#34;style:use-optimal-row-height&#34;] = Boolean.encode(
+                        use_optimal_height
+                    )
                 if background_color:
-                    kw[&#39;fo:background-color&#39;] = background_color
+                    kw[&#34;fo:background-color&#34;] = background_color
             # Table column
-            elif area == &#39;table-column&#39;:
+            elif area == &#34;table-column&#34;:
                 if width:
-                    kw[&#39;style:column-width&#39;] = width
+                    kw[&#34;style:column-width&#34;] = width
                 if break_before:
-                    kw[&#39;fo:break-before&#39;] = break_before
+                    kw[&#34;fo:break-before&#34;] = break_before
                 if break_after:
-                    kw[&#39;fo:break-after&#39;] = break_after
+                    kw[&#34;fo:break-after&#34;] = break_after
             # Graphic
-            elif area == &#39;graphic&#39;:
+            elif area == &#34;graphic&#34;:
                 if min_height:
-                    kw[&#39;fo:min-height&#39;] = min_height
+                    kw[&#34;fo:min-height&#34;] = min_height
             # Every other properties
             if kw:
                 self.set_properties(kw, area=area)
@@ -535,15 +556,16 @@ class Style(Element):
             return self._family
         except AttributeError:
             self._family = FALSE_FAMILY_MAP_REVERSE.get(
-                self.tag, self.get_attribute(&#39;style:family&#39;))
+                self.tag, self.get_attribute(&#34;style:family&#34;)
+            )
             return self._family
 
     @family.setter
     def family(self, family):
         family = to_str(family)
         self._family = family
-        if family in FAMILY_ODF_STD and self.tag == &#39;style:style&#39;:
-            self.set_attribute(&#39;style:family&#39;, family)
+        if family in FAMILY_ODF_STD and self.tag == &#34;style:style&#34;:
+            self.set_attribute(&#34;style:family&#34;, family)
 
     def get_properties(self, area=None):
         &#34;&#34;&#34;Get the mapping of all properties of this style. By default the
@@ -559,7 +581,7 @@ class Style(Element):
         &#34;&#34;&#34;
         if area is None:
             area = self.family
-        element = self.get_element(&#39;style:%s-properties&#39; % area)
+        element = self.get_element(&#34;style:%s-properties&#34; % area)
         if element is None:
             return None
         properties = element.attributes
@@ -589,9 +611,9 @@ class Style(Element):
             properties = {}
         if area is None:
             area = self.family
-        element = self.get_element(&#39;style:%s-properties&#39; % area)
+        element = self.get_element(&#34;style:%s-properties&#34; % area)
         if element is None:
-            element = Element.from_tag(&#39;style:%s-properties&#39; % area)
+            element = Element.from_tag(&#34;style:%s-properties&#34; % area)
             self.append(element)
         if properties or kw:
             properties = _expand_properties(_merge_dicts(properties, kw))
@@ -620,19 +642,21 @@ class Style(Element):
             properties = []
         if area is None:
             area = self.family
-        element = self.get_element(&#39;style:%s-properties&#39; % area)
+        element = self.get_element(&#34;style:%s-properties&#34; % area)
         if element is None:
             raise ValueError(&#34;properties element is inexistent&#34;)
         for key in _expand_properties(properties):
             element.del_attribute(key)
 
-    def set_background(self,
-                       color=None,
-                       url=None,
-                       position=&#39;center&#39;,
-                       repeat=None,
-                       opacity=None,
-                       filter=None):
+    def set_background(
+        self,
+        color=None,
+        url=None,
+        position=&#34;center&#34;,
+        repeat=None,
+        opacity=None,
+        filter=None,
+    ):
         &#34;&#34;&#34;Set the background color of a text style, or the background color
         or image of a paragraph style or page layout.
 
@@ -666,39 +690,45 @@ class Style(Element):
         &#34;&#34;&#34;
         family = self.family
         if family not in {
-                &#39;text&#39;, &#39;paragraph&#39;, &#39;page-layout&#39;, &#39;section&#39;, &#39;table&#39;,
-                &#39;table-row&#39;, &#39;table-cell&#39;, &#39;graphic&#39;
+            &#34;text&#34;,
+            &#34;paragraph&#34;,
+            &#34;page-layout&#34;,
+            &#34;section&#34;,
+            &#34;table&#34;,
+            &#34;table-row&#34;,
+            &#34;table-cell&#34;,
+            &#34;graphic&#34;,
         }:
-            raise TypeError(&#39;no background support for this family&#39;)
-        if url is not None and family == &#39;text&#39;:
-            raise TypeError(&#39;no background image for text styles&#39;)
-        properties = self.get_element(&#39;style:%s-properties&#39; % family)
+            raise TypeError(&#34;no background support for this family&#34;)
+        if url is not None and family == &#34;text&#34;:
+            raise TypeError(&#34;no background image for text styles&#34;)
+        properties = self.get_element(&#34;style:%s-properties&#34; % family)
         if properties is None:
             bg_image = None
         else:
-            bg_image = properties.get_element(&#39;style:background-image&#39;)
+            bg_image = properties.get_element(&#34;style:background-image&#34;)
         # Erasing
         if color is None and url is None:
             if properties is None:
                 return
-            properties.del_attribute(&#39;fo:background-color&#39;)
+            properties.del_attribute(&#34;fo:background-color&#34;)
             if bg_image is not None:
                 properties.delete(bg_image)
             return
         # Add the properties if necessary
         if properties is None:
-            properties = Element.from_tag(&#39;style:%s-properties&#39; % family)
+            properties = Element.from_tag(&#34;style:%s-properties&#34; % family)
             self.append(properties)
         # Add the color...
         if color:
-            properties.set_attribute(&#39;fo:background-color&#39;, color)
+            properties.set_attribute(&#34;fo:background-color&#34;, color)
             if bg_image is not None:
                 properties.delete(bg_image)
         # ... or the background
         elif url:
-            properties.set_attribute(&#39;fo:background-color&#39;, &#39;transparent&#39;)
+            properties.set_attribute(&#34;fo:background-color&#34;, &#34;transparent&#34;)
             if bg_image is None:
-                bg_image = Element.from_tag(&#39;style:background-image&#39;)
+                bg_image = Element.from_tag(&#34;style:background-image&#34;)
                 properties.append(bg_image)
             bg_image.url = url
             if position:
@@ -713,24 +743,28 @@ class Style(Element):
     # list-style only:
 
     def get_level_style(self, level):
-        if self.family != &#39;list&#39;:
+        if self.family != &#34;list&#34;:
             return None
-        level_styles = (&#39;(text:list-level-style-number&#39;
-                        &#39;|text:list-level-style-bullet&#39;
-                        &#39;|text:list-level-style-image)&#39;)
+        level_styles = (
+            &#34;(text:list-level-style-number&#34;
+            &#34;|text:list-level-style-bullet&#34;
+            &#34;|text:list-level-style-image)&#34;
+        )
         return _get_element(self, level_styles, 0, level=level)
 
-    def set_level_style(self,
-                        level,
-                        num_format=None,
-                        bullet_char=None,
-                        url=None,
-                        display_levels=None,
-                        prefix=None,
-                        suffix=None,
-                        start_value=None,
-                        style=None,
-                        clone=None):
+    def set_level_style(
+        self,
+        level,
+        num_format=None,
+        bullet_char=None,
+        url=None,
+        display_levels=None,
+        prefix=None,
+        suffix=None,
+        start_value=None,
+        style=None,
+        clone=None,
+    ):
         &#34;&#34;&#34;
         Arguments:
 
@@ -757,15 +791,15 @@ class Style(Element):
         Return:
             level_style created
         &#34;&#34;&#34;
-        if self.family != &#39;list&#39;:
+        if self.family != &#34;list&#34;:
             return None
         # Expected name
         if num_format is not None:
-            level_style_name = &#39;text:list-level-style-number&#39;
+            level_style_name = &#34;text:list-level-style-number&#34;
         elif bullet_char is not None:
-            level_style_name = &#39;text:list-level-style-bullet&#39;
+            level_style_name = &#34;text:list-level-style-bullet&#34;
         elif url is not None:
-            level_style_name = &#39;text:list-level-style-image&#39;
+            level_style_name = &#34;text:list-level-style-image&#34;
         elif clone is not None:
             level_style_name = clone.tag
         else:
@@ -782,27 +816,26 @@ class Style(Element):
                 was_created = True
         # Transmute if the type changed
         if level_style.tag != level_style_name:
-            print(&#39;warn: different style&#39;, level_style_name, level_style.tag)
+            print(&#34;warn: different style&#34;, level_style_name, level_style.tag)
             level_style.tag = level_style_name
         # Set the level
-        level_style.set_attribute(&#39;text:level&#39;, str(level))
+        level_style.set_attribute(&#34;text:level&#34;, str(level))
         # Set the main attribute
         if num_format is not None:
-            level_style.set_attribute(&#39;fo:num-format&#39;, num_format)
+            level_style.set_attribute(&#34;fo:num-format&#34;, num_format)
         elif bullet_char is not None:
-            level_style.set_attribute(&#39;text:bullet-char&#39;, bullet_char)
+            level_style.set_attribute(&#34;text:bullet-char&#34;, bullet_char)
         elif url is not None:
-            level_style.set_attribute(&#39;xlink:href&#39;, url)
+            level_style.set_attribute(&#34;xlink:href&#34;, url)
         # Set attributes
         if prefix:
-            level_style.set_attribute(&#39;style:num-prefix&#39;, prefix)
+            level_style.set_attribute(&#34;style:num-prefix&#34;, prefix)
         if suffix:
-            level_style.set_attribute(&#39;style:num-suffix&#39;, suffix)
+            level_style.set_attribute(&#34;style:num-suffix&#34;, suffix)
         if display_levels:
-            level_style.set_attribute(&#39;text:display-levels&#39;,
-                                      str(display_levels))
+            level_style.set_attribute(&#34;text:display-levels&#34;, str(display_levels))
         if start_value:
-            level_style.set_attribute(&#39;text:start-value&#39;, str(start_value))
+            level_style.set_attribute(&#34;text:start-value&#34;, str(start_value))
         if style:
             level_style.text_style = style
         # Commit the creation
@@ -813,12 +846,12 @@ class Style(Element):
     # page-layout only:
 
     def get_header_style(self):
-        if self.family != &#39;page-layout&#39;:
+        if self.family != &#34;page-layout&#34;:
             return None
-        return self.get_element(&#39;style:header-style&#39;)
+        return self.get_element(&#34;style:header-style&#34;)
 
     def set_header_style(self, new_style):
-        if self.family != &#39;page-layout&#39;:
+        if self.family != &#34;page-layout&#34;:
             return
         header_style = self.get_header_style()
         if header_style is not None:
@@ -826,12 +859,12 @@ class Style(Element):
         self.append(new_style)
 
     def get_footer_style(self):
-        if self.family != &#39;page-layout&#39;:
+        if self.family != &#34;page-layout&#34;:
             return None
-        return self.get_element(&#39;style:footer-style&#39;)
+        return self.get_element(&#34;style:footer-style&#34;)
 
     def set_footer_style(self, new_style):
-        if self.family != &#39;page-layout&#39;:
+        if self.family != &#34;page-layout&#34;:
             return
         footer_style = self.get_footer_style()
         if footer_style is not None:
@@ -840,23 +873,21 @@ class Style(Element):
 
     # master-page only:
 
-    def __set_header_or_footer(self,
-                               text_or_element,
-                               name=&#39;header&#39;,
-                               style=&#34;Header&#34;):
-        if name == &#39;header&#39;:
+    def __set_header_or_footer(self, text_or_element, name=&#34;header&#34;, style=&#34;Header&#34;):
+        if name == &#34;header&#34;:
             header_or_footer = self.get_page_header()
         else:
             header_or_footer = self.get_page_footer()
         if header_or_footer is None:
-            header_or_footer = Element.from_tag(&#39;style:&#39; + name)
+            header_or_footer = Element.from_tag(&#34;style:&#34; + name)
             self.append(header_or_footer)
         else:
             header_or_footer.clear()
         if not isiterable(text_or_element):
             # Already a header or footer?
-            if (isinstance(text_or_element, Element)
-                    and text_or_element.tag == &#39;style:%s&#39; % to_str(name)):
+            if isinstance(
+                text_or_element, Element
+            ) and text_or_element.tag == &#34;style:%s&#34; % to_str(name):
                 self.delete(header_or_footer)
                 self.append(text_or_element)
                 return
@@ -874,9 +905,9 @@ class Style(Element):
 
         If None, no header was set.
         &#34;&#34;&#34;
-        if self.family != &#39;master-page&#39;:
+        if self.family != &#34;master-page&#34;:
             return None
-        return self.get_element(&#39;style:header&#39;)
+        return self.get_element(&#34;style:header&#34;)
 
     def set_page_header(self, text_or_element):
         &#34;&#34;&#34;Create or replace the header by the given content. It can already
@@ -889,7 +920,7 @@ class Style(Element):
 
             text_or_element -- str or Element or a list of them
         &#34;&#34;&#34;
-        if self.family != &#39;master-page&#39;:
+        if self.family != &#34;master-page&#34;:
             return None
         return self.__set_header_or_footer(text_or_element)
 
@@ -898,9 +929,9 @@ class Style(Element):
 
         If None, no footer was set.
         &#34;&#34;&#34;
-        if self.family != &#39;master-page&#39;:
+        if self.family != &#34;master-page&#34;:
             return None
-        return self.get_element(&#39;style:footer&#39;)
+        return self.get_element(&#34;style:footer&#34;)
 
     def set_page_footer(self, text_or_element):
         &#34;&#34;&#34;Create or replace the footer by the given content. It can already
@@ -913,19 +944,16 @@ class Style(Element):
 
             text_or_element -- str or Element or a list of them
         &#34;&#34;&#34;
-        if self.family != &#39;master-page&#39;:
+        if self.family != &#34;master-page&#34;:
             return None
         return self.__set_header_or_footer(
-            text_or_element, name=&#39;footer&#39;, style=&#34;Footer&#34;)
+            text_or_element, name=&#34;footer&#34;, style=&#34;Footer&#34;
+        )
 
     # font-face only:
 
-    def set_font(self,
-                 name,
-                 family=None,
-                 family_generic=None,
-                 pitch=&#34;variable&#34;):
-        if self.family != &#39;font-face&#39;:
+    def set_font(self, name, family=None, family_generic=None, pitch=&#34;variable&#34;):
+        if self.family != &#34;font-face&#34;:
             return
         self.name = name
         if family is None:
@@ -940,36 +968,37 @@ Style._define_attribut_property()
 
 
 class BackgroundImage(Style, DrawImage):
-    _tag = &#39;style:background-image&#39;
+    _tag = &#34;style:background-image&#34;
     _properties = (
-        (&#39;name&#39;, &#39;style:name&#39;, None),
-        (&#39;display_name&#39;, &#39;style:display-name&#39;, None),
-        (&#39;svg_font_family&#39;, &#39;svg:font-family&#39;, None),
-        (&#39;font_family_generic&#39;, &#39;style:font-family-generic&#39;, None),
-        (&#39;font_pitch&#39;, &#39;style:font-pitch&#39;, None),
-        (&#39;position&#39;, &#39;style:position&#39;, &#39;background-image&#39;),
-        (&#39;repeat&#39;, &#39;style:repeat&#39;, &#39;background-image&#39;),
-        (&#39;opacity&#39;, &#39;draw:opacity&#39;, &#39;background-image&#39;),
-        (&#39;filter&#39;, &#39;style:filter-name&#39;, &#39;background-image&#39;),
-        (&#39;text_style&#39;, &#39;text:style-name&#39;, None),
+        (&#34;name&#34;, &#34;style:name&#34;, None),
+        (&#34;display_name&#34;, &#34;style:display-name&#34;, None),
+        (&#34;svg_font_family&#34;, &#34;svg:font-family&#34;, None),
+        (&#34;font_family_generic&#34;, &#34;style:font-family-generic&#34;, None),
+        (&#34;font_pitch&#34;, &#34;style:font-pitch&#34;, None),
+        (&#34;position&#34;, &#34;style:position&#34;, &#34;background-image&#34;),
+        (&#34;repeat&#34;, &#34;style:repeat&#34;, &#34;background-image&#34;),
+        (&#34;opacity&#34;, &#34;draw:opacity&#34;, &#34;background-image&#34;),
+        (&#34;filter&#34;, &#34;style:filter-name&#34;, &#34;background-image&#34;),
+        (&#34;text_style&#34;, &#34;text:style-name&#34;, None),
     )
 
     def __init__(
-            self,
-            name=None,
-            display_name=None,
-            position=None,
-            repeat=None,
-            opacity=None,
-            filter=None,
-            # Every other property
-            **kw):
-        kw[&#39;family&#39;] = &#39;background-image&#39;
+        self,
+        name=None,
+        display_name=None,
+        position=None,
+        repeat=None,
+        opacity=None,
+        filter=None,
+        # Every other property
+        **kw,
+    ):
+        kw[&#34;family&#34;] = &#34;background-image&#34;
         super().__init__(**kw)
         if self._do_init:
-            kw.pop(&#39;tag&#39;, None)
-            kw.pop(&#39;tag_or_elem&#39;, None)
-            self.family = &#39;background-image&#39;
+            kw.pop(&#34;tag&#34;, None)
+            kw.pop(&#34;tag_or_elem&#34;, None)
+            self.family = &#34;background-image&#34;
             if name:
                 self.name = name
             if display_name:
@@ -999,16 +1028,19 @@ def default_number_style():
         &#34;&#34;&#34;&lt;number:number-style style:name=&#34;lpod-default-number-style&#34;&gt;
            &lt;number:number number:decimal-places=&#34;2&#34;
             number:min-integer-digits=&#34;1&#34;/&gt;
-           &lt;/number:number-style&gt;&#34;&#34;&#34;)
+           &lt;/number:number-style&gt;&#34;&#34;&#34;
+    )
 
 
 def default_percentage_style():
-    return Element.from_tag(&#34;&#34;&#34;&lt;number:percentage-style
+    return Element.from_tag(
+        &#34;&#34;&#34;&lt;number:percentage-style
                   style:name=&#34;lpod-default-percentage-style&#34;&gt;
                   &lt;number:number number:decimal-places=&#34;2&#34;
                    number:min-integer-digits=&#34;1&#34;/&gt;
                   &lt;number:text&gt;%&lt;/number:text&gt;
-                  &lt;/number:percentage-style&gt;&#34;&#34;&#34;)
+                  &lt;/number:percentage-style&gt;&#34;&#34;&#34;
+    )
 
 
 def default_time_style():
@@ -1019,7 +1051,8 @@ def default_time_style():
              &lt;number:minutes number:style=&#34;long&#34;/&gt;
              &lt;number:text&gt;:&lt;/number:text&gt;
              &lt;number:seconds number:style=&#34;long&#34;/&gt;
-           &lt;/number:time-style&gt;&#34;&#34;&#34;)
+           &lt;/number:time-style&gt;&#34;&#34;&#34;
+    )
 
 
 def default_date_style():
@@ -1030,14 +1063,16 @@ def default_date_style():
              &lt;number:month number:style=&#34;long&#34;/&gt;
              &lt;number:text&gt;-&lt;/number:text&gt;
              &lt;number:day number:style=&#34;long&#34;/&gt;
-           &lt;/number:date-style&gt;&#34;&#34;&#34;)
+           &lt;/number:date-style&gt;&#34;&#34;&#34;
+    )
 
 
 def default_boolean_style():
     return Element.from_tag(
         &#34;&#34;&#34;&lt;number:boolean-style style:name=&#34;lpod-default-boolean-style&#34;&gt;
              &lt;number:boolean/&gt;
-           &lt;/number:boolean-style&gt;&#34;&#34;&#34;)
+           &lt;/number:boolean-style&gt;&#34;&#34;&#34;
+    )
 
 
 def default_currency_style():
@@ -1051,7 +1086,8 @@ def default_currency_style():
             &lt;number:currency-symbol
              number:language=&#34;fr&#34;
              number:country=&#34;FR&#34;&gt;€&lt;/number:currency-symbol&gt;
-           &lt;/number:currency-style&gt;&#34;&#34;&#34;)
+           &lt;/number:currency-style&gt;&#34;&#34;&#34;
+    )
 
 
 register_element_class(BackgroundImage)
@@ -1101,19 +1137,21 @@ no padding.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def create_table_cell_style(border=None,
-                            border_top=None,
-                            border_bottom=None,
-                            border_left=None,
-                            border_right=None,
-                            padding=None,
-                            padding_top=None,
-                            padding_bottom=None,
-                            padding_left=None,
-                            padding_right=None,
-                            background_color=None,
-                            shadow=None,
-                            color=None):
+<pre><code class="python">def create_table_cell_style(
+    border=None,
+    border_top=None,
+    border_bottom=None,
+    border_left=None,
+    border_right=None,
+    padding=None,
+    padding_top=None,
+    padding_bottom=None,
+    padding_left=None,
+    padding_right=None,
+    background_color=None,
+    shadow=None,
+    color=None,
+):
     &#34;&#34;&#34;Return a cell style.
 
     The borders arguments must be some style attribute strings or None, see the
@@ -1160,14 +1198,19 @@ no padding.</p>
 
     Return : Style
     &#34;&#34;&#34;
-    if border == &#39;default&#39;:
+    if border == &#34;default&#34;:
         border = make_table_cell_border_string()  # default border
     if border is not None:
         # use the border value for 4 sides.
         border_bottom = border_top = border_left = border_right = None
-    if (border is None and border_bottom is None and border_top is None
-            and border_left is None and border_right is None):
-        border = &#39;none&#39;
+    if (
+        border is None
+        and border_bottom is None
+        and border_top is None
+        and border_left is None
+        and border_right is None
+    ):
+        border = &#34;none&#34;
     if padding is not None:
         # use the padding value for 4 sides.
         padding_bottom = padding_top = padding_left = padding_right = None
@@ -1178,8 +1221,8 @@ no padding.</p>
     else:
         bgcolor_string = None
     cell_style = Style(
-        &#39;table-cell&#39;,
-        area=&#39;table-cell&#39;,
+        &#34;table-cell&#34;,
+        area=&#34;table-cell&#34;,
         border=border,
         border_top=border_top,
         border_bottom=border_bottom,
@@ -1191,9 +1234,10 @@ no padding.</p>
         padding_left=padding_left,
         padding_right=padding_right,
         background_color=bgcolor_string,
-        shadow=shadow)
+        shadow=shadow,
+    )
     if color:
-        cell_style.set_properties(area=&#39;text&#39;, color=color_string)
+        cell_style.set_properties(area=&#34;text&#34;, color=color_string)
     return cell_style</code></pre>
 </details>
 </dd>
@@ -1210,7 +1254,8 @@ no padding.</p>
     return Element.from_tag(
         &#34;&#34;&#34;&lt;number:boolean-style style:name=&#34;lpod-default-boolean-style&#34;&gt;
              &lt;number:boolean/&gt;
-           &lt;/number:boolean-style&gt;&#34;&#34;&#34;)</code></pre>
+           &lt;/number:boolean-style&gt;&#34;&#34;&#34;
+    )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.style.default_currency_style"><code class="name flex">
@@ -1233,7 +1278,8 @@ no padding.</p>
             &lt;number:currency-symbol
              number:language=&#34;fr&#34;
              number:country=&#34;FR&#34;&gt;€&lt;/number:currency-symbol&gt;
-           &lt;/number:currency-style&gt;&#34;&#34;&#34;)</code></pre>
+           &lt;/number:currency-style&gt;&#34;&#34;&#34;
+    )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.style.default_date_style"><code class="name flex">
@@ -1253,7 +1299,8 @@ no padding.</p>
              &lt;number:month number:style=&#34;long&#34;/&gt;
              &lt;number:text&gt;-&lt;/number:text&gt;
              &lt;number:day number:style=&#34;long&#34;/&gt;
-           &lt;/number:date-style&gt;&#34;&#34;&#34;)</code></pre>
+           &lt;/number:date-style&gt;&#34;&#34;&#34;
+    )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.style.default_number_style"><code class="name flex">
@@ -1270,7 +1317,8 @@ no padding.</p>
         &#34;&#34;&#34;&lt;number:number-style style:name=&#34;lpod-default-number-style&#34;&gt;
            &lt;number:number number:decimal-places=&#34;2&#34;
             number:min-integer-digits=&#34;1&#34;/&gt;
-           &lt;/number:number-style&gt;&#34;&#34;&#34;)</code></pre>
+           &lt;/number:number-style&gt;&#34;&#34;&#34;
+    )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.style.default_percentage_style"><code class="name flex">
@@ -1283,12 +1331,14 @@ no padding.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def default_percentage_style():
-    return Element.from_tag(&#34;&#34;&#34;&lt;number:percentage-style
+    return Element.from_tag(
+        &#34;&#34;&#34;&lt;number:percentage-style
                   style:name=&#34;lpod-default-percentage-style&#34;&gt;
                   &lt;number:number number:decimal-places=&#34;2&#34;
                    number:min-integer-digits=&#34;1&#34;/&gt;
                   &lt;number:text&gt;%&lt;/number:text&gt;
-                  &lt;/number:percentage-style&gt;&#34;&#34;&#34;)</code></pre>
+                  &lt;/number:percentage-style&gt;&#34;&#34;&#34;
+    )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.style.default_time_style"><code class="name flex">
@@ -1308,7 +1358,8 @@ no padding.</p>
              &lt;number:minutes number:style=&#34;long&#34;/&gt;
              &lt;number:text&gt;:&lt;/number:text&gt;
              &lt;number:seconds number:style=&#34;long&#34;/&gt;
-           &lt;/number:time-style&gt;&#34;&#34;&#34;)</code></pre>
+           &lt;/number:time-style&gt;&#34;&#34;&#34;
+    )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.style.hex2rgb"><code class="name flex">
@@ -1334,7 +1385,7 @@ tuple.</p>
     Return: tuple
     &#34;&#34;&#34;
     code = color[1:]
-    if not (len(color) == 7 and color[0] == &#39;#&#39; and code.isalnum()):
+    if not (len(color) == 7 and color[0] == &#34;#&#34; and code.isalnum()):
         raise ValueError(&#39;&#34;%s&#34; is not a valid color&#39; % color)
     red = int(code[:2], 16)
     green = int(code[2:4], 16)
@@ -1370,7 +1421,7 @@ color -- str or rgb 3-tuple, str is 'black', 'grey', ... or '#012345'
     thick_string = __make_thick_string(thick)
     line_string = __make_line_string(line)
     color_string = __make_color_string(color)
-    return &#39; &#39;.join((thick_string, line_string, color_string))</code></pre>
+    return &#34; &#34;.join((thick_string, line_string, color_string))</code></pre>
 </details>
 </dd>
 <dt id="odfdo.style.rgb2hex"><code class="name flex">
@@ -1422,7 +1473,7 @@ hexadecimal representation.</p>
     for channel in code:
         if channel &lt; 0 or channel &gt; 255:
             raise ValueError(&#34;color code must be between 0 and 255&#34;)
-    return &#39;#%02X%02X%02X&#39; % code</code></pre>
+    return &#34;#%02X%02X%02X&#34; % code</code></pre>
 </details>
 </dd>
 </dl>
@@ -1506,36 +1557,37 @@ break_after -- 'page', 'column' or 'auto'
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class BackgroundImage(Style, DrawImage):
-    _tag = &#39;style:background-image&#39;
+    _tag = &#34;style:background-image&#34;
     _properties = (
-        (&#39;name&#39;, &#39;style:name&#39;, None),
-        (&#39;display_name&#39;, &#39;style:display-name&#39;, None),
-        (&#39;svg_font_family&#39;, &#39;svg:font-family&#39;, None),
-        (&#39;font_family_generic&#39;, &#39;style:font-family-generic&#39;, None),
-        (&#39;font_pitch&#39;, &#39;style:font-pitch&#39;, None),
-        (&#39;position&#39;, &#39;style:position&#39;, &#39;background-image&#39;),
-        (&#39;repeat&#39;, &#39;style:repeat&#39;, &#39;background-image&#39;),
-        (&#39;opacity&#39;, &#39;draw:opacity&#39;, &#39;background-image&#39;),
-        (&#39;filter&#39;, &#39;style:filter-name&#39;, &#39;background-image&#39;),
-        (&#39;text_style&#39;, &#39;text:style-name&#39;, None),
+        (&#34;name&#34;, &#34;style:name&#34;, None),
+        (&#34;display_name&#34;, &#34;style:display-name&#34;, None),
+        (&#34;svg_font_family&#34;, &#34;svg:font-family&#34;, None),
+        (&#34;font_family_generic&#34;, &#34;style:font-family-generic&#34;, None),
+        (&#34;font_pitch&#34;, &#34;style:font-pitch&#34;, None),
+        (&#34;position&#34;, &#34;style:position&#34;, &#34;background-image&#34;),
+        (&#34;repeat&#34;, &#34;style:repeat&#34;, &#34;background-image&#34;),
+        (&#34;opacity&#34;, &#34;draw:opacity&#34;, &#34;background-image&#34;),
+        (&#34;filter&#34;, &#34;style:filter-name&#34;, &#34;background-image&#34;),
+        (&#34;text_style&#34;, &#34;text:style-name&#34;, None),
     )
 
     def __init__(
-            self,
-            name=None,
-            display_name=None,
-            position=None,
-            repeat=None,
-            opacity=None,
-            filter=None,
-            # Every other property
-            **kw):
-        kw[&#39;family&#39;] = &#39;background-image&#39;
+        self,
+        name=None,
+        display_name=None,
+        position=None,
+        repeat=None,
+        opacity=None,
+        filter=None,
+        # Every other property
+        **kw,
+    ):
+        kw[&#34;family&#34;] = &#34;background-image&#34;
         super().__init__(**kw)
         if self._do_init:
-            kw.pop(&#39;tag&#39;, None)
-            kw.pop(&#39;tag_or_elem&#39;, None)
-            self.family = &#39;background-image&#39;
+            kw.pop(&#34;tag&#34;, None)
+            kw.pop(&#34;tag_or_elem&#34;, None)
+            self.family = &#34;background-image&#34;
             if name:
                 self.name = name
             if display_name:
@@ -1576,7 +1628,7 @@ break_after -- 'page', 'column' or 'auto'
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1594,7 +1646,7 @@ break_after -- 'page', 'column' or 'auto'
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1612,7 +1664,7 @@ break_after -- 'page', 'column' or 'auto'
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1630,7 +1682,7 @@ break_after -- 'page', 'column' or 'auto'
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1875,74 +1927,76 @@ break_after -- 'page', 'column' or 'auto'
     &#39;style:tab-stops&#39;,
     ...
     &#34;&#34;&#34;
+
     _properties = (
-        (&#39;page_layout&#39;, &#39;style:page-layout-name&#39;, &#39;master-page&#39;),
-        (&#39;next_style&#39;, &#39;style:next-style-name&#39;, &#39;master-page&#39;),
-        (&#39;name&#39;, &#39;style:name&#39;, None),
-        (&#39;parent_style&#39;, &#39;style:parent-style-name&#39;, None),
-        (&#39;display_name&#39;, &#39;style:display-name&#39;, None),
-        (&#39;svg_font_family&#39;, &#39;svg:font-family&#39;, None),
-        (&#39;font_family_generic&#39;, &#39;style:font-family-generic&#39;, None),
-        (&#39;font_pitch&#39;, &#39;style:font-pitch&#39;, None),
-        (&#39;text_style&#39;, &#39;text:style-name&#39;, None),
-        (&#39;master_page&#39;, &#39;style:master-page-name&#39;, &#39;paragraph&#39;),
-        (&#39;master_page&#39;, &#39;style:master-page-name&#39;, &#39;paragraph&#39;),
-        (&#39;master_page&#39;, &#39;style:master-page-name&#39;, &#39;paragraph&#39;),
+        (&#34;page_layout&#34;, &#34;style:page-layout-name&#34;, &#34;master-page&#34;),
+        (&#34;next_style&#34;, &#34;style:next-style-name&#34;, &#34;master-page&#34;),
+        (&#34;name&#34;, &#34;style:name&#34;, None),
+        (&#34;parent_style&#34;, &#34;style:parent-style-name&#34;, None),
+        (&#34;display_name&#34;, &#34;style:display-name&#34;, None),
+        (&#34;svg_font_family&#34;, &#34;svg:font-family&#34;, None),
+        (&#34;font_family_generic&#34;, &#34;style:font-family-generic&#34;, None),
+        (&#34;font_pitch&#34;, &#34;style:font-pitch&#34;, None),
+        (&#34;text_style&#34;, &#34;text:style-name&#34;, None),
+        (&#34;master_page&#34;, &#34;style:master-page-name&#34;, &#34;paragraph&#34;),
+        (&#34;master_page&#34;, &#34;style:master-page-name&#34;, &#34;paragraph&#34;),
+        (&#34;master_page&#34;, &#34;style:master-page-name&#34;, &#34;paragraph&#34;),
         # style:tab-stop
-        (&#39;style_type&#39;, &#39;style:type&#39;, None),
-        (&#39;leader_style&#39;, &#39;style:leader-style&#39;, None),
-        (&#39;leader_text&#39;, &#39;style:leader-text&#39;, None),
-        (&#39;style_position&#39;, &#39;style:position&#39;, None),
-        (&#39;leader_text&#39;, &#39;style:position&#39;, None),
+        (&#34;style_type&#34;, &#34;style:type&#34;, None),
+        (&#34;leader_style&#34;, &#34;style:leader-style&#34;, None),
+        (&#34;leader_text&#34;, &#34;style:leader-text&#34;, None),
+        (&#34;style_position&#34;, &#34;style:position&#34;, None),
+        (&#34;leader_text&#34;, &#34;style:position&#34;, None),
     )
 
     def __init__(
-            self,
-            family=None,
-            name=None,
-            display_name=None,
-            parent_style=None,
-            # Where properties apply
-            area=None,
-            # For family &#39;text&#39;:
-            color=None,
-            background_color=None,
-            italic=False,
-            bold=False,
-            # For family &#39;paragraph&#39;
-            master_page=None,
-            # For family &#39;master-page&#39;
-            page_layout=None,
-            next_style=None,
-            # For family &#39;table-cell&#39;
-            data_style=None,  # unused
-            border=None,
-            border_top=None,
-            border_right=None,
-            border_bottom=None,
-            border_left=None,
-            padding=None,
-            padding_top=None,
-            padding_bottom=None,
-            padding_left=None,
-            padding_right=None,
-            shadow=None,
-            # For family &#39;table-row&#39;
-            height=None,
-            use_optimal_height=None,
-            # For family &#39;table-column&#39;
-            width=None,
-            break_before=None,
-            break_after=None,
-            # For family &#39;graphic&#39;
-            min_height=None,
-            # For family &#39;font-face&#39;
-            font_name=None,
-            font_family=None,
-            font_family_generic=None,
-            font_pitch=&#34;variable&#34;,
-            # Every other property
-            **kw):
+        self,
+        family=None,
+        name=None,
+        display_name=None,
+        parent_style=None,
+        # Where properties apply
+        area=None,
+        # For family &#39;text&#39;:
+        color=None,
+        background_color=None,
+        italic=False,
+        bold=False,
+        # For family &#39;paragraph&#39;
+        master_page=None,
+        # For family &#39;master-page&#39;
+        page_layout=None,
+        next_style=None,
+        # For family &#39;table-cell&#39;
+        data_style=None,  # unused
+        border=None,
+        border_top=None,
+        border_right=None,
+        border_bottom=None,
+        border_left=None,
+        padding=None,
+        padding_top=None,
+        padding_bottom=None,
+        padding_left=None,
+        padding_right=None,
+        shadow=None,
+        # For family &#39;table-row&#39;
+        height=None,
+        use_optimal_height=None,
+        # For family &#39;table-column&#39;
+        width=None,
+        break_before=None,
+        break_after=None,
+        # For family &#39;graphic&#39;
+        min_height=None,
+        # For family &#39;font-face&#39;
+        font_name=None,
+        font_family=None,
+        font_family_generic=None,
+        font_pitch=&#34;variable&#34;,
+        # Every other property
+        **kw,
+    ):
         &#34;&#34;&#34;Create a style of the given family. The name is not mandatory at this
         point but will become required when inserting in a document as a common
         style.
@@ -2012,16 +2066,16 @@ break_after -- 'page', 'column' or 'auto'
 
         Return: Style
         &#34;&#34;&#34;
-        tag_or_elem = kw.get(&#39;tag_or_elem&#39;, None)
+        tag_or_elem = kw.get(&#34;tag_or_elem&#34;, None)
         if tag_or_elem is None:
             family = to_str(family)
             if family not in FAMILY_MAPPING:
-                raise ValueError(&#39;Unknown family value: %s&#39; % family)
-            kw[&#39;tag&#39;] = FAMILY_MAPPING[family]
+                raise ValueError(&#34;Unknown family value: %s&#34; % family)
+            kw[&#34;tag&#34;] = FAMILY_MAPPING[family]
         super().__init__(**kw)
         if self._do_init and family not in SUBCLASSED_STYLES:
-            kw.pop(&#39;tag&#39;, None)
-            kw.pop(&#39;tag_or_elem&#39;, None)
+            kw.pop(&#34;tag&#34;, None)
+            kw.pop(&#34;tag_or_elem&#34;, None)
             self.family = family  # relevant test made by property
             # Common attributes
             if name:
@@ -2031,85 +2085,87 @@ break_after -- 'page', 'column' or 'auto'
             if parent_style:
                 self.parent_style = parent_style
             # Paragraph
-            if family == &#39;paragraph&#39;:
+            if family == &#34;paragraph&#34;:
                 if master_page:
                     self.master_page = master_page
             # Master Page
-            elif family == &#39;master-page&#39;:
+            elif family == &#34;master-page&#34;:
                 if page_layout:
                     self.page_layout = page_layout
                 if next_style:
                     self.next_style = next_style
             # Font face
-            elif family == &#39;font-face&#39;:
+            elif family == &#34;font-face&#34;:
                 self.set_font(
                     font_name,
                     family=font_family,
                     family_generic=font_family_generic,
-                    pitch=font_pitch)
+                    pitch=font_pitch,
+                )
             # Properties
             if area is None:
                 area = family
             area = to_str(area)
             # Text
-            if area == &#39;text&#39;:
+            if area == &#34;text&#34;:
                 if color:
-                    kw[&#39;fo:color&#39;] = color
+                    kw[&#34;fo:color&#34;] = color
                 if background_color:
-                    kw[&#39;fo:background-color&#39;] = background_color
+                    kw[&#34;fo:background-color&#34;] = background_color
                 if italic:
-                    kw[&#39;fo:font-style&#39;] = &#39;italic&#39;
-                    kw[&#39;style:font-style-asian&#39;] = &#39;italic&#39;
-                    kw[&#39;style:font-style-complex&#39;] = &#39;italic&#39;
+                    kw[&#34;fo:font-style&#34;] = &#34;italic&#34;
+                    kw[&#34;style:font-style-asian&#34;] = &#34;italic&#34;
+                    kw[&#34;style:font-style-complex&#34;] = &#34;italic&#34;
                 if bold:
-                    kw[&#39;fo:font-weight&#39;] = &#39;bold&#39;
-                    kw[&#39;style:font-weight-asian&#39;] = &#39;bold&#39;
-                    kw[&#39;style:font-weight-complex&#39;] = &#39;bold&#39;
+                    kw[&#34;fo:font-weight&#34;] = &#34;bold&#34;
+                    kw[&#34;style:font-weight-asian&#34;] = &#34;bold&#34;
+                    kw[&#34;style:font-weight-complex&#34;] = &#34;bold&#34;
             # Table cell
-            elif area == &#39;table-cell&#39;:
+            elif area == &#34;table-cell&#34;:
                 if border:
-                    kw[&#39;fo:border&#39;] = border
+                    kw[&#34;fo:border&#34;] = border
                 elif border_top or border_right or border_bottom or border_left:
-                    kw[&#39;fo:border-top&#39;] = border_top or &#39;none&#39;
-                    kw[&#39;fo:border-right&#39;] = border_right or &#39;none&#39;
-                    kw[&#39;fo:border-bottom&#39;] = border_bottom or &#39;none&#39;
-                    kw[&#39;fo:border-left&#39;] = border_left or &#39;none&#39;
+                    kw[&#34;fo:border-top&#34;] = border_top or &#34;none&#34;
+                    kw[&#34;fo:border-right&#34;] = border_right or &#34;none&#34;
+                    kw[&#34;fo:border-bottom&#34;] = border_bottom or &#34;none&#34;
+                    kw[&#34;fo:border-left&#34;] = border_left or &#34;none&#34;
                 else:  # no border_top, ... neither border are defined
                     pass  # left untouched
                 if padding:
-                    kw[&#39;fo:padding&#39;] = padding
+                    kw[&#34;fo:padding&#34;] = padding
                 elif padding_top or padding_right or padding_bottom or padding_left:
-                    kw[&#39;fo:padding-top&#39;] = padding_top or &#39;none&#39;
-                    kw[&#39;fo:padding-right&#39;] = padding_right or &#39;none&#39;
-                    kw[&#39;fo:padding-bottom&#39;] = padding_bottom or &#39;none&#39;
-                    kw[&#39;fo:padding-left&#39;] = padding_left or &#39;none&#39;
+                    kw[&#34;fo:padding-top&#34;] = padding_top or &#34;none&#34;
+                    kw[&#34;fo:padding-right&#34;] = padding_right or &#34;none&#34;
+                    kw[&#34;fo:padding-bottom&#34;] = padding_bottom or &#34;none&#34;
+                    kw[&#34;fo:padding-left&#34;] = padding_left or &#34;none&#34;
                 else:  # no border_top, ... neither border are defined
                     pass  # left untouched
                 if shadow:
-                    kw[&#39;style:shadow&#39;] = shadow
+                    kw[&#34;style:shadow&#34;] = shadow
                 if background_color:
-                    kw[&#39;fo:background-color&#39;] = background_color
+                    kw[&#34;fo:background-color&#34;] = background_color
             # Table row
-            elif area == &#39;table-row&#39;:
+            elif area == &#34;table-row&#34;:
                 if height:
-                    kw[&#39;style:row-height&#39;] = height
+                    kw[&#34;style:row-height&#34;] = height
                 if use_optimal_height is not None:
-                    kw[&#39;style:use-optimal-row-height&#39;] = Boolean.encode(
-                        use_optimal_height)
+                    kw[&#34;style:use-optimal-row-height&#34;] = Boolean.encode(
+                        use_optimal_height
+                    )
                 if background_color:
-                    kw[&#39;fo:background-color&#39;] = background_color
+                    kw[&#34;fo:background-color&#34;] = background_color
             # Table column
-            elif area == &#39;table-column&#39;:
+            elif area == &#34;table-column&#34;:
                 if width:
-                    kw[&#39;style:column-width&#39;] = width
+                    kw[&#34;style:column-width&#34;] = width
                 if break_before:
-                    kw[&#39;fo:break-before&#39;] = break_before
+                    kw[&#34;fo:break-before&#34;] = break_before
                 if break_after:
-                    kw[&#39;fo:break-after&#39;] = break_after
+                    kw[&#34;fo:break-after&#34;] = break_after
             # Graphic
-            elif area == &#39;graphic&#39;:
+            elif area == &#34;graphic&#34;:
                 if min_height:
-                    kw[&#39;fo:min-height&#39;] = min_height
+                    kw[&#34;fo:min-height&#34;] = min_height
             # Every other properties
             if kw:
                 self.set_properties(kw, area=area)
@@ -2120,15 +2176,16 @@ break_after -- 'page', 'column' or 'auto'
             return self._family
         except AttributeError:
             self._family = FALSE_FAMILY_MAP_REVERSE.get(
-                self.tag, self.get_attribute(&#39;style:family&#39;))
+                self.tag, self.get_attribute(&#34;style:family&#34;)
+            )
             return self._family
 
     @family.setter
     def family(self, family):
         family = to_str(family)
         self._family = family
-        if family in FAMILY_ODF_STD and self.tag == &#39;style:style&#39;:
-            self.set_attribute(&#39;style:family&#39;, family)
+        if family in FAMILY_ODF_STD and self.tag == &#34;style:style&#34;:
+            self.set_attribute(&#34;style:family&#34;, family)
 
     def get_properties(self, area=None):
         &#34;&#34;&#34;Get the mapping of all properties of this style. By default the
@@ -2144,7 +2201,7 @@ break_after -- 'page', 'column' or 'auto'
         &#34;&#34;&#34;
         if area is None:
             area = self.family
-        element = self.get_element(&#39;style:%s-properties&#39; % area)
+        element = self.get_element(&#34;style:%s-properties&#34; % area)
         if element is None:
             return None
         properties = element.attributes
@@ -2174,9 +2231,9 @@ break_after -- 'page', 'column' or 'auto'
             properties = {}
         if area is None:
             area = self.family
-        element = self.get_element(&#39;style:%s-properties&#39; % area)
+        element = self.get_element(&#34;style:%s-properties&#34; % area)
         if element is None:
-            element = Element.from_tag(&#39;style:%s-properties&#39; % area)
+            element = Element.from_tag(&#34;style:%s-properties&#34; % area)
             self.append(element)
         if properties or kw:
             properties = _expand_properties(_merge_dicts(properties, kw))
@@ -2205,19 +2262,21 @@ break_after -- 'page', 'column' or 'auto'
             properties = []
         if area is None:
             area = self.family
-        element = self.get_element(&#39;style:%s-properties&#39; % area)
+        element = self.get_element(&#34;style:%s-properties&#34; % area)
         if element is None:
             raise ValueError(&#34;properties element is inexistent&#34;)
         for key in _expand_properties(properties):
             element.del_attribute(key)
 
-    def set_background(self,
-                       color=None,
-                       url=None,
-                       position=&#39;center&#39;,
-                       repeat=None,
-                       opacity=None,
-                       filter=None):
+    def set_background(
+        self,
+        color=None,
+        url=None,
+        position=&#34;center&#34;,
+        repeat=None,
+        opacity=None,
+        filter=None,
+    ):
         &#34;&#34;&#34;Set the background color of a text style, or the background color
         or image of a paragraph style or page layout.
 
@@ -2251,39 +2310,45 @@ break_after -- 'page', 'column' or 'auto'
         &#34;&#34;&#34;
         family = self.family
         if family not in {
-                &#39;text&#39;, &#39;paragraph&#39;, &#39;page-layout&#39;, &#39;section&#39;, &#39;table&#39;,
-                &#39;table-row&#39;, &#39;table-cell&#39;, &#39;graphic&#39;
+            &#34;text&#34;,
+            &#34;paragraph&#34;,
+            &#34;page-layout&#34;,
+            &#34;section&#34;,
+            &#34;table&#34;,
+            &#34;table-row&#34;,
+            &#34;table-cell&#34;,
+            &#34;graphic&#34;,
         }:
-            raise TypeError(&#39;no background support for this family&#39;)
-        if url is not None and family == &#39;text&#39;:
-            raise TypeError(&#39;no background image for text styles&#39;)
-        properties = self.get_element(&#39;style:%s-properties&#39; % family)
+            raise TypeError(&#34;no background support for this family&#34;)
+        if url is not None and family == &#34;text&#34;:
+            raise TypeError(&#34;no background image for text styles&#34;)
+        properties = self.get_element(&#34;style:%s-properties&#34; % family)
         if properties is None:
             bg_image = None
         else:
-            bg_image = properties.get_element(&#39;style:background-image&#39;)
+            bg_image = properties.get_element(&#34;style:background-image&#34;)
         # Erasing
         if color is None and url is None:
             if properties is None:
                 return
-            properties.del_attribute(&#39;fo:background-color&#39;)
+            properties.del_attribute(&#34;fo:background-color&#34;)
             if bg_image is not None:
                 properties.delete(bg_image)
             return
         # Add the properties if necessary
         if properties is None:
-            properties = Element.from_tag(&#39;style:%s-properties&#39; % family)
+            properties = Element.from_tag(&#34;style:%s-properties&#34; % family)
             self.append(properties)
         # Add the color...
         if color:
-            properties.set_attribute(&#39;fo:background-color&#39;, color)
+            properties.set_attribute(&#34;fo:background-color&#34;, color)
             if bg_image is not None:
                 properties.delete(bg_image)
         # ... or the background
         elif url:
-            properties.set_attribute(&#39;fo:background-color&#39;, &#39;transparent&#39;)
+            properties.set_attribute(&#34;fo:background-color&#34;, &#34;transparent&#34;)
             if bg_image is None:
-                bg_image = Element.from_tag(&#39;style:background-image&#39;)
+                bg_image = Element.from_tag(&#34;style:background-image&#34;)
                 properties.append(bg_image)
             bg_image.url = url
             if position:
@@ -2298,24 +2363,28 @@ break_after -- 'page', 'column' or 'auto'
     # list-style only:
 
     def get_level_style(self, level):
-        if self.family != &#39;list&#39;:
+        if self.family != &#34;list&#34;:
             return None
-        level_styles = (&#39;(text:list-level-style-number&#39;
-                        &#39;|text:list-level-style-bullet&#39;
-                        &#39;|text:list-level-style-image)&#39;)
+        level_styles = (
+            &#34;(text:list-level-style-number&#34;
+            &#34;|text:list-level-style-bullet&#34;
+            &#34;|text:list-level-style-image)&#34;
+        )
         return _get_element(self, level_styles, 0, level=level)
 
-    def set_level_style(self,
-                        level,
-                        num_format=None,
-                        bullet_char=None,
-                        url=None,
-                        display_levels=None,
-                        prefix=None,
-                        suffix=None,
-                        start_value=None,
-                        style=None,
-                        clone=None):
+    def set_level_style(
+        self,
+        level,
+        num_format=None,
+        bullet_char=None,
+        url=None,
+        display_levels=None,
+        prefix=None,
+        suffix=None,
+        start_value=None,
+        style=None,
+        clone=None,
+    ):
         &#34;&#34;&#34;
         Arguments:
 
@@ -2342,15 +2411,15 @@ break_after -- 'page', 'column' or 'auto'
         Return:
             level_style created
         &#34;&#34;&#34;
-        if self.family != &#39;list&#39;:
+        if self.family != &#34;list&#34;:
             return None
         # Expected name
         if num_format is not None:
-            level_style_name = &#39;text:list-level-style-number&#39;
+            level_style_name = &#34;text:list-level-style-number&#34;
         elif bullet_char is not None:
-            level_style_name = &#39;text:list-level-style-bullet&#39;
+            level_style_name = &#34;text:list-level-style-bullet&#34;
         elif url is not None:
-            level_style_name = &#39;text:list-level-style-image&#39;
+            level_style_name = &#34;text:list-level-style-image&#34;
         elif clone is not None:
             level_style_name = clone.tag
         else:
@@ -2367,27 +2436,26 @@ break_after -- 'page', 'column' or 'auto'
                 was_created = True
         # Transmute if the type changed
         if level_style.tag != level_style_name:
-            print(&#39;warn: different style&#39;, level_style_name, level_style.tag)
+            print(&#34;warn: different style&#34;, level_style_name, level_style.tag)
             level_style.tag = level_style_name
         # Set the level
-        level_style.set_attribute(&#39;text:level&#39;, str(level))
+        level_style.set_attribute(&#34;text:level&#34;, str(level))
         # Set the main attribute
         if num_format is not None:
-            level_style.set_attribute(&#39;fo:num-format&#39;, num_format)
+            level_style.set_attribute(&#34;fo:num-format&#34;, num_format)
         elif bullet_char is not None:
-            level_style.set_attribute(&#39;text:bullet-char&#39;, bullet_char)
+            level_style.set_attribute(&#34;text:bullet-char&#34;, bullet_char)
         elif url is not None:
-            level_style.set_attribute(&#39;xlink:href&#39;, url)
+            level_style.set_attribute(&#34;xlink:href&#34;, url)
         # Set attributes
         if prefix:
-            level_style.set_attribute(&#39;style:num-prefix&#39;, prefix)
+            level_style.set_attribute(&#34;style:num-prefix&#34;, prefix)
         if suffix:
-            level_style.set_attribute(&#39;style:num-suffix&#39;, suffix)
+            level_style.set_attribute(&#34;style:num-suffix&#34;, suffix)
         if display_levels:
-            level_style.set_attribute(&#39;text:display-levels&#39;,
-                                      str(display_levels))
+            level_style.set_attribute(&#34;text:display-levels&#34;, str(display_levels))
         if start_value:
-            level_style.set_attribute(&#39;text:start-value&#39;, str(start_value))
+            level_style.set_attribute(&#34;text:start-value&#34;, str(start_value))
         if style:
             level_style.text_style = style
         # Commit the creation
@@ -2398,12 +2466,12 @@ break_after -- 'page', 'column' or 'auto'
     # page-layout only:
 
     def get_header_style(self):
-        if self.family != &#39;page-layout&#39;:
+        if self.family != &#34;page-layout&#34;:
             return None
-        return self.get_element(&#39;style:header-style&#39;)
+        return self.get_element(&#34;style:header-style&#34;)
 
     def set_header_style(self, new_style):
-        if self.family != &#39;page-layout&#39;:
+        if self.family != &#34;page-layout&#34;:
             return
         header_style = self.get_header_style()
         if header_style is not None:
@@ -2411,12 +2479,12 @@ break_after -- 'page', 'column' or 'auto'
         self.append(new_style)
 
     def get_footer_style(self):
-        if self.family != &#39;page-layout&#39;:
+        if self.family != &#34;page-layout&#34;:
             return None
-        return self.get_element(&#39;style:footer-style&#39;)
+        return self.get_element(&#34;style:footer-style&#34;)
 
     def set_footer_style(self, new_style):
-        if self.family != &#39;page-layout&#39;:
+        if self.family != &#34;page-layout&#34;:
             return
         footer_style = self.get_footer_style()
         if footer_style is not None:
@@ -2425,23 +2493,21 @@ break_after -- 'page', 'column' or 'auto'
 
     # master-page only:
 
-    def __set_header_or_footer(self,
-                               text_or_element,
-                               name=&#39;header&#39;,
-                               style=&#34;Header&#34;):
-        if name == &#39;header&#39;:
+    def __set_header_or_footer(self, text_or_element, name=&#34;header&#34;, style=&#34;Header&#34;):
+        if name == &#34;header&#34;:
             header_or_footer = self.get_page_header()
         else:
             header_or_footer = self.get_page_footer()
         if header_or_footer is None:
-            header_or_footer = Element.from_tag(&#39;style:&#39; + name)
+            header_or_footer = Element.from_tag(&#34;style:&#34; + name)
             self.append(header_or_footer)
         else:
             header_or_footer.clear()
         if not isiterable(text_or_element):
             # Already a header or footer?
-            if (isinstance(text_or_element, Element)
-                    and text_or_element.tag == &#39;style:%s&#39; % to_str(name)):
+            if isinstance(
+                text_or_element, Element
+            ) and text_or_element.tag == &#34;style:%s&#34; % to_str(name):
                 self.delete(header_or_footer)
                 self.append(text_or_element)
                 return
@@ -2459,9 +2525,9 @@ break_after -- 'page', 'column' or 'auto'
 
         If None, no header was set.
         &#34;&#34;&#34;
-        if self.family != &#39;master-page&#39;:
+        if self.family != &#34;master-page&#34;:
             return None
-        return self.get_element(&#39;style:header&#39;)
+        return self.get_element(&#34;style:header&#34;)
 
     def set_page_header(self, text_or_element):
         &#34;&#34;&#34;Create or replace the header by the given content. It can already
@@ -2474,7 +2540,7 @@ break_after -- 'page', 'column' or 'auto'
 
             text_or_element -- str or Element or a list of them
         &#34;&#34;&#34;
-        if self.family != &#39;master-page&#39;:
+        if self.family != &#34;master-page&#34;:
             return None
         return self.__set_header_or_footer(text_or_element)
 
@@ -2483,9 +2549,9 @@ break_after -- 'page', 'column' or 'auto'
 
         If None, no footer was set.
         &#34;&#34;&#34;
-        if self.family != &#39;master-page&#39;:
+        if self.family != &#34;master-page&#34;:
             return None
-        return self.get_element(&#39;style:footer&#39;)
+        return self.get_element(&#34;style:footer&#34;)
 
     def set_page_footer(self, text_or_element):
         &#34;&#34;&#34;Create or replace the footer by the given content. It can already
@@ -2498,19 +2564,16 @@ break_after -- 'page', 'column' or 'auto'
 
             text_or_element -- str or Element or a list of them
         &#34;&#34;&#34;
-        if self.family != &#39;master-page&#39;:
+        if self.family != &#34;master-page&#34;:
             return None
         return self.__set_header_or_footer(
-            text_or_element, name=&#39;footer&#39;, style=&#34;Footer&#34;)
+            text_or_element, name=&#34;footer&#34;, style=&#34;Footer&#34;
+        )
 
     # font-face only:
 
-    def set_font(self,
-                 name,
-                 family=None,
-                 family_generic=None,
-                 pitch=&#34;variable&#34;):
-        if self.family != &#39;font-face&#39;:
+    def set_font(self, name, family=None, family_generic=None, pitch=&#34;variable&#34;):
+        if self.family != &#34;font-face&#34;:
             return
         self.name = name
         if family is None:
@@ -2543,7 +2606,7 @@ break_after -- 'page', 'column' or 'auto'
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2561,7 +2624,8 @@ def family(self):
         return self._family
     except AttributeError:
         self._family = FALSE_FAMILY_MAP_REVERSE.get(
-            self.tag, self.get_attribute(&#39;style:family&#39;))
+            self.tag, self.get_attribute(&#34;style:family&#34;)
+        )
         return self._family</code></pre>
 </details>
 </dd>
@@ -2578,7 +2642,7 @@ def family(self):
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2596,7 +2660,7 @@ def family(self):
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2614,7 +2678,7 @@ def family(self):
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2632,7 +2696,7 @@ def family(self):
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2650,7 +2714,7 @@ def family(self):
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2668,7 +2732,7 @@ def family(self):
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2686,7 +2750,7 @@ def family(self):
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2704,7 +2768,7 @@ def family(self):
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2722,7 +2786,7 @@ def family(self):
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2740,7 +2804,7 @@ def family(self):
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2758,7 +2822,7 @@ def family(self):
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2776,7 +2840,7 @@ def family(self):
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2794,7 +2858,7 @@ def family(self):
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2831,7 +2895,7 @@ identical to the style family by default.</p>
         properties = []
     if area is None:
         area = self.family
-    element = self.get_element(&#39;style:%s-properties&#39; % area)
+    element = self.get_element(&#34;style:%s-properties&#34; % area)
     if element is None:
         raise ValueError(&#34;properties element is inexistent&#34;)
     for key in _expand_properties(properties):
@@ -2848,9 +2912,9 @@ identical to the style family by default.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_footer_style(self):
-    if self.family != &#39;page-layout&#39;:
+    if self.family != &#34;page-layout&#34;:
         return None
-    return self.get_element(&#39;style:footer-style&#39;)</code></pre>
+    return self.get_element(&#34;style:footer-style&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.style.Style.get_header_style"><code class="name flex">
@@ -2863,9 +2927,9 @@ identical to the style family by default.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_header_style(self):
-    if self.family != &#39;page-layout&#39;:
+    if self.family != &#34;page-layout&#34;:
         return None
-    return self.get_element(&#39;style:header-style&#39;)</code></pre>
+    return self.get_element(&#34;style:header-style&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.style.Style.get_level_style"><code class="name flex">
@@ -2878,11 +2942,13 @@ identical to the style family by default.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_level_style(self, level):
-    if self.family != &#39;list&#39;:
+    if self.family != &#34;list&#34;:
         return None
-    level_styles = (&#39;(text:list-level-style-number&#39;
-                    &#39;|text:list-level-style-bullet&#39;
-                    &#39;|text:list-level-style-image)&#39;)
+    level_styles = (
+        &#34;(text:list-level-style-number&#34;
+        &#34;|text:list-level-style-bullet&#34;
+        &#34;|text:list-level-style-image)&#34;
+    )
     return _get_element(self, level_styles, 0, level=level)</code></pre>
 </details>
 </dd>
@@ -2901,9 +2967,9 @@ identical to the style family by default.</p>
 
     If None, no footer was set.
     &#34;&#34;&#34;
-    if self.family != &#39;master-page&#39;:
+    if self.family != &#34;master-page&#34;:
         return None
-    return self.get_element(&#39;style:footer&#39;)</code></pre>
+    return self.get_element(&#34;style:footer&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.style.Style.get_page_header"><code class="name flex">
@@ -2921,9 +2987,9 @@ identical to the style family by default.</p>
 
     If None, no header was set.
     &#34;&#34;&#34;
-    if self.family != &#39;master-page&#39;:
+    if self.family != &#34;master-page&#34;:
         return None
-    return self.get_element(&#39;style:header&#39;)</code></pre>
+    return self.get_element(&#34;style:header&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.style.Style.get_properties"><code class="name flex">
@@ -2955,7 +3021,7 @@ a paragraph style for example.</p>
     &#34;&#34;&#34;
     if area is None:
         area = self.family
-    element = self.get_element(&#39;style:%s-properties&#39; % area)
+    element = self.get_element(&#34;style:%s-properties&#34; % area)
     if element is None:
         return None
     properties = element.attributes
@@ -2990,13 +3056,15 @@ an error if the style type is not compatible.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_background(self,
-                   color=None,
-                   url=None,
-                   position=&#39;center&#39;,
-                   repeat=None,
-                   opacity=None,
-                   filter=None):
+<pre><code class="python">def set_background(
+    self,
+    color=None,
+    url=None,
+    position=&#34;center&#34;,
+    repeat=None,
+    opacity=None,
+    filter=None,
+):
     &#34;&#34;&#34;Set the background color of a text style, or the background color
     or image of a paragraph style or page layout.
 
@@ -3030,39 +3098,45 @@ an error if the style type is not compatible.</p>
     &#34;&#34;&#34;
     family = self.family
     if family not in {
-            &#39;text&#39;, &#39;paragraph&#39;, &#39;page-layout&#39;, &#39;section&#39;, &#39;table&#39;,
-            &#39;table-row&#39;, &#39;table-cell&#39;, &#39;graphic&#39;
+        &#34;text&#34;,
+        &#34;paragraph&#34;,
+        &#34;page-layout&#34;,
+        &#34;section&#34;,
+        &#34;table&#34;,
+        &#34;table-row&#34;,
+        &#34;table-cell&#34;,
+        &#34;graphic&#34;,
     }:
-        raise TypeError(&#39;no background support for this family&#39;)
-    if url is not None and family == &#39;text&#39;:
-        raise TypeError(&#39;no background image for text styles&#39;)
-    properties = self.get_element(&#39;style:%s-properties&#39; % family)
+        raise TypeError(&#34;no background support for this family&#34;)
+    if url is not None and family == &#34;text&#34;:
+        raise TypeError(&#34;no background image for text styles&#34;)
+    properties = self.get_element(&#34;style:%s-properties&#34; % family)
     if properties is None:
         bg_image = None
     else:
-        bg_image = properties.get_element(&#39;style:background-image&#39;)
+        bg_image = properties.get_element(&#34;style:background-image&#34;)
     # Erasing
     if color is None and url is None:
         if properties is None:
             return
-        properties.del_attribute(&#39;fo:background-color&#39;)
+        properties.del_attribute(&#34;fo:background-color&#34;)
         if bg_image is not None:
             properties.delete(bg_image)
         return
     # Add the properties if necessary
     if properties is None:
-        properties = Element.from_tag(&#39;style:%s-properties&#39; % family)
+        properties = Element.from_tag(&#34;style:%s-properties&#34; % family)
         self.append(properties)
     # Add the color...
     if color:
-        properties.set_attribute(&#39;fo:background-color&#39;, color)
+        properties.set_attribute(&#34;fo:background-color&#34;, color)
         if bg_image is not None:
             properties.delete(bg_image)
     # ... or the background
     elif url:
-        properties.set_attribute(&#39;fo:background-color&#39;, &#39;transparent&#39;)
+        properties.set_attribute(&#34;fo:background-color&#34;, &#34;transparent&#34;)
         if bg_image is None:
-            bg_image = Element.from_tag(&#39;style:background-image&#39;)
+            bg_image = Element.from_tag(&#34;style:background-image&#34;)
             properties.append(bg_image)
         bg_image.url = url
         if position:
@@ -3084,12 +3158,8 @@ an error if the style type is not compatible.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_font(self,
-             name,
-             family=None,
-             family_generic=None,
-             pitch=&#34;variable&#34;):
-    if self.family != &#39;font-face&#39;:
+<pre><code class="python">def set_font(self, name, family=None, family_generic=None, pitch=&#34;variable&#34;):
+    if self.family != &#34;font-face&#34;:
         return
     self.name = name
     if family is None:
@@ -3110,7 +3180,7 @@ an error if the style type is not compatible.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_footer_style(self, new_style):
-    if self.family != &#39;page-layout&#39;:
+    if self.family != &#34;page-layout&#34;:
         return
     footer_style = self.get_footer_style()
     if footer_style is not None:
@@ -3128,7 +3198,7 @@ an error if the style type is not compatible.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_header_style(self, new_style):
-    if self.family != &#39;page-layout&#39;:
+    if self.family != &#34;page-layout&#34;:
         return
     header_style = self.get_header_style()
     if header_style is not None:
@@ -3157,17 +3227,19 @@ an error if the style type is not compatible.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_level_style(self,
-                    level,
-                    num_format=None,
-                    bullet_char=None,
-                    url=None,
-                    display_levels=None,
-                    prefix=None,
-                    suffix=None,
-                    start_value=None,
-                    style=None,
-                    clone=None):
+<pre><code class="python">def set_level_style(
+    self,
+    level,
+    num_format=None,
+    bullet_char=None,
+    url=None,
+    display_levels=None,
+    prefix=None,
+    suffix=None,
+    start_value=None,
+    style=None,
+    clone=None,
+):
     &#34;&#34;&#34;
     Arguments:
 
@@ -3194,15 +3266,15 @@ an error if the style type is not compatible.</p>
     Return:
         level_style created
     &#34;&#34;&#34;
-    if self.family != &#39;list&#39;:
+    if self.family != &#34;list&#34;:
         return None
     # Expected name
     if num_format is not None:
-        level_style_name = &#39;text:list-level-style-number&#39;
+        level_style_name = &#34;text:list-level-style-number&#34;
     elif bullet_char is not None:
-        level_style_name = &#39;text:list-level-style-bullet&#39;
+        level_style_name = &#34;text:list-level-style-bullet&#34;
     elif url is not None:
-        level_style_name = &#39;text:list-level-style-image&#39;
+        level_style_name = &#34;text:list-level-style-image&#34;
     elif clone is not None:
         level_style_name = clone.tag
     else:
@@ -3219,27 +3291,26 @@ an error if the style type is not compatible.</p>
             was_created = True
     # Transmute if the type changed
     if level_style.tag != level_style_name:
-        print(&#39;warn: different style&#39;, level_style_name, level_style.tag)
+        print(&#34;warn: different style&#34;, level_style_name, level_style.tag)
         level_style.tag = level_style_name
     # Set the level
-    level_style.set_attribute(&#39;text:level&#39;, str(level))
+    level_style.set_attribute(&#34;text:level&#34;, str(level))
     # Set the main attribute
     if num_format is not None:
-        level_style.set_attribute(&#39;fo:num-format&#39;, num_format)
+        level_style.set_attribute(&#34;fo:num-format&#34;, num_format)
     elif bullet_char is not None:
-        level_style.set_attribute(&#39;text:bullet-char&#39;, bullet_char)
+        level_style.set_attribute(&#34;text:bullet-char&#34;, bullet_char)
     elif url is not None:
-        level_style.set_attribute(&#39;xlink:href&#39;, url)
+        level_style.set_attribute(&#34;xlink:href&#34;, url)
     # Set attributes
     if prefix:
-        level_style.set_attribute(&#39;style:num-prefix&#39;, prefix)
+        level_style.set_attribute(&#34;style:num-prefix&#34;, prefix)
     if suffix:
-        level_style.set_attribute(&#39;style:num-suffix&#39;, suffix)
+        level_style.set_attribute(&#34;style:num-suffix&#34;, suffix)
     if display_levels:
-        level_style.set_attribute(&#39;text:display-levels&#39;,
-                                  str(display_levels))
+        level_style.set_attribute(&#34;text:display-levels&#34;, str(display_levels))
     if start_value:
-        level_style.set_attribute(&#39;text:start-value&#39;, str(start_value))
+        level_style.set_attribute(&#34;text:start-value&#34;, str(start_value))
     if style:
         level_style.text_style = style
     # Commit the creation
@@ -3273,10 +3344,11 @@ API.</p>
 
         text_or_element -- str or Element or a list of them
     &#34;&#34;&#34;
-    if self.family != &#39;master-page&#39;:
+    if self.family != &#34;master-page&#34;:
         return None
     return self.__set_header_or_footer(
-        text_or_element, name=&#39;footer&#39;, style=&#34;Footer&#34;)</code></pre>
+        text_or_element, name=&#34;footer&#34;, style=&#34;Footer&#34;
+    )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.style.Style.set_page_header"><code class="name flex">
@@ -3304,7 +3376,7 @@ API.</p>
 
         text_or_element -- str or Element or a list of them
     &#34;&#34;&#34;
-    if self.family != &#39;master-page&#39;:
+    if self.family != &#34;master-page&#34;:
         return None
     return self.__set_header_or_footer(text_or_element)</code></pre>
 </details>
@@ -3348,9 +3420,9 @@ same area. These will be copied.</p>
         properties = {}
     if area is None:
         area = self.family
-    element = self.get_element(&#39;style:%s-properties&#39; % area)
+    element = self.get_element(&#34;style:%s-properties&#34; % area)
     if element is None:
-        element = Element.from_tag(&#39;style:%s-properties&#39; % area)
+        element = Element.from_tag(&#34;style:%s-properties&#34; % area)
         self.append(element)
     if properties or kw:
         properties = _expand_properties(_merge_dicts(properties, kw))
@@ -3561,7 +3633,7 @@ same area. These will be copied.</p>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.3</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
 </footer>
 </body>
 </html>

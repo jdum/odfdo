@@ -28,7 +28,7 @@ from setuptools import setup, find_packages
 here = abspath(dirname(__file__))
 exec(open(join(here, "odfdo", "version.py")).read())
 with open(join(here, "README.md"), encoding="utf-8") as f:
-    long_description = f.read()
+    long_description = f.read().replace("![logo](./odfdo.png)", "")
 scripts = [join("scripts", f) for f in os.listdir("scripts") if f.endswith(".py")]
 
 setup(
@@ -36,7 +36,7 @@ setup(
     version=__version__,
     description="Python library for OpenDocument format",
     long_description=long_description,
-    long_description_content_type="text/plain;charset=UTF-8",
+    long_description_content_type="text/markdown",
     url="https://github.com/jdum/odfdo",
     author="Jérôme Dumonteil",
     author_email="jerome.dumonteil@gmail.com",

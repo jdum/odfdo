@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.8.3" />
+<meta name="generator" content="pdoc 0.9.2" />
 <title>odfdo.shapes API documentation</title>
 <meta name="description" content="Drawing classes ShapeBase, LineShape, RectangleShape, EllipseShape,
 ConnectorShape and DrawGroup" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
 <style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
 <style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
 </head>
 <body>
@@ -58,30 +58,32 @@ from .frame import AnchorMix, ZMix, PosMix, SizeMix
 
 
 class ShapeBase(Element, SizeMix, PosMix):
-    &#34;&#34;&#34;Base class for shapes
-    &#34;&#34;&#34;
-    _tag = &#39;draw:shape-odfdo-notodf&#39;
+    &#34;&#34;&#34;Base class for shapes&#34;&#34;&#34;
+
+    _tag = &#34;draw:shape-odfdo-notodf&#34;
     _properties = (
-        (&#39;draw_id&#39;, &#39;draw:id&#39;),
-        (&#39;layer&#39;, &#39;draw:layer&#39;),
-        (&#39;width&#39;, &#39;svg:width&#39;),
-        (&#39;height&#39;, &#39;svg:height&#39;),
-        (&#39;pos_x&#39;, &#39;svg:x&#39;),
-        (&#39;pos_y&#39;, &#39;svg:y&#39;),
-        (&#39;presentation_class&#39;, &#39;presentation:class&#39;),
-        (&#39;style&#39;, &#39;draw:style-name&#39;),
-        (&#39;text_style&#39;, &#39;draw:text-style-name&#39;),
+        (&#34;draw_id&#34;, &#34;draw:id&#34;),
+        (&#34;layer&#34;, &#34;draw:layer&#34;),
+        (&#34;width&#34;, &#34;svg:width&#34;),
+        (&#34;height&#34;, &#34;svg:height&#34;),
+        (&#34;pos_x&#34;, &#34;svg:x&#34;),
+        (&#34;pos_y&#34;, &#34;svg:y&#34;),
+        (&#34;presentation_class&#34;, &#34;presentation:class&#34;),
+        (&#34;style&#34;, &#34;draw:style-name&#34;),
+        (&#34;text_style&#34;, &#34;draw:text-style-name&#34;),
     )
 
-    def __init__(self,
-                 style=None,
-                 text_style=None,
-                 draw_id=None,
-                 layer=None,
-                 position=None,
-                 size=None,
-                 presentation_class=None,
-                 **kwargs):
+    def __init__(
+        self,
+        style=None,
+        text_style=None,
+        draw_id=None,
+        layer=None,
+        position=None,
+        size=None,
+        presentation_class=None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         if self._do_init:
             if style:
@@ -129,28 +131,33 @@ class LineShape(ShapeBase):
 
     Return: LineShape
     &#34;&#34;&#34;
-    _tag = &#39;draw:line&#39;
+
+    _tag = &#34;draw:line&#34;
     _properties = (
-        (&#39;x1&#39;, &#39;svg:x1&#39;),
-        (&#39;y1&#39;, &#39;svg:y1&#39;),
-        (&#39;x2&#39;, &#39;svg:x2&#39;),
-        (&#39;y2&#39;, &#39;svg:y2&#39;),
+        (&#34;x1&#34;, &#34;svg:x1&#34;),
+        (&#34;y1&#34;, &#34;svg:y1&#34;),
+        (&#34;x2&#34;, &#34;svg:x2&#34;),
+        (&#34;y2&#34;, &#34;svg:y2&#34;),
     )
 
-    def __init__(self,
-                 style=None,
-                 text_style=None,
-                 draw_id=None,
-                 layer=None,
-                 p1=None,
-                 p2=None,
-                 **kw):
-        kw.update({
-            &#39;style&#39;: style,
-            &#39;text_style&#39;: text_style,
-            &#39;draw_id&#39;: draw_id,
-            &#39;layer&#39;: layer
-        })
+    def __init__(
+        self,
+        style=None,
+        text_style=None,
+        draw_id=None,
+        layer=None,
+        p1=None,
+        p2=None,
+        **kw
+    ):
+        kw.update(
+            {
+                &#34;style&#34;: style,
+                &#34;text_style&#34;: text_style,
+                &#34;draw_id&#34;: draw_id,
+                &#34;layer&#34;: layer,
+            }
+        )
         super().__init__(**kw)
         if self._do_init:
             if p1:
@@ -183,25 +190,30 @@ class RectangleShape(ShapeBase):
 
     Return: RectangleShape
     &#34;&#34;&#34;
-    _tag = &#39;draw:rect&#39;
+
+    _tag = &#34;draw:rect&#34;
     _properties = ()
 
-    def __init__(self,
-                 style=None,
-                 text_style=None,
-                 draw_id=None,
-                 layer=None,
-                 size=None,
-                 position=None,
-                 **kw):
-        kw.update({
-            &#39;style&#39;: style,
-            &#39;text_style&#39;: text_style,
-            &#39;draw_id&#39;: draw_id,
-            &#39;layer&#39;: layer,
-            &#39;size&#39;: size,
-            &#39;position&#39;: position,
-        })
+    def __init__(
+        self,
+        style=None,
+        text_style=None,
+        draw_id=None,
+        layer=None,
+        size=None,
+        position=None,
+        **kw
+    ):
+        kw.update(
+            {
+                &#34;style&#34;: style,
+                &#34;text_style&#34;: text_style,
+                &#34;draw_id&#34;: draw_id,
+                &#34;layer&#34;: layer,
+                &#34;size&#34;: size,
+                &#34;position&#34;: position,
+            }
+        )
         super().__init__(**kw)
 
 
@@ -227,25 +239,30 @@ class EllipseShape(ShapeBase):
 
     Return: EllipseShape
     &#34;&#34;&#34;
-    _tag = &#39;draw:ellipse&#39;
+
+    _tag = &#34;draw:ellipse&#34;
     _properties = ()
 
-    def __init__(self,
-                 style=None,
-                 text_style=None,
-                 draw_id=None,
-                 layer=None,
-                 size=None,
-                 position=None,
-                 **kw):
-        kw.update({
-            &#39;style&#39;: style,
-            &#39;text_style&#39;: text_style,
-            &#39;draw_id&#39;: draw_id,
-            &#39;layer&#39;: layer,
-            &#39;size&#39;: size,
-            &#39;position&#39;: position,
-        })
+    def __init__(
+        self,
+        style=None,
+        text_style=None,
+        draw_id=None,
+        layer=None,
+        size=None,
+        position=None,
+        **kw
+    ):
+        kw.update(
+            {
+                &#34;style&#34;: style,
+                &#34;text_style&#34;: text_style,
+                &#34;draw_id&#34;: draw_id,
+                &#34;layer&#34;: layer,
+                &#34;size&#34;: size,
+                &#34;position&#34;: position,
+            }
+        )
         super().__init__(**kw)
 
 
@@ -275,34 +292,39 @@ class ConnectorShape(ShapeBase):
 
     Return: ConnectorShape
     &#34;&#34;&#34;
-    _tag = &#39;draw:connector&#39;
+
+    _tag = &#34;draw:connector&#34;
     _properties = (
-        (&#39;start_shape&#39;, &#39;draw:start-shape&#39;),
-        (&#39;end_shape&#39;, &#39;draw:end-shape&#39;),
-        (&#39;start_glue_point&#39;, &#39;draw:start-glue-point&#39;),
-        (&#39;end_glue_point&#39;, &#39;draw:end-glue-point&#39;),
-        (&#39;x1&#39;, &#39;svg:x1&#39;),
-        (&#39;y1&#39;, &#39;svg:y1&#39;),
-        (&#39;x2&#39;, &#39;svg:x2&#39;),
-        (&#39;y2&#39;, &#39;svg:y2&#39;),
+        (&#34;start_shape&#34;, &#34;draw:start-shape&#34;),
+        (&#34;end_shape&#34;, &#34;draw:end-shape&#34;),
+        (&#34;start_glue_point&#34;, &#34;draw:start-glue-point&#34;),
+        (&#34;end_glue_point&#34;, &#34;draw:end-glue-point&#34;),
+        (&#34;x1&#34;, &#34;svg:x1&#34;),
+        (&#34;y1&#34;, &#34;svg:y1&#34;),
+        (&#34;x2&#34;, &#34;svg:x2&#34;),
+        (&#34;y2&#34;, &#34;svg:y2&#34;),
     )
 
-    def __init__(self,
-                 style=None,
-                 text_style=None,
-                 draw_id=None,
-                 layer=None,
-                 connected_shapes=None,
-                 glue_points=None,
-                 p1=None,
-                 p2=None,
-                 **kw):
-        kw.update({
-            &#39;style&#39;: style,
-            &#39;text_style&#39;: text_style,
-            &#39;draw_id&#39;: draw_id,
-            &#39;layer&#39;: layer
-        })
+    def __init__(
+        self,
+        style=None,
+        text_style=None,
+        draw_id=None,
+        layer=None,
+        connected_shapes=None,
+        glue_points=None,
+        p1=None,
+        p2=None,
+        **kw
+    ):
+        kw.update(
+            {
+                &#34;style&#34;: style,
+                &#34;text_style&#34;: text_style,
+                &#34;draw_id&#34;: draw_id,
+                &#34;layer&#34;: layer,
+            }
+        )
         super().__init__(**kw)
         if self._do_init:
             if connected_shapes:
@@ -325,60 +347,64 @@ ConnectorShape._define_attribut_property()
 class DrawGroup(Element, AnchorMix, ZMix, PosMix):
     &#34;&#34;&#34;The DrawGroup &#34;draw:g&#34; element represents a group of drawing shapes.
 
-        Warning: implementation is currently minimal.
+    Warning: implementation is currently minimal.
 
-        Drawing shapes contained by a &#34;draw:g&#34; element that is itself
-        contained by a &#34;draw:a&#34; element, act as hyperlinks using the
-        xlink:href attribute of the containing &#34;draw:a&#34; element. If the
-        included drawing shapes are themselves contained within &#34;draw:a&#34;
-        elements, then the xlink:href attributes of those &#34;draw:a&#34; elements
-        act as the hyperlink information for the shapes they contain.
+    Drawing shapes contained by a &#34;draw:g&#34; element that is itself
+    contained by a &#34;draw:a&#34; element, act as hyperlinks using the
+    xlink:href attribute of the containing &#34;draw:a&#34; element. If the
+    included drawing shapes are themselves contained within &#34;draw:a&#34;
+    elements, then the xlink:href attributes of those &#34;draw:a&#34; elements
+    act as the hyperlink information for the shapes they contain.
 
-        The &#34;draw:g&#34; element has the following attributes: draw:caption-id,
-        draw:class-names, draw:id, draw:name, draw:style-name, draw:z-index,
-        presentation:class-names, presentation:style-name, svg:y,
-        table:end-cell-address, table:end-x, table:end-y,
-        table:table-background, text:anchor-page-number, text:anchor-type,
-        and xml:id.
+    The &#34;draw:g&#34; element has the following attributes: draw:caption-id,
+    draw:class-names, draw:id, draw:name, draw:style-name, draw:z-index,
+    presentation:class-names, presentation:style-name, svg:y,
+    table:end-cell-address, table:end-x, table:end-y,
+    table:table-background, text:anchor-page-number, text:anchor-type,
+    and xml:id.
 
-        The &#34;draw:g&#34; element has the following child elements: &#34;dr3d:scene&#34;,
-        &#34;draw:a&#34;, &#34;draw:caption&#34;, &#34;draw:circle&#34;, &#34;draw:connector&#34;,
-        &#34;draw:control&#34;, &#34;draw:custom-shape&#34;, &#34;draw:ellipse&#34;, &#34;draw:frame&#34;,
-        &#34;draw:g&#34;, &#34;draw:glue-point&#34;, &#34;draw:line&#34;, &#34;draw:measure&#34;,
-        &#34;draw:page-thumbnail&#34;, &#34;draw:path&#34;, &#34;draw:polygon&#34;, &#34;draw:polyline&#34;,
-        &#34;draw:rect&#34;, &#34;draw:regular-polygon&#34;, &#34;office:event-listeners&#34;,
-        &#34;svg:desc&#34; and &#34;svg:title&#34;.
+    The &#34;draw:g&#34; element has the following child elements: &#34;dr3d:scene&#34;,
+    &#34;draw:a&#34;, &#34;draw:caption&#34;, &#34;draw:circle&#34;, &#34;draw:connector&#34;,
+    &#34;draw:control&#34;, &#34;draw:custom-shape&#34;, &#34;draw:ellipse&#34;, &#34;draw:frame&#34;,
+    &#34;draw:g&#34;, &#34;draw:glue-point&#34;, &#34;draw:line&#34;, &#34;draw:measure&#34;,
+    &#34;draw:page-thumbnail&#34;, &#34;draw:path&#34;, &#34;draw:polygon&#34;, &#34;draw:polyline&#34;,
+    &#34;draw:rect&#34;, &#34;draw:regular-polygon&#34;, &#34;office:event-listeners&#34;,
+    &#34;svg:desc&#34; and &#34;svg:title&#34;.
     &#34;&#34;&#34;
-    _tag = &#39;draw:g&#39;
-    _properties = (
-        (&#39;draw_id&#39;, &#39;draw:id&#39;),
-        (&#39;caption_id&#39;, &#39;draw:caption-id&#39;),
-        (&#39;draw_class_names&#39;, &#39;draw:class-names&#39;),
-        (&#39;name&#39;, &#39;draw:name&#39;),
-        (&#39;style&#39;, &#39;draw:style-name&#39;),
-        #(&#39;z_index&#39;, &#39;draw:z-index&#39;),
-        (&#39;presentation_class_names&#39;, &#39;presentation:class-names&#39;),
-        (&#39;presentation_style&#39;, &#39;presentation:style-name&#39;),
-        (&#39;table_end_cell&#39;, &#39;table:end-cell-address&#39;),
-        (&#39;table_end_x&#39;, &#39;table:end-x&#39;),
-        (&#39;table_end_y&#39;, &#39;table:end-y&#39;),
-        (&#39;table_background&#39;, &#39;table:table-background&#39;),
-        #(&#39;anchor_page&#39;, &#39;text:anchor-page-number&#39;),
-        #(&#39;anchor_type&#39;, &#39;text:anchor-type&#39;),
-        (&#39;xml_id&#39;, &#39;xml:id&#39;),
-        (&#39;pos_x&#39;, &#39;svg:x&#39;),
-        (&#39;pos_y&#39;, &#39;svg:y&#39;))
 
-    def __init__(self,
-                 name=None,
-                 draw_id=None,
-                 style=None,
-                 position=None,
-                 z_index=0,
-                 anchor_type=None,
-                 anchor_page=None,
-                 presentation_style=None,
-                 **kwargs):
+    _tag = &#34;draw:g&#34;
+    _properties = (
+        (&#34;draw_id&#34;, &#34;draw:id&#34;),
+        (&#34;caption_id&#34;, &#34;draw:caption-id&#34;),
+        (&#34;draw_class_names&#34;, &#34;draw:class-names&#34;),
+        (&#34;name&#34;, &#34;draw:name&#34;),
+        (&#34;style&#34;, &#34;draw:style-name&#34;),
+        # (&#39;z_index&#39;, &#39;draw:z-index&#39;),
+        (&#34;presentation_class_names&#34;, &#34;presentation:class-names&#34;),
+        (&#34;presentation_style&#34;, &#34;presentation:style-name&#34;),
+        (&#34;table_end_cell&#34;, &#34;table:end-cell-address&#34;),
+        (&#34;table_end_x&#34;, &#34;table:end-x&#34;),
+        (&#34;table_end_y&#34;, &#34;table:end-y&#34;),
+        (&#34;table_background&#34;, &#34;table:table-background&#34;),
+        # (&#39;anchor_page&#39;, &#39;text:anchor-page-number&#39;),
+        # (&#39;anchor_type&#39;, &#39;text:anchor-type&#39;),
+        (&#34;xml_id&#34;, &#34;xml:id&#34;),
+        (&#34;pos_x&#34;, &#34;svg:x&#34;),
+        (&#34;pos_y&#34;, &#34;svg:y&#34;),
+    )
+
+    def __init__(
+        self,
+        name=None,
+        draw_id=None,
+        style=None,
+        position=None,
+        z_index=0,
+        anchor_type=None,
+        anchor_page=None,
+        presentation_style=None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         if self._do_init:
             if z_index is not None:
@@ -463,34 +489,39 @@ register_element_class(DrawGroup)</code></pre>
 
     Return: ConnectorShape
     &#34;&#34;&#34;
-    _tag = &#39;draw:connector&#39;
+
+    _tag = &#34;draw:connector&#34;
     _properties = (
-        (&#39;start_shape&#39;, &#39;draw:start-shape&#39;),
-        (&#39;end_shape&#39;, &#39;draw:end-shape&#39;),
-        (&#39;start_glue_point&#39;, &#39;draw:start-glue-point&#39;),
-        (&#39;end_glue_point&#39;, &#39;draw:end-glue-point&#39;),
-        (&#39;x1&#39;, &#39;svg:x1&#39;),
-        (&#39;y1&#39;, &#39;svg:y1&#39;),
-        (&#39;x2&#39;, &#39;svg:x2&#39;),
-        (&#39;y2&#39;, &#39;svg:y2&#39;),
+        (&#34;start_shape&#34;, &#34;draw:start-shape&#34;),
+        (&#34;end_shape&#34;, &#34;draw:end-shape&#34;),
+        (&#34;start_glue_point&#34;, &#34;draw:start-glue-point&#34;),
+        (&#34;end_glue_point&#34;, &#34;draw:end-glue-point&#34;),
+        (&#34;x1&#34;, &#34;svg:x1&#34;),
+        (&#34;y1&#34;, &#34;svg:y1&#34;),
+        (&#34;x2&#34;, &#34;svg:x2&#34;),
+        (&#34;y2&#34;, &#34;svg:y2&#34;),
     )
 
-    def __init__(self,
-                 style=None,
-                 text_style=None,
-                 draw_id=None,
-                 layer=None,
-                 connected_shapes=None,
-                 glue_points=None,
-                 p1=None,
-                 p2=None,
-                 **kw):
-        kw.update({
-            &#39;style&#39;: style,
-            &#39;text_style&#39;: text_style,
-            &#39;draw_id&#39;: draw_id,
-            &#39;layer&#39;: layer
-        })
+    def __init__(
+        self,
+        style=None,
+        text_style=None,
+        draw_id=None,
+        layer=None,
+        connected_shapes=None,
+        glue_points=None,
+        p1=None,
+        p2=None,
+        **kw
+    ):
+        kw.update(
+            {
+                &#34;style&#34;: style,
+                &#34;text_style&#34;: text_style,
+                &#34;draw_id&#34;: draw_id,
+                &#34;layer&#34;: layer,
+            }
+        )
         super().__init__(**kw)
         if self._do_init:
             if connected_shapes:
@@ -528,7 +559,7 @@ register_element_class(DrawGroup)</code></pre>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -546,7 +577,7 @@ register_element_class(DrawGroup)</code></pre>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -564,7 +595,7 @@ register_element_class(DrawGroup)</code></pre>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -582,7 +613,7 @@ register_element_class(DrawGroup)</code></pre>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -600,7 +631,7 @@ register_element_class(DrawGroup)</code></pre>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -618,7 +649,7 @@ register_element_class(DrawGroup)</code></pre>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -636,7 +667,7 @@ register_element_class(DrawGroup)</code></pre>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -654,7 +685,7 @@ register_element_class(DrawGroup)</code></pre>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -819,60 +850,64 @@ and xml:id.</p>
 <pre><code class="python">class DrawGroup(Element, AnchorMix, ZMix, PosMix):
     &#34;&#34;&#34;The DrawGroup &#34;draw:g&#34; element represents a group of drawing shapes.
 
-        Warning: implementation is currently minimal.
+    Warning: implementation is currently minimal.
 
-        Drawing shapes contained by a &#34;draw:g&#34; element that is itself
-        contained by a &#34;draw:a&#34; element, act as hyperlinks using the
-        xlink:href attribute of the containing &#34;draw:a&#34; element. If the
-        included drawing shapes are themselves contained within &#34;draw:a&#34;
-        elements, then the xlink:href attributes of those &#34;draw:a&#34; elements
-        act as the hyperlink information for the shapes they contain.
+    Drawing shapes contained by a &#34;draw:g&#34; element that is itself
+    contained by a &#34;draw:a&#34; element, act as hyperlinks using the
+    xlink:href attribute of the containing &#34;draw:a&#34; element. If the
+    included drawing shapes are themselves contained within &#34;draw:a&#34;
+    elements, then the xlink:href attributes of those &#34;draw:a&#34; elements
+    act as the hyperlink information for the shapes they contain.
 
-        The &#34;draw:g&#34; element has the following attributes: draw:caption-id,
-        draw:class-names, draw:id, draw:name, draw:style-name, draw:z-index,
-        presentation:class-names, presentation:style-name, svg:y,
-        table:end-cell-address, table:end-x, table:end-y,
-        table:table-background, text:anchor-page-number, text:anchor-type,
-        and xml:id.
+    The &#34;draw:g&#34; element has the following attributes: draw:caption-id,
+    draw:class-names, draw:id, draw:name, draw:style-name, draw:z-index,
+    presentation:class-names, presentation:style-name, svg:y,
+    table:end-cell-address, table:end-x, table:end-y,
+    table:table-background, text:anchor-page-number, text:anchor-type,
+    and xml:id.
 
-        The &#34;draw:g&#34; element has the following child elements: &#34;dr3d:scene&#34;,
-        &#34;draw:a&#34;, &#34;draw:caption&#34;, &#34;draw:circle&#34;, &#34;draw:connector&#34;,
-        &#34;draw:control&#34;, &#34;draw:custom-shape&#34;, &#34;draw:ellipse&#34;, &#34;draw:frame&#34;,
-        &#34;draw:g&#34;, &#34;draw:glue-point&#34;, &#34;draw:line&#34;, &#34;draw:measure&#34;,
-        &#34;draw:page-thumbnail&#34;, &#34;draw:path&#34;, &#34;draw:polygon&#34;, &#34;draw:polyline&#34;,
-        &#34;draw:rect&#34;, &#34;draw:regular-polygon&#34;, &#34;office:event-listeners&#34;,
-        &#34;svg:desc&#34; and &#34;svg:title&#34;.
+    The &#34;draw:g&#34; element has the following child elements: &#34;dr3d:scene&#34;,
+    &#34;draw:a&#34;, &#34;draw:caption&#34;, &#34;draw:circle&#34;, &#34;draw:connector&#34;,
+    &#34;draw:control&#34;, &#34;draw:custom-shape&#34;, &#34;draw:ellipse&#34;, &#34;draw:frame&#34;,
+    &#34;draw:g&#34;, &#34;draw:glue-point&#34;, &#34;draw:line&#34;, &#34;draw:measure&#34;,
+    &#34;draw:page-thumbnail&#34;, &#34;draw:path&#34;, &#34;draw:polygon&#34;, &#34;draw:polyline&#34;,
+    &#34;draw:rect&#34;, &#34;draw:regular-polygon&#34;, &#34;office:event-listeners&#34;,
+    &#34;svg:desc&#34; and &#34;svg:title&#34;.
     &#34;&#34;&#34;
-    _tag = &#39;draw:g&#39;
-    _properties = (
-        (&#39;draw_id&#39;, &#39;draw:id&#39;),
-        (&#39;caption_id&#39;, &#39;draw:caption-id&#39;),
-        (&#39;draw_class_names&#39;, &#39;draw:class-names&#39;),
-        (&#39;name&#39;, &#39;draw:name&#39;),
-        (&#39;style&#39;, &#39;draw:style-name&#39;),
-        #(&#39;z_index&#39;, &#39;draw:z-index&#39;),
-        (&#39;presentation_class_names&#39;, &#39;presentation:class-names&#39;),
-        (&#39;presentation_style&#39;, &#39;presentation:style-name&#39;),
-        (&#39;table_end_cell&#39;, &#39;table:end-cell-address&#39;),
-        (&#39;table_end_x&#39;, &#39;table:end-x&#39;),
-        (&#39;table_end_y&#39;, &#39;table:end-y&#39;),
-        (&#39;table_background&#39;, &#39;table:table-background&#39;),
-        #(&#39;anchor_page&#39;, &#39;text:anchor-page-number&#39;),
-        #(&#39;anchor_type&#39;, &#39;text:anchor-type&#39;),
-        (&#39;xml_id&#39;, &#39;xml:id&#39;),
-        (&#39;pos_x&#39;, &#39;svg:x&#39;),
-        (&#39;pos_y&#39;, &#39;svg:y&#39;))
 
-    def __init__(self,
-                 name=None,
-                 draw_id=None,
-                 style=None,
-                 position=None,
-                 z_index=0,
-                 anchor_type=None,
-                 anchor_page=None,
-                 presentation_style=None,
-                 **kwargs):
+    _tag = &#34;draw:g&#34;
+    _properties = (
+        (&#34;draw_id&#34;, &#34;draw:id&#34;),
+        (&#34;caption_id&#34;, &#34;draw:caption-id&#34;),
+        (&#34;draw_class_names&#34;, &#34;draw:class-names&#34;),
+        (&#34;name&#34;, &#34;draw:name&#34;),
+        (&#34;style&#34;, &#34;draw:style-name&#34;),
+        # (&#39;z_index&#39;, &#39;draw:z-index&#39;),
+        (&#34;presentation_class_names&#34;, &#34;presentation:class-names&#34;),
+        (&#34;presentation_style&#34;, &#34;presentation:style-name&#34;),
+        (&#34;table_end_cell&#34;, &#34;table:end-cell-address&#34;),
+        (&#34;table_end_x&#34;, &#34;table:end-x&#34;),
+        (&#34;table_end_y&#34;, &#34;table:end-y&#34;),
+        (&#34;table_background&#34;, &#34;table:table-background&#34;),
+        # (&#39;anchor_page&#39;, &#39;text:anchor-page-number&#39;),
+        # (&#39;anchor_type&#39;, &#39;text:anchor-type&#39;),
+        (&#34;xml_id&#34;, &#34;xml:id&#34;),
+        (&#34;pos_x&#34;, &#34;svg:x&#34;),
+        (&#34;pos_y&#34;, &#34;svg:y&#34;),
+    )
+
+    def __init__(
+        self,
+        name=None,
+        draw_id=None,
+        style=None,
+        position=None,
+        z_index=0,
+        anchor_type=None,
+        anchor_page=None,
+        presentation_style=None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         if self._do_init:
             if z_index is not None:
@@ -914,7 +949,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -932,7 +967,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -950,7 +985,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -968,7 +1003,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -986,7 +1021,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1004,7 +1039,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1022,7 +1057,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1040,7 +1075,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1058,7 +1093,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1076,7 +1111,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1094,7 +1129,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1112,7 +1147,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1130,7 +1165,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1148,7 +1183,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1322,25 +1357,30 @@ and xml:id.</p>
 
     Return: EllipseShape
     &#34;&#34;&#34;
-    _tag = &#39;draw:ellipse&#39;
+
+    _tag = &#34;draw:ellipse&#34;
     _properties = ()
 
-    def __init__(self,
-                 style=None,
-                 text_style=None,
-                 draw_id=None,
-                 layer=None,
-                 size=None,
-                 position=None,
-                 **kw):
-        kw.update({
-            &#39;style&#39;: style,
-            &#39;text_style&#39;: text_style,
-            &#39;draw_id&#39;: draw_id,
-            &#39;layer&#39;: layer,
-            &#39;size&#39;: size,
-            &#39;position&#39;: position,
-        })
+    def __init__(
+        self,
+        style=None,
+        text_style=None,
+        draw_id=None,
+        layer=None,
+        size=None,
+        position=None,
+        **kw
+    ):
+        kw.update(
+            {
+                &#34;style&#34;: style,
+                &#34;text_style&#34;: text_style,
+                &#34;draw_id&#34;: draw_id,
+                &#34;layer&#34;: layer,
+                &#34;size&#34;: size,
+                &#34;position&#34;: position,
+            }
+        )
         super().__init__(**kw)</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -1513,28 +1553,33 @@ and xml:id.</p>
 
     Return: LineShape
     &#34;&#34;&#34;
-    _tag = &#39;draw:line&#39;
+
+    _tag = &#34;draw:line&#34;
     _properties = (
-        (&#39;x1&#39;, &#39;svg:x1&#39;),
-        (&#39;y1&#39;, &#39;svg:y1&#39;),
-        (&#39;x2&#39;, &#39;svg:x2&#39;),
-        (&#39;y2&#39;, &#39;svg:y2&#39;),
+        (&#34;x1&#34;, &#34;svg:x1&#34;),
+        (&#34;y1&#34;, &#34;svg:y1&#34;),
+        (&#34;x2&#34;, &#34;svg:x2&#34;),
+        (&#34;y2&#34;, &#34;svg:y2&#34;),
     )
 
-    def __init__(self,
-                 style=None,
-                 text_style=None,
-                 draw_id=None,
-                 layer=None,
-                 p1=None,
-                 p2=None,
-                 **kw):
-        kw.update({
-            &#39;style&#39;: style,
-            &#39;text_style&#39;: text_style,
-            &#39;draw_id&#39;: draw_id,
-            &#39;layer&#39;: layer
-        })
+    def __init__(
+        self,
+        style=None,
+        text_style=None,
+        draw_id=None,
+        layer=None,
+        p1=None,
+        p2=None,
+        **kw
+    ):
+        kw.update(
+            {
+                &#34;style&#34;: style,
+                &#34;text_style&#34;: text_style,
+                &#34;draw_id&#34;: draw_id,
+                &#34;layer&#34;: layer,
+            }
+        )
         super().__init__(**kw)
         if self._do_init:
             if p1:
@@ -1566,7 +1611,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1584,7 +1629,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1602,7 +1647,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1620,7 +1665,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -1789,25 +1834,30 @@ and xml:id.</p>
 
     Return: RectangleShape
     &#34;&#34;&#34;
-    _tag = &#39;draw:rect&#39;
+
+    _tag = &#34;draw:rect&#34;
     _properties = ()
 
-    def __init__(self,
-                 style=None,
-                 text_style=None,
-                 draw_id=None,
-                 layer=None,
-                 size=None,
-                 position=None,
-                 **kw):
-        kw.update({
-            &#39;style&#39;: style,
-            &#39;text_style&#39;: text_style,
-            &#39;draw_id&#39;: draw_id,
-            &#39;layer&#39;: layer,
-            &#39;size&#39;: size,
-            &#39;position&#39;: position,
-        })
+    def __init__(
+        self,
+        style=None,
+        text_style=None,
+        draw_id=None,
+        layer=None,
+        size=None,
+        position=None,
+        **kw
+    ):
+        kw.update(
+            {
+                &#34;style&#34;: style,
+                &#34;text_style&#34;: text_style,
+                &#34;draw_id&#34;: draw_id,
+                &#34;layer&#34;: layer,
+                &#34;size&#34;: size,
+                &#34;position&#34;: position,
+            }
+        )
         super().__init__(**kw)</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -1954,30 +2004,32 @@ and xml:id.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class ShapeBase(Element, SizeMix, PosMix):
-    &#34;&#34;&#34;Base class for shapes
-    &#34;&#34;&#34;
-    _tag = &#39;draw:shape-odfdo-notodf&#39;
+    &#34;&#34;&#34;Base class for shapes&#34;&#34;&#34;
+
+    _tag = &#34;draw:shape-odfdo-notodf&#34;
     _properties = (
-        (&#39;draw_id&#39;, &#39;draw:id&#39;),
-        (&#39;layer&#39;, &#39;draw:layer&#39;),
-        (&#39;width&#39;, &#39;svg:width&#39;),
-        (&#39;height&#39;, &#39;svg:height&#39;),
-        (&#39;pos_x&#39;, &#39;svg:x&#39;),
-        (&#39;pos_y&#39;, &#39;svg:y&#39;),
-        (&#39;presentation_class&#39;, &#39;presentation:class&#39;),
-        (&#39;style&#39;, &#39;draw:style-name&#39;),
-        (&#39;text_style&#39;, &#39;draw:text-style-name&#39;),
+        (&#34;draw_id&#34;, &#34;draw:id&#34;),
+        (&#34;layer&#34;, &#34;draw:layer&#34;),
+        (&#34;width&#34;, &#34;svg:width&#34;),
+        (&#34;height&#34;, &#34;svg:height&#34;),
+        (&#34;pos_x&#34;, &#34;svg:x&#34;),
+        (&#34;pos_y&#34;, &#34;svg:y&#34;),
+        (&#34;presentation_class&#34;, &#34;presentation:class&#34;),
+        (&#34;style&#34;, &#34;draw:style-name&#34;),
+        (&#34;text_style&#34;, &#34;draw:text-style-name&#34;),
     )
 
-    def __init__(self,
-                 style=None,
-                 text_style=None,
-                 draw_id=None,
-                 layer=None,
-                 position=None,
-                 size=None,
-                 presentation_class=None,
-                 **kwargs):
+    def __init__(
+        self,
+        style=None,
+        text_style=None,
+        draw_id=None,
+        layer=None,
+        position=None,
+        size=None,
+        presentation_class=None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         if self._do_init:
             if style:
@@ -2030,7 +2082,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2048,7 +2100,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2066,7 +2118,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2084,7 +2136,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2102,7 +2154,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2120,7 +2172,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2138,7 +2190,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2156,7 +2208,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2174,7 +2226,7 @@ and xml:id.</p>
     value = self.__element.get(name)
     if value is None:
         return None
-    elif value in (&#39;true&#39;, &#39;false&#39;):
+    elif value in (&#34;true&#34;, &#34;false&#34;):
         return Boolean.decode(value)
     return str(value)</code></pre>
 </details>
@@ -2388,7 +2440,7 @@ and xml:id.</p>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.3</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
 </footer>
 </body>
 </html>

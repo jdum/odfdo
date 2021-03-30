@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.8.3" />
+<meta name="generator" content="pdoc 0.9.2" />
 <title>odfdo.tracked_changes API documentation</title>
 <meta name="description" content="TrackedChanges class for &#34;text:tracked-changes&#34; and related classes
 (ChangeInfo, TextInsertion, TextChange...)" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
 <style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
 <style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
 </head>
 <body>
@@ -65,20 +65,21 @@ from .utils import _get_elements, _get_element
 
 class ChangeInfo(Element):
     &#34;&#34;&#34;The &#34;office:change-info&#34; element represents who made a change and when.
-       It may also contain a comment (one or more Paragrah &#34;text:p&#34; elements)
-       on the change.
+    It may also contain a comment (one or more Paragrah &#34;text:p&#34; elements)
+    on the change.
 
-       The comments available in the ChangeInfo are available through:
-         - get_paragraphs and get_paragraph methods for actual Paragraph.
-         - get_comments for a plain text version
+    The comments available in the ChangeInfo are available through:
+      - get_paragraphs and get_paragraph methods for actual Paragraph.
+      - get_comments for a plain text version
 
-         Arguments:
+      Arguments:
 
-            creator -- str (or None)
+         creator -- str (or None)
 
-            date -- datetime
+         date -- datetime
     &#34;&#34;&#34;
-    _tag = &#39;office:change-info&#39;
+
+    _tag = &#34;office:change-info&#34;
 
     def __init__(self, creator=None, date=None, **kwargs):
         super().__init__(**kwargs)
@@ -93,12 +94,12 @@ class ChangeInfo(Element):
 
             creator -- str (or None)
         &#34;&#34;&#34;
-        element = self.get_element(&#39;dc:creator&#39;)
+        element = self.get_element(&#34;dc:creator&#34;)
         if element is None:
-            element = Element.from_tag(&#39;dc:creator&#39;)
+            element = Element.from_tag(&#34;dc:creator&#34;)
             self.insert(element, xmlposition=FIRST_CHILD)
         if not creator:
-            creator = &#39;Unknown&#39;
+            creator = &#34;Unknown&#34;
         element.text = creator
 
     def set_dc_date(self, date=None):
@@ -111,9 +112,9 @@ class ChangeInfo(Element):
         if date is None:
             date = datetime.now()
         dcdate = DateTime.encode(date)
-        element = self.get_element(&#39;dc:date&#39;)
+        element = self.get_element(&#34;dc:date&#34;)
         if element is None:
-            element = Element.from_tag(&#39;dc:date&#39;)
+            element = Element.from_tag(&#34;dc:date&#34;)
             self.insert(element, xmlposition=LAST_CHILD)
         element.text = dcdate
 
@@ -133,10 +134,10 @@ class ChangeInfo(Element):
             content = []
         text = [para.get_formatted_text(simple=True) for para in content]
         if joined:
-            return &#39;\n&#39;.join(text)
+            return &#34;\n&#34;.join(text)
         return text
 
-    def set_comments(self, text=&#39;&#39;, replace=True):
+    def set_comments(self, text=&#34;&#34;, replace=True):
         &#34;&#34;&#34;Set the text content of the comments. If replace is True (default),
         the new text replace old comments, else it is added at the end.
 
@@ -156,21 +157,21 @@ class ChangeInfo(Element):
 
 class TextInsertion(Element):
     &#34;&#34;&#34;The TextInsertion &#34;text:insertion&#34; element contains the information
-       that identifies the person responsible for a change and the date of
-       that change. This information may also contain one or more &#34;text:p&#34;
-       Paragraph which contain a comment on the insertion. The
-       TextInsertion element&#39;s parent &#34;text:changed-region&#34; element has an
-       xml:id or text:id attribute, the value of which binds that parent
-       element to the text:change-id attribute on the &#34;text:change-start&#34;
-       and &#34;text:change-end&#34; elements.
+    that identifies the person responsible for a change and the date of
+    that change. This information may also contain one or more &#34;text:p&#34;
+    Paragraph which contain a comment on the insertion. The
+    TextInsertion element&#39;s parent &#34;text:changed-region&#34; element has an
+    xml:id or text:id attribute, the value of which binds that parent
+    element to the text:change-id attribute on the &#34;text:change-start&#34;
+    and &#34;text:change-end&#34; elements.
     &#34;&#34;&#34;
-    _tag = &#39;text:insertion&#39;
+
+    _tag = &#34;text:insertion&#34;
 
     def get_deleted(self, as_text=False, no_header=False):
-        &#34;&#34;&#34;Return: None.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return: None.&#34;&#34;&#34;
         if as_text:
-            return &#39;&#39;
+            return &#34;&#34;
         return None
 
     def get_inserted(self, as_text=False, no_header=False, clean=True):
@@ -198,36 +199,33 @@ class TextInsertion(Element):
             body = self.root
         text_change = body.get_text_change_start(idx=idx)
         return text_change.get_inserted(
-            as_text=as_text, no_header=no_header, clean=clean)
+            as_text=as_text, no_header=no_header, clean=clean
+        )
 
     def get_change_info(self):
         &#34;&#34;&#34;Get the ChangeInfo child of the element.
 
         Return: ChangeInfo element.
         &#34;&#34;&#34;
-        return self.get_element(&#39;descendant::office:change-info&#39;)
+        return self.get_element(&#34;descendant::office:change-info&#34;)
 
-    def set_change_info(self,
-                        change_info=None,
-                        creator=None,
-                        date=None,
-                        comments=None):
+    def set_change_info(self, change_info=None, creator=None, date=None, comments=None):
         &#34;&#34;&#34;Set the ChangeInfo element for the change element. If change_info
-           is not provided, creator, date and comments will be used to build a
-           suitable change info element. Default for creator is &#39;Unknown&#39;,
-           default for date is current time and default for comments is no
-           comment at all.
-           The new change info element will replace any existant ChangeInfo.
+        is not provided, creator, date and comments will be used to build a
+        suitable change info element. Default for creator is &#39;Unknown&#39;,
+        default for date is current time and default for comments is no
+        comment at all.
+        The new change info element will replace any existant ChangeInfo.
 
-           Arguments:
+        Arguments:
 
-                change_info -- ChangeInfo element (or None)
+             change_info -- ChangeInfo element (or None)
 
-                cretor -- str (or None)
+             cretor -- str (or None)
 
-                date -- datetime (or None)
+             date -- datetime (or None)
 
-                comments -- list of Paragraph elements (or None)
+             comments -- list of Paragraph elements (or None)
         &#34;&#34;&#34;
         if change_info is None:
             new_change_info = ChangeInfo(creator, date)
@@ -238,11 +236,11 @@ class TextInsertion(Element):
                 # assume iterable of Paragraph
                 for paragraph in comments:
                     if not isinstance(paragraph, Paragraph):
-                        raise ValueError(&#39;%s is not a Paragraph.&#39; % paragraph)
+                        raise ValueError(&#34;%s is not a Paragraph.&#34; % paragraph)
                     new_change_info.insert(paragraph, xmlposition=LAST_CHILD)
         else:
             if not isinstance(change_info, ChangeInfo):
-                raise ValueError(&#39;%s is not a ChangeInfo&#39; % change_info)
+                raise ValueError(&#34;%s is not a ChangeInfo&#34; % change_info)
             new_change_info = change_info
 
         old = self.get_change_info()
@@ -254,31 +252,32 @@ class TextInsertion(Element):
 
 class TextDeletion(TextInsertion):
     &#34;&#34;&#34;The TextDeletion &#34;text:deletion&#34; contains information that identifies
-       the person responsible for a deletion and the date of that deletion.
-       This information may also contain one or more Paragraph which contains
-       a comment on the deletion. The TextDeletion element may also contain
-       content that was deleted while change tracking was enabled. The position
-       where the text was deleted is marked by a &#34;text:change&#34; element. Deleted
-       text is contained in a paragraph element. To reconstruct the original
-       text, the paragraph containing the deleted text is merged with its
-       surrounding paragraph or heading element. To reconstruct the text before
-       a deletion took place:
-         - If the change mark is inside a paragraph, insert the content that was
-         deleted, but remove all leading start tags up to and including the
-         first &#34;text:p&#34; element and all trailing end tags up to and including
-         the last &#34;/text:p&#34; or &#34;/text:h&#34; element. If the last trailing element
-         is a &#34;/text:h&#34;, change the end tag &#34;/text:p&#34; following this insertion
-         to a &#34;/text:h&#34; element.
-         - If the change mark is inside a heading, insert the content that was
-         deleted, but remove all leading start tags up to and including the
-         first &#34;text:h&#34; element and all trailing end tags up to and including
-         the last &#34;/text:h&#34; or &#34;/text:p&#34; element. If the last trailing element
-         is a &#34;/text:p&#34;, change the end tag &#34;/text:h&#34; following this insertion
-         to a &#34;/text:p&#34; element.
-         - Otherwise, copy the text content of the &#34;text:deletion&#34; element in
-         place of the change mark.
+    the person responsible for a deletion and the date of that deletion.
+    This information may also contain one or more Paragraph which contains
+    a comment on the deletion. The TextDeletion element may also contain
+    content that was deleted while change tracking was enabled. The position
+    where the text was deleted is marked by a &#34;text:change&#34; element. Deleted
+    text is contained in a paragraph element. To reconstruct the original
+    text, the paragraph containing the deleted text is merged with its
+    surrounding paragraph or heading element. To reconstruct the text before
+    a deletion took place:
+      - If the change mark is inside a paragraph, insert the content that was
+      deleted, but remove all leading start tags up to and including the
+      first &#34;text:p&#34; element and all trailing end tags up to and including
+      the last &#34;/text:p&#34; or &#34;/text:h&#34; element. If the last trailing element
+      is a &#34;/text:h&#34;, change the end tag &#34;/text:p&#34; following this insertion
+      to a &#34;/text:h&#34; element.
+      - If the change mark is inside a heading, insert the content that was
+      deleted, but remove all leading start tags up to and including the
+      first &#34;text:h&#34; element and all trailing end tags up to and including
+      the last &#34;/text:h&#34; or &#34;/text:p&#34; element. If the last trailing element
+      is a &#34;/text:p&#34;, change the end tag &#34;/text:h&#34; following this insertion
+      to a &#34;/text:p&#34; element.
+      - Otherwise, copy the text content of the &#34;text:deletion&#34; element in
+      place of the change mark.
     &#34;&#34;&#34;
-    _tag = &#39;text:deletion&#39;
+
+    _tag = &#34;text:deletion&#34;
 
     def get_deleted(self, as_text=False, no_header=False):
         &#34;&#34;&#34;Get the deleted informations stored in the TextDeletion.
@@ -294,14 +293,14 @@ class TextDeletion(TextInsertion):
         Return: Paragraph and Header list
         &#34;&#34;&#34;
         children = self.children
-        inner = [e for e in children if e.tag != &#39;office:change-info&#39;]
+        inner = [e for e in children if e.tag != &#34;office:change-info&#34;]
         if no_header:  # crude replace t:h by t:p
             new_inner = []
             for element in inner:
-                if element.tag == &#39;text:h&#39;:
+                if element.tag == &#34;text:h&#34;:
                     children = element.children
                     text = element.text
-                    para = Element.from_tag(&#39;text:p&#39;)
+                    para = Element.from_tag(&#34;text:p&#34;)
                     para.text = text
                     for c in children:
                         para.append(c)
@@ -310,8 +309,7 @@ class TextDeletion(TextInsertion):
                     new_inner.append(element)
             inner = new_inner
         if as_text:
-            return &#39;\n&#39;.join(
-                [e.get_formatted_text(context=None) for e in inner])
+            return &#34;\n&#34;.join([e.get_formatted_text(context=None) for e in inner])
         return inner
 
     def set_deleted(self, paragraph_or_list):
@@ -331,44 +329,45 @@ class TextDeletion(TextInsertion):
             self.append(element)
 
     def get_inserted(self, as_text=False, no_header=False, clean=True):
-        &#34;&#34;&#34;Return None (or u&#39;&#39;).
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return None (or u&#39;&#39;).&#34;&#34;&#34;
         if as_text:
-            return &#39;&#39;
+            return &#34;&#34;
         return None
 
 
 class TextFormatChange(TextInsertion):
     &#34;&#34;&#34;The TextFormatChange &#34;text:format-change&#34; element represents any change
-       in formatting attributes. The region where the change took place is
-       marked by &#34;text:change-start&#34;, &#34;text:change-end&#34; or &#34;text:change&#34;
-       elements.
+    in formatting attributes. The region where the change took place is
+    marked by &#34;text:change-start&#34;, &#34;text:change-end&#34; or &#34;text:change&#34;
+    elements.
 
-       Note: This element does not contain formatting changes that have taken
-       place.
+    Note: This element does not contain formatting changes that have taken
+    place.
     &#34;&#34;&#34;
-    _tag = &#39;text:format-change&#39;
+
+    _tag = &#34;text:format-change&#34;
 
 
 class TextChangedRegion(Element):
     &#34;&#34;&#34;Each TextChangedRegion &#34;text:changed-region&#34; element contains a single
-       element, one of TextInsertion, TextDeletion or TextFormatChange that
-       corresponds to a change being tracked within the scope of the
-       &#34;text:tracked-changes&#34; element that contains the &#34;text:changed-region&#34;
-       instance.
-       The xml:id attribute of the TextChangedRegion is referenced
-       from the &#34;text:change&#34;, &#34;text:change-start&#34; and &#34;text:change-end&#34;
-       elements that identify where the change applies to markup in the scope of
-       the &#34;text:tracked-changes&#34; element.
+    element, one of TextInsertion, TextDeletion or TextFormatChange that
+    corresponds to a change being tracked within the scope of the
+    &#34;text:tracked-changes&#34; element that contains the &#34;text:changed-region&#34;
+    instance.
+    The xml:id attribute of the TextChangedRegion is referenced
+    from the &#34;text:change&#34;, &#34;text:change-start&#34; and &#34;text:change-end&#34;
+    elements that identify where the change applies to markup in the scope of
+    the &#34;text:tracked-changes&#34; element.
 
-       Warning : for this implementation, text:change should be referenced only
-                 once in the scope, which is different from ODF 1.2 requirement:
-                &#34; A &#34;text:changed-region&#34; can be referenced by more than one
-                change, but the corresponding referencing change mark elements
-                shall be of the same change type - insertion, format change or
-                deletion. &#34;
+    Warning : for this implementation, text:change should be referenced only
+              once in the scope, which is different from ODF 1.2 requirement:
+             &#34; A &#34;text:changed-region&#34; can be referenced by more than one
+             change, but the corresponding referencing change mark elements
+             shall be of the same change type - insertion, format change or
+             deletion. &#34;
     &#34;&#34;&#34;
-    _tag = &#39;text:changed-region&#39;
+
+    _tag = &#34;text:changed-region&#34;
 
     def get_change_info(self):
         &#34;&#34;&#34;Shortcut to get the ChangeInfo element of the change
@@ -376,22 +375,16 @@ class TextChangedRegion(Element):
 
         Return: ChangeInfo element.
         &#34;&#34;&#34;
-        return self.get_element(&#39;descendant::office:change-info&#39;)
+        return self.get_element(&#34;descendant::office:change-info&#34;)
 
-    def set_change_info(self,
-                        change_info=None,
-                        creator=None,
-                        date=None,
-                        comments=None):
+    def set_change_info(self, change_info=None, creator=None, date=None, comments=None):
         &#34;&#34;&#34;Shortcut to set the ChangeInfo element of the sub change element.
-           See TextInsertion.set_change_info() for details.
+        See TextInsertion.set_change_info() for details.
         &#34;&#34;&#34;
         child = self.get_change_element()
         child.set_change_info(
-            change_info=change_info,
-            creator=creator,
-            date=date,
-            comments=comments)
+            change_info=change_info, creator=creator, date=date, comments=comments
+        )
 
     def get_change_element(self):
         &#34;&#34;&#34;Get the change element child. It can be either: TextInsertion,
@@ -399,22 +392,24 @@ class TextChangedRegion(Element):
 
         Return: Element.
         &#34;&#34;&#34;
-        request = (&#39;descendant::text:insertion &#39;
-                   &#39;| descendant::text:deletion&#39;
-                   &#39;| descendant::text:format-change&#39;)
+        request = (
+            &#34;descendant::text:insertion &#34;
+            &#34;| descendant::text:deletion&#34;
+            &#34;| descendant::text:format-change&#34;
+        )
         return _get_element(self, request, position=0)
 
     def _get_text_id(self):
-        return self.get_attribute(&#39;text:id&#39;)
+        return self.get_attribute(&#34;text:id&#34;)
 
     def _set_text_id(self, text_id):
-        return self.set_attribute(&#39;text:id&#39;, text_id)
+        return self.set_attribute(&#34;text:id&#34;, text_id)
 
     def _get_xml_id(self):
-        return self.get_attribute(&#39;xml:id&#39;)
+        return self.get_attribute(&#34;xml:id&#34;)
 
     def _set_xml_id(self, xml_id):
-        return self.set_attribute(&#39;xml:id&#39;, xml_id)
+        return self.set_attribute(&#34;xml:id&#34;, xml_id)
 
     def get_id(self):
         &#34;&#34;&#34;Get the &#34;text:id&#34; attribute.
@@ -424,36 +419,33 @@ class TextChangedRegion(Element):
         return self._get_text_id()
 
     def set_id(self, idx):
-        &#34;&#34;&#34;Set both the &#34;text:id&#34; and &#34;xml:id&#34; attributes.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Set both the &#34;text:id&#34; and &#34;xml:id&#34; attributes.&#34;&#34;&#34;
         self._set_text_id(idx)
         self._set_xml_id(idx)
 
 
 class TrackedChanges(Element):
     &#34;&#34;&#34;The TrackedChanges &#34;text:tracked-changes&#34; element acts as a container
-       for TextChangedRegion elements that represent changes in a certain
-       scope of an OpenDocument document. This scope is the element in which
-       the TrackedChanges element occurs. Changes in this scope shall be
-       tracked by TextChangedRegion elements contained in the
-       TrackedChanges element in this scope. If a TrackedChanges
-       element is absent, there are no tracked changes in the corresponding
-       scope. In this case, all change mark elements in this scope shall be
-       ignored.
+    for TextChangedRegion elements that represent changes in a certain
+    scope of an OpenDocument document. This scope is the element in which
+    the TrackedChanges element occurs. Changes in this scope shall be
+    tracked by TextChangedRegion elements contained in the
+    TrackedChanges element in this scope. If a TrackedChanges
+    element is absent, there are no tracked changes in the corresponding
+    scope. In this case, all change mark elements in this scope shall be
+    ignored.
     &#34;&#34;&#34;
-    _tag = &#39;text:tracked-changes&#39;
 
-    def get_changed_regions(self,
-                            creator=None,
-                            date=None,
-                            content=None,
-                            role=None):
+    _tag = &#34;text:tracked-changes&#34;
+
+    def get_changed_regions(self, creator=None, date=None, content=None, role=None):
         changed_regions = _get_elements(
             self,
-            &#39;text:changed-region&#39;,
+            &#34;text:changed-region&#34;,
             dc_creator=creator,
             dc_date=date,
-            content=content)
+            content=content,
+        )
         if role is None:
             return changed_regions
         result = []
@@ -465,33 +457,32 @@ class TrackedChanges(Element):
                 result.append(cr)
         return result
 
-    def get_changed_region(self,
-                           position=0,
-                           text_id=None,
-                           creator=None,
-                           date=None,
-                           content=None):
+    def get_changed_region(
+        self, position=0, text_id=None, creator=None, date=None, content=None
+    ):
         return _get_element(
             self,
-            &#39;text:changed-region&#39;,
+            &#34;text:changed-region&#34;,
             position,
             text_id=text_id,
             dc_creator=creator,
             dc_date=date,
-            content=content)
+            content=content,
+        )
 
 
 class TextChange(Element):
     &#34;&#34;&#34;The TextChange &#34;text:change&#34; element marks a position in an empty
-       region where text has been deleted.
+    region where text has been deleted.
     &#34;&#34;&#34;
-    _tag = &#39;text:change&#39;
+
+    _tag = &#34;text:change&#34;
 
     def get_id(self):
-        return self.get_attribute(&#39;text:change-id&#39;)
+        return self.get_attribute(&#34;text:change-id&#34;)
 
     def set_id(self, idx):
-        return self.set_attribute(&#39;text:change-id&#39;, idx)
+        return self.set_attribute(&#34;text:change-id&#34;, idx)
 
     def _get_tracked_changes(self):
         body = self.document_body
@@ -511,46 +502,40 @@ class TextChange(Element):
         cr = self.get_changed_region(tracked_changes=tracked_changes)
         return cr.get_change_element()
 
-    def get_deleted(self,
-                    tracked_changes=None,
-                    as_text=False,
-                    no_header=False,
-                    clean=True):
+    def get_deleted(
+        self, tracked_changes=None, as_text=False, no_header=False, clean=True
+    ):
         &#34;&#34;&#34;Shortcut to get the deleted informations stored in the
-            TextDeletion stored in the tracked changes.
+        TextDeletion stored in the tracked changes.
 
-            Return: Paragraph (or None).&#34;
+        Return: Paragraph (or None).&#34;
         &#34;&#34;&#34;
         ce = self.get_change_element(tracked_changes=tracked_changes)
-        return ce.get_deleted(
-            as_text=as_text, no_header=no_header, clean=clean)
+        return ce.get_deleted(as_text=as_text, no_header=no_header, clean=clean)
 
     def get_inserted(self, *args, **kwargs):
-        &#34;&#34;&#34;Return None.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None
 
     def get_start(self):
-        &#34;&#34;&#34;Return None.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None
 
     def get_end(self):
-        &#34;&#34;&#34;Return None.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None
 
 
 class TextChangeEnd(TextChange):
     &#34;&#34;&#34;The TextChangeEnd &#34;text:change-end&#34; element marks the end of a region
-       with content where text has been inserted or the format has been
-       changed.
+    with content where text has been inserted or the format has been
+    changed.
     &#34;&#34;&#34;
-    _tag = &#39;text:change-end&#39;
+
+    _tag = &#34;text:change-end&#34;
 
     def get_start(self):
-        &#34;&#34;&#34;Return the corresponding annotation starting tag or None.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return the corresponding annotation starting tag or None.&#34;&#34;&#34;
         idx = self.get_id()
         parent = self.parent
         if parent is None:
@@ -561,13 +546,11 @@ class TextChangeEnd(TextChange):
         return body.get_text_change_start(idx=idx)
 
     def get_end(self):
-        &#34;&#34;&#34;Return self.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return self.&#34;&#34;&#34;
         return self
 
     def get_deleted(self, *args, **kwargs):
-        &#34;&#34;&#34;Return None.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None
 
     def get_inserted(self, as_text=False, no_header=False, clean=True):
@@ -592,35 +575,35 @@ class TextChangeEnd(TextChange):
         Return: list or Paragraph or text
         &#34;&#34;&#34;
 
-        #idx = self.get_id()
+        # idx = self.get_id()
         start = self.get_start()
         end = self.get_end()
         if end is None or start is None:
             if as_text:
-                return &#39;&#39;
+                return &#34;&#34;
             return None
         body = self.document_body
         if not body:
             body = self.root
         return body.get_between(
-            start, end, as_text=as_text, no_header=no_header, clean=clean)
+            start, end, as_text=as_text, no_header=no_header, clean=clean
+        )
 
 
 class TextChangeStart(TextChangeEnd):
     &#34;&#34;&#34;The TextChangeStart &#34;text:change-start&#34; element marks the start of a
-       region with content where text has been inserted or the format has
-       been changed.
+    region with content where text has been inserted or the format has
+    been changed.
     &#34;&#34;&#34;
-    _tag = &#39;text:change-start&#39;
+
+    _tag = &#34;text:change-start&#34;
 
     def get_start(self):
-        &#34;&#34;&#34;Return self.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return self.&#34;&#34;&#34;
         return self
 
     def get_end(self):
-        &#34;&#34;&#34;Return the corresponding change-end tag or None.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return the corresponding change-end tag or None.&#34;&#34;&#34;
         idx = self.get_id()
         parent = self.parent
         if parent is None:
@@ -701,20 +684,21 @@ on the change.</p>
 </summary>
 <pre><code class="python">class ChangeInfo(Element):
     &#34;&#34;&#34;The &#34;office:change-info&#34; element represents who made a change and when.
-       It may also contain a comment (one or more Paragrah &#34;text:p&#34; elements)
-       on the change.
+    It may also contain a comment (one or more Paragrah &#34;text:p&#34; elements)
+    on the change.
 
-       The comments available in the ChangeInfo are available through:
-         - get_paragraphs and get_paragraph methods for actual Paragraph.
-         - get_comments for a plain text version
+    The comments available in the ChangeInfo are available through:
+      - get_paragraphs and get_paragraph methods for actual Paragraph.
+      - get_comments for a plain text version
 
-         Arguments:
+      Arguments:
 
-            creator -- str (or None)
+         creator -- str (or None)
 
-            date -- datetime
+         date -- datetime
     &#34;&#34;&#34;
-    _tag = &#39;office:change-info&#39;
+
+    _tag = &#34;office:change-info&#34;
 
     def __init__(self, creator=None, date=None, **kwargs):
         super().__init__(**kwargs)
@@ -729,12 +713,12 @@ on the change.</p>
 
             creator -- str (or None)
         &#34;&#34;&#34;
-        element = self.get_element(&#39;dc:creator&#39;)
+        element = self.get_element(&#34;dc:creator&#34;)
         if element is None:
-            element = Element.from_tag(&#39;dc:creator&#39;)
+            element = Element.from_tag(&#34;dc:creator&#34;)
             self.insert(element, xmlposition=FIRST_CHILD)
         if not creator:
-            creator = &#39;Unknown&#39;
+            creator = &#34;Unknown&#34;
         element.text = creator
 
     def set_dc_date(self, date=None):
@@ -747,9 +731,9 @@ on the change.</p>
         if date is None:
             date = datetime.now()
         dcdate = DateTime.encode(date)
-        element = self.get_element(&#39;dc:date&#39;)
+        element = self.get_element(&#34;dc:date&#34;)
         if element is None:
-            element = Element.from_tag(&#39;dc:date&#39;)
+            element = Element.from_tag(&#34;dc:date&#34;)
             self.insert(element, xmlposition=LAST_CHILD)
         element.text = dcdate
 
@@ -769,10 +753,10 @@ on the change.</p>
             content = []
         text = [para.get_formatted_text(simple=True) for para in content]
         if joined:
-            return &#39;\n&#39;.join(text)
+            return &#34;\n&#34;.join(text)
         return text
 
-    def set_comments(self, text=&#39;&#39;, replace=True):
+    def set_comments(self, text=&#34;&#34;, replace=True):
         &#34;&#34;&#34;Set the text content of the comments. If replace is True (default),
         the new text replace old comments, else it is added at the end.
 
@@ -825,7 +809,7 @@ one per paragraph, is returned.</p>
         content = []
     text = [para.get_formatted_text(simple=True) for para in content]
     if joined:
-        return &#39;\n&#39;.join(text)
+        return &#34;\n&#34;.join(text)
     return text</code></pre>
 </details>
 </dd>
@@ -842,7 +826,7 @@ the new text replace old comments, else it is added at the end.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_comments(self, text=&#39;&#39;, replace=True):
+<pre><code class="python">def set_comments(self, text=&#34;&#34;, replace=True):
     &#34;&#34;&#34;Set the text content of the comments. If replace is True (default),
     the new text replace old comments, else it is added at the end.
 
@@ -878,12 +862,12 @@ the new text replace old comments, else it is added at the end.</p>
 
         creator -- str (or None)
     &#34;&#34;&#34;
-    element = self.get_element(&#39;dc:creator&#39;)
+    element = self.get_element(&#34;dc:creator&#34;)
     if element is None:
-        element = Element.from_tag(&#39;dc:creator&#39;)
+        element = Element.from_tag(&#34;dc:creator&#34;)
         self.insert(element, xmlposition=FIRST_CHILD)
     if not creator:
-        creator = &#39;Unknown&#39;
+        creator = &#34;Unknown&#34;
     element.text = creator</code></pre>
 </details>
 </dd>
@@ -908,9 +892,9 @@ the new text replace old comments, else it is added at the end.</p>
     if date is None:
         date = datetime.now()
     dcdate = DateTime.encode(date)
-    element = self.get_element(&#39;dc:date&#39;)
+    element = self.get_element(&#34;dc:date&#34;)
     if element is None:
-        element = Element.from_tag(&#39;dc:date&#39;)
+        element = Element.from_tag(&#34;dc:date&#34;)
         self.insert(element, xmlposition=LAST_CHILD)
     element.text = dcdate</code></pre>
 </details>
@@ -1044,15 +1028,16 @@ region where text has been deleted.</p></div>
 </summary>
 <pre><code class="python">class TextChange(Element):
     &#34;&#34;&#34;The TextChange &#34;text:change&#34; element marks a position in an empty
-       region where text has been deleted.
+    region where text has been deleted.
     &#34;&#34;&#34;
-    _tag = &#39;text:change&#39;
+
+    _tag = &#34;text:change&#34;
 
     def get_id(self):
-        return self.get_attribute(&#39;text:change-id&#39;)
+        return self.get_attribute(&#34;text:change-id&#34;)
 
     def set_id(self, idx):
-        return self.set_attribute(&#39;text:change-id&#39;, idx)
+        return self.set_attribute(&#34;text:change-id&#34;, idx)
 
     def _get_tracked_changes(self):
         body = self.document_body
@@ -1072,33 +1057,27 @@ region where text has been deleted.</p></div>
         cr = self.get_changed_region(tracked_changes=tracked_changes)
         return cr.get_change_element()
 
-    def get_deleted(self,
-                    tracked_changes=None,
-                    as_text=False,
-                    no_header=False,
-                    clean=True):
+    def get_deleted(
+        self, tracked_changes=None, as_text=False, no_header=False, clean=True
+    ):
         &#34;&#34;&#34;Shortcut to get the deleted informations stored in the
-            TextDeletion stored in the tracked changes.
+        TextDeletion stored in the tracked changes.
 
-            Return: Paragraph (or None).&#34;
+        Return: Paragraph (or None).&#34;
         &#34;&#34;&#34;
         ce = self.get_change_element(tracked_changes=tracked_changes)
-        return ce.get_deleted(
-            as_text=as_text, no_header=no_header, clean=clean)
+        return ce.get_deleted(as_text=as_text, no_header=no_header, clean=clean)
 
     def get_inserted(self, *args, **kwargs):
-        &#34;&#34;&#34;Return None.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None
 
     def get_start(self):
-        &#34;&#34;&#34;Return None.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None
 
     def get_end(self):
-        &#34;&#34;&#34;Return None.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -1166,19 +1145,16 @@ TextDeletion stored in the tracked changes.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_deleted(self,
-                tracked_changes=None,
-                as_text=False,
-                no_header=False,
-                clean=True):
+<pre><code class="python">def get_deleted(
+    self, tracked_changes=None, as_text=False, no_header=False, clean=True
+):
     &#34;&#34;&#34;Shortcut to get the deleted informations stored in the
-        TextDeletion stored in the tracked changes.
+    TextDeletion stored in the tracked changes.
 
-        Return: Paragraph (or None).&#34;
+    Return: Paragraph (or None).&#34;
     &#34;&#34;&#34;
     ce = self.get_change_element(tracked_changes=tracked_changes)
-    return ce.get_deleted(
-        as_text=as_text, no_header=no_header, clean=clean)</code></pre>
+    return ce.get_deleted(as_text=as_text, no_header=no_header, clean=clean)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChange.get_end"><code class="name flex">
@@ -1191,8 +1167,7 @@ TextDeletion stored in the tracked changes.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_end(self):
-    &#34;&#34;&#34;Return None.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Return None.&#34;&#34;&#34;
     return None</code></pre>
 </details>
 </dd>
@@ -1206,7 +1181,7 @@ TextDeletion stored in the tracked changes.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_id(self):
-    return self.get_attribute(&#39;text:change-id&#39;)</code></pre>
+    return self.get_attribute(&#34;text:change-id&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChange.get_inserted"><code class="name flex">
@@ -1219,8 +1194,7 @@ TextDeletion stored in the tracked changes.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_inserted(self, *args, **kwargs):
-    &#34;&#34;&#34;Return None.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Return None.&#34;&#34;&#34;
     return None</code></pre>
 </details>
 </dd>
@@ -1234,8 +1208,7 @@ TextDeletion stored in the tracked changes.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_start(self):
-    &#34;&#34;&#34;Return None.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Return None.&#34;&#34;&#34;
     return None</code></pre>
 </details>
 </dd>
@@ -1249,7 +1222,7 @@ TextDeletion stored in the tracked changes.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_id(self, idx):
-    return self.set_attribute(&#39;text:change-id&#39;, idx)</code></pre>
+    return self.set_attribute(&#34;text:change-id&#34;, idx)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1382,14 +1355,14 @@ changed.</p></div>
 </summary>
 <pre><code class="python">class TextChangeEnd(TextChange):
     &#34;&#34;&#34;The TextChangeEnd &#34;text:change-end&#34; element marks the end of a region
-       with content where text has been inserted or the format has been
-       changed.
+    with content where text has been inserted or the format has been
+    changed.
     &#34;&#34;&#34;
-    _tag = &#39;text:change-end&#39;
+
+    _tag = &#34;text:change-end&#34;
 
     def get_start(self):
-        &#34;&#34;&#34;Return the corresponding annotation starting tag or None.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return the corresponding annotation starting tag or None.&#34;&#34;&#34;
         idx = self.get_id()
         parent = self.parent
         if parent is None:
@@ -1400,13 +1373,11 @@ changed.</p></div>
         return body.get_text_change_start(idx=idx)
 
     def get_end(self):
-        &#34;&#34;&#34;Return self.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return self.&#34;&#34;&#34;
         return self
 
     def get_deleted(self, *args, **kwargs):
-        &#34;&#34;&#34;Return None.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None
 
     def get_inserted(self, as_text=False, no_header=False, clean=True):
@@ -1431,18 +1402,19 @@ changed.</p></div>
         Return: list or Paragraph or text
         &#34;&#34;&#34;
 
-        #idx = self.get_id()
+        # idx = self.get_id()
         start = self.get_start()
         end = self.get_end()
         if end is None or start is None:
             if as_text:
-                return &#39;&#39;
+                return &#34;&#34;
             return None
         body = self.document_body
         if not body:
             body = self.root
         return body.get_between(
-            start, end, as_text=as_text, no_header=no_header, clean=clean)</code></pre>
+            start, end, as_text=as_text, no_header=no_header, clean=clean
+        )</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1465,8 +1437,7 @@ changed.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_deleted(self, *args, **kwargs):
-    &#34;&#34;&#34;Return None.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Return None.&#34;&#34;&#34;
     return None</code></pre>
 </details>
 </dd>
@@ -1480,8 +1451,7 @@ changed.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_end(self):
-    &#34;&#34;&#34;Return self.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Return self.&#34;&#34;&#34;
     return self</code></pre>
 </details>
 </dd>
@@ -1528,18 +1498,19 @@ By default: returns a list of Text or Element.</p>
     Return: list or Paragraph or text
     &#34;&#34;&#34;
 
-    #idx = self.get_id()
+    # idx = self.get_id()
     start = self.get_start()
     end = self.get_end()
     if end is None or start is None:
         if as_text:
-            return &#39;&#39;
+            return &#34;&#34;
         return None
     body = self.document_body
     if not body:
         body = self.root
     return body.get_between(
-        start, end, as_text=as_text, no_header=no_header, clean=clean)</code></pre>
+        start, end, as_text=as_text, no_header=no_header, clean=clean
+    )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangeEnd.get_start"><code class="name flex">
@@ -1552,8 +1523,7 @@ By default: returns a list of Text or Element.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_start(self):
-    &#34;&#34;&#34;Return the corresponding annotation starting tag or None.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Return the corresponding annotation starting tag or None.&#34;&#34;&#34;
     idx = self.get_id()
     parent = self.parent
     if parent is None:
@@ -1694,19 +1664,18 @@ been changed.</p></div>
 </summary>
 <pre><code class="python">class TextChangeStart(TextChangeEnd):
     &#34;&#34;&#34;The TextChangeStart &#34;text:change-start&#34; element marks the start of a
-       region with content where text has been inserted or the format has
-       been changed.
+    region with content where text has been inserted or the format has
+    been changed.
     &#34;&#34;&#34;
-    _tag = &#39;text:change-start&#39;
+
+    _tag = &#34;text:change-start&#34;
 
     def get_start(self):
-        &#34;&#34;&#34;Return self.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return self.&#34;&#34;&#34;
         return self
 
     def get_end(self):
-        &#34;&#34;&#34;Return the corresponding change-end tag or None.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return the corresponding change-end tag or None.&#34;&#34;&#34;
         idx = self.get_id()
         parent = self.parent
         if parent is None:
@@ -1806,8 +1775,7 @@ element now "orphan" as long as you have a reference to it.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_end(self):
-    &#34;&#34;&#34;Return the corresponding change-end tag or None.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Return the corresponding change-end tag or None.&#34;&#34;&#34;
     idx = self.get_id()
     parent = self.parent
     if parent is None:
@@ -1828,8 +1796,7 @@ element now "orphan" as long as you have a reference to it.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_start(self):
-    &#34;&#34;&#34;Return self.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Return self.&#34;&#34;&#34;
     return self</code></pre>
 </details>
 </dd>
@@ -1976,23 +1943,24 @@ deletion. "</p></div>
 </summary>
 <pre><code class="python">class TextChangedRegion(Element):
     &#34;&#34;&#34;Each TextChangedRegion &#34;text:changed-region&#34; element contains a single
-       element, one of TextInsertion, TextDeletion or TextFormatChange that
-       corresponds to a change being tracked within the scope of the
-       &#34;text:tracked-changes&#34; element that contains the &#34;text:changed-region&#34;
-       instance.
-       The xml:id attribute of the TextChangedRegion is referenced
-       from the &#34;text:change&#34;, &#34;text:change-start&#34; and &#34;text:change-end&#34;
-       elements that identify where the change applies to markup in the scope of
-       the &#34;text:tracked-changes&#34; element.
+    element, one of TextInsertion, TextDeletion or TextFormatChange that
+    corresponds to a change being tracked within the scope of the
+    &#34;text:tracked-changes&#34; element that contains the &#34;text:changed-region&#34;
+    instance.
+    The xml:id attribute of the TextChangedRegion is referenced
+    from the &#34;text:change&#34;, &#34;text:change-start&#34; and &#34;text:change-end&#34;
+    elements that identify where the change applies to markup in the scope of
+    the &#34;text:tracked-changes&#34; element.
 
-       Warning : for this implementation, text:change should be referenced only
-                 once in the scope, which is different from ODF 1.2 requirement:
-                &#34; A &#34;text:changed-region&#34; can be referenced by more than one
-                change, but the corresponding referencing change mark elements
-                shall be of the same change type - insertion, format change or
-                deletion. &#34;
+    Warning : for this implementation, text:change should be referenced only
+              once in the scope, which is different from ODF 1.2 requirement:
+             &#34; A &#34;text:changed-region&#34; can be referenced by more than one
+             change, but the corresponding referencing change mark elements
+             shall be of the same change type - insertion, format change or
+             deletion. &#34;
     &#34;&#34;&#34;
-    _tag = &#39;text:changed-region&#39;
+
+    _tag = &#34;text:changed-region&#34;
 
     def get_change_info(self):
         &#34;&#34;&#34;Shortcut to get the ChangeInfo element of the change
@@ -2000,22 +1968,16 @@ deletion. "</p></div>
 
         Return: ChangeInfo element.
         &#34;&#34;&#34;
-        return self.get_element(&#39;descendant::office:change-info&#39;)
+        return self.get_element(&#34;descendant::office:change-info&#34;)
 
-    def set_change_info(self,
-                        change_info=None,
-                        creator=None,
-                        date=None,
-                        comments=None):
+    def set_change_info(self, change_info=None, creator=None, date=None, comments=None):
         &#34;&#34;&#34;Shortcut to set the ChangeInfo element of the sub change element.
-           See TextInsertion.set_change_info() for details.
+        See TextInsertion.set_change_info() for details.
         &#34;&#34;&#34;
         child = self.get_change_element()
         child.set_change_info(
-            change_info=change_info,
-            creator=creator,
-            date=date,
-            comments=comments)
+            change_info=change_info, creator=creator, date=date, comments=comments
+        )
 
     def get_change_element(self):
         &#34;&#34;&#34;Get the change element child. It can be either: TextInsertion,
@@ -2023,22 +1985,24 @@ deletion. "</p></div>
 
         Return: Element.
         &#34;&#34;&#34;
-        request = (&#39;descendant::text:insertion &#39;
-                   &#39;| descendant::text:deletion&#39;
-                   &#39;| descendant::text:format-change&#39;)
+        request = (
+            &#34;descendant::text:insertion &#34;
+            &#34;| descendant::text:deletion&#34;
+            &#34;| descendant::text:format-change&#34;
+        )
         return _get_element(self, request, position=0)
 
     def _get_text_id(self):
-        return self.get_attribute(&#39;text:id&#39;)
+        return self.get_attribute(&#34;text:id&#34;)
 
     def _set_text_id(self, text_id):
-        return self.set_attribute(&#39;text:id&#39;, text_id)
+        return self.set_attribute(&#34;text:id&#34;, text_id)
 
     def _get_xml_id(self):
-        return self.get_attribute(&#39;xml:id&#39;)
+        return self.get_attribute(&#34;xml:id&#34;)
 
     def _set_xml_id(self, xml_id):
-        return self.set_attribute(&#39;xml:id&#39;, xml_id)
+        return self.set_attribute(&#34;xml:id&#34;, xml_id)
 
     def get_id(self):
         &#34;&#34;&#34;Get the &#34;text:id&#34; attribute.
@@ -2048,8 +2012,7 @@ deletion. "</p></div>
         return self._get_text_id()
 
     def set_id(self, idx):
-        &#34;&#34;&#34;Set both the &#34;text:id&#34; and &#34;xml:id&#34; attributes.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Set both the &#34;text:id&#34; and &#34;xml:id&#34; attributes.&#34;&#34;&#34;
         self._set_text_id(idx)
         self._set_xml_id(idx)</code></pre>
 </details>
@@ -2076,9 +2039,11 @@ TextDeletion, or TextFormatChange as an Element object.</p>
 
     Return: Element.
     &#34;&#34;&#34;
-    request = (&#39;descendant::text:insertion &#39;
-               &#39;| descendant::text:deletion&#39;
-               &#39;| descendant::text:format-change&#39;)
+    request = (
+        &#34;descendant::text:insertion &#34;
+        &#34;| descendant::text:deletion&#34;
+        &#34;| descendant::text:format-change&#34;
+    )
     return _get_element(self, request, position=0)</code></pre>
 </details>
 </dd>
@@ -2099,7 +2064,7 @@ element child.</p>
 
     Return: ChangeInfo element.
     &#34;&#34;&#34;
-    return self.get_element(&#39;descendant::office:change-info&#39;)</code></pre>
+    return self.get_element(&#34;descendant::office:change-info&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangedRegion.get_id"><code class="name flex">
@@ -2130,20 +2095,14 @@ See TextInsertion.set_change_info() for details.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_change_info(self,
-                    change_info=None,
-                    creator=None,
-                    date=None,
-                    comments=None):
+<pre><code class="python">def set_change_info(self, change_info=None, creator=None, date=None, comments=None):
     &#34;&#34;&#34;Shortcut to set the ChangeInfo element of the sub change element.
-       See TextInsertion.set_change_info() for details.
+    See TextInsertion.set_change_info() for details.
     &#34;&#34;&#34;
     child = self.get_change_element()
     child.set_change_info(
-        change_info=change_info,
-        creator=creator,
-        date=date,
-        comments=comments)</code></pre>
+        change_info=change_info, creator=creator, date=date, comments=comments
+    )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangedRegion.set_id"><code class="name flex">
@@ -2156,8 +2115,7 @@ See TextInsertion.set_change_info() for details.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_id(self, idx):
-    &#34;&#34;&#34;Set both the &#34;text:id&#34; and &#34;xml:id&#34; attributes.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Set both the &#34;text:id&#34; and &#34;xml:id&#34; attributes.&#34;&#34;&#34;
     self._set_text_id(idx)
     self._set_xml_id(idx)</code></pre>
 </details>
@@ -2313,31 +2271,32 @@ place of the change mark.</p></div>
 </summary>
 <pre><code class="python">class TextDeletion(TextInsertion):
     &#34;&#34;&#34;The TextDeletion &#34;text:deletion&#34; contains information that identifies
-       the person responsible for a deletion and the date of that deletion.
-       This information may also contain one or more Paragraph which contains
-       a comment on the deletion. The TextDeletion element may also contain
-       content that was deleted while change tracking was enabled. The position
-       where the text was deleted is marked by a &#34;text:change&#34; element. Deleted
-       text is contained in a paragraph element. To reconstruct the original
-       text, the paragraph containing the deleted text is merged with its
-       surrounding paragraph or heading element. To reconstruct the text before
-       a deletion took place:
-         - If the change mark is inside a paragraph, insert the content that was
-         deleted, but remove all leading start tags up to and including the
-         first &#34;text:p&#34; element and all trailing end tags up to and including
-         the last &#34;/text:p&#34; or &#34;/text:h&#34; element. If the last trailing element
-         is a &#34;/text:h&#34;, change the end tag &#34;/text:p&#34; following this insertion
-         to a &#34;/text:h&#34; element.
-         - If the change mark is inside a heading, insert the content that was
-         deleted, but remove all leading start tags up to and including the
-         first &#34;text:h&#34; element and all trailing end tags up to and including
-         the last &#34;/text:h&#34; or &#34;/text:p&#34; element. If the last trailing element
-         is a &#34;/text:p&#34;, change the end tag &#34;/text:h&#34; following this insertion
-         to a &#34;/text:p&#34; element.
-         - Otherwise, copy the text content of the &#34;text:deletion&#34; element in
-         place of the change mark.
+    the person responsible for a deletion and the date of that deletion.
+    This information may also contain one or more Paragraph which contains
+    a comment on the deletion. The TextDeletion element may also contain
+    content that was deleted while change tracking was enabled. The position
+    where the text was deleted is marked by a &#34;text:change&#34; element. Deleted
+    text is contained in a paragraph element. To reconstruct the original
+    text, the paragraph containing the deleted text is merged with its
+    surrounding paragraph or heading element. To reconstruct the text before
+    a deletion took place:
+      - If the change mark is inside a paragraph, insert the content that was
+      deleted, but remove all leading start tags up to and including the
+      first &#34;text:p&#34; element and all trailing end tags up to and including
+      the last &#34;/text:p&#34; or &#34;/text:h&#34; element. If the last trailing element
+      is a &#34;/text:h&#34;, change the end tag &#34;/text:p&#34; following this insertion
+      to a &#34;/text:h&#34; element.
+      - If the change mark is inside a heading, insert the content that was
+      deleted, but remove all leading start tags up to and including the
+      first &#34;text:h&#34; element and all trailing end tags up to and including
+      the last &#34;/text:h&#34; or &#34;/text:p&#34; element. If the last trailing element
+      is a &#34;/text:p&#34;, change the end tag &#34;/text:h&#34; following this insertion
+      to a &#34;/text:p&#34; element.
+      - Otherwise, copy the text content of the &#34;text:deletion&#34; element in
+      place of the change mark.
     &#34;&#34;&#34;
-    _tag = &#39;text:deletion&#39;
+
+    _tag = &#34;text:deletion&#34;
 
     def get_deleted(self, as_text=False, no_header=False):
         &#34;&#34;&#34;Get the deleted informations stored in the TextDeletion.
@@ -2353,14 +2312,14 @@ place of the change mark.</p></div>
         Return: Paragraph and Header list
         &#34;&#34;&#34;
         children = self.children
-        inner = [e for e in children if e.tag != &#39;office:change-info&#39;]
+        inner = [e for e in children if e.tag != &#34;office:change-info&#34;]
         if no_header:  # crude replace t:h by t:p
             new_inner = []
             for element in inner:
-                if element.tag == &#39;text:h&#39;:
+                if element.tag == &#34;text:h&#34;:
                     children = element.children
                     text = element.text
-                    para = Element.from_tag(&#39;text:p&#39;)
+                    para = Element.from_tag(&#34;text:p&#34;)
                     para.text = text
                     for c in children:
                         para.append(c)
@@ -2369,8 +2328,7 @@ place of the change mark.</p></div>
                     new_inner.append(element)
             inner = new_inner
         if as_text:
-            return &#39;\n&#39;.join(
-                [e.get_formatted_text(context=None) for e in inner])
+            return &#34;\n&#34;.join([e.get_formatted_text(context=None) for e in inner])
         return inner
 
     def set_deleted(self, paragraph_or_list):
@@ -2390,10 +2348,9 @@ place of the change mark.</p></div>
             self.append(element)
 
     def get_inserted(self, as_text=False, no_header=False, clean=True):
-        &#34;&#34;&#34;Return None (or u&#39;&#39;).
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return None (or u&#39;&#39;).&#34;&#34;&#34;
         if as_text:
-            return &#39;&#39;
+            return &#34;&#34;
         return None</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -2432,14 +2389,14 @@ If no_header is True: existing Heading are changed in Paragraph</p>
     Return: Paragraph and Header list
     &#34;&#34;&#34;
     children = self.children
-    inner = [e for e in children if e.tag != &#39;office:change-info&#39;]
+    inner = [e for e in children if e.tag != &#34;office:change-info&#34;]
     if no_header:  # crude replace t:h by t:p
         new_inner = []
         for element in inner:
-            if element.tag == &#39;text:h&#39;:
+            if element.tag == &#34;text:h&#34;:
                 children = element.children
                 text = element.text
-                para = Element.from_tag(&#39;text:p&#39;)
+                para = Element.from_tag(&#34;text:p&#34;)
                 para.text = text
                 for c in children:
                     para.append(c)
@@ -2448,8 +2405,7 @@ If no_header is True: existing Heading are changed in Paragraph</p>
                 new_inner.append(element)
         inner = new_inner
     if as_text:
-        return &#39;\n&#39;.join(
-            [e.get_formatted_text(context=None) for e in inner])
+        return &#34;\n&#34;.join([e.get_formatted_text(context=None) for e in inner])
     return inner</code></pre>
 </details>
 </dd>
@@ -2463,10 +2419,9 @@ If no_header is True: existing Heading are changed in Paragraph</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_inserted(self, as_text=False, no_header=False, clean=True):
-    &#34;&#34;&#34;Return None (or u&#39;&#39;).
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Return None (or u&#39;&#39;).&#34;&#34;&#34;
     if as_text:
-        return &#39;&#39;
+        return &#34;&#34;
     return None</code></pre>
 </details>
 </dd>
@@ -2635,14 +2590,15 @@ place.</p></div>
 </summary>
 <pre><code class="python">class TextFormatChange(TextInsertion):
     &#34;&#34;&#34;The TextFormatChange &#34;text:format-change&#34; element represents any change
-       in formatting attributes. The region where the change took place is
-       marked by &#34;text:change-start&#34;, &#34;text:change-end&#34; or &#34;text:change&#34;
-       elements.
+    in formatting attributes. The region where the change took place is
+    marked by &#34;text:change-start&#34;, &#34;text:change-end&#34; or &#34;text:change&#34;
+    elements.
 
-       Note: This element does not contain formatting changes that have taken
-       place.
+    Note: This element does not contain formatting changes that have taken
+    place.
     &#34;&#34;&#34;
-    _tag = &#39;text:format-change&#39;</code></pre>
+
+    _tag = &#34;text:format-change&#34;</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -2787,21 +2743,21 @@ and "text:change-end" elements.</p></div>
 </summary>
 <pre><code class="python">class TextInsertion(Element):
     &#34;&#34;&#34;The TextInsertion &#34;text:insertion&#34; element contains the information
-       that identifies the person responsible for a change and the date of
-       that change. This information may also contain one or more &#34;text:p&#34;
-       Paragraph which contain a comment on the insertion. The
-       TextInsertion element&#39;s parent &#34;text:changed-region&#34; element has an
-       xml:id or text:id attribute, the value of which binds that parent
-       element to the text:change-id attribute on the &#34;text:change-start&#34;
-       and &#34;text:change-end&#34; elements.
+    that identifies the person responsible for a change and the date of
+    that change. This information may also contain one or more &#34;text:p&#34;
+    Paragraph which contain a comment on the insertion. The
+    TextInsertion element&#39;s parent &#34;text:changed-region&#34; element has an
+    xml:id or text:id attribute, the value of which binds that parent
+    element to the text:change-id attribute on the &#34;text:change-start&#34;
+    and &#34;text:change-end&#34; elements.
     &#34;&#34;&#34;
-    _tag = &#39;text:insertion&#39;
+
+    _tag = &#34;text:insertion&#34;
 
     def get_deleted(self, as_text=False, no_header=False):
-        &#34;&#34;&#34;Return: None.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Return: None.&#34;&#34;&#34;
         if as_text:
-            return &#39;&#39;
+            return &#34;&#34;
         return None
 
     def get_inserted(self, as_text=False, no_header=False, clean=True):
@@ -2829,36 +2785,33 @@ and "text:change-end" elements.</p></div>
             body = self.root
         text_change = body.get_text_change_start(idx=idx)
         return text_change.get_inserted(
-            as_text=as_text, no_header=no_header, clean=clean)
+            as_text=as_text, no_header=no_header, clean=clean
+        )
 
     def get_change_info(self):
         &#34;&#34;&#34;Get the ChangeInfo child of the element.
 
         Return: ChangeInfo element.
         &#34;&#34;&#34;
-        return self.get_element(&#39;descendant::office:change-info&#39;)
+        return self.get_element(&#34;descendant::office:change-info&#34;)
 
-    def set_change_info(self,
-                        change_info=None,
-                        creator=None,
-                        date=None,
-                        comments=None):
+    def set_change_info(self, change_info=None, creator=None, date=None, comments=None):
         &#34;&#34;&#34;Set the ChangeInfo element for the change element. If change_info
-           is not provided, creator, date and comments will be used to build a
-           suitable change info element. Default for creator is &#39;Unknown&#39;,
-           default for date is current time and default for comments is no
-           comment at all.
-           The new change info element will replace any existant ChangeInfo.
+        is not provided, creator, date and comments will be used to build a
+        suitable change info element. Default for creator is &#39;Unknown&#39;,
+        default for date is current time and default for comments is no
+        comment at all.
+        The new change info element will replace any existant ChangeInfo.
 
-           Arguments:
+        Arguments:
 
-                change_info -- ChangeInfo element (or None)
+             change_info -- ChangeInfo element (or None)
 
-                cretor -- str (or None)
+             cretor -- str (or None)
 
-                date -- datetime (or None)
+             date -- datetime (or None)
 
-                comments -- list of Paragraph elements (or None)
+             comments -- list of Paragraph elements (or None)
         &#34;&#34;&#34;
         if change_info is None:
             new_change_info = ChangeInfo(creator, date)
@@ -2869,11 +2822,11 @@ and "text:change-end" elements.</p></div>
                 # assume iterable of Paragraph
                 for paragraph in comments:
                     if not isinstance(paragraph, Paragraph):
-                        raise ValueError(&#39;%s is not a Paragraph.&#39; % paragraph)
+                        raise ValueError(&#34;%s is not a Paragraph.&#34; % paragraph)
                     new_change_info.insert(paragraph, xmlposition=LAST_CHILD)
         else:
             if not isinstance(change_info, ChangeInfo):
-                raise ValueError(&#39;%s is not a ChangeInfo&#39; % change_info)
+                raise ValueError(&#34;%s is not a ChangeInfo&#34; % change_info)
             new_change_info = change_info
 
         old = self.get_change_info()
@@ -2908,7 +2861,7 @@ and "text:change-end" elements.</p></div>
 
     Return: ChangeInfo element.
     &#34;&#34;&#34;
-    return self.get_element(&#39;descendant::office:change-info&#39;)</code></pre>
+    return self.get_element(&#34;descendant::office:change-info&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextInsertion.get_deleted"><code class="name flex">
@@ -2921,10 +2874,9 @@ and "text:change-end" elements.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_deleted(self, as_text=False, no_header=False):
-    &#34;&#34;&#34;Return: None.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Return: None.&#34;&#34;&#34;
     if as_text:
-        return &#39;&#39;
+        return &#34;&#34;
     return None</code></pre>
 </details>
 </dd>
@@ -2972,7 +2924,8 @@ By default: returns a list of Text or Element.</p>
         body = self.root
     text_change = body.get_text_change_start(idx=idx)
     return text_change.get_inserted(
-        as_text=as_text, no_header=no_header, clean=clean)</code></pre>
+        as_text=as_text, no_header=no_header, clean=clean
+    )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextInsertion.set_change_info"><code class="name flex">
@@ -2994,27 +2947,23 @@ The new change info element will replace any existant ChangeInfo.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_change_info(self,
-                    change_info=None,
-                    creator=None,
-                    date=None,
-                    comments=None):
+<pre><code class="python">def set_change_info(self, change_info=None, creator=None, date=None, comments=None):
     &#34;&#34;&#34;Set the ChangeInfo element for the change element. If change_info
-       is not provided, creator, date and comments will be used to build a
-       suitable change info element. Default for creator is &#39;Unknown&#39;,
-       default for date is current time and default for comments is no
-       comment at all.
-       The new change info element will replace any existant ChangeInfo.
+    is not provided, creator, date and comments will be used to build a
+    suitable change info element. Default for creator is &#39;Unknown&#39;,
+    default for date is current time and default for comments is no
+    comment at all.
+    The new change info element will replace any existant ChangeInfo.
 
-       Arguments:
+    Arguments:
 
-            change_info -- ChangeInfo element (or None)
+         change_info -- ChangeInfo element (or None)
 
-            cretor -- str (or None)
+         cretor -- str (or None)
 
-            date -- datetime (or None)
+         date -- datetime (or None)
 
-            comments -- list of Paragraph elements (or None)
+         comments -- list of Paragraph elements (or None)
     &#34;&#34;&#34;
     if change_info is None:
         new_change_info = ChangeInfo(creator, date)
@@ -3025,11 +2974,11 @@ The new change info element will replace any existant ChangeInfo.</p>
             # assume iterable of Paragraph
             for paragraph in comments:
                 if not isinstance(paragraph, Paragraph):
-                    raise ValueError(&#39;%s is not a Paragraph.&#39; % paragraph)
+                    raise ValueError(&#34;%s is not a Paragraph.&#34; % paragraph)
                 new_change_info.insert(paragraph, xmlposition=LAST_CHILD)
     else:
         if not isinstance(change_info, ChangeInfo):
-            raise ValueError(&#39;%s is not a ChangeInfo&#39; % change_info)
+            raise ValueError(&#34;%s is not a ChangeInfo&#34; % change_info)
         new_change_info = change_info
 
     old = self.get_change_info()
@@ -3175,28 +3124,26 @@ ignored.</p></div>
 </summary>
 <pre><code class="python">class TrackedChanges(Element):
     &#34;&#34;&#34;The TrackedChanges &#34;text:tracked-changes&#34; element acts as a container
-       for TextChangedRegion elements that represent changes in a certain
-       scope of an OpenDocument document. This scope is the element in which
-       the TrackedChanges element occurs. Changes in this scope shall be
-       tracked by TextChangedRegion elements contained in the
-       TrackedChanges element in this scope. If a TrackedChanges
-       element is absent, there are no tracked changes in the corresponding
-       scope. In this case, all change mark elements in this scope shall be
-       ignored.
+    for TextChangedRegion elements that represent changes in a certain
+    scope of an OpenDocument document. This scope is the element in which
+    the TrackedChanges element occurs. Changes in this scope shall be
+    tracked by TextChangedRegion elements contained in the
+    TrackedChanges element in this scope. If a TrackedChanges
+    element is absent, there are no tracked changes in the corresponding
+    scope. In this case, all change mark elements in this scope shall be
+    ignored.
     &#34;&#34;&#34;
-    _tag = &#39;text:tracked-changes&#39;
 
-    def get_changed_regions(self,
-                            creator=None,
-                            date=None,
-                            content=None,
-                            role=None):
+    _tag = &#34;text:tracked-changes&#34;
+
+    def get_changed_regions(self, creator=None, date=None, content=None, role=None):
         changed_regions = _get_elements(
             self,
-            &#39;text:changed-region&#39;,
+            &#34;text:changed-region&#34;,
             dc_creator=creator,
             dc_date=date,
-            content=content)
+            content=content,
+        )
         if role is None:
             return changed_regions
         result = []
@@ -3208,20 +3155,18 @@ ignored.</p></div>
                 result.append(cr)
         return result
 
-    def get_changed_region(self,
-                           position=0,
-                           text_id=None,
-                           creator=None,
-                           date=None,
-                           content=None):
+    def get_changed_region(
+        self, position=0, text_id=None, creator=None, date=None, content=None
+    ):
         return _get_element(
             self,
-            &#39;text:changed-region&#39;,
+            &#34;text:changed-region&#34;,
             position,
             text_id=text_id,
             dc_creator=creator,
             dc_date=date,
-            content=content)</code></pre>
+            content=content,
+        )</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -3238,20 +3183,18 @@ ignored.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_changed_region(self,
-                       position=0,
-                       text_id=None,
-                       creator=None,
-                       date=None,
-                       content=None):
+<pre><code class="python">def get_changed_region(
+    self, position=0, text_id=None, creator=None, date=None, content=None
+):
     return _get_element(
         self,
-        &#39;text:changed-region&#39;,
+        &#34;text:changed-region&#34;,
         position,
         text_id=text_id,
         dc_creator=creator,
         dc_date=date,
-        content=content)</code></pre>
+        content=content,
+    )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TrackedChanges.get_changed_regions"><code class="name flex">
@@ -3263,17 +3206,14 @@ ignored.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_changed_regions(self,
-                        creator=None,
-                        date=None,
-                        content=None,
-                        role=None):
+<pre><code class="python">def get_changed_regions(self, creator=None, date=None, content=None, role=None):
     changed_regions = _get_elements(
         self,
-        &#39;text:changed-region&#39;,
+        &#34;text:changed-region&#34;,
         dc_creator=creator,
         dc_date=date,
-        content=content)
+        content=content,
+    )
     if role is None:
         return changed_regions
     result = []
@@ -3501,7 +3441,7 @@ ignored.</p></div>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.3</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
 </footer>
 </body>
 </html>

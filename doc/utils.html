@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.8.3" />
+<meta name="generator" content="pdoc 0.9.2" />
 <title>odfdo.utils API documentation</title>
 <meta name="description" content="get_value() and other utilities" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
 <style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
 <style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
 </head>
 <body>
@@ -73,7 +73,7 @@ from .datatype import Boolean, Date, DateTime, Duration
 
 # This DPI is computed to have:
 # 640 px (width of your wiki) &lt;==&gt; 17 cm (width of a normal ODT page)
-DPI = 640 * dec(&#39;2.54&#39;) / 17
+DPI = 640 * dec(&#34;2.54&#34;) / 17
 
 ######################################################################
 # Private API
@@ -82,173 +82,155 @@ DPI = 640 * dec(&#39;2.54&#39;) / 17
 
 def to_bytes(value):
     if isinstance(value, str):
-        return value.encode(&#39;utf-8&#39;)
+        return value.encode(&#34;utf-8&#34;)
     return value
 
 
 def to_str(value):
     if isinstance(value, bytes):
-        return value.decode(&#39;utf-8&#39;)
+        return value.decode(&#34;utf-8&#34;)
     return value
 
 
-def _get_abspath(local_path):
-    &#34;&#34;&#34;Returns the absolute path to the required file.
-    &#34;&#34;&#34;
-
-    mname = _getframe(1).f_globals.get(&#39;__name__&#39;)
-
-    if mname in (&#39;__main__&#39;, &#39;__init__&#39;):
-        mpath = getcwd()
-    else:
-        module = modules[mname]
-        if hasattr(module, &#39;__path__&#39;):
-            mpath = module.__path__[0]
-        elif &#39;.&#39; in mname:
-            mpath = modules[mname[:mname.rfind(&#39;.&#39;)]].__path__[0]
-        else:
-            mpath = mname
-
-    drive, mpath = splitdrive(mpath)
-    mpath = drive + join(mpath, local_path)
-
-    # Make it working with Windows. Internally we use always the &#34;/&#34;.
-    if sep == &#39;\\&#39;:
-        mpath = mpath.replace(sep, &#39;/&#39;)
-
-    return mpath
-
-
-def _make_xpath_query(element_name,
-                      family=None,
-                      text_style=None,
-                      draw_id=None,
-                      draw_name=None,
-                      draw_style=None,
-                      draw_text_style=None,
-                      table_name=None,
-                      table_style=None,
-                      style_name=None,
-                      display_name=None,
-                      note_class=None,
-                      text_id=None,
-                      text_name=None,
-                      change_id=None,
-                      office_name=None,
-                      office_title=None,
-                      outline_level=None,
-                      level=None,
-                      page_layout=None,
-                      master_page=None,
-                      parent_style=None,
-                      presentation_class=None,
-                      position=None,
-                      **kw):
+def _make_xpath_query(
+    element_name,
+    family=None,
+    text_style=None,
+    draw_id=None,
+    draw_name=None,
+    draw_style=None,
+    draw_text_style=None,
+    table_name=None,
+    table_style=None,
+    style_name=None,
+    display_name=None,
+    note_class=None,
+    text_id=None,
+    text_name=None,
+    change_id=None,
+    office_name=None,
+    office_title=None,
+    outline_level=None,
+    level=None,
+    page_layout=None,
+    master_page=None,
+    parent_style=None,
+    presentation_class=None,
+    position=None,
+    **kw
+):
     query = [to_str(element_name)]
     attributes = kw
     if text_style:
-        attributes[&#39;text:style-name&#39;] = text_style
+        attributes[&#34;text:style-name&#34;] = text_style
     if family and family in FAMILY_ODF_STD:
-        attributes[&#39;style:family&#39;] = family
+        attributes[&#34;style:family&#34;] = family
     if draw_id:
-        attributes[&#39;draw:id&#39;] = draw_id
+        attributes[&#34;draw:id&#34;] = draw_id
     if draw_name:
-        attributes[&#39;draw:name&#39;] = draw_name
+        attributes[&#34;draw:name&#34;] = draw_name
     if draw_style:
-        attributes[&#39;draw:style-name&#39;] = draw_style
+        attributes[&#34;draw:style-name&#34;] = draw_style
     if draw_text_style:
-        attributes[&#39;draw:text-style-name&#39;] = draw_text_style
+        attributes[&#34;draw:text-style-name&#34;] = draw_text_style
     if table_name:
-        attributes[&#39;table:name&#39;] = table_name
+        attributes[&#34;table:name&#34;] = table_name
     if table_style:
-        attributes[&#39;table:style-name&#39;] = table_style
+        attributes[&#34;table:style-name&#34;] = table_style
     if style_name:
-        attributes[&#39;style:name&#39;] = style_name
+        attributes[&#34;style:name&#34;] = style_name
     if display_name:
-        attributes[&#39;style:display-name&#39;] = display_name
+        attributes[&#34;style:display-name&#34;] = display_name
     if note_class:
-        attributes[&#39;text:note-class&#39;] = note_class
+        attributes[&#34;text:note-class&#34;] = note_class
     if text_id:
-        attributes[&#39;text:id&#39;] = text_id
+        attributes[&#34;text:id&#34;] = text_id
     if text_name:
-        attributes[&#39;text:name&#39;] = text_name
+        attributes[&#34;text:name&#34;] = text_name
     if change_id:
-        attributes[&#39;text:change-id&#39;] = change_id
+        attributes[&#34;text:change-id&#34;] = change_id
     if office_name:
-        attributes[&#39;office:name&#39;] = office_name
+        attributes[&#34;office:name&#34;] = office_name
     if office_title:
-        attributes[&#39;office:title&#39;] = office_title
+        attributes[&#34;office:title&#34;] = office_title
     if outline_level:
-        attributes[&#39;text:outline-level&#39;] = outline_level
+        attributes[&#34;text:outline-level&#34;] = outline_level
     if level:
-        attributes[&#39;text:level&#39;] = level
+        attributes[&#34;text:level&#34;] = level
     if page_layout:
-        attributes[&#39;style:page-layout-name&#39;] = page_layout
+        attributes[&#34;style:page-layout-name&#34;] = page_layout
     if master_page:
-        attributes[&#39;draw:master-page-name&#39;] = master_page
+        attributes[&#34;draw:master-page-name&#34;] = master_page
     if parent_style:
-        attributes[&#39;style:parent-style-name&#39;] = parent_style
+        attributes[&#34;style:parent-style-name&#34;] = parent_style
     if presentation_class:
-        attributes[&#39;presentation:class&#39;] = presentation_class
+        attributes[&#34;presentation:class&#34;] = presentation_class
     # Sort attributes for reproducible test cases
     for qname in sorted(attributes):
         value = attributes[qname]
         if value is True:
-            query.append(&#39;[@%s]&#39; % to_str(qname))
+            query.append(&#34;[@%s]&#34; % to_str(qname))
         else:
             query.append(&#39;[@%s=&#34;%s&#34;]&#39; % (to_str(qname), value))
-    query = &#39;&#39;.join(query)
+    query = &#34;&#34;.join(query)
     if position is not None:
         # A position argument that mimics the behaviour of a python&#39;s list
         if position &gt;= 0:
-            position = &#39;%s&#39; % (position + 1)
+            position = &#34;%s&#34; % (position + 1)
         elif position == -1:
-            position = &#39;last()&#39;
+            position = &#34;last()&#34;
         else:
-            position = &#39;last()-%s&#39; % (abs(position) - 1)
-        query = &#39;(%s)[%s]&#39; % (query, position)
-    #print(query)
+            position = &#34;last()-%s&#34; % (abs(position) - 1)
+        query = &#34;(%s)[%s]&#34; % (query, position)
+    # print(query)
     return query
 
 
 # style:family as defined by ODF 1.2, e.g. xxx possibily for:
 # &#39;style:style style:family=&#34;xxx&#34;&#39;
-FAMILY_ODF_STD = set((&#39;chart drawing-page graphic paragraph&#39;
-                      &#39; presentation ruby section table table-cell&#39;
-                      &#39; table-column table-row text&#39;).split())
+FAMILY_ODF_STD = set(
+    (
+        &#34;chart drawing-page graphic paragraph&#34;
+        &#34; presentation ruby section table table-cell&#34;
+        &#34; table-column table-row text&#34;
+    ).split()
+)
 
-_BASE_FAMILY_MAP = {k: &#39;style:style&#39; for k in FAMILY_ODF_STD}
+_BASE_FAMILY_MAP = {k: &#34;style:style&#34; for k in FAMILY_ODF_STD}
 
 _FALSE_FAMILY_MAP = {
-    &#39;background-image&#39;: &#39;style:background-image&#39;,
-    &#39;date&#39;: &#39;number:date-style&#39;,
-    &#39;font-face&#39;: &#39;style:font-face&#39;,
-    &#39;list&#39;: &#39;text:list-style&#39;,
-    &#39;master-page&#39;: &#39;style:master-page&#39;,
-    &#39;marker&#39;: &#39;draw:marker&#39;,
-    &#39;number&#39;: &#39;number:number-style&#39;,
-    &#39;outline&#39;: &#39;text:outline-style&#39;,
-    &#39;page-layout&#39;: &#39;style:page-layout&#39;,
-    &#39;percentage&#39;: &#39;number:percentage-style&#39;,
-    &#39;presentation-page-layout&#39;: &#39;style:presentation-page-layout&#39;,
-    &#39;time&#39;: &#39;number:time-style&#39;,
-    &#39;boolean&#39;: &#39;number:boolean-style&#39;,
-    &#39;currency&#39;: &#39;number:currency-style&#39;,
-    &#39;tab-stop&#39;: &#39;style:tab-stop&#39;,
+    &#34;background-image&#34;: &#34;style:background-image&#34;,
+    &#34;date&#34;: &#34;number:date-style&#34;,
+    &#34;font-face&#34;: &#34;style:font-face&#34;,
+    &#34;list&#34;: &#34;text:list-style&#34;,
+    &#34;master-page&#34;: &#34;style:master-page&#34;,
+    &#34;marker&#34;: &#34;draw:marker&#34;,
+    &#34;number&#34;: &#34;number:number-style&#34;,
+    &#34;outline&#34;: &#34;text:outline-style&#34;,
+    &#34;page-layout&#34;: &#34;style:page-layout&#34;,
+    &#34;percentage&#34;: &#34;number:percentage-style&#34;,
+    &#34;presentation-page-layout&#34;: &#34;style:presentation-page-layout&#34;,
+    &#34;time&#34;: &#34;number:time-style&#34;,
+    &#34;boolean&#34;: &#34;number:boolean-style&#34;,
+    &#34;currency&#34;: &#34;number:currency-style&#34;,
+    &#34;tab-stop&#34;: &#34;style:tab-stop&#34;,
 }
 
-OTHER_STYLES = set((&#39;style:default-style style:header-style&#39;
-                    &#39; style:footer-style text:list-level-style-bullet&#39;
-                    &#39; text:list-level-style-image&#39;
-                    &#39; text:list-level-style-number&#39;).split())
-SUBCLASS_STYLES = {&#39;background-image&#39;}
+OTHER_STYLES = set(
+    (
+        &#34;style:default-style style:header-style&#34;
+        &#34; style:footer-style text:list-level-style-bullet&#34;
+        &#34; text:list-level-style-image&#34;
+        &#34; text:list-level-style-number&#34;
+    ).split()
+)
+SUBCLASS_STYLES = {&#34;background-image&#34;}
 
 FAMILY_MAPPING = {**_BASE_FAMILY_MAP, **_FALSE_FAMILY_MAP}
 
 FALSE_FAMILY_MAP_REVERSE = {v: k for k, v in _FALSE_FAMILY_MAP.items()}
-SUBCLASSED_STYLES = {&#39;style:background-image&#39;}
-STYLES_TO_REGISTER = (set(FAMILY_MAPPING.values())
-                      | OTHER_STYLES) - SUBCLASSED_STYLES
+SUBCLASSED_STYLES = {&#34;style:background-image&#34;}
+STYLES_TO_REGISTER = (set(FAMILY_MAPPING.values()) | OTHER_STYLES) - SUBCLASSED_STYLES
 
 
 def _family_style_tagname(family):
@@ -268,48 +250,48 @@ def _expand_properties(properties):
     # This mapping is not exhaustive, it only contains cases where replacing
     # &#39;_&#39; with &#39;-&#39; and adding the &#34;fo:&#34; prefix is not enough
     mapping = {  # text
-        &#39;display&#39;: &#39;text:display&#39;,
-        &#39;family_generic&#39;: &#39;style:font-family-generic&#39;,
-        &#39;font&#39;: &#39;style:font-name&#39;,
-        &#39;outline&#39;: &#39;style:text-outline&#39;,
-        &#39;pitch&#39;: &#39;style:font-pitch&#39;,
-        &#39;size&#39;: &#39;fo:font-size&#39;,
-        &#39;style&#39;: &#39;fo:font-style&#39;,
-        &#39;underline&#39;: &#39;style:text-underline-style&#39;,
-        &#39;weight&#39;: &#39;fo:font-weight&#39;,
+        &#34;display&#34;: &#34;text:display&#34;,
+        &#34;family_generic&#34;: &#34;style:font-family-generic&#34;,
+        &#34;font&#34;: &#34;style:font-name&#34;,
+        &#34;outline&#34;: &#34;style:text-outline&#34;,
+        &#34;pitch&#34;: &#34;style:font-pitch&#34;,
+        &#34;size&#34;: &#34;fo:font-size&#34;,
+        &#34;style&#34;: &#34;fo:font-style&#34;,
+        &#34;underline&#34;: &#34;style:text-underline-style&#34;,
+        &#34;weight&#34;: &#34;fo:font-weight&#34;,
         # compliance with office suites
-        &#39;font_family&#39;: &#39;fo:font-family&#39;,
-        &#39;font_style_name&#39;: &#39;style:font-style-name&#39;,
+        &#34;font_family&#34;: &#34;fo:font-family&#34;,
+        &#34;font_style_name&#34;: &#34;style:font-style-name&#34;,
         # paragraph
-        &#39;align-last&#39;: &#39;fo:text-align-last&#39;,
-        &#39;align&#39;: &#39;fo:text-align&#39;,
-        &#39;indent&#39;: &#39;fo:text-indent&#39;,
-        &#39;together&#39;: &#39;fo:keep-together&#39;,
+        &#34;align-last&#34;: &#34;fo:text-align-last&#34;,
+        &#34;align&#34;: &#34;fo:text-align&#34;,
+        &#34;indent&#34;: &#34;fo:text-indent&#34;,
+        &#34;together&#34;: &#34;fo:keep-together&#34;,
         # frame position
-        &#39;horizontal_pos&#39;: &#39;style:horizontal-pos&#39;,
-        &#39;horizontal_rel&#39;: &#39;style:horizontal-rel&#39;,
-        &#39;vertical_pos&#39;: &#39;style:vertical-pos&#39;,
-        &#39;vertical_rel&#39;: &#39;style:vertical-rel&#39;,
+        &#34;horizontal_pos&#34;: &#34;style:horizontal-pos&#34;,
+        &#34;horizontal_rel&#34;: &#34;style:horizontal-rel&#34;,
+        &#34;vertical_pos&#34;: &#34;style:vertical-pos&#34;,
+        &#34;vertical_rel&#34;: &#34;style:vertical-rel&#34;,
         # TODO &#39;page-break-before&#39;: &#39;fo:page-break-before&#39;,
         # TODO &#39;page-break-after&#39;: &#39;fo:page-break-after&#39;,
-        &#39;shadow&#39;: &#39;fo:text-shadow&#39;,
+        &#34;shadow&#34;: &#34;fo:text-shadow&#34;,
         # Graphic
-        &#39;fill_color&#39;: &#39;draw:fill-color&#39;,
-        &#39;fill_image_height&#39;: &#39;draw:fill-image-height&#39;,
-        &#39;fill_image_width&#39;: &#39;draw:fill-image-width&#39;,
-        &#39;guide_distance&#39;: &#39;draw:guide-distance&#39;,
-        &#39;guide_overhang&#39;: &#39;draw:guide-overhang&#39;,
-        &#39;line_distance&#39;: &#39;draw:line-distance&#39;,
-        &#39;stroke&#39;: &#39;draw:stroke&#39;,
-        &#39;textarea_vertical_align&#39;: &#39;draw:textarea-vertical-align&#39;
+        &#34;fill_color&#34;: &#34;draw:fill-color&#34;,
+        &#34;fill_image_height&#34;: &#34;draw:fill-image-height&#34;,
+        &#34;fill_image_width&#34;: &#34;draw:fill-image-width&#34;,
+        &#34;guide_distance&#34;: &#34;draw:guide-distance&#34;,
+        &#34;guide_overhang&#34;: &#34;draw:guide-overhang&#34;,
+        &#34;line_distance&#34;: &#34;draw:line-distance&#34;,
+        &#34;stroke&#34;: &#34;draw:stroke&#34;,
+        &#34;textarea_vertical_align&#34;: &#34;draw:textarea-vertical-align&#34;,
     }
 
     def map_key(key):
         if key in ODF_PROPERTIES:
             return key
-        key = mapping.get(key, key).replace(&#39;_&#39;, &#39;-&#39;)
-        if &#39;:&#39; not in key:
-            key = &#39;fo:&#39; + key
+        key = mapping.get(key, key).replace(&#34;_&#34;, &#34;-&#34;)
+        if &#34;:&#34; not in key:
+            key = &#34;fo:&#34; + key
         if key in ODF_PROPERTIES:
             return key
         return None
@@ -328,8 +310,7 @@ def _expand_properties(properties):
 
 
 def _merge_dicts(d, *args, **kw):
-    &#34;&#34;&#34;Merge two or more dictionaries into a new dictionary object.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Merge two or more dictionaries into a new dictionary object.&#34;&#34;&#34;
     new_d = d.copy()
     for dic in args:
         new_d.update(dic)
@@ -340,15 +321,17 @@ def _merge_dicts(d, *args, **kw):
 # Non-public yet useful helpers
 
 
-def _get_elements(context,
-                  element_name,
-                  content=None,
-                  url=None,
-                  svg_title=None,
-                  svg_desc=None,
-                  dc_creator=None,
-                  dc_date=None,
-                  **kw):
+def _get_elements(
+    context,
+    element_name,
+    content=None,
+    url=None,
+    svg_title=None,
+    svg_desc=None,
+    dc_creator=None,
+    dc_date=None,
+    **kw
+):
     query = _make_xpath_query(element_name, **kw)
     elements = context.get_elements(query)
     # Filter the elements with the regex (TODO use XPath)
@@ -357,17 +340,19 @@ def _get_elements(context,
     if url is not None:
         filtered = []
         for element in elements:
-            url_attr = element.get_attribute(&#39;xlink:href&#39;)
+            url_attr = element.get_attribute(&#34;xlink:href&#34;)
             if search(url, url_attr) is not None:
                 filtered.append(element)
         elements = filtered
     if dc_date is not None:
         # XXX Date or DateTime?
         dc_date = DateTime.encode(dc_date)
-    for variable, childname in [(svg_title, &#39;svg:title&#39;), (svg_desc,
-                                                           &#39;svg:desc&#39;),
-                                (dc_creator, &#39;descendant::dc:creator&#39;),
-                                (dc_date, &#39;descendant::dc:date&#39;)]:
+    for variable, childname in [
+        (svg_title, &#34;svg:title&#34;),
+        (svg_desc, &#34;svg:desc&#34;),
+        (dc_creator, &#34;descendant::dc:creator&#34;),
+        (dc_date, &#34;descendant::dc:date&#34;),
+    ]:
         if not variable:
             continue
         filtered = []
@@ -388,15 +373,20 @@ def _get_element(context, element_name, position, **kw):
         return None
 
 
-def _set_value_and_type(element,
-                        value=None,
-                        value_type=None,
-                        text=None,
-                        currency=None):
+def _set_value_and_type(element, value=None, value_type=None, text=None, currency=None):
     # Remove possible previous value and type
-    for name in (&#39;office:value-type&#39;, &#39;office:boolean-value&#39;, &#39;office:value&#39;,
-                 &#39;office:date-value&#39;, &#39;office:string-value&#39;,
-                 &#39;office:time-value&#39;, &#39;table:formula&#39;, &#39;office:currency&#39;):
+    for name in (
+        &#34;office:value-type&#34;,
+        &#34;office:boolean-value&#34;,
+        &#34;office:value&#34;,
+        &#34;office:date-value&#34;,
+        &#34;office:string-value&#34;,
+        &#34;office:time-value&#34;,
+        &#34;table:formula&#34;,
+        &#34;office:currency&#34;,
+        &#34;calcext:value-type&#34;,
+        &#34;loext:value-type&#34;,
+    ):
         try:
             element.del_attribute(name)
         except KeyError:
@@ -414,38 +404,38 @@ def _set_value_and_type(element,
         return text
     if isinstance(value, bool):
         if value_type is None:
-            value_type = &#39;boolean&#39;
+            value_type = &#34;boolean&#34;
         if text is None:
-            text = &#39;true&#39; if value else &#39;false&#39;
+            text = &#34;true&#34; if value else &#34;false&#34;
         value = Boolean.encode(value)
     elif isinstance(value, (int, float, dec)):
-        if value_type is &#39;percentage&#39;:
+        if value_type == &#34;percentage&#34;:
             text = &#34;%d %%&#34; % int(value * 100)
         if value_type is None:
-            value_type = &#39;float&#39;
+            value_type = &#34;float&#34;
         if text is None:
             text = str(value)
         value = str(value)
     elif isinstance(value, datetime):
         if value_type is None:
-            value_type = &#39;date&#39;
+            value_type = &#34;date&#34;
         if text is None:
             text = str(DateTime.encode(value))
         value = DateTime.encode(value)
     elif isinstance(value, date):
         if value_type is None:
-            value_type = &#39;date&#39;
+            value_type = &#34;date&#34;
         if text is None:
             text = str(Date.encode(value))
         value = Date.encode(value)
     elif isinstance(value, str):
         if value_type is None:
-            value_type = &#39;string&#39;
+            value_type = &#34;string&#34;
         if text is None:
             text = str(value)
     elif isinstance(value, timedelta):
         if value_type is None:
-            value_type = &#39;time&#39;
+            value_type = &#34;time&#34;
         if text is None:
             text = str(Duration.encode(value))
         value = Duration.encode(value)
@@ -453,21 +443,22 @@ def _set_value_and_type(element,
         raise TypeError(&#39;type &#34;%s&#34; is unknown&#39; % type(value))
 
     if value_type is not None:
-        element.set_attribute(&#39;office:value-type&#39;, value_type)
-
-    if value_type == &#39;boolean&#39;:
-        element.set_attribute(&#39;office:boolean-value&#39;, value)
-    elif value_type == &#39;currency&#39;:
-        element.set_attribute(&#39;office:value&#39;, value)
-        element.set_attribute(&#39;office:currency&#39;, currency)
-    elif value_type == &#39;date&#39;:
-        element.set_attribute(&#39;office:date-value&#39;, value)
-    elif value_type in (&#39;float&#39;, &#39;percentage&#39;):
-        element.set_attribute(&#39;office:value&#39;, value)
-    elif value_type == &#39;string&#39;:
-        element.set_attribute(&#39;office:string-value&#39;, value)
-    elif value_type == &#39;time&#39;:
-        element.set_attribute(&#39;office:time-value&#39;, value)
+        element.set_attribute(&#34;office:value-type&#34;, value_type)
+        element.set_attribute(&#34;calcext:value-type&#34;, value_type)
+    if value_type == &#34;boolean&#34;:
+        element.set_attribute(&#34;office:boolean-value&#34;, value)
+    elif value_type == &#34;currency&#34;:
+        element.set_attribute(&#34;office:value&#34;, value)
+        element.set_attribute(&#34;office:currency&#34;, currency)
+    elif value_type == &#34;date&#34;:
+        element.set_attribute(&#34;office:date-value&#34;, value)
+    elif value_type in (&#34;float&#34;, &#34;percentage&#34;):
+        element.set_attribute(&#34;office:value&#34;, value)
+        element.set_attribute(&#34;calcext:value&#34;, value)
+    elif value_type == &#34;string&#34;:
+        element.set_attribute(&#34;office:string-value&#34;, value)
+    elif value_type == &#34;time&#34;:
+        element.set_attribute(&#34;office:time-value&#34;, value)
 
     return text
 
@@ -476,18 +467,17 @@ def _set_value_and_type(element,
 # Public API
 ######################################################################
 def get_value(element, value_type=None, try_get_text=True, get_type=False):
-    &#34;&#34;&#34;Only for &#34;with office:value-type&#34; elements, not for meta fields
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Only for &#34;with office:value-type&#34; elements, not for meta fields&#34;&#34;&#34;
     if value_type is None:
-        value_type = element.get_attribute(&#39;office:value-type&#39;)
-    #value_type = to_str(value_type)
-    if value_type == &#39;boolean&#39;:
-        value = element.get_attribute(&#39;office:boolean-value&#39;)
+        value_type = element.get_attribute(&#34;office:value-type&#34;)
+    # value_type = to_str(value_type)
+    if value_type == &#34;boolean&#34;:
+        value = element.get_attribute(&#34;office:boolean-value&#34;)
         if get_type:
             return (value, value_type)
         return value  # value is already decoded by get_attribute for booleans
-    if value_type in {&#39;float&#39;, &#39;percentage&#39;, &#39;currency&#39;}:
-        value = dec(element.get_attribute(&#39;office:value&#39;))
+    if value_type in {&#34;float&#34;, &#34;percentage&#34;, &#34;currency&#34;}:
+        value = dec(element.get_attribute(&#34;office:value&#34;))
         # Return 3 instead of 3.0 if possible
         if int(value) == value:
             if get_type:
@@ -496,34 +486,34 @@ def get_value(element, value_type=None, try_get_text=True, get_type=False):
         if get_type:
             return (value, value_type)
         return value
-    if value_type == &#39;date&#39;:
-        value = element.get_attribute(&#39;office:date-value&#39;)
-        if &#39;T&#39; in value:
+    if value_type == &#34;date&#34;:
+        value = element.get_attribute(&#34;office:date-value&#34;)
+        if &#34;T&#34; in value:
             if get_type:
                 return (DateTime.decode(value), value_type)
             return DateTime.decode(value)
         if get_type:
             return (Date.decode(value), value_type)
         return Date.decode(value)
-    if value_type == &#39;string&#39;:
-        value = element.get_attribute(&#39;office:string-value&#39;)
+    if value_type == &#34;string&#34;:
+        value = element.get_attribute(&#34;office:string-value&#34;)
         if value is not None:
             if get_type:
                 return (str(value), value_type)
             return str(value)
         if try_get_text:
             value = []
-            for para in element.get_elements(&#39;text:p&#39;):
+            for para in element.get_elements(&#34;text:p&#34;):
                 value.append(para.text_recursive)
             if value:
                 if get_type:
-                    return (&#39;\n&#39;.join(value), value_type)
-                return &#39;\n&#39;.join(value)
+                    return (&#34;\n&#34;.join(value), value_type)
+                return &#34;\n&#34;.join(value)
         if get_type:
             return (None, value_type)
         return None
-    if value_type == &#39;time&#39;:
-        value = Duration.decode(element.get_attribute(&#39;office:time-value&#39;))
+    if value_type == &#34;time&#34;:
+        value = Duration.decode(element.get_attribute(&#34;office:time-value&#34;))
         if get_type:
             return (value, value_type)
         return value
@@ -536,32 +526,31 @@ def get_value(element, value_type=None, try_get_text=True, get_type=False):
 
 
 def set_value(element, value):
-    &#34;&#34;&#34;Only for &#34;with office:value-type&#34; elements
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Only for &#34;with office:value-type&#34; elements&#34;&#34;&#34;
     tag = element.tag
     # A table:cell ?
-    if tag == &#39;table:table-cell&#39;:
+    if tag == &#34;table:table-cell&#34;:
         element.clear()
         text = _set_value_and_type(element, value=value)
         element.text_content = text
         return
     # A text:variable-set ?
-    if tag == &#39;text:variable-set&#39;:
-        name = element.get_attribute(&#39;text:name&#39;)
-        display = element.get_attribute(&#39;text:display&#39;)
+    if tag == &#34;text:variable-set&#34;:
+        name = element.get_attribute(&#34;text:name&#34;)
+        display = element.get_attribute(&#34;text:display&#34;)
         element.clear()
         text = _set_value_and_type(element, value=value)
-        element.set_attribute(&#39;text:name&#39;, name)
+        element.set_attribute(&#34;text:name&#34;, name)
         if display is not None:
-            element.set_attribute(&#39;text:display&#39;, display)
+            element.set_attribute(&#34;text:display&#34;, display)
         element.text = text
         return
     # A text:user-field-decl ?
-    if tag == &#39;text:user-field-decl&#39;:
-        name = element.get_attribute(&#39;text:name&#39;)
+    if tag == &#34;text:user-field-decl&#34;:
+        name = element.get_attribute(&#34;text:name&#34;)
         element.clear()
         _set_value_and_type(element, value=value)
-        element.set_attribute(&#39;text:name&#39;, name)
+        element.set_attribute(&#34;text:name&#34;, name)
         return
     # Else =&gt; error
     raise ValueError(&#39;set_value: unexpected element &#34;%s&#34;&#39; % tag)
@@ -624,18 +613,17 @@ def isiterable(obj):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_value(element, value_type=None, try_get_text=True, get_type=False):
-    &#34;&#34;&#34;Only for &#34;with office:value-type&#34; elements, not for meta fields
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Only for &#34;with office:value-type&#34; elements, not for meta fields&#34;&#34;&#34;
     if value_type is None:
-        value_type = element.get_attribute(&#39;office:value-type&#39;)
-    #value_type = to_str(value_type)
-    if value_type == &#39;boolean&#39;:
-        value = element.get_attribute(&#39;office:boolean-value&#39;)
+        value_type = element.get_attribute(&#34;office:value-type&#34;)
+    # value_type = to_str(value_type)
+    if value_type == &#34;boolean&#34;:
+        value = element.get_attribute(&#34;office:boolean-value&#34;)
         if get_type:
             return (value, value_type)
         return value  # value is already decoded by get_attribute for booleans
-    if value_type in {&#39;float&#39;, &#39;percentage&#39;, &#39;currency&#39;}:
-        value = dec(element.get_attribute(&#39;office:value&#39;))
+    if value_type in {&#34;float&#34;, &#34;percentage&#34;, &#34;currency&#34;}:
+        value = dec(element.get_attribute(&#34;office:value&#34;))
         # Return 3 instead of 3.0 if possible
         if int(value) == value:
             if get_type:
@@ -644,34 +632,34 @@ def isiterable(obj):
         if get_type:
             return (value, value_type)
         return value
-    if value_type == &#39;date&#39;:
-        value = element.get_attribute(&#39;office:date-value&#39;)
-        if &#39;T&#39; in value:
+    if value_type == &#34;date&#34;:
+        value = element.get_attribute(&#34;office:date-value&#34;)
+        if &#34;T&#34; in value:
             if get_type:
                 return (DateTime.decode(value), value_type)
             return DateTime.decode(value)
         if get_type:
             return (Date.decode(value), value_type)
         return Date.decode(value)
-    if value_type == &#39;string&#39;:
-        value = element.get_attribute(&#39;office:string-value&#39;)
+    if value_type == &#34;string&#34;:
+        value = element.get_attribute(&#34;office:string-value&#34;)
         if value is not None:
             if get_type:
                 return (str(value), value_type)
             return str(value)
         if try_get_text:
             value = []
-            for para in element.get_elements(&#39;text:p&#39;):
+            for para in element.get_elements(&#34;text:p&#34;):
                 value.append(para.text_recursive)
             if value:
                 if get_type:
-                    return (&#39;\n&#39;.join(value), value_type)
-                return &#39;\n&#39;.join(value)
+                    return (&#34;\n&#34;.join(value), value_type)
+                return &#34;\n&#34;.join(value)
         if get_type:
             return (None, value_type)
         return None
-    if value_type == &#39;time&#39;:
-        value = Duration.decode(element.get_attribute(&#39;office:time-value&#39;))
+    if value_type == &#34;time&#34;:
+        value = Duration.decode(element.get_attribute(&#34;office:time-value&#34;))
         if get_type:
             return (value, value_type)
         return value
@@ -742,32 +730,31 @@ def isiterable(obj):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_value(element, value):
-    &#34;&#34;&#34;Only for &#34;with office:value-type&#34; elements
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Only for &#34;with office:value-type&#34; elements&#34;&#34;&#34;
     tag = element.tag
     # A table:cell ?
-    if tag == &#39;table:table-cell&#39;:
+    if tag == &#34;table:table-cell&#34;:
         element.clear()
         text = _set_value_and_type(element, value=value)
         element.text_content = text
         return
     # A text:variable-set ?
-    if tag == &#39;text:variable-set&#39;:
-        name = element.get_attribute(&#39;text:name&#39;)
-        display = element.get_attribute(&#39;text:display&#39;)
+    if tag == &#34;text:variable-set&#34;:
+        name = element.get_attribute(&#34;text:name&#34;)
+        display = element.get_attribute(&#34;text:display&#34;)
         element.clear()
         text = _set_value_and_type(element, value=value)
-        element.set_attribute(&#39;text:name&#39;, name)
+        element.set_attribute(&#34;text:name&#34;, name)
         if display is not None:
-            element.set_attribute(&#39;text:display&#39;, display)
+            element.set_attribute(&#34;text:display&#34;, display)
         element.text = text
         return
     # A text:user-field-decl ?
-    if tag == &#39;text:user-field-decl&#39;:
-        name = element.get_attribute(&#39;text:name&#39;)
+    if tag == &#34;text:user-field-decl&#34;:
+        name = element.get_attribute(&#34;text:name&#34;)
         element.clear()
         _set_value_and_type(element, value=value)
-        element.set_attribute(&#39;text:name&#39;, name)
+        element.set_attribute(&#34;text:name&#34;, name)
         return
     # Else =&gt; error
     raise ValueError(&#39;set_value: unexpected element &#34;%s&#34;&#39; % tag)</code></pre>
@@ -784,7 +771,7 @@ def isiterable(obj):
 </summary>
 <pre><code class="python">def to_bytes(value):
     if isinstance(value, str):
-        return value.encode(&#39;utf-8&#39;)
+        return value.encode(&#34;utf-8&#34;)
     return value</code></pre>
 </details>
 </dd>
@@ -799,7 +786,7 @@ def isiterable(obj):
 </summary>
 <pre><code class="python">def to_str(value):
     if isinstance(value, bytes):
-        return value.decode(&#39;utf-8&#39;)
+        return value.decode(&#34;utf-8&#34;)
     return value</code></pre>
 </details>
 </dd>
@@ -833,7 +820,7 @@ def isiterable(obj):
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.3</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
 </footer>
 </body>
 </html>
