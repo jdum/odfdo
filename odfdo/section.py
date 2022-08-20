@@ -21,7 +21,7 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 """Section class for "text:section"
 """
-from .element import register_element_class, Element
+from .element import Element, register_element_class
 
 
 class Section(Element):
@@ -48,7 +48,7 @@ class Section(Element):
             if style:
                 self.style = style
             if name:
-                self.name = style
+                self.name = name
 
     def get_formatted_text(self, context):
         result = []

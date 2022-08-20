@@ -37,8 +37,8 @@ class TestSection(TestCase):
         test_xmlpart.
         """
         element = Section()
-        excepted = "<text:section/>"
-        self.assertEqual(element.serialize(), excepted)
+        expected = "<text:section/>"
+        self.assertEqual(element.serialize(), expected)
 
     def test_create_complex_section(self):
         """The idea is to test with all possible arguments. If some arguments
@@ -46,8 +46,14 @@ class TestSection(TestCase):
         combinations separately.
         """
         element = Section(style="Standard")
-        excepted = '<text:section text:style-name="Standard"/>'
-        self.assertEqual(element.serialize(), excepted)
+        expected = '<text:section text:style-name="Standard"/>'
+        self.assertEqual(element.serialize(), expected)
+
+    def test_create_complex_section_with_name(self):
+        """Test the name argument."""
+        element = Section(name="SomeName")
+        expected = '<text:section text:name="SomeName"/>'
+        self.assertEqual(element.serialize(), expected)
 
     def test_get_section_list(self):
         body = self.body
