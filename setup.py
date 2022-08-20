@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2022 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,8 +22,9 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 
 import os
-from os.path import join, abspath, dirname
-from setuptools import setup, find_packages
+from os.path import abspath, dirname, join
+
+from setuptools import find_packages, setup
 
 here = abspath(dirname(__file__))
 exec(open(join(here, "odfdo", "version.py")).read())
@@ -45,7 +46,14 @@ setup(
         "Environment :: Console",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],

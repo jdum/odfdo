@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2022 Jérôme Dumonteil
 # Copyright (c) 2009-2012 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,4 +20,4 @@
 # Authors: Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 """Version number of the package
 """
-__version__ = "3.3.1"
+__version__ = "3.3.2"

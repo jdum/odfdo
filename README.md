@@ -27,10 +27,12 @@ installation
 
 
 after installation you can check everything is working:
-    
-    
-    `cd test && python test.py`
-    
+
+    cd test && pytest
+or
+
+    cd test && python test.py
+
 
 test should run for a few seconds and issue no error.
 
@@ -84,7 +86,7 @@ see: https://github.com/lpod/lpod-python
 
 odfdo main changes from lpod:
 
- - odfdo requires python version >= 3.6
+ - odfdo requires python version >= 3.6 (tested up to python 3.10)
  - API change: more pythonic
  - include recipes
  - use only Apache 2.0 license
