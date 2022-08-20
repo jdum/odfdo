@@ -156,72 +156,38 @@ class TestLinks(TestCase):
         self.assertEqual(element, [])
 
 
-class TestInsertLink(object):  # TestCase):
+class TestInsertLink(TestCase):
     def test_insert_link_simple(self):
         paragraph = Element.from_tag("<text:p>toto tata titi</text:p>")
-        paragraph.insert_link("http://", from_="tata", to="tata")
+        paragraph.set_link("http://example.com", regex="tata")
         expected = (
             "<text:p>toto "
-            '<text:a xlink:href="http://">tata</text:a> '
+            '<text:a xlink:href="http://example.com">tata</text:a> '
             "titi</text:p>"
         )
         self.assertEqual(paragraph.serialize(), expected)
 
     def test_insert_link_medium(self):
         paragraph = Element.from_tag(
-            "<text:p><text:span>toto</text:span> " "tata titi</text:p>"
+            "<text:p><text:span>toto</text:span> tata titi</text:p>"
         )
-        paragraph.insert_link("http://", from_="tata", to="tata")
+        paragraph.set_link("http://example.com", regex="tata")
         expected = (
             "<text:p><text:span>toto</text:span> "
-            '<text:a xlink:href="http://">tata</text:a> '
+            '<text:a xlink:href="http://example.com">tata</text:a> '
             "titi</text:p>"
         )
         self.assertEqual(paragraph.serialize(), expected)
 
     def test_insert_link_complex(self):
         paragraph = Element.from_tag(
-            "<text:p>toto " "<text:span> tata </text:span> " "titi</text:p>"
+            "<text:p>toto <text:span> tata </text:span> titi</text:p>"
         )
-        paragraph.insert_link("http://", from_="tata", to="titi")
+        paragraph.set_link("http://example.com", regex="tata")
         expected = (
-            "<text:p>toto <text:span> </text:span>"
-            '<text:a xlink:href="http://">'
-            "<text:span>tata </text:span> titi"
-            "</text:a>"
-            "</text:p>"
-        )
-        self.assertEqual(paragraph.serialize(), expected)
-
-    def test_insert_link_horrible(self):
-        paragraph = Element.from_tag(
-            "<text:p>toto " "<text:span>tata titi</text:span>" " tutu </text:p>"
-        )
-        paragraph.insert_link("http://", from_="titi", to="tutu")
-        expected = (
-            "<text:p>toto <text:span>tata </text:span>"
-            '<text:a xlink:href="http://">'
-            "<text:span>titi</text:span> tutu"
-            "</text:a> "
-            "</text:p>"
-        )
-        self.assertEqual(paragraph.serialize(), expected)
-
-    def test_insert_link_hideous(self):
-        paragraph = Element.from_tag(
-            "<text:p>toto "
-            "<text:span>tata titi</text:span>"
-            " <text:span>tutu tyty</text:span>"
-            "</text:p>"
-        )
-        paragraph.insert_link("http://", from_="titi", to="tutu")
-        expected = (
-            "<text:p>toto <text:span>tata </text:span>"
-            '<text:a xlink:href="http://">'
-            "<text:span>titi</text:span> "
-            "<text:span>tutu</text:span>"
-            "</text:a>"
-            "<text:span> tyty</text:span>"
+            "<text:p>toto <text:span> "
+            '<text:a xlink:href="http://example.com">'
+            "tata</text:a> </text:span> titi"
             "</text:p>"
         )
         self.assertEqual(paragraph.serialize(), expected)
