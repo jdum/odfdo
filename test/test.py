@@ -35,6 +35,7 @@ import test_header
 import test_image
 import test_link
 import test_list
+import test_manifest
 import test_meta
 import test_note
 import test_paragraph
@@ -46,6 +47,7 @@ import test_style
 import test_styles
 import test_table
 import test_text
+import test_toc
 import test_tracked_changes
 import test_utils
 import test_variable
@@ -64,6 +66,7 @@ test_modules = [
     test_image,
     test_link,
     test_list,
+    test_manifest,
     test_meta,
     test_note,
     test_paragraph,
@@ -75,6 +78,7 @@ test_modules = [
     test_styles,
     test_table,
     test_text,
+    test_toc,
     test_tracked_changes,
     test_utils,
     test_variable,
