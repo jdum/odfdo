@@ -52,9 +52,9 @@ CONTEXT_MAPPING = {
 
 class Styles(XmlPart):
     def _get_style_contexts(self, family, automatic=False):
-        if automatic is True:
+        if automatic:
             return (self.get_element("//office:automatic-styles"),)
-        if family is None:
+        if not family:
             # All possibilities
             return (
                 self.get_element("//office:automatic-styles"),
@@ -64,11 +64,11 @@ class Styles(XmlPart):
             )
         queries = CONTEXT_MAPPING.get(family)
         if queries is None:
-            raise ValueError("unknown family: %s" % family)
+            raise ValueError(f"unknown family: {family}")
         # print('q:', queries)
         return [self.get_element(query) for query in queries]
 
-    def get_styles(self, family=None, automatic=False):
+    def get_styles(self, family="", automatic=False):
         """Return the list of styles in the Content part, optionally limited
         to the given family, optionaly limited to automatic styles.
 

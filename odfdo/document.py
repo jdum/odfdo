@@ -51,6 +51,8 @@ from .styles import Styles
 from .xmlpart import XmlPart
 from .utils import to_str, FAMILY_ODF_STD
 
+AUTOMATIC_PREFIX = "odfdo_auto_"
+
 underline_lvl = ["=", "-", ":", "`", "'", '"', "~", "^", "_", "*", "+"]
 
 
@@ -505,6 +507,31 @@ class Document:
             family, name_or_element=name_or_element, display_name=display_name
         )
 
+    @staticmethod
+    def _pseudo_style_attribute(style_element, attribute):
+        if hasattr(style_element, attribute):
+            return getattr(style_element, attribute)
+        return ""
+
+    def _set_automatic_name(self, style, family):
+        """Generate a name for the new automatic style."""
+        if not hasattr(style, "name"):
+            # do nothing
+            return
+        styles = self.get_styles(family=family, automatic=True)
+        max_index = 0
+        for existing_style in styles:
+            if not hasattr(existing_style, "name"):
+                continue
+            if not existing_style.name.startswith(AUTOMATIC_PREFIX):
+                continue
+            try:
+                index = int(existing_style.name[len(AUTOMATIC_PREFIX) :])
+            except ValueError:
+                continue
+            max_index = max(max_index, index)
+        style.name = f"{AUTOMATIC_PREFIX}{max_index+1}"
+
     def insert_style(self, style, name=None, automatic=False, default=False):
         """Insert the given style object in the document, as required by the
         style family and type.
@@ -544,10 +571,9 @@ class Document:
             style = Element.from_tag(style)
 
         # Get family and name
-        family = style.family
-
-        if name is None:
-            name = style.name
+        family = self._pseudo_style_attribute(style, "family")
+        if not name:
+            name = self._pseudo_style_attribute(style, "name")
 
         # Master page style
         if family == "master-page":
@@ -580,33 +606,14 @@ class Document:
             elif automatic is True and default is False:
                 part = self.get_part(ODF_CONTENT)
                 container = part.get_element("office:automatic-styles")
-
                 # A name ?
-                if name is None:
-                    # Make a beautiful name
-
-                    # TODO: Use prefixes of Ooo: Mpm1, ...
-                    prefix = "lpod_auto_"
-
-                    styles = self.get_styles(family=family, automatic=True)
-                    names = [s.name for s in styles]
-                    numbers = [
-                        int(name[len(prefix) :])
-                        for name in names
-                        if name and name.startswith(prefix)
-                    ]
-                    if numbers:
-                        number = max(numbers) + 1
-                    else:
-                        number = 1
-                    name = prefix + str(number)
-
-                    # And set it
-                    style.name = name
-                    existing = None
-                else:
+                if name:
+                    if hasattr(style, "name"):
+                        style.name = name
                     existing = part.get_style(family, name)
-                    style.name = name
+                else:
+                    self._set_automatic_name(style, family)
+                    existing = None
 
             # Default style
             elif automatic is False and default is True:
@@ -615,14 +622,18 @@ class Document:
 
                 # Force default style
                 style.tag = "style:default-style"
-                if name is not None:
+                if name:
                     style.del_attribute("style:name")
-
                 existing = part.get_style(family)
 
             # Error
             else:
                 raise AttributeError("invalid combination of arguments")
+        elif not family and style.__class__.__name__ == "DrawFillImage":
+            # special case for 'draw:fill-image' pseudo style
+            part = self.get_part(ODF_STYLES)
+            container = part.get_element("office:styles")
+            existing = part.get_style("", name)
         # Invalid style
         else:
             raise ValueError(
@@ -633,7 +644,7 @@ class Document:
         if existing is not None:
             container.delete(existing)
         container.append(style)
-        return style.name
+        return self._pseudo_style_attribute(style, "name")
 
     def get_styled_elements(self, name=True):
         """Brute-force to find paragraphs, tables, etc. using the given style
@@ -662,6 +673,10 @@ class Document:
                 print(style.__class__)
                 print(style.serialize())
                 raise
+            if style.__class__.__name__ == "DrawFillImage":
+                family = ""
+            else:
+                family = style.family
             parent = style.parent
             is_auto = parent and parent.tag == "office:automatic-styles"
             if is_auto and automatic is False or not is_auto and common is False:
@@ -671,10 +686,11 @@ class Document:
                 {
                     "type": "auto  " if is_auto else "common",
                     "used": "y" if is_used else "n",
-                    "family": style.family or "",
-                    "parent": style.parent_style or "",
+                    "family": family,
+                    "parent": self._pseudo_style_attribute(style, "parent_style") or "",
                     "name": name or "",
-                    "display_name": style.display_name,
+                    "display_name": self._pseudo_style_attribute(style, "display_name")
+                    or "",
                     "properties": style.get_properties() if properties else None,
                 }
             )

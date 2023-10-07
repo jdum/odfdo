@@ -2846,7 +2846,7 @@ class Element:
     @staticmethod
     def _get_style_tagname(family, is_default=False):
         """Widely match possible tag names given the family (or not)."""
-        if family is None:
+        if not family:
             tagname = (
                 "("
                 + "|".join(
@@ -2859,7 +2859,7 @@ class Element:
                 )
                 + ")"
             )
-        elif is_default is True:
+        elif is_default:
             # Default style
             tagname = "style:default-style"
         else:
@@ -2905,11 +2905,20 @@ class Element:
         is_default = not (style_name or display_name)
         tagname = self._get_style_tagname(family, is_default=is_default)
         # famattr became None if no "style:family" attribute
-        return _get_element(
-            self,
-            tagname,
-            0,
-            style_name=style_name,
-            display_name=display_name,
-            family=family,
-        )
+        if family:
+            return _get_element(
+                self,
+                tagname,
+                0,
+                style_name=style_name,
+                display_name=display_name,
+                family=family,
+            )
+        else:
+            return _get_element(
+                self,
+                tagname,
+                0,
+                draw_name=style_name or display_name,
+                family=family,
+            )

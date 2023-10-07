@@ -36,6 +36,7 @@ from os.path import join
 from odfdo.const import ODF_EXTENSIONS, ODF_CONTENT, ODF_MANIFEST, ODF_META, ODF_STYLES
 from odfdo.content import Content
 from odfdo.document import Document
+from odfdo.element import Element
 from odfdo.paragraph import Paragraph
 from odfdo.manifest import Manifest
 from odfdo.meta import Meta
@@ -256,6 +257,157 @@ class TestStyle(TestCase):
         document = self.document
         style = document.get_style("paragraph", "Heading_20_1")
         self.assertNotEqual(style, None)
+
+    def test_show_styles(self):
+        # XXX hard to unit test
+        document = self.document
+        all_styles = document.show_styles()
+        self.assertTrue("auto   used:" in all_styles)
+        self.assertTrue("common used:" in all_styles)
+        common_styles = document.show_styles(automatic=False)
+        self.assertTrue("auto   used:" not in common_styles)
+        self.assertTrue("common used:" in common_styles)
+        automatic_styles = document.show_styles(common=False)
+        self.assertTrue("auto   used:" in automatic_styles)
+        self.assertTrue("common used:" not in automatic_styles)
+        no_styles = document.show_styles(automatic=False, common=False)
+        self.assertEqual(no_styles, "")
+
+
+class DocumentBackgroundImageStyles(TestCase):
+    def setUp(self):
+        self.document = Document(join("samples", "background.odp"))
+
+    def test_get_mimetype(self):
+        mimetype = self.document.mimetype
+        self.assertEqual(mimetype, ODF_EXTENSIONS["odp"])
+
+    def test_get_content(self):
+        content = self.document.get_part(ODF_CONTENT)
+        self.assertTrue(isinstance(content, Content))
+
+    def test_get_meta(self):
+        meta = self.document.get_part(ODF_META)
+        self.assertTrue(isinstance(meta, Meta))
+
+    def test_get_styles(self):
+        styles = self.document.get_part(ODF_STYLES)
+        self.assertTrue(isinstance(styles, Styles))
+
+    def test_get_manifest(self):
+        manifest = self.document.get_part(ODF_MANIFEST)
+        self.assertTrue(isinstance(manifest, Manifest))
+
+    def test_get_body(self):
+        body = self.document.body
+        self.assertEqual(body.tag, "office:presentation")
+
+    def test_get_styles_method(self):
+        document = self.document
+        styles = document.get_styles()
+        self.assertEqual(len(styles), 112)
+
+    def test_get_styles_family_paragraph(self):
+        document = self.document
+        styles = document.get_styles(family="paragraph")
+        self.assertEqual(len(styles), 7)
+
+    def test_get_styles_family_paragraph_bytes(self):
+        document = self.document
+        styles = document.get_styles(family="paragraph")
+        self.assertEqual(len(styles), 7)
+
+    def test_get_styles_family_text(self):
+        document = self.document
+        styles = document.get_styles(family="text")
+        self.assertEqual(len(styles), 0)
+
+    def test_get_styles_family_graphic(self):
+        document = self.document
+        styles = document.get_styles(family="graphic")
+        self.assertEqual(len(styles), 43)
+
+    def test_get_styles_family_page_layout_automatic(self):
+        document = self.document
+        styles = document.get_styles(family="page-layout", automatic=True)
+        self.assertEqual(len(styles), 3)
+
+    def test_get_styles_family_page_layout_no_automatic(self):
+        document = self.document
+        styles = document.get_styles(family="page-layout")
+        self.assertEqual(len(styles), 3)
+
+    def test_get_styles_family_master_page(self):
+        document = self.document
+        styles = document.get_styles(family="master-page")
+        self.assertEqual(len(styles), 1)
+
+    def test_get_style_automatic(self):
+        document = self.document
+        style = document.get_style("paragraph", "P1")
+        self.assertNotEqual(style, None)
+
+    def test_get_style_named(self):
+        document = self.document
+        style = document.get_style("", "Paper_20_Crumpled")
+        self.assertNotEqual(style, None)
+
+    def test_add_bg_image(self):
+        document = self.document
+        tag = (
+            "<draw:fill-image"
+            ' draw:name="background_test"'
+            ' xlink:href="Pictures/10000000000004B000000640068E29EE.jpg"'
+            ' xlink:type="simple"'
+            ' xlink:show="embed"'
+            ' xlink:actuate="onLoad"'
+            " />"
+        )
+        elem = Element.from_tag(tag)
+        # elem should now be a odfdo.image.DrawFillImage instance
+        self.assertEqual(elem.__class__.__name__, "DrawFillImage")
+        part = document.get_part("styles")
+        container = part.get_element("office:styles")
+        container.append(elem)
+        # check style is added:
+        style = document.get_style("", "background_test")
+        self.assertNotEqual(style, None)
+
+    def test_add_bg_image_style(self):
+        document = self.document
+        tag = (
+            "<draw:fill-image"
+            ' draw:name="background_test"'
+            ' xlink:href="Pictures/10000000000004B000000640068E29EE.jpg"'
+            ' xlink:type="simple"'
+            ' xlink:show="embed"'
+            ' xlink:actuate="onLoad"'
+            " />"
+        )
+        document.insert_style(tag)
+        style = document.get_style("", "background_test")
+        self.assertNotEqual(style, None)
+
+    def test_add_bg_image_style_twice(self):
+        """Check that prior style of same name is replaced."""
+        document = self.document
+        tag = (
+            "<draw:fill-image"
+            ' draw:name="background_test"'
+            ' xlink:href="Pictures/10000000000004B000000640068E29EE.jpg"'
+            ' xlink:type="simple"'
+            ' xlink:show="embed"'
+            ' xlink:actuate="onLoad"'
+            " />"
+        )
+        nb_styles = len(document.get_styles(""))
+        document.insert_style(tag)
+        expected = nb_styles + 1
+        result = len(document.get_styles(""))
+        self.assertEqual(result, expected)
+        result = len(document.get_styles(""))
+        document.insert_style(tag)
+        self.assertEqual(result, expected)
 
     def test_show_styles(self):
         # XXX hard to unit test
