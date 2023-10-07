@@ -81,9 +81,9 @@ CONTEXT_MAPPING = {
 
 class Styles(XmlPart):
     def _get_style_contexts(self, family, automatic=False):
-        if automatic is True:
+        if automatic:
             return (self.get_element(&#34;//office:automatic-styles&#34;),)
-        if family is None:
+        if not family:
             # All possibilities
             return (
                 self.get_element(&#34;//office:automatic-styles&#34;),
@@ -93,11 +93,11 @@ class Styles(XmlPart):
             )
         queries = CONTEXT_MAPPING.get(family)
         if queries is None:
-            raise ValueError(&#34;unknown family: %s&#34; % family)
+            raise ValueError(f&#34;unknown family: {family}&#34;)
         # print(&#39;q:&#39;, queries)
         return [self.get_element(query) for query in queries]
 
-    def get_styles(self, family=None, automatic=False):
+    def get_styles(self, family=&#34;&#34;, automatic=False):
         &#34;&#34;&#34;Return the list of styles in the Content part, optionally limited
         to the given family, optionaly limited to automatic styles.
 
@@ -179,9 +179,9 @@ Abstraction of the XML library behind.</p></div>
 </summary>
 <pre><code class="python">class Styles(XmlPart):
     def _get_style_contexts(self, family, automatic=False):
-        if automatic is True:
+        if automatic:
             return (self.get_element(&#34;//office:automatic-styles&#34;),)
-        if family is None:
+        if not family:
             # All possibilities
             return (
                 self.get_element(&#34;//office:automatic-styles&#34;),
@@ -191,11 +191,11 @@ Abstraction of the XML library behind.</p></div>
             )
         queries = CONTEXT_MAPPING.get(family)
         if queries is None:
-            raise ValueError(&#34;unknown family: %s&#34; % family)
+            raise ValueError(f&#34;unknown family: {family}&#34;)
         # print(&#39;q:&#39;, queries)
         return [self.get_element(query) for query in queries]
 
-    def get_styles(self, family=None, automatic=False):
+    def get_styles(self, family=&#34;&#34;, automatic=False):
         &#34;&#34;&#34;Return the list of styles in the Content part, optionally limited
         to the given family, optionaly limited to automatic styles.
 
@@ -338,7 +338,7 @@ desktop application, use display_name instead.</p>
 </details>
 </dd>
 <dt id="odfdo.styles.Styles.get_styles"><code class="name flex">
-<span>def <span class="ident">get_styles</span></span>(<span>self, family=None, automatic=False)</span>
+<span>def <span class="ident">get_styles</span></span>(<span>self, family='', automatic=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return the list of styles in the Content part, optionally limited
@@ -351,7 +351,7 @@ to the given family, optionaly limited to automatic styles.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_styles(self, family=None, automatic=False):
+<pre><code class="python">def get_styles(self, family=&#34;&#34;, automatic=False):
     &#34;&#34;&#34;Return the list of styles in the Content part, optionally limited
     to the given family, optionaly limited to automatic styles.
 

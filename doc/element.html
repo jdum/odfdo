@@ -2875,7 +2875,7 @@ class Element:
     @staticmethod
     def _get_style_tagname(family, is_default=False):
         &#34;&#34;&#34;Widely match possible tag names given the family (or not).&#34;&#34;&#34;
-        if family is None:
+        if not family:
             tagname = (
                 &#34;(&#34;
                 + &#34;|&#34;.join(
@@ -2888,7 +2888,7 @@ class Element:
                 )
                 + &#34;)&#34;
             )
-        elif is_default is True:
+        elif is_default:
             # Default style
             tagname = &#34;style:default-style&#34;
         else:
@@ -2934,14 +2934,23 @@ class Element:
         is_default = not (style_name or display_name)
         tagname = self._get_style_tagname(family, is_default=is_default)
         # famattr became None if no &#34;style:family&#34; attribute
-        return _get_element(
-            self,
-            tagname,
-            0,
-            style_name=style_name,
-            display_name=display_name,
-            family=family,
-        )</code></pre>
+        if family:
+            return _get_element(
+                self,
+                tagname,
+                0,
+                style_name=style_name,
+                display_name=display_name,
+                family=family,
+            )
+        else:
+            return _get_element(
+                self,
+                tagname,
+                0,
+                draw_name=style_name or display_name,
+                family=family,
+            )</code></pre>
 </details>
 </section>
 <section>
@@ -5601,7 +5610,7 @@ Abstraction of the XML library behind.</p></div>
     @staticmethod
     def _get_style_tagname(family, is_default=False):
         &#34;&#34;&#34;Widely match possible tag names given the family (or not).&#34;&#34;&#34;
-        if family is None:
+        if not family:
             tagname = (
                 &#34;(&#34;
                 + &#34;|&#34;.join(
@@ -5614,7 +5623,7 @@ Abstraction of the XML library behind.</p></div>
                 )
                 + &#34;)&#34;
             )
-        elif is_default is True:
+        elif is_default:
             # Default style
             tagname = &#34;style:default-style&#34;
         else:
@@ -5660,14 +5669,23 @@ Abstraction of the XML library behind.</p></div>
         is_default = not (style_name or display_name)
         tagname = self._get_style_tagname(family, is_default=is_default)
         # famattr became None if no &#34;style:family&#34; attribute
-        return _get_element(
-            self,
-            tagname,
-            0,
-            style_name=style_name,
-            display_name=display_name,
-            family=family,
-        )</code></pre>
+        if family:
+            return _get_element(
+                self,
+                tagname,
+                0,
+                style_name=style_name,
+                display_name=display_name,
+                family=family,
+            )
+        else:
+            return _get_element(
+                self,
+                tagname,
+                0,
+                draw_name=style_name or display_name,
+                family=family,
+            )</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -8202,14 +8220,23 @@ desktop application, use display_name instead.</p>
     is_default = not (style_name or display_name)
     tagname = self._get_style_tagname(family, is_default=is_default)
     # famattr became None if no &#34;style:family&#34; attribute
-    return _get_element(
-        self,
-        tagname,
-        0,
-        style_name=style_name,
-        display_name=display_name,
-        family=family,
-    )</code></pre>
+    if family:
+        return _get_element(
+            self,
+            tagname,
+            0,
+            style_name=style_name,
+            display_name=display_name,
+            family=family,
+        )
+    else:
+        return _get_element(
+            self,
+            tagname,
+            0,
+            draw_name=style_name or display_name,
+            family=family,
+        )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.element.Element.get_styled_elements"><code class="name flex">
