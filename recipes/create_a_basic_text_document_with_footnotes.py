@@ -3,33 +3,21 @@
 import os
 
 # Uncommented parts are explained in: create_a_basic_text_document.py
-
-# Some utilities
-import urllib.request, urllib.parse, urllib.error
-
-
-def random_text(sentences):
-    uri = "http://enneagon.org/phrases/%s" % sentences
-    try:
-        text = urllib.request.urlopen(uri).read().decode("iso8859-1")
-    except:
-        text = "Almost no text."
-    return text
-
-
 from odfdo import Document, Header, Paragraph
+
+lorem_ipsum = open("./lorem.txt", "r", encoding="utf8").read()
 
 # Create the document
 my_document = Document("text")
 body = my_document.body
 
 # Add content (See Create_a_basic_document.py)
-title1 = Header(1, random_text(1)[:70])
+title1 = Header(1, "Main title")
 body.append(title1)
 for p in range(3):
-    title = Header(2, random_text(1)[:70])
+    title = Header(2, f"title {p}")
     body.append(title)
-    paragraph = Paragraph(random_text(10))
+    paragraph = Paragraph(lorem_ipsum[:240])
 
     # Adding Footnote
     # Now we add a footnote on each paragraph

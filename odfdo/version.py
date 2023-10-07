@@ -20,4 +20,4 @@
 # Authors: Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 """Version number of the package
 """
-__version__ = "3.3.333"
+__version__ = "3.3.4"
