@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,7 @@
 """
 import re
 
-from .element import Element, register_element_class, to_str, Text
+from .element import Element, Text, register_element_class, to_str
 
 _rsplitter = re.compile("(\n|\t|  +)")
 _rspace = re.compile("^  +$")

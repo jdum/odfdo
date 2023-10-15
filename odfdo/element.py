@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,20 +22,30 @@
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 """Element, super class of all ODF classes
 """
+import re
 import sys
 from copy import deepcopy
-import re
 
-from lxml.etree import fromstring, tostring, _Element
-from lxml.etree import _ElementStringResult, _ElementUnicodeResult
 from lxml.etree import Element as lxml_Element
+from lxml.etree import (
+    XPath,
+    _Element,
+    _ElementStringResult,
+    _ElementUnicodeResult,
+    fromstring,
+    tostring,
+)
 
-from lxml.etree import XPath
-
-from .datatype import DateTime, Boolean
-from .utils import _get_elements, _get_element
-from .utils import _family_style_tagname, get_value
-from .utils import to_bytes, to_str, FAMILY_ODF_STD
+from .datatype import Boolean, DateTime
+from .utils import (
+    FAMILY_ODF_STD,
+    _family_style_tagname,
+    _get_element,
+    _get_elements,
+    get_value,
+    to_bytes,
+    to_str,
+)
 
 ODF_NAMESPACES = {
     "anim": "urn:oasis:names:tc:opendocument:xmlns:animation:1.0",
@@ -527,7 +537,7 @@ class Element:
         current = self.__element
         wrapper = element.__element
         for text in _xpath_text_descendant(current):
-            if not from_ in text:
+            if from_ not in text:
                 continue
             from_index = text.index(from_)
             text_before = text[:from_index]
@@ -572,7 +582,7 @@ class Element:
         index = parent.index(from_container)
         parent.insert(index + 1, wrapper)
         for text in _xpath_text_descendant(wrapper):
-            if not to in text:
+            if to not in text:
                 continue
             to_end = text.index(to) + len(to)
             text_before = text[:to_end]

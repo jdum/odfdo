@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,10 +21,10 @@
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 """User fields and variable fields classes
 """
-from .datatype import Date, DateTime, Duration
 from .const import ODF_META
-from .utils import _set_value_and_type
+from .datatype import Date, DateTime, Duration
 from .element import Element, register_element_class
+from .utils import _set_value_and_type
 
 
 class VarDecls(Element):

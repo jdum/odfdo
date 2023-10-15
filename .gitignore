@@ -11,3 +11,6 @@ build/
 dist/
 *.log
 *egg-info/
+doc.old/
+recipes_output/
+test/samples/

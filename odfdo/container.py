@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,28 +22,18 @@
 """Container class, ODF file management
 """
 import os
-from os.path import join, dirname, exists
-from pathlib import PurePath, Path
 import shutil
 from copy import deepcopy
-
+from os.path import dirname, exists, join
+from pathlib import Path, PurePath
 # from io import BytesIO
-from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile, BadZipfile, is_zipfile
+from zipfile import ZIP_DEFLATED, ZIP_STORED, BadZipfile, ZipFile, is_zipfile
 
-from .const import (
-    ODF_MIMETYPES,
-    ODF_MANIFEST,
-    ODF_TEMPLATES,
-    ODF_TEMPLATES_DIR,
-    ODF_CONTENT,
-    ODF_META,
-    ODF_SETTINGS,
-    ODF_STYLES,
-    ODF_EXTENSIONS,
-)
+from .const import (ODF_CONTENT, ODF_EXTENSIONS, ODF_MANIFEST, ODF_META,
+                    ODF_MIMETYPES, ODF_SETTINGS, ODF_STYLES, ODF_TEMPLATES,
+                    ODF_TEMPLATES_DIR)
 from .manifest import Manifest
 from .scriptutils import printwarn
-
 from .utils import to_bytes, to_str
 
 

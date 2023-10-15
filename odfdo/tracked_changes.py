@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,12 +24,11 @@
 (ChangeInfo, TextInsertion, TextChange...)
 """
 from datetime import datetime
-from .datatype import DateTime
 
-from .element import register_element_class, Element
-from .element import FIRST_CHILD, LAST_CHILD
+from .datatype import DateTime
+from .element import FIRST_CHILD, LAST_CHILD, Element, register_element_class
 from .paragraph import Paragraph
-from .utils import _get_elements, _get_element
+from .utils import _get_element, _get_elements
 
 
 class ChangeInfo(Element):

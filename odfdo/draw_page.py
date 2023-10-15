@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 """DrawPage class for "draw:page"
 """
-from .element import register_element_class, Element
+from .element import Element, register_element_class
 from .shapes import registered_shapes
 from .smil import AnimPar, AnimTransFilter
 

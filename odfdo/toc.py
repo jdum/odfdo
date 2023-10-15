@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,8 +21,7 @@
 """TOC class for "text:table-of-content" and IndexTitle, TabStopStyle,
 IndexTitleTemplate, TocEntryTemplate related classes
 """
-from .element import FIRST_CHILD
-from .element import register_element_class, Element
+from .element import FIRST_CHILD, Element, register_element_class
 from .paragraph import Paragraph
 from .style import Style
 
@@ -392,17 +391,17 @@ class TOC(Element):
                 continue
             number = []
             # 1. l < level
-            for l in range(1, level):
-                index = level_indexes.setdefault(l, 1)
+            for idx in range(1, level):
+                index = level_indexes.setdefault(idx, 1)
                 number.append(str(index))
             # 2. l == level
             index = level_indexes.setdefault(level, 0) + 1
             level_indexes[level] = index
             number.append(str(index))
             # 3. l > level
-            for l in range(level + 1, 11):
-                if l in level_indexes:
-                    del level_indexes[l]
+            for idx in range(level + 1, 11):
+                if idx in level_indexes:
+                    del level_indexes[idx]
             number = ".".join(number) + "."
             # Make the title with "1.2.3. Title" format
             title = "%s %s" % (number, header.text)

@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,14 +29,14 @@ from copy import deepcopy
 from mimetypes import guess_type
 from operator import itemgetter
 from uuid import uuid4
-
+from pathlib import Path
 from .const import (
     ODF_CONTENT,
+    ODF_MANIFEST,
     ODF_META,
     ODF_SETTINGS,
     ODF_STYLES,
     ODF_TEMPLATES,
-    ODF_MANIFEST,
 )
 from .container import Container
 from .content import Content
@@ -46,10 +46,10 @@ from .meta import Meta
 
 # from .style import registered_styles
 from .styles import Styles
+from .utils import FAMILY_ODF_STD, to_str
 
 # from utils import obsolete
 from .xmlpart import XmlPart
-from .utils import to_str, FAMILY_ODF_STD
 
 AUTOMATIC_PREFIX = "odfdo_auto_"
 
@@ -126,6 +126,10 @@ class Document:
             # empty document
             self.container = Container()
             return
+        if isinstance(target, Path):
+            # let's assume we open a container on existing file
+            self.container = Container(target)
+            return
         if isinstance(target, Container):
             self.container = target
             return
@@ -134,8 +138,7 @@ class Document:
             self.container = Container.new(target)
             return
         # let's assume we open a container on existing file
-        self.container = Container()
-        self.container.open(target)
+        self.container = Container(target)
 
     @classmethod
     def new(cls, target="text"):

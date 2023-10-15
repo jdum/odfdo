@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,13 +21,8 @@
 #          Romain Gauthier <romain@itaapy.com>
 """List class for "text:list"
 """
-from .element import (
-    register_element_class,
-    Element,
-    FIRST_CHILD,
-    PREV_SIBLING,
-    NEXT_SIBLING,
-)
+from .element import (FIRST_CHILD, NEXT_SIBLING, PREV_SIBLING, Element,
+                      register_element_class)
 from .paragraph import Paragraph
 from .utils import _get_element, _get_elements, isiterable
 

@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,8 +22,8 @@
 """
 from re import sub
 
-from .paragraph import Paragraph
 from .element import register_element_class
+from .paragraph import Paragraph
 
 
 class Header(Paragraph):

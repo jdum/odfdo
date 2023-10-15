@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,8 +21,8 @@
 #          Romain Gauthier <romain@itaapy.com>
 """Styles class for styles.xml part
 """
+from .utils import _get_element, _get_elements
 from .xmlpart import XmlPart
-from .utils import _get_elements, _get_element
 
 CONTEXT_MAPPING = {
     "paragraph": ("//office:styles", "//office:automatic-styles"),

@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,8 +22,8 @@
 """Manifest class for manifest.xml part
 """
 from .element import Element
-from .xmlpart import XmlPart
 from .utils import to_str
+from .xmlpart import XmlPart
 
 
 class Manifest(XmlPart):

@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@
 ConnectorShape and DrawGroup
 """
 from .element import Element, register_element_class
-from .frame import AnchorMix, ZMix, PosMix, SizeMix
+from .frame import AnchorMix, PosMix, SizeMix, ZMix
 
 
 class ShapeBase(Element, SizeMix, PosMix):

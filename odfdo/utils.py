@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,12 +24,9 @@
 """
 from datetime import date, datetime, timedelta
 from decimal import Decimal as dec
-from os import getcwd
-from os.path import splitdrive, join, sep
 from re import search
-from sys import _getframe, modules
-from .const import ODF_PROPERTIES
 
+from .const import ODF_PROPERTIES
 from .datatype import Boolean, Date, DateTime, Duration
 
 # CELL_TYPES = 'boolean currency date float percentage string time'.split()

@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,24 +20,14 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 """Style class for various style tags and BackgroundImage class
 """
-from .datatype import Boolean
 from .const import CSS3_COLORMAP
-from .element import register_element_class, Element
-
+from .datatype import Boolean
+from .element import Element, register_element_class
 from .image import DrawImage
-from .utils import (
-    _expand_properties,
-    _merge_dicts,
-    _get_element,
-    isiterable,
-    to_str,
-    FALSE_FAMILY_MAP_REVERSE,
-    FAMILY_ODF_STD,
-    FAMILY_MAPPING,
-    SUBCLASSED_STYLES,
-    STYLES_TO_REGISTER,
-)
 from .paragraph import Paragraph
+from .utils import (FALSE_FAMILY_MAP_REVERSE, FAMILY_MAPPING, FAMILY_ODF_STD,
+                    STYLES_TO_REGISTER, SUBCLASSED_STYLES, _expand_properties,
+                    _get_element, _merge_dicts, isiterable, to_str)
 
 
 def hex2rgb(color):

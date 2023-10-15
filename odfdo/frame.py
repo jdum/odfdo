@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,12 +21,12 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 """Frame class for "draw:frame"
 """
-from .element import Element, register_element_class
 from .datatype import Unit
+from .element import Element, register_element_class
 from .image import DrawImage
 from .paragraph import Paragraph
 from .style import Style
-from .utils import isiterable, DPI
+from .utils import DPI, isiterable
 
 
 def default_frame_position_style(

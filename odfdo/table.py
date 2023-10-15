@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2012 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,17 +24,17 @@
 """Table class for "table:table" and HeaderRows, Cell, Row, Column,
 NamedRange related classes
 """
-from io import StringIO
-from csv import reader, Sniffer, writer
-from textwrap import wrap
-from bisect import bisect_left, insort
-from itertools import zip_longest
-from decimal import Decimal as dec
 import string
+from bisect import bisect_left, insort
+from csv import Sniffer, reader, writer
+from decimal import Decimal as dec
+from io import StringIO
+from itertools import zip_longest
+from textwrap import wrap
 
 from .datatype import Boolean, Date, DateTime, Duration
-from .element import Element, register_element_class, _xpath_compile
-from .utils import get_value, _set_value_and_type, isiterable, to_str
+from .element import Element, _xpath_compile, register_element_class
+from .utils import _set_value_and_type, get_value, isiterable, to_str
 
 _xpath_row = _xpath_compile("table:table-row")
 _xpath_row_idx = _xpath_compile("(table:table-row)[$idx]")
@@ -210,7 +210,7 @@ def _set_item_in_vault(position, item, vault, vault_scheme, vault_map_name, clon
     """
     try:
         vault_map = getattr(vault, vault_map_name)
-    except:
+    except Exception:
         raise ValueError
     odf_idx = _find_odf_idx(vault_map, position)
     repeated = item.repeated or 1
@@ -290,7 +290,7 @@ def _set_item_in_vault(position, item, vault, vault_scheme, vault_map_name, clon
 def _insert_item_in_vault(position, item, vault, vault_scheme, vault_map_name):
     try:
         vault_map = getattr(vault, vault_map_name)
-    except:
+    except Exception:
         raise ValueError
     odf_idx = _find_odf_idx(vault_map, position)
     repeated = item.repeated or 1
@@ -336,7 +336,7 @@ def _insert_item_in_vault(position, item, vault, vault_scheme, vault_map_name):
 def _delete_item_in_vault(position, vault, vault_scheme, vault_map_name):
     try:
         vault_map = getattr(vault, vault_map_name)
-    except:
+    except Exception:
         raise ValueError
     odf_idx = _find_odf_idx(vault_map, position)
     current_cache = vault_map[odf_idx]
@@ -2463,9 +2463,9 @@ class Table(Element):
         Return: list of rows
         """
         if coord:
-            x, y, z, t = self._translate_table_coordinates(coord)
+            _x, y, _z, t = self._translate_table_coordinates(coord)
         else:
-            x = y = z = t = None
+            y = t = None
         # fixme : not clones ?
         if not content and not style:
             return [row for row in self.traverse(start=y, end=t)]
@@ -3209,9 +3209,9 @@ class Table(Element):
         Return: list of columns
         """
         if coord:
-            x, y, z, t = self._translate_column_coordinates(coord)
+            x, _y, _z, t = self._translate_column_coordinates(coord)
         else:
-            x = y = z = t = None
+            x = t = None
         if not style:
             return [column for column in self.traverse_columns(start=x, end=t)]
         columns = []

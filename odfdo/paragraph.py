@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,13 +26,21 @@
 import re
 from functools import wraps  # for keeping trace of docstring with decorators
 
-from .bookmark import Bookmark, BookmarkStart, BookmarkEnd
-from .element import FIRST_CHILD, NEXT_SIBLING, register_element_class, Element
-from .paragraph_base import ParagraphBase, Spacer, Tab, LineBreak
-
-from .note import Note, Annotation, AnnotationEnd
-from .reference import Reference, ReferenceMark, ReferenceMarkStart, ReferenceMarkEnd
+from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
+from .element import FIRST_CHILD, NEXT_SIBLING, Element, register_element_class
 from .link import Link
+from .note import Annotation, AnnotationEnd, Note
+from .paragraph_base import LineBreak, ParagraphBase, Spacer, Tab
+from .reference import (Reference, ReferenceMark, ReferenceMarkEnd,
+                        ReferenceMarkStart)
+
+__all__ = [
+    "LineBreak",
+    "Paragraph",
+    "Spacer",
+    "Span",
+    "Tab",
+]
 
 
 def _by_regex_offset(method):

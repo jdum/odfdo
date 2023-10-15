@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,16 +22,16 @@
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 """Meta class for meta.xml part
 """
-from datetime import timedelta, datetime
 from datetime import date as dtdate
+from datetime import datetime, timedelta
 from decimal import Decimal
 from string import ascii_letters, digits
 
-from .datatype import DateTime, Duration, Boolean, Date
+from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element
-from .xmlpart import XmlPart
 from .utils import to_str
 from .version import __version__
+from .xmlpart import XmlPart
 
 
 class Meta(XmlPart):

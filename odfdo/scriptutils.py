@@ -1,4 +1,4 @@
-# Copyright 2018-2020 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,10 +21,10 @@
 """Utilities shared by the scripts
 """
 import sys
-from sys import stdin, stdout, stderr
+from io import StringIO
 from mimetypes import guess_type
 from os.path import exists, isfile
-from io import StringIO
+from sys import stderr, stdin, stdout
 
 
 def check_target_file(path, kind="file"):

@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "odfdo"
+version = "3.3.7"
+description = "Python library for OpenDocument format"
+license = "Apache v2"
+keywords = ["python", "library", "ODF", "OpenDocument"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules"]
+homepage = "https://github.com/jdum/odfdo"
+authors = ["Jérôme Dumonteil <jerome.dumonteil@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "*"
+lxml = "*"
