@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,18 +21,16 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 
-from optparse import OptionParser
-from os import mkdir, makedirs
-from os.path import join, exists
-from shutil import rmtree
 import sys
-
-from odfdo import __version__
+from optparse import OptionParser
+from os import makedirs, mkdir
+from os.path import exists, join
+from shutil import rmtree
 
 # from odfdo.cleaner import test_document
-from odfdo import Document
-from odfdo.scriptutils import add_option_output, printerr
-from odfdo.scriptutils import check_target_directory
+from odfdo import Document, __version__
+from odfdo.scriptutils import (add_option_output, check_target_directory,
+                               printerr)
 
 
 def clean_filename(filename):

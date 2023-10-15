@@ -51,7 +51,7 @@ class ShapeBase(Element, SizeMix, PosMix):
         position=None,
         size=None,
         presentation_class=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         if self._do_init:
@@ -117,7 +117,7 @@ class LineShape(ShapeBase):
         layer=None,
         p1=None,
         p2=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -171,7 +171,7 @@ class RectangleShape(ShapeBase):
         layer=None,
         size=None,
         position=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -220,7 +220,7 @@ class EllipseShape(ShapeBase):
         layer=None,
         size=None,
         position=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -284,7 +284,7 @@ class ConnectorShape(ShapeBase):
         glue_points=None,
         p1=None,
         p2=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -372,7 +372,7 @@ class DrawGroup(Element, AnchorMix, ZMix, PosMix):
         anchor_type=None,
         anchor_page=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         if self._do_init:

@@ -48,7 +48,7 @@ class Link(ParagraphBase):
         target_frame=None,
         style=None,
         visited_style=None,
-        **kwargs
+        **kwargs,
     ):
         """
         Arguments:

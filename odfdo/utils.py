@@ -85,7 +85,7 @@ def _make_xpath_query(
     parent_style=None,
     presentation_class=None,
     position=None,
-    **kw
+    **kw,
 ):
     query = [to_str(element_name)]
     attributes = kw
@@ -298,7 +298,7 @@ def _get_elements(
     svg_desc=None,
     dc_creator=None,
     dc_date=None,
-    **kw
+    **kw,
 ):
     query = _make_xpath_query(element_name, **kw)
     elements = context.get_elements(query)

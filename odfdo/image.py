@@ -49,7 +49,7 @@ class DrawImage(Element):
         show="embed",
         actuate="onLoad",
         filter_name=None,
-        **kw
+        **kw,
     ):
         """Initialisation of an DrawImage.
 

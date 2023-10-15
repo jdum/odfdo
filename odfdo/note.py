@@ -156,7 +156,7 @@ class Annotation(Element):
         date=None,
         name=None,
         parent=None,
-        **kwargs
+        **kwargs,
     ):
         # fixme : use offset
         # TODO allow paragraph and text styles

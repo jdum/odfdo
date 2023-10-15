@@ -28,26 +28,19 @@ import posixpath
 from copy import deepcopy
 from mimetypes import guess_type
 from operator import itemgetter
-from uuid import uuid4
 from pathlib import Path
-from .const import (
-    ODF_CONTENT,
-    ODF_MANIFEST,
-    ODF_META,
-    ODF_SETTINGS,
-    ODF_STYLES,
-    ODF_TEMPLATES,
-)
+from uuid import uuid4
+
+from .const import (ODF_CONTENT, ODF_MANIFEST, ODF_META, ODF_SETTINGS,
+                    ODF_STYLES, ODF_TEMPLATES)
 from .container import Container
 from .content import Content
 from .element import Element
 from .manifest import Manifest
 from .meta import Meta
-
 # from .style import registered_styles
 from .styles import Styles
 from .utils import FAMILY_ODF_STD, to_str
-
 # from utils import obsolete
 from .xmlpart import XmlPart
 

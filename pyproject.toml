@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "odfdo"
-version = "3.3.7"
+version = "3.3.8"
 description = "Python library for OpenDocument format"
-license = "Apache v2"
+license = "Apache-2.0"
 keywords = ["python", "library", "ODF", "OpenDocument"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -12,17 +12,39 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Operating System :: OS Independent",
     "Topic :: Software Development :: Libraries :: Python Modules"]
 homepage = "https://github.com/jdum/odfdo"
+repository = "https://github.com/jdum/odfdo"
 authors = ["Jérôme Dumonteil <jerome.dumonteil@gmail.com>"]
 readme = "README.md"
+packages = [{ include = "odfdo" }]
 
 [tool.poetry.dependencies]
-python = "*"
-lxml = "*"
+python = "^3.9"
+lxml = "^4.0"
+
+[tool.poetry.group.docs.dependencies]
+pdoc3 = "*"
+
+[tool.poetry.group.dev.dependencies]
+poetry = "*"
+pytest = "*"
+
+[tool.poetry.scripts]
+odfdo-diff = 'odfdo.scripts.odfdo-diff:main'
+odfdo-folder = 'odfdo.scripts.odfdo-folder:main'
+odfdo-show = 'odfdo.scripts.odfdo-show:main'
+odfdo-styles = 'odfdo.scripts.odfdo-styles:main'
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py312']

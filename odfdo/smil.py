@@ -115,7 +115,7 @@ class AnimTransFilter(Element):
         smil_direction=None,
         smil_fadeColor=None,
         smil_mode=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         if self._do_init:

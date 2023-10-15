@@ -45,7 +45,7 @@ class Header(Paragraph):
         start_value=None,
         suppress_numbering=False,
         style=None,
-        **kwargs
+        **kwargs,
     ):
         """Create a header element of the given style and level, containing the
         optional given text.

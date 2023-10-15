@@ -27,25 +27,12 @@ import sys
 from copy import deepcopy
 
 from lxml.etree import Element as lxml_Element
-from lxml.etree import (
-    XPath,
-    _Element,
-    _ElementStringResult,
-    _ElementUnicodeResult,
-    fromstring,
-    tostring,
-)
+from lxml.etree import (XPath, _Element, _ElementStringResult,
+                        _ElementUnicodeResult, fromstring, tostring)
 
 from .datatype import Boolean, DateTime
-from .utils import (
-    FAMILY_ODF_STD,
-    _family_style_tagname,
-    _get_element,
-    _get_elements,
-    get_value,
-    to_bytes,
-    to_str,
-)
+from .utils import (FAMILY_ODF_STD, _family_style_tagname, _get_element,
+                    _get_elements, get_value, to_bytes, to_str)
 
 ODF_NAMESPACES = {
     "anim": "urn:oasis:names:tc:opendocument:xmlns:animation:1.0",

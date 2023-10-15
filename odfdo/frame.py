@@ -183,7 +183,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
         anchor_page=None,
         layer=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         """Create a frame element of the given size. Position is relative to the
         context the frame is inserted in. If positioned by page, give the page
@@ -265,7 +265,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
         anchor_page=None,
         layer=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         """Create a ready-to-use image, since image must be embedded in a
         frame.
@@ -294,7 +294,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
             anchor_page=anchor_page,
             layer=layer,
             presentation_style=presentation_style,
-            **kwargs
+            **kwargs,
         )
         image_element = frame.set_image(image)
         if text:
@@ -317,7 +317,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
         anchor_page=None,
         layer=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         """Create a ready-to-use text box, since text box must be embedded in
         a frame.
@@ -347,7 +347,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
             anchor_page=anchor_page,
             layer=layer,
             presentation_style=presentation_style,
-            **kwargs
+            **kwargs,
         )
         frame.set_text_box(text_or_element, text_style)
         return frame

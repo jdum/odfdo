@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,13 +21,13 @@
 # Authors: Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 
 import os
-from optparse import OptionParser
 import sys
+from optparse import OptionParser
 
-from odfdo import __version__
-from odfdo import Document
+from odfdo import Document, __version__
 
-if __name__ == "__main__":
+
+def main():
     usage = "%prog <input>"
     description = "Convert standard ODF File to folder, and reverse."
     parser = OptionParser(usage, version=__version__, description=description)
@@ -48,3 +48,7 @@ if __name__ == "__main__":
         raise ValueError("no File or folder ?")
     doc = Document(args[0])
     doc.save(packaging=out_packaging, pretty=True)
+
+
+if __name__ == "__main__":
+    main()

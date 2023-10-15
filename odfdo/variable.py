@@ -63,7 +63,7 @@ class VarSet(Element):
         display=False,
         text=None,
         style=None,
-        **kw
+        **kw,
     ):
         super().__init__(**kw)
         if self._do_init:
@@ -184,7 +184,7 @@ class UserDefined(Element):
         text=None,
         style=None,
         from_document=None,
-        **kw
+        **kw,
     ):
         super().__init__(**kw)
         if self._do_init:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,16 +20,16 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 
-from difflib import unified_diff, ndiff
-from optparse import OptionParser
 import sys
-from time import ctime
+from difflib import ndiff, unified_diff
+from optparse import OptionParser
 from os import stat
+from time import ctime
 
-from odfdo import __version__
-from odfdo import Document
+from odfdo import Document, __version__
 
-if __name__ == "__main__":
+
+def main():
     usage = "%prog <doc1.odt> <doc2.odt>"
     description = "Show a diff between doc1.odt and doc2.odt"
     parser = OptionParser(usage, version=__version__, description=description)
@@ -71,3 +71,7 @@ if __name__ == "__main__":
         todate = ctime(stat(args[1]).st_mtime)
         result = unified_diff(text1, text2, args[0], args[1], fromdate, todate)
     print("".join(result))
+
+
+if __name__ == "__main__":
+    main()

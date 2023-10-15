@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2018 Jérôme Dumonteil
+# Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,19 +21,13 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 
-from optparse import OptionParser
 import sys
+from optparse import OptionParser
 
-from odfdo import __version__
+from odfdo import Document, __version__
 from odfdo.const import ODF_CLASSES
-from odfdo import Document
-from odfdo.scriptutils import (
-    add_option_output,
-    StdoutWriter,
-    printinfo,
-    check_target_file,
-    printerr,
-)
+from odfdo.scriptutils import (StdoutWriter, add_option_output,
+                               check_target_file, printerr, printinfo)
 
 
 def show_styles(document, target=None, automatic=True, common=True, properties=False):
