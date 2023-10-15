@@ -66,11 +66,17 @@ Documentation
 There is no detailed documentation or tutorial, but:
 
  - the `recipes` folder contains more than 50 working sample scripts,
- - the `scripts` folder contains some useful scripts (like style management),
  - the `doc` folder contains an auto generated documentation.
 
+When installing odfdo, 4 scripts are installed:
+
+ - `odfdo-diff`: show a *diff* between two .odt document.
+ - `odfdo-folder`: convert standard ODF file to folder and files, and reverse.
+ - `odfdo-show`: dump text from an ODF file to the standard output, and optionally styles and meta informations.
+ - `odfdo-styles`: command line interface tool to manipulate styles of ODF files.
+
 About styles: the best way to apply style is by merging styles from a template
-document into your generated document. See odfdo-style.py in `scripts` folder.
+document into your generated document (See `odfdo-style` script).
 Styles are a complex matter in ODF, so trying to generate styles programmatically
 is not recommended.
 
@@ -86,8 +92,7 @@ ODF document rendering can vary greatly from software to software. Especially th
 software.
 
 The best (only ?) way to apply style is by merging styles from a template
-document into your generated document. See `odfdo-style.py`exempale in the `scripts`
-folder.
+document into your generated document.
 
 Related project
 ===============
@@ -103,7 +108,7 @@ see: https://github.com/lpod/lpod-python
 
 `odfdo` is an adaptation of this formaer project. `odfdo` main changes from `lpod`:
 
- - `odfdo` requires, at least, Python version >= 3.6 (tested up to python 3.12).
+ - `odfdo` requires Python version 3.9 to 3.12. For Python 3.6 to 3.8 see previous releases.
  - API change: more pythonic.
  - include recipes.
  - use Apache 2.0 license.

@@ -1,95 +1,45 @@
 #!/usr/bin/env python
-"""
-Insert an image (e.g. the logo of an event, organization or a Creative Commons
+"""Insert an image (e.g. the logo of an event, organization or a Creative Commons
 attribution) with size x,y at position x2,y2 on a number of slides in a
 presentation slide deck.
-
-Exemple:
-
-./add_logo_on_presentation.py -i newlogo.png -r 1-8 -s 4.00 presentation_logo.odp
-
 """
-
-import sys
-import os
-from optparse import OptionParser
+from pathlib import Path
 
 from odfdo import Document, Frame
 
-# Readng image size requires a graphic library
-# The standard PIL lib may have different modules names on different OS
-try:
-    from PIL import Image
+# reading image size requires a graphic library
+from PIL import Image
 
-    PIL_ok = True
-except:
-    PIL_ok = False
-    print("No image size detection. " "You should install Python Imaging Library")
+OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "add_logo"
+TARGET = "presentation.odp"
+DATA = Path(__file__).parent / "data"
+SOURCE = DATA / "presentation_wo_logo.odp"
+LOGO = DATA / "newlogo.png"
 
-modified_file_suffix = "new"
-image_position = ("1.50cm", "1.50cm")
-title = "New Logo"
-text = "The new logo with blue background"
+
+def save_new(document: Document, name: str):
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    new_path = OUTPUT_DIR / name
+    print("Saving:", new_path)
+    document.save(new_path, pretty=True)
 
 
 def make_image_size(path, size):
-    try:
-        w, h = Image.open(path).size
-    except OSError:
-        print("error reading", path)
-        return None
-    ratio = max(w / size, h / size)
-    return (f"{w / ratio:.2f}cm", f"{h / ratio:.2f}cm")
+    width, height = Image.open(path).size
+    ratio = max(width / size, height / size)
+    return (f"{width / ratio:.2f}cm", f"{height / ratio:.2f}cm")
 
 
-def main():
-    usage = "usage: %prog -i IMAGE -r RANGE -s SIZE PRESENTATION"
-    description = "Add an image on some pages of a presentation."
-    parser = OptionParser(usage, description=description)
-    parser.add_option(
-        "-i",
-        "--image",
-        dest="image",
-        help="Image to be added",
-        action="store",
-        type="string",
-    )
-    parser.add_option(
-        "-r",
-        "--range",
-        dest="range",
-        help="Range of the slides",
-        action="store",
-        type="string",
-    )
-    parser.add_option(
-        "-s",
-        "--size",
-        dest="size",
-        help="max width in cm of the image",
-        action="store",
-        type="float",
-    )
+def add_logo(presentation):
+    image_position = ("1.50cm", "1.50cm")
+    svg_title = "New Logo"
+    svg_description = "The new logo with blue background"
 
-    options, source = parser.parse_args()
-    if not source or not options.image or not options.range or not options.size:
-        print("need options !")
-        parser.print_help()
-        exit(0)
-
-    lst = options.range.split("-")
-    start = int(lst[0]) - 1
-    end = int(lst[1])
-    file_name = source[0]
-    image_size = make_image_size(options.image, float(options.size))
-
-    presentation = Document(file_name)
+    image_size = make_image_size(LOGO, 4.0)
     presentation_body = presentation.body
+    uri = presentation.add_file(str(LOGO))
 
-    uri = presentation.add_file(options.image)
-
-    # Append all the component
-    for i in range(start, end):
+    for slide in presentation_body.get_draw_pages():
         # Create a frame for the image
         image_frame = Frame.image_frame(
             image=uri,
@@ -100,17 +50,15 @@ def main():
             position=image_position,
             style=None,
         )
-        image_frame.svg_title = title
-        image_frame.svg_description = text
-        slide = presentation_body.get_draw_page(position=i)
+        image_frame.svg_title = svg_title
+        image_frame.svg_description = svg_description
         slide.append(image_frame)
 
-    # Finally save the result
-    name_parts = file_name.split(".")
-    name_parts.insert(-1, modified_file_suffix)
-    new_name = ".".join(name_parts)
 
-    presentation.save(new_name)
+def main():
+    document = Document(SOURCE)
+    add_logo(document)
+    save_new(document, TARGET)
 
 
 if __name__ == "__main__":

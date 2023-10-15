@@ -1,13 +1,27 @@
 #!/usr/bin/env python
+"""Create a spreadsheet with one table.
 """
-Create a spreadsheet with one table.
-"""
-import os
+from pathlib import Path
 
 from odfdo import Document, Table
 
-if __name__ == "__main__":
+OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "basic_ods"
+TARGET = "spreadsheet.ods"
 
+
+def save_new(document: Document, name: str):
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    new_path = OUTPUT_DIR / name
+    print("Saving:", new_path)
+    document.save(new_path, pretty=True)
+
+
+def main():
+    document = generate_document()
+    save_new(document, TARGET)
+
+
+def generate_document():
     # creating an empty spreadsheet document:
     document = Document("spreadsheet")
 
@@ -16,11 +30,12 @@ if __name__ == "__main__":
     # is not mandatory, but a good practice, since odfdo don't check
     # actual existence of cells
     body = document.body
+    body.clear()
     table = Table("First Table", width=20, height=3)
     body.append(table)
 
     # A table contains rows, we can append some more.
-    for r in range(2):
+    for _ in range(2):
         table.append_row()
     print("rows in the table (3+2):", len(table.get_rows()))
 
@@ -32,12 +47,12 @@ if __name__ == "__main__":
     print("nb of cells of the last row:", len(last_row.get_cells()))
 
     # cell can have different kind of values
-    for r in range(3):
-        for c in range(10):
-            table.set_value((c, r), "cell %s %s" % (c, r))
-    for r in range(3, 5):
-        for c in range(10):
-            table.set_value((c, r), c * 100 + r)
+    for row_nb in range(3):
+        for col_nb in range(10):
+            table.set_value((col_nb, row_nb), f"cell {col_nb} {row_nb}")
+    for row_nb in range(3, 5):
+        for col_nb in range(10):
+            table.set_value((col_nb, row_nb), col_nb * 100 + row_nb)
 
     # Before saving the document,  we can strip the unused colums:
     print("table size:", table.size)
@@ -47,9 +62,8 @@ if __name__ == "__main__":
     print("Content of the table:")
     print(table.to_csv())
 
-    if not os.path.exists("test_output"):
-        os.mkdir("test_output")
+    return document
 
-    output = os.path.join("test_output", "my_basic_spreadsheet.ods")
 
-    document.save(target=output, pretty=True)
+if __name__ == "__main__":
+    main()

@@ -1,41 +1,60 @@
 #!/usr/bin/env python
-"""
-Build a basic commercial document, with numerical values displayed in both the
-text and in a table.
+"""Build a basic commercial document, with numerical values displayed in
+both the text and in a table.
 """
 
-import os
-
-from odfdo import Document, Header, Paragraph, List, ListItem, Style
-from odfdo import Table, Row, Cell
+from pathlib import Path
 
 # for cell style
-from odfdo import create_table_cell_style, make_table_cell_border_string
+from odfdo import (
+    Cell,
+    Document,
+    Header,
+    List,
+    ListItem,
+    Paragraph,
+    Row,
+    Table,
+    create_table_cell_style,
+    make_table_cell_border_string,
+)
 
-# basic commercial document v1
+OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "commercial"
+TARGET = "commercial.odt"
+TAX_RATE = 0.20
+
+
+def save_new(document: Document, name: str):
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    new_path = OUTPUT_DIR / name
+    print("Saving:", new_path)
+    document.save(new_path, pretty=True)
 
 
 class Product:
     def __init__(self, name, price):
-        self.name = "Product %s" % name
+        self.name = f"Product {name}"
         self.price = price
 
 
-def make_catalog():
-    cat_list = []
+def make_product_catalog():
+    catalog = []
     price = 10.0
-    for p in range(5):
-        cat_list.append(Product(chr(65 + p), price))
+    for prod in range(5):
+        catalog.append(Product(chr(65 + prod), price))
         price += 10.5
-    return cat_list
+    return catalog
 
 
-tax_rate = 0.196
+def main():
+    document = generate_commercial()
+    save_new(document, TARGET)
 
-if __name__ == "__main__":
+
+def generate_commercial():
     commercial = Document("text")
     body = commercial.body
-    catalog = make_catalog()
+    catalog = make_product_catalog()
 
     title1 = Header(1, "Basic commercial document")
     body.append(title1)
@@ -45,10 +64,10 @@ if __name__ == "__main__":
     body.append(paragraph)
 
     # List of products in a list :
-    product_list = List()
+    product_list = List()  # odfdo.List
     body.append(product_list)
     for product in catalog:
-        item = ListItem("%-10s, price: %.2f €" % (product.name, product.price))
+        item = ListItem(f"{product.name:<10}, price: {product.price:.2f} €")
         product_list.append(item)
 
     title12 = Header(2, "Your command")
@@ -71,15 +90,23 @@ if __name__ == "__main__":
         # or : row.set_value(0, prod.name)
         cell = Cell()
         cell.set_value(
-            prod.price, text="%.2f €" % prod.price, currency="EUR", cell_type="float"
+            prod.price,
+            text=f"{prod.price:.2f} €",
+            currency="EUR",
+            cell_type="float",
         )
         row.set_cell("B", cell)
         # or : row.set_cell(1, cell)
         row.set_value("C", quantity)
         # row.set_value(2, quantity)
-        p = prod.price * quantity
+        price = prod.price * quantity
         cell = Cell()
-        cell.set_value(p, text="%.2f €" % p, currency="EUR", cell_type="float")
+        cell.set_value(
+            price,
+            text=f"{price:.2f} €",
+            currency="EUR",
+            cell_type="float",
+        )
         row.set_cell(3, cell)
         row_number += 1
         table.set_row(row_number, row)
@@ -98,7 +125,12 @@ if __name__ == "__main__":
     row.set_value(column - 1, "Total:")
     total = sum(table.get_column_values(column)[1:-1])
     cell = Cell()
-    cell.set_value(total, text="%.2f €" % total, currency="EUR", cell_type="float")
+    cell.set_value(
+        total,
+        text=f"{total:.2f} €",
+        currency="EUR",
+        cell_type="float",
+    )
     row.set_cell(column, cell)
     row_number += 1
     table.set_row(row_number, row)
@@ -108,9 +140,14 @@ if __name__ == "__main__":
 
     row = Row()
     row.set_value(column - 1, "Total with tax:")
-    total *= 1 + tax_rate
+    total *= 1 + TAX_RATE
     cell = Cell()
-    cell.set_value(total, text="%.2f €" % total, currency="EUR", cell_type="float")
+    cell.set_value(
+        total,
+        text=f"{total:.2f} €",
+        currency="EUR",
+        cell_type="float",
+    )
     row.set_cell(column, cell)
     row_number += 1
     table.set_row(row_number, row)
@@ -136,9 +173,8 @@ if __name__ == "__main__":
         row.set_cell(x=cell.x, cell=cell)
     table.set_row(row.y, row)
 
-    if not os.path.exists("test_output"):
-        os.mkdir("test_output")
+    return commercial
 
-    output = os.path.join("test_output", "my_commercial.odt")
 
-    commercial.save(target=output, pretty=True)
+if __name__ == "__main__":
+    main()

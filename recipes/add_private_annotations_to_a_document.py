@@ -1,12 +1,15 @@
 #!/usr/bin/env python
-"""Create a basic text document.
+"""Add not printable annotations to a document.
+
+Annotations are notes that don’t appear in the document but typically
+on a side bar in a desktop application. So they are not printed.
 """
 from pathlib import Path
 
 from odfdo import Document, Header, Paragraph
 
-OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "basic_text"
-TARGET = "document.odt"
+OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "annotated"
+TARGET = "annotated_document.odt"
 
 
 def save_new(document: Document, name: str):
@@ -16,7 +19,7 @@ def save_new(document: Document, name: str):
     document.save(new_path, pretty=True)
 
 
-def create_basic_document():
+def base_document():
     document = Document("text")
     body = document.body
 
@@ -50,7 +53,20 @@ def create_basic_document():
 
 
 def main():
-    document = create_basic_document()
+    document = base_document()
+    body = document.body
+    paragraph = body.get_paragraph(content="consulat")
+
+    # Annotations are inserted like notes but they are simpler:
+    # Annotation arguments:
+    # after   =>  The word after what the annotation is inserted.
+    # body    =>  The annotation itself, at the end of the page.
+    # creator =>  The author of the annotation.
+    # date    =>  A datetime value, by default datetime.now().
+    paragraph.insert_annotation(
+        after="Domitius", body="Talking about Lucius Domitius", creator="Luis"
+    )
+
     save_new(document, TARGET)
 
 

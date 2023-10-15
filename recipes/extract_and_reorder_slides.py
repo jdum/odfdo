@@ -1,46 +1,48 @@
 #!/usr/bin/env python
+"""Create a new presentation from a previous one by extracting some slides,
+in a different order.
 """
-Create a new presentation from a previous one by extrating some slides, in a
-different order.
-"""
-import os
-import sys
+from pathlib import Path
 
 from odfdo import Document
 
-filename = "presentation_base.odp"
-presentation_base = Document(filename)
-output_filename = "my_extracted_slides.odp"
+OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "presentation_extracted"
+TARGET = "presentation.odp"
+DATA = Path(__file__).parent / "data"
+SOURCE = DATA / "presentation_base.odp"
 
-if __name__ == "__main__":
-    # extract = sys.argv[1:]
-    extract = " 3 5 2 2"
 
+def save_new(document: Document, name: str):
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    new_path = OUTPUT_DIR / name
+    print("Saving:", new_path)
+    document.save(new_path, pretty=True)
+
+
+def main():
+    new_order = (3, 5, 2, 2)
+    presentation_base = Document(SOURCE)
     extracted = Document("presentation")
-
-    body_base = presentation_base.body
-    body_extracted = extracted.body
 
     # Important, copy styles too:
     extracted.delete_styles()
     extracted.merge_styles_from(presentation_base)
+    extracted.body.clear()
 
-    for i in extract.split():
+    for index in new_order:
         try:
-            slide_position = int(i) - 1
-            slide = body_base.get_draw_page(position=slide_position)
-        except:
+            slide_position = index - 1
+            slide = presentation_base.body.get_draw_page(position=slide_position)
+        except Exception:
             continue
         if slide is None:
             continue
 
         slide = slide.clone
+        extracted.body.append(slide)
 
-        body_extracted.append(slide)
+    save_new(extracted, TARGET)
 
-    if not os.path.exists("test_output"):
-        os.mkdir("test_output")
 
-    output = os.path.join("test_output", output_filename)
-
-    extracted.save(target=output, pretty=True)
+if __name__ == "__main__":
+    main()

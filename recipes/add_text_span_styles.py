@@ -1,54 +1,65 @@
 #!/usr/bin/env python
+"""Transform a not styled document into a multi styled document,
+by changing size and color of each parts of words.
 """
-Transform a not styled document into a multi styled document, by changing
-size and color of each parts of words.
-"""
-import sys, os
+from pathlib import Path
 from random import randrange
 
 from odfdo import Document, Style
 
-
-def get_default_doc():
-    return "dormeur_notstyled.odt"
-
-
-def style_name():
-    "returns a random style name"
-    return "rnd%s" % randrange(64)
+DATA = Path(__file__).parent / "data"
+OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "styled3"
+TARGET = "dormeur_styled.odt"
+SOURCE = DATA / "dormeur_notstyled.odt"
 
 
-if __name__ == "__main__":
-    try:
-        source = sys.argv[1]
-    except IndexError:
-        source = get_default_doc()
+def save_new(document: Document, name: str):
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    new_path = OUTPUT_DIR / name
+    print("Saving:", new_path)
+    document.save(new_path, pretty=True)
 
-    document = Document(source)
-    body = document.body
 
-    print("Add some span styles to", source)
-    # create some random text styles
-    for i in range(64):
+def color_hex(r, g, b):
+    return f"#{r:02X}{g:02X}{b:02X}"
+
+
+def random_style_name():
+    """Returns a random style name."""
+    return f"rnd_{randrange(64)}"
+
+
+def generate_random_styles(document):
+    """Generate 64 random styles."""
+    for index in range(64):
         style = Style(
             "text",
-            name="rnd%s" % i,
-            color=(randrange(256), randrange(256), randrange(256)),
-            size="%s" % (8 + i / 5),
+            name=f"rnd_{index}",
+            color=color_hex(randrange(256), randrange(256), randrange(256)),
+            size=f"{8 + index / 5}",
         )
         document.insert_style(style)
 
+
+def main():
+    document = Document(SOURCE)
+    add_styles(document)
+    save_new(document, TARGET)
+
+
+def add_styles(document):
+    body = document.body
+
+    generate_random_styles(document)
+
     words = set(body.text_recursive.split())
     for word in words:
-        name = style_name()
-        style = document.get_style("text", name)
+        style_name = random_style_name()
+        style = document.get_style("text", style_name)
         for paragraph in body.get_paragraphs() + body.get_headers():
             # apply style to each text matching with the regex of some word
-            paragraph.set_span(name, regex=word)
+            paragraph.set_span(style_name, regex=word)
 
-    if not os.path.exists("test_output"):
-        os.mkdir("test_output")
 
-    output = "my_span_styled_" + source
-    # document.save(target=os.path.join('test_output', output), pretty=True, packaging='folder')
-    document.save(target=os.path.join("test_output", output), pretty=True)
+if __name__ == "__main__":
+    main()

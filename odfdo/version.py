@@ -18,8 +18,13 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Version number of the package
+"""Version number of the package.
 """
-import importlib
+try:
+    from importlib.metadata import version
+except (AttributeError, ImportError):
+    import importlib
 
-__version__ = importlib.metadata.version("odfdo")
+    version = importlib.metadata.version
+
+__version__ = version("odfdo")

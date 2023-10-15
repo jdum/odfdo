@@ -1,13 +1,18 @@
 #!/usr/bin/env python
+"""Create a document with styles.
 
-import os
+ We want to
+  - remove standard styles from the document
+  - set some styles grabed from a styles.xml ODF file (or generated)
+  - insert plain "python" text, containing some \t , \n, and spaces
+"""
+from pathlib import Path
 
-from odfdo import Document, Element, Style, Paragraph
+from odfdo import Document, Element, Paragraph, Style
 
-# We want to
-#  - remove standard styles from the document
-#  - set some styles grabed from a styles.xml ODF file (or generated)
-#  - insert plain "python" text, containing some \t , \n, and spaces
+OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "styled2"
+TARGET = "document.odt"
+
 
 # Element is the base class of all odfdo classes.
 # Element.from_tag permits the creation of any ODF XML tag
@@ -153,86 +158,94 @@ _style_line = Element.from_tag(
 # some odfdo generated style (for bold Span)
 _style_bold = Style("text", name="bolder", bold=True)
 
-# Some plain text :
-text_1 = (
-    "Lorem ipsum dolor sit amet,\n\t"
-    "consectetuer adipiscing elit.\n\tSed"
-    "non risus.\n\tSuspendisse lectus tortor,\n"
-    "ndignissim sit amet, \nadipiscing nec,"
-    "\nultricies sed, dolor.\n\n"
-    " Cras elementum ultrices diam. Maecenas ligula massa,"
-    "varius a,semper congue, euismod non,"
-    " mi. Proin porttitor, orci nec nonummy"
-    "molestie, enim est eleifend mi,"
-    " non fermentum diam nisl sit amet erat."
-)
 
-text_2 = (
-    "Vestibulum                 "
-    "ante               "
-    "ipsum             primis\n"
-    "in faucibus orci luctus et ultrices "
-    "posuere cubilia Curae; Aliquam nibh."
-)
+def save_new(document: Document, name: str):
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    new_path = OUTPUT_DIR / name
+    print("Saving:", new_path)
+    document.save(new_path, pretty=True)
 
-text_3 = (
-    "\n"
-    "Duis semper. \n\tDuis arcu massa,"
-    " \n\t\tscelerisque vitae, \n"
-    "\t\t\tconsequat in, \n"
-    "\t\t\t\tpretium a, enim. \n"
-    "\t\t\t\t\tPellentesque congue. \n"
-    "Ut in risus volutpat libero pharetra "
-    "tempor. Cras vestibulum bibendum augue."
-    "Praesent egestas leo in pede. Praesent "
-    "blandit odio eu enim. Pellentesque sed"
-)
 
-# make document,
-document = Document("text")
-# remove default styles
-document.delete_styles()
-# add our styles
-document.insert_style(_style_font_1, default=True)
-document.insert_style(_style_font_2, default=True)
-document.insert_style(_style_font_3, default=True)
-document.insert_style(_style_page, automatic=True)
-document.insert_style(_style_master)
-document.insert_style(_style_footer)
-document.insert_style(_style_description)
-document.insert_style(_style_small_serif)
-document.insert_style(_style_bold)
+def main():
+    # Some plain text :
+    text_1 = (
+        "Lorem ipsum dolor sit amet,\n\t"
+        "consectetuer adipiscing elit.\n\tSed"
+        "non risus.\n\tSuspendisse lectus tortor,\n"
+        "ndignissim sit amet, \nadipiscing nec,"
+        "\nultricies sed, dolor.\n\n"
+        " Cras elementum ultrices diam. Maecenas ligula massa,"
+        "varius a,semper congue, euismod non,"
+        " mi. Proin porttitor, orci nec nonummy"
+        "molestie, enim est eleifend mi,"
+        " non fermentum diam nisl sit amet erat."
+    )
 
-body = document.body
+    text_2 = (
+        "Vestibulum                 "
+        "ante               "
+        "ipsum             primis\n"
+        "in faucibus orci luctus et ultrices "
+        "posuere cubilia Curae; Aliquam nibh."
+    )
 
-paragraph = Paragraph("", style="description")
-paragraph.append_plain_text(text_1)
-body.append(paragraph)
+    text_3 = (
+        "\n"
+        "Duis semper. \n\tDuis arcu massa,"
+        " \n\t\tscelerisque vitae, \n"
+        "\t\t\tconsequat in, \n"
+        "\t\t\t\tpretium a, enim. \n"
+        "\t\t\t\t\tPellentesque congue. \n"
+        "Ut in risus volutpat libero pharetra "
+        "tempor. Cras vestibulum bibendum augue."
+        "Praesent egestas leo in pede. Praesent "
+        "blandit odio eu enim. Pellentesque sed"
+    )
 
-paragraph = Paragraph(style="line")
-body.append(paragraph)
+    document = Document("text")
+    # remove default styles
+    document.delete_styles()
+    # add our styles
+    document.insert_style(_style_font_1, default=True)
+    document.insert_style(_style_font_2, default=True)
+    document.insert_style(_style_font_3, default=True)
+    document.insert_style(_style_page, automatic=True)
+    document.insert_style(_style_master)
+    document.insert_style(_style_footer)
+    document.insert_style(_style_description)
+    document.insert_style(_style_small_serif)
+    document.insert_style(_style_bold)
 
-paragraph = Paragraph(style="smallserif")
-paragraph.append_plain_text(text_2)
-body.append(paragraph)
+    body = document.body
 
-paragraph = Paragraph(style="line")
-body.append(paragraph)
+    paragraph = Paragraph("", style="description")
+    paragraph.append_plain_text(text_1)
+    body.append(paragraph)
 
-paragraph = Paragraph(style="description")
-paragraph.append_plain_text(text_3)
+    paragraph = Paragraph(style="line")
+    body.append(paragraph)
 
-# span offset become complex after inserting <CR> and <TAB> in a text
-paragraph.set_span("bolder", offset=5, length=6)  # find TEXT position 5 : 6
-paragraph.set_span("bolder", offset=18, length=4)  # find TEXT position 18 : 4
-paragraph.set_span("bolder", offset=49)  # find TEXT position 18 to the end
-# of the text bloc
-paragraph.set_span("bolder", regex="Praes\w+\s\w+")  # regex: Praes. + next word
+    paragraph = Paragraph(style="smallserif")
+    paragraph.append_plain_text(text_2)
+    body.append(paragraph)
 
-body.append(paragraph)
+    paragraph = Paragraph(style="line")
+    body.append(paragraph)
 
-if not os.path.exists("test_output"):
-    os.mkdir("test_output")
-output = os.path.join("test_output", "my_styled_plain_text_document.odt")
+    paragraph = Paragraph(style="description")
+    paragraph.append_plain_text(text_3)
 
-document.save(target=output, pretty=True)
+    # span offset become complex after inserting <CR> and <TAB> in a text
+    paragraph.set_span("bolder", offset=5, length=6)  # find TEXT position 5 : 6
+    paragraph.set_span("bolder", offset=18, length=4)  # find TEXT position 18 : 4
+    paragraph.set_span("bolder", offset=49)  # find TEXT position 18 to the end
+    # of the text bloc
+    paragraph.set_span("bolder", regex=r"Praes\w+\s\w+")  # regex: Praes. + next word
+
+    body.append(paragraph)
+
+    save_new(document, TARGET)
+
+
+if __name__ == "__main__":
+    main()

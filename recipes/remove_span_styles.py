@@ -1,31 +1,56 @@
 #!/usr/bin/env python
+"""Remove span styles (like some words in bold in a paragraph),
+except in titles.
 """
-Remove span styles (like some words in bold in a paragraph), except in titles.
-"""
-import os
 import sys
+from pathlib import Path
 
-from odfdo import Document, Element
+from odfdo import Document
+
+DATA = Path(__file__).parent / "data"
+SOURCE = "dormeur.odt"
+OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "nostyle"
+TARGET = "document.odt"
 
 
-def get_default_doc():
-
-    return "dormeur.odt"
+def save_new(document: Document, name: str):
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    new_path = OUTPUT_DIR / name
+    print("Saving:", new_path)
+    document.save(new_path, pretty=True)
 
 
 def remove_text_span(element):
     tag = "text:span"
     keep_inside_tag = "text:h"
     context = (tag, keep_inside_tag, False)
-    element, is_modified = _tree_remove_tag(element, context)
-    return is_modified
+    element, _is_modified = _tree_remove_tag(element, context)
+
+
+def main():
+    try:
+        source = Path(sys.argv[1])
+    except IndexError:
+        source = DATA / SOURCE
+
+    document = Document(str(source))
+    body = document.body
+
+    print("Removing span styles from", source.name)
+    print("'text:span' occurrences:", len(body.get_spans()))
+
+    remove_text_span(body)
+    print("'text:span' occurrences after removal:", len(body.get_spans()))
+
+    save_new(document, TARGET)
 
 
 def _tree_remove_tag(element, context):
     """Send back a copy of the element, without span styles. Element should be
-    either paragraph or heading
-    - context = (tag to remove, protection tag, protection flag)
-    - protection tag protect from change any sub elements one level depth
+    either paragraph or heading.
+
+    - context: a tuple (tag to remove, protection tag, protection flag)
+    where protection tag protects from change any sub elements one level depth
     """
     buffer = element.clone
     modified = False
@@ -41,7 +66,7 @@ def _tree_remove_tag(element, context):
         )
         if is_modified:
             modified = True
-        if type(striped) == type([]):
+        if isinstance(striped, list):
             for item in striped:
                 sub_elements.append(item)
         else:
@@ -66,7 +91,7 @@ def _tree_remove_tag(element, context):
     for child in sub_elements:
         element.append(child)
     if tail is not None:
-        if type(element) == type([]):
+        if isinstance(element, list):
             element.append(tail)
         else:
             element.tail = tail
@@ -74,24 +99,4 @@ def _tree_remove_tag(element, context):
 
 
 if __name__ == "__main__":
-    try:
-        source = sys.argv[1]
-    except IndexError:
-        source = get_default_doc()
-
-    document = Document(source)
-    body = document.body
-
-    print("Removing span styles from", source)
-    print("'text:span' occurrences:", len(body.get_spans()))
-
-    remove_text_span(body)
-
-    print("'text:span' occurrences after removal:", len(body.get_spans()))
-
-    if not os.path.exists("test_output"):
-        os.mkdir("test_output")
-
-    output = os.path.join("test_output", "my_RS_" + source)
-
-    document.save(target=output, pretty=True)
+    main()

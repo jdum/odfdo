@@ -4,5 +4,5 @@ document = Document("text")
 body = document.body
 
 # create a new paragraph with some content :
-paragraph = Paragraph("Hello_World")
+paragraph = Paragraph("Hello World")
 body.append(paragraph)

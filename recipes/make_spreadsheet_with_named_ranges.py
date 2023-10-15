@@ -1,26 +1,42 @@
 #!/usr/bin/env python
+"""Create a spreadsheet with two tables, using some named ranges.
 """
-Create a spreadsheet with two tables, using some named ranges.
-"""
-import os
+from pathlib import Path
 
 from odfdo import Document, Table
 
-if __name__ == "__main__":
+OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "named_range"
+TARGET = "spreadsheet.ods"
+
+
+def save_new(document: Document, name: str):
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    new_path = OUTPUT_DIR / name
+    print("Saving:", new_path)
+    document.save(new_path, pretty=True)
+
+
+def main():
+    document = generate_document()
+    save_new(document, TARGET)
+
+
+def generate_document():
     document = Document("spreadsheet")
     body = document.body
+    body.clear()
     table = Table("First Table")
     body.append(table)
     # populate the table :
-    for i in range(10):
-        table.set_value((1, i), (i + 1) ** 2)
+    for index in range(10):
+        table.set_value((1, index), (index + 1) ** 2)
     table.set_value("A11", "Total:")
 
     # lets define a named range for the 10 values :
-    crange = "B1:B10"
+    range_squares = "B1:B10"
     name = "squares_values"
     table_name = table.name
-    table.set_named_range(name, crange, table_name)
+    table.set_named_range(name, range_squares, table_name)
 
     # we can define a single cell range, using notation "B11" or (1, 10) :
     table.set_named_range("total", (1, 10), table_name)
@@ -64,7 +80,8 @@ if __name__ == "__main__":
     print(table2.to_csv())
 
     # of course named ranges are stored in the document :
-    if not os.path.exists("test_output"):
-        os.mkdir("test_output")
-    output = os.path.join("test_output", "my_spreadsheet_with_named_range.ods")
-    document.save(target=output, pretty=True)
+    return document
+
+
+if __name__ == "__main__":
+    main()

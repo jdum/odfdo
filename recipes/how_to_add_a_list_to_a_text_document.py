@@ -1,15 +1,31 @@
-from odfdo import Document
+#!/usr/bin/env python
+"""Create an empty text document and add a list.
+"""
+from pathlib import Path
 
-document = Document("text")
-body = document.body
+# Lists are a dedicated object List
+from odfdo import Document, List
 
-# Lists are a dedicated object
-from odfdo import List
+OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "add_list"
+TARGET = "document.odt"
 
-my_list = List(["chocolat", "café"])
 
-# The list factory accepts a Python list of strings and list items.
-#
-# The list can be written even though we will modify it afterwards:
+def save_new(document: Document, name: str):
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    new_path = OUTPUT_DIR / name
+    print("Saving:", new_path)
+    document.save(new_path, pretty=True)
 
-body.append(my_list)
+
+def main():
+    document = Document("text")
+    body = document.body
+    some_list = List(["chocolate", "tea", "coffee"])
+    # The list factory accepts a Python list of strings and list items.
+    body.append(some_list)
+
+    save_new(document, TARGET)
+
+
+if __name__ == "__main__":
+    main()

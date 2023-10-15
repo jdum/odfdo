@@ -1,45 +1,57 @@
 #!/usr/bin/env python
+"""Create a basic text document with footnotes.
+"""
+from pathlib import Path
 
-import os
-
-# Uncommented parts are explained in: create_a_basic_text_document.py
 from odfdo import Document, Header, Paragraph
 
-lorem_ipsum = open("./lorem.txt", "r", encoding="utf8").read()
+OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "basic_footnotes"
+DATA = Path(__file__).parent / "data"
+LOREM = (DATA / "lorem.txt").read_text(encoding="utf8")
+TARGET = "document.odt"
 
-# Create the document
-my_document = Document("text")
-body = my_document.body
 
-# Add content (See Create_a_basic_document.py)
-title1 = Header(1, "Main title")
-body.append(title1)
-for p in range(3):
-    title = Header(2, f"title {p}")
-    body.append(title)
-    paragraph = Paragraph(lorem_ipsum[:240])
+def save_new(document: Document, name: str):
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    new_path = OUTPUT_DIR / name
+    print("Saving:", new_path)
+    document.save(new_path, pretty=True)
 
-    # Adding Footnote
-    # Now we add a footnote on each paragraph
-    # Notes are quite complex so they deserve a dedicated API on paragraphs:
-    some_word = paragraph.text_recursive.split()[3]
-    # choosing the 4th word of the paragraph to insert the note
-    paragraph.insert_note(
-        after=some_word,  # The word after what the “¹” citation is inserted.
-        note_id=f"note{p}",  # The unique identifier of the note in the document.
-        citation="1",  # The symbol the user sees to follow the footnote.
-        body=(
-            f'Author{p}, A. (2007). "How to cite references", Sample Editions.'
-            # The footnote itself, at the end of the page.
-        ),
-    )
 
-    body.append(paragraph)
+def main():
+    document = Document("text")
+    make_footnotes(document)
+    save_new(document, TARGET)
 
-if not os.path.exists("test_output"):
-    os.mkdir("test_output")
 
-output = os.path.join("test_output", "my_document_with_footnote.odt")
+def make_footnotes(document):
+    body = document.body
 
-# And finally save the document.
-my_document.save(target=output, pretty=True)
+    # Add content (See Create_a_basic_document.py)
+    title1 = Header(1, "Main title")
+    body.append(title1)
+    for index in range(3):
+        title = Header(2, f"title {index}")
+        body.append(title)
+        paragraph = Paragraph(LOREM[:240])
+
+        # Adding Footnote
+        # Now we add a footnote on each paragraph
+        # Notes are quite complex so they deserve a dedicated API on paragraphs:
+        some_word = paragraph.text_recursive.split()[3]
+        # choosing the 4th word of the paragraph to insert the note
+        paragraph.insert_note(
+            after=some_word,  # The word after what the “¹” citation is inserted.
+            note_id=f"note{index}",  # The unique identifier of the note in the document.
+            citation="1",  # The symbol the user sees to follow the footnote.
+            body=(
+                f'Author{index}, A. (2007). "How to cite references", Sample Editions.'
+                # The footnote itself, at the end of the page.
+            ),
+        )
+
+        body.append(paragraph)
+
+
+if __name__ == "__main__":
+    main()

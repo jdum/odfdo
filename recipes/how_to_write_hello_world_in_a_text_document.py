@@ -1,5 +1,3 @@
-#  I want to write "Hello World" on the first page.
-
 from odfdo import Document, Paragraph
 
 document = Document("text")

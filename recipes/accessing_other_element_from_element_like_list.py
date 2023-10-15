@@ -1,51 +1,77 @@
 #!/usr/bin/env python
+"""Accessing other element from element like list.
+"""
+from pathlib import Path
 
 from odfdo import Document
 
-# ODF export of Wikipedia article Hitchhiker's Guide to the Galaxy (CC-By-SA)
-filename = "collection2.odt"
+DATA = Path(__file__).parent / "data"
+SOURCE = DATA / "collection2.odt"
 
-doc = Document(filename)
 
-# The body object is an XML element from which we can access one or several
-# other elements we are looking for.
-body = doc.body
+def analyse_list(document):
+    # The body object is an XML element from which we can access one or several
+    # other elements we are looking for.
+    body = document.body
 
-# Any element is a context for navigating but only on the subtree it
-# contains. Just like the body was, but since the body contains all content,
-# we didn’t see the difference.
-# Let's try the lists:
-print("Available lists of the document:", len(body.get_lists()))
+    # Any element is a context for navigating but only on the subtree it
+    # contains. Just like the body was, but since the body contains all content,
+    # we didn’t see the difference.
+    # Let's try the lists:
+    print("Number of available lists in the document:", len(body.get_lists()))
+    print()
 
-mylist = body.get_list(position=4)
-print(mylist)
-print("The 4th list got paragraphs:", len(mylist.get_paragraphs()))
+    list4 = body.get_list(position=4)
+    print(f"The 4th list contains {len(list4.get_paragraphs())} paragraphs")
+    print()
 
-# Now print the list content
-for paragraph in mylist.get_paragraphs():
-    print(paragraph)
-    print(paragraph.text_recursive)
+    # Now print the list content
+    count = 0
+    for paragraph in list4.get_paragraphs():
+        count += 1
+        print(count, ":", paragraph)
+        print(paragraph.text_recursive)
+        print()
 
-Expected_result = """
-Available lists of the document: 5
-<lpod.list.odf_list object at 0x1018434d0> "text:list"
-The 4th list got paragraphs: 9
-<lpod.paragraph.odf_paragraph object at 0x101843650> "text:p"
-BBC Cult website, official website for the TV show version (includes information, links and downloads)
-<lpod.paragraph.odf_paragraph object at 0x101843690> "text:p"
-BBC Radio 4 website for the 2004-2005 series
-<lpod.paragraph.odf_paragraph object at 0x101843610> "text:p"
-Official Movie Site
-<lpod.paragraph.odf_paragraph object at 0x101843550> "text:p"
-The Hitchhiker's Guide to the Galaxy (2005 movie) at the Internet Movie Database
-<lpod.paragraph.odf_paragraph object at 0x1018436d0> "text:p"
-The Hitch Hikers Guide to the Galaxy (1981 TV series) at the Internet Movie Database
-<lpod.paragraph.odf_paragraph object at 0x101843710> "text:p"
-h2g2
-<lpod.paragraph.odf_paragraph object at 0x101843750> "text:p"
-Encyclopedia of Television
-<lpod.paragraph.odf_paragraph object at 0x101843790> "text:p"
-British Film Institute Screen Online page devoted to the TV series
-<lpod.paragraph.odf_paragraph object at 0x101843510> "text:p"
-DC Comics H2G2 site
-"""
+    _expected_result = """
+    Number of available lists in the document: 5
+
+    The 4th list contains 9 paragraphs
+
+    1 : <odfdo.paragraph.Paragraph object at 0x105761820> "text:p"
+    BBC Cult website, official website for the TV show version (includes information, links and downloads)
+
+    2 : <odfdo.paragraph.Paragraph object at 0x105761850> "text:p"
+    BBC Radio 4 website for the 2004–2005 series
+
+    3 : <odfdo.paragraph.Paragraph object at 0x105761880> "text:p"
+    Official Movie Site
+
+    4 : <odfdo.paragraph.Paragraph object at 0x1057618b0> "text:p"
+    The Hitchhiker's Guide to the Galaxy (2005 movie) at the Internet Movie Database
+
+    5 : <odfdo.paragraph.Paragraph object at 0x1057618e0> "text:p"
+    The Hitch Hikers Guide to the Galaxy (1981 TV series) at the Internet Movie Database
+
+    6 : <odfdo.paragraph.Paragraph object at 0x105761910> "text:p"
+    h2g2
+
+    7 : <odfdo.paragraph.Paragraph object at 0x105761940> "text:p"
+    Encyclopedia of Television
+
+    8 : <odfdo.paragraph.Paragraph object at 0x105761970> "text:p"
+    British Film Institute Screen Online page devoted to the TV series
+
+    9 : <odfdo.paragraph.Paragraph object at 0x1057617f0> "text:p"
+    DC Comics H2G2 site
+
+    """  # noqa: E501
+
+
+def main():
+    document = Document(SOURCE)
+    analyse_list(document)
+
+
+if __name__ == "__main__":
+    main()

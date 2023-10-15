@@ -1,61 +1,73 @@
 #!/usr/bin/env python
-import os
-
-# Uncommented parts are explained in : create_a_basic_document_with_a_list.py
+"""Create a basic text document with list and sublists.
+"""
+from pathlib import Path
 
 from odfdo import Document, List, ListItem
 
-# Create the document
-my_document = Document("text")
-body = my_document.body
-
-# Adding List
-my_list = List(["Arthur", "Ford", "Trillian"])
-item = ListItem("Marvin")
-my_list.append_item(item)
-body.append(my_list)
-
-# Adding Sublist¶
-# A sublist is simply a list as an item of another list:
-item.append(List(["Paranoid Android", "older than the universe"]))
-
-# See the result:
-print(my_document.get_formatted_text())
-# - Arthur
-# - Ford
-# - Trillian
-# - Marvin
-#   - Paranoid Android
-#   - older than the universe
+OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "basic_sublist"
+TARGET = "document.odt"
 
 
-# Inserting List Item
-# In case your forgot to insert an item:
-my_list.insert_item("some dolphins", position=1)
-
-# Or you can insert it before another item:
-marvin = my_list.get_item(content="Marvin")
-my_list.insert_item("Zaphod", before=marvin)
-# Or after:
-my_list.insert_item("and many others", after=marvin)
+def save_new(document: Document, name: str):
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    new_path = OUTPUT_DIR / name
+    print("Saving:", new_path)
+    document.save(new_path, pretty=True)
 
 
-if not os.path.exists("test_output"):
-    os.mkdir("test_output")
+def main():
+    document = generate_document()
+    save_new(document, TARGET)
 
-output = os.path.join("test_output", "my_document_with_sublist.odt")
 
-# And finally save the document.
-my_document.save(target=output, pretty=True)
+def generate_document():
+    document = Document("text")
+    body = document.body
 
-# See the result:
-print(my_document.get_formatted_text())
-# - Arthur
-# - some dolphins
-# - Ford
-# - Trillian
-# - Zaphod
-# - Marvin
-#   - Paranoid Android
-#   - older than the universe
-# - and many others
+    # Adding List
+    name_list = List(["Arthur", "Ford", "Trillian"])
+    item = ListItem("Marvin")
+    name_list.append_item(item)
+    body.append(name_list)
+
+    # Adding Sublist¶
+    # A sublist is simply a list as an item of another list:
+    item.append(List(["Paranoid Android", "older than the universe"]))
+
+    # See the result:
+    print(document.get_formatted_text())
+    # - Arthur
+    # - Ford
+    # - Trillian
+    # - Marvin
+    #   - Paranoid Android
+    #   - older than the universe
+
+    # Inserting List Item
+    # In case your forgot to insert an item:
+    name_list.insert_item("some dolphins", position=1)
+
+    # Or you can insert it before another item:
+    marvin = name_list.get_item(content="Marvin")
+    name_list.insert_item("Zaphod", before=marvin)
+    # Or after:
+    name_list.insert_item("and many others", after=marvin)
+
+    # See the result:
+    print(document.get_formatted_text())
+    # - Arthur
+    # - some dolphins
+    # - Ford
+    # - Trillian
+    # - Zaphod
+    # - Marvin
+    #   - Paranoid Android
+    #   - older than the universe
+    # - and many others
+    #
+    return document
+
+
+if __name__ == "__main__":
+    main()

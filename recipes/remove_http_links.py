@@ -1,29 +1,54 @@
 #!/usr/bin/env python
+"""Remove the links (the text:a tag), keeping the inner text.
 """
-Remove the links (the text:a tag), keeping the inner text.
-"""
-import os
 import sys
+from pathlib import Path
 
-from odfdo import Document, Element
+from odfdo import Document
+
+DATA = Path(__file__).parent / "data"
+SOURCE = "collection2.odt"
+OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "nolink"
+TARGET = "document.odt"
 
 
-def get_default_doc():
-    return "collection2.odt"
+def save_new(document: Document, name: str):
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    new_path = OUTPUT_DIR / name
+    print("Saving:", new_path)
+    document.save(new_path, pretty=True)
+
+
+def main():
+    try:
+        source = Path(sys.argv[1])
+    except IndexError:
+        source = DATA / SOURCE
+
+    document = Document(str(source))
+    body = document.body
+
+    print("Removing links from", source)
+    print("'text:a' occurrences:", len(body.get_links()))
+
+    remove_links(body)
+    print("'text:a' occurrences after removal:", len(body.get_links()))
+
+    save_new(document, TARGET)
 
 
 def remove_links(element):
     tag = "text:a"
     keep_inside_tag = "None"
     context = (tag, keep_inside_tag, False)
-    element, is_modified = _tree_remove_tag(element, context)
-    return is_modified
+    element, _is_modified = _tree_remove_tag(element, context)
 
 
 def _tree_remove_tag(element, context):
     """Remove tag in the element, recursive.
-    - context = (tag to remove, protection tag, protection flag)
-    - protection tag protect from change sub elements one sub level depth
+
+    - context: a tuple (tag to remove, protection tag, protection flag)
+    where protection tag protect from change sub elements one sub level depth
     """
     buffer = element.clone
     modified = False
@@ -39,7 +64,7 @@ def _tree_remove_tag(element, context):
         )
         if is_modified:
             modified = True
-        if type(striped) == type([]):
+        if isinstance(striped, list):
             for item in striped:
                 sub_elements.append(item)
         else:
@@ -64,7 +89,7 @@ def _tree_remove_tag(element, context):
     for child in sub_elements:
         element.append(child)
     if tail is not None:
-        if type(element) == type([]):
+        if isinstance(element, list):
             element.append(tail)
         else:
             element.tail = tail
@@ -72,24 +97,4 @@ def _tree_remove_tag(element, context):
 
 
 if __name__ == "__main__":
-    try:
-        source = sys.argv[1]
-    except IndexError:
-        source = get_default_doc()
-
-    document = Document(source)
-    body = document.body
-
-    print("Removing links from", source)
-    print("'text:a' occurrences:", len(body.get_links()))
-
-    remove_links(body)
-
-    print("'text:a' occurrences after removal:", len(body.get_links()))
-
-    if not os.path.exists("test_output"):
-        os.mkdir("test_output")
-
-    output = os.path.join("test_output", "my_" + source)
-
-    document.save(target=output, pretty=True)
+    main()
