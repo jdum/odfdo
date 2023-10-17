@@ -36,10 +36,10 @@ poetry = "*"
 pytest = "*"
 
 [tool.poetry.scripts]
-odfdo-diff = 'odfdo.scripts.odfdo-diff:main'
-odfdo-folder = 'odfdo.scripts.odfdo-folder:main'
-odfdo-show = 'odfdo.scripts.odfdo-show:main'
-odfdo-styles = 'odfdo.scripts.odfdo-styles:main'
+odfdo-diff = "odfdo.scripts.diff:main"
+odfdo-folder = 'odfdo.scripts.folder:main'
+odfdo-show = 'odfdo.scripts.show:main'
+odfdo-styles = 'odfdo.scripts.styles:main'
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
