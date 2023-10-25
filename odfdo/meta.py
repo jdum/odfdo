@@ -158,16 +158,10 @@ class Meta(XmlPart):
         def test_part1(p1):
             if not 2 <= len(p1) <= 3:
                 return False
-            for x in p1:
-                if x not in ascii_letters:
-                    return False
-            return True
+            return all(x in ascii_letters for x in p1)
 
         def test_part2(p1):
-            for x in p1:
-                if x not in ascii_letters and x not in digits:
-                    return False
-            return True
+            return all(x in ascii_letters or x in digits for x in p1)
 
         if not lang or not isinstance(lang, str):
             return False
@@ -178,10 +172,7 @@ class Meta(XmlPart):
             return False
         if not test_part1(parts[0]):
             return False
-        for p in parts[1:]:
-            if not test_part2(p):
-                return False
-        return True
+        return all(test_part2(p) for p in parts[1:])
 
     def get_modification_date(self):
         """Get the last modified date of the document.
@@ -469,8 +460,8 @@ class Meta(XmlPart):
         for key, value in statistic.items():
             try:
                 ivalue = int(value)
-            except ValueError:
-                raise TypeError("statistic value must be a int")
+            except ValueError as e:
+                raise TypeError("statistic value must be a int") from e
             element.set_attribute(to_str(key), str(ivalue))
 
     def get_user_defined_metadata(self):

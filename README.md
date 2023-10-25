@@ -76,7 +76,7 @@ When installing odfdo, 4 scripts are installed:
  - `odfdo-styles`: command line interface tool to manipulate styles of ODF files.
 
 About styles: the best way to apply style is by merging styles from a template
-document into your generated document (See `odfdo-style` script).
+document into your generated document (See `odfdo-styles` script).
 Styles are a complex matter in ODF, so trying to generate styles programmatically
 is not recommended.
 

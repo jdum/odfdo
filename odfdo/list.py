@@ -21,8 +21,13 @@
 #          Romain Gauthier <romain@itaapy.com>
 """List class for "text:list"
 """
-from .element import (FIRST_CHILD, NEXT_SIBLING, PREV_SIBLING, Element,
-                      register_element_class)
+from .element import (
+    FIRST_CHILD,
+    NEXT_SIBLING,
+    PREV_SIBLING,
+    Element,
+    register_element_class,
+)
 from .paragraph import Paragraph
 from .utils import _get_element, _get_elements, isiterable
 

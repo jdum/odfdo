@@ -21,17 +21,25 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 """Container class, ODF file management
 """
+import contextlib
 import os
 import shutil
 from copy import deepcopy
 from os.path import dirname, exists, join
 from pathlib import Path, PurePath
-# from io import BytesIO
 from zipfile import ZIP_DEFLATED, ZIP_STORED, BadZipfile, ZipFile, is_zipfile
 
-from .const import (ODF_CONTENT, ODF_EXTENSIONS, ODF_MANIFEST, ODF_META,
-                    ODF_MIMETYPES, ODF_SETTINGS, ODF_STYLES, ODF_TEMPLATES,
-                    ODF_TEMPLATES_DIR)
+from .const import (
+    ODF_CONTENT,
+    ODF_EXTENSIONS,
+    ODF_MANIFEST,
+    ODF_META,
+    ODF_MIMETYPES,
+    ODF_SETTINGS,
+    ODF_STYLES,
+    ODF_TEMPLATES,
+    ODF_TEMPLATES_DIR,
+)
 from .manifest import Manifest
 from .scriptutils import printwarn
 from .utils import to_bytes, to_str
@@ -225,10 +233,8 @@ class Container:
                     continue
                 filezip.writestr(path, data)
             # Manifest
-            try:
+            with contextlib.suppress(KeyError):
                 filezip.writestr(ODF_MANIFEST, parts[ODF_MANIFEST])
-            except KeyError:
-                pass
 
     def __save_folder(self, folder):
         """Save a folder ODF from the available parts."""
@@ -324,7 +330,7 @@ class Container:
         if self.path and self.__packaging == "zip":
             self.__get_all_zip_part()
         clone = deepcopy(self)
-        setattr(clone, "path", None)
+        clone.path = None
         return clone
 
     @staticmethod
@@ -344,6 +350,47 @@ class Container:
             except OSError as e:
                 printwarn(str(e))
 
+    def _save_packaging(self, packaging):
+        if not packaging:
+            packaging = self.__packaging if self.__packaging else "zip"
+        packaging = packaging.strip().lower()
+        # if packaging not in ('zip', 'flat', 'folder'):
+        if packaging not in ("zip", "folder"):
+            raise ValueError(f'packaging of type "{packaging}" is not supported')
+        return packaging
+
+    def _save_target(self, target):
+        if target is None:
+            target = self.path
+        if isinstance(target, str):
+            while target.endswith(os.sep):
+                target = target[:-1]
+            while target.endswith(".folder"):
+                target = target.split(".folder", 1)[0]
+        return target
+
+    def _save_as_zip(self, packaging, target, backup):
+        if isinstance(target, str) and backup:
+            self.__do_backup(target)
+        self.__save_zip(target)
+
+    def _save_as_folder(self, packaging, target, backup):
+        if not isinstance(target, str):
+            raise TypeError(
+                f"Saving in folder format requires a folder name, not '{target}'"
+            )
+        if not target.endswith(".folder"):
+            target = target + ".folder"
+        if backup:
+            self.__do_backup(target)
+        else:
+            if exists(target):
+                try:
+                    shutil.rmtree(target)
+                except OSError as e:
+                    printwarn(str(e))
+        self.__save_folder(target)
+
     def save(self, target=None, packaging=None, backup=False):
         """Save the container to the given target, a path or a file-like
         object.
@@ -360,47 +407,14 @@ class Container:
             backup -- boolean
         """
         parts = self.__parts
-        # Packaging
-        if packaging is None:
-            if self.__packaging:
-                packaging = self.__packaging
-            else:
-                packaging = "zip"  # default
-        packaging = packaging.strip().lower()
-        # if packaging not in ('zip', 'flat', 'folder'):
-        if packaging not in ("zip", "folder"):
-            raise ValueError('packaging type "%s" not supported' % packaging)
+        packaging = self._save_packaging(packaging)
         # Load parts else they will be considered deleted
         for path in self.get_parts():
             if path not in parts:
                 self.get_part(path)
-        # Open output file
-        # close_after = False
-        if target is None:
-            target = self.path
-        if isinstance(target, str):
-            while target.endswith(os.sep):
-                target = target[:-1]
-            while target.endswith(".folder"):
-                target = target.split(".folder", 1)[0]
-        if packaging == "zip":
-            if isinstance(target, str) and backup:
-                self.__do_backup(target)
-            self.__save_zip(target)
+        target = self._save_target(target)
         if packaging == "folder":
-            if not isinstance(target, str):
-                raise ValueError(
-                    "Saving in folder format requires a folder "
-                    "name, not %s." % target
-                )
-            if not target.endswith(".folder"):
-                target = target + ".folder"
-            if backup:
-                self.__do_backup(target)
-            else:
-                if exists(target):
-                    try:
-                        shutil.rmtree(target)
-                    except OSError as e:
-                        printwarn(str(e))
-            self.__save_folder(target)
+            self._save_as_folder(packaging, target, backup)
+        else:
+            # default:
+            self._save_as_zip(packaging, target, backup)

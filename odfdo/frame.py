@@ -60,7 +60,13 @@ class AnchorMix:
     value can be: 'page', 'frame', 'paragraph', 'char' or 'as-char'
     """
 
-    anchor_value_choice = {"page", "frame", "paragraph", "char", "as-char"}
+    ANCHOR_VALUE_CHOICE = {  # noqa: RUF012
+        "page",
+        "frame",
+        "paragraph",
+        "char",
+        "as-char",
+    }
 
     @property
     def anchor_type(self):
@@ -69,7 +75,7 @@ class AnchorMix:
 
     @anchor_type.setter
     def anchor_type(self, anchor_type):
-        if anchor_type not in self.anchor_value_choice:
+        if anchor_type not in self.ANCHOR_VALUE_CHOICE:
             raise ValueError("anchor_type not valid: %s" % anchor_type)
         self.set_attribute("text:anchor-type", anchor_type)
 
@@ -170,7 +176,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
         ("presentation_style", "presentation:style-name"),
     )
 
-    def __init__(
+    def __init__(  # noqa:  C901
         self,
         name=None,
         draw_id=None,
@@ -410,7 +416,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
             text_box.append(item)
         return text_box
 
-    def get_formatted_text(self, context):
+    def get_formatted_text(self, context):  # noqa:  C901
         result = []
         for element in self.children:
             tag = element.tag

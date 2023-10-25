@@ -32,7 +32,7 @@ _rsplitter = re.compile("(\n|\t|  +)")
 _rspace = re.compile("^  +$")
 
 
-def _get_formatted_text(element, context, with_text=True):
+def _get_formatted_text(element, context, with_text=True):  # noqa: C901
     document = context.get("document", None)
     rst_mode = context.get("rst_mode", False)
 
@@ -202,10 +202,8 @@ class Tab(Element):
         Return: Tab
         """
         super().__init__(**kwargs)
-        if self._do_init:
-            if position is not None:
-                if position >= 0:
-                    self.position = str(position)
+        if self._do_init and position is not None and position >= 0:
+            self.position = str(position)
 
 
 Tab._define_attribut_property()

@@ -22,17 +22,31 @@
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 """Element, super class of all ODF classes
 """
+import contextlib
 import re
 import sys
 from copy import deepcopy
 
 from lxml.etree import Element as lxml_Element
-from lxml.etree import (XPath, _Element, _ElementStringResult,
-                        _ElementUnicodeResult, fromstring, tostring)
+from lxml.etree import (
+    XPath,
+    _Element,
+    _ElementStringResult,
+    _ElementUnicodeResult,
+    fromstring,
+    tostring,
+)
 
 from .datatype import Boolean, DateTime
-from .utils import (FAMILY_ODF_STD, _family_style_tagname, _get_element,
-                    _get_elements, get_value, to_bytes, to_str)
+from .utils import (
+    FAMILY_ODF_STD,
+    _family_style_tagname,
+    _get_element,
+    _get_elements,
+    get_value,
+    to_bytes,
+    to_str,
+)
 
 ODF_NAMESPACES = {
     "anim": "urn:oasis:names:tc:opendocument:xmlns:animation:1.0",
@@ -142,8 +156,8 @@ def _decode_qname(qname):
         prefix, name = qname.split(":")
         try:
             uri = ODF_NAMESPACES[prefix]
-        except KeyError:
-            raise ValueError('XML prefix "%s" is unknown' % prefix)
+        except KeyError as e:
+            raise ValueError(f'XML prefix "{prefix}" is unknown') from e
         return uri, name
     return None, qname
 
@@ -165,7 +179,7 @@ def _get_prefixed_name(tag):
 
 def _get_lxml_tag(qname):
     """Replace "prefix:name" syntax with lxml "{uri}name" one."""
-    return "{%s}%s" % _decode_qname(qname)
+    return "{%s}%s" % _decode_qname(qname)  # noqa:UP031
 
 
 def _xpath_compile(path):
@@ -323,11 +337,11 @@ class Element:
             # repeated namespace declarations
             tag = b"<%s/>" % tag
         # XML fragment
-        root = fromstring(NAMESPACES_XML % tag)
+        root = fromstring(NAMESPACES_XML % tag)  # noqa:S320
         return root[0]
 
     def __str__(self):
-        return '%s "%s"' % (repr(self), self.tag)
+        return f'{self!r} "{self.tag}"'
 
     @staticmethod
     def _generic_attrib_getter(attr_name, family=None):
@@ -353,10 +367,8 @@ class Element:
             if family and self.family != family:
                 return None
             if value is None:
-                try:
+                with contextlib.suppress(KeyError):
                     del self.__element.attrib[name]
-                except KeyError:
-                    pass
                 return
             if isinstance(value, bool):
                 value = Boolean.encode(value)
@@ -383,6 +395,70 @@ class Element:
                     f"Get/set the attribute {attr}",
                 ),
             )
+
+    def _insert_before_after(
+        self,
+        current,
+        element,
+        before,
+        after,
+        position,
+        main_text,
+        xpath_text,
+    ):
+        # 1) before xor after is not None
+        if before is not None:
+            regex = re.compile(before)
+        else:
+            regex = re.compile(after)
+
+        # position = -1
+        if position < 0:
+            # Found the last text that matches the regex
+            text = None
+            for a_text in xpath_text(current):
+                if regex.search(a_text) is not None:
+                    text = a_text
+            if text is None:
+                raise ValueError("text not found")
+            sre = list(regex.finditer(text))[-1]
+        # position >= 0
+        else:
+            count = 0
+            for text in xpath_text(current):
+                found_nb = len(regex.findall(text))
+                if found_nb + count >= position + 1:
+                    break
+                count += found_nb
+            else:
+                raise ValueError("text not found")
+            sre = list(regex.finditer(text))[position - count]
+        # Compute pos
+        pos = sre.start() if before is not None else sre.end()
+        return pos, text
+
+    def _insert_find_text(
+        self,
+        current,
+        element,
+        before,
+        after,
+        position,
+        main_text,
+        xpath_text,
+    ):
+        # Found the text
+        count = 0
+        for text in xpath_text(current):
+            found_nb = len(text)
+            if found_nb + count >= position:
+                break
+            count += found_nb
+        else:
+            raise ValueError("text not found")
+        # We insert before the character
+        pos = position - count
+        return pos, text
 
     def _insert(self, element, before=None, after=None, position=0, main_text=False):
         """Insert an element before or after the characters in the text which
@@ -417,54 +493,30 @@ class Element:
 
         # 1) before xor after is not None
         if (before is not None) ^ (after is not None):
-            if before is not None:
-                regex = re.compile(before)
-            else:
-                regex = re.compile(after)
-
-            # position = -1
-            if position < 0:
-                # Found the last text that matches the regex
-                text = None
-                for a_text in xpath_text(current):
-                    if regex.search(a_text) is not None:
-                        text = a_text
-                if text is None:
-                    raise ValueError("text not found")
-                sre = list(regex.finditer(text))[-1]
-            # position >= 0
-            else:
-                count = 0
-                for text in xpath_text(current):
-                    found_nb = len(regex.findall(text))
-                    if found_nb + count >= position + 1:
-                        break
-                    count += found_nb
-                else:
-                    raise ValueError("text not found")
-                sre = list(regex.finditer(text))[position - count]
-
-            # Compute pos
-            pos = sre.start() if before is not None else sre.end()
+            pos, text = self._insert_before_after(
+                current,
+                element,
+                before,
+                after,
+                position,
+                main_text,
+                xpath_text,
+            )
         # 2) before=after=None => only with position
         elif before is None and after is None:
             # Hack if position is negative => quickly
             if position < 0:
                 current.append(element)
                 return
-
-            # Found the text
-            count = 0
-            for text in xpath_text(current):
-                found_nb = len(text)
-                if found_nb + count >= position:
-                    break
-                count += found_nb
-            else:
-                raise ValueError("text not found")
-
-            # We insert before the character
-            pos = position - count
+            pos, text = self._insert_find_text(
+                current,
+                element,
+                before,
+                after,
+                position,
+                main_text,
+                xpath_text,
+            )
         else:
             raise ValueError("bad combination of arguments")
 
@@ -606,7 +658,7 @@ class Element:
     def elements_repeated_sequence(self, xpath_instance, name):
         uri, name = _decode_qname(name)
         if uri is not None:
-            name = "{%s}%s" % (uri, name)
+            name = "{%s}%s" % (uri, name)  # noqa: UP031
         element = self.__element
         sub_elements = xpath_instance(element)
         result = []
@@ -651,9 +703,7 @@ class Element:
 
     def _get_element_idx(self, xpath_query, idx):
         element = self.__element
-        result = element.xpath(
-            "(%s)[%s]" % (xpath_query, idx + 1), namespaces=ODF_NAMESPACES
-        )
+        result = element.xpath(f"({xpath_query})[{idx + 1}]", namespaces=ODF_NAMESPACES)
         if result:
             return Element.from_tag(result[0])
         return None
@@ -674,7 +724,7 @@ class Element:
         element = self.__element
         uri, name = _decode_qname(name)
         if uri is not None:
-            name = "{%s}%s" % (uri, name)
+            name = "{%s}%s" % (uri, name)  # noqa: UP031
         value = element.get(name)
         if value is None:
             return None
@@ -695,15 +745,13 @@ class Element:
         element = self.__element
         uri, name = _decode_qname(name)
         if uri is not None:
-            name = "{%s}%s" % (uri, name)
+            name = "{%s}%s" % (uri, name)  # noqa: UP031
 
         if isinstance(value, bool):
             value = Boolean.encode(value)
         elif value is None:
-            try:
+            with contextlib.suppress(KeyError):
                 del element.attrib[name]
-            except KeyError:
-                pass
             return
         element.set(name, str(value))
 
@@ -717,7 +765,7 @@ class Element:
         element = self.__element
         uri, name = _decode_qname(name)
         if uri is not None:
-            name = "{%s}%s" % (uri, name)
+            name = "{%s}%s" % (uri, name)  # noqa: UP031
         del element.attrib[name]
 
     @property
@@ -731,8 +779,8 @@ class Element:
             text = ""
         try:
             self.__element.text = to_str(text)
-        except TypeError:
-            raise TypeError('str type expected: "%s"' % type(text))
+        except TypeError as e:
+            raise TypeError(f'str type expected: "{type(text)}"') from e
 
     @property
     def text_recursive(self):
@@ -921,7 +969,7 @@ class Element:
             return None, None
         return parent._get_successor(target.parent)
 
-    def _get_between_base(self, tag1, tag2):
+    def _get_between_base(self, tag1, tag2):  # noqa:C901
         def find_any_id(tag):
             stag = tag.tag
             for attribute in (
@@ -939,8 +987,8 @@ class Element:
 
         def common_ancestor(t1, a1, v1, t2, a2, v2):
             root = self.root
-            request1 = 'descendant::%s[@%s="%s"]' % (t1, a1, v1)
-            request2 = 'descendant::%s[@%s="%s"]' % (t2, a2, v2)
+            request1 = f'descendant::{t1}[@{a1}="{v1}"]'
+            request2 = f'descendant::{t2}[@{a2}="{v2}"]'
             up = root.xpath(request1)[0]
             while True:
                 # print "up",
@@ -956,8 +1004,8 @@ class Element:
         t1, a1, v1 = find_any_id(tag1)
         t2, a2, v2 = find_any_id(tag2)
         ancestor = common_ancestor(t1, a1, v1, t2, a2, v2).clone
-        r1 = '%s[@%s="%s"]' % (t1, a1, v1)
-        r2 = '%s[@%s="%s"]' % (t2, a2, v2)
+        r1 = f'{t1}[@{a1}="{v1}"]'
+        r2 = f'{t2}[@{a2}="{v2}"]'
         resu = ancestor.clone
         for child in resu.children:
             resu.delete(child)
@@ -969,8 +1017,8 @@ class Element:
         while True:
             # print 'current', state, current.serialize()
             if state == 0:  # before tag 1
-                if current.xpath("descendant-or-self::%s" % r1):
-                    if current.xpath("self::%s" % r1):
+                if current.xpath(f"descendant-or-self::{r1}"):
+                    if current.xpath(f"self::{r1}"):
                         tail = current.tail
                         if tail:
                             # got a tail => the parent should be either t:p or t:h
@@ -994,8 +1042,8 @@ class Element:
                     continue
             elif state == 1:  # collect elements
                 further = False
-                if current.xpath("descendant-or-self::%s" % r2):
-                    if current.xpath("self::%s" % r2):
+                if current.xpath(f"descendant-or-self::{r2}"):
+                    if current.xpath(f"self::{r2}"):
                         # end of trip
                         break
                     # got T2 in chidren, need further analysis
@@ -1019,7 +1067,7 @@ class Element:
         # - a text:h or text:p sigle item (simple case)
         # - a upper element, with some text:p, text:h in it => need to be
         #   stripped to have a list of text:p, text:h
-        if resu.tag in ("text:p", "text:h"):
+        if resu.tag in {"text:p", "text:h"}:
             inner = [resu]
         else:
             inner = resu.children
@@ -1275,19 +1323,18 @@ class Element:
             protect = ()
         protected = False
         element, modified = Element._strip_tags(self, strip, protect, protected)
-        if modified:
-            if isinstance(element, list) and default:
-                new = Element.from_tag(default)
-                for content in element:
-                    if isinstance(content, Element):
-                        new.append(content)
-                    else:
-                        new.text = content
-                element = new
+        if modified and isinstance(element, list) and default:
+            new = Element.from_tag(default)
+            for content in element:
+                if isinstance(content, Element):
+                    new.append(content)
+                else:
+                    new.text = content
+            element = new
         return element
 
     @staticmethod
-    def _strip_tags(element, strip, protect, protected):
+    def _strip_tags(element, strip, protect, protected):  # noqa: C901
         """sub method for strip_tags()"""
         copy = element.clone
         modified = False
@@ -2543,7 +2590,7 @@ class Element:
             content=content,
         )
 
-    def get_draw_line(self, position=0, id=None, content=None):
+    def get_draw_line(self, position=0, id=None, content=None):  # noqa: A002
         """Return the draw line that matches the criteria.
 
         Arguments:
@@ -2583,7 +2630,7 @@ class Element:
             content=content,
         )
 
-    def get_draw_rectangle(self, position=0, id=None, content=None):
+    def get_draw_rectangle(self, position=0, id=None, content=None):  # noqa: A002
         """Return the draw rectangle that matches the criteria.
 
         Arguments:
@@ -2623,7 +2670,7 @@ class Element:
             content=content,
         )
 
-    def get_draw_ellipse(self, position=0, id=None, content=None):
+    def get_draw_ellipse(self, position=0, id=None, content=None):  # noqa: A002
         """Return the draw ellipse that matches the criteria.
 
         Arguments:
@@ -2663,7 +2710,7 @@ class Element:
             content=content,
         )
 
-    def get_draw_connector(self, position=0, id=None, content=None):
+    def get_draw_connector(self, position=0, id=None, content=None):  # noqa: A002
         """Return the draw connector that matches the criteria.
 
         Arguments:
@@ -2809,9 +2856,9 @@ class Element:
         """
         if idx:
             request = (
-                'descendant::text:change-start[@text:change-id="%s"] '
-                '| descendant::text:change[@text:change-id="%s"]'
-            ) % (idx, idx)
+                f'descendant::text:change-start[@text:change-id="{idx}"] '
+                f'| descendant::text:change[@text:change-id="{idx}"]'
+            )
             return _get_element(self, request, position=0)
         request = "descendant::text:change-start | descendant::text:change"
         return _get_element(self, request, position)

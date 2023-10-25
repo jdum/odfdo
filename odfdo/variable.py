@@ -300,7 +300,7 @@ VarTime._define_attribut_property()
 class VarChapter(Element):
     _tag = "text:chapter"
     _properties = (("display", "text:display"), ("outline_level", "text:outline-level"))
-    display_value_choice = {
+    DISPLAY_VALUE_CHOICE = {  # noqa: RUF012
         "number",
         "name",
         "number-and-name",
@@ -314,7 +314,7 @@ class VarChapter(Element):
         """
         super().__init__(**kw)
         if self._do_init:
-            if display not in VarChapter.display_value_choice:
+            if display not in VarChapter.DISPLAY_VALUE_CHOICE:
                 raise ValueError("unknown display value: %s" % display)
             self.display = display
             if outline_level is not None:
@@ -327,13 +327,18 @@ VarChapter._define_attribut_property()
 class VarFileName(Element):
     _tag = "text:file-name"
     _properties = (("display", "text:display"), ("fixed", "text:fixed"))
-    display_value_choice = {"full", "path", "name", "name-and-extension"}
+    DISPLAY_VALUE_CHOICE = {  # noqa: RUF012
+        "full",
+        "path",
+        "name",
+        "name-and-extension",
+    }
 
     def __init__(self, display="full", fixed=False, **kw):
         """display can be: 'full', 'path', 'name' or 'name-and-extension'"""
         super().__init__(**kw)
         if self._do_init:
-            if display not in VarFileName.display_value_choice:
+            if display not in VarFileName.DISPLAY_VALUE_CHOICE:
                 raise ValueError("unknown display value: %s" % display)
             self.display = display
             if fixed:
@@ -349,9 +354,8 @@ class VarInitialCreator(Element):
 
     def __init__(self, fixed=False, **kw):
         super().__init__(**kw)
-        if self._do_init:
-            if fixed:
-                self.fixed = True
+        if self._do_init and fixed:
+            self.fixed = True
 
 
 VarInitialCreator._define_attribut_property()

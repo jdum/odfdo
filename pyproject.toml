@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "odfdo"
-version = "3.3.8"
-description = "Python library for OpenDocument format"
+version = "3.4.0"
+description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 keywords = ["python", "library", "ODF", "OpenDocument"]
 classifiers = [
@@ -25,7 +25,7 @@ readme = "README.md"
 packages = [{ include = "odfdo" }]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3"
 lxml = "^4.0"
 
 [tool.poetry.group.docs.dependencies]
@@ -34,6 +34,7 @@ pdoc3 = "*"
 [tool.poetry.group.dev.dependencies]
 poetry = "*"
 pytest = "*"
+tox = "*"
 
 [tool.poetry.scripts]
 odfdo-diff = "odfdo.scripts.diff:main"
@@ -48,3 +49,61 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 line-length = 88
 target-version = ['py312']
+
+[tool.isort]
+profile = "black"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+fix = false
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bandit
+    "S",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # tryceratops
+    "TRY",
+]
+ignore = [
+    # LineTooLong
+    "E501",
+    # DoNotAssignLambda
+    "E731",
+    # Use specific rule codes when ignoring type issues
+    "PGH003",
+    # check for execution of untrusted input
+    "S603",
+    # Class attribute `open` is shadowing a Python builtin
+    "A003",
+    # Use `X | Y` in `isinstance` call instead of `(X, Y)`
+    "UP038",
+    # Avoid specifying long messages outside the exception class
+    "TRY003",
+    # Use ternary operator
+    "SIM108",
+]

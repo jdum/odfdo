@@ -22,6 +22,7 @@
 #          Romain Gauthier <romain@itaapy.com>
 """get_value() and other utilities
 """
+import contextlib
 from datetime import date, datetime, timedelta
 from decimal import Decimal as dec
 from re import search
@@ -60,7 +61,7 @@ def to_str(value):
     return value
 
 
-def _make_xpath_query(
+def _make_xpath_query(  # noqa: C901
     element_name,
     family=None,
     text_style=None,
@@ -137,19 +138,19 @@ def _make_xpath_query(
     for qname in sorted(attributes):
         value = attributes[qname]
         if value is True:
-            query.append("[@%s]" % to_str(qname))
+            query.append(f"[@{to_str(qname)}]")
         else:
-            query.append('[@%s="%s"]' % (to_str(qname), value))
+            query.append(f'[@{to_str(qname)}="{value}"]')
     query = "".join(query)
     if position is not None:
         # A position argument that mimics the behaviour of a python's list
         if position >= 0:
-            position = "%s" % (position + 1)
+            position = str(position + 1)
         elif position == -1:
             position = "last()"
         else:
-            position = "last()-%s" % (abs(position) - 1)
-        query = "(%s)[%s]" % (query, position)
+            position = f"last()-{abs(position) - 1}"
+        query = f"({query})[{position}]"
     # print(query)
     return query
 
@@ -341,9 +342,15 @@ def _get_element(context, element_name, position, **kw):
         return None
 
 
-def _set_value_and_type(element, value=None, value_type=None, text=None, currency=None):
+def _set_value_and_type(  # noqa: C901
+    element,
+    value=None,
+    value_type=None,
+    text=None,
+    currency=None,
+):
     # Remove possible previous value and type
-    for name in (
+    for name in {
         "office:value-type",
         "office:boolean-value",
         "office:value",
@@ -354,20 +361,16 @@ def _set_value_and_type(element, value=None, value_type=None, text=None, currenc
         "office:currency",
         "calcext:value-type",
         "loext:value-type",
-    ):
-        try:
+    }:
+        with contextlib.suppress(KeyError):
             element.del_attribute(name)
-        except KeyError:
-            pass
     value = to_str(value)
     value_type = to_str(value_type)
     text = to_str(text)
     currency = to_str(currency)
     if value is None:
-        try:
+        with contextlib.suppress(KeyError):
             element.del_attribute(name)
-        except KeyError:
-            pass
         element._erase_text_content()
         return text
     if isinstance(value, bool):
@@ -434,7 +437,12 @@ def _set_value_and_type(element, value=None, value_type=None, text=None, currenc
 ######################################################################
 # Public API
 ######################################################################
-def get_value(element, value_type=None, try_get_text=True, get_type=False):
+def get_value(  # noqa: C901
+    element,
+    value_type=None,
+    try_get_text=True,
+    get_type=False,
+):
     """Only for "with office:value-type" elements, not for meta fields"""
     if value_type is None:
         value_type = element.get_attribute("office:value-type")
@@ -534,7 +542,7 @@ def oooc_to_ooow(formula):
     Return: str
     """
     prefix, formula = formula.split(":=", 1)
-    assert "oooc" in prefix
+    # assert "oooc" in prefix
     # Convert cell addresses
     formula = formula.replace("[.", "<").replace(":.", ":").replace("]", ">")
     # Convert functions

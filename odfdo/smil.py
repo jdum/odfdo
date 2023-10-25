@@ -71,9 +71,8 @@ class AnimSeq(Element):
 
     def __init__(self, presentation_node_type=None, **kwargs):
         super().__init__(**kwargs)
-        if self._do_init:
-            if presentation_node_type:
-                self.presentation_node_type = presentation_node_type
+        if self._do_init and presentation_node_type:
+            self.presentation_node_type = presentation_node_type
 
 
 AnimSeq._define_attribut_property()

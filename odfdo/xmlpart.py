@@ -46,7 +46,7 @@ class XmlPart:
         if self.__tree is None:
             container = self.container
             part = container.get_part(self.part_name)
-            self.__tree = parse(BytesIO(part))
+            self.__tree = parse(BytesIO(part))  # noqa:S320
         return self.__tree
 
     # Public API

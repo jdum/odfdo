@@ -24,6 +24,7 @@
 """Table class for "table:table" and HeaderRows, Cell, Row, Column,
 NamedRange related classes
 """
+import contextlib
 import string
 from bisect import bisect_left, insort
 from csv import Sniffer, reader, writer
@@ -46,13 +47,13 @@ _xpath_cell_idx = _xpath_compile("(table:table-cell|table:covered-table-cell)[$i
 
 def _table_name_check(name):
     if not isinstance(name, str):
-        raise ValueError("String required.")
+        raise TypeError("String required.")
     name = name.strip()
     if not name:
         raise ValueError("Empty name not allowed.")
     for character in ("\n", "/", "\\", "'"):
         if character in name:
-            raise ValueError("Character %s not allowed." % character)
+            raise ValueError(f"Character {character} not allowed.")
     return name
 
 
@@ -68,7 +69,7 @@ def _alpha_to_digit(alpha):
     if isinstance(alpha, int):
         return alpha
     if not alpha.isalpha():
-        raise ValueError('column name "%s" is malformed' % alpha)
+        raise ValueError(f'column name "{alpha}" is malformed')
     column = 0
     for c in alpha.lower():
         v = ord(c) - ord("a") + 1
@@ -80,7 +81,7 @@ def _digit_to_alpha(digit):
     if isinstance(digit, str) and digit.isalpha():
         return digit
     if not isinstance(digit, int):
-        raise ValueError('column number "%s" is invalid' % digit)
+        raise TypeError(f'column number "{digit}" is invalid')
     digit += 1
     column = ""
     while digit:
@@ -106,8 +107,8 @@ def _coordinates_to_alpha_area(coord):
         else:
             # should be 4 int
             x, y, z, t = coord
-        start = _digit_to_alpha(x) + "%s" % (y + 1)
-        end = _digit_to_alpha(z) + "%s" % (t + 1)
+        start = _digit_to_alpha(x) + str(y + 1)
+        end = _digit_to_alpha(z) + str(t + 1)
     else:
         raise ValueError
     crange = start + ":" + end
@@ -131,7 +132,7 @@ def _convert_coordinates(obj):
         return tuple(obj)
     # Or by 'B3' notation ?
     if not isinstance(obj, str):
-        raise ValueError('bad coordinates type: "%s"' % type(obj))
+        raise TypeError(f'bad coordinates type: "{type(obj)}"')
     coordinates = []
     for coord in [x.strip() for x in obj.split(":", 1)]:
         # First "A"
@@ -156,7 +157,7 @@ def _convert_coordinates(obj):
             # maybe 'A:C' row coordinates
             line = None
         if line and line <= 0:
-            raise ValueError('coordinates "%s" malformed' % obj)
+            raise ValueError(f'coordinates "{obj}" malformed')
         coordinates.append(line)
     return tuple(coordinates)
 
@@ -204,14 +205,21 @@ def _get_python_value(data, encoding):
     return data
 
 
-def _set_item_in_vault(position, item, vault, vault_scheme, vault_map_name, clone=True):
+def _set_item_in_vault(  # noqa: C901
+    position,
+    item,
+    vault,
+    vault_scheme,
+    vault_map_name,
+    clone=True,
+):
     """Set the item (cell, row) in its vault (row, table), updating the
     cache map.
     """
     try:
         vault_map = getattr(vault, vault_map_name)
-    except Exception:
-        raise ValueError
+    except Exception as e:
+        raise ValueError from e
     odf_idx = _find_odf_idx(vault_map, position)
     repeated = item.repeated or 1
     current_cache = vault_map[odf_idx]
@@ -290,8 +298,8 @@ def _set_item_in_vault(position, item, vault, vault_scheme, vault_map_name, clon
 def _insert_item_in_vault(position, item, vault, vault_scheme, vault_map_name):
     try:
         vault_map = getattr(vault, vault_map_name)
-    except Exception:
-        raise ValueError
+    except Exception as e:
+        raise ValueError from e
     odf_idx = _find_odf_idx(vault_map, position)
     repeated = item.repeated or 1
     current_cache = vault_map[odf_idx]
@@ -336,8 +344,8 @@ def _insert_item_in_vault(position, item, vault, vault_scheme, vault_map_name):
 def _delete_item_in_vault(position, vault, vault_scheme, vault_map_name):
     try:
         vault_map = getattr(vault, vault_map_name)
-    except Exception:
-        raise ValueError
+    except Exception as e:
+        raise ValueError from e
     odf_idx = _find_odf_idx(vault_map, position)
     current_cache = vault_map[odf_idx]
     cache = vault._indexes[vault_map_name]
@@ -691,10 +699,8 @@ class Cell(Element):
         None to delete. Without changing cache.
         """
         if repeated is None or repeated < 2:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute("table:number-columns-repeated")
-            except KeyError:
-                pass
             return
         self.set_attribute("table:number-columns-repeated", str(repeated))
 
@@ -872,10 +878,8 @@ class Row(Element):
             repeated -- int
         """
         if repeated is None or repeated < 2:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute("table:number-rows-repeated")
-            except KeyError:
-                pass
             return
         self.set_attribute("table:number-rows-repeated", str(repeated))
 
@@ -928,7 +932,7 @@ class Row(Element):
             w = 0
         return w
 
-    def traverse(self, start=None, end=None):
+    def traverse(self, start=None, end=None):  # noqa: C901
         """Yield as many cell elements as expected cells in the row, i.e.
         expand repetitions by returning the same cell as many times as
         necessary.
@@ -1405,10 +1409,7 @@ class Row(Element):
 
         Return: bool
         """
-        for cell in self._get_cells():
-            if not cell.is_empty(aggressive=aggressive):
-                return False
-        return True
+        return all(cell.is_empty(aggressive=aggressive) for cell in self._get_cells())
 
 
 class RowGroup(Element):
@@ -1433,11 +1434,10 @@ class RowGroup(Element):
         Return RowGroup
         """
         super().__init__(**kwargs)
-        if self._do_init:
-            if height is not None:
-                for _i in range(height):
-                    row = Row(width=width)
-                    self.append(row)
+        if self._do_init and height is not None:
+            for _i in range(height):
+                row = Row(width=width)
+                self.append(row)
 
 
 class Column(Element):
@@ -1514,10 +1514,8 @@ class Column(Element):
             repeated -- int or None
         """
         if repeated is None or repeated < 2:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute("table:number-columns-repeated")
-            except KeyError:
-                pass
             return
         self.set_attribute("table:number-columns-repeated", str(repeated))
 
@@ -1667,7 +1665,7 @@ class Table(Element):
             return _increment(y, self.height)
         return y
 
-    def _translate_table_coordinates(self, coord):
+    def _translate_table_coordinates(self, coord):  # noqa: C901
         height = self.height
         width = self.width
         if isiterable(coord):
@@ -1719,7 +1717,7 @@ class Table(Element):
             t = _increment(t, height)
         return (x, y, z, t)
 
-    def _translate_column_coordinates(self, coord):
+    def _translate_column_coordinates(self, coord):  # noqa: C901
         height = self.height
         width = self.width
         if isiterable(coord):
@@ -1780,7 +1778,7 @@ class Table(Element):
         elif len(coord) == 4:
             x, y, z, t = coord
         else:
-            raise ValueError("ValueError %s" % str(coord))
+            raise ValueError(str(coord))
         if x and x < 0:
             x = _increment(x, self.width)
         if y and y < 0:
@@ -1825,7 +1823,7 @@ class Table(Element):
             result.append("\n")
         return "".join(result)
 
-    def __get_formatted_text_rst(self, context):
+    def __get_formatted_text_rst(self, context):  # noqa: C901
         context["no_img_level"] += 1
         # Strip the table => We must clone
         table = self.clone
@@ -2292,7 +2290,7 @@ class Table(Element):
         self._indexes["_cmap"] = {}
         self._compute_table_cache()
 
-    def transpose(self, coord=None):
+    def transpose(self, coord=None):  # noqa: C901
         """Swap *in-place* rows and columns of the table.
 
         If 'coord' is not None, apply transpose only to the area defined by the
@@ -2308,7 +2306,7 @@ class Table(Element):
         data = []
         if coord is None:
             for row in self.traverse():
-                data.append([cell for cell in row.traverse()])
+                data.append(list(row.traverse()))
             transposed_data = zip_longest(*data)
             self.clear()
             # new_rows = []
@@ -2338,7 +2336,7 @@ class Table(Element):
             else:
                 t = min(t, self.height - 1)
             for row in self.traverse(start=y, end=t):
-                data.append([cell for cell in row.traverse(start=x, end=z)])
+                data.append(list(row.traverse(start=x, end=z)))
             transposed_data = zip_longest(*data)
             # clear locally
             w = z - x + 1
@@ -2366,10 +2364,7 @@ class Table(Element):
 
             aggressive -- bool
         """
-        for row in self._get_rows():
-            if not row.is_empty(aggressive=aggressive):
-                return False
-        return True
+        return all(row.is_empty(aggressive=aggressive) for row in self._get_rows())
 
     #
     # Rows
@@ -2378,7 +2373,7 @@ class Table(Element):
     def _get_rows(self):
         return self.get_elements(_xpath_row)
 
-    def traverse(self, start=None, end=None):
+    def traverse(self, start=None, end=None):  # noqa: C901
         """Yield as many row elements as expected rows in the table, i.e.
         expand repetitions by returning the same row as many times as
         necessary.
@@ -2468,7 +2463,7 @@ class Table(Element):
             y = t = None
         # fixme : not clones ?
         if not content and not style:
-            return [row for row in self.traverse(start=y, end=t)]
+            return list(self.traverse(start=y, end=t))
         rows = []
         for row in self.traverse(start=y, end=t):
             if content and not row.match(content):
@@ -3027,7 +3022,7 @@ class Table(Element):
             image_frame.set_attribute("table:end-x", width)
             image_frame.set_attribute("table:end-y", height)
             # FIXME what happens when the address changes?
-            address = "%s.%s%s" % (self.name, _digit_to_alpha(x), y + 1)
+            address = f"{self.name}.{_digit_to_alpha(x)}{y + 1}"
             image_frame.set_attribute("table:end-cell-address", address)
             # The frame is directly in the cell
             cell.append(image_frame)
@@ -3127,7 +3122,7 @@ class Table(Element):
     def _get_columns(self):
         return self.get_elements(_xpath_column)
 
-    def traverse_columns(self, start=None, end=None):
+    def traverse_columns(self, start=None, end=None):  # noqa: C901
         """Yield as many column elements as expected columns in the table,
         i.e. expand repetitions by returning the same column as many times as
         necessary.
@@ -3213,7 +3208,7 @@ class Table(Element):
         else:
             x = t = None
         if not style:
-            return [column for column in self.traverse_columns(start=x, end=t)]
+            return list(self.traverse_columns(start=x, end=t))
         columns = []
         for column in self.traverse_columns(start=x, end=t):
             if style != column.style:
@@ -3384,8 +3379,13 @@ class Table(Element):
             if row.width >= width:
                 row.delete_cell(x)
 
-    def get_column_cells(
-        self, x, style=None, content=None, cell_type=None, complete=False
+    def get_column_cells(  # noqa: C901
+        self,
+        x,
+        style=None,
+        content=None,
+        cell_type=None,
+        complete=False,
     ):
         """Get the list of cells at the given position.
 
@@ -3508,7 +3508,7 @@ class Table(Element):
         """
         height = self.height
         if len(cells) != height:
-            raise ValueError("col mismatch: %s cells expected" % height)
+            raise ValueError(f"col mismatch: {height} cells expected")
         cells = iter(cells)
         for y, row in enumerate(self.traverse()):
             row.set_cell(x, next(cells))
@@ -3578,16 +3578,16 @@ class Table(Element):
         all_named_ranges = body.get_named_ranges()
         if not table_name:
             return all_named_ranges
-        filter = []
+        filter_ = []
         if isinstance(table_name, str):
-            filter.append(table_name)
+            filter_.append(table_name)
         elif isiterable(table_name):
-            filter.extend(table_name)
+            filter_.extend(table_name)
         else:
             raise ValueError(
-                "table_name must be string or Iterable, not %s" % type(table_name)
+                f"table_name must be string or Iterable, not {type(table_name)}"
             )
-        return [nr for nr in all_named_ranges if nr.table_name in filter]
+        return [nr for nr in all_named_ranges if nr.table_name in filter_]
 
     def get_named_range(self, name):
         """Returns the Name Ranges of the specified name. If
@@ -3652,7 +3652,7 @@ class Table(Element):
     # Cell span
     #
 
-    def set_span(self, area, merge=False):
+    def set_span(self, area, merge=False):  # noqa: C901
         """Create a Cell Span : span the first cell of the area on several
         columns and/or rows.
         If merge is True, replace text of the cell by the concatenation of
@@ -3905,10 +3905,8 @@ class NamedRange(Element):
             if usage not in ("print-range", "filter", "repeat-column", "repeat-row"):
                 usage = None
         if usage is None:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute("table:range-usable-as")
-            except KeyError:
-                pass
             self.usage = None
         else:
             self.set_attribute("table:range-usable-as", usage)
@@ -3935,7 +3933,7 @@ class NamedRange(Element):
             raise ValueError("Name required.")
         for x in name:
             if x in _forbidden_in_named_range:
-                raise ValueError("Character forbidden '%s' " % x)
+                raise ValueError(f"Character forbidden '{x}' ")
         step = ""
         for x in name:
             if x in string.ascii_letters and step in ("", "A"):
@@ -3954,7 +3952,7 @@ class NamedRange(Element):
             named_range = body.get_named_range(name)
             if named_range:
                 named_range.delete()
-        except Exception:
+        except Exception:  # noqa: S110
             pass  # we are not on an inserted in a document.
         self.set_attribute("table:name", name)
 
@@ -3998,25 +3996,22 @@ class NamedRange(Element):
     def _make_base_cell_address(self):
         # assuming we got table_name and range
         if " " in self.table_name:
-            name = "'%s'" % self.table_name
+            name = f"'{self.table_name}'"
         else:
             name = self.table_name
-        return "$%s.$%s$%s" % (name, _digit_to_alpha(self.start[0]), self.start[1] + 1)
+        return f"${name}.${_digit_to_alpha(self.start[0])}${self.start[1] + 1}"
 
     def _make_cell_range_address(self):
         # assuming we got table_name and range
         if " " in self.table_name:
-            name = "'%s'" % self.table_name
+            name = f"'{self.table_name}'"
         else:
             name = self.table_name
         if self.start == self.end:
             return self._make_base_cell_address()
-        return "$%s.$%s$%s:.$%s$%s" % (
-            name,
-            _digit_to_alpha(self.start[0]),
-            self.start[1] + 1,
-            _digit_to_alpha(self.end[0]),
-            self.end[1] + 1,
+        return (
+            f"${name}.${_digit_to_alpha(self.start[0])}${self.start[1] + 1}:"
+            f".${_digit_to_alpha(self.end[0])}${self.end[1] + 1}"
         )
 
     def get_values(self, cell_type=None, complete=True, get_type=False, flat=False):

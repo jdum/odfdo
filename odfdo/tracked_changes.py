@@ -204,7 +204,7 @@ class TextInsertion(Element):
                 # assume iterable of Paragraph
                 for paragraph in comments:
                     if not isinstance(paragraph, Paragraph):
-                        raise ValueError("%s is not a Paragraph." % paragraph)
+                        raise TypeError(f"{paragraph} is not a Paragraph.")
                     new_change_info.insert(paragraph, xmlposition=LAST_CHILD)
         else:
             if not isinstance(change_info, ChangeInfo):

@@ -31,8 +31,7 @@ from .element import FIRST_CHILD, NEXT_SIBLING, Element, register_element_class
 from .link import Link
 from .note import Annotation, AnnotationEnd, Note
 from .paragraph_base import LineBreak, ParagraphBase, Spacer, Tab
-from .reference import (Reference, ReferenceMark, ReferenceMarkEnd,
-                        ReferenceMarkStart)
+from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
 
 __all__ = [
     "LineBreak",
@@ -43,9 +42,9 @@ __all__ = [
 ]
 
 
-def _by_regex_offset(method):
+def _by_regex_offset(method):  # noqa: C901
     @wraps(method)
-    def wrapper(element, *args, **kwargs):
+    def wrapper(element, *args, **kwargs):  # noqa: C901
         """Insert the result of method(element, ...) at the place matching the
         regex OR the positional arguments offset and length.
 
@@ -192,7 +191,7 @@ class Paragraph(ParagraphBase):
         else:
             self.insert(note_element, FIRST_CHILD)
 
-    def insert_annotation(
+    def insert_annotation(  # noqa: C901
         self,
         annotation_element=None,
         before=None,
@@ -339,7 +338,7 @@ class Paragraph(ParagraphBase):
         if annotation_element is None:
             raise ValueError
         if not isinstance(annotation_element, Annotation):
-            raise ValueError("Not a <office:annotation> Annotation")
+            raise TypeError("Not a <office:annotation> Annotation")
 
         # remove existing end tag
         name = annotation_element.name
@@ -469,7 +468,7 @@ class Paragraph(ParagraphBase):
             position -- int
         """
         if not isinstance(reference_mark, (ReferenceMark, ReferenceMarkStart)):
-            raise ValueError("Not a ReferenceMark or ReferenceMarkStart")
+            raise TypeError("Not a ReferenceMark or ReferenceMarkStart")
         name = reference_mark.name
         if isinstance(reference_mark, ReferenceMark):
             # change it to a range reference:

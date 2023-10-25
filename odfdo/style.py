@@ -25,9 +25,18 @@ from .datatype import Boolean
 from .element import Element, register_element_class
 from .image import DrawImage
 from .paragraph import Paragraph
-from .utils import (FALSE_FAMILY_MAP_REVERSE, FAMILY_MAPPING, FAMILY_ODF_STD,
-                    STYLES_TO_REGISTER, SUBCLASSED_STYLES, _expand_properties,
-                    _get_element, _merge_dicts, isiterable, to_str)
+from .utils import (
+    FALSE_FAMILY_MAP_REVERSE,
+    FAMILY_MAPPING,
+    FAMILY_ODF_STD,
+    STYLES_TO_REGISTER,
+    SUBCLASSED_STYLES,
+    _expand_properties,
+    _get_element,
+    _merge_dicts,
+    isiterable,
+    to_str,
+)
 
 
 def hex2rgb(color):
@@ -67,8 +76,8 @@ def rgb2hex(color):
     if isinstance(color, str):
         try:
             code = CSS3_COLORMAP[color.lower()]
-        except KeyError:
-            raise KeyError('color "%s" is unknown' % color)
+        except KeyError as e:
+            raise KeyError(f'color "{color}" is unknown') from e
     elif isinstance(color, tuple):
         if len(color) != 3:
             raise ValueError("color must be a 3-tuple")
@@ -78,7 +87,7 @@ def rgb2hex(color):
     for channel in code:
         if channel < 0 or channel > 255:
             raise ValueError("color code must be between 0 and 255")
-    return "#%02X%02X%02X" % code
+    return f"#{code[0]:02X}{code[1]:02X}{code[2]:02X}"
 
 
 def __make_color_string(color=None):
@@ -90,7 +99,7 @@ def __make_color_string(color=None):
     color = to_str(color)
     msg = "Color must be None for default or color string, or RGB tuple"
     if not isinstance(color, str):
-        raise ValueError(msg)
+        raise TypeError(msg)
     color = color.strip()
     if not color:
         return color_default
@@ -290,7 +299,7 @@ class Style(Element):
         ("leader_text", "style:position", None),
     )
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         family=None,
         name=None,
@@ -609,14 +618,14 @@ class Style(Element):
         for key in _expand_properties(properties):
             element.del_attribute(key)
 
-    def set_background(
+    def set_background(  # noqa: C901
         self,
         color=None,
         url=None,
         position="center",
         repeat=None,
         opacity=None,
-        filter=None,
+        filter=None,  # noqa: A002
     ):
         """Set the background color of a text style, or the background color
         or image of a paragraph style or page layout.
@@ -713,7 +722,7 @@ class Style(Element):
         )
         return _get_element(self, level_styles, 0, level=level)
 
-    def set_level_style(
+    def set_level_style(  # noqa: C901
         self,
         level,
         num_format=None,
@@ -950,7 +959,7 @@ class BackgroundImage(Style, DrawImage):
         position=None,
         repeat=None,
         opacity=None,
-        filter=None,
+        filter=None,  # noqa: A002
         # Every other property
         **kw,
     ):

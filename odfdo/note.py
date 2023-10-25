@@ -109,7 +109,7 @@ class Note(Element):
             note_body.clear()
             note_body.append(text_or_element)
         else:
-            raise ValueError('Unexpected type for body: "%s"' % type(text_or_element))
+            raise TypeError(f'Unexpected type for body: "{type(text_or_element)}"')
 
     def check_validity(self):
         if not self.note_class:

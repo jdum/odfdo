@@ -176,7 +176,7 @@ class Unit:
         return str(self.value) + self.unit
 
     def __repr__(self):
-        return "%s %s" % (object.__repr__(self), self)
+        return f"{object.__repr__(self)} {self}"
 
     def __lt__(self, other):
         if type(other) is not type(self):

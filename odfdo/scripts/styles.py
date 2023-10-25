@@ -26,8 +26,13 @@ from optparse import OptionParser
 
 from odfdo import Document, __version__
 from odfdo.const import ODF_CLASSES
-from odfdo.scriptutils import (StdoutWriter, add_option_output,
-                               check_target_file, printerr, printinfo)
+from odfdo.scriptutils import (
+    StdoutWriter,
+    add_option_output,
+    check_target_file,
+    printerr,
+    printinfo,
+)
 
 
 def show_styles(document, target=None, automatic=True, common=True, properties=False):

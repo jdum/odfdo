@@ -52,7 +52,7 @@ class TestCoordinates(TestCase):
         self.assertEqual(_digit_to_alpha("ABC"), "ABC")
 
     def test_digit_to_alpha_alphanum(self):
-        self.assertRaises(ValueError, _digit_to_alpha, "730")
+        self.assertRaises(TypeError, _digit_to_alpha, "730")
 
     def test_convert_coordinates_tuple(self):
         x1, y1 = (12, 34)
@@ -85,7 +85,7 @@ class TestCoordinates(TestCase):
         self.assertEqual(converted, (730, 122, 5, 6))
 
     def test_convert_coordinates_bad(self):
-        self.assertRaises(ValueError, _convert_coordinates, None)
+        self.assertRaises(TypeError, _convert_coordinates, None)
         self.assertEqual(_convert_coordinates((None,)), (None,))
         self.assertEqual(_convert_coordinates((None, None)), (None, None))
         self.assertEqual(_convert_coordinates((1, "bad")), (1, "bad"))
@@ -742,7 +742,6 @@ class TestRow(TestCase):
 
 
 class TestRowCell(TestCase):
-
     #    simpletable :
     #      1	1	1	2	3	3	3
     #      1	1	1	2	3	3	3       self.row
@@ -1252,7 +1251,6 @@ class TestRowCell(TestCase):
 
 
 class TestRowCellGetValues(TestCase):
-
     #    simpletable :
     #      1	1	1	2	3	3	3
     #      1	1	1	2	3	3	3       self.row
@@ -2969,7 +2967,6 @@ class TestTableCellSpan(TestCase):
 
 
 class TestTableGetValues(TestCase):
-
     #    simpletable :
     #      1	1	1	2	3	3	3
     #      1	1	1	2	3	3	3       self.row
@@ -3976,7 +3973,7 @@ class TestTableNamedRange(TestCase):
         self.assertRaises(ValueError, NamedRange, "ok", "A1", "tname\nsecond line")
 
     def test_create_bad_nr_10(self):
-        self.assertRaises(ValueError, NamedRange, "ok", "A1", 42)
+        self.assertRaises(TypeError, NamedRange, "ok", "A1", 42)
 
     def test_create_nr(self):
         nr = NamedRange("nr_name_ù", "A1:C2", "table name é", usage="filter")
@@ -4046,7 +4043,7 @@ class TestTableNamedRange(TestCase):
 
     def test_range_1(self):
         nr = NamedRange("nr_name", "A1:C2", "tablename")
-        self.assertRaises(ValueError, nr.set_range, "   ")
+        self.assertRaises(TypeError, nr.set_range, "   ")
 
     def test_range_2(self):
         nr = NamedRange("nr_name", "A1:C2", "tablename")

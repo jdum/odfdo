@@ -100,7 +100,7 @@ class TabStopStyle(Element):
         ("style_type", "style:type"),
     )
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         style_char=None,
         leader_color=None,
@@ -336,7 +336,7 @@ class TOC(Element):
                 paragraph.style = text_style
             paragraph.text = title
 
-    def fill(self, document=None, use_default_styles=True):
+    def fill(self, document=None, use_default_styles=True):  # noqa: C901
         """Fill the TOC with the titles found in the document. A TOC is not
         contextual so it will catch all titles before and after its insertion.
         If the TOC is not attached to a document, attach it beforehand or
@@ -404,7 +404,7 @@ class TOC(Element):
                     del level_indexes[idx]
             number = ".".join(number) + "."
             # Make the title with "1.2.3. Title" format
-            title = "%s %s" % (number, header.text)
+            title = f"{number} {header.text}"
             paragraph = Paragraph(title)
             if use_default_styles:
                 paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
@@ -429,9 +429,8 @@ class IndexTitleTemplate(Element):
 
     def __init__(self, style=None, **kw):
         super().__init__(**kw)
-        if self._do_init:
-            if style:
-                self.style = style
+        if self._do_init and style:
+            self.style = style
 
 
 IndexTitleTemplate._define_attribut_property()
