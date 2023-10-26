@@ -19,9 +19,8 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
-"""Constants, XML tags and ODF headers
+"""Constants, XML tags and ODF headers.
 """
-ODF_TEMPLATES_DIR = "templates"
 ODF_TEMPLATES = {
     "text": "text.ott",
     "texte": "text.ott",

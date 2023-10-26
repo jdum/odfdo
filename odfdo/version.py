@@ -21,10 +21,10 @@
 """Version number of the package.
 """
 try:
-    from importlib.metadata import version
-except (AttributeError, ImportError):
+    from importlib.metadata import version as __version
+except (AttributeError, ImportError):  # pragma: no cover
     import importlib
 
-    version = importlib.metadata.version
+    __version = importlib.metadata.version
 
-__version__ = version("odfdo")
+__version__ = __version("odfdo")
