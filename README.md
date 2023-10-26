@@ -37,7 +37,7 @@ pip install .
 After installation, you can check everything is working (requirement: `pytest`):
 
 ```python
-cd test && pytest
+pytest tests
 ```
 
 The tests should run for a few seconds and issue no error.

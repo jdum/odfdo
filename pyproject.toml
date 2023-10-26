@@ -25,16 +25,17 @@ readme = "README.md"
 packages = [{ include = "odfdo" }]
 
 [tool.poetry.dependencies]
-python = "^3"
+python = ">=3.9,<4"
 lxml = "^4.0"
 
 [tool.poetry.group.docs.dependencies]
-pdoc3 = "*"
+pdoc3 = ">=0.10"
 
 [tool.poetry.group.dev.dependencies]
-poetry = "*"
-pytest = "*"
-tox = "*"
+poetry = ">=1.6"
+pytest = ">=7.0"
+tox = "^4"
+Pillow = ">=10.0.0"
 
 [tool.poetry.scripts]
 odfdo-diff = "odfdo.scripts.diff:main"
@@ -107,3 +108,10 @@ ignore = [
     # Use ternary operator
     "SIM108",
 ]
+
+[tool.coverage.report]
+skip_empty = true
+
+[tool.coverage.run]
+branch = true
+source = ["odfdo"]
