@@ -3,7 +3,8 @@ name: Main
 on:
   push:
     branches:
-      - devel
+        - devel
+        - master
   pull_request:
     types: [opened, synchronize, reopened]
 
