@@ -362,6 +362,8 @@ class Container:
     def _save_target(self, target):
         if target is None:
             target = self.path
+        if isinstance(target, Path):
+            target = str(target)
         if isinstance(target, str):
             while target.endswith(os.sep):
                 target = target[:-1]
@@ -400,7 +402,7 @@ class Container:
 
         Arguments:
 
-            target -- str or file-like
+            target -- str or file-like or Path
 
             packaging -- 'zip', or for debugging purpose 'folder'
 
