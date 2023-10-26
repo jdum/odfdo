@@ -27,7 +27,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -50,10 +50,10 @@
 #          Jerome Dumonteil &lt;jerome.dumonteil@itaapy.com&gt;
 &#34;&#34;&#34;User fields and variable fields classes
 &#34;&#34;&#34;
-from .datatype import Date, DateTime, Duration
 from .const import ODF_META
-from .utils import _set_value_and_type
+from .datatype import Date, DateTime, Duration
 from .element import Element, register_element_class
+from .utils import _set_value_and_type
 
 
 class VarDecls(Element):
@@ -92,7 +92,7 @@ class VarSet(Element):
         display=False,
         text=None,
         style=None,
-        **kw
+        **kw,
     ):
         super().__init__(**kw)
         if self._do_init:
@@ -213,7 +213,7 @@ class UserDefined(Element):
         text=None,
         style=None,
         from_document=None,
-        **kw
+        **kw,
     ):
         super().__init__(**kw)
         if self._do_init:
@@ -329,7 +329,7 @@ VarTime._define_attribut_property()
 class VarChapter(Element):
     _tag = &#34;text:chapter&#34;
     _properties = ((&#34;display&#34;, &#34;text:display&#34;), (&#34;outline_level&#34;, &#34;text:outline-level&#34;))
-    display_value_choice = {
+    DISPLAY_VALUE_CHOICE = {  # noqa: RUF012
         &#34;number&#34;,
         &#34;name&#34;,
         &#34;number-and-name&#34;,
@@ -343,7 +343,7 @@ class VarChapter(Element):
         &#34;&#34;&#34;
         super().__init__(**kw)
         if self._do_init:
-            if display not in VarChapter.display_value_choice:
+            if display not in VarChapter.DISPLAY_VALUE_CHOICE:
                 raise ValueError(&#34;unknown display value: %s&#34; % display)
             self.display = display
             if outline_level is not None:
@@ -356,13 +356,18 @@ VarChapter._define_attribut_property()
 class VarFileName(Element):
     _tag = &#34;text:file-name&#34;
     _properties = ((&#34;display&#34;, &#34;text:display&#34;), (&#34;fixed&#34;, &#34;text:fixed&#34;))
-    display_value_choice = {&#34;full&#34;, &#34;path&#34;, &#34;name&#34;, &#34;name-and-extension&#34;}
+    DISPLAY_VALUE_CHOICE = {  # noqa: RUF012
+        &#34;full&#34;,
+        &#34;path&#34;,
+        &#34;name&#34;,
+        &#34;name-and-extension&#34;,
+    }
 
     def __init__(self, display=&#34;full&#34;, fixed=False, **kw):
         &#34;&#34;&#34;display can be: &#39;full&#39;, &#39;path&#39;, &#39;name&#39; or &#39;name-and-extension&#39;&#34;&#34;&#34;
         super().__init__(**kw)
         if self._do_init:
-            if display not in VarFileName.display_value_choice:
+            if display not in VarFileName.DISPLAY_VALUE_CHOICE:
                 raise ValueError(&#34;unknown display value: %s&#34; % display)
             self.display = display
             if fixed:
@@ -378,9 +383,8 @@ class VarInitialCreator(Element):
 
     def __init__(self, fixed=False, **kw):
         super().__init__(**kw)
-        if self._do_init:
-            if fixed:
-                self.fixed = True
+        if self._do_init and fixed:
+            self.fixed = True
 
 
 VarInitialCreator._define_attribut_property()
@@ -528,7 +532,7 @@ field of same name.</p>
         text=None,
         style=None,
         from_document=None,
-        **kw
+        **kw,
     ):
         super().__init__(**kw)
         if self._do_init:
@@ -1345,7 +1349,7 @@ Abstraction of the XML library behind.</p>
 <pre><code class="python">class VarChapter(Element):
     _tag = &#34;text:chapter&#34;
     _properties = ((&#34;display&#34;, &#34;text:display&#34;), (&#34;outline_level&#34;, &#34;text:outline-level&#34;))
-    display_value_choice = {
+    DISPLAY_VALUE_CHOICE = {  # noqa: RUF012
         &#34;number&#34;,
         &#34;name&#34;,
         &#34;number-and-name&#34;,
@@ -1359,7 +1363,7 @@ Abstraction of the XML library behind.</p>
         &#34;&#34;&#34;
         super().__init__(**kw)
         if self._do_init:
-            if display not in VarChapter.display_value_choice:
+            if display not in VarChapter.DISPLAY_VALUE_CHOICE:
                 raise ValueError(&#34;unknown display value: %s&#34; % display)
             self.display = display
             if outline_level is not None:
@@ -1371,7 +1375,7 @@ Abstraction of the XML library behind.</p>
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="odfdo.variable.VarChapter.display_value_choice"><code class="name">var <span class="ident">display_value_choice</span></code></dt>
+<dt id="odfdo.variable.VarChapter.DISPLAY_VALUE_CHOICE"><code class="name">var <span class="ident">DISPLAY_VALUE_CHOICE</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -2586,13 +2590,18 @@ Abstraction of the XML library behind.</p>
 <pre><code class="python">class VarFileName(Element):
     _tag = &#34;text:file-name&#34;
     _properties = ((&#34;display&#34;, &#34;text:display&#34;), (&#34;fixed&#34;, &#34;text:fixed&#34;))
-    display_value_choice = {&#34;full&#34;, &#34;path&#34;, &#34;name&#34;, &#34;name-and-extension&#34;}
+    DISPLAY_VALUE_CHOICE = {  # noqa: RUF012
+        &#34;full&#34;,
+        &#34;path&#34;,
+        &#34;name&#34;,
+        &#34;name-and-extension&#34;,
+    }
 
     def __init__(self, display=&#34;full&#34;, fixed=False, **kw):
         &#34;&#34;&#34;display can be: &#39;full&#39;, &#39;path&#39;, &#39;name&#39; or &#39;name-and-extension&#39;&#34;&#34;&#34;
         super().__init__(**kw)
         if self._do_init:
-            if display not in VarFileName.display_value_choice:
+            if display not in VarFileName.DISPLAY_VALUE_CHOICE:
                 raise ValueError(&#34;unknown display value: %s&#34; % display)
             self.display = display
             if fixed:
@@ -2604,7 +2613,7 @@ Abstraction of the XML library behind.</p>
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="odfdo.variable.VarFileName.display_value_choice"><code class="name">var <span class="ident">display_value_choice</span></code></dt>
+<dt id="odfdo.variable.VarFileName.DISPLAY_VALUE_CHOICE"><code class="name">var <span class="ident">DISPLAY_VALUE_CHOICE</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -2967,9 +2976,8 @@ Abstraction of the XML library behind.</p></div>
 
     def __init__(self, fixed=False, **kw):
         super().__init__(**kw)
-        if self._do_init:
-            if fixed:
-                self.fixed = True</code></pre>
+        if self._do_init and fixed:
+            self.fixed = True</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -3604,7 +3612,7 @@ Abstraction of the XML library behind.</p></div>
         display=False,
         text=None,
         style=None,
-        **kw
+        **kw,
     ):
         super().__init__(**kw)
         if self._do_init:
@@ -4341,8 +4349,8 @@ Abstraction of the XML library behind.</p></div>
 <li>
 <h4><code><a title="odfdo.variable.VarChapter" href="#odfdo.variable.VarChapter">VarChapter</a></code></h4>
 <ul class="">
+<li><code><a title="odfdo.variable.VarChapter.DISPLAY_VALUE_CHOICE" href="#odfdo.variable.VarChapter.DISPLAY_VALUE_CHOICE">DISPLAY_VALUE_CHOICE</a></code></li>
 <li><code><a title="odfdo.variable.VarChapter.display" href="#odfdo.variable.VarChapter.display">display</a></code></li>
-<li><code><a title="odfdo.variable.VarChapter.display_value_choice" href="#odfdo.variable.VarChapter.display_value_choice">display_value_choice</a></code></li>
 <li><code><a title="odfdo.variable.VarChapter.outline_level" href="#odfdo.variable.VarChapter.outline_level">outline_level</a></code></li>
 </ul>
 </li>
@@ -4385,8 +4393,8 @@ Abstraction of the XML library behind.</p></div>
 <li>
 <h4><code><a title="odfdo.variable.VarFileName" href="#odfdo.variable.VarFileName">VarFileName</a></code></h4>
 <ul class="">
+<li><code><a title="odfdo.variable.VarFileName.DISPLAY_VALUE_CHOICE" href="#odfdo.variable.VarFileName.DISPLAY_VALUE_CHOICE">DISPLAY_VALUE_CHOICE</a></code></li>
 <li><code><a title="odfdo.variable.VarFileName.display" href="#odfdo.variable.VarFileName.display">display</a></code></li>
-<li><code><a title="odfdo.variable.VarFileName.display_value_choice" href="#odfdo.variable.VarFileName.display_value_choice">display_value_choice</a></code></li>
 <li><code><a title="odfdo.variable.VarFileName.fixed" href="#odfdo.variable.VarFileName.fixed">fixed</a></code></li>
 </ul>
 </li>

@@ -27,7 +27,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -49,24 +49,23 @@
 # Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
 &#34;&#34;&#34;Style class for various style tags and BackgroundImage class
 &#34;&#34;&#34;
-from .datatype import Boolean
 from .const import CSS3_COLORMAP
-from .element import register_element_class, Element
-
+from .datatype import Boolean
+from .element import Element, register_element_class
 from .image import DrawImage
+from .paragraph import Paragraph
 from .utils import (
+    FALSE_FAMILY_MAP_REVERSE,
+    FAMILY_MAPPING,
+    FAMILY_ODF_STD,
+    STYLES_TO_REGISTER,
+    SUBCLASSED_STYLES,
     _expand_properties,
-    _merge_dicts,
     _get_element,
+    _merge_dicts,
     isiterable,
     to_str,
-    FALSE_FAMILY_MAP_REVERSE,
-    FAMILY_ODF_STD,
-    FAMILY_MAPPING,
-    SUBCLASSED_STYLES,
-    STYLES_TO_REGISTER,
 )
-from .paragraph import Paragraph
 
 
 def hex2rgb(color):
@@ -106,8 +105,8 @@ def rgb2hex(color):
     if isinstance(color, str):
         try:
             code = CSS3_COLORMAP[color.lower()]
-        except KeyError:
-            raise KeyError(&#39;color &#34;%s&#34; is unknown&#39; % color)
+        except KeyError as e:
+            raise KeyError(f&#39;color &#34;{color}&#34; is unknown&#39;) from e
     elif isinstance(color, tuple):
         if len(color) != 3:
             raise ValueError(&#34;color must be a 3-tuple&#34;)
@@ -117,7 +116,7 @@ def rgb2hex(color):
     for channel in code:
         if channel &lt; 0 or channel &gt; 255:
             raise ValueError(&#34;color code must be between 0 and 255&#34;)
-    return &#34;#%02X%02X%02X&#34; % code
+    return f&#34;#{code[0]:02X}{code[1]:02X}{code[2]:02X}&#34;
 
 
 def __make_color_string(color=None):
@@ -129,7 +128,7 @@ def __make_color_string(color=None):
     color = to_str(color)
     msg = &#34;Color must be None for default or color string, or RGB tuple&#34;
     if not isinstance(color, str):
-        raise ValueError(msg)
+        raise TypeError(msg)
     color = color.strip()
     if not color:
         return color_default
@@ -329,7 +328,7 @@ class Style(Element):
         (&#34;leader_text&#34;, &#34;style:position&#34;, None),
     )
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         family=None,
         name=None,
@@ -648,14 +647,14 @@ class Style(Element):
         for key in _expand_properties(properties):
             element.del_attribute(key)
 
-    def set_background(
+    def set_background(  # noqa: C901
         self,
         color=None,
         url=None,
         position=&#34;center&#34;,
         repeat=None,
         opacity=None,
-        filter=None,
+        filter=None,  # noqa: A002
     ):
         &#34;&#34;&#34;Set the background color of a text style, or the background color
         or image of a paragraph style or page layout.
@@ -752,7 +751,7 @@ class Style(Element):
         )
         return _get_element(self, level_styles, 0, level=level)
 
-    def set_level_style(
+    def set_level_style(  # noqa: C901
         self,
         level,
         num_format=None,
@@ -989,7 +988,7 @@ class BackgroundImage(Style, DrawImage):
         position=None,
         repeat=None,
         opacity=None,
-        filter=None,
+        filter=None,  # noqa: A002
         # Every other property
         **kw,
     ):
@@ -1462,8 +1461,8 @@ hexadecimal representation.</p>
     if isinstance(color, str):
         try:
             code = CSS3_COLORMAP[color.lower()]
-        except KeyError:
-            raise KeyError(&#39;color &#34;%s&#34; is unknown&#39; % color)
+        except KeyError as e:
+            raise KeyError(f&#39;color &#34;{color}&#34; is unknown&#39;) from e
     elif isinstance(color, tuple):
         if len(color) != 3:
             raise ValueError(&#34;color must be a 3-tuple&#34;)
@@ -1473,7 +1472,7 @@ hexadecimal representation.</p>
     for channel in code:
         if channel &lt; 0 or channel &gt; 255:
             raise ValueError(&#34;color code must be between 0 and 255&#34;)
-    return &#34;#%02X%02X%02X&#34; % code</code></pre>
+    return f&#34;#{code[0]:02X}{code[1]:02X}{code[2]:02X}&#34;</code></pre>
 </details>
 </dd>
 </dl>
@@ -1578,7 +1577,7 @@ break_after -- 'page', 'column' or 'auto'
         position=None,
         repeat=None,
         opacity=None,
-        filter=None,
+        filter=None,  # noqa: A002
         # Every other property
         **kw,
     ):
@@ -1949,7 +1948,7 @@ break_after -- 'page', 'column' or 'auto'
         (&#34;leader_text&#34;, &#34;style:position&#34;, None),
     )
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         family=None,
         name=None,
@@ -2268,14 +2267,14 @@ break_after -- 'page', 'column' or 'auto'
         for key in _expand_properties(properties):
             element.del_attribute(key)
 
-    def set_background(
+    def set_background(  # noqa: C901
         self,
         color=None,
         url=None,
         position=&#34;center&#34;,
         repeat=None,
         opacity=None,
-        filter=None,
+        filter=None,  # noqa: A002
     ):
         &#34;&#34;&#34;Set the background color of a text style, or the background color
         or image of a paragraph style or page layout.
@@ -2372,7 +2371,7 @@ break_after -- 'page', 'column' or 'auto'
         )
         return _get_element(self, level_styles, 0, level=level)
 
-    def set_level_style(
+    def set_level_style(  # noqa: C901
         self,
         level,
         num_format=None,
@@ -3056,14 +3055,14 @@ an error if the style type is not compatible.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_background(
+<pre><code class="python">def set_background(  # noqa: C901
     self,
     color=None,
     url=None,
     position=&#34;center&#34;,
     repeat=None,
     opacity=None,
-    filter=None,
+    filter=None,  # noqa: A002
 ):
     &#34;&#34;&#34;Set the background color of a text style, or the background color
     or image of a paragraph style or page layout.
@@ -3227,7 +3226,7 @@ an error if the style type is not compatible.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_level_style(
+<pre><code class="python">def set_level_style(  # noqa: C901
     self,
     level,
     num_format=None,

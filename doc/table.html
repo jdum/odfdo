@@ -29,7 +29,7 @@ NamedRange related classes</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2012 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -55,17 +55,18 @@ NamedRange related classes</p>
 &#34;&#34;&#34;Table class for &#34;table:table&#34; and HeaderRows, Cell, Row, Column,
 NamedRange related classes
 &#34;&#34;&#34;
-from io import StringIO
-from csv import reader, Sniffer, writer
-from textwrap import wrap
-from bisect import bisect_left, insort
-from itertools import zip_longest
-from decimal import Decimal as dec
+import contextlib
 import string
+from bisect import bisect_left, insort
+from csv import Sniffer, reader, writer
+from decimal import Decimal as dec
+from io import StringIO
+from itertools import zip_longest
+from textwrap import wrap
 
 from .datatype import Boolean, Date, DateTime, Duration
-from .element import Element, register_element_class, _xpath_compile
-from .utils import get_value, _set_value_and_type, isiterable, to_str
+from .element import Element, _xpath_compile, register_element_class
+from .utils import _set_value_and_type, get_value, isiterable, to_str
 
 _xpath_row = _xpath_compile(&#34;table:table-row&#34;)
 _xpath_row_idx = _xpath_compile(&#34;(table:table-row)[$idx]&#34;)
@@ -77,13 +78,13 @@ _xpath_cell_idx = _xpath_compile(&#34;(table:table-cell|table:covered-table-cell
 
 def _table_name_check(name):
     if not isinstance(name, str):
-        raise ValueError(&#34;String required.&#34;)
+        raise TypeError(&#34;String required.&#34;)
     name = name.strip()
     if not name:
         raise ValueError(&#34;Empty name not allowed.&#34;)
     for character in (&#34;\n&#34;, &#34;/&#34;, &#34;\\&#34;, &#34;&#39;&#34;):
         if character in name:
-            raise ValueError(&#34;Character %s not allowed.&#34; % character)
+            raise ValueError(f&#34;Character {character} not allowed.&#34;)
     return name
 
 
@@ -99,7 +100,7 @@ def _alpha_to_digit(alpha):
     if isinstance(alpha, int):
         return alpha
     if not alpha.isalpha():
-        raise ValueError(&#39;column name &#34;%s&#34; is malformed&#39; % alpha)
+        raise ValueError(f&#39;column name &#34;{alpha}&#34; is malformed&#39;)
     column = 0
     for c in alpha.lower():
         v = ord(c) - ord(&#34;a&#34;) + 1
@@ -111,7 +112,7 @@ def _digit_to_alpha(digit):
     if isinstance(digit, str) and digit.isalpha():
         return digit
     if not isinstance(digit, int):
-        raise ValueError(&#39;column number &#34;%s&#34; is invalid&#39; % digit)
+        raise TypeError(f&#39;column number &#34;{digit}&#34; is invalid&#39;)
     digit += 1
     column = &#34;&#34;
     while digit:
@@ -137,8 +138,8 @@ def _coordinates_to_alpha_area(coord):
         else:
             # should be 4 int
             x, y, z, t = coord
-        start = _digit_to_alpha(x) + &#34;%s&#34; % (y + 1)
-        end = _digit_to_alpha(z) + &#34;%s&#34; % (t + 1)
+        start = _digit_to_alpha(x) + str(y + 1)
+        end = _digit_to_alpha(z) + str(t + 1)
     else:
         raise ValueError
     crange = start + &#34;:&#34; + end
@@ -162,7 +163,7 @@ def _convert_coordinates(obj):
         return tuple(obj)
     # Or by &#39;B3&#39; notation ?
     if not isinstance(obj, str):
-        raise ValueError(&#39;bad coordinates type: &#34;%s&#34;&#39; % type(obj))
+        raise TypeError(f&#39;bad coordinates type: &#34;{type(obj)}&#34;&#39;)
     coordinates = []
     for coord in [x.strip() for x in obj.split(&#34;:&#34;, 1)]:
         # First &#34;A&#34;
@@ -187,7 +188,7 @@ def _convert_coordinates(obj):
             # maybe &#39;A:C&#39; row coordinates
             line = None
         if line and line &lt;= 0:
-            raise ValueError(&#39;coordinates &#34;%s&#34; malformed&#39; % obj)
+            raise ValueError(f&#39;coordinates &#34;{obj}&#34; malformed&#39;)
         coordinates.append(line)
     return tuple(coordinates)
 
@@ -235,14 +236,21 @@ def _get_python_value(data, encoding):
     return data
 
 
-def _set_item_in_vault(position, item, vault, vault_scheme, vault_map_name, clone=True):
+def _set_item_in_vault(  # noqa: C901
+    position,
+    item,
+    vault,
+    vault_scheme,
+    vault_map_name,
+    clone=True,
+):
     &#34;&#34;&#34;Set the item (cell, row) in its vault (row, table), updating the
     cache map.
     &#34;&#34;&#34;
     try:
         vault_map = getattr(vault, vault_map_name)
-    except:
-        raise ValueError
+    except Exception as e:
+        raise ValueError from e
     odf_idx = _find_odf_idx(vault_map, position)
     repeated = item.repeated or 1
     current_cache = vault_map[odf_idx]
@@ -321,8 +329,8 @@ def _set_item_in_vault(position, item, vault, vault_scheme, vault_map_name, clon
 def _insert_item_in_vault(position, item, vault, vault_scheme, vault_map_name):
     try:
         vault_map = getattr(vault, vault_map_name)
-    except:
-        raise ValueError
+    except Exception as e:
+        raise ValueError from e
     odf_idx = _find_odf_idx(vault_map, position)
     repeated = item.repeated or 1
     current_cache = vault_map[odf_idx]
@@ -367,8 +375,8 @@ def _insert_item_in_vault(position, item, vault, vault_scheme, vault_map_name):
 def _delete_item_in_vault(position, vault, vault_scheme, vault_map_name):
     try:
         vault_map = getattr(vault, vault_map_name)
-    except:
-        raise ValueError
+    except Exception as e:
+        raise ValueError from e
     odf_idx = _find_odf_idx(vault_map, position)
     current_cache = vault_map[odf_idx]
     cache = vault._indexes[vault_map_name]
@@ -722,10 +730,8 @@ class Cell(Element):
         None to delete. Without changing cache.
         &#34;&#34;&#34;
         if repeated is None or repeated &lt; 2:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute(&#34;table:number-columns-repeated&#34;)
-            except KeyError:
-                pass
             return
         self.set_attribute(&#34;table:number-columns-repeated&#34;, str(repeated))
 
@@ -903,10 +909,8 @@ class Row(Element):
             repeated -- int
         &#34;&#34;&#34;
         if repeated is None or repeated &lt; 2:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute(&#34;table:number-rows-repeated&#34;)
-            except KeyError:
-                pass
             return
         self.set_attribute(&#34;table:number-rows-repeated&#34;, str(repeated))
 
@@ -959,7 +963,7 @@ class Row(Element):
             w = 0
         return w
 
-    def traverse(self, start=None, end=None):
+    def traverse(self, start=None, end=None):  # noqa: C901
         &#34;&#34;&#34;Yield as many cell elements as expected cells in the row, i.e.
         expand repetitions by returning the same cell as many times as
         necessary.
@@ -1436,10 +1440,7 @@ class Row(Element):
 
         Return: bool
         &#34;&#34;&#34;
-        for cell in self._get_cells():
-            if not cell.is_empty(aggressive=aggressive):
-                return False
-        return True
+        return all(cell.is_empty(aggressive=aggressive) for cell in self._get_cells())
 
 
 class RowGroup(Element):
@@ -1464,11 +1465,10 @@ class RowGroup(Element):
         Return RowGroup
         &#34;&#34;&#34;
         super().__init__(**kwargs)
-        if self._do_init:
-            if height is not None:
-                for _i in range(height):
-                    row = Row(width=width)
-                    self.append(row)
+        if self._do_init and height is not None:
+            for _i in range(height):
+                row = Row(width=width)
+                self.append(row)
 
 
 class Column(Element):
@@ -1545,10 +1545,8 @@ class Column(Element):
             repeated -- int or None
         &#34;&#34;&#34;
         if repeated is None or repeated &lt; 2:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute(&#34;table:number-columns-repeated&#34;)
-            except KeyError:
-                pass
             return
         self.set_attribute(&#34;table:number-columns-repeated&#34;, str(repeated))
 
@@ -1698,7 +1696,7 @@ class Table(Element):
             return _increment(y, self.height)
         return y
 
-    def _translate_table_coordinates(self, coord):
+    def _translate_table_coordinates(self, coord):  # noqa: C901
         height = self.height
         width = self.width
         if isiterable(coord):
@@ -1750,7 +1748,7 @@ class Table(Element):
             t = _increment(t, height)
         return (x, y, z, t)
 
-    def _translate_column_coordinates(self, coord):
+    def _translate_column_coordinates(self, coord):  # noqa: C901
         height = self.height
         width = self.width
         if isiterable(coord):
@@ -1811,7 +1809,7 @@ class Table(Element):
         elif len(coord) == 4:
             x, y, z, t = coord
         else:
-            raise ValueError(&#34;ValueError %s&#34; % str(coord))
+            raise ValueError(str(coord))
         if x and x &lt; 0:
             x = _increment(x, self.width)
         if y and y &lt; 0:
@@ -1856,7 +1854,7 @@ class Table(Element):
             result.append(&#34;\n&#34;)
         return &#34;&#34;.join(result)
 
-    def __get_formatted_text_rst(self, context):
+    def __get_formatted_text_rst(self, context):  # noqa: C901
         context[&#34;no_img_level&#34;] += 1
         # Strip the table =&gt; We must clone
         table = self.clone
@@ -2323,7 +2321,7 @@ class Table(Element):
         self._indexes[&#34;_cmap&#34;] = {}
         self._compute_table_cache()
 
-    def transpose(self, coord=None):
+    def transpose(self, coord=None):  # noqa: C901
         &#34;&#34;&#34;Swap *in-place* rows and columns of the table.
 
         If &#39;coord&#39; is not None, apply transpose only to the area defined by the
@@ -2339,7 +2337,7 @@ class Table(Element):
         data = []
         if coord is None:
             for row in self.traverse():
-                data.append([cell for cell in row.traverse()])
+                data.append(list(row.traverse()))
             transposed_data = zip_longest(*data)
             self.clear()
             # new_rows = []
@@ -2369,7 +2367,7 @@ class Table(Element):
             else:
                 t = min(t, self.height - 1)
             for row in self.traverse(start=y, end=t):
-                data.append([cell for cell in row.traverse(start=x, end=z)])
+                data.append(list(row.traverse(start=x, end=z)))
             transposed_data = zip_longest(*data)
             # clear locally
             w = z - x + 1
@@ -2397,10 +2395,7 @@ class Table(Element):
 
             aggressive -- bool
         &#34;&#34;&#34;
-        for row in self._get_rows():
-            if not row.is_empty(aggressive=aggressive):
-                return False
-        return True
+        return all(row.is_empty(aggressive=aggressive) for row in self._get_rows())
 
     #
     # Rows
@@ -2409,7 +2404,7 @@ class Table(Element):
     def _get_rows(self):
         return self.get_elements(_xpath_row)
 
-    def traverse(self, start=None, end=None):
+    def traverse(self, start=None, end=None):  # noqa: C901
         &#34;&#34;&#34;Yield as many row elements as expected rows in the table, i.e.
         expand repetitions by returning the same row as many times as
         necessary.
@@ -2494,12 +2489,12 @@ class Table(Element):
         Return: list of rows
         &#34;&#34;&#34;
         if coord:
-            x, y, z, t = self._translate_table_coordinates(coord)
+            _x, y, _z, t = self._translate_table_coordinates(coord)
         else:
-            x = y = z = t = None
+            y = t = None
         # fixme : not clones ?
         if not content and not style:
-            return [row for row in self.traverse(start=y, end=t)]
+            return list(self.traverse(start=y, end=t))
         rows = []
         for row in self.traverse(start=y, end=t):
             if content and not row.match(content):
@@ -3058,7 +3053,7 @@ class Table(Element):
             image_frame.set_attribute(&#34;table:end-x&#34;, width)
             image_frame.set_attribute(&#34;table:end-y&#34;, height)
             # FIXME what happens when the address changes?
-            address = &#34;%s.%s%s&#34; % (self.name, _digit_to_alpha(x), y + 1)
+            address = f&#34;{self.name}.{_digit_to_alpha(x)}{y + 1}&#34;
             image_frame.set_attribute(&#34;table:end-cell-address&#34;, address)
             # The frame is directly in the cell
             cell.append(image_frame)
@@ -3158,7 +3153,7 @@ class Table(Element):
     def _get_columns(self):
         return self.get_elements(_xpath_column)
 
-    def traverse_columns(self, start=None, end=None):
+    def traverse_columns(self, start=None, end=None):  # noqa: C901
         &#34;&#34;&#34;Yield as many column elements as expected columns in the table,
         i.e. expand repetitions by returning the same column as many times as
         necessary.
@@ -3240,11 +3235,11 @@ class Table(Element):
         Return: list of columns
         &#34;&#34;&#34;
         if coord:
-            x, y, z, t = self._translate_column_coordinates(coord)
+            x, _y, _z, t = self._translate_column_coordinates(coord)
         else:
-            x = y = z = t = None
+            x = t = None
         if not style:
-            return [column for column in self.traverse_columns(start=x, end=t)]
+            return list(self.traverse_columns(start=x, end=t))
         columns = []
         for column in self.traverse_columns(start=x, end=t):
             if style != column.style:
@@ -3415,8 +3410,13 @@ class Table(Element):
             if row.width &gt;= width:
                 row.delete_cell(x)
 
-    def get_column_cells(
-        self, x, style=None, content=None, cell_type=None, complete=False
+    def get_column_cells(  # noqa: C901
+        self,
+        x,
+        style=None,
+        content=None,
+        cell_type=None,
+        complete=False,
     ):
         &#34;&#34;&#34;Get the list of cells at the given position.
 
@@ -3539,7 +3539,7 @@ class Table(Element):
         &#34;&#34;&#34;
         height = self.height
         if len(cells) != height:
-            raise ValueError(&#34;col mismatch: %s cells expected&#34; % height)
+            raise ValueError(f&#34;col mismatch: {height} cells expected&#34;)
         cells = iter(cells)
         for y, row in enumerate(self.traverse()):
             row.set_cell(x, next(cells))
@@ -3609,16 +3609,16 @@ class Table(Element):
         all_named_ranges = body.get_named_ranges()
         if not table_name:
             return all_named_ranges
-        filter = []
+        filter_ = []
         if isinstance(table_name, str):
-            filter.append(table_name)
+            filter_.append(table_name)
         elif isiterable(table_name):
-            filter.extend(table_name)
+            filter_.extend(table_name)
         else:
             raise ValueError(
-                &#34;table_name must be string or Iterable, not %s&#34; % type(table_name)
+                f&#34;table_name must be string or Iterable, not {type(table_name)}&#34;
             )
-        return [nr for nr in all_named_ranges if nr.table_name in filter]
+        return [nr for nr in all_named_ranges if nr.table_name in filter_]
 
     def get_named_range(self, name):
         &#34;&#34;&#34;Returns the Name Ranges of the specified name. If
@@ -3683,7 +3683,7 @@ class Table(Element):
     # Cell span
     #
 
-    def set_span(self, area, merge=False):
+    def set_span(self, area, merge=False):  # noqa: C901
         &#34;&#34;&#34;Create a Cell Span : span the first cell of the area on several
         columns and/or rows.
         If merge is True, replace text of the cell by the concatenation of
@@ -3936,10 +3936,8 @@ class NamedRange(Element):
             if usage not in (&#34;print-range&#34;, &#34;filter&#34;, &#34;repeat-column&#34;, &#34;repeat-row&#34;):
                 usage = None
         if usage is None:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute(&#34;table:range-usable-as&#34;)
-            except KeyError:
-                pass
             self.usage = None
         else:
             self.set_attribute(&#34;table:range-usable-as&#34;, usage)
@@ -3966,7 +3964,7 @@ class NamedRange(Element):
             raise ValueError(&#34;Name required.&#34;)
         for x in name:
             if x in _forbidden_in_named_range:
-                raise ValueError(&#34;Character forbidden &#39;%s&#39; &#34; % x)
+                raise ValueError(f&#34;Character forbidden &#39;{x}&#39; &#34;)
         step = &#34;&#34;
         for x in name:
             if x in string.ascii_letters and step in (&#34;&#34;, &#34;A&#34;):
@@ -3985,7 +3983,7 @@ class NamedRange(Element):
             named_range = body.get_named_range(name)
             if named_range:
                 named_range.delete()
-        except Exception:
+        except Exception:  # noqa: S110
             pass  # we are not on an inserted in a document.
         self.set_attribute(&#34;table:name&#34;, name)
 
@@ -4029,25 +4027,22 @@ class NamedRange(Element):
     def _make_base_cell_address(self):
         # assuming we got table_name and range
         if &#34; &#34; in self.table_name:
-            name = &#34;&#39;%s&#39;&#34; % self.table_name
+            name = f&#34;&#39;{self.table_name}&#39;&#34;
         else:
             name = self.table_name
-        return &#34;$%s.$%s$%s&#34; % (name, _digit_to_alpha(self.start[0]), self.start[1] + 1)
+        return f&#34;${name}.${_digit_to_alpha(self.start[0])}${self.start[1] + 1}&#34;
 
     def _make_cell_range_address(self):
         # assuming we got table_name and range
         if &#34; &#34; in self.table_name:
-            name = &#34;&#39;%s&#39;&#34; % self.table_name
+            name = f&#34;&#39;{self.table_name}&#39;&#34;
         else:
             name = self.table_name
         if self.start == self.end:
             return self._make_base_cell_address()
-        return &#34;$%s.$%s$%s:.$%s$%s&#34; % (
-            name,
-            _digit_to_alpha(self.start[0]),
-            self.start[1] + 1,
-            _digit_to_alpha(self.end[0]),
-            self.end[1] + 1,
+        return (
+            f&#34;${name}.${_digit_to_alpha(self.start[0])}${self.start[1] + 1}:&#34;
+            f&#34;.${_digit_to_alpha(self.end[0])}${self.end[1] + 1}&#34;
         )
 
     def get_values(self, cell_type=None, complete=True, get_type=False, flat=False):
@@ -4558,10 +4553,8 @@ timedelta</p>
         None to delete. Without changing cache.
         &#34;&#34;&#34;
         if repeated is None or repeated &lt; 2:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute(&#34;table:number-columns-repeated&#34;)
-            except KeyError:
-                pass
             return
         self.set_attribute(&#34;table:number-columns-repeated&#34;, str(repeated))
 
@@ -5112,10 +5105,8 @@ several columns, give the number of repeated columns.</p>
             repeated -- int or None
         &#34;&#34;&#34;
         if repeated is None or repeated &lt; 2:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute(&#34;table:number-columns-repeated&#34;)
-            except KeyError:
-                pass
             return
         self.set_attribute(&#34;table:number-columns-repeated&#34;, str(repeated))
 
@@ -5608,10 +5599,8 @@ a correct table name (no "'" or "/" in it).</p>
             if usage not in (&#34;print-range&#34;, &#34;filter&#34;, &#34;repeat-column&#34;, &#34;repeat-row&#34;):
                 usage = None
         if usage is None:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute(&#34;table:range-usable-as&#34;)
-            except KeyError:
-                pass
             self.usage = None
         else:
             self.set_attribute(&#34;table:range-usable-as&#34;, usage)
@@ -5638,7 +5627,7 @@ a correct table name (no "'" or "/" in it).</p>
             raise ValueError(&#34;Name required.&#34;)
         for x in name:
             if x in _forbidden_in_named_range:
-                raise ValueError(&#34;Character forbidden &#39;%s&#39; &#34; % x)
+                raise ValueError(f&#34;Character forbidden &#39;{x}&#39; &#34;)
         step = &#34;&#34;
         for x in name:
             if x in string.ascii_letters and step in (&#34;&#34;, &#34;A&#34;):
@@ -5657,7 +5646,7 @@ a correct table name (no "'" or "/" in it).</p>
             named_range = body.get_named_range(name)
             if named_range:
                 named_range.delete()
-        except Exception:
+        except Exception:  # noqa: S110
             pass  # we are not on an inserted in a document.
         self.set_attribute(&#34;table:name&#34;, name)
 
@@ -5701,25 +5690,22 @@ a correct table name (no "'" or "/" in it).</p>
     def _make_base_cell_address(self):
         # assuming we got table_name and range
         if &#34; &#34; in self.table_name:
-            name = &#34;&#39;%s&#39;&#34; % self.table_name
+            name = f&#34;&#39;{self.table_name}&#39;&#34;
         else:
             name = self.table_name
-        return &#34;$%s.$%s$%s&#34; % (name, _digit_to_alpha(self.start[0]), self.start[1] + 1)
+        return f&#34;${name}.${_digit_to_alpha(self.start[0])}${self.start[1] + 1}&#34;
 
     def _make_cell_range_address(self):
         # assuming we got table_name and range
         if &#34; &#34; in self.table_name:
-            name = &#34;&#39;%s&#39;&#34; % self.table_name
+            name = f&#34;&#39;{self.table_name}&#39;&#34;
         else:
             name = self.table_name
         if self.start == self.end:
             return self._make_base_cell_address()
-        return &#34;$%s.$%s$%s:.$%s$%s&#34; % (
-            name,
-            _digit_to_alpha(self.start[0]),
-            self.start[1] + 1,
-            _digit_to_alpha(self.end[0]),
-            self.end[1] + 1,
+        return (
+            f&#34;${name}.${_digit_to_alpha(self.start[0])}${self.start[1] + 1}:&#34;
+            f&#34;.${_digit_to_alpha(self.end[0])}${self.end[1] + 1}&#34;
         )
 
     def get_values(self, cell_type=None, complete=True, get_type=False, flat=False):
@@ -5919,10 +5905,8 @@ of :
         if usage not in (&#34;print-range&#34;, &#34;filter&#34;, &#34;repeat-column&#34;, &#34;repeat-row&#34;):
             usage = None
     if usage is None:
-        try:
+        with contextlib.suppress(KeyError):
             self.del_attribute(&#34;table:range-usable-as&#34;)
-        except KeyError:
-            pass
         self.usage = None
     else:
         self.set_attribute(&#34;table:range-usable-as&#34;, usage)
@@ -6224,10 +6208,8 @@ See table.set_values() for the arguments description.</p></div>
             repeated -- int
         &#34;&#34;&#34;
         if repeated is None or repeated &lt; 2:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute(&#34;table:number-rows-repeated&#34;)
-            except KeyError:
-                pass
             return
         self.set_attribute(&#34;table:number-rows-repeated&#34;, str(repeated))
 
@@ -6280,7 +6262,7 @@ See table.set_values() for the arguments description.</p></div>
             w = 0
         return w
 
-    def traverse(self, start=None, end=None):
+    def traverse(self, start=None, end=None):  # noqa: C901
         &#34;&#34;&#34;Yield as many cell elements as expected cells in the row, i.e.
         expand repetitions by returning the same cell as many times as
         necessary.
@@ -6757,10 +6739,7 @@ See table.set_values() for the arguments description.</p></div>
 
         Return: bool
         &#34;&#34;&#34;
-        for cell in self._get_cells():
-            if not cell.is_empty(aggressive=aggressive):
-                return False
-        return True</code></pre>
+        return all(cell.is_empty(aggressive=aggressive) for cell in self._get_cells())</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -7283,10 +7262,7 @@ evaluates to False (empty string), and no style.</p>
 
     Return: bool
     &#34;&#34;&#34;
-    for cell in self._get_cells():
-        if not cell.is_empty(aggressive=aggressive):
-            return False
-    return True</code></pre>
+    return all(cell.is_empty(aggressive=aggressive) for cell in self._get_cells())</code></pre>
 </details>
 </dd>
 <dt id="odfdo.table.Row.rstrip"><code class="name flex">
@@ -7530,7 +7506,7 @@ necessary.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def traverse(self, start=None, end=None):
+<pre><code class="python">def traverse(self, start=None, end=None):  # noqa: C901
     &#34;&#34;&#34;Yield as many cell elements as expected cells in the row, i.e.
     expand repetitions by returning the same cell as many times as
     necessary.
@@ -7761,11 +7737,10 @@ rows, of "width" cells each.</p>
         Return RowGroup
         &#34;&#34;&#34;
         super().__init__(**kwargs)
-        if self._do_init:
-            if height is not None:
-                for _i in range(height):
-                    row = Row(width=width)
-                    self.append(row)</code></pre>
+        if self._do_init and height is not None:
+            for _i in range(height):
+                row = Row(width=width)
+                self.append(row)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -8032,7 +8007,7 @@ ensuiring model integrity.</p>
             return _increment(y, self.height)
         return y
 
-    def _translate_table_coordinates(self, coord):
+    def _translate_table_coordinates(self, coord):  # noqa: C901
         height = self.height
         width = self.width
         if isiterable(coord):
@@ -8084,7 +8059,7 @@ ensuiring model integrity.</p>
             t = _increment(t, height)
         return (x, y, z, t)
 
-    def _translate_column_coordinates(self, coord):
+    def _translate_column_coordinates(self, coord):  # noqa: C901
         height = self.height
         width = self.width
         if isiterable(coord):
@@ -8145,7 +8120,7 @@ ensuiring model integrity.</p>
         elif len(coord) == 4:
             x, y, z, t = coord
         else:
-            raise ValueError(&#34;ValueError %s&#34; % str(coord))
+            raise ValueError(str(coord))
         if x and x &lt; 0:
             x = _increment(x, self.width)
         if y and y &lt; 0:
@@ -8190,7 +8165,7 @@ ensuiring model integrity.</p>
             result.append(&#34;\n&#34;)
         return &#34;&#34;.join(result)
 
-    def __get_formatted_text_rst(self, context):
+    def __get_formatted_text_rst(self, context):  # noqa: C901
         context[&#34;no_img_level&#34;] += 1
         # Strip the table =&gt; We must clone
         table = self.clone
@@ -8657,7 +8632,7 @@ ensuiring model integrity.</p>
         self._indexes[&#34;_cmap&#34;] = {}
         self._compute_table_cache()
 
-    def transpose(self, coord=None):
+    def transpose(self, coord=None):  # noqa: C901
         &#34;&#34;&#34;Swap *in-place* rows and columns of the table.
 
         If &#39;coord&#39; is not None, apply transpose only to the area defined by the
@@ -8673,7 +8648,7 @@ ensuiring model integrity.</p>
         data = []
         if coord is None:
             for row in self.traverse():
-                data.append([cell for cell in row.traverse()])
+                data.append(list(row.traverse()))
             transposed_data = zip_longest(*data)
             self.clear()
             # new_rows = []
@@ -8703,7 +8678,7 @@ ensuiring model integrity.</p>
             else:
                 t = min(t, self.height - 1)
             for row in self.traverse(start=y, end=t):
-                data.append([cell for cell in row.traverse(start=x, end=z)])
+                data.append(list(row.traverse(start=x, end=z)))
             transposed_data = zip_longest(*data)
             # clear locally
             w = z - x + 1
@@ -8731,10 +8706,7 @@ ensuiring model integrity.</p>
 
             aggressive -- bool
         &#34;&#34;&#34;
-        for row in self._get_rows():
-            if not row.is_empty(aggressive=aggressive):
-                return False
-        return True
+        return all(row.is_empty(aggressive=aggressive) for row in self._get_rows())
 
     #
     # Rows
@@ -8743,7 +8715,7 @@ ensuiring model integrity.</p>
     def _get_rows(self):
         return self.get_elements(_xpath_row)
 
-    def traverse(self, start=None, end=None):
+    def traverse(self, start=None, end=None):  # noqa: C901
         &#34;&#34;&#34;Yield as many row elements as expected rows in the table, i.e.
         expand repetitions by returning the same row as many times as
         necessary.
@@ -8828,12 +8800,12 @@ ensuiring model integrity.</p>
         Return: list of rows
         &#34;&#34;&#34;
         if coord:
-            x, y, z, t = self._translate_table_coordinates(coord)
+            _x, y, _z, t = self._translate_table_coordinates(coord)
         else:
-            x = y = z = t = None
+            y = t = None
         # fixme : not clones ?
         if not content and not style:
-            return [row for row in self.traverse(start=y, end=t)]
+            return list(self.traverse(start=y, end=t))
         rows = []
         for row in self.traverse(start=y, end=t):
             if content and not row.match(content):
@@ -9392,7 +9364,7 @@ ensuiring model integrity.</p>
             image_frame.set_attribute(&#34;table:end-x&#34;, width)
             image_frame.set_attribute(&#34;table:end-y&#34;, height)
             # FIXME what happens when the address changes?
-            address = &#34;%s.%s%s&#34; % (self.name, _digit_to_alpha(x), y + 1)
+            address = f&#34;{self.name}.{_digit_to_alpha(x)}{y + 1}&#34;
             image_frame.set_attribute(&#34;table:end-cell-address&#34;, address)
             # The frame is directly in the cell
             cell.append(image_frame)
@@ -9492,7 +9464,7 @@ ensuiring model integrity.</p>
     def _get_columns(self):
         return self.get_elements(_xpath_column)
 
-    def traverse_columns(self, start=None, end=None):
+    def traverse_columns(self, start=None, end=None):  # noqa: C901
         &#34;&#34;&#34;Yield as many column elements as expected columns in the table,
         i.e. expand repetitions by returning the same column as many times as
         necessary.
@@ -9574,11 +9546,11 @@ ensuiring model integrity.</p>
         Return: list of columns
         &#34;&#34;&#34;
         if coord:
-            x, y, z, t = self._translate_column_coordinates(coord)
+            x, _y, _z, t = self._translate_column_coordinates(coord)
         else:
-            x = y = z = t = None
+            x = t = None
         if not style:
-            return [column for column in self.traverse_columns(start=x, end=t)]
+            return list(self.traverse_columns(start=x, end=t))
         columns = []
         for column in self.traverse_columns(start=x, end=t):
             if style != column.style:
@@ -9749,8 +9721,13 @@ ensuiring model integrity.</p>
             if row.width &gt;= width:
                 row.delete_cell(x)
 
-    def get_column_cells(
-        self, x, style=None, content=None, cell_type=None, complete=False
+    def get_column_cells(  # noqa: C901
+        self,
+        x,
+        style=None,
+        content=None,
+        cell_type=None,
+        complete=False,
     ):
         &#34;&#34;&#34;Get the list of cells at the given position.
 
@@ -9873,7 +9850,7 @@ ensuiring model integrity.</p>
         &#34;&#34;&#34;
         height = self.height
         if len(cells) != height:
-            raise ValueError(&#34;col mismatch: %s cells expected&#34; % height)
+            raise ValueError(f&#34;col mismatch: {height} cells expected&#34;)
         cells = iter(cells)
         for y, row in enumerate(self.traverse()):
             row.set_cell(x, next(cells))
@@ -9943,16 +9920,16 @@ ensuiring model integrity.</p>
         all_named_ranges = body.get_named_ranges()
         if not table_name:
             return all_named_ranges
-        filter = []
+        filter_ = []
         if isinstance(table_name, str):
-            filter.append(table_name)
+            filter_.append(table_name)
         elif isiterable(table_name):
-            filter.extend(table_name)
+            filter_.extend(table_name)
         else:
             raise ValueError(
-                &#34;table_name must be string or Iterable, not %s&#34; % type(table_name)
+                f&#34;table_name must be string or Iterable, not {type(table_name)}&#34;
             )
-        return [nr for nr in all_named_ranges if nr.table_name in filter]
+        return [nr for nr in all_named_ranges if nr.table_name in filter_]
 
     def get_named_range(self, name):
         &#34;&#34;&#34;Returns the Name Ranges of the specified name. If
@@ -10017,7 +9994,7 @@ ensuiring model integrity.</p>
     # Cell span
     #
 
-    def set_span(self, area, merge=False):
+    def set_span(self, area, merge=False):  # noqa: C901
         &#34;&#34;&#34;Create a Cell Span : span the first cell of the area on several
         columns and/or rows.
         If merge is True, replace text of the cell by the concatenation of
@@ -10947,8 +10924,13 @@ type, aka non empty cells.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_column_cells(
-    self, x, style=None, content=None, cell_type=None, complete=False
+<pre><code class="python">def get_column_cells(  # noqa: C901
+    self,
+    x,
+    style=None,
+    content=None,
+    cell_type=None,
+    complete=False,
 ):
     &#34;&#34;&#34;Get the list of cells at the given position.
 
@@ -11107,11 +11089,11 @@ tuple of (x, column).</p>
     Return: list of columns
     &#34;&#34;&#34;
     if coord:
-        x, y, z, t = self._translate_column_coordinates(coord)
+        x, _y, _z, t = self._translate_column_coordinates(coord)
     else:
-        x = y = z = t = None
+        x = t = None
     if not style:
-        return [column for column in self.traverse_columns(start=x, end=t)]
+        return list(self.traverse_columns(start=x, end=t))
     columns = []
     for column in self.traverse_columns(start=x, end=t):
         if style != column.style:
@@ -11186,16 +11168,16 @@ this method on a cloned table.</p>
     all_named_ranges = body.get_named_ranges()
     if not table_name:
         return all_named_ranges
-    filter = []
+    filter_ = []
     if isinstance(table_name, str):
-        filter.append(table_name)
+        filter_.append(table_name)
     elif isiterable(table_name):
-        filter.extend(table_name)
+        filter_.extend(table_name)
     else:
         raise ValueError(
-            &#34;table_name must be string or Iterable, not %s&#34; % type(table_name)
+            f&#34;table_name must be string or Iterable, not {type(table_name)}&#34;
         )
-    return [nr for nr in all_named_ranges if nr.table_name in filter]</code></pre>
+    return [nr for nr in all_named_ranges if nr.table_name in filter_]</code></pre>
 </details>
 </dd>
 <dt id="odfdo.table.Table.get_row"><code class="name flex">
@@ -11322,12 +11304,12 @@ If cell_type and complete is True, replace missing values by None.</p>
     Return: list of rows
     &#34;&#34;&#34;
     if coord:
-        x, y, z, t = self._translate_table_coordinates(coord)
+        _x, y, _z, t = self._translate_table_coordinates(coord)
     else:
-        x = y = z = t = None
+        y = t = None
     # fixme : not clones ?
     if not content and not style:
-        return [row for row in self.traverse(start=y, end=t)]
+        return list(self.traverse(start=y, end=t))
     rows = []
     for row in self.traverse(start=y, end=t):
         if content and not row.match(content):
@@ -11688,10 +11670,7 @@ evaluates to False (empty string), and no style.</p>
 
         aggressive -- bool
     &#34;&#34;&#34;
-    for row in self._get_rows():
-        if not row.is_empty(aggressive=aggressive):
-            return False
-    return True</code></pre>
+    return all(row.is_empty(aggressive=aggressive) for row in self._get_rows())</code></pre>
 </details>
 </dd>
 <dt id="odfdo.table.Table.is_row_empty"><code class="name flex">
@@ -11972,7 +11951,7 @@ provided or the table element must be already attached to a document.</p>
         image_frame.set_attribute(&#34;table:end-x&#34;, width)
         image_frame.set_attribute(&#34;table:end-y&#34;, height)
         # FIXME what happens when the address changes?
-        address = &#34;%s.%s%s&#34; % (self.name, _digit_to_alpha(x), y + 1)
+        address = f&#34;{self.name}.{_digit_to_alpha(x)}{y + 1}&#34;
         image_frame.set_attribute(&#34;table:end-cell-address&#34;, address)
         # The frame is directly in the cell
         cell.append(image_frame)
@@ -12130,7 +12109,7 @@ like "C" is accepted.</p>
     &#34;&#34;&#34;
     height = self.height
     if len(cells) != height:
-        raise ValueError(&#34;col mismatch: %s cells expected&#34; % height)
+        raise ValueError(f&#34;col mismatch: {height} cells expected&#34;)
     cells = iter(cells)
     for y, row in enumerate(self.traverse()):
         row.set_cell(x, next(cells))
@@ -12394,7 +12373,7 @@ be provided as an alpha numeric value like "A1:B2' or a tuple like
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_span(self, area, merge=False):
+<pre><code class="python">def set_span(self, area, merge=False):  # noqa: C901
     &#34;&#34;&#34;Create a Cell Span : span the first cell of the area on several
     columns and/or rows.
     If merge is True, replace text of the cell by the concatenation of
@@ -12675,7 +12654,7 @@ written during the process.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def transpose(self, coord=None):
+<pre><code class="python">def transpose(self, coord=None):  # noqa: C901
     &#34;&#34;&#34;Swap *in-place* rows and columns of the table.
 
     If &#39;coord&#39; is not None, apply transpose only to the area defined by the
@@ -12691,7 +12670,7 @@ written during the process.</p>
     data = []
     if coord is None:
         for row in self.traverse():
-            data.append([cell for cell in row.traverse()])
+            data.append(list(row.traverse()))
         transposed_data = zip_longest(*data)
         self.clear()
         # new_rows = []
@@ -12721,7 +12700,7 @@ written during the process.</p>
         else:
             t = min(t, self.height - 1)
         for row in self.traverse(start=y, end=t):
-            data.append([cell for cell in row.traverse(start=x, end=z)])
+            data.append(list(row.traverse(start=x, end=z)))
         transposed_data = zip_longest(*data)
         # clear locally
         w = z - x + 1
@@ -12758,7 +12737,7 @@ necessary.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def traverse(self, start=None, end=None):
+<pre><code class="python">def traverse(self, start=None, end=None):  # noqa: C901
     &#34;&#34;&#34;Yield as many row elements as expected rows in the table, i.e.
     expand repetitions by returning the same row as many times as
     necessary.
@@ -12846,7 +12825,7 @@ necessary.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def traverse_columns(self, start=None, end=None):
+<pre><code class="python">def traverse_columns(self, start=None, end=None):  # noqa: C901
     &#34;&#34;&#34;Yield as many column elements as expected columns in the table,
     i.e. expand repetitions by returning the same column as many times as
     necessary.

@@ -29,7 +29,7 @@ IndexTitleTemplate, TocEntryTemplate related classes</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -52,8 +52,7 @@ IndexTitleTemplate, TocEntryTemplate related classes</p>
 &#34;&#34;&#34;TOC class for &#34;text:table-of-content&#34; and IndexTitle, TabStopStyle,
 IndexTitleTemplate, TocEntryTemplate related classes
 &#34;&#34;&#34;
-from .element import FIRST_CHILD
-from .element import register_element_class, Element
+from .element import FIRST_CHILD, Element, register_element_class
 from .paragraph import Paragraph
 from .style import Style
 
@@ -132,7 +131,7 @@ class TabStopStyle(Element):
         (&#34;style_type&#34;, &#34;style:type&#34;),
     )
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         style_char=None,
         leader_color=None,
@@ -368,7 +367,7 @@ class TOC(Element):
                 paragraph.style = text_style
             paragraph.text = title
 
-    def fill(self, document=None, use_default_styles=True):
+    def fill(self, document=None, use_default_styles=True):  # noqa: C901
         &#34;&#34;&#34;Fill the TOC with the titles found in the document. A TOC is not
         contextual so it will catch all titles before and after its insertion.
         If the TOC is not attached to a document, attach it beforehand or
@@ -423,20 +422,20 @@ class TOC(Element):
                 continue
             number = []
             # 1. l &lt; level
-            for l in range(1, level):
-                index = level_indexes.setdefault(l, 1)
+            for idx in range(1, level):
+                index = level_indexes.setdefault(idx, 1)
                 number.append(str(index))
             # 2. l == level
             index = level_indexes.setdefault(level, 0) + 1
             level_indexes[level] = index
             number.append(str(index))
             # 3. l &gt; level
-            for l in range(level + 1, 11):
-                if l in level_indexes:
-                    del level_indexes[l]
+            for idx in range(level + 1, 11):
+                if idx in level_indexes:
+                    del level_indexes[idx]
             number = &#34;.&#34;.join(number) + &#34;.&#34;
             # Make the title with &#34;1.2.3. Title&#34; format
-            title = &#34;%s %s&#34; % (number, header.text)
+            title = f&#34;{number} {header.text}&#34;
             paragraph = Paragraph(title)
             if use_default_styles:
                 paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
@@ -461,9 +460,8 @@ class IndexTitleTemplate(Element):
 
     def __init__(self, style=None, **kw):
         super().__init__(**kw)
-        if self._do_init:
-            if style:
-                self.style = style
+        if self._do_init and style:
+            self.style = style
 
 
 IndexTitleTemplate._define_attribut_property()
@@ -893,9 +891,8 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 
     def __init__(self, style=None, **kw):
         super().__init__(**kw)
-        if self._do_init:
-            if style:
-                self.style = style</code></pre>
+        if self._do_init and style:
+            self.style = style</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1251,7 +1248,7 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
                 paragraph.style = text_style
             paragraph.text = title
 
-    def fill(self, document=None, use_default_styles=True):
+    def fill(self, document=None, use_default_styles=True):  # noqa: C901
         &#34;&#34;&#34;Fill the TOC with the titles found in the document. A TOC is not
         contextual so it will catch all titles before and after its insertion.
         If the TOC is not attached to a document, attach it beforehand or
@@ -1306,20 +1303,20 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
                 continue
             number = []
             # 1. l &lt; level
-            for l in range(1, level):
-                index = level_indexes.setdefault(l, 1)
+            for idx in range(1, level):
+                index = level_indexes.setdefault(idx, 1)
                 number.append(str(index))
             # 2. l == level
             index = level_indexes.setdefault(level, 0) + 1
             level_indexes[level] = index
             number.append(str(index))
             # 3. l &gt; level
-            for l in range(level + 1, 11):
-                if l in level_indexes:
-                    del level_indexes[l]
+            for idx in range(level + 1, 11):
+                if idx in level_indexes:
+                    del level_indexes[idx]
             number = &#34;.&#34;.join(number) + &#34;.&#34;
             # Make the title with &#34;1.2.3. Title&#34; format
-            title = &#34;%s %s&#34; % (number, header.text)
+            title = f&#34;{number} {header.text}&#34;
             paragraph = Paragraph(title)
             if use_default_styles:
                 paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
@@ -1516,7 +1513,7 @@ provide one as argument.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def fill(self, document=None, use_default_styles=True):
+<pre><code class="python">def fill(self, document=None, use_default_styles=True):  # noqa: C901
     &#34;&#34;&#34;Fill the TOC with the titles found in the document. A TOC is not
     contextual so it will catch all titles before and after its insertion.
     If the TOC is not attached to a document, attach it beforehand or
@@ -1571,20 +1568,20 @@ provide one as argument.</p>
             continue
         number = []
         # 1. l &lt; level
-        for l in range(1, level):
-            index = level_indexes.setdefault(l, 1)
+        for idx in range(1, level):
+            index = level_indexes.setdefault(idx, 1)
             number.append(str(index))
         # 2. l == level
         index = level_indexes.setdefault(level, 0) + 1
         level_indexes[level] = index
         number.append(str(index))
         # 3. l &gt; level
-        for l in range(level + 1, 11):
-            if l in level_indexes:
-                del level_indexes[l]
+        for idx in range(level + 1, 11):
+            if idx in level_indexes:
+                del level_indexes[idx]
         number = &#34;.&#34;.join(number) + &#34;.&#34;
         # Make the title with &#34;1.2.3. Title&#34; format
-        title = &#34;%s %s&#34; % (number, header.text)
+        title = f&#34;{number} {header.text}&#34;
         paragraph = Paragraph(title)
         if use_default_styles:
             paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
@@ -1794,7 +1791,7 @@ Base style for a TOC entryBase style for a TOC entry</p>
         (&#34;style_type&#34;, &#34;style:type&#34;),
     )
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         style_char=None,
         leader_color=None,

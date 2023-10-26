@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo API documentation</title>
-<meta name="description" content="odfdo
-python library for OpenDocument format (ODF) …" />
+<meta name="description" content="Python library for OpenDocument Format (ODF)" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,65 +22,12 @@ python library for OpenDocument format (ODF) …" />
 <h1 class="title">Package <code>odfdo</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="odfdo">odfdo</h1>
-<p>python library for OpenDocument format (ODF)</p>
-<p><img alt="logo" src="./odfdo.png"></p>
-<p>odfdo is a Python3 library implementing the ISO/IEC 26300 OpenDocument Format
-standard.</p>
-<p>project:
-<a href="https://github.com/jdum/odfdo">https://github.com/jdum/odfdo</a></p>
-<p>author:
-jerome.dumonteil@gmail.com</p>
-<p>licence:
-Apache License, Version 2.0</p>
-<p>odfdo is a derivative work of the lpod-python project.</p>
-<h1 id="installation">installation</h1>
-<pre><code>sudo python setup.py install
-</code></pre>
-<p>after installation you can check everything is working:
-<code>cd test &amp;&amp; python test.py</code>
-</p>
-<p>test should run for a few seconds and issue no error.</p>
-<h1 id="usage">usage</h1>
-<pre><code>from odfdo import Document, Paragraph
-
-doc = Document('text')
-doc.body.append(Paragraph("Hello world!"))
-doc.save("hello.odt")
-</code></pre>
-<h1 id="tldr">tl;dr</h1>
-<p>'Intended Audience :: Developers'</p>
-<h1 id="documentation">documentation</h1>
-<ul>
-<li>the "recipes" folder contains more than 50 working sample scripts,</li>
-<li>the "scripts" folder contains some useful scripts (like style management),</li>
-<li>the "doc" folder contains auto generated documentation.</li>
-</ul>
-<p>styles: the best way to apply style is by merging styles from a template
-document into your generated document. See odfdo-style.py in "scripts" folder.</p>
-<h1 id="limitations">limitations</h1>
-<p>odfdo is intended to facilitate the generation of ODF documents,
-nevertheless a basic knowledge of the ODF format is necessary.</p>
-<p>ODF document rendering can vary greatly from software to software. In
-particular the "styles" of the document allow an adaptation of the rendering
-for a particular software.</p>
-<p>the best (only ?) way to apply style is by merging styles from a template
-document into your generated document. See odfdo-style.py in "scripts" folder.</p>
-<h1 id="changes-from-former-lpod-library">changes from former lpod library</h1>
-<p>lpod-python was written in 2009-2010 as a python2 library,
-see: <a href="https://github.com/lpod/lpod-python">https://github.com/lpod/lpod-python</a></p>
-<p>odfdo main changes from lpod:</p>
-<ul>
-<li>odfdo requires python version &gt;= 3.6</li>
-<li>API change: more pythonic</li>
-<li>include recipes</li>
-<li>use only Apache 2.0 license</li>
-</ul>
+<p>Python library for OpenDocument Format (ODF)</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -103,199 +49,195 @@ see: <a href="https://github.com/lpod/lpod-python">https://github.com/lpod/lpod-
 # Authors: David Versmisse &lt;david.versmisse@itaapy.com&gt;
 #          Hervé Cauwelier &lt;herve@itaapy.com&gt;
 #          Romain Gauthier &lt;romain@itaapy.com&gt;
-&#34;&#34;&#34;# odfdo
-python library for OpenDocument format (ODF)
+&#34;&#34;&#34;Python library for OpenDocument Format (ODF)&#34;&#34;&#34;
+
+__all__ = [
+    &#34;AnimPar&#34;,
+    &#34;AnimSeq&#34;,
+    &#34;AnimTransFilter&#34;,
+    &#34;Annotation&#34;,
+    &#34;AnnotationEnd&#34;,
+    &#34;BackgroundImage&#34;,
+    &#34;Bookmark&#34;,
+    &#34;BookmarkEnd&#34;,
+    &#34;BookmarkStart&#34;,
+    &#34;Cell&#34;,
+    &#34;ChangeInfo&#34;,
+    &#34;Column&#34;,
+    &#34;ConnectorShape&#34;,
+    &#34;Container&#34;,
+    &#34;Content&#34;,
+    &#34;Content&#34;,
+    &#34;Document&#34;,
+    &#34;DrawFillImage&#34;,
+    &#34;DrawGroup&#34;,
+    &#34;DrawImage&#34;,
+    &#34;DrawPage&#34;,
+    &#34;Element&#34;,
+    &#34;EllipseShape&#34;,
+    &#34;FIRST_CHILD&#34;,
+    &#34;Frame&#34;,
+    &#34;Header&#34;,
+    &#34;HeaderRows&#34;,
+    &#34;IndexTitle&#34;,
+    &#34;IndexTitleTemplate&#34;,
+    &#34;LAST_CHILD&#34;,
+    &#34;LineBreak&#34;,
+    &#34;LineShape&#34;,
+    &#34;Link&#34;,
+    &#34;List&#34;,
+    &#34;ListItem&#34;,
+    &#34;Manifest&#34;,
+    &#34;Meta&#34;,
+    &#34;NEXT_SIBLING&#34;,
+    &#34;NamedRange&#34;,
+    &#34;Note&#34;,
+    &#34;PREV_SIBLING&#34;,
+    &#34;Paragraph&#34;,
+    &#34;RectangleShape&#34;,
+    &#34;Reference&#34;,
+    &#34;ReferenceMark&#34;,
+    &#34;ReferenceMarkEnd&#34;,
+    &#34;ReferenceMarkStart&#34;,
+    &#34;Row&#34;,
+    &#34;RowGroup&#34;,
+    &#34;Section&#34;,
+    &#34;Spacer&#34;,
+    &#34;Span&#34;,
+    &#34;Style&#34;,
+    &#34;Styles&#34;,
+    &#34;TOC&#34;,
+    &#34;Tab&#34;,
+    &#34;TabStopStyle&#34;,
+    &#34;Table&#34;,
+    &#34;Text&#34;,
+    &#34;TextChange&#34;,
+    &#34;TextChangeEnd&#34;,
+    &#34;TextChangeStart&#34;,
+    &#34;TextChangedRegion&#34;,
+    &#34;TextDeletion&#34;,
+    &#34;TextFormatChange&#34;,
+    &#34;TextInsertion&#34;,
+    &#34;TocEntryTemplate&#34;,
+    &#34;TrackedChanges&#34;,
+    &#34;UserDefined&#34;,
+    &#34;UserFieldDecl&#34;,
+    &#34;UserFieldDecls&#34;,
+    &#34;UserFieldGet&#34;,
+    &#34;UserFieldInput&#34;,
+    &#34;VarChapter&#34;,
+    &#34;VarCreationDate&#34;,
+    &#34;VarCreationTime&#34;,
+    &#34;VarDate&#34;,
+    &#34;VarDecl&#34;,
+    &#34;VarDecls&#34;,
+    &#34;VarDescription&#34;,
+    &#34;VarFileName&#34;,
+    &#34;VarGet&#34;,
+    &#34;VarInitialCreator&#34;,
+    &#34;VarKeywords&#34;,
+    &#34;VarPageCount&#34;,
+    &#34;VarPageNumber&#34;,
+    &#34;VarSet&#34;,
+    &#34;VarSubject&#34;,
+    &#34;VarTime&#34;,
+    &#34;VarTitle&#34;,
+    &#34;XmlPart&#34;,
+    &#34;__version__&#34;,
+    &#34;create_table_cell_style&#34;,
+    &#34;default_boolean_style&#34;,
+    &#34;default_currency_style&#34;,
+    &#34;default_date_style&#34;,
+    &#34;default_frame_position_style&#34;,
+    &#34;default_number_style&#34;,
+    &#34;default_percentage_style&#34;,
+    &#34;default_time_style&#34;,
+    &#34;default_toc_level_style&#34;,
+    &#34;hex2rgb&#34;,
+    &#34;make_table_cell_border_string&#34;,
+    &#34;rgb2hex&#34;,
+]
 
 
-![logo](./odfdo.png)
-
-odfdo is a Python3 library implementing the ISO/IEC 26300 OpenDocument Format
-standard.
-
-project:
-    https://github.com/jdum/odfdo
-
-author:
-    jerome.dumonteil@gmail.com
-
-licence:
-    Apache License, Version 2.0
-
-odfdo is a derivative work of the lpod-python project.
-
-
-installation
-============
-
-
-    sudo python setup.py install
-
-
-after installation you can check everything is working:
-    
-    
-    `cd test &amp;&amp; python test.py`
-    
-
-test should run for a few seconds and issue no error.
-
-
-usage
-=====
-
-
-    from odfdo import Document, Paragraph
-
-    doc = Document(&#39;text&#39;)
-    doc.body.append(Paragraph(&#34;Hello world!&#34;))
-    doc.save(&#34;hello.odt&#34;)
-
-
-tl;dr
-=====
-
-&#39;Intended Audience :: Developers&#39;
-
-
-documentation
-=============
-
- - the &#34;recipes&#34; folder contains more than 50 working sample scripts,
- - the &#34;scripts&#34; folder contains some useful scripts (like style management),
- - the &#34;doc&#34; folder contains auto generated documentation.
-
-styles: the best way to apply style is by merging styles from a template
-document into your generated document. See odfdo-style.py in &#34;scripts&#34; folder.
-
-
-limitations
-===========
-
-odfdo is intended to facilitate the generation of ODF documents,
-nevertheless a basic knowledge of the ODF format is necessary.
-
-ODF document rendering can vary greatly from software to software. In
-particular the &#34;styles&#34; of the document allow an adaptation of the rendering
-for a particular software.
-
-the best (only ?) way to apply style is by merging styles from a template
-document into your generated document. See odfdo-style.py in &#34;scripts&#34; folder.
-
-
-changes from former lpod library
-================================
-lpod-python was written in 2009-2010 as a python2 library,
-see: https://github.com/lpod/lpod-python
-
-odfdo main changes from lpod:
-
- - odfdo requires python version &gt;= 3.6
- - API change: more pythonic
- - include recipes
- - use only Apache 2.0 license
-&#34;&#34;&#34;
-__all__ = (
-    &#34;Bookmark BookmarkStart BookmarkEnd Container Content Content &#34;
-    &#34;Document DrawPage Element Text FIRST_CHILD LAST_CHILD NEXT_SIBLING &#34;
-    &#34;PREV_SIBLING Frame default_frame_position_style Header DrawImage &#34;
-    &#34;DrawFillImage Link ListItem List Manifest Meta Note Annotation &#34;
-    &#34;AnnotationEnd Spacer Tab LineBreak Span Paragraph Reference &#34;
-    &#34;ReferenceMark ReferenceMarkStart ReferenceMarkEnd Section &#34;
-    &#34;ConnectorShape DrawGroup LineShape RectangleShape EllipseShape &#34;
-    &#34;AnimPar AnimSeq AnimTransFilter default_boolean_style &#34;
-    &#34;default_currency_style default_number_style default_percentage_style &#34;
-    &#34;default_time_style default_date_style make_table_cell_border_string &#34;
-    &#34;create_table_cell_style Style BackgroundImage rgb2hex hex2rgb Styles &#34;
-    &#34;ChangeInfo TextInsertion TextDeletion TextFormatChange &#34;
-    &#34;TextChangedRegion TrackedChanges TextChange TextChangeEnd &#34;
-    &#34;TextChangeStart Cell Row Column Table HeaderRows RowGroup NamedRange &#34;
-    &#34;IndexTitleTemplate default_toc_level_style TOC IndexTitle &#34;
-    &#34;TocEntryTemplate TabStopStyle UserFieldDecl UserFieldGet &#34;
-    &#34;UserFieldInput UserDefined VarChapter VarFileName VarInitialCreator &#34;
-    &#34;VarCreationDate VarCreationTime VarDescription VarDecls VarDecl &#34;
-    &#34;VarSet VarGet UserFieldDecls VarPageNumber VarPageCount VarDate &#34;
-    &#34;VarTime VarTitle VarSubject VarKeywords XmlPart&#34;
-).split()
-
-from .version import __version__
-from .bookmark import Bookmark, BookmarkStart, BookmarkEnd
+from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
 from .container import Container
 from .content import Content
 from .document import Document
 from .draw_page import DrawPage
-from .element import Element, Text, FIRST_CHILD, LAST_CHILD, NEXT_SIBLING, PREV_SIBLING
+from .element import FIRST_CHILD, LAST_CHILD, NEXT_SIBLING, PREV_SIBLING, Element, Text
 from .frame import Frame, default_frame_position_style
 from .header import Header
-from .image import DrawImage, DrawFillImage
+from .image import DrawFillImage, DrawImage
 from .link import Link
-from .list import ListItem, List
+from .list import List, ListItem
 from .manifest import Manifest
 from .meta import Meta
-from .note import Note, Annotation, AnnotationEnd
-from .paragraph import Span, Paragraph, Spacer, Tab, LineBreak
-from .reference import Reference, ReferenceMark, ReferenceMarkStart, ReferenceMarkEnd
+from .note import Annotation, AnnotationEnd, Note
+from .paragraph import LineBreak, Paragraph, Spacer, Span, Tab
+from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
 from .section import Section
-from .shapes import ConnectorShape, DrawGroup, LineShape, RectangleShape, EllipseShape
+from .shapes import ConnectorShape, DrawGroup, EllipseShape, LineShape, RectangleShape
 from .smil import AnimPar, AnimSeq, AnimTransFilter
 from .style import (
+    BackgroundImage,
     Style,
+    create_table_cell_style,
     default_boolean_style,
     default_currency_style,
+    default_date_style,
     default_number_style,
     default_percentage_style,
     default_time_style,
-    default_date_style,
-    make_table_cell_border_string,
-    create_table_cell_style,
-    BackgroundImage,
-    rgb2hex,
     hex2rgb,
+    make_table_cell_border_string,
+    rgb2hex,
 )
 from .styles import Styles
-from .tracked_changes import (
-    ChangeInfo,
-    TextInsertion,
-    TextDeletion,
-    TextFormatChange,
-    TextChangedRegion,
-    TrackedChanges,
-    TextChange,
-    TextChangeEnd,
-    TextChangeStart,
-)
-from .table import Cell, Row, Column, Table, HeaderRows, RowGroup, NamedRange
+from .table import Cell, Column, HeaderRows, NamedRange, Row, RowGroup, Table
 from .toc import (
     TOC,
-    IndexTitleTemplate,
-    default_toc_level_style,
     IndexTitle,
-    TocEntryTemplate,
+    IndexTitleTemplate,
     TabStopStyle,
+    TocEntryTemplate,
+    default_toc_level_style,
+)
+from .tracked_changes import (
+    ChangeInfo,
+    TextChange,
+    TextChangedRegion,
+    TextChangeEnd,
+    TextChangeStart,
+    TextDeletion,
+    TextFormatChange,
+    TextInsertion,
+    TrackedChanges,
 )
 from .variable import (
+    UserDefined,
     UserFieldDecl,
+    UserFieldDecls,
     UserFieldGet,
     UserFieldInput,
-    UserDefined,
     VarChapter,
-    VarFileName,
-    VarInitialCreator,
     VarCreationDate,
     VarCreationTime,
-    VarDescription,
-    VarDecls,
-    VarDecl,
-    VarSet,
-    VarGet,
-    UserFieldDecls,
-    VarPageNumber,
-    VarPageCount,
     VarDate,
+    VarDecl,
+    VarDecls,
+    VarDescription,
+    VarFileName,
+    VarGet,
+    VarInitialCreator,
+    VarKeywords,
+    VarPageCount,
+    VarPageNumber,
+    VarSet,
+    VarSubject,
     VarTime,
     VarTitle,
-    VarSubject,
-    VarKeywords,
 )
+from .version import __version__
 from .xmlpart import XmlPart</code></pre>
 </details>
 </section>
@@ -308,7 +250,7 @@ from .xmlpart import XmlPart</code></pre>
 </dd>
 <dt><code class="name"><a title="odfdo.const" href="const.html">odfdo.const</a></code></dt>
 <dd>
-<div class="desc"><p>Constants, XML tags and ODF headers</p></div>
+<div class="desc"><p>Constants, XML tags and ODF headers.</p></div>
 </dd>
 <dt><code class="name"><a title="odfdo.container" href="container.html">odfdo.container</a></code></dt>
 <dd>
@@ -379,6 +321,10 @@ from .xmlpart import XmlPart</code></pre>
 <dd>
 <div class="desc"><p>Reference related classes for "text:reference-&hellip;" tags</p></div>
 </dd>
+<dt><code class="name"><a title="odfdo.scripts" href="scripts/index.html">odfdo.scripts</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt><code class="name"><a title="odfdo.scriptutils" href="scriptutils.html">odfdo.scriptutils</a></code></dt>
 <dd>
 <div class="desc"><p>Utilities shared by the scripts</p></div>
@@ -410,6 +356,10 @@ Integration Language)</p></div>
 <div class="desc"><p>Table class for "table:table" and HeaderRows, Cell, Row, Column,
 NamedRange related classes</p></div>
 </dd>
+<dt><code class="name"><a title="odfdo.templates" href="templates/index.html">odfdo.templates</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt><code class="name"><a title="odfdo.toc" href="toc.html">odfdo.toc</a></code></dt>
 <dd>
 <div class="desc"><p>TOC class for "text:table-of-content" and IndexTitle, TabStopStyle,
@@ -430,7 +380,7 @@ IndexTitleTemplate, TocEntryTemplate related classes</p></div>
 </dd>
 <dt><code class="name"><a title="odfdo.version" href="version.html">odfdo.version</a></code></dt>
 <dd>
-<div class="desc"><p>Version number of the package</p></div>
+<div class="desc"><p>Version number of the package.</p></div>
 </dd>
 <dt><code class="name"><a title="odfdo.xmlpart" href="xmlpart.html">odfdo.xmlpart</a></code></dt>
 <dd>
@@ -869,8 +819,8 @@ hexadecimal representation.</p>
     if isinstance(color, str):
         try:
             code = CSS3_COLORMAP[color.lower()]
-        except KeyError:
-            raise KeyError(&#39;color &#34;%s&#34; is unknown&#39; % color)
+        except KeyError as e:
+            raise KeyError(f&#39;color &#34;{color}&#34; is unknown&#39;) from e
     elif isinstance(color, tuple):
         if len(color) != 3:
             raise ValueError(&#34;color must be a 3-tuple&#34;)
@@ -880,7 +830,7 @@ hexadecimal representation.</p>
     for channel in code:
         if channel &lt; 0 or channel &gt; 255:
             raise ValueError(&#34;color code must be between 0 and 255&#34;)
-    return &#34;#%02X%02X%02X&#34; % code</code></pre>
+    return f&#34;#{code[0]:02X}{code[1]:02X}{code[2]:02X}&#34;</code></pre>
 </details>
 </dd>
 </dl>
@@ -1120,9 +1070,8 @@ and interactive-sequence</p></div>
 
     def __init__(self, presentation_node_type=None, **kwargs):
         super().__init__(**kwargs)
-        if self._do_init:
-            if presentation_node_type:
-                self.presentation_node_type = presentation_node_type</code></pre>
+        if self._do_init and presentation_node_type:
+            self.presentation_node_type = presentation_node_type</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1318,7 +1267,7 @@ to get a list of all types/subtypes</p>
         smil_direction=None,
         smil_fadeColor=None,
         smil_mode=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         if self._do_init:
@@ -1616,7 +1565,7 @@ autogenerated.</p>
         date=None,
         name=None,
         parent=None,
-        **kwargs
+        **kwargs,
     ):
         # fixme : use offset
         # TODO allow paragraph and text styles
@@ -2381,7 +2330,7 @@ break_after -- 'page', 'column' or 'auto'
         position=None,
         repeat=None,
         opacity=None,
-        filter=None,
+        filter=None,  # noqa: A002
         # Every other property
         **kw,
     ):
@@ -3423,10 +3372,8 @@ timedelta</p>
         None to delete. Without changing cache.
         &#34;&#34;&#34;
         if repeated is None or repeated &lt; 2:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute(&#34;table:number-columns-repeated&#34;)
-            except KeyError:
-                pass
             return
         self.set_attribute(&#34;table:number-columns-repeated&#34;, str(repeated))
 
@@ -4330,10 +4277,8 @@ several columns, give the number of repeated columns.</p>
             repeated -- int or None
         &#34;&#34;&#34;
         if repeated is None or repeated &lt; 2:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute(&#34;table:number-columns-repeated&#34;)
-            except KeyError:
-                pass
             return
         self.set_attribute(&#34;table:number-columns-repeated&#34;, str(repeated))
 
@@ -4649,7 +4594,7 @@ def style(self):
         glue_points=None,
         p1=None,
         p2=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -4973,43 +4918,37 @@ def style(self):
         self.__packaging = None
         self.__path_like = None
         self.__packaging = &#34;zip&#34;
-        self.path = None
+        self.path = None  # or Path
         if path:
             self.open(path)
 
     def open(self, path_or_file):
-        &#34;&#34;&#34;Load the content of an ODF file&#34;&#34;&#34;
+        &#34;&#34;&#34;Load the content of an ODF file.&#34;&#34;&#34;
         self.__path_like = path_or_file
         if isinstance(path_or_file, (str, bytes, Path)):
-            self.path = path_or_file
-            if not exists(self.path):
-                raise OSError(f&#34;File not found: {self.path}&#34;)
-        else:
-            self.path = None
-        if is_zipfile(path_or_file):
+            self.path = Path(path_or_file)
+            if not self.path.exists():
+                raise FileNotFoundError(str(self.path))
+        if (self.path or isinstance(path_or_file, io.IOBase)) and is_zipfile(
+            path_or_file
+        ):
             self.__packaging = &#34;zip&#34;
             return self.__read_zip()
-        # to guess other packaging types
         if self.path:
-            try:
-                is_folder = os.path.isdir(self.path)
-            except OSError:
-                is_folder = False
+            is_folder = False
+            with contextlib.suppress(OSError):
+                is_folder = self.path.is_dir()
             if is_folder:
                 self.__packaging = &#34;folder&#34;
                 return self.__read_folder()
-        # last try, flat xml either by path or file
-        # self._read_flat() # FIXME: not implemented
-        raise ValueError(&#34;Document format not managed by this tool.&#34;)
+        raise ValueError(f&#34;Document format not managed by odfdo: {type(path_or_file)}.&#34;)
 
     @classmethod
     def new(cls, path_or_file):
         &#34;&#34;&#34;Return a Container instance based on template argument.&#34;&#34;&#34;
         test_file = to_str(path_or_file)
         if test_file in ODF_TEMPLATES:
-            path_or_file = join(
-                dirname(__file__), ODF_TEMPLATES_DIR, ODF_TEMPLATES[test_file]
-            )
+            path_or_file = template_path(test_file)
         template_container = cls()
         template_container.open(path_or_file)
         # Return a copy of the template container
@@ -5025,7 +4964,7 @@ def style(self):
 
     def __read_zip(self):
         with ZipFile(self.__path_like) as zf:
-            mimetype = zf.read(&#34;mimetype&#34;).decode(&#34;utf-8&#34;, &#34;ignore&#34;)
+            mimetype = zf.read(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
             if mimetype not in ODF_MIMETYPES:
                 raise ValueError(f&#34;Document of unknown type {mimetype}&#34;)
             self.__parts[&#34;mimetype&#34;] = to_bytes(mimetype)
@@ -5041,54 +4980,50 @@ def style(self):
         try:
             mimetype, timestamp = self.__get_folder_part(&#34;mimetype&#34;)
         except OSError:
-            printwarn(&#34;corrupted or not an OpenDocument folder &#34; &#34;(missing mimetype)&#34;)
+            printwarn(&#34;Corrupted or not an OpenDocument folder (missing mimetype)&#34;)
             mimetype = b&#34;&#34;
             timestamp = None
         if to_str(mimetype) not in ODF_MIMETYPES:
-            message = f&#34;Document of unknown type {mimetype}, &#34; &#34;try with ODF Text.&#34;
+            message = f&#34;Document of unknown type {mimetype}, try with ODF Text.&#34;
             printwarn(message)
             mimetype = to_bytes(ODF_EXTENSIONS[&#34;odt&#34;])
             self.__parts[&#34;mimetype&#34;] = mimetype
             self.__parts_ts[&#34;mimetype&#34;] = timestamp
 
+    def _parse_folder(self, folder):
+        parts = []
+        root = self.path / folder
+        for path in root.iterdir():
+            if path.name.startswith(&#34;.&#34;):  # no hidden files
+                continue
+            relative_path = path.relative_to(self.path)
+            if path.is_file():
+                parts.append(relative_path.as_posix())
+            if path.is_dir():
+                sub_parts = self._parse_folder(relative_path)
+                if sub_parts:
+                    parts.extend(sub_parts)
+                else:
+                    # store leaf directories
+                    parts.append(relative_path.as_posix() + &#34;/&#34;)
+        return parts
+
     def __get_folder_parts(self):
         &#34;&#34;&#34;Get the list of members in the ODF folder.&#34;&#34;&#34;
-
-        def parse_folder(folder):
-            parts = []
-            file_names = os.listdir(join(self.path, folder))
-            for f in file_names:
-                if f.startswith(&#34;.&#34;):  # no hidden files
-                    continue
-                if os.path.isfile(join(self.path, folder, f)):
-                    part_name = PurePath(folder, f).as_posix()
-                    parts.append(part_name)
-                if os.path.isdir(join(self.path, folder, f)):
-                    sub_folder = join(folder, f)
-                    sub_parts = parse_folder(sub_folder)
-                    if sub_parts:
-                        parts.extend(sub_parts)
-                    else:
-                        # store leaf directories
-                        parts.append(PurePath(sub_folder).as_posix() + &#34;/&#34;)
-            return parts
-
-        return parse_folder(&#34;&#34;)
+        return self._parse_folder(&#34;&#34;)
 
     def __get_folder_part(self, name):
         &#34;&#34;&#34;Get bytes of a part from the ODF folder, with timestamp.&#34;&#34;&#34;
-        path = join(self.path, name)
-        timestamp = os.stat(path).st_mtime
-        if os.path.isdir(path):
-            return (&#34;&#34;, timestamp)
-        with open(path, &#34;rb&#34;) as f:
-            part = f.read()
-        return (part, timestamp)
+        path = self.path / name
+        timestamp = path.stat().st_mtime
+        if path.is_dir():
+            return (b&#34;&#34;, timestamp)
+        return (path.read_bytes(), timestamp)
 
     def __get_folder_part_timestamp(self, name):
-        path = join(self.path, name)
+        path = self.path / name
         try:
-            timestamp = os.stat(path).st_mtime
+            timestamp = path.stat().st_mtime
         except OSError:
             timestamp = -1
         return timestamp
@@ -5129,18 +5064,18 @@ def style(self):
             try:
                 part_names.remove(ODF_MANIFEST)
             except ValueError:
-                printwarn(&#34;missing &#39;%s&#39;&#34; % ODF_MANIFEST)
+                printwarn(f&#34;Missing &#39;{ODF_MANIFEST}&#39;&#34;)
             # &#34;Pretty-save&#34; parts in some order
             # mimetype requires to be first and uncompressed
             try:
                 filezip.writestr(&#34;mimetype&#34;, parts[&#34;mimetype&#34;], ZIP_STORED)
                 part_names.remove(&#34;mimetype&#34;)
             except (ValueError, KeyError):
-                printwarn(&#34;missing &#39;mimetype&#39;&#34;)
+                printwarn(&#34;Missing &#39;mimetype&#39;&#34;)
             # XML parts
             for path in ODF_CONTENT, ODF_META, ODF_SETTINGS, ODF_STYLES:
                 if path not in parts:
-                    printwarn(&#34;missing &#39;%s&#39;&#34; % path)
+                    printwarn(f&#34;Missing &#39;{path}&#39;&#34;)
                     continue
                 filezip.writestr(path, parts[path])
                 part_names.remove(path)
@@ -5152,36 +5087,32 @@ def style(self):
                     continue
                 filezip.writestr(path, data)
             # Manifest
-            try:
+            with contextlib.suppress(KeyError):
                 filezip.writestr(ODF_MANIFEST, parts[ODF_MANIFEST])
-            except KeyError:
-                pass
 
     def __save_folder(self, folder):
         &#34;&#34;&#34;Save a folder ODF from the available parts.&#34;&#34;&#34;
 
-        def dump(path, content):
-            if path.endswith(&#34;/&#34;):  # folder
+        def dump(part_path, content):
+            if part_path.endswith(&#34;/&#34;):  # folder
                 is_folder = True
-                file_name = PurePath(folder, path[:-1])
+                pure_path = PurePath(folder, part_path[:-1])
             else:
                 is_folder = False
-                file_name = PurePath(folder, path)
-            dir_name = dirname(file_name)
-            if not exists(dir_name):
-                os.makedirs(dir_name, 0o755)
+                pure_path = PurePath(folder, part_path)
+            path = Path(pure_path)
+            path.parent.mkdir(parents=False, exist_ok=True)
             if is_folder:
-                if not os.path.isdir(file_name):
-                    os.makedirs(file_name, 0o777)
+                path.mkdir(parents=False, exist_ok=True)
             else:
-                with open(file_name, &#34;wb&#34;, 0o666) as f:
-                    f.write(content)
+                path.write_bytes(content)
+                path.chmod(0o666)
 
-        for path, data in self.__parts.items():
+        for part_path, data in self.__parts.items():
             if data is None:
                 # Deleted
                 continue
-            dump(path, data)
+            dump(part_path, data)
 
     # Public API
 
@@ -5206,10 +5137,11 @@ def style(self):
 
     def get_part(self, path):
         &#34;&#34;&#34;Get the bytes of a part of the ODF.&#34;&#34;&#34;
+        path = str(path)
         if path in self.__parts:
             part = self.__parts[path]
             if part is None:
-                raise ValueError(f&#39;part &#34;{path}&#34; is deleted&#39;)
+                raise ValueError(f&#39;Part &#34;{path}&#34; is deleted&#39;)
             if self.__packaging == &#34;folder&#34;:
                 cache_ts = self.__parts_ts.get(path, -1)
                 current_ts = self.__get_folder_part_timestamp(path)
@@ -5230,7 +5162,7 @@ def style(self):
     @property
     def mimetype(self):
         &#34;&#34;&#34;Return unicode value of mimetype of the document.&#34;&#34;&#34;
-        return self.get_part(&#34;mimetype&#34;).decode(&#34;utf-8&#34;, &#34;ignore&#34;)
+        return self.get_part(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
 
     @mimetype.setter
     def mimetype(self, m):
@@ -5251,25 +5183,68 @@ def style(self):
         if self.path and self.__packaging == &#34;zip&#34;:
             self.__get_all_zip_part()
         clone = deepcopy(self)
-        setattr(clone, &#34;path&#34;, None)
+        clone.path = None
         return clone
 
     @staticmethod
     def __do_backup(target):
-        prefix, ext = os.path.splitext(target)
-        if len(ext) &lt;= 1:
-            ext = &#34;&#34;
-        back_file = prefix + &#34;.backup&#34; + ext
-        if exists(target):
-            if os.path.isdir(back_file):
-                try:
-                    shutil.rmtree(back_file)
-                except OSError as e:
-                    printwarn(str(e))
+        path = Path(target)
+        if not path.exists():
+            return
+        back_file = Path(path.stem + &#34;.backup&#34; + path.suffix)
+        if back_file.is_dir():
             try:
-                shutil.move(target, back_file)
+                shutil.rmtree(back_file)
             except OSError as e:
                 printwarn(str(e))
+        try:
+            shutil.move(target, back_file)
+        except OSError as e:
+            printwarn(str(e))
+
+    def _save_packaging(self, packaging):
+        if not packaging:
+            packaging = self.__packaging if self.__packaging else &#34;zip&#34;
+        packaging = packaging.strip().lower()
+        # if packaging not in (&#39;zip&#39;, &#39;flat&#39;, &#39;folder&#39;):
+        if packaging not in (&#34;zip&#34;, &#34;folder&#34;):
+            raise ValueError(f&#39;Packaging of type &#34;{packaging}&#34; is not supported&#39;)
+        return packaging
+
+    def _save_target(self, target):
+        if target is None:
+            target = self.path
+        if isinstance(target, Path):
+            target = str(target)
+        if isinstance(target, str):
+            while target.endswith(os.sep):
+                target = target[:-1]
+            while target.endswith(&#34;.folder&#34;):
+                target = target.split(&#34;.folder&#34;, 1)[0]
+        return target
+
+    def _save_as_zip(self, packaging, target, backup):
+        if isinstance(target, str) and backup:
+            self.__do_backup(target)
+        self.__save_zip(target)
+
+    def _save_as_folder(self, packaging, target, backup):
+        if not isinstance(target, str):
+            raise TypeError(
+                f&#34;Saving in folder format requires a folder name, not &#39;{target}&#39;&#34;
+            )
+        if not target.endswith(&#34;.folder&#34;):
+            target = target + &#34;.folder&#34;
+        if backup:
+            self.__do_backup(target)
+        else:
+            path = Path(target)
+            if path.exists():
+                try:
+                    shutil.rmtree(path)
+                except OSError as e:
+                    printwarn(str(e))
+        self.__save_folder(target)
 
     def save(self, target=None, packaging=None, backup=False):
         &#34;&#34;&#34;Save the container to the given target, a path or a file-like
@@ -5280,57 +5255,24 @@ def style(self):
 
         Arguments:
 
-            target -- str or file-like
+            target -- str or file-like or Path
 
             packaging -- &#39;zip&#39;, or for debugging purpose &#39;folder&#39;
 
             backup -- boolean
         &#34;&#34;&#34;
         parts = self.__parts
-        # Packaging
-        if packaging is None:
-            if self.__packaging:
-                packaging = self.__packaging
-            else:
-                packaging = &#34;zip&#34;  # default
-        packaging = packaging.strip().lower()
-        # if packaging not in (&#39;zip&#39;, &#39;flat&#39;, &#39;folder&#39;):
-        if packaging not in (&#34;zip&#34;, &#34;folder&#34;):
-            raise ValueError(&#39;packaging type &#34;%s&#34; not supported&#39; % packaging)
+        packaging = self._save_packaging(packaging)
         # Load parts else they will be considered deleted
         for path in self.get_parts():
             if path not in parts:
                 self.get_part(path)
-        # Open output file
-        # close_after = False
-        if target is None:
-            target = self.path
-        if isinstance(target, str):
-            while target.endswith(os.sep):
-                target = target[:-1]
-            while target.endswith(&#34;.folder&#34;):
-                target = target.split(&#34;.folder&#34;, 1)[0]
-        if packaging == &#34;zip&#34;:
-            if isinstance(target, str) and backup:
-                self.__do_backup(target)
-            self.__save_zip(target)
+        target = self._save_target(target)
         if packaging == &#34;folder&#34;:
-            if not isinstance(target, str):
-                raise ValueError(
-                    &#34;Saving in folder format requires a folder &#34;
-                    &#34;name, not %s.&#34; % target
-                )
-            if not target.endswith(&#34;.folder&#34;):
-                target = target + &#34;.folder&#34;
-            if backup:
-                self.__do_backup(target)
-            else:
-                if exists(target):
-                    try:
-                        shutil.rmtree(target)
-                    except OSError as e:
-                        printwarn(str(e))
-            self.__save_folder(target)</code></pre>
+            self._save_as_folder(packaging, target, backup)
+        else:
+            # default:
+            self._save_as_zip(packaging, target, backup)</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
@@ -5348,9 +5290,7 @@ def new(cls, path_or_file):
     &#34;&#34;&#34;Return a Container instance based on template argument.&#34;&#34;&#34;
     test_file = to_str(path_or_file)
     if test_file in ODF_TEMPLATES:
-        path_or_file = join(
-            dirname(__file__), ODF_TEMPLATES_DIR, ODF_TEMPLATES[test_file]
-        )
+        path_or_file = template_path(test_file)
     template_container = cls()
     template_container.open(path_or_file)
     # Return a copy of the template container
@@ -5381,7 +5321,7 @@ def clone(self):
     if self.path and self.__packaging == &#34;zip&#34;:
         self.__get_all_zip_part()
     clone = deepcopy(self)
-    setattr(clone, &#34;path&#34;, None)
+    clone.path = None
     return clone</code></pre>
 </details>
 </dd>
@@ -5395,7 +5335,7 @@ def clone(self):
 <pre><code class="python">@property
 def mimetype(self):
     &#34;&#34;&#34;Return unicode value of mimetype of the document.&#34;&#34;&#34;
-    return self.get_part(&#34;mimetype&#34;).decode(&#34;utf-8&#34;, &#34;ignore&#34;)</code></pre>
+    return self.get_part(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -5426,10 +5366,11 @@ def mimetype(self):
 </summary>
 <pre><code class="python">def get_part(self, path):
     &#34;&#34;&#34;Get the bytes of a part of the ODF.&#34;&#34;&#34;
+    path = str(path)
     if path in self.__parts:
         part = self.__parts[path]
         if part is None:
-            raise ValueError(f&#39;part &#34;{path}&#34; is deleted&#39;)
+            raise ValueError(f&#39;Part &#34;{path}&#34; is deleted&#39;)
         if self.__packaging == &#34;folder&#34;:
             cache_ts = self.__parts_ts.get(path, -1)
             current_ts = self.__get_folder_part_timestamp(path)
@@ -5481,35 +5422,31 @@ def mimetype(self):
 <span>def <span class="ident">open</span></span>(<span>self, path_or_file)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Load the content of an ODF file</p></div>
+<div class="desc"><p>Load the content of an ODF file.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def open(self, path_or_file):
-    &#34;&#34;&#34;Load the content of an ODF file&#34;&#34;&#34;
+    &#34;&#34;&#34;Load the content of an ODF file.&#34;&#34;&#34;
     self.__path_like = path_or_file
     if isinstance(path_or_file, (str, bytes, Path)):
-        self.path = path_or_file
-        if not exists(self.path):
-            raise OSError(f&#34;File not found: {self.path}&#34;)
-    else:
-        self.path = None
-    if is_zipfile(path_or_file):
+        self.path = Path(path_or_file)
+        if not self.path.exists():
+            raise FileNotFoundError(str(self.path))
+    if (self.path or isinstance(path_or_file, io.IOBase)) and is_zipfile(
+        path_or_file
+    ):
         self.__packaging = &#34;zip&#34;
         return self.__read_zip()
-    # to guess other packaging types
     if self.path:
-        try:
-            is_folder = os.path.isdir(self.path)
-        except OSError:
-            is_folder = False
+        is_folder = False
+        with contextlib.suppress(OSError):
+            is_folder = self.path.is_dir()
         if is_folder:
             self.__packaging = &#34;folder&#34;
             return self.__read_folder()
-    # last try, flat xml either by path or file
-    # self._read_flat() # FIXME: not implemented
-    raise ValueError(&#34;Document format not managed by this tool.&#34;)</code></pre>
+    raise ValueError(f&#34;Document format not managed by odfdo: {type(path_or_file)}.&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.Container.save"><code class="name flex">
@@ -5521,7 +5458,7 @@ object.</p>
 <p>Package the output document in the same format than current document,
 unless "packaging" is different.</p>
 <h2 id="arguments">Arguments</h2>
-<p>target &ndash; str or file-like</p>
+<p>target &ndash; str or file-like or Path</p>
 <p>packaging &ndash; 'zip', or for debugging purpose 'folder'</p>
 <p>backup &ndash; boolean</p></div>
 <details class="source">
@@ -5537,57 +5474,24 @@ unless "packaging" is different.</p>
 
     Arguments:
 
-        target -- str or file-like
+        target -- str or file-like or Path
 
         packaging -- &#39;zip&#39;, or for debugging purpose &#39;folder&#39;
 
         backup -- boolean
     &#34;&#34;&#34;
     parts = self.__parts
-    # Packaging
-    if packaging is None:
-        if self.__packaging:
-            packaging = self.__packaging
-        else:
-            packaging = &#34;zip&#34;  # default
-    packaging = packaging.strip().lower()
-    # if packaging not in (&#39;zip&#39;, &#39;flat&#39;, &#39;folder&#39;):
-    if packaging not in (&#34;zip&#34;, &#34;folder&#34;):
-        raise ValueError(&#39;packaging type &#34;%s&#34; not supported&#39; % packaging)
+    packaging = self._save_packaging(packaging)
     # Load parts else they will be considered deleted
     for path in self.get_parts():
         if path not in parts:
             self.get_part(path)
-    # Open output file
-    # close_after = False
-    if target is None:
-        target = self.path
-    if isinstance(target, str):
-        while target.endswith(os.sep):
-            target = target[:-1]
-        while target.endswith(&#34;.folder&#34;):
-            target = target.split(&#34;.folder&#34;, 1)[0]
-    if packaging == &#34;zip&#34;:
-        if isinstance(target, str) and backup:
-            self.__do_backup(target)
-        self.__save_zip(target)
+    target = self._save_target(target)
     if packaging == &#34;folder&#34;:
-        if not isinstance(target, str):
-            raise ValueError(
-                &#34;Saving in folder format requires a folder &#34;
-                &#34;name, not %s.&#34; % target
-            )
-        if not target.endswith(&#34;.folder&#34;):
-            target = target + &#34;.folder&#34;
-        if backup:
-            self.__do_backup(target)
-        else:
-            if exists(target):
-                try:
-                    shutil.rmtree(target)
-                except OSError as e:
-                    printwarn(str(e))
-        self.__save_folder(target)</code></pre>
+        self._save_as_folder(packaging, target, backup)
+    else:
+        # default:
+        self._save_as_zip(packaging, target, backup)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.Container.set_part"><code class="name flex">
@@ -5816,6 +5720,10 @@ to the given family.</p>
             # empty document
             self.container = Container()
             return
+        if isinstance(target, Path):
+            # let&#39;s assume we open a container on existing file
+            self.container = Container(target)
+            return
         if isinstance(target, Container):
             self.container = target
             return
@@ -5824,8 +5732,7 @@ to the given family.</p>
             self.container = Container.new(target)
             return
         # let&#39;s assume we open a container on existing file
-        self.container = Container()
-        self.container.open(target)
+        self.container = Container(target)
 
     @classmethod
     def new(cls, target=&#34;text&#34;):
@@ -5924,6 +5831,59 @@ to the given family.</p>
             self.__body = content.body
         return self.__body
 
+    def _get_formatted_text_footnotes(self, result, context, rst_mode):
+        # Separate text from notes
+        if rst_mode:
+            result.append(&#34;\n&#34;)
+        else:
+            result.append(&#34;----\n&#34;)
+        for citation, body in context[&#34;footnotes&#34;]:
+            if rst_mode:
+                result.append(f&#34;.. [#] {body}\n&#34;)
+            else:
+                result.append(f&#34;[{citation}] {body}\n&#34;)
+        # Append a \n after the notes
+        result.append(&#34;\n&#34;)
+        # Reset for the next paragraph
+        context[&#34;footnotes&#34;] = []
+
+    def _get_formatted_text_annotations(self, result, context, rst_mode):
+        # Insert the annotations
+        # With a separation
+        if rst_mode:
+            result.append(&#34;\n&#34;)
+        else:
+            result.append(&#34;----\n&#34;)
+        for annotation in context[&#34;annotations&#34;]:
+            if rst_mode:
+                result.append(f&#34;.. [#] {annotation}\n&#34;)
+            else:
+                result.append(f&#34;[*] {annotation}\n&#34;)
+        context[&#34;annotations&#34;] = []
+
+    def _get_formatted_text_images(self, result, context, rst_mode):
+        # Insert the images ref, only in rst mode
+        result.append(&#34;\n&#34;)
+        for ref, filename, (width, height) in context[&#34;images&#34;]:
+            result.append(f&#34;.. {ref} image:: {filename}\n&#34;)
+            if width is not None:
+                result.append(f&#34;   :width: {width}\n&#34;)
+            if height is not None:
+                result.append(f&#34;   :height: {height}\n&#34;)
+        context[&#34;images&#34;] = []
+
+    def _get_formatted_text_endnotes(self, result, context, rst_mode):
+        # Append the end notes
+        if rst_mode:
+            result.append(&#34;\n\n&#34;)
+        else:
+            result.append(&#34;\n========\n&#34;)
+        for citation, body in context[&#34;endnotes&#34;]:
+            if rst_mode:
+                result.append(f&#34;.. [*] {body}\n&#34;)
+            else:
+                result.append(f&#34;({citation}) {body}\n&#34;)
+
     def get_formatted_text(self, rst_mode=False):
         &#34;&#34;&#34;Return content as text, with some formatting.&#34;&#34;&#34;
         # For the moment, only &#34;type=&#39;text&#39;&#34;
@@ -5952,65 +5912,20 @@ to the given family.</p>
         # Get the text
         result = []
         for element in body.children:
+            # self._get_formatted_text_child(result, element, context, rst_mode)
             if element.tag == &#34;table:table&#34;:
                 result.append(element.get_formatted_text(context))
-            else:
-                result.append(element.get_formatted_text(context))
-                # Insert the notes
-                footnotes = context[&#34;footnotes&#34;]
-                # Separate text from notes
-                if footnotes:
-                    if rst_mode:
-                        result.append(&#34;\n&#34;)
-                    else:
-                        result.append(&#34;----\n&#34;)
-                    for citation, body in footnotes:
-                        if rst_mode:
-                            result.append(&#34;.. [#] %s\n&#34; % body)
-                        else:
-                            result.append(&#34;[%s] %s\n&#34; % (citation, body))
-                    # Append a \n after the notes
-                    result.append(&#34;\n&#34;)
-                    # Reset for the next paragraph
-                    context[&#34;footnotes&#34;] = []
-                # Insert the annotations
-                annotations = context[&#34;annotations&#34;]
-                # With a separation
-                if annotations:
-                    if rst_mode:
-                        result.append(&#34;\n&#34;)
-                    else:
-                        result.append(&#34;----\n&#34;)
-                    for annotation in annotations:
-                        if rst_mode:
-                            result.append(&#34;.. [#] %s\n&#34; % annotation)
-                        else:
-                            result.append(&#34;[*] %s\n&#34; % annotation)
-                    context[&#34;annotations&#34;] = []
-                # Insert the images ref, only in rst mode
-                images = context[&#34;images&#34;]
-                if images:
-                    result.append(&#34;\n&#34;)
-                    for ref, filename, (width, height) in images:
-                        result.append(&#34;.. %s image:: %s\n&#34; % (ref, filename))
-                        if width is not None:
-                            result.append(&#34;   :width: %s\n&#34; % width)
-                        if height is not None:
-                            result.append(&#34;   :height: %s\n&#34; % height)
-                        result.append(&#34;\n&#34;)
-                    context[&#34;images&#34;] = []
-        # Append the end notes
-        endnotes = context[&#34;endnotes&#34;]
-        if endnotes:
-            if rst_mode:
-                result.append(&#34;\n\n&#34;)
-            else:
-                result.append(&#34;\n========\n&#34;)
-            for citation, body in endnotes:
-                if rst_mode:
-                    result.append(&#34;.. [*] %s\n&#34; % body)
-                else:
-                    result.append(&#34;(%s) %s\n&#34; % (citation, body))
+                return
+            result.append(element.get_formatted_text(context))
+            if context[&#34;footnotes&#34;]:
+                self._get_formatted_text_footnotes(result, context, rst_mode)
+            if context[&#34;annotations&#34;]:
+                self._get_formatted_text_annotations(result, context, rst_mode)
+            # Insert the images ref, only in rst mode
+            if context[&#34;images&#34;]:
+                self._get_formatted_text_images(result, context, rst_mode)
+        if context[&#34;endnotes&#34;]:
+            self._get_formatted_text_endnotes(result, context, rst_mode)
         return &#34;&#34;.join(result)
 
     def get_formated_meta(self):
@@ -6022,7 +5937,7 @@ to the given family.</p>
         # Simple values
         def print_info(name, value):
             if value:
-                result.append(&#34;%s: %s&#34; % (name, value))
+                result.append(f&#34;{name}: {value}&#34;)
 
         print_info(&#34;Title&#34;, meta.get_title())
         print_info(&#34;Subject&#34;, meta.get_subject())
@@ -6039,15 +5954,13 @@ to the given family.</p>
         result.append(&#34;Statistic:&#34;)
         statistic = meta.get_statistic()
         for name, value in statistic.items():
-            result.append(
-                &#34;  - %s: %s&#34; % (name[5:].replace(&#34;-&#34;, &#34; &#34;).capitalize(), value)
-            )
+            result.append(f&#34;  - {name[5:].replace(&#39;-&#39;, &#39; &#39;).capitalize()}: {value}&#34;)
 
         # User defined metadata
         result.append(&#34;User defined metadata:&#34;)
         user_metadata = meta.get_user_defined_metadata()
         for name, value in user_metadata.items():
-            result.append(&#34;  - %s: %s&#34; % (name, value))
+            result.append(f&#34;  - {name}: {value}&#34;)
 
         # And the description
         print_info(&#34;Description&#34;, meta.get_description())
@@ -6071,7 +5984,7 @@ to the given family.</p>
         medias = manifest.get_paths()
 
         if isinstance(path_or_file, str):
-            handler = open(path_or_file, &#34;rb&#34;)
+            handler = open(path_or_file, &#34;rb&#34;)  # noqa:SIM115
             name = path_or_file
             close_after = True
         else:
@@ -6090,7 +6003,7 @@ to the given family.</p>
             media_type, _encoding = guess_type(name)
             # Check this name is already used in the document
             if posixpath.join(&#34;Pictures&#34;, name) in medias:
-                root = &#34;%s_%s&#34; % (root, uuid)
+                root = f&#34;{root}_{uuid}&#34;
                 name = root + extension
                 media_type, _encoding = guess_type(name)
 
@@ -6222,6 +6135,38 @@ to the given family.</p>
             max_index = max(max_index, index)
         style.name = f&#34;{AUTOMATIC_PREFIX}{max_index+1}&#34;
 
+    def _insert_style_standard(self, style, name, family, automatic, default):
+        # Common style
+        if name and automatic is False and default is False:
+            part = self.get_part(ODF_STYLES)
+            container = part.get_element(&#34;office:styles&#34;)
+            existing = part.get_style(family, name)
+        # Automatic style
+        elif automatic is True and default is False:
+            part = self.get_part(ODF_CONTENT)
+            container = part.get_element(&#34;office:automatic-styles&#34;)
+            # A name ?
+            if name:
+                if hasattr(style, &#34;name&#34;):
+                    style.name = name
+                existing = part.get_style(family, name)
+            else:
+                self._set_automatic_name(style, family)
+                existing = None
+        # Default style
+        elif automatic is False and default is True:
+            part = self.get_part(ODF_STYLES)
+            container = part.get_element(&#34;office:styles&#34;)
+            # Force default style
+            style.tag = &#34;style:default-style&#34;
+            if name:
+                style.del_attribute(&#34;style:name&#34;)
+            existing = part.get_style(family)
+        # Error
+        else:
+            raise AttributeError(&#34;invalid combination of arguments&#34;)
+        return existing, container
+
     def insert_style(self, style, name=None, automatic=False, default=False):
         &#34;&#34;&#34;Insert the given style object in the document, as required by the
         style family and type.
@@ -6238,7 +6183,7 @@ to the given family.</p>
 
         Automatic and default arguments are mutually exclusive.
 
-        All styles can’t be used as default styles. Default styles are
+        All styles can&#39;t be used as default styles. Default styles are
         allowed for the following families: paragraph, text, section, table,
         table-column, table-row, table-cell, table-page, chart, drawing-page,
         graphic, presentation, control and ruby.
@@ -6286,39 +6231,9 @@ to the given family.</p>
             existing = part.get_style(family, name)
         # Common style
         elif family in FAMILY_ODF_STD or family in {&#34;number&#34;}:
-            # Common style
-            if name and automatic is False and default is False:
-                part = self.get_part(ODF_STYLES)
-                container = part.get_element(&#34;office:styles&#34;)
-                existing = part.get_style(family, name)
-
-            # Automatic style
-            elif automatic is True and default is False:
-                part = self.get_part(ODF_CONTENT)
-                container = part.get_element(&#34;office:automatic-styles&#34;)
-                # A name ?
-                if name:
-                    if hasattr(style, &#34;name&#34;):
-                        style.name = name
-                    existing = part.get_style(family, name)
-                else:
-                    self._set_automatic_name(style, family)
-                    existing = None
-
-            # Default style
-            elif automatic is False and default is True:
-                part = self.get_part(ODF_STYLES)
-                container = part.get_element(&#34;office:styles&#34;)
-
-                # Force default style
-                style.tag = &#34;style:default-style&#34;
-                if name:
-                    style.del_attribute(&#34;style:name&#34;)
-                existing = part.get_style(family)
-
-            # Error
-            else:
-                raise AttributeError(&#34;invalid combination of arguments&#34;)
+            existing, container = self._insert_style_standard(
+                style, name, family, automatic, default
+            )
         elif not family and style.__class__.__name__ == &#34;DrawFillImage&#34;:
             # special case for &#39;draw:fill-image&#39; pseudo style
             part = self.get_part(ODF_STYLES)
@@ -6407,7 +6322,7 @@ to the given family.</p>
             output.append(line)
             if info[&#34;properties&#34;]:
                 for name, value in info[&#34;properties&#34;].items():
-                    output.append(&#34;   - %s: %s&#34; % (name, value))
+                    output.append(f&#34;   - {name}: {value}&#34;)
         output.append(&#34;&#34;)
         return &#34;\n&#34;.join(output)
 
@@ -6613,7 +6528,7 @@ Return the full path to reference it in the content.</p>
     medias = manifest.get_paths()
 
     if isinstance(path_or_file, str):
-        handler = open(path_or_file, &#34;rb&#34;)
+        handler = open(path_or_file, &#34;rb&#34;)  # noqa:SIM115
         name = path_or_file
         close_after = True
     else:
@@ -6632,7 +6547,7 @@ Return the full path to reference it in the content.</p>
         media_type, _encoding = guess_type(name)
         # Check this name is already used in the document
         if posixpath.join(&#34;Pictures&#34;, name) in medias:
-            root = &#34;%s_%s&#34; % (root, uuid)
+            root = f&#34;{root}_{uuid}&#34;
             name = root + extension
             media_type, _encoding = guess_type(name)
 
@@ -6731,7 +6646,7 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
     # Simple values
     def print_info(name, value):
         if value:
-            result.append(&#34;%s: %s&#34; % (name, value))
+            result.append(f&#34;{name}: {value}&#34;)
 
     print_info(&#34;Title&#34;, meta.get_title())
     print_info(&#34;Subject&#34;, meta.get_subject())
@@ -6748,15 +6663,13 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
     result.append(&#34;Statistic:&#34;)
     statistic = meta.get_statistic()
     for name, value in statistic.items():
-        result.append(
-            &#34;  - %s: %s&#34; % (name[5:].replace(&#34;-&#34;, &#34; &#34;).capitalize(), value)
-        )
+        result.append(f&#34;  - {name[5:].replace(&#39;-&#39;, &#39; &#39;).capitalize()}: {value}&#34;)
 
     # User defined metadata
     result.append(&#34;User defined metadata:&#34;)
     user_metadata = meta.get_user_defined_metadata()
     for name, value in user_metadata.items():
-        result.append(&#34;  - %s: %s&#34; % (name, value))
+        result.append(f&#34;  - {name}: {value}&#34;)
 
     # And the description
     print_info(&#34;Description&#34;, meta.get_description())
@@ -6801,65 +6714,20 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
     # Get the text
     result = []
     for element in body.children:
+        # self._get_formatted_text_child(result, element, context, rst_mode)
         if element.tag == &#34;table:table&#34;:
             result.append(element.get_formatted_text(context))
-        else:
-            result.append(element.get_formatted_text(context))
-            # Insert the notes
-            footnotes = context[&#34;footnotes&#34;]
-            # Separate text from notes
-            if footnotes:
-                if rst_mode:
-                    result.append(&#34;\n&#34;)
-                else:
-                    result.append(&#34;----\n&#34;)
-                for citation, body in footnotes:
-                    if rst_mode:
-                        result.append(&#34;.. [#] %s\n&#34; % body)
-                    else:
-                        result.append(&#34;[%s] %s\n&#34; % (citation, body))
-                # Append a \n after the notes
-                result.append(&#34;\n&#34;)
-                # Reset for the next paragraph
-                context[&#34;footnotes&#34;] = []
-            # Insert the annotations
-            annotations = context[&#34;annotations&#34;]
-            # With a separation
-            if annotations:
-                if rst_mode:
-                    result.append(&#34;\n&#34;)
-                else:
-                    result.append(&#34;----\n&#34;)
-                for annotation in annotations:
-                    if rst_mode:
-                        result.append(&#34;.. [#] %s\n&#34; % annotation)
-                    else:
-                        result.append(&#34;[*] %s\n&#34; % annotation)
-                context[&#34;annotations&#34;] = []
-            # Insert the images ref, only in rst mode
-            images = context[&#34;images&#34;]
-            if images:
-                result.append(&#34;\n&#34;)
-                for ref, filename, (width, height) in images:
-                    result.append(&#34;.. %s image:: %s\n&#34; % (ref, filename))
-                    if width is not None:
-                        result.append(&#34;   :width: %s\n&#34; % width)
-                    if height is not None:
-                        result.append(&#34;   :height: %s\n&#34; % height)
-                    result.append(&#34;\n&#34;)
-                context[&#34;images&#34;] = []
-    # Append the end notes
-    endnotes = context[&#34;endnotes&#34;]
-    if endnotes:
-        if rst_mode:
-            result.append(&#34;\n\n&#34;)
-        else:
-            result.append(&#34;\n========\n&#34;)
-        for citation, body in endnotes:
-            if rst_mode:
-                result.append(&#34;.. [*] %s\n&#34; % body)
-            else:
-                result.append(&#34;(%s) %s\n&#34; % (citation, body))
+            return
+        result.append(element.get_formatted_text(context))
+        if context[&#34;footnotes&#34;]:
+            self._get_formatted_text_footnotes(result, context, rst_mode)
+        if context[&#34;annotations&#34;]:
+            self._get_formatted_text_annotations(result, context, rst_mode)
+        # Insert the images ref, only in rst mode
+        if context[&#34;images&#34;]:
+            self._get_formatted_text_images(result, context, rst_mode)
+    if context[&#34;endnotes&#34;]:
+        self._get_formatted_text_endnotes(result, context, rst_mode)
     return &#34;&#34;.join(result)</code></pre>
 </details>
 </dd>
@@ -7067,7 +6935,7 @@ style.</p>
 would replace any existing default style of the same family. Any name
 or display name would be ignored.</p>
 <p>Automatic and default arguments are mutually exclusive.</p>
-<p>All styles can’t be used as default styles. Default styles are
+<p>All styles can't be used as default styles. Default styles are
 allowed for the following families: paragraph, text, section, table,
 table-column, table-row, table-cell, table-page, chart, drawing-page,
 graphic, presentation, control and ruby.</p>
@@ -7097,7 +6965,7 @@ graphic, presentation, control and ruby.</p>
 
     Automatic and default arguments are mutually exclusive.
 
-    All styles can’t be used as default styles. Default styles are
+    All styles can&#39;t be used as default styles. Default styles are
     allowed for the following families: paragraph, text, section, table,
     table-column, table-row, table-cell, table-page, chart, drawing-page,
     graphic, presentation, control and ruby.
@@ -7145,39 +7013,9 @@ graphic, presentation, control and ruby.</p>
         existing = part.get_style(family, name)
     # Common style
     elif family in FAMILY_ODF_STD or family in {&#34;number&#34;}:
-        # Common style
-        if name and automatic is False and default is False:
-            part = self.get_part(ODF_STYLES)
-            container = part.get_element(&#34;office:styles&#34;)
-            existing = part.get_style(family, name)
-
-        # Automatic style
-        elif automatic is True and default is False:
-            part = self.get_part(ODF_CONTENT)
-            container = part.get_element(&#34;office:automatic-styles&#34;)
-            # A name ?
-            if name:
-                if hasattr(style, &#34;name&#34;):
-                    style.name = name
-                existing = part.get_style(family, name)
-            else:
-                self._set_automatic_name(style, family)
-                existing = None
-
-        # Default style
-        elif automatic is False and default is True:
-            part = self.get_part(ODF_STYLES)
-            container = part.get_element(&#34;office:styles&#34;)
-
-            # Force default style
-            style.tag = &#34;style:default-style&#34;
-            if name:
-                style.del_attribute(&#34;style:name&#34;)
-            existing = part.get_style(family)
-
-        # Error
-        else:
-            raise AttributeError(&#34;invalid combination of arguments&#34;)
+        existing, container = self._insert_style_standard(
+            style, name, family, automatic, default
+        )
     elif not family and style.__class__.__name__ == &#34;DrawFillImage&#34;:
         # special case for &#39;draw:fill-image&#39; pseudo style
         part = self.get_part(ODF_STYLES)
@@ -7401,7 +7239,7 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
         output.append(line)
         if info[&#34;properties&#34;]:
             for name, value in info[&#34;properties&#34;].items():
-                output.append(&#34;   - %s: %s&#34; % (name, value))
+                output.append(f&#34;   - {name}: {value}&#34;)
     output.append(&#34;&#34;)
     return &#34;\n&#34;.join(output)</code></pre>
 </details>
@@ -7756,7 +7594,7 @@ and xml:id.</p>
         anchor_type=None,
         anchor_page=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         if self._do_init:
@@ -8219,7 +8057,7 @@ see Frame().</p>
         show=&#34;embed&#34;,
         actuate=&#34;onLoad&#34;,
         filter_name=None,
-        **kw
+        **kw,
     ):
         &#34;&#34;&#34;Initialisation of an DrawImage.
 
@@ -8902,11 +8740,11 @@ Abstraction of the XML library behind.</p></div>
             # repeated namespace declarations
             tag = b&#34;&lt;%s/&gt;&#34; % tag
         # XML fragment
-        root = fromstring(NAMESPACES_XML % tag)
+        root = fromstring(NAMESPACES_XML % tag)  # noqa:S320
         return root[0]
 
     def __str__(self):
-        return &#39;%s &#34;%s&#34;&#39; % (repr(self), self.tag)
+        return f&#39;{self!r} &#34;{self.tag}&#34;&#39;
 
     @staticmethod
     def _generic_attrib_getter(attr_name, family=None):
@@ -8932,10 +8770,8 @@ Abstraction of the XML library behind.</p></div>
             if family and self.family != family:
                 return None
             if value is None:
-                try:
+                with contextlib.suppress(KeyError):
                     del self.__element.attrib[name]
-                except KeyError:
-                    pass
                 return
             if isinstance(value, bool):
                 value = Boolean.encode(value)
@@ -8962,6 +8798,70 @@ Abstraction of the XML library behind.</p></div>
                     f&#34;Get/set the attribute {attr}&#34;,
                 ),
             )
+
+    def _insert_before_after(
+        self,
+        current,
+        element,
+        before,
+        after,
+        position,
+        main_text,
+        xpath_text,
+    ):
+        # 1) before xor after is not None
+        if before is not None:
+            regex = re.compile(before)
+        else:
+            regex = re.compile(after)
+
+        # position = -1
+        if position &lt; 0:
+            # Found the last text that matches the regex
+            text = None
+            for a_text in xpath_text(current):
+                if regex.search(a_text) is not None:
+                    text = a_text
+            if text is None:
+                raise ValueError(&#34;text not found&#34;)
+            sre = list(regex.finditer(text))[-1]
+        # position &gt;= 0
+        else:
+            count = 0
+            for text in xpath_text(current):
+                found_nb = len(regex.findall(text))
+                if found_nb + count &gt;= position + 1:
+                    break
+                count += found_nb
+            else:
+                raise ValueError(&#34;text not found&#34;)
+            sre = list(regex.finditer(text))[position - count]
+        # Compute pos
+        pos = sre.start() if before is not None else sre.end()
+        return pos, text
+
+    def _insert_find_text(
+        self,
+        current,
+        element,
+        before,
+        after,
+        position,
+        main_text,
+        xpath_text,
+    ):
+        # Found the text
+        count = 0
+        for text in xpath_text(current):
+            found_nb = len(text)
+            if found_nb + count &gt;= position:
+                break
+            count += found_nb
+        else:
+            raise ValueError(&#34;text not found&#34;)
+        # We insert before the character
+        pos = position - count
+        return pos, text
 
     def _insert(self, element, before=None, after=None, position=0, main_text=False):
         &#34;&#34;&#34;Insert an element before or after the characters in the text which
@@ -8996,54 +8896,30 @@ Abstraction of the XML library behind.</p></div>
 
         # 1) before xor after is not None
         if (before is not None) ^ (after is not None):
-            if before is not None:
-                regex = re.compile(before)
-            else:
-                regex = re.compile(after)
-
-            # position = -1
-            if position &lt; 0:
-                # Found the last text that matches the regex
-                text = None
-                for a_text in xpath_text(current):
-                    if regex.search(a_text) is not None:
-                        text = a_text
-                if text is None:
-                    raise ValueError(&#34;text not found&#34;)
-                sre = list(regex.finditer(text))[-1]
-            # position &gt;= 0
-            else:
-                count = 0
-                for text in xpath_text(current):
-                    found_nb = len(regex.findall(text))
-                    if found_nb + count &gt;= position + 1:
-                        break
-                    count += found_nb
-                else:
-                    raise ValueError(&#34;text not found&#34;)
-                sre = list(regex.finditer(text))[position - count]
-
-            # Compute pos
-            pos = sre.start() if before is not None else sre.end()
+            pos, text = self._insert_before_after(
+                current,
+                element,
+                before,
+                after,
+                position,
+                main_text,
+                xpath_text,
+            )
         # 2) before=after=None =&gt; only with position
         elif before is None and after is None:
             # Hack if position is negative =&gt; quickly
             if position &lt; 0:
                 current.append(element)
                 return
-
-            # Found the text
-            count = 0
-            for text in xpath_text(current):
-                found_nb = len(text)
-                if found_nb + count &gt;= position:
-                    break
-                count += found_nb
-            else:
-                raise ValueError(&#34;text not found&#34;)
-
-            # We insert before the character
-            pos = position - count
+            pos, text = self._insert_find_text(
+                current,
+                element,
+                before,
+                after,
+                position,
+                main_text,
+                xpath_text,
+            )
         else:
             raise ValueError(&#34;bad combination of arguments&#34;)
 
@@ -9103,7 +8979,7 @@ Abstraction of the XML library behind.</p></div>
         current = self.__element
         wrapper = element.__element
         for text in _xpath_text_descendant(current):
-            if not from_ in text:
+            if from_ not in text:
                 continue
             from_index = text.index(from_)
             text_before = text[:from_index]
@@ -9148,7 +9024,7 @@ Abstraction of the XML library behind.</p></div>
         index = parent.index(from_container)
         parent.insert(index + 1, wrapper)
         for text in _xpath_text_descendant(wrapper):
-            if not to in text:
+            if to not in text:
                 continue
             to_end = text.index(to) + len(to)
             text_before = text[:to_end]
@@ -9185,7 +9061,7 @@ Abstraction of the XML library behind.</p></div>
     def elements_repeated_sequence(self, xpath_instance, name):
         uri, name = _decode_qname(name)
         if uri is not None:
-            name = &#34;{%s}%s&#34; % (uri, name)
+            name = &#34;{%s}%s&#34; % (uri, name)  # noqa: UP031
         element = self.__element
         sub_elements = xpath_instance(element)
         result = []
@@ -9230,9 +9106,7 @@ Abstraction of the XML library behind.</p></div>
 
     def _get_element_idx(self, xpath_query, idx):
         element = self.__element
-        result = element.xpath(
-            &#34;(%s)[%s]&#34; % (xpath_query, idx + 1), namespaces=ODF_NAMESPACES
-        )
+        result = element.xpath(f&#34;({xpath_query})[{idx + 1}]&#34;, namespaces=ODF_NAMESPACES)
         if result:
             return Element.from_tag(result[0])
         return None
@@ -9253,7 +9127,7 @@ Abstraction of the XML library behind.</p></div>
         element = self.__element
         uri, name = _decode_qname(name)
         if uri is not None:
-            name = &#34;{%s}%s&#34; % (uri, name)
+            name = &#34;{%s}%s&#34; % (uri, name)  # noqa: UP031
         value = element.get(name)
         if value is None:
             return None
@@ -9274,15 +9148,13 @@ Abstraction of the XML library behind.</p></div>
         element = self.__element
         uri, name = _decode_qname(name)
         if uri is not None:
-            name = &#34;{%s}%s&#34; % (uri, name)
+            name = &#34;{%s}%s&#34; % (uri, name)  # noqa: UP031
 
         if isinstance(value, bool):
             value = Boolean.encode(value)
         elif value is None:
-            try:
+            with contextlib.suppress(KeyError):
                 del element.attrib[name]
-            except KeyError:
-                pass
             return
         element.set(name, str(value))
 
@@ -9296,7 +9168,7 @@ Abstraction of the XML library behind.</p></div>
         element = self.__element
         uri, name = _decode_qname(name)
         if uri is not None:
-            name = &#34;{%s}%s&#34; % (uri, name)
+            name = &#34;{%s}%s&#34; % (uri, name)  # noqa: UP031
         del element.attrib[name]
 
     @property
@@ -9310,8 +9182,8 @@ Abstraction of the XML library behind.</p></div>
             text = &#34;&#34;
         try:
             self.__element.text = to_str(text)
-        except TypeError:
-            raise TypeError(&#39;str type expected: &#34;%s&#34;&#39; % type(text))
+        except TypeError as e:
+            raise TypeError(f&#39;str type expected: &#34;{type(text)}&#34;&#39;) from e
 
     @property
     def text_recursive(self):
@@ -9500,7 +9372,7 @@ Abstraction of the XML library behind.</p></div>
             return None, None
         return parent._get_successor(target.parent)
 
-    def _get_between_base(self, tag1, tag2):
+    def _get_between_base(self, tag1, tag2):  # noqa:C901
         def find_any_id(tag):
             stag = tag.tag
             for attribute in (
@@ -9518,8 +9390,8 @@ Abstraction of the XML library behind.</p></div>
 
         def common_ancestor(t1, a1, v1, t2, a2, v2):
             root = self.root
-            request1 = &#39;descendant::%s[@%s=&#34;%s&#34;]&#39; % (t1, a1, v1)
-            request2 = &#39;descendant::%s[@%s=&#34;%s&#34;]&#39; % (t2, a2, v2)
+            request1 = f&#39;descendant::{t1}[@{a1}=&#34;{v1}&#34;]&#39;
+            request2 = f&#39;descendant::{t2}[@{a2}=&#34;{v2}&#34;]&#39;
             up = root.xpath(request1)[0]
             while True:
                 # print &#34;up&#34;,
@@ -9535,8 +9407,8 @@ Abstraction of the XML library behind.</p></div>
         t1, a1, v1 = find_any_id(tag1)
         t2, a2, v2 = find_any_id(tag2)
         ancestor = common_ancestor(t1, a1, v1, t2, a2, v2).clone
-        r1 = &#39;%s[@%s=&#34;%s&#34;]&#39; % (t1, a1, v1)
-        r2 = &#39;%s[@%s=&#34;%s&#34;]&#39; % (t2, a2, v2)
+        r1 = f&#39;{t1}[@{a1}=&#34;{v1}&#34;]&#39;
+        r2 = f&#39;{t2}[@{a2}=&#34;{v2}&#34;]&#39;
         resu = ancestor.clone
         for child in resu.children:
             resu.delete(child)
@@ -9548,8 +9420,8 @@ Abstraction of the XML library behind.</p></div>
         while True:
             # print &#39;current&#39;, state, current.serialize()
             if state == 0:  # before tag 1
-                if current.xpath(&#34;descendant-or-self::%s&#34; % r1):
-                    if current.xpath(&#34;self::%s&#34; % r1):
+                if current.xpath(f&#34;descendant-or-self::{r1}&#34;):
+                    if current.xpath(f&#34;self::{r1}&#34;):
                         tail = current.tail
                         if tail:
                             # got a tail =&gt; the parent should be either t:p or t:h
@@ -9573,8 +9445,8 @@ Abstraction of the XML library behind.</p></div>
                     continue
             elif state == 1:  # collect elements
                 further = False
-                if current.xpath(&#34;descendant-or-self::%s&#34; % r2):
-                    if current.xpath(&#34;self::%s&#34; % r2):
+                if current.xpath(f&#34;descendant-or-self::{r2}&#34;):
+                    if current.xpath(f&#34;self::{r2}&#34;):
                         # end of trip
                         break
                     # got T2 in chidren, need further analysis
@@ -9598,7 +9470,7 @@ Abstraction of the XML library behind.</p></div>
         # - a text:h or text:p sigle item (simple case)
         # - a upper element, with some text:p, text:h in it =&gt; need to be
         #   stripped to have a list of text:p, text:h
-        if resu.tag in (&#34;text:p&#34;, &#34;text:h&#34;):
+        if resu.tag in {&#34;text:p&#34;, &#34;text:h&#34;}:
             inner = [resu]
         else:
             inner = resu.children
@@ -9854,19 +9726,18 @@ Abstraction of the XML library behind.</p></div>
             protect = ()
         protected = False
         element, modified = Element._strip_tags(self, strip, protect, protected)
-        if modified:
-            if isinstance(element, list) and default:
-                new = Element.from_tag(default)
-                for content in element:
-                    if isinstance(content, Element):
-                        new.append(content)
-                    else:
-                        new.text = content
-                element = new
+        if modified and isinstance(element, list) and default:
+            new = Element.from_tag(default)
+            for content in element:
+                if isinstance(content, Element):
+                    new.append(content)
+                else:
+                    new.text = content
+            element = new
         return element
 
     @staticmethod
-    def _strip_tags(element, strip, protect, protected):
+    def _strip_tags(element, strip, protect, protected):  # noqa: C901
         &#34;&#34;&#34;sub method for strip_tags()&#34;&#34;&#34;
         copy = element.clone
         modified = False
@@ -11122,7 +10993,7 @@ Abstraction of the XML library behind.</p></div>
             content=content,
         )
 
-    def get_draw_line(self, position=0, id=None, content=None):
+    def get_draw_line(self, position=0, id=None, content=None):  # noqa: A002
         &#34;&#34;&#34;Return the draw line that matches the criteria.
 
         Arguments:
@@ -11162,7 +11033,7 @@ Abstraction of the XML library behind.</p></div>
             content=content,
         )
 
-    def get_draw_rectangle(self, position=0, id=None, content=None):
+    def get_draw_rectangle(self, position=0, id=None, content=None):  # noqa: A002
         &#34;&#34;&#34;Return the draw rectangle that matches the criteria.
 
         Arguments:
@@ -11202,7 +11073,7 @@ Abstraction of the XML library behind.</p></div>
             content=content,
         )
 
-    def get_draw_ellipse(self, position=0, id=None, content=None):
+    def get_draw_ellipse(self, position=0, id=None, content=None):  # noqa: A002
         &#34;&#34;&#34;Return the draw ellipse that matches the criteria.
 
         Arguments:
@@ -11242,7 +11113,7 @@ Abstraction of the XML library behind.</p></div>
             content=content,
         )
 
-    def get_draw_connector(self, position=0, id=None, content=None):
+    def get_draw_connector(self, position=0, id=None, content=None):  # noqa: A002
         &#34;&#34;&#34;Return the draw connector that matches the criteria.
 
         Arguments:
@@ -11388,9 +11259,9 @@ Abstraction of the XML library behind.</p></div>
         &#34;&#34;&#34;
         if idx:
             request = (
-                &#39;descendant::text:change-start[@text:change-id=&#34;%s&#34;] &#39;
-                &#39;| descendant::text:change[@text:change-id=&#34;%s&#34;]&#39;
-            ) % (idx, idx)
+                f&#39;descendant::text:change-start[@text:change-id=&#34;{idx}&#34;] &#39;
+                f&#39;| descendant::text:change[@text:change-id=&#34;{idx}&#34;]&#39;
+            )
             return _get_element(self, request, position=0)
         request = &#34;descendant::text:change-start | descendant::text:change&#34;
         return _get_element(self, request, position)
@@ -11640,7 +11511,7 @@ def make_etree_element(tag):
         # repeated namespace declarations
         tag = b&#34;&lt;%s/&gt;&#34; % tag
     # XML fragment
-    root = fromstring(NAMESPACES_XML % tag)
+    root = fromstring(NAMESPACES_XML % tag)  # noqa:S320
     return root[0]</code></pre>
 </details>
 </dd>
@@ -11998,7 +11869,7 @@ NamedRange</p></div>
     element = self.__element
     uri, name = _decode_qname(name)
     if uri is not None:
-        name = &#34;{%s}%s&#34; % (uri, name)
+        name = &#34;{%s}%s&#34; % (uri, name)  # noqa: UP031
     del element.attrib[name]</code></pre>
 </details>
 </dd>
@@ -12099,7 +11970,7 @@ element now "orphan" as long as you have a reference to it.</p>
 <pre><code class="python">def elements_repeated_sequence(self, xpath_instance, name):
     uri, name = _decode_qname(name)
     if uri is not None:
-        name = &#34;{%s}%s&#34; % (uri, name)
+        name = &#34;{%s}%s&#34; % (uri, name)  # noqa: UP031
     element = self.__element
     sub_elements = xpath_instance(element)
     result = []
@@ -12301,7 +12172,7 @@ element now "orphan" as long as you have a reference to it.</p>
     element = self.__element
     uri, name = _decode_qname(name)
     if uri is not None:
-        name = &#34;{%s}%s&#34; % (uri, name)
+        name = &#34;{%s}%s&#34; % (uri, name)  # noqa: UP031
     value = element.get(name)
     if value is None:
         return None
@@ -12601,7 +12472,7 @@ changes list.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_draw_connector(self, position=0, id=None, content=None):
+<pre><code class="python">def get_draw_connector(self, position=0, id=None, content=None):  # noqa: A002
     &#34;&#34;&#34;Return the draw connector that matches the criteria.
 
     Arguments:
@@ -12669,7 +12540,7 @@ changes list.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_draw_ellipse(self, position=0, id=None, content=None):
+<pre><code class="python">def get_draw_ellipse(self, position=0, id=None, content=None):  # noqa: A002
     &#34;&#34;&#34;Return the draw ellipse that matches the criteria.
 
     Arguments:
@@ -12779,7 +12650,7 @@ changes list.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_draw_line(self, position=0, id=None, content=None):
+<pre><code class="python">def get_draw_line(self, position=0, id=None, content=None):  # noqa: A002
     &#34;&#34;&#34;Return the draw line that matches the criteria.
 
     Arguments:
@@ -12908,7 +12779,7 @@ changes list.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_draw_rectangle(self, position=0, id=None, content=None):
+<pre><code class="python">def get_draw_rectangle(self, position=0, id=None, content=None):  # noqa: A002
     &#34;&#34;&#34;Return the draw rectangle that matches the criteria.
 
     Arguments:
@@ -14204,9 +14075,9 @@ idx : change-id of the element.</p>
     &#34;&#34;&#34;
     if idx:
         request = (
-            &#39;descendant::text:change-start[@text:change-id=&#34;%s&#34;] &#39;
-            &#39;| descendant::text:change[@text:change-id=&#34;%s&#34;]&#39;
-        ) % (idx, idx)
+            f&#39;descendant::text:change-start[@text:change-id=&#34;{idx}&#34;] &#39;
+            f&#39;| descendant::text:change[@text:change-id=&#34;{idx}&#34;]&#39;
+        )
         return _get_element(self, request, position=0)
     request = &#34;descendant::text:change-start | descendant::text:change&#34;
     return _get_element(self, request, position)</code></pre>
@@ -15072,15 +14943,13 @@ the element, or None if not found.</p>
     element = self.__element
     uri, name = _decode_qname(name)
     if uri is not None:
-        name = &#34;{%s}%s&#34; % (uri, name)
+        name = &#34;{%s}%s&#34; % (uri, name)  # noqa: UP031
 
     if isinstance(value, bool):
         value = Boolean.encode(value)
     elif value is None:
-        try:
+        with contextlib.suppress(KeyError):
             del element.attrib[name]
-        except KeyError:
-            pass
         return
     element.set(name, str(value))</code></pre>
 </details>
@@ -15187,15 +15056,14 @@ element.</p>
         protect = ()
     protected = False
     element, modified = Element._strip_tags(self, strip, protect, protected)
-    if modified:
-        if isinstance(element, list) and default:
-            new = Element.from_tag(default)
-            for content in element:
-                if isinstance(content, Element):
-                    new.append(content)
-                else:
-                    new.text = content
-            element = new
+    if modified and isinstance(element, list) and default:
+        new = Element.from_tag(default)
+        for content in element:
+            if isinstance(content, Element):
+                new.append(content)
+            else:
+                new.text = content
+        element = new
     return element</code></pre>
 </details>
 </dd>
@@ -15278,7 +15146,7 @@ Element or Text instances translated from the nodes found.</p></div>
         layer=None,
         size=None,
         position=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -15480,7 +15348,7 @@ Frame.text_frame()</p>
         (&#34;presentation_style&#34;, &#34;presentation:style-name&#34;),
     )
 
-    def __init__(
+    def __init__(  # noqa:  C901
         self,
         name=None,
         draw_id=None,
@@ -15493,7 +15361,7 @@ Frame.text_frame()</p>
         anchor_page=None,
         layer=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         &#34;&#34;&#34;Create a frame element of the given size. Position is relative to the
         context the frame is inserted in. If positioned by page, give the page
@@ -15575,7 +15443,7 @@ Frame.text_frame()</p>
         anchor_page=None,
         layer=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         &#34;&#34;&#34;Create a ready-to-use image, since image must be embedded in a
         frame.
@@ -15604,7 +15472,7 @@ Frame.text_frame()</p>
             anchor_page=anchor_page,
             layer=layer,
             presentation_style=presentation_style,
-            **kwargs
+            **kwargs,
         )
         image_element = frame.set_image(image)
         if text:
@@ -15627,7 +15495,7 @@ Frame.text_frame()</p>
         anchor_page=None,
         layer=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         &#34;&#34;&#34;Create a ready-to-use text box, since text box must be embedded in
         a frame.
@@ -15657,7 +15525,7 @@ Frame.text_frame()</p>
             anchor_page=anchor_page,
             layer=layer,
             presentation_style=presentation_style,
-            **kwargs
+            **kwargs,
         )
         frame.set_text_box(text_or_element, text_style)
         return frame
@@ -15720,7 +15588,7 @@ Frame.text_frame()</p>
             text_box.append(item)
         return text_box
 
-    def get_formatted_text(self, context):
+    def get_formatted_text(self, context):  # noqa:  C901
         result = []
         for element in self.children:
             tag = element.tag
@@ -15806,7 +15674,7 @@ def image_frame(
     anchor_page=None,
     layer=None,
     presentation_style=None,
-    **kwargs
+    **kwargs,
 ):
     &#34;&#34;&#34;Create a ready-to-use image, since image must be embedded in a
     frame.
@@ -15835,7 +15703,7 @@ def image_frame(
         anchor_page=anchor_page,
         layer=layer,
         presentation_style=presentation_style,
-        **kwargs
+        **kwargs,
     )
     image_element = frame.set_image(image)
     if text:
@@ -15876,7 +15744,7 @@ def text_frame(
     anchor_page=None,
     layer=None,
     presentation_style=None,
-    **kwargs
+    **kwargs,
 ):
     &#34;&#34;&#34;Create a ready-to-use text box, since text box must be embedded in
     a frame.
@@ -15906,7 +15774,7 @@ def text_frame(
         anchor_page=anchor_page,
         layer=layer,
         presentation_style=presentation_style,
-        **kwargs
+        **kwargs,
     )
     frame.set_text_box(text_or_element, text_style)
     return frame</code></pre>
@@ -16340,7 +16208,7 @@ optional given text.</p>
         start_value=None,
         suppress_numbering=False,
         style=None,
-        **kwargs
+        **kwargs,
     ):
         &#34;&#34;&#34;Create a header element of the given style and level, containing the
         optional given text.
@@ -17088,9 +16956,8 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 
     def __init__(self, style=None, **kw):
         super().__init__(**kw)
-        if self._do_init:
-            if style:
-                self.style = style</code></pre>
+        if self._do_init and style:
+            self.style = style</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -17427,7 +17294,7 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
         layer=None,
         p1=None,
         p2=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -17696,7 +17563,7 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
         target_frame=None,
         style=None,
         visited_style=None,
-        **kwargs
+        **kwargs,
     ):
         &#34;&#34;&#34;
         Arguments:
@@ -18940,16 +18807,10 @@ Abstraction of the XML library behind.</p></div>
         def test_part1(p1):
             if not 2 &lt;= len(p1) &lt;= 3:
                 return False
-            for x in p1:
-                if x not in ascii_letters:
-                    return False
-            return True
+            return all(x in ascii_letters for x in p1)
 
         def test_part2(p1):
-            for x in p1:
-                if x not in ascii_letters and x not in digits:
-                    return False
-            return True
+            return all(x in ascii_letters or x in digits for x in p1)
 
         if not lang or not isinstance(lang, str):
             return False
@@ -18960,10 +18821,7 @@ Abstraction of the XML library behind.</p></div>
             return False
         if not test_part1(parts[0]):
             return False
-        for p in parts[1:]:
-            if not test_part2(p):
-                return False
-        return True
+        return all(test_part2(p) for p in parts[1:])
 
     def get_modification_date(self):
         &#34;&#34;&#34;Get the last modified date of the document.
@@ -19251,8 +19109,8 @@ Abstraction of the XML library behind.</p></div>
         for key, value in statistic.items():
             try:
                 ivalue = int(value)
-            except ValueError:
-                raise TypeError(&#34;statistic value must be a int&#34;)
+            except ValueError as e:
+                raise TypeError(&#34;statistic value must be a int&#34;) from e
             element.set_attribute(to_str(key), str(ivalue))
 
     def get_user_defined_metadata(self):
@@ -20186,8 +20044,8 @@ etc.</p>
     for key, value in statistic.items():
         try:
             ivalue = int(value)
-        except ValueError:
-            raise TypeError(&#34;statistic value must be a int&#34;)
+        except ValueError as e:
+            raise TypeError(&#34;statistic value must be a int&#34;) from e
         element.set_attribute(to_str(key), str(ivalue))</code></pre>
 </details>
 </dd>
@@ -20404,10 +20262,8 @@ a correct table name (no "'" or "/" in it).</p>
             if usage not in (&#34;print-range&#34;, &#34;filter&#34;, &#34;repeat-column&#34;, &#34;repeat-row&#34;):
                 usage = None
         if usage is None:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute(&#34;table:range-usable-as&#34;)
-            except KeyError:
-                pass
             self.usage = None
         else:
             self.set_attribute(&#34;table:range-usable-as&#34;, usage)
@@ -20434,7 +20290,7 @@ a correct table name (no "'" or "/" in it).</p>
             raise ValueError(&#34;Name required.&#34;)
         for x in name:
             if x in _forbidden_in_named_range:
-                raise ValueError(&#34;Character forbidden &#39;%s&#39; &#34; % x)
+                raise ValueError(f&#34;Character forbidden &#39;{x}&#39; &#34;)
         step = &#34;&#34;
         for x in name:
             if x in string.ascii_letters and step in (&#34;&#34;, &#34;A&#34;):
@@ -20453,7 +20309,7 @@ a correct table name (no "'" or "/" in it).</p>
             named_range = body.get_named_range(name)
             if named_range:
                 named_range.delete()
-        except Exception:
+        except Exception:  # noqa: S110
             pass  # we are not on an inserted in a document.
         self.set_attribute(&#34;table:name&#34;, name)
 
@@ -20497,25 +20353,22 @@ a correct table name (no "'" or "/" in it).</p>
     def _make_base_cell_address(self):
         # assuming we got table_name and range
         if &#34; &#34; in self.table_name:
-            name = &#34;&#39;%s&#39;&#34; % self.table_name
+            name = f&#34;&#39;{self.table_name}&#39;&#34;
         else:
             name = self.table_name
-        return &#34;$%s.$%s$%s&#34; % (name, _digit_to_alpha(self.start[0]), self.start[1] + 1)
+        return f&#34;${name}.${_digit_to_alpha(self.start[0])}${self.start[1] + 1}&#34;
 
     def _make_cell_range_address(self):
         # assuming we got table_name and range
         if &#34; &#34; in self.table_name:
-            name = &#34;&#39;%s&#39;&#34; % self.table_name
+            name = f&#34;&#39;{self.table_name}&#39;&#34;
         else:
             name = self.table_name
         if self.start == self.end:
             return self._make_base_cell_address()
-        return &#34;$%s.$%s$%s:.$%s$%s&#34; % (
-            name,
-            _digit_to_alpha(self.start[0]),
-            self.start[1] + 1,
-            _digit_to_alpha(self.end[0]),
-            self.end[1] + 1,
+        return (
+            f&#34;${name}.${_digit_to_alpha(self.start[0])}${self.start[1] + 1}:&#34;
+            f&#34;.${_digit_to_alpha(self.end[0])}${self.end[1] + 1}&#34;
         )
 
     def get_values(self, cell_type=None, complete=True, get_type=False, flat=False):
@@ -20715,10 +20568,8 @@ of :
         if usage not in (&#34;print-range&#34;, &#34;filter&#34;, &#34;repeat-column&#34;, &#34;repeat-row&#34;):
             usage = None
     if usage is None:
-        try:
+        with contextlib.suppress(KeyError):
             self.del_attribute(&#34;table:range-usable-as&#34;)
-        except KeyError:
-            pass
         self.usage = None
     else:
         self.set_attribute(&#34;table:range-usable-as&#34;, usage)
@@ -20971,7 +20822,7 @@ optionally referencing it using the given note_id.</p>
             note_body.clear()
             note_body.append(text_or_element)
         else:
-            raise ValueError(&#39;Unexpected type for body: &#34;%s&#34;&#39; % type(text_or_element))
+            raise TypeError(f&#39;Unexpected type for body: &#34;{type(text_or_element)}&#34;&#39;)
 
     def check_validity(self):
         if not self.note_class:
@@ -21268,7 +21119,7 @@ given text.</p>
         else:
             self.insert(note_element, FIRST_CHILD)
 
-    def insert_annotation(
+    def insert_annotation(  # noqa: C901
         self,
         annotation_element=None,
         before=None,
@@ -21415,7 +21266,7 @@ given text.</p>
         if annotation_element is None:
             raise ValueError
         if not isinstance(annotation_element, Annotation):
-            raise ValueError(&#34;Not a &lt;office:annotation&gt; Annotation&#34;)
+            raise TypeError(&#34;Not a &lt;office:annotation&gt; Annotation&#34;)
 
         # remove existing end tag
         name = annotation_element.name
@@ -21545,7 +21396,7 @@ given text.</p>
             position -- int
         &#34;&#34;&#34;
         if not isinstance(reference_mark, (ReferenceMark, ReferenceMarkStart)):
-            raise ValueError(&#34;Not a ReferenceMark or ReferenceMarkStart&#34;)
+            raise TypeError(&#34;Not a ReferenceMark or ReferenceMarkStart&#34;)
         name = reference_mark.name
         if isinstance(reference_mark, ReferenceMark):
             # change it to a range reference:
@@ -21852,7 +21703,7 @@ the annotation is created from the body, creator and optional date
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_annotation(
+<pre><code class="python">def insert_annotation(  # noqa: C901
     self,
     annotation_element=None,
     before=None,
@@ -22018,7 +21869,7 @@ positions, the position value is the index of matching place to use.</p>
     if annotation_element is None:
         raise ValueError
     if not isinstance(annotation_element, Annotation):
-        raise ValueError(&#34;Not a &lt;office:annotation&gt; Annotation&#34;)
+        raise TypeError(&#34;Not a &lt;office:annotation&gt; Annotation&#34;)
 
     # remove existing end tag
     name = annotation_element.name
@@ -22605,7 +22456,7 @@ positions, the position value is the index of matching place to use.</p>
         position -- int
     &#34;&#34;&#34;
     if not isinstance(reference_mark, (ReferenceMark, ReferenceMarkStart)):
-        raise ValueError(&#34;Not a ReferenceMark or ReferenceMarkStart&#34;)
+        raise TypeError(&#34;Not a ReferenceMark or ReferenceMarkStart&#34;)
     name = reference_mark.name
     if isinstance(reference_mark, ReferenceMark):
         # change it to a range reference:
@@ -22833,7 +22684,7 @@ def set_span(self, match, tail, style, regex=None, offset=None, length=0):
         layer=None,
         size=None,
         position=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -24260,10 +24111,8 @@ return a raw list of odf elements.</p></div>
             repeated -- int
         &#34;&#34;&#34;
         if repeated is None or repeated &lt; 2:
-            try:
+            with contextlib.suppress(KeyError):
                 self.del_attribute(&#34;table:number-rows-repeated&#34;)
-            except KeyError:
-                pass
             return
         self.set_attribute(&#34;table:number-rows-repeated&#34;, str(repeated))
 
@@ -24316,7 +24165,7 @@ return a raw list of odf elements.</p></div>
             w = 0
         return w
 
-    def traverse(self, start=None, end=None):
+    def traverse(self, start=None, end=None):  # noqa: C901
         &#34;&#34;&#34;Yield as many cell elements as expected cells in the row, i.e.
         expand repetitions by returning the same cell as many times as
         necessary.
@@ -24793,10 +24642,7 @@ return a raw list of odf elements.</p></div>
 
         Return: bool
         &#34;&#34;&#34;
-        for cell in self._get_cells():
-            if not cell.is_empty(aggressive=aggressive):
-                return False
-        return True</code></pre>
+        return all(cell.is_empty(aggressive=aggressive) for cell in self._get_cells())</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -25319,10 +25165,7 @@ evaluates to False (empty string), and no style.</p>
 
     Return: bool
     &#34;&#34;&#34;
-    for cell in self._get_cells():
-        if not cell.is_empty(aggressive=aggressive):
-            return False
-    return True</code></pre>
+    return all(cell.is_empty(aggressive=aggressive) for cell in self._get_cells())</code></pre>
 </details>
 </dd>
 <dt id="odfdo.Row.rstrip"><code class="name flex">
@@ -25566,7 +25409,7 @@ necessary.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def traverse(self, start=None, end=None):
+<pre><code class="python">def traverse(self, start=None, end=None):  # noqa: C901
     &#34;&#34;&#34;Yield as many cell elements as expected cells in the row, i.e.
     expand repetitions by returning the same cell as many times as
     necessary.
@@ -25797,11 +25640,10 @@ rows, of "width" cells each.</p>
         Return RowGroup
         &#34;&#34;&#34;
         super().__init__(**kwargs)
-        if self._do_init:
-            if height is not None:
-                for _i in range(height):
-                    row = Row(width=width)
-                    self.append(row)</code></pre>
+        if self._do_init and height is not None:
+            for _i in range(height):
+                row = Row(width=width)
+                self.append(row)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -26617,7 +26459,7 @@ break_after -- 'page', 'column' or 'auto'
         (&#34;leader_text&#34;, &#34;style:position&#34;, None),
     )
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         family=None,
         name=None,
@@ -26936,14 +26778,14 @@ break_after -- 'page', 'column' or 'auto'
         for key in _expand_properties(properties):
             element.del_attribute(key)
 
-    def set_background(
+    def set_background(  # noqa: C901
         self,
         color=None,
         url=None,
         position=&#34;center&#34;,
         repeat=None,
         opacity=None,
-        filter=None,
+        filter=None,  # noqa: A002
     ):
         &#34;&#34;&#34;Set the background color of a text style, or the background color
         or image of a paragraph style or page layout.
@@ -27040,7 +26882,7 @@ break_after -- 'page', 'column' or 'auto'
         )
         return _get_element(self, level_styles, 0, level=level)
 
-    def set_level_style(
+    def set_level_style(  # noqa: C901
         self,
         level,
         num_format=None,
@@ -27724,14 +27566,14 @@ an error if the style type is not compatible.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_background(
+<pre><code class="python">def set_background(  # noqa: C901
     self,
     color=None,
     url=None,
     position=&#34;center&#34;,
     repeat=None,
     opacity=None,
-    filter=None,
+    filter=None,  # noqa: A002
 ):
     &#34;&#34;&#34;Set the background color of a text style, or the background color
     or image of a paragraph style or page layout.
@@ -27895,7 +27737,7 @@ an error if the style type is not compatible.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_level_style(
+<pre><code class="python">def set_level_style(  # noqa: C901
     self,
     level,
     num_format=None,
@@ -28654,7 +28496,7 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
                 paragraph.style = text_style
             paragraph.text = title
 
-    def fill(self, document=None, use_default_styles=True):
+    def fill(self, document=None, use_default_styles=True):  # noqa: C901
         &#34;&#34;&#34;Fill the TOC with the titles found in the document. A TOC is not
         contextual so it will catch all titles before and after its insertion.
         If the TOC is not attached to a document, attach it beforehand or
@@ -28709,20 +28551,20 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
                 continue
             number = []
             # 1. l &lt; level
-            for l in range(1, level):
-                index = level_indexes.setdefault(l, 1)
+            for idx in range(1, level):
+                index = level_indexes.setdefault(idx, 1)
                 number.append(str(index))
             # 2. l == level
             index = level_indexes.setdefault(level, 0) + 1
             level_indexes[level] = index
             number.append(str(index))
             # 3. l &gt; level
-            for l in range(level + 1, 11):
-                if l in level_indexes:
-                    del level_indexes[l]
+            for idx in range(level + 1, 11):
+                if idx in level_indexes:
+                    del level_indexes[idx]
             number = &#34;.&#34;.join(number) + &#34;.&#34;
             # Make the title with &#34;1.2.3. Title&#34; format
-            title = &#34;%s %s&#34; % (number, header.text)
+            title = f&#34;{number} {header.text}&#34;
             paragraph = Paragraph(title)
             if use_default_styles:
                 paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
@@ -28919,7 +28761,7 @@ provide one as argument.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def fill(self, document=None, use_default_styles=True):
+<pre><code class="python">def fill(self, document=None, use_default_styles=True):  # noqa: C901
     &#34;&#34;&#34;Fill the TOC with the titles found in the document. A TOC is not
     contextual so it will catch all titles before and after its insertion.
     If the TOC is not attached to a document, attach it beforehand or
@@ -28974,20 +28816,20 @@ provide one as argument.</p>
             continue
         number = []
         # 1. l &lt; level
-        for l in range(1, level):
-            index = level_indexes.setdefault(l, 1)
+        for idx in range(1, level):
+            index = level_indexes.setdefault(idx, 1)
             number.append(str(index))
         # 2. l == level
         index = level_indexes.setdefault(level, 0) + 1
         level_indexes[level] = index
         number.append(str(index))
         # 3. l &gt; level
-        for l in range(level + 1, 11):
-            if l in level_indexes:
-                del level_indexes[l]
+        for idx in range(level + 1, 11):
+            if idx in level_indexes:
+                del level_indexes[idx]
         number = &#34;.&#34;.join(number) + &#34;.&#34;
         # Make the title with &#34;1.2.3. Title&#34; format
-        title = &#34;%s %s&#34; % (number, header.text)
+        title = f&#34;{number} {header.text}&#34;
         paragraph = Paragraph(title)
         if use_default_styles:
             paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
@@ -29206,10 +29048,8 @@ information</p>
         Return: Tab
         &#34;&#34;&#34;
         super().__init__(**kwargs)
-        if self._do_init:
-            if position is not None:
-                if position &gt;= 0:
-                    self.position = str(position)</code></pre>
+        if self._do_init and position is not None and position &gt;= 0:
+            self.position = str(position)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -29386,7 +29226,7 @@ Base style for a TOC entryBase style for a TOC entry</p>
         (&#34;style_type&#34;, &#34;style:type&#34;),
     )
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         style_char=None,
         leader_color=None,
@@ -29850,7 +29690,7 @@ ensuiring model integrity.</p>
             return _increment(y, self.height)
         return y
 
-    def _translate_table_coordinates(self, coord):
+    def _translate_table_coordinates(self, coord):  # noqa: C901
         height = self.height
         width = self.width
         if isiterable(coord):
@@ -29902,7 +29742,7 @@ ensuiring model integrity.</p>
             t = _increment(t, height)
         return (x, y, z, t)
 
-    def _translate_column_coordinates(self, coord):
+    def _translate_column_coordinates(self, coord):  # noqa: C901
         height = self.height
         width = self.width
         if isiterable(coord):
@@ -29963,7 +29803,7 @@ ensuiring model integrity.</p>
         elif len(coord) == 4:
             x, y, z, t = coord
         else:
-            raise ValueError(&#34;ValueError %s&#34; % str(coord))
+            raise ValueError(str(coord))
         if x and x &lt; 0:
             x = _increment(x, self.width)
         if y and y &lt; 0:
@@ -30008,7 +29848,7 @@ ensuiring model integrity.</p>
             result.append(&#34;\n&#34;)
         return &#34;&#34;.join(result)
 
-    def __get_formatted_text_rst(self, context):
+    def __get_formatted_text_rst(self, context):  # noqa: C901
         context[&#34;no_img_level&#34;] += 1
         # Strip the table =&gt; We must clone
         table = self.clone
@@ -30475,7 +30315,7 @@ ensuiring model integrity.</p>
         self._indexes[&#34;_cmap&#34;] = {}
         self._compute_table_cache()
 
-    def transpose(self, coord=None):
+    def transpose(self, coord=None):  # noqa: C901
         &#34;&#34;&#34;Swap *in-place* rows and columns of the table.
 
         If &#39;coord&#39; is not None, apply transpose only to the area defined by the
@@ -30491,7 +30331,7 @@ ensuiring model integrity.</p>
         data = []
         if coord is None:
             for row in self.traverse():
-                data.append([cell for cell in row.traverse()])
+                data.append(list(row.traverse()))
             transposed_data = zip_longest(*data)
             self.clear()
             # new_rows = []
@@ -30521,7 +30361,7 @@ ensuiring model integrity.</p>
             else:
                 t = min(t, self.height - 1)
             for row in self.traverse(start=y, end=t):
-                data.append([cell for cell in row.traverse(start=x, end=z)])
+                data.append(list(row.traverse(start=x, end=z)))
             transposed_data = zip_longest(*data)
             # clear locally
             w = z - x + 1
@@ -30549,10 +30389,7 @@ ensuiring model integrity.</p>
 
             aggressive -- bool
         &#34;&#34;&#34;
-        for row in self._get_rows():
-            if not row.is_empty(aggressive=aggressive):
-                return False
-        return True
+        return all(row.is_empty(aggressive=aggressive) for row in self._get_rows())
 
     #
     # Rows
@@ -30561,7 +30398,7 @@ ensuiring model integrity.</p>
     def _get_rows(self):
         return self.get_elements(_xpath_row)
 
-    def traverse(self, start=None, end=None):
+    def traverse(self, start=None, end=None):  # noqa: C901
         &#34;&#34;&#34;Yield as many row elements as expected rows in the table, i.e.
         expand repetitions by returning the same row as many times as
         necessary.
@@ -30646,12 +30483,12 @@ ensuiring model integrity.</p>
         Return: list of rows
         &#34;&#34;&#34;
         if coord:
-            x, y, z, t = self._translate_table_coordinates(coord)
+            _x, y, _z, t = self._translate_table_coordinates(coord)
         else:
-            x = y = z = t = None
+            y = t = None
         # fixme : not clones ?
         if not content and not style:
-            return [row for row in self.traverse(start=y, end=t)]
+            return list(self.traverse(start=y, end=t))
         rows = []
         for row in self.traverse(start=y, end=t):
             if content and not row.match(content):
@@ -31210,7 +31047,7 @@ ensuiring model integrity.</p>
             image_frame.set_attribute(&#34;table:end-x&#34;, width)
             image_frame.set_attribute(&#34;table:end-y&#34;, height)
             # FIXME what happens when the address changes?
-            address = &#34;%s.%s%s&#34; % (self.name, _digit_to_alpha(x), y + 1)
+            address = f&#34;{self.name}.{_digit_to_alpha(x)}{y + 1}&#34;
             image_frame.set_attribute(&#34;table:end-cell-address&#34;, address)
             # The frame is directly in the cell
             cell.append(image_frame)
@@ -31310,7 +31147,7 @@ ensuiring model integrity.</p>
     def _get_columns(self):
         return self.get_elements(_xpath_column)
 
-    def traverse_columns(self, start=None, end=None):
+    def traverse_columns(self, start=None, end=None):  # noqa: C901
         &#34;&#34;&#34;Yield as many column elements as expected columns in the table,
         i.e. expand repetitions by returning the same column as many times as
         necessary.
@@ -31392,11 +31229,11 @@ ensuiring model integrity.</p>
         Return: list of columns
         &#34;&#34;&#34;
         if coord:
-            x, y, z, t = self._translate_column_coordinates(coord)
+            x, _y, _z, t = self._translate_column_coordinates(coord)
         else:
-            x = y = z = t = None
+            x = t = None
         if not style:
-            return [column for column in self.traverse_columns(start=x, end=t)]
+            return list(self.traverse_columns(start=x, end=t))
         columns = []
         for column in self.traverse_columns(start=x, end=t):
             if style != column.style:
@@ -31567,8 +31404,13 @@ ensuiring model integrity.</p>
             if row.width &gt;= width:
                 row.delete_cell(x)
 
-    def get_column_cells(
-        self, x, style=None, content=None, cell_type=None, complete=False
+    def get_column_cells(  # noqa: C901
+        self,
+        x,
+        style=None,
+        content=None,
+        cell_type=None,
+        complete=False,
     ):
         &#34;&#34;&#34;Get the list of cells at the given position.
 
@@ -31691,7 +31533,7 @@ ensuiring model integrity.</p>
         &#34;&#34;&#34;
         height = self.height
         if len(cells) != height:
-            raise ValueError(&#34;col mismatch: %s cells expected&#34; % height)
+            raise ValueError(f&#34;col mismatch: {height} cells expected&#34;)
         cells = iter(cells)
         for y, row in enumerate(self.traverse()):
             row.set_cell(x, next(cells))
@@ -31761,16 +31603,16 @@ ensuiring model integrity.</p>
         all_named_ranges = body.get_named_ranges()
         if not table_name:
             return all_named_ranges
-        filter = []
+        filter_ = []
         if isinstance(table_name, str):
-            filter.append(table_name)
+            filter_.append(table_name)
         elif isiterable(table_name):
-            filter.extend(table_name)
+            filter_.extend(table_name)
         else:
             raise ValueError(
-                &#34;table_name must be string or Iterable, not %s&#34; % type(table_name)
+                f&#34;table_name must be string or Iterable, not {type(table_name)}&#34;
             )
-        return [nr for nr in all_named_ranges if nr.table_name in filter]
+        return [nr for nr in all_named_ranges if nr.table_name in filter_]
 
     def get_named_range(self, name):
         &#34;&#34;&#34;Returns the Name Ranges of the specified name. If
@@ -31835,7 +31677,7 @@ ensuiring model integrity.</p>
     # Cell span
     #
 
-    def set_span(self, area, merge=False):
+    def set_span(self, area, merge=False):  # noqa: C901
         &#34;&#34;&#34;Create a Cell Span : span the first cell of the area on several
         columns and/or rows.
         If merge is True, replace text of the cell by the concatenation of
@@ -32765,8 +32607,13 @@ type, aka non empty cells.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_column_cells(
-    self, x, style=None, content=None, cell_type=None, complete=False
+<pre><code class="python">def get_column_cells(  # noqa: C901
+    self,
+    x,
+    style=None,
+    content=None,
+    cell_type=None,
+    complete=False,
 ):
     &#34;&#34;&#34;Get the list of cells at the given position.
 
@@ -32925,11 +32772,11 @@ tuple of (x, column).</p>
     Return: list of columns
     &#34;&#34;&#34;
     if coord:
-        x, y, z, t = self._translate_column_coordinates(coord)
+        x, _y, _z, t = self._translate_column_coordinates(coord)
     else:
-        x = y = z = t = None
+        x = t = None
     if not style:
-        return [column for column in self.traverse_columns(start=x, end=t)]
+        return list(self.traverse_columns(start=x, end=t))
     columns = []
     for column in self.traverse_columns(start=x, end=t):
         if style != column.style:
@@ -33004,16 +32851,16 @@ this method on a cloned table.</p>
     all_named_ranges = body.get_named_ranges()
     if not table_name:
         return all_named_ranges
-    filter = []
+    filter_ = []
     if isinstance(table_name, str):
-        filter.append(table_name)
+        filter_.append(table_name)
     elif isiterable(table_name):
-        filter.extend(table_name)
+        filter_.extend(table_name)
     else:
         raise ValueError(
-            &#34;table_name must be string or Iterable, not %s&#34; % type(table_name)
+            f&#34;table_name must be string or Iterable, not {type(table_name)}&#34;
         )
-    return [nr for nr in all_named_ranges if nr.table_name in filter]</code></pre>
+    return [nr for nr in all_named_ranges if nr.table_name in filter_]</code></pre>
 </details>
 </dd>
 <dt id="odfdo.Table.get_row"><code class="name flex">
@@ -33140,12 +32987,12 @@ If cell_type and complete is True, replace missing values by None.</p>
     Return: list of rows
     &#34;&#34;&#34;
     if coord:
-        x, y, z, t = self._translate_table_coordinates(coord)
+        _x, y, _z, t = self._translate_table_coordinates(coord)
     else:
-        x = y = z = t = None
+        y = t = None
     # fixme : not clones ?
     if not content and not style:
-        return [row for row in self.traverse(start=y, end=t)]
+        return list(self.traverse(start=y, end=t))
     rows = []
     for row in self.traverse(start=y, end=t):
         if content and not row.match(content):
@@ -33506,10 +33353,7 @@ evaluates to False (empty string), and no style.</p>
 
         aggressive -- bool
     &#34;&#34;&#34;
-    for row in self._get_rows():
-        if not row.is_empty(aggressive=aggressive):
-            return False
-    return True</code></pre>
+    return all(row.is_empty(aggressive=aggressive) for row in self._get_rows())</code></pre>
 </details>
 </dd>
 <dt id="odfdo.Table.is_row_empty"><code class="name flex">
@@ -33790,7 +33634,7 @@ provided or the table element must be already attached to a document.</p>
         image_frame.set_attribute(&#34;table:end-x&#34;, width)
         image_frame.set_attribute(&#34;table:end-y&#34;, height)
         # FIXME what happens when the address changes?
-        address = &#34;%s.%s%s&#34; % (self.name, _digit_to_alpha(x), y + 1)
+        address = f&#34;{self.name}.{_digit_to_alpha(x)}{y + 1}&#34;
         image_frame.set_attribute(&#34;table:end-cell-address&#34;, address)
         # The frame is directly in the cell
         cell.append(image_frame)
@@ -33948,7 +33792,7 @@ like "C" is accepted.</p>
     &#34;&#34;&#34;
     height = self.height
     if len(cells) != height:
-        raise ValueError(&#34;col mismatch: %s cells expected&#34; % height)
+        raise ValueError(f&#34;col mismatch: {height} cells expected&#34;)
     cells = iter(cells)
     for y, row in enumerate(self.traverse()):
         row.set_cell(x, next(cells))
@@ -34212,7 +34056,7 @@ be provided as an alpha numeric value like "A1:B2' or a tuple like
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_span(self, area, merge=False):
+<pre><code class="python">def set_span(self, area, merge=False):  # noqa: C901
     &#34;&#34;&#34;Create a Cell Span : span the first cell of the area on several
     columns and/or rows.
     If merge is True, replace text of the cell by the concatenation of
@@ -34493,7 +34337,7 @@ written during the process.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def transpose(self, coord=None):
+<pre><code class="python">def transpose(self, coord=None):  # noqa: C901
     &#34;&#34;&#34;Swap *in-place* rows and columns of the table.
 
     If &#39;coord&#39; is not None, apply transpose only to the area defined by the
@@ -34509,7 +34353,7 @@ written during the process.</p>
     data = []
     if coord is None:
         for row in self.traverse():
-            data.append([cell for cell in row.traverse()])
+            data.append(list(row.traverse()))
         transposed_data = zip_longest(*data)
         self.clear()
         # new_rows = []
@@ -34539,7 +34383,7 @@ written during the process.</p>
         else:
             t = min(t, self.height - 1)
         for row in self.traverse(start=y, end=t):
-            data.append([cell for cell in row.traverse(start=x, end=z)])
+            data.append(list(row.traverse(start=x, end=z)))
         transposed_data = zip_longest(*data)
         # clear locally
         w = z - x + 1
@@ -34576,7 +34420,7 @@ necessary.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def traverse(self, start=None, end=None):
+<pre><code class="python">def traverse(self, start=None, end=None):  # noqa: C901
     &#34;&#34;&#34;Yield as many row elements as expected rows in the table, i.e.
     expand repetitions by returning the same row as many times as
     necessary.
@@ -34664,7 +34508,7 @@ necessary.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def traverse_columns(self, start=None, end=None):
+<pre><code class="python">def traverse_columns(self, start=None, end=None):  # noqa: C901
     &#34;&#34;&#34;Yield as many column elements as expected columns in the table,
     i.e. expand repetitions by returning the same column as many times as
     necessary.
@@ -36744,7 +36588,7 @@ and "text:change-end" elements.</p></div>
                 # assume iterable of Paragraph
                 for paragraph in comments:
                     if not isinstance(paragraph, Paragraph):
-                        raise ValueError(&#34;%s is not a Paragraph.&#34; % paragraph)
+                        raise TypeError(f&#34;{paragraph} is not a Paragraph.&#34;)
                     new_change_info.insert(paragraph, xmlposition=LAST_CHILD)
         else:
             if not isinstance(change_info, ChangeInfo):
@@ -36896,7 +36740,7 @@ The new change info element will replace any existant ChangeInfo.</p>
             # assume iterable of Paragraph
             for paragraph in comments:
                 if not isinstance(paragraph, Paragraph):
-                    raise ValueError(&#34;%s is not a Paragraph.&#34; % paragraph)
+                    raise TypeError(f&#34;{paragraph} is not a Paragraph.&#34;)
                 new_change_info.insert(paragraph, xmlposition=LAST_CHILD)
     else:
         if not isinstance(change_info, ChangeInfo):
@@ -37541,7 +37385,7 @@ field of same name.</p>
         text=None,
         style=None,
         from_document=None,
-        **kw
+        **kw,
     ):
         super().__init__(**kw)
         if self._do_init:
@@ -38358,7 +38202,7 @@ Abstraction of the XML library behind.</p>
 <pre><code class="python">class VarChapter(Element):
     _tag = &#34;text:chapter&#34;
     _properties = ((&#34;display&#34;, &#34;text:display&#34;), (&#34;outline_level&#34;, &#34;text:outline-level&#34;))
-    display_value_choice = {
+    DISPLAY_VALUE_CHOICE = {  # noqa: RUF012
         &#34;number&#34;,
         &#34;name&#34;,
         &#34;number-and-name&#34;,
@@ -38372,7 +38216,7 @@ Abstraction of the XML library behind.</p>
         &#34;&#34;&#34;
         super().__init__(**kw)
         if self._do_init:
-            if display not in VarChapter.display_value_choice:
+            if display not in VarChapter.DISPLAY_VALUE_CHOICE:
                 raise ValueError(&#34;unknown display value: %s&#34; % display)
             self.display = display
             if outline_level is not None:
@@ -38384,7 +38228,7 @@ Abstraction of the XML library behind.</p>
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="odfdo.VarChapter.display_value_choice"><code class="name">var <span class="ident">display_value_choice</span></code></dt>
+<dt id="odfdo.VarChapter.DISPLAY_VALUE_CHOICE"><code class="name">var <span class="ident">DISPLAY_VALUE_CHOICE</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -39599,13 +39443,18 @@ Abstraction of the XML library behind.</p>
 <pre><code class="python">class VarFileName(Element):
     _tag = &#34;text:file-name&#34;
     _properties = ((&#34;display&#34;, &#34;text:display&#34;), (&#34;fixed&#34;, &#34;text:fixed&#34;))
-    display_value_choice = {&#34;full&#34;, &#34;path&#34;, &#34;name&#34;, &#34;name-and-extension&#34;}
+    DISPLAY_VALUE_CHOICE = {  # noqa: RUF012
+        &#34;full&#34;,
+        &#34;path&#34;,
+        &#34;name&#34;,
+        &#34;name-and-extension&#34;,
+    }
 
     def __init__(self, display=&#34;full&#34;, fixed=False, **kw):
         &#34;&#34;&#34;display can be: &#39;full&#39;, &#39;path&#39;, &#39;name&#39; or &#39;name-and-extension&#39;&#34;&#34;&#34;
         super().__init__(**kw)
         if self._do_init:
-            if display not in VarFileName.display_value_choice:
+            if display not in VarFileName.DISPLAY_VALUE_CHOICE:
                 raise ValueError(&#34;unknown display value: %s&#34; % display)
             self.display = display
             if fixed:
@@ -39617,7 +39466,7 @@ Abstraction of the XML library behind.</p>
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="odfdo.VarFileName.display_value_choice"><code class="name">var <span class="ident">display_value_choice</span></code></dt>
+<dt id="odfdo.VarFileName.DISPLAY_VALUE_CHOICE"><code class="name">var <span class="ident">DISPLAY_VALUE_CHOICE</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -39980,9 +39829,8 @@ Abstraction of the XML library behind.</p></div>
 
     def __init__(self, fixed=False, **kw):
         super().__init__(**kw)
-        if self._do_init:
-            if fixed:
-                self.fixed = True</code></pre>
+        if self._do_init and fixed:
+            self.fixed = True</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -40617,7 +40465,7 @@ Abstraction of the XML library behind.</p></div>
         display=False,
         text=None,
         style=None,
-        **kw
+        **kw,
     ):
         super().__init__(**kw)
         if self._do_init:
@@ -41337,7 +41185,7 @@ Abstraction of the XML library behind.</p></div>
         if self.__tree is None:
             container = self.container
             part = container.get_part(self.part_name)
-            self.__tree = parse(BytesIO(part))
+            self.__tree = parse(BytesIO(part))  # noqa:S320
         return self.__tree
 
     # Public API
@@ -41533,15 +41381,7 @@ Text instances translated from the nodes found.</p></div>
 <nav id="sidebar">
 <h1>Index</h1>
 <div class="toc">
-<ul>
-<li><a href="#odfdo">odfdo</a></li>
-<li><a href="#installation">installation</a></li>
-<li><a href="#usage">usage</a></li>
-<li><a href="#tldr">tl;dr</a></li>
-<li><a href="#documentation">documentation</a></li>
-<li><a href="#limitations">limitations</a></li>
-<li><a href="#changes-from-former-lpod-library">changes from former lpod library</a></li>
-</ul>
+<ul></ul>
 </div>
 <ul id="index">
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
@@ -41565,6 +41405,7 @@ Text instances translated from the nodes found.</p></div>
 <li><code><a title="odfdo.paragraph" href="paragraph.html">odfdo.paragraph</a></code></li>
 <li><code><a title="odfdo.paragraph_base" href="paragraph_base.html">odfdo.paragraph_base</a></code></li>
 <li><code><a title="odfdo.reference" href="reference.html">odfdo.reference</a></code></li>
+<li><code><a title="odfdo.scripts" href="scripts/index.html">odfdo.scripts</a></code></li>
 <li><code><a title="odfdo.scriptutils" href="scriptutils.html">odfdo.scriptutils</a></code></li>
 <li><code><a title="odfdo.section" href="section.html">odfdo.section</a></code></li>
 <li><code><a title="odfdo.shapes" href="shapes.html">odfdo.shapes</a></code></li>
@@ -41572,6 +41413,7 @@ Text instances translated from the nodes found.</p></div>
 <li><code><a title="odfdo.style" href="style.html">odfdo.style</a></code></li>
 <li><code><a title="odfdo.styles" href="styles.html">odfdo.styles</a></code></li>
 <li><code><a title="odfdo.table" href="table.html">odfdo.table</a></code></li>
+<li><code><a title="odfdo.templates" href="templates/index.html">odfdo.templates</a></code></li>
 <li><code><a title="odfdo.toc" href="toc.html">odfdo.toc</a></code></li>
 <li><code><a title="odfdo.tracked_changes" href="tracked_changes.html">odfdo.tracked_changes</a></code></li>
 <li><code><a title="odfdo.utils" href="utils.html">odfdo.utils</a></code></li>
@@ -42469,8 +42311,8 @@ Text instances translated from the nodes found.</p></div>
 <li>
 <h4><code><a title="odfdo.VarChapter" href="#odfdo.VarChapter">VarChapter</a></code></h4>
 <ul class="">
+<li><code><a title="odfdo.VarChapter.DISPLAY_VALUE_CHOICE" href="#odfdo.VarChapter.DISPLAY_VALUE_CHOICE">DISPLAY_VALUE_CHOICE</a></code></li>
 <li><code><a title="odfdo.VarChapter.display" href="#odfdo.VarChapter.display">display</a></code></li>
-<li><code><a title="odfdo.VarChapter.display_value_choice" href="#odfdo.VarChapter.display_value_choice">display_value_choice</a></code></li>
 <li><code><a title="odfdo.VarChapter.outline_level" href="#odfdo.VarChapter.outline_level">outline_level</a></code></li>
 </ul>
 </li>
@@ -42513,8 +42355,8 @@ Text instances translated from the nodes found.</p></div>
 <li>
 <h4><code><a title="odfdo.VarFileName" href="#odfdo.VarFileName">VarFileName</a></code></h4>
 <ul class="">
+<li><code><a title="odfdo.VarFileName.DISPLAY_VALUE_CHOICE" href="#odfdo.VarFileName.DISPLAY_VALUE_CHOICE">DISPLAY_VALUE_CHOICE</a></code></li>
 <li><code><a title="odfdo.VarFileName.display" href="#odfdo.VarFileName.display">display</a></code></li>
-<li><code><a title="odfdo.VarFileName.display_value_choice" href="#odfdo.VarFileName.display_value_choice">display_value_choice</a></code></li>
 <li><code><a title="odfdo.VarFileName.fixed" href="#odfdo.VarFileName.fixed">fixed</a></code></li>
 </ul>
 </li>

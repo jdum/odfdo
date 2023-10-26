@@ -29,7 +29,7 @@ ConnectorShape and DrawGroup</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -54,7 +54,7 @@ ConnectorShape and DrawGroup</p>
 ConnectorShape and DrawGroup
 &#34;&#34;&#34;
 from .element import Element, register_element_class
-from .frame import AnchorMix, ZMix, PosMix, SizeMix
+from .frame import AnchorMix, PosMix, SizeMix, ZMix
 
 
 class ShapeBase(Element, SizeMix, PosMix):
@@ -82,7 +82,7 @@ class ShapeBase(Element, SizeMix, PosMix):
         position=None,
         size=None,
         presentation_class=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         if self._do_init:
@@ -148,7 +148,7 @@ class LineShape(ShapeBase):
         layer=None,
         p1=None,
         p2=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -202,7 +202,7 @@ class RectangleShape(ShapeBase):
         layer=None,
         size=None,
         position=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -251,7 +251,7 @@ class EllipseShape(ShapeBase):
         layer=None,
         size=None,
         position=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -315,7 +315,7 @@ class ConnectorShape(ShapeBase):
         glue_points=None,
         p1=None,
         p2=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -403,7 +403,7 @@ class DrawGroup(Element, AnchorMix, ZMix, PosMix):
         anchor_type=None,
         anchor_page=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         if self._do_init:
@@ -512,7 +512,7 @@ register_element_class(DrawGroup)</code></pre>
         glue_points=None,
         p1=None,
         p2=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -906,7 +906,7 @@ and xml:id.</p>
         anchor_type=None,
         anchor_page=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         if self._do_init:
@@ -1369,7 +1369,7 @@ and xml:id.</p>
         layer=None,
         size=None,
         position=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -1570,7 +1570,7 @@ and xml:id.</p>
         layer=None,
         p1=None,
         p2=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -1846,7 +1846,7 @@ and xml:id.</p>
         layer=None,
         size=None,
         position=None,
-        **kw
+        **kw,
     ):
         kw.update(
             {
@@ -2028,7 +2028,7 @@ and xml:id.</p>
         position=None,
         size=None,
         presentation_class=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         if self._do_init:

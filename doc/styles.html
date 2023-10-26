@@ -27,7 +27,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -50,8 +50,8 @@
 #          Romain Gauthier &lt;romain@itaapy.com&gt;
 &#34;&#34;&#34;Styles class for styles.xml part
 &#34;&#34;&#34;
+from .utils import _get_element, _get_elements
 from .xmlpart import XmlPart
-from .utils import _get_elements, _get_element
 
 CONTEXT_MAPPING = {
     &#34;paragraph&#34;: (&#34;//office:styles&#34;, &#34;//office:automatic-styles&#34;),

@@ -27,7 +27,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -51,16 +51,16 @@
 #          Jerome Dumonteil &lt;jerome.dumonteil@itaapy.com&gt;
 &#34;&#34;&#34;Meta class for meta.xml part
 &#34;&#34;&#34;
-from datetime import timedelta, datetime
 from datetime import date as dtdate
+from datetime import datetime, timedelta
 from decimal import Decimal
 from string import ascii_letters, digits
 
-from .datatype import DateTime, Duration, Boolean, Date
+from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element
-from .xmlpart import XmlPart
 from .utils import to_str
 from .version import __version__
+from .xmlpart import XmlPart
 
 
 class Meta(XmlPart):
@@ -187,16 +187,10 @@ class Meta(XmlPart):
         def test_part1(p1):
             if not 2 &lt;= len(p1) &lt;= 3:
                 return False
-            for x in p1:
-                if x not in ascii_letters:
-                    return False
-            return True
+            return all(x in ascii_letters for x in p1)
 
         def test_part2(p1):
-            for x in p1:
-                if x not in ascii_letters and x not in digits:
-                    return False
-            return True
+            return all(x in ascii_letters or x in digits for x in p1)
 
         if not lang or not isinstance(lang, str):
             return False
@@ -207,10 +201,7 @@ class Meta(XmlPart):
             return False
         if not test_part1(parts[0]):
             return False
-        for p in parts[1:]:
-            if not test_part2(p):
-                return False
-        return True
+        return all(test_part2(p) for p in parts[1:])
 
     def get_modification_date(self):
         &#34;&#34;&#34;Get the last modified date of the document.
@@ -498,8 +489,8 @@ class Meta(XmlPart):
         for key, value in statistic.items():
             try:
                 ivalue = int(value)
-            except ValueError:
-                raise TypeError(&#34;statistic value must be a int&#34;)
+            except ValueError as e:
+                raise TypeError(&#34;statistic value must be a int&#34;) from e
             element.set_attribute(to_str(key), str(ivalue))
 
     def get_user_defined_metadata(self):
@@ -743,16 +734,10 @@ Abstraction of the XML library behind.</p></div>
         def test_part1(p1):
             if not 2 &lt;= len(p1) &lt;= 3:
                 return False
-            for x in p1:
-                if x not in ascii_letters:
-                    return False
-            return True
+            return all(x in ascii_letters for x in p1)
 
         def test_part2(p1):
-            for x in p1:
-                if x not in ascii_letters and x not in digits:
-                    return False
-            return True
+            return all(x in ascii_letters or x in digits for x in p1)
 
         if not lang or not isinstance(lang, str):
             return False
@@ -763,10 +748,7 @@ Abstraction of the XML library behind.</p></div>
             return False
         if not test_part1(parts[0]):
             return False
-        for p in parts[1:]:
-            if not test_part2(p):
-                return False
-        return True
+        return all(test_part2(p) for p in parts[1:])
 
     def get_modification_date(self):
         &#34;&#34;&#34;Get the last modified date of the document.
@@ -1054,8 +1036,8 @@ Abstraction of the XML library behind.</p></div>
         for key, value in statistic.items():
             try:
                 ivalue = int(value)
-            except ValueError:
-                raise TypeError(&#34;statistic value must be a int&#34;)
+            except ValueError as e:
+                raise TypeError(&#34;statistic value must be a int&#34;) from e
             element.set_attribute(to_str(key), str(ivalue))
 
     def get_user_defined_metadata(self):
@@ -1989,8 +1971,8 @@ etc.</p>
     for key, value in statistic.items():
         try:
             ivalue = int(value)
-        except ValueError:
-            raise TypeError(&#34;statistic value must be a int&#34;)
+        except ValueError as e:
+            raise TypeError(&#34;statistic value must be a int&#34;) from e
         element.set_attribute(to_str(key), str(ivalue))</code></pre>
 </details>
 </dd>

@@ -27,7 +27,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -50,12 +50,12 @@
 #          Hervé Cauwelier &lt;herve@itaapy.com&gt;
 &#34;&#34;&#34;Frame class for &#34;draw:frame&#34;
 &#34;&#34;&#34;
-from .element import Element, register_element_class
 from .datatype import Unit
+from .element import Element, register_element_class
 from .image import DrawImage
 from .paragraph import Paragraph
 from .style import Style
-from .utils import isiterable, DPI
+from .utils import DPI, isiterable
 
 
 def default_frame_position_style(
@@ -89,7 +89,13 @@ class AnchorMix:
     value can be: &#39;page&#39;, &#39;frame&#39;, &#39;paragraph&#39;, &#39;char&#39; or &#39;as-char&#39;
     &#34;&#34;&#34;
 
-    anchor_value_choice = {&#34;page&#34;, &#34;frame&#34;, &#34;paragraph&#34;, &#34;char&#34;, &#34;as-char&#34;}
+    ANCHOR_VALUE_CHOICE = {  # noqa: RUF012
+        &#34;page&#34;,
+        &#34;frame&#34;,
+        &#34;paragraph&#34;,
+        &#34;char&#34;,
+        &#34;as-char&#34;,
+    }
 
     @property
     def anchor_type(self):
@@ -98,7 +104,7 @@ class AnchorMix:
 
     @anchor_type.setter
     def anchor_type(self, anchor_type):
-        if anchor_type not in self.anchor_value_choice:
+        if anchor_type not in self.ANCHOR_VALUE_CHOICE:
             raise ValueError(&#34;anchor_type not valid: %s&#34; % anchor_type)
         self.set_attribute(&#34;text:anchor-type&#34;, anchor_type)
 
@@ -199,7 +205,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
         (&#34;presentation_style&#34;, &#34;presentation:style-name&#34;),
     )
 
-    def __init__(
+    def __init__(  # noqa:  C901
         self,
         name=None,
         draw_id=None,
@@ -212,7 +218,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
         anchor_page=None,
         layer=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         &#34;&#34;&#34;Create a frame element of the given size. Position is relative to the
         context the frame is inserted in. If positioned by page, give the page
@@ -294,7 +300,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
         anchor_page=None,
         layer=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         &#34;&#34;&#34;Create a ready-to-use image, since image must be embedded in a
         frame.
@@ -323,7 +329,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
             anchor_page=anchor_page,
             layer=layer,
             presentation_style=presentation_style,
-            **kwargs
+            **kwargs,
         )
         image_element = frame.set_image(image)
         if text:
@@ -346,7 +352,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
         anchor_page=None,
         layer=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         &#34;&#34;&#34;Create a ready-to-use text box, since text box must be embedded in
         a frame.
@@ -376,7 +382,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
             anchor_page=anchor_page,
             layer=layer,
             presentation_style=presentation_style,
-            **kwargs
+            **kwargs,
         )
         frame.set_text_box(text_or_element, text_style)
         return frame
@@ -439,7 +445,7 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
             text_box.append(item)
         return text_box
 
-    def get_formatted_text(self, context):
+    def get_formatted_text(self, context):  # noqa:  C901
         result = []
         for element in self.children:
             tag = element.tag
@@ -555,7 +561,13 @@ with this style as the parent.</p></div>
     value can be: &#39;page&#39;, &#39;frame&#39;, &#39;paragraph&#39;, &#39;char&#39; or &#39;as-char&#39;
     &#34;&#34;&#34;
 
-    anchor_value_choice = {&#34;page&#34;, &#34;frame&#34;, &#34;paragraph&#34;, &#34;char&#34;, &#34;as-char&#34;}
+    ANCHOR_VALUE_CHOICE = {  # noqa: RUF012
+        &#34;page&#34;,
+        &#34;frame&#34;,
+        &#34;paragraph&#34;,
+        &#34;char&#34;,
+        &#34;as-char&#34;,
+    }
 
     @property
     def anchor_type(self):
@@ -564,7 +576,7 @@ with this style as the parent.</p></div>
 
     @anchor_type.setter
     def anchor_type(self, anchor_type):
-        if anchor_type not in self.anchor_value_choice:
+        if anchor_type not in self.ANCHOR_VALUE_CHOICE:
             raise ValueError(&#34;anchor_type not valid: %s&#34; % anchor_type)
         self.set_attribute(&#34;text:anchor-type&#34;, anchor_type)
 
@@ -591,7 +603,7 @@ with this style as the parent.</p></div>
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="odfdo.frame.AnchorMix.anchor_value_choice"><code class="name">var <span class="ident">anchor_value_choice</span></code></dt>
+<dt id="odfdo.frame.AnchorMix.ANCHOR_VALUE_CHOICE"><code class="name">var <span class="ident">ANCHOR_VALUE_CHOICE</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -690,7 +702,7 @@ Frame.text_frame()</p>
         (&#34;presentation_style&#34;, &#34;presentation:style-name&#34;),
     )
 
-    def __init__(
+    def __init__(  # noqa:  C901
         self,
         name=None,
         draw_id=None,
@@ -703,7 +715,7 @@ Frame.text_frame()</p>
         anchor_page=None,
         layer=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         &#34;&#34;&#34;Create a frame element of the given size. Position is relative to the
         context the frame is inserted in. If positioned by page, give the page
@@ -785,7 +797,7 @@ Frame.text_frame()</p>
         anchor_page=None,
         layer=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         &#34;&#34;&#34;Create a ready-to-use image, since image must be embedded in a
         frame.
@@ -814,7 +826,7 @@ Frame.text_frame()</p>
             anchor_page=anchor_page,
             layer=layer,
             presentation_style=presentation_style,
-            **kwargs
+            **kwargs,
         )
         image_element = frame.set_image(image)
         if text:
@@ -837,7 +849,7 @@ Frame.text_frame()</p>
         anchor_page=None,
         layer=None,
         presentation_style=None,
-        **kwargs
+        **kwargs,
     ):
         &#34;&#34;&#34;Create a ready-to-use text box, since text box must be embedded in
         a frame.
@@ -867,7 +879,7 @@ Frame.text_frame()</p>
             anchor_page=anchor_page,
             layer=layer,
             presentation_style=presentation_style,
-            **kwargs
+            **kwargs,
         )
         frame.set_text_box(text_or_element, text_style)
         return frame
@@ -930,7 +942,7 @@ Frame.text_frame()</p>
             text_box.append(item)
         return text_box
 
-    def get_formatted_text(self, context):
+    def get_formatted_text(self, context):  # noqa:  C901
         result = []
         for element in self.children:
             tag = element.tag
@@ -1016,7 +1028,7 @@ def image_frame(
     anchor_page=None,
     layer=None,
     presentation_style=None,
-    **kwargs
+    **kwargs,
 ):
     &#34;&#34;&#34;Create a ready-to-use image, since image must be embedded in a
     frame.
@@ -1045,7 +1057,7 @@ def image_frame(
         anchor_page=anchor_page,
         layer=layer,
         presentation_style=presentation_style,
-        **kwargs
+        **kwargs,
     )
     image_element = frame.set_image(image)
     if text:
@@ -1086,7 +1098,7 @@ def text_frame(
     anchor_page=None,
     layer=None,
     presentation_style=None,
-    **kwargs
+    **kwargs,
 ):
     &#34;&#34;&#34;Create a ready-to-use text box, since text box must be embedded in
     a frame.
@@ -1116,7 +1128,7 @@ def text_frame(
         anchor_page=anchor_page,
         layer=layer,
         presentation_style=presentation_style,
-        **kwargs
+        **kwargs,
     )
     frame.set_text_box(text_or_element, text_style)
     return frame</code></pre>
@@ -1696,9 +1708,9 @@ def z_index(self):
 <li>
 <h4><code><a title="odfdo.frame.AnchorMix" href="#odfdo.frame.AnchorMix">AnchorMix</a></code></h4>
 <ul class="">
+<li><code><a title="odfdo.frame.AnchorMix.ANCHOR_VALUE_CHOICE" href="#odfdo.frame.AnchorMix.ANCHOR_VALUE_CHOICE">ANCHOR_VALUE_CHOICE</a></code></li>
 <li><code><a title="odfdo.frame.AnchorMix.anchor_page" href="#odfdo.frame.AnchorMix.anchor_page">anchor_page</a></code></li>
 <li><code><a title="odfdo.frame.AnchorMix.anchor_type" href="#odfdo.frame.AnchorMix.anchor_type">anchor_type</a></code></li>
-<li><code><a title="odfdo.frame.AnchorMix.anchor_value_choice" href="#odfdo.frame.AnchorMix.anchor_value_choice">anchor_value_choice</a></code></li>
 </ul>
 </li>
 <li>

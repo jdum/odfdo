@@ -27,7 +27,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -51,14 +51,12 @@
 #          Romain Gauthier &lt;romain@itaapy.com&gt;
 &#34;&#34;&#34;get_value() and other utilities
 &#34;&#34;&#34;
+import contextlib
 from datetime import date, datetime, timedelta
 from decimal import Decimal as dec
-from os import getcwd
-from os.path import splitdrive, join, sep
 from re import search
-from sys import _getframe, modules
-from .const import ODF_PROPERTIES
 
+from .const import ODF_PROPERTIES
 from .datatype import Boolean, Date, DateTime, Duration
 
 # CELL_TYPES = &#39;boolean currency date float percentage string time&#39;.split()
@@ -92,7 +90,7 @@ def to_str(value):
     return value
 
 
-def _make_xpath_query(
+def _make_xpath_query(  # noqa: C901
     element_name,
     family=None,
     text_style=None,
@@ -117,7 +115,7 @@ def _make_xpath_query(
     parent_style=None,
     presentation_class=None,
     position=None,
-    **kw
+    **kw,
 ):
     query = [to_str(element_name)]
     attributes = kw
@@ -169,19 +167,19 @@ def _make_xpath_query(
     for qname in sorted(attributes):
         value = attributes[qname]
         if value is True:
-            query.append(&#34;[@%s]&#34; % to_str(qname))
+            query.append(f&#34;[@{to_str(qname)}]&#34;)
         else:
-            query.append(&#39;[@%s=&#34;%s&#34;]&#39; % (to_str(qname), value))
+            query.append(f&#39;[@{to_str(qname)}=&#34;{value}&#34;]&#39;)
     query = &#34;&#34;.join(query)
     if position is not None:
         # A position argument that mimics the behaviour of a python&#39;s list
         if position &gt;= 0:
-            position = &#34;%s&#34; % (position + 1)
+            position = str(position + 1)
         elif position == -1:
             position = &#34;last()&#34;
         else:
-            position = &#34;last()-%s&#34; % (abs(position) - 1)
-        query = &#34;(%s)[%s]&#34; % (query, position)
+            position = f&#34;last()-{abs(position) - 1}&#34;
+        query = f&#34;({query})[{position}]&#34;
     # print(query)
     return query
 
@@ -330,7 +328,7 @@ def _get_elements(
     svg_desc=None,
     dc_creator=None,
     dc_date=None,
-    **kw
+    **kw,
 ):
     query = _make_xpath_query(element_name, **kw)
     elements = context.get_elements(query)
@@ -373,9 +371,15 @@ def _get_element(context, element_name, position, **kw):
         return None
 
 
-def _set_value_and_type(element, value=None, value_type=None, text=None, currency=None):
+def _set_value_and_type(  # noqa: C901
+    element,
+    value=None,
+    value_type=None,
+    text=None,
+    currency=None,
+):
     # Remove possible previous value and type
-    for name in (
+    for name in {
         &#34;office:value-type&#34;,
         &#34;office:boolean-value&#34;,
         &#34;office:value&#34;,
@@ -386,20 +390,16 @@ def _set_value_and_type(element, value=None, value_type=None, text=None, currenc
         &#34;office:currency&#34;,
         &#34;calcext:value-type&#34;,
         &#34;loext:value-type&#34;,
-    ):
-        try:
+    }:
+        with contextlib.suppress(KeyError):
             element.del_attribute(name)
-        except KeyError:
-            pass
     value = to_str(value)
     value_type = to_str(value_type)
     text = to_str(text)
     currency = to_str(currency)
     if value is None:
-        try:
+        with contextlib.suppress(KeyError):
             element.del_attribute(name)
-        except KeyError:
-            pass
         element._erase_text_content()
         return text
     if isinstance(value, bool):
@@ -466,7 +466,12 @@ def _set_value_and_type(element, value=None, value_type=None, text=None, currenc
 ######################################################################
 # Public API
 ######################################################################
-def get_value(element, value_type=None, try_get_text=True, get_type=False):
+def get_value(  # noqa: C901
+    element,
+    value_type=None,
+    try_get_text=True,
+    get_type=False,
+):
     &#34;&#34;&#34;Only for &#34;with office:value-type&#34; elements, not for meta fields&#34;&#34;&#34;
     if value_type is None:
         value_type = element.get_attribute(&#34;office:value-type&#34;)
@@ -566,7 +571,7 @@ def oooc_to_ooow(formula):
     Return: str
     &#34;&#34;&#34;
     prefix, formula = formula.split(&#34;:=&#34;, 1)
-    assert &#34;oooc&#34; in prefix
+    # assert &#34;oooc&#34; in prefix
     # Convert cell addresses
     formula = formula.replace(&#34;[.&#34;, &#34;&lt;&#34;).replace(&#34;:.&#34;, &#34;:&#34;).replace(&#34;]&#34;, &#34;&gt;&#34;)
     # Convert functions
@@ -612,7 +617,12 @@ def isiterable(obj):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_value(element, value_type=None, try_get_text=True, get_type=False):
+<pre><code class="python">def get_value(  # noqa: C901
+    element,
+    value_type=None,
+    try_get_text=True,
+    get_type=False,
+):
     &#34;&#34;&#34;Only for &#34;with office:value-type&#34; elements, not for meta fields&#34;&#34;&#34;
     if value_type is None:
         value_type = element.get_attribute(&#34;office:value-type&#34;)
@@ -712,7 +722,7 @@ def isiterable(obj):
     Return: str
     &#34;&#34;&#34;
     prefix, formula = formula.split(&#34;:=&#34;, 1)
-    assert &#34;oooc&#34; in prefix
+    # assert &#34;oooc&#34; in prefix
     # Convert cell addresses
     formula = formula.replace(&#34;[.&#34;, &#34;&lt;&#34;).replace(&#34;:.&#34;, &#34;:&#34;).replace(&#34;]&#34;, &#34;&gt;&#34;)
     # Convert functions

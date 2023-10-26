@@ -27,7 +27,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -57,15 +57,16 @@ import posixpath
 from copy import deepcopy
 from mimetypes import guess_type
 from operator import itemgetter
+from pathlib import Path
 from uuid import uuid4
 
 from .const import (
     ODF_CONTENT,
+    ODF_MANIFEST,
     ODF_META,
     ODF_SETTINGS,
     ODF_STYLES,
     ODF_TEMPLATES,
-    ODF_MANIFEST,
 )
 from .container import Container
 from .content import Content
@@ -75,10 +76,10 @@ from .meta import Meta
 
 # from .style import registered_styles
 from .styles import Styles
+from .utils import FAMILY_ODF_STD, to_str
 
 # from utils import obsolete
 from .xmlpart import XmlPart
-from .utils import to_str, FAMILY_ODF_STD
 
 AUTOMATIC_PREFIX = &#34;odfdo_auto_&#34;
 
@@ -103,7 +104,7 @@ def _show_styles(element, level=0):
     attrs = []
     # Attributes
     for key, value in attributes.items():
-        attrs.append(&#34;%s: %s&#34; % (key, value))
+        attrs.append(f&#34;{key}: {value}&#34;)
     if attrs:
         attrs.sort()
         # Add a separation between attributes and children
@@ -155,6 +156,10 @@ class Document:
             # empty document
             self.container = Container()
             return
+        if isinstance(target, Path):
+            # let&#39;s assume we open a container on existing file
+            self.container = Container(target)
+            return
         if isinstance(target, Container):
             self.container = target
             return
@@ -163,8 +168,7 @@ class Document:
             self.container = Container.new(target)
             return
         # let&#39;s assume we open a container on existing file
-        self.container = Container()
-        self.container.open(target)
+        self.container = Container(target)
 
     @classmethod
     def new(cls, target=&#34;text&#34;):
@@ -263,6 +267,59 @@ class Document:
             self.__body = content.body
         return self.__body
 
+    def _get_formatted_text_footnotes(self, result, context, rst_mode):
+        # Separate text from notes
+        if rst_mode:
+            result.append(&#34;\n&#34;)
+        else:
+            result.append(&#34;----\n&#34;)
+        for citation, body in context[&#34;footnotes&#34;]:
+            if rst_mode:
+                result.append(f&#34;.. [#] {body}\n&#34;)
+            else:
+                result.append(f&#34;[{citation}] {body}\n&#34;)
+        # Append a \n after the notes
+        result.append(&#34;\n&#34;)
+        # Reset for the next paragraph
+        context[&#34;footnotes&#34;] = []
+
+    def _get_formatted_text_annotations(self, result, context, rst_mode):
+        # Insert the annotations
+        # With a separation
+        if rst_mode:
+            result.append(&#34;\n&#34;)
+        else:
+            result.append(&#34;----\n&#34;)
+        for annotation in context[&#34;annotations&#34;]:
+            if rst_mode:
+                result.append(f&#34;.. [#] {annotation}\n&#34;)
+            else:
+                result.append(f&#34;[*] {annotation}\n&#34;)
+        context[&#34;annotations&#34;] = []
+
+    def _get_formatted_text_images(self, result, context, rst_mode):
+        # Insert the images ref, only in rst mode
+        result.append(&#34;\n&#34;)
+        for ref, filename, (width, height) in context[&#34;images&#34;]:
+            result.append(f&#34;.. {ref} image:: {filename}\n&#34;)
+            if width is not None:
+                result.append(f&#34;   :width: {width}\n&#34;)
+            if height is not None:
+                result.append(f&#34;   :height: {height}\n&#34;)
+        context[&#34;images&#34;] = []
+
+    def _get_formatted_text_endnotes(self, result, context, rst_mode):
+        # Append the end notes
+        if rst_mode:
+            result.append(&#34;\n\n&#34;)
+        else:
+            result.append(&#34;\n========\n&#34;)
+        for citation, body in context[&#34;endnotes&#34;]:
+            if rst_mode:
+                result.append(f&#34;.. [*] {body}\n&#34;)
+            else:
+                result.append(f&#34;({citation}) {body}\n&#34;)
+
     def get_formatted_text(self, rst_mode=False):
         &#34;&#34;&#34;Return content as text, with some formatting.&#34;&#34;&#34;
         # For the moment, only &#34;type=&#39;text&#39;&#34;
@@ -291,65 +348,20 @@ class Document:
         # Get the text
         result = []
         for element in body.children:
+            # self._get_formatted_text_child(result, element, context, rst_mode)
             if element.tag == &#34;table:table&#34;:
                 result.append(element.get_formatted_text(context))
-            else:
-                result.append(element.get_formatted_text(context))
-                # Insert the notes
-                footnotes = context[&#34;footnotes&#34;]
-                # Separate text from notes
-                if footnotes:
-                    if rst_mode:
-                        result.append(&#34;\n&#34;)
-                    else:
-                        result.append(&#34;----\n&#34;)
-                    for citation, body in footnotes:
-                        if rst_mode:
-                            result.append(&#34;.. [#] %s\n&#34; % body)
-                        else:
-                            result.append(&#34;[%s] %s\n&#34; % (citation, body))
-                    # Append a \n after the notes
-                    result.append(&#34;\n&#34;)
-                    # Reset for the next paragraph
-                    context[&#34;footnotes&#34;] = []
-                # Insert the annotations
-                annotations = context[&#34;annotations&#34;]
-                # With a separation
-                if annotations:
-                    if rst_mode:
-                        result.append(&#34;\n&#34;)
-                    else:
-                        result.append(&#34;----\n&#34;)
-                    for annotation in annotations:
-                        if rst_mode:
-                            result.append(&#34;.. [#] %s\n&#34; % annotation)
-                        else:
-                            result.append(&#34;[*] %s\n&#34; % annotation)
-                    context[&#34;annotations&#34;] = []
-                # Insert the images ref, only in rst mode
-                images = context[&#34;images&#34;]
-                if images:
-                    result.append(&#34;\n&#34;)
-                    for ref, filename, (width, height) in images:
-                        result.append(&#34;.. %s image:: %s\n&#34; % (ref, filename))
-                        if width is not None:
-                            result.append(&#34;   :width: %s\n&#34; % width)
-                        if height is not None:
-                            result.append(&#34;   :height: %s\n&#34; % height)
-                        result.append(&#34;\n&#34;)
-                    context[&#34;images&#34;] = []
-        # Append the end notes
-        endnotes = context[&#34;endnotes&#34;]
-        if endnotes:
-            if rst_mode:
-                result.append(&#34;\n\n&#34;)
-            else:
-                result.append(&#34;\n========\n&#34;)
-            for citation, body in endnotes:
-                if rst_mode:
-                    result.append(&#34;.. [*] %s\n&#34; % body)
-                else:
-                    result.append(&#34;(%s) %s\n&#34; % (citation, body))
+                return
+            result.append(element.get_formatted_text(context))
+            if context[&#34;footnotes&#34;]:
+                self._get_formatted_text_footnotes(result, context, rst_mode)
+            if context[&#34;annotations&#34;]:
+                self._get_formatted_text_annotations(result, context, rst_mode)
+            # Insert the images ref, only in rst mode
+            if context[&#34;images&#34;]:
+                self._get_formatted_text_images(result, context, rst_mode)
+        if context[&#34;endnotes&#34;]:
+            self._get_formatted_text_endnotes(result, context, rst_mode)
         return &#34;&#34;.join(result)
 
     def get_formated_meta(self):
@@ -361,7 +373,7 @@ class Document:
         # Simple values
         def print_info(name, value):
             if value:
-                result.append(&#34;%s: %s&#34; % (name, value))
+                result.append(f&#34;{name}: {value}&#34;)
 
         print_info(&#34;Title&#34;, meta.get_title())
         print_info(&#34;Subject&#34;, meta.get_subject())
@@ -378,15 +390,13 @@ class Document:
         result.append(&#34;Statistic:&#34;)
         statistic = meta.get_statistic()
         for name, value in statistic.items():
-            result.append(
-                &#34;  - %s: %s&#34; % (name[5:].replace(&#34;-&#34;, &#34; &#34;).capitalize(), value)
-            )
+            result.append(f&#34;  - {name[5:].replace(&#39;-&#39;, &#39; &#39;).capitalize()}: {value}&#34;)
 
         # User defined metadata
         result.append(&#34;User defined metadata:&#34;)
         user_metadata = meta.get_user_defined_metadata()
         for name, value in user_metadata.items():
-            result.append(&#34;  - %s: %s&#34; % (name, value))
+            result.append(f&#34;  - {name}: {value}&#34;)
 
         # And the description
         print_info(&#34;Description&#34;, meta.get_description())
@@ -410,7 +420,7 @@ class Document:
         medias = manifest.get_paths()
 
         if isinstance(path_or_file, str):
-            handler = open(path_or_file, &#34;rb&#34;)
+            handler = open(path_or_file, &#34;rb&#34;)  # noqa:SIM115
             name = path_or_file
             close_after = True
         else:
@@ -429,7 +439,7 @@ class Document:
             media_type, _encoding = guess_type(name)
             # Check this name is already used in the document
             if posixpath.join(&#34;Pictures&#34;, name) in medias:
-                root = &#34;%s_%s&#34; % (root, uuid)
+                root = f&#34;{root}_{uuid}&#34;
                 name = root + extension
                 media_type, _encoding = guess_type(name)
 
@@ -561,6 +571,38 @@ class Document:
             max_index = max(max_index, index)
         style.name = f&#34;{AUTOMATIC_PREFIX}{max_index+1}&#34;
 
+    def _insert_style_standard(self, style, name, family, automatic, default):
+        # Common style
+        if name and automatic is False and default is False:
+            part = self.get_part(ODF_STYLES)
+            container = part.get_element(&#34;office:styles&#34;)
+            existing = part.get_style(family, name)
+        # Automatic style
+        elif automatic is True and default is False:
+            part = self.get_part(ODF_CONTENT)
+            container = part.get_element(&#34;office:automatic-styles&#34;)
+            # A name ?
+            if name:
+                if hasattr(style, &#34;name&#34;):
+                    style.name = name
+                existing = part.get_style(family, name)
+            else:
+                self._set_automatic_name(style, family)
+                existing = None
+        # Default style
+        elif automatic is False and default is True:
+            part = self.get_part(ODF_STYLES)
+            container = part.get_element(&#34;office:styles&#34;)
+            # Force default style
+            style.tag = &#34;style:default-style&#34;
+            if name:
+                style.del_attribute(&#34;style:name&#34;)
+            existing = part.get_style(family)
+        # Error
+        else:
+            raise AttributeError(&#34;invalid combination of arguments&#34;)
+        return existing, container
+
     def insert_style(self, style, name=None, automatic=False, default=False):
         &#34;&#34;&#34;Insert the given style object in the document, as required by the
         style family and type.
@@ -577,7 +619,7 @@ class Document:
 
         Automatic and default arguments are mutually exclusive.
 
-        All styles can’t be used as default styles. Default styles are
+        All styles can&#39;t be used as default styles. Default styles are
         allowed for the following families: paragraph, text, section, table,
         table-column, table-row, table-cell, table-page, chart, drawing-page,
         graphic, presentation, control and ruby.
@@ -625,39 +667,9 @@ class Document:
             existing = part.get_style(family, name)
         # Common style
         elif family in FAMILY_ODF_STD or family in {&#34;number&#34;}:
-            # Common style
-            if name and automatic is False and default is False:
-                part = self.get_part(ODF_STYLES)
-                container = part.get_element(&#34;office:styles&#34;)
-                existing = part.get_style(family, name)
-
-            # Automatic style
-            elif automatic is True and default is False:
-                part = self.get_part(ODF_CONTENT)
-                container = part.get_element(&#34;office:automatic-styles&#34;)
-                # A name ?
-                if name:
-                    if hasattr(style, &#34;name&#34;):
-                        style.name = name
-                    existing = part.get_style(family, name)
-                else:
-                    self._set_automatic_name(style, family)
-                    existing = None
-
-            # Default style
-            elif automatic is False and default is True:
-                part = self.get_part(ODF_STYLES)
-                container = part.get_element(&#34;office:styles&#34;)
-
-                # Force default style
-                style.tag = &#34;style:default-style&#34;
-                if name:
-                    style.del_attribute(&#34;style:name&#34;)
-                existing = part.get_style(family)
-
-            # Error
-            else:
-                raise AttributeError(&#34;invalid combination of arguments&#34;)
+            existing, container = self._insert_style_standard(
+                style, name, family, automatic, default
+            )
         elif not family and style.__class__.__name__ == &#34;DrawFillImage&#34;:
             # special case for &#39;draw:fill-image&#39; pseudo style
             part = self.get_part(ODF_STYLES)
@@ -746,7 +758,7 @@ class Document:
             output.append(line)
             if info[&#34;properties&#34;]:
                 for name, value in info[&#34;properties&#34;].items():
-                    output.append(&#34;   - %s: %s&#34; % (name, value))
+                    output.append(f&#34;   - {name}: {value}&#34;)
         output.append(&#34;&#34;)
         return &#34;\n&#34;.join(output)
 
@@ -872,6 +884,10 @@ class Document:
             # empty document
             self.container = Container()
             return
+        if isinstance(target, Path):
+            # let&#39;s assume we open a container on existing file
+            self.container = Container(target)
+            return
         if isinstance(target, Container):
             self.container = target
             return
@@ -880,8 +896,7 @@ class Document:
             self.container = Container.new(target)
             return
         # let&#39;s assume we open a container on existing file
-        self.container = Container()
-        self.container.open(target)
+        self.container = Container(target)
 
     @classmethod
     def new(cls, target=&#34;text&#34;):
@@ -980,6 +995,59 @@ class Document:
             self.__body = content.body
         return self.__body
 
+    def _get_formatted_text_footnotes(self, result, context, rst_mode):
+        # Separate text from notes
+        if rst_mode:
+            result.append(&#34;\n&#34;)
+        else:
+            result.append(&#34;----\n&#34;)
+        for citation, body in context[&#34;footnotes&#34;]:
+            if rst_mode:
+                result.append(f&#34;.. [#] {body}\n&#34;)
+            else:
+                result.append(f&#34;[{citation}] {body}\n&#34;)
+        # Append a \n after the notes
+        result.append(&#34;\n&#34;)
+        # Reset for the next paragraph
+        context[&#34;footnotes&#34;] = []
+
+    def _get_formatted_text_annotations(self, result, context, rst_mode):
+        # Insert the annotations
+        # With a separation
+        if rst_mode:
+            result.append(&#34;\n&#34;)
+        else:
+            result.append(&#34;----\n&#34;)
+        for annotation in context[&#34;annotations&#34;]:
+            if rst_mode:
+                result.append(f&#34;.. [#] {annotation}\n&#34;)
+            else:
+                result.append(f&#34;[*] {annotation}\n&#34;)
+        context[&#34;annotations&#34;] = []
+
+    def _get_formatted_text_images(self, result, context, rst_mode):
+        # Insert the images ref, only in rst mode
+        result.append(&#34;\n&#34;)
+        for ref, filename, (width, height) in context[&#34;images&#34;]:
+            result.append(f&#34;.. {ref} image:: {filename}\n&#34;)
+            if width is not None:
+                result.append(f&#34;   :width: {width}\n&#34;)
+            if height is not None:
+                result.append(f&#34;   :height: {height}\n&#34;)
+        context[&#34;images&#34;] = []
+
+    def _get_formatted_text_endnotes(self, result, context, rst_mode):
+        # Append the end notes
+        if rst_mode:
+            result.append(&#34;\n\n&#34;)
+        else:
+            result.append(&#34;\n========\n&#34;)
+        for citation, body in context[&#34;endnotes&#34;]:
+            if rst_mode:
+                result.append(f&#34;.. [*] {body}\n&#34;)
+            else:
+                result.append(f&#34;({citation}) {body}\n&#34;)
+
     def get_formatted_text(self, rst_mode=False):
         &#34;&#34;&#34;Return content as text, with some formatting.&#34;&#34;&#34;
         # For the moment, only &#34;type=&#39;text&#39;&#34;
@@ -1008,65 +1076,20 @@ class Document:
         # Get the text
         result = []
         for element in body.children:
+            # self._get_formatted_text_child(result, element, context, rst_mode)
             if element.tag == &#34;table:table&#34;:
                 result.append(element.get_formatted_text(context))
-            else:
-                result.append(element.get_formatted_text(context))
-                # Insert the notes
-                footnotes = context[&#34;footnotes&#34;]
-                # Separate text from notes
-                if footnotes:
-                    if rst_mode:
-                        result.append(&#34;\n&#34;)
-                    else:
-                        result.append(&#34;----\n&#34;)
-                    for citation, body in footnotes:
-                        if rst_mode:
-                            result.append(&#34;.. [#] %s\n&#34; % body)
-                        else:
-                            result.append(&#34;[%s] %s\n&#34; % (citation, body))
-                    # Append a \n after the notes
-                    result.append(&#34;\n&#34;)
-                    # Reset for the next paragraph
-                    context[&#34;footnotes&#34;] = []
-                # Insert the annotations
-                annotations = context[&#34;annotations&#34;]
-                # With a separation
-                if annotations:
-                    if rst_mode:
-                        result.append(&#34;\n&#34;)
-                    else:
-                        result.append(&#34;----\n&#34;)
-                    for annotation in annotations:
-                        if rst_mode:
-                            result.append(&#34;.. [#] %s\n&#34; % annotation)
-                        else:
-                            result.append(&#34;[*] %s\n&#34; % annotation)
-                    context[&#34;annotations&#34;] = []
-                # Insert the images ref, only in rst mode
-                images = context[&#34;images&#34;]
-                if images:
-                    result.append(&#34;\n&#34;)
-                    for ref, filename, (width, height) in images:
-                        result.append(&#34;.. %s image:: %s\n&#34; % (ref, filename))
-                        if width is not None:
-                            result.append(&#34;   :width: %s\n&#34; % width)
-                        if height is not None:
-                            result.append(&#34;   :height: %s\n&#34; % height)
-                        result.append(&#34;\n&#34;)
-                    context[&#34;images&#34;] = []
-        # Append the end notes
-        endnotes = context[&#34;endnotes&#34;]
-        if endnotes:
-            if rst_mode:
-                result.append(&#34;\n\n&#34;)
-            else:
-                result.append(&#34;\n========\n&#34;)
-            for citation, body in endnotes:
-                if rst_mode:
-                    result.append(&#34;.. [*] %s\n&#34; % body)
-                else:
-                    result.append(&#34;(%s) %s\n&#34; % (citation, body))
+                return
+            result.append(element.get_formatted_text(context))
+            if context[&#34;footnotes&#34;]:
+                self._get_formatted_text_footnotes(result, context, rst_mode)
+            if context[&#34;annotations&#34;]:
+                self._get_formatted_text_annotations(result, context, rst_mode)
+            # Insert the images ref, only in rst mode
+            if context[&#34;images&#34;]:
+                self._get_formatted_text_images(result, context, rst_mode)
+        if context[&#34;endnotes&#34;]:
+            self._get_formatted_text_endnotes(result, context, rst_mode)
         return &#34;&#34;.join(result)
 
     def get_formated_meta(self):
@@ -1078,7 +1101,7 @@ class Document:
         # Simple values
         def print_info(name, value):
             if value:
-                result.append(&#34;%s: %s&#34; % (name, value))
+                result.append(f&#34;{name}: {value}&#34;)
 
         print_info(&#34;Title&#34;, meta.get_title())
         print_info(&#34;Subject&#34;, meta.get_subject())
@@ -1095,15 +1118,13 @@ class Document:
         result.append(&#34;Statistic:&#34;)
         statistic = meta.get_statistic()
         for name, value in statistic.items():
-            result.append(
-                &#34;  - %s: %s&#34; % (name[5:].replace(&#34;-&#34;, &#34; &#34;).capitalize(), value)
-            )
+            result.append(f&#34;  - {name[5:].replace(&#39;-&#39;, &#39; &#39;).capitalize()}: {value}&#34;)
 
         # User defined metadata
         result.append(&#34;User defined metadata:&#34;)
         user_metadata = meta.get_user_defined_metadata()
         for name, value in user_metadata.items():
-            result.append(&#34;  - %s: %s&#34; % (name, value))
+            result.append(f&#34;  - {name}: {value}&#34;)
 
         # And the description
         print_info(&#34;Description&#34;, meta.get_description())
@@ -1127,7 +1148,7 @@ class Document:
         medias = manifest.get_paths()
 
         if isinstance(path_or_file, str):
-            handler = open(path_or_file, &#34;rb&#34;)
+            handler = open(path_or_file, &#34;rb&#34;)  # noqa:SIM115
             name = path_or_file
             close_after = True
         else:
@@ -1146,7 +1167,7 @@ class Document:
             media_type, _encoding = guess_type(name)
             # Check this name is already used in the document
             if posixpath.join(&#34;Pictures&#34;, name) in medias:
-                root = &#34;%s_%s&#34; % (root, uuid)
+                root = f&#34;{root}_{uuid}&#34;
                 name = root + extension
                 media_type, _encoding = guess_type(name)
 
@@ -1278,6 +1299,38 @@ class Document:
             max_index = max(max_index, index)
         style.name = f&#34;{AUTOMATIC_PREFIX}{max_index+1}&#34;
 
+    def _insert_style_standard(self, style, name, family, automatic, default):
+        # Common style
+        if name and automatic is False and default is False:
+            part = self.get_part(ODF_STYLES)
+            container = part.get_element(&#34;office:styles&#34;)
+            existing = part.get_style(family, name)
+        # Automatic style
+        elif automatic is True and default is False:
+            part = self.get_part(ODF_CONTENT)
+            container = part.get_element(&#34;office:automatic-styles&#34;)
+            # A name ?
+            if name:
+                if hasattr(style, &#34;name&#34;):
+                    style.name = name
+                existing = part.get_style(family, name)
+            else:
+                self._set_automatic_name(style, family)
+                existing = None
+        # Default style
+        elif automatic is False and default is True:
+            part = self.get_part(ODF_STYLES)
+            container = part.get_element(&#34;office:styles&#34;)
+            # Force default style
+            style.tag = &#34;style:default-style&#34;
+            if name:
+                style.del_attribute(&#34;style:name&#34;)
+            existing = part.get_style(family)
+        # Error
+        else:
+            raise AttributeError(&#34;invalid combination of arguments&#34;)
+        return existing, container
+
     def insert_style(self, style, name=None, automatic=False, default=False):
         &#34;&#34;&#34;Insert the given style object in the document, as required by the
         style family and type.
@@ -1294,7 +1347,7 @@ class Document:
 
         Automatic and default arguments are mutually exclusive.
 
-        All styles can’t be used as default styles. Default styles are
+        All styles can&#39;t be used as default styles. Default styles are
         allowed for the following families: paragraph, text, section, table,
         table-column, table-row, table-cell, table-page, chart, drawing-page,
         graphic, presentation, control and ruby.
@@ -1342,39 +1395,9 @@ class Document:
             existing = part.get_style(family, name)
         # Common style
         elif family in FAMILY_ODF_STD or family in {&#34;number&#34;}:
-            # Common style
-            if name and automatic is False and default is False:
-                part = self.get_part(ODF_STYLES)
-                container = part.get_element(&#34;office:styles&#34;)
-                existing = part.get_style(family, name)
-
-            # Automatic style
-            elif automatic is True and default is False:
-                part = self.get_part(ODF_CONTENT)
-                container = part.get_element(&#34;office:automatic-styles&#34;)
-                # A name ?
-                if name:
-                    if hasattr(style, &#34;name&#34;):
-                        style.name = name
-                    existing = part.get_style(family, name)
-                else:
-                    self._set_automatic_name(style, family)
-                    existing = None
-
-            # Default style
-            elif automatic is False and default is True:
-                part = self.get_part(ODF_STYLES)
-                container = part.get_element(&#34;office:styles&#34;)
-
-                # Force default style
-                style.tag = &#34;style:default-style&#34;
-                if name:
-                    style.del_attribute(&#34;style:name&#34;)
-                existing = part.get_style(family)
-
-            # Error
-            else:
-                raise AttributeError(&#34;invalid combination of arguments&#34;)
+            existing, container = self._insert_style_standard(
+                style, name, family, automatic, default
+            )
         elif not family and style.__class__.__name__ == &#34;DrawFillImage&#34;:
             # special case for &#39;draw:fill-image&#39; pseudo style
             part = self.get_part(ODF_STYLES)
@@ -1463,7 +1486,7 @@ class Document:
             output.append(line)
             if info[&#34;properties&#34;]:
                 for name, value in info[&#34;properties&#34;].items():
-                    output.append(&#34;   - %s: %s&#34; % (name, value))
+                    output.append(f&#34;   - {name}: {value}&#34;)
         output.append(&#34;&#34;)
         return &#34;\n&#34;.join(output)
 
@@ -1669,7 +1692,7 @@ Return the full path to reference it in the content.</p>
     medias = manifest.get_paths()
 
     if isinstance(path_or_file, str):
-        handler = open(path_or_file, &#34;rb&#34;)
+        handler = open(path_or_file, &#34;rb&#34;)  # noqa:SIM115
         name = path_or_file
         close_after = True
     else:
@@ -1688,7 +1711,7 @@ Return the full path to reference it in the content.</p>
         media_type, _encoding = guess_type(name)
         # Check this name is already used in the document
         if posixpath.join(&#34;Pictures&#34;, name) in medias:
-            root = &#34;%s_%s&#34; % (root, uuid)
+            root = f&#34;{root}_{uuid}&#34;
             name = root + extension
             media_type, _encoding = guess_type(name)
 
@@ -1787,7 +1810,7 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
     # Simple values
     def print_info(name, value):
         if value:
-            result.append(&#34;%s: %s&#34; % (name, value))
+            result.append(f&#34;{name}: {value}&#34;)
 
     print_info(&#34;Title&#34;, meta.get_title())
     print_info(&#34;Subject&#34;, meta.get_subject())
@@ -1804,15 +1827,13 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
     result.append(&#34;Statistic:&#34;)
     statistic = meta.get_statistic()
     for name, value in statistic.items():
-        result.append(
-            &#34;  - %s: %s&#34; % (name[5:].replace(&#34;-&#34;, &#34; &#34;).capitalize(), value)
-        )
+        result.append(f&#34;  - {name[5:].replace(&#39;-&#39;, &#39; &#39;).capitalize()}: {value}&#34;)
 
     # User defined metadata
     result.append(&#34;User defined metadata:&#34;)
     user_metadata = meta.get_user_defined_metadata()
     for name, value in user_metadata.items():
-        result.append(&#34;  - %s: %s&#34; % (name, value))
+        result.append(f&#34;  - {name}: {value}&#34;)
 
     # And the description
     print_info(&#34;Description&#34;, meta.get_description())
@@ -1857,65 +1878,20 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
     # Get the text
     result = []
     for element in body.children:
+        # self._get_formatted_text_child(result, element, context, rst_mode)
         if element.tag == &#34;table:table&#34;:
             result.append(element.get_formatted_text(context))
-        else:
-            result.append(element.get_formatted_text(context))
-            # Insert the notes
-            footnotes = context[&#34;footnotes&#34;]
-            # Separate text from notes
-            if footnotes:
-                if rst_mode:
-                    result.append(&#34;\n&#34;)
-                else:
-                    result.append(&#34;----\n&#34;)
-                for citation, body in footnotes:
-                    if rst_mode:
-                        result.append(&#34;.. [#] %s\n&#34; % body)
-                    else:
-                        result.append(&#34;[%s] %s\n&#34; % (citation, body))
-                # Append a \n after the notes
-                result.append(&#34;\n&#34;)
-                # Reset for the next paragraph
-                context[&#34;footnotes&#34;] = []
-            # Insert the annotations
-            annotations = context[&#34;annotations&#34;]
-            # With a separation
-            if annotations:
-                if rst_mode:
-                    result.append(&#34;\n&#34;)
-                else:
-                    result.append(&#34;----\n&#34;)
-                for annotation in annotations:
-                    if rst_mode:
-                        result.append(&#34;.. [#] %s\n&#34; % annotation)
-                    else:
-                        result.append(&#34;[*] %s\n&#34; % annotation)
-                context[&#34;annotations&#34;] = []
-            # Insert the images ref, only in rst mode
-            images = context[&#34;images&#34;]
-            if images:
-                result.append(&#34;\n&#34;)
-                for ref, filename, (width, height) in images:
-                    result.append(&#34;.. %s image:: %s\n&#34; % (ref, filename))
-                    if width is not None:
-                        result.append(&#34;   :width: %s\n&#34; % width)
-                    if height is not None:
-                        result.append(&#34;   :height: %s\n&#34; % height)
-                    result.append(&#34;\n&#34;)
-                context[&#34;images&#34;] = []
-    # Append the end notes
-    endnotes = context[&#34;endnotes&#34;]
-    if endnotes:
-        if rst_mode:
-            result.append(&#34;\n\n&#34;)
-        else:
-            result.append(&#34;\n========\n&#34;)
-        for citation, body in endnotes:
-            if rst_mode:
-                result.append(&#34;.. [*] %s\n&#34; % body)
-            else:
-                result.append(&#34;(%s) %s\n&#34; % (citation, body))
+            return
+        result.append(element.get_formatted_text(context))
+        if context[&#34;footnotes&#34;]:
+            self._get_formatted_text_footnotes(result, context, rst_mode)
+        if context[&#34;annotations&#34;]:
+            self._get_formatted_text_annotations(result, context, rst_mode)
+        # Insert the images ref, only in rst mode
+        if context[&#34;images&#34;]:
+            self._get_formatted_text_images(result, context, rst_mode)
+    if context[&#34;endnotes&#34;]:
+        self._get_formatted_text_endnotes(result, context, rst_mode)
     return &#34;&#34;.join(result)</code></pre>
 </details>
 </dd>
@@ -2123,7 +2099,7 @@ style.</p>
 would replace any existing default style of the same family. Any name
 or display name would be ignored.</p>
 <p>Automatic and default arguments are mutually exclusive.</p>
-<p>All styles can’t be used as default styles. Default styles are
+<p>All styles can't be used as default styles. Default styles are
 allowed for the following families: paragraph, text, section, table,
 table-column, table-row, table-cell, table-page, chart, drawing-page,
 graphic, presentation, control and ruby.</p>
@@ -2153,7 +2129,7 @@ graphic, presentation, control and ruby.</p>
 
     Automatic and default arguments are mutually exclusive.
 
-    All styles can’t be used as default styles. Default styles are
+    All styles can&#39;t be used as default styles. Default styles are
     allowed for the following families: paragraph, text, section, table,
     table-column, table-row, table-cell, table-page, chart, drawing-page,
     graphic, presentation, control and ruby.
@@ -2201,39 +2177,9 @@ graphic, presentation, control and ruby.</p>
         existing = part.get_style(family, name)
     # Common style
     elif family in FAMILY_ODF_STD or family in {&#34;number&#34;}:
-        # Common style
-        if name and automatic is False and default is False:
-            part = self.get_part(ODF_STYLES)
-            container = part.get_element(&#34;office:styles&#34;)
-            existing = part.get_style(family, name)
-
-        # Automatic style
-        elif automatic is True and default is False:
-            part = self.get_part(ODF_CONTENT)
-            container = part.get_element(&#34;office:automatic-styles&#34;)
-            # A name ?
-            if name:
-                if hasattr(style, &#34;name&#34;):
-                    style.name = name
-                existing = part.get_style(family, name)
-            else:
-                self._set_automatic_name(style, family)
-                existing = None
-
-        # Default style
-        elif automatic is False and default is True:
-            part = self.get_part(ODF_STYLES)
-            container = part.get_element(&#34;office:styles&#34;)
-
-            # Force default style
-            style.tag = &#34;style:default-style&#34;
-            if name:
-                style.del_attribute(&#34;style:name&#34;)
-            existing = part.get_style(family)
-
-        # Error
-        else:
-            raise AttributeError(&#34;invalid combination of arguments&#34;)
+        existing, container = self._insert_style_standard(
+            style, name, family, automatic, default
+        )
     elif not family and style.__class__.__name__ == &#34;DrawFillImage&#34;:
         # special case for &#39;draw:fill-image&#39; pseudo style
         part = self.get_part(ODF_STYLES)
@@ -2457,7 +2403,7 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
         output.append(line)
         if info[&#34;properties&#34;]:
             for name, value in info[&#34;properties&#34;].items():
-                output.append(&#34;   - %s: %s&#34; % (name, value))
+                output.append(f&#34;   - {name}: {value}&#34;)
     output.append(&#34;&#34;)
     return &#34;\n&#34;.join(output)</code></pre>
 </details>

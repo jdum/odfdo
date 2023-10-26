@@ -29,7 +29,7 @@ Integration Language)</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -102,9 +102,8 @@ class AnimSeq(Element):
 
     def __init__(self, presentation_node_type=None, **kwargs):
         super().__init__(**kwargs)
-        if self._do_init:
-            if presentation_node_type:
-                self.presentation_node_type = presentation_node_type
+        if self._do_init and presentation_node_type:
+            self.presentation_node_type = presentation_node_type
 
 
 AnimSeq._define_attribut_property()
@@ -146,7 +145,7 @@ class AnimTransFilter(Element):
         smil_direction=None,
         smil_fadeColor=None,
         smil_mode=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         if self._do_init:
@@ -412,9 +411,8 @@ and interactive-sequence</p></div>
 
     def __init__(self, presentation_node_type=None, **kwargs):
         super().__init__(**kwargs)
-        if self._do_init:
-            if presentation_node_type:
-                self.presentation_node_type = presentation_node_type</code></pre>
+        if self._do_init and presentation_node_type:
+            self.presentation_node_type = presentation_node_type</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -610,7 +608,7 @@ to get a list of all types/subtypes</p>
         smil_direction=None,
         smil_fadeColor=None,
         smil_mode=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         if self._do_init:

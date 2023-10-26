@@ -27,7 +27,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -55,18 +55,25 @@
 import re
 from functools import wraps  # for keeping trace of docstring with decorators
 
-from .bookmark import Bookmark, BookmarkStart, BookmarkEnd
-from .element import FIRST_CHILD, NEXT_SIBLING, register_element_class, Element
-from .paragraph_base import ParagraphBase, Spacer, Tab, LineBreak
-
-from .note import Note, Annotation, AnnotationEnd
-from .reference import Reference, ReferenceMark, ReferenceMarkStart, ReferenceMarkEnd
+from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
+from .element import FIRST_CHILD, NEXT_SIBLING, Element, register_element_class
 from .link import Link
+from .note import Annotation, AnnotationEnd, Note
+from .paragraph_base import LineBreak, ParagraphBase, Spacer, Tab
+from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
+
+__all__ = [
+    &#34;LineBreak&#34;,
+    &#34;Paragraph&#34;,
+    &#34;Spacer&#34;,
+    &#34;Span&#34;,
+    &#34;Tab&#34;,
+]
 
 
-def _by_regex_offset(method):
+def _by_regex_offset(method):  # noqa: C901
     @wraps(method)
-    def wrapper(element, *args, **kwargs):
+    def wrapper(element, *args, **kwargs):  # noqa: C901
         &#34;&#34;&#34;Insert the result of method(element, ...) at the place matching the
         regex OR the positional arguments offset and length.
 
@@ -213,7 +220,7 @@ class Paragraph(ParagraphBase):
         else:
             self.insert(note_element, FIRST_CHILD)
 
-    def insert_annotation(
+    def insert_annotation(  # noqa: C901
         self,
         annotation_element=None,
         before=None,
@@ -360,7 +367,7 @@ class Paragraph(ParagraphBase):
         if annotation_element is None:
             raise ValueError
         if not isinstance(annotation_element, Annotation):
-            raise ValueError(&#34;Not a &lt;office:annotation&gt; Annotation&#34;)
+            raise TypeError(&#34;Not a &lt;office:annotation&gt; Annotation&#34;)
 
         # remove existing end tag
         name = annotation_element.name
@@ -490,7 +497,7 @@ class Paragraph(ParagraphBase):
             position -- int
         &#34;&#34;&#34;
         if not isinstance(reference_mark, (ReferenceMark, ReferenceMarkStart)):
-            raise ValueError(&#34;Not a ReferenceMark or ReferenceMarkStart&#34;)
+            raise TypeError(&#34;Not a ReferenceMark or ReferenceMarkStart&#34;)
         name = reference_mark.name
         if isinstance(reference_mark, ReferenceMark):
             # change it to a range reference:
@@ -798,6 +805,147 @@ register_element_class(Paragraph)</code></pre>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="odfdo.paragraph.LineBreak"><code class="flex name class">
+<span>class <span class="ident">LineBreak</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This element represents a line break "text:line-break"</p>
+<p>Return: LineBreak</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class LineBreak(Element):
+    &#34;&#34;&#34;This element represents a line break &#34;text:line-break&#34;
+
+    Return: LineBreak
+    &#34;&#34;&#34;
+
+    _tag = &#34;text:line-break&#34;
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></b></code>:
+<ul class="hlist">
+<li><code><a title="odfdo.element.Element.append" href="element.html#odfdo.element.Element.append">append</a></code></li>
+<li><code><a title="odfdo.element.Element.append_named_range" href="element.html#odfdo.element.Element.append_named_range">append_named_range</a></code></li>
+<li><code><a title="odfdo.element.Element.clear" href="element.html#odfdo.element.Element.clear">clear</a></code></li>
+<li><code><a title="odfdo.element.Element.dc_creator" href="element.html#odfdo.element.Element.dc_creator">dc_creator</a></code></li>
+<li><code><a title="odfdo.element.Element.dc_date" href="element.html#odfdo.element.Element.dc_date">dc_date</a></code></li>
+<li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
+<li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
+<li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
+<li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_ends" href="element.html#odfdo.element.Element.get_bookmark_ends">get_bookmark_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_start" href="element.html#odfdo.element.Element.get_bookmark_start">get_bookmark_start</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_starts" href="element.html#odfdo.element.Element.get_bookmark_starts">get_bookmark_starts</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmarks" href="element.html#odfdo.element.Element.get_bookmarks">get_bookmarks</a></code></li>
+<li><code><a title="odfdo.element.Element.get_changes_ids" href="element.html#odfdo.element.Element.get_changes_ids">get_changes_ids</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_connector" href="element.html#odfdo.element.Element.get_draw_connector">get_draw_connector</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_connectors" href="element.html#odfdo.element.Element.get_draw_connectors">get_draw_connectors</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_ellipse" href="element.html#odfdo.element.Element.get_draw_ellipse">get_draw_ellipse</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_ellipses" href="element.html#odfdo.element.Element.get_draw_ellipses">get_draw_ellipses</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_line" href="element.html#odfdo.element.Element.get_draw_line">get_draw_line</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_lines" href="element.html#odfdo.element.Element.get_draw_lines">get_draw_lines</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_page" href="element.html#odfdo.element.Element.get_draw_page">get_draw_page</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_pages" href="element.html#odfdo.element.Element.get_draw_pages">get_draw_pages</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_rectangle" href="element.html#odfdo.element.Element.get_draw_rectangle">get_draw_rectangle</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_rectangles" href="element.html#odfdo.element.Element.get_draw_rectangles">get_draw_rectangles</a></code></li>
+<li><code><a title="odfdo.element.Element.get_formatted_text" href="element.html#odfdo.element.Element.get_formatted_text">get_formatted_text</a></code></li>
+<li><code><a title="odfdo.element.Element.get_frame" href="element.html#odfdo.element.Element.get_frame">get_frame</a></code></li>
+<li><code><a title="odfdo.element.Element.get_frames" href="element.html#odfdo.element.Element.get_frames">get_frames</a></code></li>
+<li><code><a title="odfdo.element.Element.get_header" href="element.html#odfdo.element.Element.get_header">get_header</a></code></li>
+<li><code><a title="odfdo.element.Element.get_headers" href="element.html#odfdo.element.Element.get_headers">get_headers</a></code></li>
+<li><code><a title="odfdo.element.Element.get_image" href="element.html#odfdo.element.Element.get_image">get_image</a></code></li>
+<li><code><a title="odfdo.element.Element.get_images" href="element.html#odfdo.element.Element.get_images">get_images</a></code></li>
+<li><code><a title="odfdo.element.Element.get_link" href="element.html#odfdo.element.Element.get_link">get_link</a></code></li>
+<li><code><a title="odfdo.element.Element.get_links" href="element.html#odfdo.element.Element.get_links">get_links</a></code></li>
+<li><code><a title="odfdo.element.Element.get_list" href="element.html#odfdo.element.Element.get_list">get_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_lists" href="element.html#odfdo.element.Element.get_lists">get_lists</a></code></li>
+<li><code><a title="odfdo.element.Element.get_named_range" href="element.html#odfdo.element.Element.get_named_range">get_named_range</a></code></li>
+<li><code><a title="odfdo.element.Element.get_named_ranges" href="element.html#odfdo.element.Element.get_named_ranges">get_named_ranges</a></code></li>
+<li><code><a title="odfdo.element.Element.get_note" href="element.html#odfdo.element.Element.get_note">get_note</a></code></li>
+<li><code><a title="odfdo.element.Element.get_notes" href="element.html#odfdo.element.Element.get_notes">get_notes</a></code></li>
+<li><code><a title="odfdo.element.Element.get_office_names" href="element.html#odfdo.element.Element.get_office_names">get_office_names</a></code></li>
+<li><code><a title="odfdo.element.Element.get_orphan_draw_connectors" href="element.html#odfdo.element.Element.get_orphan_draw_connectors">get_orphan_draw_connectors</a></code></li>
+<li><code><a title="odfdo.element.Element.get_paragraph" href="element.html#odfdo.element.Element.get_paragraph">get_paragraph</a></code></li>
+<li><code><a title="odfdo.element.Element.get_paragraphs" href="element.html#odfdo.element.Element.get_paragraphs">get_paragraphs</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark" href="element.html#odfdo.element.Element.get_reference_mark">get_reference_mark</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_end" href="element.html#odfdo.element.Element.get_reference_mark_end">get_reference_mark_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_ends" href="element.html#odfdo.element.Element.get_reference_mark_ends">get_reference_mark_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_single" href="element.html#odfdo.element.Element.get_reference_mark_single">get_reference_mark_single</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_start" href="element.html#odfdo.element.Element.get_reference_mark_start">get_reference_mark_start</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_starts" href="element.html#odfdo.element.Element.get_reference_mark_starts">get_reference_mark_starts</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_marks" href="element.html#odfdo.element.Element.get_reference_marks">get_reference_marks</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_marks_single" href="element.html#odfdo.element.Element.get_reference_marks_single">get_reference_marks_single</a></code></li>
+<li><code><a title="odfdo.element.Element.get_references" href="element.html#odfdo.element.Element.get_references">get_references</a></code></li>
+<li><code><a title="odfdo.element.Element.get_section" href="element.html#odfdo.element.Element.get_section">get_section</a></code></li>
+<li><code><a title="odfdo.element.Element.get_sections" href="element.html#odfdo.element.Element.get_sections">get_sections</a></code></li>
+<li><code><a title="odfdo.element.Element.get_span" href="element.html#odfdo.element.Element.get_span">get_span</a></code></li>
+<li><code><a title="odfdo.element.Element.get_spans" href="element.html#odfdo.element.Element.get_spans">get_spans</a></code></li>
+<li><code><a title="odfdo.element.Element.get_style" href="element.html#odfdo.element.Element.get_style">get_style</a></code></li>
+<li><code><a title="odfdo.element.Element.get_styled_elements" href="element.html#odfdo.element.Element.get_styled_elements">get_styled_elements</a></code></li>
+<li><code><a title="odfdo.element.Element.get_table" href="element.html#odfdo.element.Element.get_table">get_table</a></code></li>
+<li><code><a title="odfdo.element.Element.get_tables" href="element.html#odfdo.element.Element.get_tables">get_tables</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change" href="element.html#odfdo.element.Element.get_text_change">get_text_change</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_deletion" href="element.html#odfdo.element.Element.get_text_change_deletion">get_text_change_deletion</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_deletions" href="element.html#odfdo.element.Element.get_text_change_deletions">get_text_change_deletions</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_end" href="element.html#odfdo.element.Element.get_text_change_end">get_text_change_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_ends" href="element.html#odfdo.element.Element.get_text_change_ends">get_text_change_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_start" href="element.html#odfdo.element.Element.get_text_change_start">get_text_change_start</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_starts" href="element.html#odfdo.element.Element.get_text_change_starts">get_text_change_starts</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_changes" href="element.html#odfdo.element.Element.get_text_changes">get_text_changes</a></code></li>
+<li><code><a title="odfdo.element.Element.get_toc" href="element.html#odfdo.element.Element.get_toc">get_toc</a></code></li>
+<li><code><a title="odfdo.element.Element.get_tocs" href="element.html#odfdo.element.Element.get_tocs">get_tocs</a></code></li>
+<li><code><a title="odfdo.element.Element.get_tracked_changes" href="element.html#odfdo.element.Element.get_tracked_changes">get_tracked_changes</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_defined" href="element.html#odfdo.element.Element.get_user_defined">get_user_defined</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_defined_list" href="element.html#odfdo.element.Element.get_user_defined_list">get_user_defined_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_defined_value" href="element.html#odfdo.element.Element.get_user_defined_value">get_user_defined_value</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_decl" href="element.html#odfdo.element.Element.get_user_field_decl">get_user_field_decl</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_decl_list" href="element.html#odfdo.element.Element.get_user_field_decl_list">get_user_field_decl_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_decls" href="element.html#odfdo.element.Element.get_user_field_decls">get_user_field_decls</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_value" href="element.html#odfdo.element.Element.get_user_field_value">get_user_field_value</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_decl" href="element.html#odfdo.element.Element.get_variable_decl">get_variable_decl</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_decl_list" href="element.html#odfdo.element.Element.get_variable_decl_list">get_variable_decl_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_decls" href="element.html#odfdo.element.Element.get_variable_decls">get_variable_decls</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_set" href="element.html#odfdo.element.Element.get_variable_set">get_variable_set</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_set_value" href="element.html#odfdo.element.Element.get_variable_set_value">get_variable_set_value</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_sets" href="element.html#odfdo.element.Element.get_variable_sets">get_variable_sets</a></code></li>
+<li><code><a title="odfdo.element.Element.index" href="element.html#odfdo.element.Element.index">index</a></code></li>
+<li><code><a title="odfdo.element.Element.insert" href="element.html#odfdo.element.Element.insert">insert</a></code></li>
+<li><code><a title="odfdo.element.Element.is_empty" href="element.html#odfdo.element.Element.is_empty">is_empty</a></code></li>
+<li><code><a title="odfdo.element.Element.match" href="element.html#odfdo.element.Element.match">match</a></code></li>
+<li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
+<li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
+<li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
+<li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
+<li><code><a title="odfdo.element.Element.tag" href="element.html#odfdo.element.Element.tag">tag</a></code></li>
+<li><code><a title="odfdo.element.Element.tail" href="element.html#odfdo.element.Element.tail">tail</a></code></li>
+<li><code><a title="odfdo.element.Element.text" href="element.html#odfdo.element.Element.text">text</a></code></li>
+<li><code><a title="odfdo.element.Element.text_content" href="element.html#odfdo.element.Element.text_content">text_content</a></code></li>
+<li><code><a title="odfdo.element.Element.xpath" href="element.html#odfdo.element.Element.xpath">xpath</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
 <dt id="odfdo.paragraph.Paragraph"><code class="flex name class">
 <span>class <span class="ident">Paragraph</span></span>
 <span>(</span><span>text_or_element=None, style=None, **kwargs)</span>
@@ -876,7 +1024,7 @@ given text.</p>
         else:
             self.insert(note_element, FIRST_CHILD)
 
-    def insert_annotation(
+    def insert_annotation(  # noqa: C901
         self,
         annotation_element=None,
         before=None,
@@ -1023,7 +1171,7 @@ given text.</p>
         if annotation_element is None:
             raise ValueError
         if not isinstance(annotation_element, Annotation):
-            raise ValueError(&#34;Not a &lt;office:annotation&gt; Annotation&#34;)
+            raise TypeError(&#34;Not a &lt;office:annotation&gt; Annotation&#34;)
 
         # remove existing end tag
         name = annotation_element.name
@@ -1153,7 +1301,7 @@ given text.</p>
             position -- int
         &#34;&#34;&#34;
         if not isinstance(reference_mark, (ReferenceMark, ReferenceMarkStart)):
-            raise ValueError(&#34;Not a ReferenceMark or ReferenceMarkStart&#34;)
+            raise TypeError(&#34;Not a ReferenceMark or ReferenceMarkStart&#34;)
         name = reference_mark.name
         if isinstance(reference_mark, ReferenceMark):
             # change it to a range reference:
@@ -1460,7 +1608,7 @@ the annotation is created from the body, creator and optional date
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_annotation(
+<pre><code class="python">def insert_annotation(  # noqa: C901
     self,
     annotation_element=None,
     before=None,
@@ -1626,7 +1774,7 @@ positions, the position value is the index of matching place to use.</p>
     if annotation_element is None:
         raise ValueError
     if not isinstance(annotation_element, Annotation):
-        raise ValueError(&#34;Not a &lt;office:annotation&gt; Annotation&#34;)
+        raise TypeError(&#34;Not a &lt;office:annotation&gt; Annotation&#34;)
 
     # remove existing end tag
     name = annotation_element.name
@@ -2213,7 +2361,7 @@ positions, the position value is the index of matching place to use.</p>
         position -- int
     &#34;&#34;&#34;
     if not isinstance(reference_mark, (ReferenceMark, ReferenceMarkStart)):
-        raise ValueError(&#34;Not a ReferenceMark or ReferenceMarkStart&#34;)
+        raise TypeError(&#34;Not a ReferenceMark or ReferenceMarkStart&#34;)
     name = reference_mark.name
     if isinstance(reference_mark, ReferenceMark):
         # change it to a range reference:
@@ -2388,6 +2536,186 @@ def set_span(self, match, tail, style, regex=None, offset=None, length=0):
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.text" href="element.html#odfdo.element.Element.text">text</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.text_content" href="element.html#odfdo.element.Element.text_content">text_content</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.xpath" href="element.html#odfdo.element.Element.xpath">xpath</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="odfdo.paragraph.Spacer"><code class="flex name class">
+<span>class <span class="ident">Spacer</span></span>
+<span>(</span><span>number=1, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This element shall be used to represent the second and all following “ “
+(U+0020, SPACE) characters in a sequence of “ “ (U+0020, SPACE) characters.
+Note: It is not an error if the character preceding the element is not a
+white space character, but it is good practice to use this element only for
+the second and all following SPACE characters in a sequence.</p>
+<h2 id="arguments">Arguments</h2>
+<p>number &ndash; int</p>
+<p>Return: Space</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Spacer(Element):
+    &#34;&#34;&#34;This element shall be used to represent the second and all following “ “
+    (U+0020, SPACE) characters in a sequence of “ “ (U+0020, SPACE) characters.
+    Note: It is not an error if the character preceding the element is not a
+    white space character, but it is good practice to use this element only for
+    the second and all following SPACE characters in a sequence.
+    &#34;&#34;&#34;
+
+    _tag = &#34;text:s&#34;
+    _properties = ((&#34;number&#34;, &#34;text:c&#34;),)
+
+    def __init__(self, number=1, **kwargs):
+        &#34;&#34;&#34;
+        Arguments:
+
+            number -- int
+
+        Return: Space
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+        if self._do_init:
+            self.number = str(number)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="odfdo.paragraph.Spacer.number"><code class="name">var <span class="ident">number</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute text:c</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#34;true&#34;, &#34;false&#34;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></b></code>:
+<ul class="hlist">
+<li><code><a title="odfdo.element.Element.append" href="element.html#odfdo.element.Element.append">append</a></code></li>
+<li><code><a title="odfdo.element.Element.append_named_range" href="element.html#odfdo.element.Element.append_named_range">append_named_range</a></code></li>
+<li><code><a title="odfdo.element.Element.clear" href="element.html#odfdo.element.Element.clear">clear</a></code></li>
+<li><code><a title="odfdo.element.Element.dc_creator" href="element.html#odfdo.element.Element.dc_creator">dc_creator</a></code></li>
+<li><code><a title="odfdo.element.Element.dc_date" href="element.html#odfdo.element.Element.dc_date">dc_date</a></code></li>
+<li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
+<li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
+<li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
+<li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_ends" href="element.html#odfdo.element.Element.get_bookmark_ends">get_bookmark_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_start" href="element.html#odfdo.element.Element.get_bookmark_start">get_bookmark_start</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_starts" href="element.html#odfdo.element.Element.get_bookmark_starts">get_bookmark_starts</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmarks" href="element.html#odfdo.element.Element.get_bookmarks">get_bookmarks</a></code></li>
+<li><code><a title="odfdo.element.Element.get_changes_ids" href="element.html#odfdo.element.Element.get_changes_ids">get_changes_ids</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_connector" href="element.html#odfdo.element.Element.get_draw_connector">get_draw_connector</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_connectors" href="element.html#odfdo.element.Element.get_draw_connectors">get_draw_connectors</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_ellipse" href="element.html#odfdo.element.Element.get_draw_ellipse">get_draw_ellipse</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_ellipses" href="element.html#odfdo.element.Element.get_draw_ellipses">get_draw_ellipses</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_line" href="element.html#odfdo.element.Element.get_draw_line">get_draw_line</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_lines" href="element.html#odfdo.element.Element.get_draw_lines">get_draw_lines</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_page" href="element.html#odfdo.element.Element.get_draw_page">get_draw_page</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_pages" href="element.html#odfdo.element.Element.get_draw_pages">get_draw_pages</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_rectangle" href="element.html#odfdo.element.Element.get_draw_rectangle">get_draw_rectangle</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_rectangles" href="element.html#odfdo.element.Element.get_draw_rectangles">get_draw_rectangles</a></code></li>
+<li><code><a title="odfdo.element.Element.get_formatted_text" href="element.html#odfdo.element.Element.get_formatted_text">get_formatted_text</a></code></li>
+<li><code><a title="odfdo.element.Element.get_frame" href="element.html#odfdo.element.Element.get_frame">get_frame</a></code></li>
+<li><code><a title="odfdo.element.Element.get_frames" href="element.html#odfdo.element.Element.get_frames">get_frames</a></code></li>
+<li><code><a title="odfdo.element.Element.get_header" href="element.html#odfdo.element.Element.get_header">get_header</a></code></li>
+<li><code><a title="odfdo.element.Element.get_headers" href="element.html#odfdo.element.Element.get_headers">get_headers</a></code></li>
+<li><code><a title="odfdo.element.Element.get_image" href="element.html#odfdo.element.Element.get_image">get_image</a></code></li>
+<li><code><a title="odfdo.element.Element.get_images" href="element.html#odfdo.element.Element.get_images">get_images</a></code></li>
+<li><code><a title="odfdo.element.Element.get_link" href="element.html#odfdo.element.Element.get_link">get_link</a></code></li>
+<li><code><a title="odfdo.element.Element.get_links" href="element.html#odfdo.element.Element.get_links">get_links</a></code></li>
+<li><code><a title="odfdo.element.Element.get_list" href="element.html#odfdo.element.Element.get_list">get_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_lists" href="element.html#odfdo.element.Element.get_lists">get_lists</a></code></li>
+<li><code><a title="odfdo.element.Element.get_named_range" href="element.html#odfdo.element.Element.get_named_range">get_named_range</a></code></li>
+<li><code><a title="odfdo.element.Element.get_named_ranges" href="element.html#odfdo.element.Element.get_named_ranges">get_named_ranges</a></code></li>
+<li><code><a title="odfdo.element.Element.get_note" href="element.html#odfdo.element.Element.get_note">get_note</a></code></li>
+<li><code><a title="odfdo.element.Element.get_notes" href="element.html#odfdo.element.Element.get_notes">get_notes</a></code></li>
+<li><code><a title="odfdo.element.Element.get_office_names" href="element.html#odfdo.element.Element.get_office_names">get_office_names</a></code></li>
+<li><code><a title="odfdo.element.Element.get_orphan_draw_connectors" href="element.html#odfdo.element.Element.get_orphan_draw_connectors">get_orphan_draw_connectors</a></code></li>
+<li><code><a title="odfdo.element.Element.get_paragraph" href="element.html#odfdo.element.Element.get_paragraph">get_paragraph</a></code></li>
+<li><code><a title="odfdo.element.Element.get_paragraphs" href="element.html#odfdo.element.Element.get_paragraphs">get_paragraphs</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark" href="element.html#odfdo.element.Element.get_reference_mark">get_reference_mark</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_end" href="element.html#odfdo.element.Element.get_reference_mark_end">get_reference_mark_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_ends" href="element.html#odfdo.element.Element.get_reference_mark_ends">get_reference_mark_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_single" href="element.html#odfdo.element.Element.get_reference_mark_single">get_reference_mark_single</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_start" href="element.html#odfdo.element.Element.get_reference_mark_start">get_reference_mark_start</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_starts" href="element.html#odfdo.element.Element.get_reference_mark_starts">get_reference_mark_starts</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_marks" href="element.html#odfdo.element.Element.get_reference_marks">get_reference_marks</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_marks_single" href="element.html#odfdo.element.Element.get_reference_marks_single">get_reference_marks_single</a></code></li>
+<li><code><a title="odfdo.element.Element.get_references" href="element.html#odfdo.element.Element.get_references">get_references</a></code></li>
+<li><code><a title="odfdo.element.Element.get_section" href="element.html#odfdo.element.Element.get_section">get_section</a></code></li>
+<li><code><a title="odfdo.element.Element.get_sections" href="element.html#odfdo.element.Element.get_sections">get_sections</a></code></li>
+<li><code><a title="odfdo.element.Element.get_span" href="element.html#odfdo.element.Element.get_span">get_span</a></code></li>
+<li><code><a title="odfdo.element.Element.get_spans" href="element.html#odfdo.element.Element.get_spans">get_spans</a></code></li>
+<li><code><a title="odfdo.element.Element.get_style" href="element.html#odfdo.element.Element.get_style">get_style</a></code></li>
+<li><code><a title="odfdo.element.Element.get_styled_elements" href="element.html#odfdo.element.Element.get_styled_elements">get_styled_elements</a></code></li>
+<li><code><a title="odfdo.element.Element.get_table" href="element.html#odfdo.element.Element.get_table">get_table</a></code></li>
+<li><code><a title="odfdo.element.Element.get_tables" href="element.html#odfdo.element.Element.get_tables">get_tables</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change" href="element.html#odfdo.element.Element.get_text_change">get_text_change</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_deletion" href="element.html#odfdo.element.Element.get_text_change_deletion">get_text_change_deletion</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_deletions" href="element.html#odfdo.element.Element.get_text_change_deletions">get_text_change_deletions</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_end" href="element.html#odfdo.element.Element.get_text_change_end">get_text_change_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_ends" href="element.html#odfdo.element.Element.get_text_change_ends">get_text_change_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_start" href="element.html#odfdo.element.Element.get_text_change_start">get_text_change_start</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_starts" href="element.html#odfdo.element.Element.get_text_change_starts">get_text_change_starts</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_changes" href="element.html#odfdo.element.Element.get_text_changes">get_text_changes</a></code></li>
+<li><code><a title="odfdo.element.Element.get_toc" href="element.html#odfdo.element.Element.get_toc">get_toc</a></code></li>
+<li><code><a title="odfdo.element.Element.get_tocs" href="element.html#odfdo.element.Element.get_tocs">get_tocs</a></code></li>
+<li><code><a title="odfdo.element.Element.get_tracked_changes" href="element.html#odfdo.element.Element.get_tracked_changes">get_tracked_changes</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_defined" href="element.html#odfdo.element.Element.get_user_defined">get_user_defined</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_defined_list" href="element.html#odfdo.element.Element.get_user_defined_list">get_user_defined_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_defined_value" href="element.html#odfdo.element.Element.get_user_defined_value">get_user_defined_value</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_decl" href="element.html#odfdo.element.Element.get_user_field_decl">get_user_field_decl</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_decl_list" href="element.html#odfdo.element.Element.get_user_field_decl_list">get_user_field_decl_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_decls" href="element.html#odfdo.element.Element.get_user_field_decls">get_user_field_decls</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_value" href="element.html#odfdo.element.Element.get_user_field_value">get_user_field_value</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_decl" href="element.html#odfdo.element.Element.get_variable_decl">get_variable_decl</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_decl_list" href="element.html#odfdo.element.Element.get_variable_decl_list">get_variable_decl_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_decls" href="element.html#odfdo.element.Element.get_variable_decls">get_variable_decls</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_set" href="element.html#odfdo.element.Element.get_variable_set">get_variable_set</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_set_value" href="element.html#odfdo.element.Element.get_variable_set_value">get_variable_set_value</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_sets" href="element.html#odfdo.element.Element.get_variable_sets">get_variable_sets</a></code></li>
+<li><code><a title="odfdo.element.Element.index" href="element.html#odfdo.element.Element.index">index</a></code></li>
+<li><code><a title="odfdo.element.Element.insert" href="element.html#odfdo.element.Element.insert">insert</a></code></li>
+<li><code><a title="odfdo.element.Element.is_empty" href="element.html#odfdo.element.Element.is_empty">is_empty</a></code></li>
+<li><code><a title="odfdo.element.Element.match" href="element.html#odfdo.element.Element.match">match</a></code></li>
+<li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
+<li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
+<li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
+<li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
+<li><code><a title="odfdo.element.Element.tag" href="element.html#odfdo.element.Element.tag">tag</a></code></li>
+<li><code><a title="odfdo.element.Element.tail" href="element.html#odfdo.element.Element.tail">tail</a></code></li>
+<li><code><a title="odfdo.element.Element.text" href="element.html#odfdo.element.Element.text">text</a></code></li>
+<li><code><a title="odfdo.element.Element.text_content" href="element.html#odfdo.element.Element.text_content">text_content</a></code></li>
+<li><code><a title="odfdo.element.Element.xpath" href="element.html#odfdo.element.Element.xpath">xpath</a></code></li>
 </ul>
 </li>
 </ul>
@@ -2588,6 +2916,193 @@ given text.</p>
 </li>
 </ul>
 </dd>
+<dt id="odfdo.paragraph.Tab"><code class="flex name class">
+<span>class <span class="ident">Tab</span></span>
+<span>(</span><span>position=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This element represents the [UNICODE] tab character (HORIZONTAL
+TABULATION, U+0009).</p>
+<p>The position attribute contains the number of the tab-stop to which
+a tab character refers. The position 0 marks the start margin of a
+paragraph. Note: The position attribute is only a hint to help non-layout
+oriented consumers to determine the tab/tab-stop association. Layout
+oriented consumers should determine the tab positions based on the style
+information</p>
+<h2 id="arguments">Arguments</h2>
+<p>position &ndash; int</p>
+<p>Return: Tab</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Tab(Element):
+    &#34;&#34;&#34;This element represents the [UNICODE] tab character (HORIZONTAL
+    TABULATION, U+0009).
+
+    The position attribute contains the number of the tab-stop to which
+    a tab character refers. The position 0 marks the start margin of a
+    paragraph. Note: The position attribute is only a hint to help non-layout
+    oriented consumers to determine the tab/tab-stop association. Layout
+    oriented consumers should determine the tab positions based on the style
+    information
+    &#34;&#34;&#34;
+
+    _tag = &#34;text:tab&#34;
+    _properties = ((&#34;position&#34;, &#34;text:tab-ref&#34;),)
+
+    def __init__(self, position=None, **kwargs):
+        &#34;&#34;&#34;
+        Arguments:
+
+            position -- int
+
+        Return: Tab
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+        if self._do_init and position is not None and position &gt;= 0:
+            self.position = str(position)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="odfdo.paragraph.Tab.position"><code class="name">var <span class="ident">position</span></code></dt>
+<dd>
+<div class="desc"><p>Get/set the attribute text:tab-ref</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getter(self):
+    if family and self.family != family:
+        return None
+    value = self.__element.get(name)
+    if value is None:
+        return None
+    elif value in (&#34;true&#34;, &#34;false&#34;):
+        return Boolean.decode(value)
+    return str(value)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></b></code>:
+<ul class="hlist">
+<li><code><a title="odfdo.element.Element.append" href="element.html#odfdo.element.Element.append">append</a></code></li>
+<li><code><a title="odfdo.element.Element.append_named_range" href="element.html#odfdo.element.Element.append_named_range">append_named_range</a></code></li>
+<li><code><a title="odfdo.element.Element.clear" href="element.html#odfdo.element.Element.clear">clear</a></code></li>
+<li><code><a title="odfdo.element.Element.dc_creator" href="element.html#odfdo.element.Element.dc_creator">dc_creator</a></code></li>
+<li><code><a title="odfdo.element.Element.dc_date" href="element.html#odfdo.element.Element.dc_date">dc_date</a></code></li>
+<li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
+<li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
+<li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
+<li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_ends" href="element.html#odfdo.element.Element.get_bookmark_ends">get_bookmark_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_start" href="element.html#odfdo.element.Element.get_bookmark_start">get_bookmark_start</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmark_starts" href="element.html#odfdo.element.Element.get_bookmark_starts">get_bookmark_starts</a></code></li>
+<li><code><a title="odfdo.element.Element.get_bookmarks" href="element.html#odfdo.element.Element.get_bookmarks">get_bookmarks</a></code></li>
+<li><code><a title="odfdo.element.Element.get_changes_ids" href="element.html#odfdo.element.Element.get_changes_ids">get_changes_ids</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_connector" href="element.html#odfdo.element.Element.get_draw_connector">get_draw_connector</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_connectors" href="element.html#odfdo.element.Element.get_draw_connectors">get_draw_connectors</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_ellipse" href="element.html#odfdo.element.Element.get_draw_ellipse">get_draw_ellipse</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_ellipses" href="element.html#odfdo.element.Element.get_draw_ellipses">get_draw_ellipses</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_line" href="element.html#odfdo.element.Element.get_draw_line">get_draw_line</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_lines" href="element.html#odfdo.element.Element.get_draw_lines">get_draw_lines</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_page" href="element.html#odfdo.element.Element.get_draw_page">get_draw_page</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_pages" href="element.html#odfdo.element.Element.get_draw_pages">get_draw_pages</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_rectangle" href="element.html#odfdo.element.Element.get_draw_rectangle">get_draw_rectangle</a></code></li>
+<li><code><a title="odfdo.element.Element.get_draw_rectangles" href="element.html#odfdo.element.Element.get_draw_rectangles">get_draw_rectangles</a></code></li>
+<li><code><a title="odfdo.element.Element.get_formatted_text" href="element.html#odfdo.element.Element.get_formatted_text">get_formatted_text</a></code></li>
+<li><code><a title="odfdo.element.Element.get_frame" href="element.html#odfdo.element.Element.get_frame">get_frame</a></code></li>
+<li><code><a title="odfdo.element.Element.get_frames" href="element.html#odfdo.element.Element.get_frames">get_frames</a></code></li>
+<li><code><a title="odfdo.element.Element.get_header" href="element.html#odfdo.element.Element.get_header">get_header</a></code></li>
+<li><code><a title="odfdo.element.Element.get_headers" href="element.html#odfdo.element.Element.get_headers">get_headers</a></code></li>
+<li><code><a title="odfdo.element.Element.get_image" href="element.html#odfdo.element.Element.get_image">get_image</a></code></li>
+<li><code><a title="odfdo.element.Element.get_images" href="element.html#odfdo.element.Element.get_images">get_images</a></code></li>
+<li><code><a title="odfdo.element.Element.get_link" href="element.html#odfdo.element.Element.get_link">get_link</a></code></li>
+<li><code><a title="odfdo.element.Element.get_links" href="element.html#odfdo.element.Element.get_links">get_links</a></code></li>
+<li><code><a title="odfdo.element.Element.get_list" href="element.html#odfdo.element.Element.get_list">get_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_lists" href="element.html#odfdo.element.Element.get_lists">get_lists</a></code></li>
+<li><code><a title="odfdo.element.Element.get_named_range" href="element.html#odfdo.element.Element.get_named_range">get_named_range</a></code></li>
+<li><code><a title="odfdo.element.Element.get_named_ranges" href="element.html#odfdo.element.Element.get_named_ranges">get_named_ranges</a></code></li>
+<li><code><a title="odfdo.element.Element.get_note" href="element.html#odfdo.element.Element.get_note">get_note</a></code></li>
+<li><code><a title="odfdo.element.Element.get_notes" href="element.html#odfdo.element.Element.get_notes">get_notes</a></code></li>
+<li><code><a title="odfdo.element.Element.get_office_names" href="element.html#odfdo.element.Element.get_office_names">get_office_names</a></code></li>
+<li><code><a title="odfdo.element.Element.get_orphan_draw_connectors" href="element.html#odfdo.element.Element.get_orphan_draw_connectors">get_orphan_draw_connectors</a></code></li>
+<li><code><a title="odfdo.element.Element.get_paragraph" href="element.html#odfdo.element.Element.get_paragraph">get_paragraph</a></code></li>
+<li><code><a title="odfdo.element.Element.get_paragraphs" href="element.html#odfdo.element.Element.get_paragraphs">get_paragraphs</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark" href="element.html#odfdo.element.Element.get_reference_mark">get_reference_mark</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_end" href="element.html#odfdo.element.Element.get_reference_mark_end">get_reference_mark_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_ends" href="element.html#odfdo.element.Element.get_reference_mark_ends">get_reference_mark_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_single" href="element.html#odfdo.element.Element.get_reference_mark_single">get_reference_mark_single</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_start" href="element.html#odfdo.element.Element.get_reference_mark_start">get_reference_mark_start</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_mark_starts" href="element.html#odfdo.element.Element.get_reference_mark_starts">get_reference_mark_starts</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_marks" href="element.html#odfdo.element.Element.get_reference_marks">get_reference_marks</a></code></li>
+<li><code><a title="odfdo.element.Element.get_reference_marks_single" href="element.html#odfdo.element.Element.get_reference_marks_single">get_reference_marks_single</a></code></li>
+<li><code><a title="odfdo.element.Element.get_references" href="element.html#odfdo.element.Element.get_references">get_references</a></code></li>
+<li><code><a title="odfdo.element.Element.get_section" href="element.html#odfdo.element.Element.get_section">get_section</a></code></li>
+<li><code><a title="odfdo.element.Element.get_sections" href="element.html#odfdo.element.Element.get_sections">get_sections</a></code></li>
+<li><code><a title="odfdo.element.Element.get_span" href="element.html#odfdo.element.Element.get_span">get_span</a></code></li>
+<li><code><a title="odfdo.element.Element.get_spans" href="element.html#odfdo.element.Element.get_spans">get_spans</a></code></li>
+<li><code><a title="odfdo.element.Element.get_style" href="element.html#odfdo.element.Element.get_style">get_style</a></code></li>
+<li><code><a title="odfdo.element.Element.get_styled_elements" href="element.html#odfdo.element.Element.get_styled_elements">get_styled_elements</a></code></li>
+<li><code><a title="odfdo.element.Element.get_table" href="element.html#odfdo.element.Element.get_table">get_table</a></code></li>
+<li><code><a title="odfdo.element.Element.get_tables" href="element.html#odfdo.element.Element.get_tables">get_tables</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change" href="element.html#odfdo.element.Element.get_text_change">get_text_change</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_deletion" href="element.html#odfdo.element.Element.get_text_change_deletion">get_text_change_deletion</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_deletions" href="element.html#odfdo.element.Element.get_text_change_deletions">get_text_change_deletions</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_end" href="element.html#odfdo.element.Element.get_text_change_end">get_text_change_end</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_ends" href="element.html#odfdo.element.Element.get_text_change_ends">get_text_change_ends</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_start" href="element.html#odfdo.element.Element.get_text_change_start">get_text_change_start</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_change_starts" href="element.html#odfdo.element.Element.get_text_change_starts">get_text_change_starts</a></code></li>
+<li><code><a title="odfdo.element.Element.get_text_changes" href="element.html#odfdo.element.Element.get_text_changes">get_text_changes</a></code></li>
+<li><code><a title="odfdo.element.Element.get_toc" href="element.html#odfdo.element.Element.get_toc">get_toc</a></code></li>
+<li><code><a title="odfdo.element.Element.get_tocs" href="element.html#odfdo.element.Element.get_tocs">get_tocs</a></code></li>
+<li><code><a title="odfdo.element.Element.get_tracked_changes" href="element.html#odfdo.element.Element.get_tracked_changes">get_tracked_changes</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_defined" href="element.html#odfdo.element.Element.get_user_defined">get_user_defined</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_defined_list" href="element.html#odfdo.element.Element.get_user_defined_list">get_user_defined_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_defined_value" href="element.html#odfdo.element.Element.get_user_defined_value">get_user_defined_value</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_decl" href="element.html#odfdo.element.Element.get_user_field_decl">get_user_field_decl</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_decl_list" href="element.html#odfdo.element.Element.get_user_field_decl_list">get_user_field_decl_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_decls" href="element.html#odfdo.element.Element.get_user_field_decls">get_user_field_decls</a></code></li>
+<li><code><a title="odfdo.element.Element.get_user_field_value" href="element.html#odfdo.element.Element.get_user_field_value">get_user_field_value</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_decl" href="element.html#odfdo.element.Element.get_variable_decl">get_variable_decl</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_decl_list" href="element.html#odfdo.element.Element.get_variable_decl_list">get_variable_decl_list</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_decls" href="element.html#odfdo.element.Element.get_variable_decls">get_variable_decls</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_set" href="element.html#odfdo.element.Element.get_variable_set">get_variable_set</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_set_value" href="element.html#odfdo.element.Element.get_variable_set_value">get_variable_set_value</a></code></li>
+<li><code><a title="odfdo.element.Element.get_variable_sets" href="element.html#odfdo.element.Element.get_variable_sets">get_variable_sets</a></code></li>
+<li><code><a title="odfdo.element.Element.index" href="element.html#odfdo.element.Element.index">index</a></code></li>
+<li><code><a title="odfdo.element.Element.insert" href="element.html#odfdo.element.Element.insert">insert</a></code></li>
+<li><code><a title="odfdo.element.Element.is_empty" href="element.html#odfdo.element.Element.is_empty">is_empty</a></code></li>
+<li><code><a title="odfdo.element.Element.match" href="element.html#odfdo.element.Element.match">match</a></code></li>
+<li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
+<li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
+<li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
+<li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
+<li><code><a title="odfdo.element.Element.tag" href="element.html#odfdo.element.Element.tag">tag</a></code></li>
+<li><code><a title="odfdo.element.Element.tail" href="element.html#odfdo.element.Element.tail">tail</a></code></li>
+<li><code><a title="odfdo.element.Element.text" href="element.html#odfdo.element.Element.text">text</a></code></li>
+<li><code><a title="odfdo.element.Element.text_content" href="element.html#odfdo.element.Element.text_content">text_content</a></code></li>
+<li><code><a title="odfdo.element.Element.xpath" href="element.html#odfdo.element.Element.xpath">xpath</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
 </dl>
 </section>
 </article>
@@ -2604,6 +3119,9 @@ given text.</p>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="odfdo.paragraph.LineBreak" href="#odfdo.paragraph.LineBreak">LineBreak</a></code></h4>
+</li>
 <li>
 <h4><code><a title="odfdo.paragraph.Paragraph" href="#odfdo.paragraph.Paragraph">Paragraph</a></code></h4>
 <ul class="">
@@ -2624,9 +3142,21 @@ given text.</p>
 </ul>
 </li>
 <li>
+<h4><code><a title="odfdo.paragraph.Spacer" href="#odfdo.paragraph.Spacer">Spacer</a></code></h4>
+<ul class="">
+<li><code><a title="odfdo.paragraph.Spacer.number" href="#odfdo.paragraph.Spacer.number">number</a></code></li>
+</ul>
+</li>
+<li>
 <h4><code><a title="odfdo.paragraph.Span" href="#odfdo.paragraph.Span">Span</a></code></h4>
 <ul class="">
 <li><code><a title="odfdo.paragraph.Span.class_names" href="#odfdo.paragraph.Span.class_names">class_names</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="odfdo.paragraph.Tab" href="#odfdo.paragraph.Tab">Tab</a></code></h4>
+<ul class="">
+<li><code><a title="odfdo.paragraph.Tab.position" href="#odfdo.paragraph.Tab.position">position</a></code></li>
 </ul>
 </li>
 </ul>

@@ -27,7 +27,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -75,7 +75,7 @@ class XmlPart:
         if self.__tree is None:
             container = self.container
             part = container.get_part(self.part_name)
-            self.__tree = parse(BytesIO(part))
+            self.__tree = parse(BytesIO(part))  # noqa:S320
         return self.__tree
 
     # Public API
@@ -170,7 +170,7 @@ Abstraction of the XML library behind.</p></div>
         if self.__tree is None:
             container = self.container
             part = container.get_part(self.part_name)
-            self.__tree = parse(BytesIO(part))
+            self.__tree = parse(BytesIO(part))  # noqa:S320
         return self.__tree
 
     # Public API

@@ -29,7 +29,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -57,13 +57,13 @@
 &#34;&#34;&#34;
 import re
 
-from .element import Element, register_element_class, to_str, Text
+from .element import Element, Text, register_element_class, to_str
 
 _rsplitter = re.compile(&#34;(\n|\t|  +)&#34;)
 _rspace = re.compile(&#34;^  +$&#34;)
 
 
-def _get_formatted_text(element, context, with_text=True):
+def _get_formatted_text(element, context, with_text=True):  # noqa: C901
     document = context.get(&#34;document&#34;, None)
     rst_mode = context.get(&#34;rst_mode&#34;, False)
 
@@ -233,10 +233,8 @@ class Tab(Element):
         Return: Tab
         &#34;&#34;&#34;
         super().__init__(**kwargs)
-        if self._do_init:
-            if position is not None:
-                if position &gt;= 0:
-                    self.position = str(position)
+        if self._do_init and position is not None and position &gt;= 0:
+            self.position = str(position)
 
 
 Tab._define_attribut_property()
@@ -929,10 +927,8 @@ information</p>
         Return: Tab
         &#34;&#34;&#34;
         super().__init__(**kwargs)
-        if self._do_init:
-            if position is not None:
-                if position &gt;= 0:
-                    self.position = str(position)</code></pre>
+        if self._do_init and position is not None and position &gt;= 0:
+            self.position = str(position)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">

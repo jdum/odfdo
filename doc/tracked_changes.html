@@ -29,7 +29,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2020 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -55,12 +55,11 @@
 (ChangeInfo, TextInsertion, TextChange...)
 &#34;&#34;&#34;
 from datetime import datetime
-from .datatype import DateTime
 
-from .element import register_element_class, Element
-from .element import FIRST_CHILD, LAST_CHILD
+from .datatype import DateTime
+from .element import FIRST_CHILD, LAST_CHILD, Element, register_element_class
 from .paragraph import Paragraph
-from .utils import _get_elements, _get_element
+from .utils import _get_element, _get_elements
 
 
 class ChangeInfo(Element):
@@ -236,7 +235,7 @@ class TextInsertion(Element):
                 # assume iterable of Paragraph
                 for paragraph in comments:
                     if not isinstance(paragraph, Paragraph):
-                        raise ValueError(&#34;%s is not a Paragraph.&#34; % paragraph)
+                        raise TypeError(f&#34;{paragraph} is not a Paragraph.&#34;)
                     new_change_info.insert(paragraph, xmlposition=LAST_CHILD)
         else:
             if not isinstance(change_info, ChangeInfo):
@@ -2822,7 +2821,7 @@ and "text:change-end" elements.</p></div>
                 # assume iterable of Paragraph
                 for paragraph in comments:
                     if not isinstance(paragraph, Paragraph):
-                        raise ValueError(&#34;%s is not a Paragraph.&#34; % paragraph)
+                        raise TypeError(f&#34;{paragraph} is not a Paragraph.&#34;)
                     new_change_info.insert(paragraph, xmlposition=LAST_CHILD)
         else:
             if not isinstance(change_info, ChangeInfo):
@@ -2974,7 +2973,7 @@ The new change info element will replace any existant ChangeInfo.</p>
             # assume iterable of Paragraph
             for paragraph in comments:
                 if not isinstance(paragraph, Paragraph):
-                    raise ValueError(&#34;%s is not a Paragraph.&#34; % paragraph)
+                    raise TypeError(f&#34;{paragraph} is not a Paragraph.&#34;)
                 new_change_info.insert(paragraph, xmlposition=LAST_CHILD)
     else:
         if not isinstance(change_info, ChangeInfo):
