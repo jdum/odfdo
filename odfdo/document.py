@@ -149,6 +149,22 @@ class Document:
 
     # Public API
 
+    @property
+    def path(self):
+        """Shortcut to Document.Container.path."""
+        if not self.container:
+            return None
+        return self.container.path
+
+    @path.setter
+    def path(self, path_or_str):
+        """Shortcut to Document.Container.path
+
+        Only accepting str or Path."""
+        if not self.container:
+            return
+        self.container.path = Path(path_or_str)
+
     def get_parts(self):
         """Return available part names with path inside the archive, e.g.
         ['content.xml', ..., 'Pictures/100000000000032000000258912EB1C3.jpg']
