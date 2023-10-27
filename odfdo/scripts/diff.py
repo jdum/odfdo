@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
@@ -46,32 +45,50 @@ def main():
     # Parse !
     options, args = parser.parse_args()
 
-    # Go !
     if len(args) != 2:
         parser.print_help()
         sys.exit(1)
 
-    # Open the 2 documents, diff only for ODT
-    doc1 = Document(args[0])
-    doc2 = Document(args[1])
-    if doc1.get_type() != "text" or doc2.get_type() != "text":
+    path0 = args[0]
+    path1 = args[1]
+    try:
+        print_diff(path0, path1, options.ndiff)
+    except Exception as e:
         parser.print_help()
+        print()
+        print(repr(e))
         sys.exit(1)
 
-    # Convert in text before the diff
-    text1 = doc1.get_formatted_text(True).splitlines(True)
-    text2 = doc2.get_formatted_text(True).splitlines(True)
 
-    # Make the diff !
-    if options.ndiff:
-        result = ndiff(text1, text2, None, None)
-        result = [line for line in result if not line.startswith(" ")]
+def print_diff(path0, path1, ndiff):
+    # Open the 2 documents, diff only for ODT
+    doc0 = Document(path0)
+    doc1 = Document(path1)
+    if doc0.get_type() != "text" or doc1.get_type() != "text":
+        raise ValueError("Requires documents of type text.")
+    if ndiff:
+        print(make_ndiff(doc0, doc1))
     else:
-        fromdate = ctime(stat(args[0]).st_mtime)
-        todate = ctime(stat(args[1]).st_mtime)
-        result = unified_diff(text1, text2, args[0], args[1], fromdate, todate)
-    print("".join(result))
+        print(make_diff(doc0, doc1, path0, path1))
 
 
-if __name__ == "__main__":
+def make_ndiff(doc0, doc1):
+    # Convert in text before the diff
+    text0 = doc0.get_formatted_text(True).splitlines(True)
+    text1 = doc1.get_formatted_text(True).splitlines(True)
+    # Make the diff !
+    return "".join(ndiff(text0, text1, None, None))
+
+
+def make_diff(doc0, doc1, path0, path1):
+    # Convert in text before the diff
+    text0 = doc0.get_formatted_text(True).splitlines(True)
+    text1 = doc1.get_formatted_text(True).splitlines(True)
+    # Make the diff !
+    fromdate = ctime(stat(path0).st_mtime)
+    todate = ctime(stat(path1).st_mtime)
+    return "".join(unified_diff(text0, text1, path0, path1, fromdate, todate))
+
+
+if __name__ == "__main__":  # pragma: no cover
     main()
