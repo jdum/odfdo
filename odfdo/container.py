@@ -242,10 +242,10 @@ class Container:
                 is_folder = False
                 pure_path = PurePath(folder, part_path)
             path = Path(pure_path)
-            path.parent.mkdir(parents=False, exist_ok=True)
             if is_folder:
-                path.mkdir(parents=False, exist_ok=True)
+                path.mkdir(parents=True, exist_ok=True)
             else:
+                path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(content)
                 path.chmod(0o666)
 
@@ -364,12 +364,12 @@ class Container:
                 target = target.split(".folder", 1)[0]
         return target
 
-    def _save_as_zip(self, packaging, target, backup):
+    def _save_as_zip(self, target, backup):
         if isinstance(target, str) and backup:
             self.__do_backup(target)
         self.__save_zip(target)
 
-    def _save_as_folder(self, packaging, target, backup):
+    def _save_as_folder(self, target, backup):
         if not isinstance(target, str):
             raise TypeError(
                 f"Saving in folder format requires a folder name, not '{target}'"
@@ -410,7 +410,7 @@ class Container:
                 self.get_part(path)
         target = self._save_target(target)
         if packaging == "folder":
-            self._save_as_folder(packaging, target, backup)
+            self._save_as_folder(target, backup)
         else:
             # default:
-            self._save_as_zip(packaging, target, backup)
+            self._save_as_zip(target, backup)

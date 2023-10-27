@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
@@ -23,32 +22,38 @@
 import os
 import sys
 from optparse import OptionParser
-
+from pathlib import Path
 from odfdo import Document, __version__
 
 
 def main():
-    usage = "%prog <input>"
-    description = "Convert standard ODF File to folder, and reverse."
+    usage = "%prog <input file_or_folder>"
+    description = "Convert standard ODF file to folder, and reverse."
     parser = OptionParser(usage, version=__version__, description=description)
 
     # Parse !
     options, args = parser.parse_args()
 
-    # Go !
-    if len(args) != 1:
+    try:
+        convert_folder(args[0])
+    except Exception as e:
         parser.print_help()
-        sys.exit(0)
+        print()
+        print(repr(e))
+        sys.exit(1)
 
-    if os.path.isfile(args[0]):
+
+def convert_folder(path):
+    path = Path(path)
+    if path.is_file():
         out_packaging = "folder"
-    elif os.path.isdir(args[0]):
+    elif path.is_dir():
         out_packaging = "zip"
     else:
-        raise ValueError("no File or folder ?")
-    doc = Document(args[0])
-    doc.save(packaging=out_packaging, pretty=True)
+        raise ValueError(f"Not a file or folder: {path}")
+    document = Document(path)
+    document.save(packaging=out_packaging, pretty=True)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()
