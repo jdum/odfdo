@@ -100,12 +100,12 @@ class Set_Get_ValueTestCase(TestCase):
         expected = (
             '<table:table-cell office:value-type="string" '
             'calcext:value-type="string" '
-            'office:string-value="%s">'
+            f'office:string-value="{ZOE}">'
             "<text:p>"
-            "%s"
+            f"{ZOE}"
             "</text:p>"
             "</table:table-cell>"
-        ) % (ZOE, ZOE)
+        )
         self.assertEqual(cell.serialize(), expected)
 
     def test_with_variable(self):
@@ -114,11 +114,11 @@ class Set_Get_ValueTestCase(TestCase):
         expected = (
             '<text:variable-set office:value-type="string" '
             'calcext:value-type="string" '
-            'office:string-value="%s" text:name="%s" '
+            f'office:string-value="{ZOE}" text:name="{ZOE}" '
             'text:display="none">'
-            "%s"
+            f"{ZOE}"
             "</text:variable-set>"
-        ) % (ZOE, ZOE, ZOE)
+        )
         self.assertEqual(variable_set.serialize(), expected)
 
     def test_with_user_field(self):

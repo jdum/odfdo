@@ -34,13 +34,13 @@ Installation from sources (requiring setuptools):
 pip install .
 ```
 
-After installation, you can check everything is working (requirement: `pytest`):
+After installation from sources, you can check everything is working (some requirements: `pytest`, Pillow, ...):
 
 ```python
-pytest tests
+pytest
 ```
 
-The tests should run for a few seconds and issue no error.
+The tests should run for a few seconds or minutes and issue no error.
 
 
 Usage

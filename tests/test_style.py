@@ -141,7 +141,7 @@ class Test_make_table_cell_border_string(TestCase):
 class TestCreateStyle(TestCase):
     def test_create_style_paragraph(self):
         style = Style("paragraph", "style1")
-        expected = ()
+        # expected = ()
         self.assertIn(
             style.serialize(),
             (

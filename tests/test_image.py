@@ -23,8 +23,6 @@
 from pathlib import Path
 from unittest import TestCase, main
 
-import pytest
-
 from odfdo.document import Document
 from odfdo.element import NEXT_SIBLING
 from odfdo.frame import Frame

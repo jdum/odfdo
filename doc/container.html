@@ -227,7 +227,6 @@ class Container:
     def __save_zip(self, target):
         &#34;&#34;&#34;Save a Zip ODF from the available parts.&#34;&#34;&#34;
         parts = self.__parts
-
         with ZipFile(target, &#34;w&#34;, compression=ZIP_DEFLATED) as filezip:
             # Parts to save, except manifest at the end
             part_names = list(parts.keys())
@@ -271,10 +270,10 @@ class Container:
                 is_folder = False
                 pure_path = PurePath(folder, part_path)
             path = Path(pure_path)
-            path.parent.mkdir(parents=False, exist_ok=True)
             if is_folder:
-                path.mkdir(parents=False, exist_ok=True)
+                path.mkdir(parents=True, exist_ok=True)
             else:
+                path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(content)
                 path.chmod(0o666)
 
@@ -393,12 +392,12 @@ class Container:
                 target = target.split(&#34;.folder&#34;, 1)[0]
         return target
 
-    def _save_as_zip(self, packaging, target, backup):
+    def _save_as_zip(self, target, backup):
         if isinstance(target, str) and backup:
             self.__do_backup(target)
         self.__save_zip(target)
 
-    def _save_as_folder(self, packaging, target, backup):
+    def _save_as_folder(self, target, backup):
         if not isinstance(target, str):
             raise TypeError(
                 f&#34;Saving in folder format requires a folder name, not &#39;{target}&#39;&#34;
@@ -439,10 +438,10 @@ class Container:
                 self.get_part(path)
         target = self._save_target(target)
         if packaging == &#34;folder&#34;:
-            self._save_as_folder(packaging, target, backup)
+            self._save_as_folder(target, backup)
         else:
             # default:
-            self._save_as_zip(packaging, target, backup)</code></pre>
+            self._save_as_zip(target, backup)</code></pre>
 </details>
 </section>
 <section>
@@ -629,7 +628,6 @@ class Container:
     def __save_zip(self, target):
         &#34;&#34;&#34;Save a Zip ODF from the available parts.&#34;&#34;&#34;
         parts = self.__parts
-
         with ZipFile(target, &#34;w&#34;, compression=ZIP_DEFLATED) as filezip:
             # Parts to save, except manifest at the end
             part_names = list(parts.keys())
@@ -673,10 +671,10 @@ class Container:
                 is_folder = False
                 pure_path = PurePath(folder, part_path)
             path = Path(pure_path)
-            path.parent.mkdir(parents=False, exist_ok=True)
             if is_folder:
-                path.mkdir(parents=False, exist_ok=True)
+                path.mkdir(parents=True, exist_ok=True)
             else:
+                path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(content)
                 path.chmod(0o666)
 
@@ -795,12 +793,12 @@ class Container:
                 target = target.split(&#34;.folder&#34;, 1)[0]
         return target
 
-    def _save_as_zip(self, packaging, target, backup):
+    def _save_as_zip(self, target, backup):
         if isinstance(target, str) and backup:
             self.__do_backup(target)
         self.__save_zip(target)
 
-    def _save_as_folder(self, packaging, target, backup):
+    def _save_as_folder(self, target, backup):
         if not isinstance(target, str):
             raise TypeError(
                 f&#34;Saving in folder format requires a folder name, not &#39;{target}&#39;&#34;
@@ -841,10 +839,10 @@ class Container:
                 self.get_part(path)
         target = self._save_target(target)
         if packaging == &#34;folder&#34;:
-            self._save_as_folder(packaging, target, backup)
+            self._save_as_folder(target, backup)
         else:
             # default:
-            self._save_as_zip(packaging, target, backup)</code></pre>
+            self._save_as_zip(target, backup)</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
@@ -1060,10 +1058,10 @@ unless "packaging" is different.</p>
             self.get_part(path)
     target = self._save_target(target)
     if packaging == &#34;folder&#34;:
-        self._save_as_folder(packaging, target, backup)
+        self._save_as_folder(target, backup)
     else:
         # default:
-        self._save_as_zip(packaging, target, backup)</code></pre>
+        self._save_as_zip(target, backup)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.container.Container.set_part"><code class="name flex">

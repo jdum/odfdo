@@ -396,51 +396,37 @@ class Document:
 
         Arguments:
 
-            path_or_file -- str or file-like
+            path_or_file -- str or Path or file-like
 
         Return: str (URI)
         """
         name = None
-        close_after = False
         # Folder for added files (FIXME hard-coded and copied)
         manifest = self.get_part(ODF_MANIFEST)
         medias = manifest.get_paths()
+        # uuid = str(uuid4())
 
-        if isinstance(path_or_file, str):
-            handler = open(path_or_file, "rb")  # noqa:SIM115
-            name = path_or_file
-            close_after = True
-        else:
-            handler = path_or_file
-            name = getattr(path_or_file, "name", None)
-        name = os.path.basename(name)
-        # Generate a safe portable name
-        uuid = str(uuid4())
-        if name is None:
-            name = uuid
-            media_type = ""
-        else:
-            root, extension = os.path.splitext(name)
-            extension = extension.lower()
-            name = root + extension
-            media_type, _encoding = guess_type(name)
-            # Check this name is already used in the document
+        if isinstance(path_or_file, (str, Path)):
+            path = Path(path_or_file)
+            extension = path.suffix.lower()
+            name = f"{path.stem}{extension}"
             if posixpath.join("Pictures", name) in medias:
-                root = f"{root}_{uuid}"
-                name = root + extension
-                media_type, _encoding = guess_type(name)
-
+                name = f"{path.stem}_{uuid4()}{extension}"
+        else:
+            name = getattr(path_or_file, "name", None)
+            if not name:
+                name = str(uuid4())
+        media_type, _encoding = guess_type(name)
+        if not media_type:
+            media_type = "application/octet-stream"
         if manifest.get_media_type("Pictures/") is None:
             manifest.add_full_path("Pictures/")
-
         full_path = posixpath.join("Pictures", name)
-        self.container.set_part(full_path, handler.read())
-
-        # Update manifest
+        if path is None:
+            self.container.set_part(full_path, handler.read())
+        else:
+            self.container.set_part(full_path, path.read_bytes())
         manifest.add_full_path(full_path, media_type)
-        # Close file
-        if close_after:
-            handler.close()
         return full_path
 
     @property

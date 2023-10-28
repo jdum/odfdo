@@ -26,8 +26,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">#!/usr/bin/env python
-# Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -51,36 +50,34 @@
 
 import sys
 from optparse import OptionParser
-from os import makedirs, mkdir
-from os.path import exists, join
+from pathlib import Path
 from shutil import rmtree
 
-# from odfdo.cleaner import test_document
 from odfdo import Document, __version__
 from odfdo.scriptutils import add_option_output, check_target_directory, printerr
 
 
-def clean_filename(filename):
-    allowed_characters = {&#34;.&#34;, &#34;-&#34;, &#34;_&#34;, &#34;@&#34;}
+def clean_filename(name):
+    allowed_characters = {&#34;.&#34;, &#34;-&#34;, &#34;@&#34;}
     result = []
-    for c in filename:
-        if c not in allowed_characters and not c.isalnum():
-            result.append(&#34;_&#34;)
+    for char in name:
+        if char in allowed_characters or char.isalnum():
+            result.append(char)
         else:
-            result.append(c)
-    return &#34;&#34;.join(result)
+            result.append(&#34;\t&#34;)
+    return &#34;_&#34;.join(&#34;&#34;.join(result).split())
 
 
 def dump_pictures(document, target):
     for part_name in document.get_parts():
-        if part_name.startswith(&#34;Pictures/&#34;):
-            path = join(target, &#34;Pictures&#34;)
-            if not exists(path):
-                mkdir(path)
-            data = document.get_part(part_name)
-            path = join(target, part_name)
-            with open(path, &#34;wb&#34;) as f:
-                f.write(data)
+        if not part_name.startswith(&#34;Pictures/&#34;):
+            continue
+        path = Path(target, &#34;Pictures&#34;)
+        if not path.exists():
+            path.mkdir(parents=False, exist_ok=False)
+        data = document.get_part(part_name)
+        path = Path(target, part_name)
+        path.write_bytes(data)
 
 
 def spreadsheet_to_stdout(document):
@@ -90,41 +87,46 @@ def spreadsheet_to_stdout(document):
         print(table.to_csv(None))
 
 
-def spreadsheet_to_csv(document):
-    body = document.get_body()
+def spreadsheet_to_csv(document, output):
+    body = document.body
     for table in body.get_tables():
-        name = table.get_name()
+        name = table.name
         filename = clean_filename(name) + &#34;.csv&#34;
+        print(filename)
         table.rstrip(aggressive=True)
-        table.to_csv(filename)
+        table.to_csv(output / filename)
 
 
 def show_output(container_url, options, doc, doc_type):
-    output = options.output
-    check_target_directory(output)
-    if exists(output):
-        rmtree(output)
-    makedirs(output)
-    with open(join(output, &#34;meta.txt&#34;), &#34;w&#34;) as f:
-        f.write(doc.get_formated_meta())
-    with open(join(output, &#34;styles.txt&#34;), &#34;w&#34;) as f:
-        f.write(doc.show_styles())
+    output = Path(options.output)
+    check_target_directory(str(output))
+    if output.exists():
+        rmtree(output)  # pragma: no cover
+    output.mkdir(parents=True, exist_ok=True)
+    (output / &#34;meta.txt&#34;).write_text(doc.get_formated_meta())
+    (output / &#34;styles.txt&#34;).write_text(doc.show_styles())
     dump_pictures(doc, output)
 
     if doc_type in {&#34;text&#34;, &#34;text-template&#34;, &#34;presentation&#34;, &#34;presentation-template&#34;}:
-        with open(join(output, &#34;content.rst&#34;), &#34;w&#34;) as f:
-            f.write(doc.get_formatted_text(rst_mode=options.rst))
-    # spreadsheet
+        (output / &#34;content.rst&#34;).write_text(
+            doc.get_formatted_text(rst_mode=options.rst)
+        )
     elif doc_type in {&#34;spreadsheet&#34;, &#34;spreadsheet-template&#34;}:
-        spreadsheet_to_csv(doc)
+        print(doc)
+        print(doc.path)
+        print(doc.body)
+        spreadsheet_to_csv(doc, output)
     else:
-        printerr(&#34;The OpenDocument format&#34;, doc_type, &#34;is not supported yet.&#34;)
+        printerr(f&#34;The OpenDocument format &#39;{doc_type}&#39; is not supported yet.&#34;)
         sys.exit(1)
 
 
 def show(container_url, options):
-    # Open it!
-    doc = Document(container_url)
+    try:
+        doc = Document(container_url)
+    except Exception as e:
+        print(repr(e))
+        sys.exit(1)
     doc_type = doc.get_type()
     # Test it! XXX for TEXT only
     # if doc_type == &#39;text&#39;:
@@ -139,15 +141,14 @@ def show(container_url, options):
         print(doc.get_formated_meta())
     if options.styles:
         print(doc.show_styles())
-    if (
-        doc_type in {&#34;text&#34;, &#34;text-template&#34;, &#34;presentation&#34;, &#34;presentation-template&#34;}
-        and not options.no_content
-    ):
-        print(doc.get_formatted_text(rst_mode=options.rst))
-    elif doc_type in {&#34;spreadsheet&#34;, &#34;spreadsheet-template&#34;} and not options.no_content:
-        spreadsheet_to_stdout(doc)
+    if doc_type in {&#34;text&#34;, &#34;text-template&#34;, &#34;presentation&#34;, &#34;presentation-template&#34;}:
+        if not options.no_content:
+            print(doc.get_formatted_text(rst_mode=options.rst))
+    elif doc_type in {&#34;spreadsheet&#34;, &#34;spreadsheet-template&#34;}:
+        if not options.no_content:
+            spreadsheet_to_stdout(doc)
     else:
-        printerr(&#34;The OpenDocument format&#34;, doc_type, &#34;is not supported yet.&#34;)
+        printerr(f&#34;The OpenDocument format &#39;{doc_type}&#39; is not supported yet.&#34;)
         sys.exit(1)
 
 
@@ -207,7 +208,7 @@ def main():
     show(container_url, options)
 
 
-if __name__ == &#34;__main__&#34;:
+if __name__ == &#34;__main__&#34;:  # pragma: no cover
     main()</code></pre>
 </details>
 </section>
@@ -219,7 +220,7 @@ if __name__ == &#34;__main__&#34;:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="odfdo.scripts.show.clean_filename"><code class="name flex">
-<span>def <span class="ident">clean_filename</span></span>(<span>filename)</span>
+<span>def <span class="ident">clean_filename</span></span>(<span>name)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -227,15 +228,15 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def clean_filename(filename):
-    allowed_characters = {&#34;.&#34;, &#34;-&#34;, &#34;_&#34;, &#34;@&#34;}
+<pre><code class="python">def clean_filename(name):
+    allowed_characters = {&#34;.&#34;, &#34;-&#34;, &#34;@&#34;}
     result = []
-    for c in filename:
-        if c not in allowed_characters and not c.isalnum():
-            result.append(&#34;_&#34;)
+    for char in name:
+        if char in allowed_characters or char.isalnum():
+            result.append(char)
         else:
-            result.append(c)
-    return &#34;&#34;.join(result)</code></pre>
+            result.append(&#34;\t&#34;)
+    return &#34;_&#34;.join(&#34;&#34;.join(result).split())</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scripts.show.dump_pictures"><code class="name flex">
@@ -249,14 +250,14 @@ if __name__ == &#34;__main__&#34;:
 </summary>
 <pre><code class="python">def dump_pictures(document, target):
     for part_name in document.get_parts():
-        if part_name.startswith(&#34;Pictures/&#34;):
-            path = join(target, &#34;Pictures&#34;)
-            if not exists(path):
-                mkdir(path)
-            data = document.get_part(part_name)
-            path = join(target, part_name)
-            with open(path, &#34;wb&#34;) as f:
-                f.write(data)</code></pre>
+        if not part_name.startswith(&#34;Pictures/&#34;):
+            continue
+        path = Path(target, &#34;Pictures&#34;)
+        if not path.exists():
+            path.mkdir(parents=False, exist_ok=False)
+        data = document.get_part(part_name)
+        path = Path(target, part_name)
+        path.write_bytes(data)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scripts.show.main"><code class="name flex">
@@ -334,8 +335,11 @@ if __name__ == &#34;__main__&#34;:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def show(container_url, options):
-    # Open it!
-    doc = Document(container_url)
+    try:
+        doc = Document(container_url)
+    except Exception as e:
+        print(repr(e))
+        sys.exit(1)
     doc_type = doc.get_type()
     # Test it! XXX for TEXT only
     # if doc_type == &#39;text&#39;:
@@ -350,15 +354,14 @@ if __name__ == &#34;__main__&#34;:
         print(doc.get_formated_meta())
     if options.styles:
         print(doc.show_styles())
-    if (
-        doc_type in {&#34;text&#34;, &#34;text-template&#34;, &#34;presentation&#34;, &#34;presentation-template&#34;}
-        and not options.no_content
-    ):
-        print(doc.get_formatted_text(rst_mode=options.rst))
-    elif doc_type in {&#34;spreadsheet&#34;, &#34;spreadsheet-template&#34;} and not options.no_content:
-        spreadsheet_to_stdout(doc)
+    if doc_type in {&#34;text&#34;, &#34;text-template&#34;, &#34;presentation&#34;, &#34;presentation-template&#34;}:
+        if not options.no_content:
+            print(doc.get_formatted_text(rst_mode=options.rst))
+    elif doc_type in {&#34;spreadsheet&#34;, &#34;spreadsheet-template&#34;}:
+        if not options.no_content:
+            spreadsheet_to_stdout(doc)
     else:
-        printerr(&#34;The OpenDocument format&#34;, doc_type, &#34;is not supported yet.&#34;)
+        printerr(f&#34;The OpenDocument format &#39;{doc_type}&#39; is not supported yet.&#34;)
         sys.exit(1)</code></pre>
 </details>
 </dd>
@@ -372,30 +375,31 @@ if __name__ == &#34;__main__&#34;:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def show_output(container_url, options, doc, doc_type):
-    output = options.output
-    check_target_directory(output)
-    if exists(output):
-        rmtree(output)
-    makedirs(output)
-    with open(join(output, &#34;meta.txt&#34;), &#34;w&#34;) as f:
-        f.write(doc.get_formated_meta())
-    with open(join(output, &#34;styles.txt&#34;), &#34;w&#34;) as f:
-        f.write(doc.show_styles())
+    output = Path(options.output)
+    check_target_directory(str(output))
+    if output.exists():
+        rmtree(output)  # pragma: no cover
+    output.mkdir(parents=True, exist_ok=True)
+    (output / &#34;meta.txt&#34;).write_text(doc.get_formated_meta())
+    (output / &#34;styles.txt&#34;).write_text(doc.show_styles())
     dump_pictures(doc, output)
 
     if doc_type in {&#34;text&#34;, &#34;text-template&#34;, &#34;presentation&#34;, &#34;presentation-template&#34;}:
-        with open(join(output, &#34;content.rst&#34;), &#34;w&#34;) as f:
-            f.write(doc.get_formatted_text(rst_mode=options.rst))
-    # spreadsheet
+        (output / &#34;content.rst&#34;).write_text(
+            doc.get_formatted_text(rst_mode=options.rst)
+        )
     elif doc_type in {&#34;spreadsheet&#34;, &#34;spreadsheet-template&#34;}:
-        spreadsheet_to_csv(doc)
+        print(doc)
+        print(doc.path)
+        print(doc.body)
+        spreadsheet_to_csv(doc, output)
     else:
-        printerr(&#34;The OpenDocument format&#34;, doc_type, &#34;is not supported yet.&#34;)
+        printerr(f&#34;The OpenDocument format &#39;{doc_type}&#39; is not supported yet.&#34;)
         sys.exit(1)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scripts.show.spreadsheet_to_csv"><code class="name flex">
-<span>def <span class="ident">spreadsheet_to_csv</span></span>(<span>document)</span>
+<span>def <span class="ident">spreadsheet_to_csv</span></span>(<span>document, output)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -403,13 +407,14 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def spreadsheet_to_csv(document):
-    body = document.get_body()
+<pre><code class="python">def spreadsheet_to_csv(document, output):
+    body = document.body
     for table in body.get_tables():
-        name = table.get_name()
+        name = table.name
         filename = clean_filename(name) + &#34;.csv&#34;
+        print(filename)
         table.rstrip(aggressive=True)
-        table.to_csv(filename)</code></pre>
+        table.to_csv(output / filename)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scripts.show.spreadsheet_to_stdout"><code class="name flex">

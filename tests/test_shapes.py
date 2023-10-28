@@ -78,12 +78,12 @@ class TestShapes(TestCase):
 
     def test_create_ellipse(self):
         page = DrawPage("Page1")
-        svg_attrs = {
-            "svg:width": "2cm",
-            "svg:height": "2cm",
-            "svg:x": "2cm",
-            "svg:y": "2cm",
-        }
+        # svg_attrs = {
+        #     "svg:width": "2cm",
+        #     "svg:height": "2cm",
+        #     "svg:x": "2cm",
+        #     "svg:y": "2cm",
+        # }
         ellipse = EllipseShape(size=("2cm", "1cm"), position=("3cm", "4cm"))
         page.append(ellipse)
         expected = (
@@ -326,7 +326,7 @@ class TestShapes(TestCase):
 
     def test_get_draw_orphans_connector(self):
         body = self.content.body
-        page = body.get_draw_page()
+        # page = body.get_draw_page()
         orphan_connector = ConnectorShape()
         orphan_connector.append(Paragraph("Orphan c"))
         body.append(orphan_connector)

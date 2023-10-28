@@ -2495,7 +2495,7 @@ class TestTableCellSpan(TestCase):
             ],
         )
 
-    def test_span_sp4(self):
+    def test_span_sp42(self):
         table = self.table2.clone
         zone = "g1:g4"
         table.set_span(zone, merge=True)
@@ -3319,7 +3319,7 @@ class TestTableGetValues(TestCase):
         row.set_cell(12, Cell(value="far"), clone=False)
         table = self.table.clone
         table.append_row(row)
-        result1 = [[1, 1, 1, 2, 3, 3, 3, None, None, None, None, None, None]]
+        # result1 = [[1, 1, 1, 2, 3, 3, 3, None, None, None, None, None, None]]
         result2 = [
             [
                 None,
@@ -3574,17 +3574,17 @@ class TestTableCache(TestCase):
 
     def test_basic_spreadsheet_case(self):
         table = Table("Table", width=20, height=3)
-        for r in range(2):
+        for _r in range(2):
             table.append_row()
         self.assertEqual(len(table.get_rows()), 5)
         vals = []
         for row in table.get_rows():
             vals.append(len(row.get_cells()))
         self.assertEqual(vals, [20, 20, 20, 0, 0])
-        last_row = table.get_row(-1)
+        # last_row = table.get_row(-1)
         for r in range(3):
             for c in range(10):
-                table.set_value((c, r), "cell %s %s" % (c, r))
+                table.set_value((c, r), f"cell {c} {r}")
         for r in range(3, 5):
             for c in range(10):
                 table.set_value((c, r), c * 100 + r)
@@ -4032,7 +4032,7 @@ class TestTableNamedRange(TestCase):
         try:
             nr.name = "   "
             ok = True
-        except:
+        except Exception:
             ok = False
         self.assertEqual(ok, False)
 

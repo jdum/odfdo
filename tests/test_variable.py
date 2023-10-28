@@ -113,7 +113,7 @@ class TestVariables(TestCase):
         body = clone.body
         variable_decl = body.get_variable_decl("Variabilité")
         expected = (
-            '<text:variable-decl office:value-type="float" '
+            '<text:variable-decl office:value-type="float" '  # noqa: UP031
             'text:name="%s"/>' % "Variabilité"
         )
         self.assertEqual(variable_decl.serialize(), expected)
@@ -124,7 +124,7 @@ class TestVariables(TestCase):
         variable_sets = body.get_variable_sets("Variabilité")
         self.assertEqual(len(variable_sets), 1)
         expected = (
-            '<text:variable-set text:name="%s" '
+            '<text:variable-set text:name="%s" '  # noqa: UP031
             'office:value-type="float" office:value="123" '
             'style:data-style-name="N1">123</text:variable-set>' % "Variabilité"
         )
@@ -177,7 +177,7 @@ class TestUserFields(TestCase):
         body = clone.body
         user_field_decl = body.get_user_field_decl("Champêtre")
         expected = (
-            '<text:user-field-decl office:value-type="float" '
+            '<text:user-field-decl office:value-type="float" '  # noqa: UP031
             'office:value="1" text:name="%s"/>' % "Champêtre"
         )
         self.assertEqual(user_field_decl.serialize(), expected)
@@ -247,7 +247,7 @@ class TestUserDefined(TestCase):
 
     def test_create_user_defined_3_existing(self):
         element = UserDefined("Référence", from_document=self.document)
-        expected = (
+        expected = (  # noqa: UP031
             '<text:user-defined text:name="%s" '
             'office:value-type="boolean" calcext:value-type="boolean" '
             'office:boolean-value="true">true</text:user-defined>'
@@ -261,7 +261,7 @@ class TestUserDefined(TestCase):
             value_type="boolean",
             from_document=self.document,
         )
-        expected = (
+        expected = (  # noqa: UP031
             '<text:user-defined text:name="%s" '
             'office:value-type="boolean" calcext:value-type="boolean" '
             'office:boolean-value="true">true</text:user-defined>'
@@ -275,7 +275,7 @@ class TestUserDefined(TestCase):
             value_type="boolean",
             from_document=None,
         )
-        expected = (
+        expected = (  # noqa: UP031
             '<text:user-defined text:name="%s" '
             'office:value-type="boolean" calcext:value-type="boolean" '
             'office:boolean-value="false">false</text:user-defined>'
@@ -293,7 +293,7 @@ class TestUserDefined(TestCase):
         para = body.get_paragraph()
         para.append(element)
         user_defined = body.get_user_defined("Référence")
-        expected = (
+        expected = (  # noqa: UP031
             '<text:user-defined text:name="%s" '
             'office:value-type="boolean" calcext:value-type="boolean" '
             'office:boolean-value="true">true</text:user-defined>'

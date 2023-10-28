@@ -49,7 +49,7 @@ class initial_compute:
         random.seed(42)
         base = list(range(self.cols))
         tab = []
-        for dummy in range(self.lines):
+        for _dummy in range(self.lines):
             random.shuffle(base)
             tab.append(base[:])
         return tab
@@ -65,19 +65,20 @@ class initial_compute:
 class chrono:
     def __init__(self):
         self.t0 = time.time()
+        self.t1 = 0.0
 
     def delta(self):
-        t1 = time.time()
-        print("%.1f sec" % (t1 - self.t0))
+        self.t1 = time.time()
+        print("%.1f sec" % (self.t1 - self.t0))
 
     def value(self):
-        return t1 - self.t0
+        return self.t1 - self.t0
 
     def ratio(self, base):
         return self.value() / base
 
 
-def test_append_rows(D):
+def run_append_rows(D):
     print("Test append_row", D.lines, "rows", D.cols, "cols")
     table = Table("Table")
     C = chrono()
@@ -92,7 +93,7 @@ def test_append_rows(D):
     print("-" * 50)
 
 
-def test_set_rows(D):
+def run_set_rows(D):
     print("Test random set_row", D.lines, "rows", D.cols, "cols")
     table = Table("Table")
     C = chrono()
@@ -114,7 +115,7 @@ def test_set_rows(D):
     return table
 
 
-def test_swap(D, table_ini):
+def run_swap(D, table_ini):
     print("Test swap rows/cols from table", D.lines, "rows", D.cols, "cols")
     table = Table("swapped", D.lines, D.cols)
     C = chrono()
@@ -128,7 +129,7 @@ def test_swap(D, table_ini):
     print("-" * 50)
 
 
-def test_swap_transpose(D, table_ini):
+def run_swap_transpose(D, table_ini):
     print("Test swap rows/cols with transpose ", D.lines, "rows", D.cols, "cols")
     if not hasattr(table_ini, "transpose"):
         print("method not available")
@@ -144,7 +145,7 @@ def test_swap_transpose(D, table_ini):
     print("-" * 50)
 
 
-def test_random_set_value(D):
+def run_random_set_value(D):
     print("Test random set_value", D.lines, "rows", D.cols, "cols")
     table = Table("Table")
     cpt = 0
@@ -162,7 +163,7 @@ def test_random_set_value(D):
     return table
 
 
-def test_random_get_value(D, table_ini):
+def run_random_get_value(D, table_ini):
     print("Test read random get_value", D.lines, "rows", D.cols, "cols")
     vals = []
     cpt = 0
@@ -176,7 +177,7 @@ def test_random_get_value(D, table_ini):
     print("-" * 50)
 
 
-def test_repeated(D):
+def run_repeated(D):
     print("test random repeated lines", D.lines, "rows", D.cols, "cols")
     table = Table("Table")
     C = chrono()
@@ -195,18 +196,23 @@ def test_repeated(D):
     return table
 
 
-if __name__ == "__main__":
+def run_all_perf():
     print(version)
     total = chrono()
     # for r,c  in [(10,8)]:
     for r, c in [(10, 10), (100, 10), (100, 100), (1000, 10)]:
         D = initial_compute(lines=r, cols=c)
-        test_append_rows(D)
-        t = test_set_rows(D)
-        test_swap(D, t)
-        test_swap_transpose(D, t)
-        t = test_random_set_value(D)
-        test_random_get_value(D, t)
-        test_repeated(D)
+        run_append_rows(D)
+        t = run_set_rows(D)
+        run_swap(D, t)
+        run_swap_transpose(D, t)
+        t = run_random_set_value(D)
+        run_random_get_value(D, t)
+        run_repeated(D)
     print("Total", end=" ")
     total.delta()
+
+
+def test_all_perf():
+    run_all_perf()
+    assert True

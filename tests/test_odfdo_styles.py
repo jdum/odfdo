@@ -3,7 +3,6 @@
 
 import shlex
 import subprocess
-from odfdo import Document
 from pathlib import Path
 
 SCRIPT = Path(__file__).parent.parent / "odfdo" / "scripts" / "styles.py"

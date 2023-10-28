@@ -178,6 +178,22 @@ class Document:
 
     # Public API
 
+    @property
+    def path(self):
+        &#34;&#34;&#34;Shortcut to Document.Container.path.&#34;&#34;&#34;
+        if not self.container:
+            return None
+        return self.container.path
+
+    @path.setter
+    def path(self, path_or_str):
+        &#34;&#34;&#34;Shortcut to Document.Container.path
+
+        Only accepting str or Path.&#34;&#34;&#34;
+        if not self.container:
+            return
+        self.container.path = Path(path_or_str)
+
     def get_parts(self):
         &#34;&#34;&#34;Return available part names with path inside the archive, e.g.
         [&#39;content.xml&#39;, ..., &#39;Pictures/100000000000032000000258912EB1C3.jpg&#39;]
@@ -409,51 +425,37 @@ class Document:
 
         Arguments:
 
-            path_or_file -- str or file-like
+            path_or_file -- str or Path or file-like
 
         Return: str (URI)
         &#34;&#34;&#34;
         name = None
-        close_after = False
         # Folder for added files (FIXME hard-coded and copied)
         manifest = self.get_part(ODF_MANIFEST)
         medias = manifest.get_paths()
+        # uuid = str(uuid4())
 
-        if isinstance(path_or_file, str):
-            handler = open(path_or_file, &#34;rb&#34;)  # noqa:SIM115
-            name = path_or_file
-            close_after = True
-        else:
-            handler = path_or_file
-            name = getattr(path_or_file, &#34;name&#34;, None)
-        name = os.path.basename(name)
-        # Generate a safe portable name
-        uuid = str(uuid4())
-        if name is None:
-            name = uuid
-            media_type = &#34;&#34;
-        else:
-            root, extension = os.path.splitext(name)
-            extension = extension.lower()
-            name = root + extension
-            media_type, _encoding = guess_type(name)
-            # Check this name is already used in the document
+        if isinstance(path_or_file, (str, Path)):
+            path = Path(path_or_file)
+            extension = path.suffix.lower()
+            name = f&#34;{path.stem}{extension}&#34;
             if posixpath.join(&#34;Pictures&#34;, name) in medias:
-                root = f&#34;{root}_{uuid}&#34;
-                name = root + extension
-                media_type, _encoding = guess_type(name)
-
+                name = f&#34;{path.stem}_{uuid4()}{extension}&#34;
+        else:
+            name = getattr(path_or_file, &#34;name&#34;, None)
+            if not name:
+                name = str(uuid4())
+        media_type, _encoding = guess_type(name)
+        if not media_type:
+            media_type = &#34;application/octet-stream&#34;
         if manifest.get_media_type(&#34;Pictures/&#34;) is None:
             manifest.add_full_path(&#34;Pictures/&#34;)
-
         full_path = posixpath.join(&#34;Pictures&#34;, name)
-        self.container.set_part(full_path, handler.read())
-
-        # Update manifest
+        if path is None:
+            self.container.set_part(full_path, handler.read())
+        else:
+            self.container.set_part(full_path, path.read_bytes())
         manifest.add_full_path(full_path, media_type)
-        # Close file
-        if close_after:
-            handler.close()
         return full_path
 
     @property
@@ -805,7 +807,7 @@ class Document:
         document_manifest = document.get_part(ODF_MANIFEST)
         for style in document.get_styles():
             tagname = style.tag
-            family = style.family
+            family = self._pseudo_style_attribute(style, &#34;family&#34;)
             stylename = style.name
             container = style.parent
             container_name = container.tag
@@ -837,7 +839,7 @@ class Document:
             if tagname == &#34;style:master-page&#34;:
                 query = &#34;descendant::draw:image&#34;
                 for image in style.get_elements(query):
-                    url = image.get_url()
+                    url = image.url
                     part = document.get_part(url)
                     # Manually add the part to keep the name
                     self.set_part(url, part)
@@ -845,7 +847,7 @@ class Document:
                     manifest.add_full_path(url, media_type)
             # Copy images from the fill-image
             elif tagname == &#34;draw:fill-image&#34;:
-                url = style.get_url()
+                url = style.url
                 part = document.get_part(url)
                 self.set_part(url, part)
                 media_type = document_manifest.get_media_type(url)
@@ -906,6 +908,22 @@ class Document:
 
     # Public API
 
+    @property
+    def path(self):
+        &#34;&#34;&#34;Shortcut to Document.Container.path.&#34;&#34;&#34;
+        if not self.container:
+            return None
+        return self.container.path
+
+    @path.setter
+    def path(self, path_or_str):
+        &#34;&#34;&#34;Shortcut to Document.Container.path
+
+        Only accepting str or Path.&#34;&#34;&#34;
+        if not self.container:
+            return
+        self.container.path = Path(path_or_str)
+
     def get_parts(self):
         &#34;&#34;&#34;Return available part names with path inside the archive, e.g.
         [&#39;content.xml&#39;, ..., &#39;Pictures/100000000000032000000258912EB1C3.jpg&#39;]
@@ -1137,51 +1155,37 @@ class Document:
 
         Arguments:
 
-            path_or_file -- str or file-like
+            path_or_file -- str or Path or file-like
 
         Return: str (URI)
         &#34;&#34;&#34;
         name = None
-        close_after = False
         # Folder for added files (FIXME hard-coded and copied)
         manifest = self.get_part(ODF_MANIFEST)
         medias = manifest.get_paths()
+        # uuid = str(uuid4())
 
-        if isinstance(path_or_file, str):
-            handler = open(path_or_file, &#34;rb&#34;)  # noqa:SIM115
-            name = path_or_file
-            close_after = True
-        else:
-            handler = path_or_file
-            name = getattr(path_or_file, &#34;name&#34;, None)
-        name = os.path.basename(name)
-        # Generate a safe portable name
-        uuid = str(uuid4())
-        if name is None:
-            name = uuid
-            media_type = &#34;&#34;
-        else:
-            root, extension = os.path.splitext(name)
-            extension = extension.lower()
-            name = root + extension
-            media_type, _encoding = guess_type(name)
-            # Check this name is already used in the document
+        if isinstance(path_or_file, (str, Path)):
+            path = Path(path_or_file)
+            extension = path.suffix.lower()
+            name = f&#34;{path.stem}{extension}&#34;
             if posixpath.join(&#34;Pictures&#34;, name) in medias:
-                root = f&#34;{root}_{uuid}&#34;
-                name = root + extension
-                media_type, _encoding = guess_type(name)
-
+                name = f&#34;{path.stem}_{uuid4()}{extension}&#34;
+        else:
+            name = getattr(path_or_file, &#34;name&#34;, None)
+            if not name:
+                name = str(uuid4())
+        media_type, _encoding = guess_type(name)
+        if not media_type:
+            media_type = &#34;application/octet-stream&#34;
         if manifest.get_media_type(&#34;Pictures/&#34;) is None:
             manifest.add_full_path(&#34;Pictures/&#34;)
-
         full_path = posixpath.join(&#34;Pictures&#34;, name)
-        self.container.set_part(full_path, handler.read())
-
-        # Update manifest
+        if path is None:
+            self.container.set_part(full_path, handler.read())
+        else:
+            self.container.set_part(full_path, path.read_bytes())
         manifest.add_full_path(full_path, media_type)
-        # Close file
-        if close_after:
-            handler.close()
         return full_path
 
     @property
@@ -1533,7 +1537,7 @@ class Document:
         document_manifest = document.get_part(ODF_MANIFEST)
         for style in document.get_styles():
             tagname = style.tag
-            family = style.family
+            family = self._pseudo_style_attribute(style, &#34;family&#34;)
             stylename = style.name
             container = style.parent
             container_name = container.tag
@@ -1565,7 +1569,7 @@ class Document:
             if tagname == &#34;style:master-page&#34;:
                 query = &#34;descendant::draw:image&#34;
                 for image in style.get_elements(query):
-                    url = image.get_url()
+                    url = image.url
                     part = document.get_part(url)
                     # Manually add the part to keep the name
                     self.set_part(url, part)
@@ -1573,7 +1577,7 @@ class Document:
                     manifest.add_full_path(url, media_type)
             # Copy images from the fill-image
             elif tagname == &#34;draw:fill-image&#34;:
-                url = style.get_url()
+                url = style.url
                 part = document.get_part(url)
                 self.set_part(url, part)
                 media_type = document_manifest.get_media_type(url)
@@ -1659,6 +1663,21 @@ def mimetype(self):
     return self.container.mimetype</code></pre>
 </details>
 </dd>
+<dt id="odfdo.document.Document.path"><code class="name">var <span class="ident">path</span></code></dt>
+<dd>
+<div class="desc"><p>Shortcut to Document.Container.path.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def path(self):
+    &#34;&#34;&#34;Shortcut to Document.Container.path.&#34;&#34;&#34;
+    if not self.container:
+        return None
+    return self.container.path</code></pre>
+</details>
+</dd>
 </dl>
 <h3>Methods</h3>
 <dl>
@@ -1669,7 +1688,7 @@ def mimetype(self):
 <div class="desc"><p>Insert a file from a path or a fike-like object in the container.
 Return the full path to reference it in the content.</p>
 <h2 id="arguments">Arguments</h2>
-<p>path_or_file &ndash; str or file-like</p>
+<p>path_or_file &ndash; str or Path or file-like</p>
 <p>Return: str (URI)</p></div>
 <details class="source">
 <summary>
@@ -1681,51 +1700,37 @@ Return the full path to reference it in the content.</p>
 
     Arguments:
 
-        path_or_file -- str or file-like
+        path_or_file -- str or Path or file-like
 
     Return: str (URI)
     &#34;&#34;&#34;
     name = None
-    close_after = False
     # Folder for added files (FIXME hard-coded and copied)
     manifest = self.get_part(ODF_MANIFEST)
     medias = manifest.get_paths()
+    # uuid = str(uuid4())
 
-    if isinstance(path_or_file, str):
-        handler = open(path_or_file, &#34;rb&#34;)  # noqa:SIM115
-        name = path_or_file
-        close_after = True
-    else:
-        handler = path_or_file
-        name = getattr(path_or_file, &#34;name&#34;, None)
-    name = os.path.basename(name)
-    # Generate a safe portable name
-    uuid = str(uuid4())
-    if name is None:
-        name = uuid
-        media_type = &#34;&#34;
-    else:
-        root, extension = os.path.splitext(name)
-        extension = extension.lower()
-        name = root + extension
-        media_type, _encoding = guess_type(name)
-        # Check this name is already used in the document
+    if isinstance(path_or_file, (str, Path)):
+        path = Path(path_or_file)
+        extension = path.suffix.lower()
+        name = f&#34;{path.stem}{extension}&#34;
         if posixpath.join(&#34;Pictures&#34;, name) in medias:
-            root = f&#34;{root}_{uuid}&#34;
-            name = root + extension
-            media_type, _encoding = guess_type(name)
-
+            name = f&#34;{path.stem}_{uuid4()}{extension}&#34;
+    else:
+        name = getattr(path_or_file, &#34;name&#34;, None)
+        if not name:
+            name = str(uuid4())
+    media_type, _encoding = guess_type(name)
+    if not media_type:
+        media_type = &#34;application/octet-stream&#34;
     if manifest.get_media_type(&#34;Pictures/&#34;) is None:
         manifest.add_full_path(&#34;Pictures/&#34;)
-
     full_path = posixpath.join(&#34;Pictures&#34;, name)
-    self.container.set_part(full_path, handler.read())
-
-    # Update manifest
+    if path is None:
+        self.container.set_part(full_path, handler.read())
+    else:
+        self.container.set_part(full_path, path.read_bytes())
     manifest.add_full_path(full_path, media_type)
-    # Close file
-    if close_after:
-        handler.close()
     return full_path</code></pre>
 </details>
 </dd>
@@ -2221,7 +2226,7 @@ styles will be preserved.</p></div>
     document_manifest = document.get_part(ODF_MANIFEST)
     for style in document.get_styles():
         tagname = style.tag
-        family = style.family
+        family = self._pseudo_style_attribute(style, &#34;family&#34;)
         stylename = style.name
         container = style.parent
         container_name = container.tag
@@ -2253,7 +2258,7 @@ styles will be preserved.</p></div>
         if tagname == &#34;style:master-page&#34;:
             query = &#34;descendant::draw:image&#34;
             for image in style.get_elements(query):
-                url = image.get_url()
+                url = image.url
                 part = document.get_part(url)
                 # Manually add the part to keep the name
                 self.set_part(url, part)
@@ -2261,7 +2266,7 @@ styles will be preserved.</p></div>
                 manifest.add_full_path(url, media_type)
         # Copy images from the fill-image
         elif tagname == &#34;draw:fill-image&#34;:
-            url = style.get_url()
+            url = style.url
             part = document.get_part(url)
             self.set_part(url, part)
             media_type = document_manifest.get_media_type(url)
@@ -2446,6 +2451,7 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
 <li><code><a title="odfdo.document.Document.merge_styles_from" href="#odfdo.document.Document.merge_styles_from">merge_styles_from</a></code></li>
 <li><code><a title="odfdo.document.Document.mimetype" href="#odfdo.document.Document.mimetype">mimetype</a></code></li>
 <li><code><a title="odfdo.document.Document.new" href="#odfdo.document.Document.new">new</a></code></li>
+<li><code><a title="odfdo.document.Document.path" href="#odfdo.document.Document.path">path</a></code></li>
 <li><code><a title="odfdo.document.Document.save" href="#odfdo.document.Document.save">save</a></code></li>
 <li><code><a title="odfdo.document.Document.set_part" href="#odfdo.document.Document.set_part">set_part</a></code></li>
 <li><code><a title="odfdo.document.Document.show_styles" href="#odfdo.document.Document.show_styles">show_styles</a></code></li>

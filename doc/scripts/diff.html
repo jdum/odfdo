@@ -26,8 +26,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">#!/usr/bin/env python
-# Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -74,34 +73,52 @@ def main():
     # Parse !
     options, args = parser.parse_args()
 
-    # Go !
     if len(args) != 2:
         parser.print_help()
         sys.exit(1)
 
-    # Open the 2 documents, diff only for ODT
-    doc1 = Document(args[0])
-    doc2 = Document(args[1])
-    if doc1.get_type() != &#34;text&#34; or doc2.get_type() != &#34;text&#34;:
+    path0 = args[0]
+    path1 = args[1]
+    try:
+        print_diff(path0, path1, options.ndiff)
+    except Exception as e:
         parser.print_help()
+        print()
+        print(repr(e))
         sys.exit(1)
 
-    # Convert in text before the diff
-    text1 = doc1.get_formatted_text(True).splitlines(True)
-    text2 = doc2.get_formatted_text(True).splitlines(True)
 
-    # Make the diff !
-    if options.ndiff:
-        result = ndiff(text1, text2, None, None)
-        result = [line for line in result if not line.startswith(&#34; &#34;)]
+def print_diff(path0, path1, ndiff):
+    # Open the 2 documents, diff only for ODT
+    doc0 = Document(path0)
+    doc1 = Document(path1)
+    if doc0.get_type() != &#34;text&#34; or doc1.get_type() != &#34;text&#34;:
+        raise ValueError(&#34;Requires documents of type text.&#34;)
+    if ndiff:
+        print(make_ndiff(doc0, doc1))
     else:
-        fromdate = ctime(stat(args[0]).st_mtime)
-        todate = ctime(stat(args[1]).st_mtime)
-        result = unified_diff(text1, text2, args[0], args[1], fromdate, todate)
-    print(&#34;&#34;.join(result))
+        print(make_diff(doc0, doc1, path0, path1))
 
 
-if __name__ == &#34;__main__&#34;:
+def make_ndiff(doc0, doc1):
+    # Convert in text before the diff
+    text0 = doc0.get_formatted_text(True).splitlines(True)
+    text1 = doc1.get_formatted_text(True).splitlines(True)
+    # Make the diff !
+    return &#34;&#34;.join(ndiff(text0, text1, None, None))
+
+
+def make_diff(doc0, doc1, path0, path1):
+    # Convert in text before the diff
+    text0 = doc0.get_formatted_text(True).splitlines(True)
+    text1 = doc1.get_formatted_text(True).splitlines(True)
+    # Make the diff !
+    fromdate = ctime(stat(path0).st_mtime)
+    todate = ctime(stat(path1).st_mtime)
+    return &#34;&#34;.join(unified_diff(text0, text1, path0, path1, fromdate, todate))
+
+
+if __name__ == &#34;__main__&#34;:  # pragma: no cover
     main()</code></pre>
 </details>
 </section>
@@ -138,31 +155,76 @@ if __name__ == &#34;__main__&#34;:
     # Parse !
     options, args = parser.parse_args()
 
-    # Go !
     if len(args) != 2:
         parser.print_help()
         sys.exit(1)
 
-    # Open the 2 documents, diff only for ODT
-    doc1 = Document(args[0])
-    doc2 = Document(args[1])
-    if doc1.get_type() != &#34;text&#34; or doc2.get_type() != &#34;text&#34;:
+    path0 = args[0]
+    path1 = args[1]
+    try:
+        print_diff(path0, path1, options.ndiff)
+    except Exception as e:
         parser.print_help()
-        sys.exit(1)
-
+        print()
+        print(repr(e))
+        sys.exit(1)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.scripts.diff.make_diff"><code class="name flex">
+<span>def <span class="ident">make_diff</span></span>(<span>doc0, doc1, path0, path1)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_diff(doc0, doc1, path0, path1):
     # Convert in text before the diff
+    text0 = doc0.get_formatted_text(True).splitlines(True)
     text1 = doc1.get_formatted_text(True).splitlines(True)
-    text2 = doc2.get_formatted_text(True).splitlines(True)
-
     # Make the diff !
-    if options.ndiff:
-        result = ndiff(text1, text2, None, None)
-        result = [line for line in result if not line.startswith(&#34; &#34;)]
+    fromdate = ctime(stat(path0).st_mtime)
+    todate = ctime(stat(path1).st_mtime)
+    return &#34;&#34;.join(unified_diff(text0, text1, path0, path1, fromdate, todate))</code></pre>
+</details>
+</dd>
+<dt id="odfdo.scripts.diff.make_ndiff"><code class="name flex">
+<span>def <span class="ident">make_ndiff</span></span>(<span>doc0, doc1)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_ndiff(doc0, doc1):
+    # Convert in text before the diff
+    text0 = doc0.get_formatted_text(True).splitlines(True)
+    text1 = doc1.get_formatted_text(True).splitlines(True)
+    # Make the diff !
+    return &#34;&#34;.join(ndiff(text0, text1, None, None))</code></pre>
+</details>
+</dd>
+<dt id="odfdo.scripts.diff.print_diff"><code class="name flex">
+<span>def <span class="ident">print_diff</span></span>(<span>path0, path1, ndiff)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_diff(path0, path1, ndiff):
+    # Open the 2 documents, diff only for ODT
+    doc0 = Document(path0)
+    doc1 = Document(path1)
+    if doc0.get_type() != &#34;text&#34; or doc1.get_type() != &#34;text&#34;:
+        raise ValueError(&#34;Requires documents of type text.&#34;)
+    if ndiff:
+        print(make_ndiff(doc0, doc1))
     else:
-        fromdate = ctime(stat(args[0]).st_mtime)
-        todate = ctime(stat(args[1]).st_mtime)
-        result = unified_diff(text1, text2, args[0], args[1], fromdate, todate)
-    print(&#34;&#34;.join(result))</code></pre>
+        print(make_diff(doc0, doc1, path0, path1))</code></pre>
 </details>
 </dd>
 </dl>
@@ -184,6 +246,9 @@ if __name__ == &#34;__main__&#34;:
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="odfdo.scripts.diff.main" href="#odfdo.scripts.diff.main">main</a></code></li>
+<li><code><a title="odfdo.scripts.diff.make_diff" href="#odfdo.scripts.diff.make_diff">make_diff</a></code></li>
+<li><code><a title="odfdo.scripts.diff.make_ndiff" href="#odfdo.scripts.diff.make_ndiff">make_ndiff</a></code></li>
+<li><code><a title="odfdo.scripts.diff.print_diff" href="#odfdo.scripts.diff.print_diff">print_diff</a></code></li>
 </ul>
 </li>
 </ul>

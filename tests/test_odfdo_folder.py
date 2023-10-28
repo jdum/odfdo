@@ -3,8 +3,9 @@
 
 import shlex
 import subprocess
-from odfdo import Document
 from pathlib import Path
+
+from odfdo import Document
 
 SCRIPT = Path(__file__).parent.parent / "odfdo" / "scripts" / "folder.py"
 SAMPLES = Path(__file__).parent / "samples"

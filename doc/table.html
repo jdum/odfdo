@@ -62,6 +62,7 @@ from csv import Sniffer, reader, writer
 from decimal import Decimal as dec
 from io import StringIO
 from itertools import zip_longest
+from pathlib import Path
 from textwrap import wrap
 
 from .datatype import Boolean, Date, DateTime, Duration
@@ -3837,7 +3838,7 @@ class Table(Element):
 
         &#34;&#34;&#34;
 
-        def write_content(w):
+        def write_content(csv_writer):
             for values in self.iter_values():
                 line = []
                 for value in values:
@@ -3846,16 +3847,15 @@ class Table(Element):
                     if isinstance(value, str):
                         value = value.strip()
                     line.append(value)
-                w.writerow(line)
+                csv_writer.writerow(line)
 
+        out = StringIO()
+        csv_writer = writer(out, dialect=dialect)
+        write_content(csv_writer)
         if path_or_file is None:
-            out = StringIO()
-            w = writer(out, dialect=dialect)
-            write_content(w)
             return out.getvalue()
-        with open(path_or_file, &#34;w&#34;) as f:
-            w = writer(f, dialect=dialect)
-            write_content(w)
+        path = Path(path_or_file)
+        path.write_text(out.getvalue())
         return None
 
 
@@ -10148,7 +10148,7 @@ ensuiring model integrity.</p>
 
         &#34;&#34;&#34;
 
-        def write_content(w):
+        def write_content(csv_writer):
             for values in self.iter_values():
                 line = []
                 for value in values:
@@ -10157,16 +10157,15 @@ ensuiring model integrity.</p>
                     if isinstance(value, str):
                         value = value.strip()
                     line.append(value)
-                w.writerow(line)
+                csv_writer.writerow(line)
 
+        out = StringIO()
+        csv_writer = writer(out, dialect=dialect)
+        write_content(csv_writer)
         if path_or_file is None:
-            out = StringIO()
-            w = writer(out, dialect=dialect)
-            write_content(w)
             return out.getvalue()
-        with open(path_or_file, &#34;w&#34;) as f:
-            w = writer(f, dialect=dialect)
-            write_content(w)
+        path = Path(path_or_file)
+        path.write_text(out.getvalue())
         return None</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -12617,7 +12616,7 @@ opened as a local path. Else a opened file-like is expected.</p>
 
     &#34;&#34;&#34;
 
-    def write_content(w):
+    def write_content(csv_writer):
         for values in self.iter_values():
             line = []
             for value in values:
@@ -12626,16 +12625,15 @@ opened as a local path. Else a opened file-like is expected.</p>
                 if isinstance(value, str):
                     value = value.strip()
                 line.append(value)
-            w.writerow(line)
+            csv_writer.writerow(line)
 
+    out = StringIO()
+    csv_writer = writer(out, dialect=dialect)
+    write_content(csv_writer)
     if path_or_file is None:
-        out = StringIO()
-        w = writer(out, dialect=dialect)
-        write_content(w)
         return out.getvalue()
-    with open(path_or_file, &#34;w&#34;) as f:
-        w = writer(f, dialect=dialect)
-        write_content(w)
+    path = Path(path_or_file)
+    path.write_text(out.getvalue())
     return None</code></pre>
 </details>
 </dd>
