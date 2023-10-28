@@ -198,7 +198,6 @@ class Container:
     def __save_zip(self, target):
         """Save a Zip ODF from the available parts."""
         parts = self.__parts
-
         with ZipFile(target, "w", compression=ZIP_DEFLATED) as filezip:
             # Parts to save, except manifest at the end
             part_names = list(parts.keys())

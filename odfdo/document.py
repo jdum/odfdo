@@ -792,7 +792,7 @@ class Document:
         document_manifest = document.get_part(ODF_MANIFEST)
         for style in document.get_styles():
             tagname = style.tag
-            family = style.family
+            family = self._pseudo_style_attribute(style, "family")
             stylename = style.name
             container = style.parent
             container_name = container.tag
@@ -824,7 +824,7 @@ class Document:
             if tagname == "style:master-page":
                 query = "descendant::draw:image"
                 for image in style.get_elements(query):
-                    url = image.get_url()
+                    url = image.url
                     part = document.get_part(url)
                     # Manually add the part to keep the name
                     self.set_part(url, part)
@@ -832,7 +832,7 @@ class Document:
                     manifest.add_full_path(url, media_type)
             # Copy images from the fill-image
             elif tagname == "draw:fill-image":
-                url = style.get_url()
+                url = style.url
                 part = document.get_part(url)
                 self.set_part(url, part)
                 media_type = document_manifest.get_media_type(url)

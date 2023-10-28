@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
@@ -20,99 +19,133 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-
 import sys
+from io import BytesIO
 from optparse import OptionParser
+from pathlib import Path
 
 from odfdo import Document, __version__
-from odfdo.const import ODF_CLASSES
-from odfdo.scriptutils import (
-    StdoutWriter,
-    add_option_output,
-    check_target_file,
-    printerr,
-    printinfo,
-)
+from odfdo.scriptutils import add_option_output, check_target_file, printerr, printinfo
 
 
-def show_styles(document, target=None, automatic=True, common=True, properties=False):
+def show_styles(
+    document,
+    target=None,
+    automatic=True,
+    common=True,
+    properties=False,
+):
     """Show the different styles of a document and their properties."""
-    output = document.show_styles(
-        automatic=automatic, common=common, properties=properties
+    styles_content = document.show_styles(
+        automatic=automatic,
+        common=common,
+        properties=properties,
     )
     # Print the output
     if target is None:
-        print(output, end="")
+        print(styles_content, end="")
         return
-    with open(target, "w") as f:
-        f.write(output)
+    Path(target).write_text(styles_content)
 
 
 def delete_styles(document, target, pretty=True):
-    n = document.delete_styles()
+    number_deleted = document.delete_styles()
     document.save(target=target, pretty=pretty)
-    printinfo(n, "styles removed (0 error, 0 warning).")
+    printinfo(f"{number_deleted} styles removed (0 error, 0 warning).")
+    if isinstance(target, BytesIO):
+        sys.stdout.buffer.write(target.getvalue())
 
 
-def find_presentation_list_style(body):
-    for frame in body.get_frames(presentation_class="outline"):
-        first_list = frame.get_list()
-        if first_list is not None:
-            return first_list.get_style()
-    return None
+# def find_presentation_list_style(body):
+#     for frame in body.get_frames(presentation_class="outline"):
+#         first_list = frame.get_list()
+#         if first_list is not None:
+#             return first_list.get_style()
+#     return None
 
 
 def merge_presentation_styles(document, source):
     # Apply master page found
-    source_body = source.body
-    first_page = source_body.get_draw_page()
-    print(first_page.serialize())
-    master_page_name = first_page.master_page
-    print(master_page_name)
-    first_master_page = document.get_style("master-page", master_page_name)
-    printinfo("master page used:", first_master_page.display_name)
-    body = document.get_body
-    for page in body.get_draw_pages():
-        page.set_style_attribute(first_page.get_style())
-        page.set_master_page(first_page.get_master_page())
-        page.set_presentation_page_layout(first_page.get_presentation_page_layout())
+    raise NotImplementedError("merge_presentation_styles")  # pragma: no cover
+    # source_body = source.body
+    # first_page = source_body.get_draw_page()
+    # master_page_name = first_page.master_page
+    # print(master_page_name)
+    # first_master_page = document.get_style("master-page", master_page_name)
+    # printinfo(f"master page used: {first_master_page.display_name}")
+    # body = document.body
+
+    # for page in body.get_draw_pages():
+    #     page.set_style_attribute(first_page.get_style())
+    #     page.set_master_page(first_page.get_master_page())
+    #     page.set_presentation_page_layout(first_page.get_presentation_page_layout())
     # Adjust layout -- will obviously work only if content is separated from
+
     # style: use of master pages, layout, etc.
-    for presentation_class in ODF_CLASSES:
-        first_frame = source_body.get_frame(presentation_class=presentation_class)
-        if first_frame is None:
-            continue
-        # Mimic frame style
-        position = first_frame.get_position()
-        size = first_frame.size
-        style = first_frame.style
-        presentation_style = first_frame.get_presentation_style()
-        for page in body.get_draw_pages():
-            for frame in page.get_frames(presentation_class=presentation_class):
-                frame.position = position
-                frame.size = size
-                frame.set_style_attribute(style)
-                frame.set_presentation_style(presentation_style)
-        # Mimic list style (XXX only first level)
-        if presentation_class == "outline":
-            list_style = find_presentation_list_style(source_body)
-            for page in body.get_draw_pages():
-                for frame in page.get_frames(presentation_class="outline"):
-                    for lst in frame.get_lists():
-                        lst.set_style_attribute(list_style)
+    # for presentation_class in ODF_CLASSES:
+    #     first_frame = source_body.get_frame(presentation_class=presentation_class)
+    #     if first_frame is None:
+    #         continue
+    #     # Mimic frame style
+    #     position = first_frame.get_position()
+    #     size = first_frame.size
+    #     style = first_frame.style
+    #     presentation_style = first_frame.get_presentation_style()
+    #     for page in body.get_draw_pages():
+    #         for frame in page.get_frames(presentation_class=presentation_class):
+    #             frame.position = position
+    #             frame.size = size
+    #             frame.set_style_attribute(style)
+    #             frame.set_presentation_style(presentation_style)
+    #     # Mimic list style (XXX only first level)
+    #     if presentation_class == "outline":
+    #         list_style = find_presentation_list_style(source_body)
+    #         for page in body.get_draw_pages():
+    #             for frame in page.get_frames(presentation_class="outline"):
+    #                 for lst in frame.get_lists():
+    #                     lst.set_style_attribute(list_style)
 
 
 def merge_styles(document, from_file, target=None, pretty=True):
     source = Document(from_file)
     document.delete_styles()
     document.merge_styles_from(source)
-    doc_type = document.get_type()
+    # doc_type = document.get_type()
     # Enhance Presentation merge
-    if doc_type in {"presentation", "presentation-template"}:
-        printinfo("merging presentation styles...")
-        merge_presentation_styles(document, source)
+    # if doc_type in {"presentation", "presentation-template"}:
+    #     printinfo("merging presentation styles...")
+    #     merge_presentation_styles(document, source)
     document.save(target=target, pretty=pretty)
     printinfo("Done (0 error, 0 warning).")
+
+
+def style_tools(container_url, options):
+    doc = Document(container_url)
+
+    if options.delete:
+        target = options.output
+        if target is None:
+            printerr("Will not delete in-place: output file needed or '-' for stdout")
+            sys.exit(1)
+        elif target == "-":
+            target = BytesIO()
+        else:
+            check_target_file(target)
+        delete_styles(doc, target)
+    elif options.merge:
+        merge_styles(doc, options.merge, target=options.output)
+    else:
+        automatic = options.automatic
+        common = options.common
+        if not automatic ^ common:
+            automatic, common = True, True
+        show_styles(
+            doc,
+            options.output,
+            automatic=automatic,
+            common=common,
+            properties=options.properties,
+        )
 
 
 def main():
@@ -158,34 +191,14 @@ def main():
     if len(args) != 1:
         parser.print_help()
         sys.exit(1)
-    doc = Document(args[0])
-    if options.delete:
-        target = options.output
-        if target is None:
-            printerr(
-                "Will not delete in-place: ", 'output file needed or "-" for stdout'
-            )
-            sys.exit(1)
-        elif target == "-":
-            target = StdoutWriter()
-        else:
-            check_target_file(target)
-        delete_styles(doc, target)
-    elif options.merge:
-        merge_styles(doc, options.merge, target=options.output)
-    else:
-        automatic = options.automatic
-        common = options.common
-        if not automatic ^ common:
-            automatic, common = True, True
-        show_styles(
-            doc,
-            options.output,
-            automatic=automatic,
-            common=common,
-            properties=options.properties,
-        )
+
+    container_url = args[0]
+    try:
+        style_tools(container_url, options)
+    except Exception as e:
+        print(repr(e))
+        sys.exit(1)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

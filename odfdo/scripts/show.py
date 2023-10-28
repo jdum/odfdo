@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # Copyright 2018-2023 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
@@ -23,36 +22,34 @@
 
 import sys
 from optparse import OptionParser
-from os import makedirs, mkdir
-from os.path import exists, join
+from pathlib import Path
 from shutil import rmtree
 
-# from odfdo.cleaner import test_document
 from odfdo import Document, __version__
 from odfdo.scriptutils import add_option_output, check_target_directory, printerr
 
 
-def clean_filename(filename):
-    allowed_characters = {".", "-", "_", "@"}
+def clean_filename(name):
+    allowed_characters = {".", "-", "@"}
     result = []
-    for c in filename:
-        if c not in allowed_characters and not c.isalnum():
-            result.append("_")
+    for char in name:
+        if char in allowed_characters or char.isalnum():
+            result.append(char)
         else:
-            result.append(c)
-    return "".join(result)
+            result.append("\t")
+    return "_".join("".join(result).split())
 
 
 def dump_pictures(document, target):
     for part_name in document.get_parts():
-        if part_name.startswith("Pictures/"):
-            path = join(target, "Pictures")
-            if not exists(path):
-                mkdir(path)
-            data = document.get_part(part_name)
-            path = join(target, part_name)
-            with open(path, "wb") as f:
-                f.write(data)
+        if not part_name.startswith("Pictures/"):
+            continue
+        path = Path(target, "Pictures")
+        if not path.exists():
+            path.mkdir(parents=False, exist_ok=False)
+        data = document.get_part(part_name)
+        path = Path(target, part_name)
+        path.write_bytes(data)
 
 
 def spreadsheet_to_stdout(document):
@@ -62,41 +59,46 @@ def spreadsheet_to_stdout(document):
         print(table.to_csv(None))
 
 
-def spreadsheet_to_csv(document):
-    body = document.get_body()
+def spreadsheet_to_csv(document, output):
+    body = document.body
     for table in body.get_tables():
-        name = table.get_name()
+        name = table.name
         filename = clean_filename(name) + ".csv"
+        print(filename)
         table.rstrip(aggressive=True)
-        table.to_csv(filename)
+        table.to_csv(output / filename)
 
 
 def show_output(container_url, options, doc, doc_type):
-    output = options.output
-    check_target_directory(output)
-    if exists(output):
-        rmtree(output)
-    makedirs(output)
-    with open(join(output, "meta.txt"), "w") as f:
-        f.write(doc.get_formated_meta())
-    with open(join(output, "styles.txt"), "w") as f:
-        f.write(doc.show_styles())
+    output = Path(options.output)
+    check_target_directory(str(output))
+    if output.exists():
+        rmtree(output)  # pragma: no cover
+    output.mkdir(parents=True, exist_ok=True)
+    (output / "meta.txt").write_text(doc.get_formated_meta())
+    (output / "styles.txt").write_text(doc.show_styles())
     dump_pictures(doc, output)
 
     if doc_type in {"text", "text-template", "presentation", "presentation-template"}:
-        with open(join(output, "content.rst"), "w") as f:
-            f.write(doc.get_formatted_text(rst_mode=options.rst))
-    # spreadsheet
+        (output / "content.rst").write_text(
+            doc.get_formatted_text(rst_mode=options.rst)
+        )
     elif doc_type in {"spreadsheet", "spreadsheet-template"}:
-        spreadsheet_to_csv(doc)
+        print(doc)
+        print(doc.path)
+        print(doc.body)
+        spreadsheet_to_csv(doc, output)
     else:
-        printerr("The OpenDocument format", doc_type, "is not supported yet.")
+        printerr(f"The OpenDocument format '{doc_type}' is not supported yet.")
         sys.exit(1)
 
 
 def show(container_url, options):
-    # Open it!
-    doc = Document(container_url)
+    try:
+        doc = Document(container_url)
+    except Exception as e:
+        print(repr(e))
+        sys.exit(1)
     doc_type = doc.get_type()
     # Test it! XXX for TEXT only
     # if doc_type == 'text':
@@ -111,15 +113,14 @@ def show(container_url, options):
         print(doc.get_formated_meta())
     if options.styles:
         print(doc.show_styles())
-    if (
-        doc_type in {"text", "text-template", "presentation", "presentation-template"}
-        and not options.no_content
-    ):
-        print(doc.get_formatted_text(rst_mode=options.rst))
-    elif doc_type in {"spreadsheet", "spreadsheet-template"} and not options.no_content:
-        spreadsheet_to_stdout(doc)
+    if doc_type in {"text", "text-template", "presentation", "presentation-template"}:
+        if not options.no_content:
+            print(doc.get_formatted_text(rst_mode=options.rst))
+    elif doc_type in {"spreadsheet", "spreadsheet-template"}:
+        if not options.no_content:
+            spreadsheet_to_stdout(doc)
     else:
-        printerr("The OpenDocument format", doc_type, "is not supported yet.")
+        printerr(f"The OpenDocument format '{doc_type}' is not supported yet.")
         sys.exit(1)
 
 
@@ -179,5 +180,5 @@ def main():
     show(container_url, options)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

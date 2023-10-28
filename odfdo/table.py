@@ -31,6 +31,7 @@ from csv import Sniffer, reader, writer
 from decimal import Decimal as dec
 from io import StringIO
 from itertools import zip_longest
+from pathlib import Path
 from textwrap import wrap
 
 from .datatype import Boolean, Date, DateTime, Duration
@@ -3806,7 +3807,7 @@ class Table(Element):
 
         """
 
-        def write_content(w):
+        def write_content(csv_writer):
             for values in self.iter_values():
                 line = []
                 for value in values:
@@ -3815,16 +3816,15 @@ class Table(Element):
                     if isinstance(value, str):
                         value = value.strip()
                     line.append(value)
-                w.writerow(line)
+                csv_writer.writerow(line)
 
+        out = StringIO()
+        csv_writer = writer(out, dialect=dialect)
+        write_content(csv_writer)
         if path_or_file is None:
-            out = StringIO()
-            w = writer(out, dialect=dialect)
-            write_content(w)
             return out.getvalue()
-        with open(path_or_file, "w") as f:
-            w = writer(f, dialect=dialect)
-            write_content(w)
+        path = Path(path_or_file)
+        path.write_text(out.getvalue())
         return None
 
 

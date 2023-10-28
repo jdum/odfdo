@@ -33,3 +33,5 @@ cover/
 .dmypy.json
 dmypy.json
 
+pyrightconfig.json
+local.sh

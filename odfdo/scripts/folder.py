@@ -19,10 +19,10 @@
 # https://github.com/lpod/lpod-python
 # Authors: Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 
-import os
 import sys
 from optparse import OptionParser
 from pathlib import Path
+
 from odfdo import Document, __version__
 
 

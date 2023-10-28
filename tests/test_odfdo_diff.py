@@ -37,7 +37,7 @@ def test_no_file():
 
 
 def test_bad_format():
-    params = f"{SAMPLES/'test_odf.odt'} {SAMPLES/'background.odp'}"
+    params = f"{SAMPLES/'test_diff1.odt'} {SAMPLES/'background.odp'}"
     out, err, exitcode = run_params(params)
     assert exitcode == 1
     assert "Show a diff" in out
@@ -45,17 +45,26 @@ def test_bad_format():
 
 
 def test_diff():
-    params = f"{SAMPLES/'test_odf.odt'} {SAMPLES/'test2_odf.odt'}"
+    params = f"{SAMPLES/'test_diff1.odt'} {SAMPLES/'test_diff2.odt'}"
     out, err, exitcode = run_params(params)
     assert exitcode == 0
-    assert "test_odf.odt" in out
-    assert "test2_odf.odt" in out
-    assert "\n-xxxx\n+yyyyy\n" in out
+    assert "test_diff1.odt" in out
+    assert "test_diff2.odt" in out
+    assert "\n-content A\n" in out
+    assert "\n+content B\n" in out
 
 
 def test_ndiff():
-    params = f"-n {SAMPLES/'test_odf.odt'} {SAMPLES/'test2_odf.odt'}"
+    params = f"-n {SAMPLES/'test_diff1.odt'} {SAMPLES/'test_diff2.odt'}"
     out, err, exitcode = run_params(params)
     assert exitcode == 0
-    assert "test_odf.odt" not in out
-    assert "\n- xxxx\n+ yyyyy\n" in out
+    assert "test_diff1.odt" not in out
+    assert "\n- content A\n" in out
+    assert "\n+ content B\n" in out
+
+
+def test_diff_same():
+    params = f"{SAMPLES/'test_diff1.odt'} {SAMPLES/'test_diff1.odt'}"
+    out, err, exitcode = run_params(params)
+    assert exitcode == 0
+    assert not out.strip()
