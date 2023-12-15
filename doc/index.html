@@ -5698,7 +5698,7 @@ to the given family.</p>
 </dd>
 <dt id="odfdo.Document"><code class="flex name class">
 <span>class <span class="ident">Document</span></span>
-<span>(</span><span>target='text')</span>
+<span>(</span><span>target: Union[str, bytes, pathlib.Path, <a title="odfdo.container.Container" href="container.html#odfdo.container.Container">Container</a>, ForwardRef(None)] = 'text')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Abstraction of the ODF document.</p></div>
@@ -5709,7 +5709,7 @@ to the given family.</p>
 <pre><code class="python">class Document:
     &#34;&#34;&#34;Abstraction of the ODF document.&#34;&#34;&#34;
 
-    def __init__(self, target=&#34;text&#34;):
+    def __init__(self, target: Union[str, bytes, Path, Container, None] = &#34;text&#34;):
         # Cache of XML parts
         self.__xmlparts = {}
         # Cache of the body
@@ -5983,8 +5983,9 @@ to the given family.</p>
         return &#34;\n&#34;.join(result) + &#34;\n&#34;
 
     def add_file(self, path_or_file):
-        &#34;&#34;&#34;Insert a file from a path or a fike-like object in the container.
-        Return the full path to reference it in the content.
+        &#34;&#34;&#34;Insert a file from a path or a file-like object in the container.
+
+        Return the full path to reference in the content.
 
         Arguments:
 
@@ -6005,6 +6006,7 @@ to the given family.</p>
             if posixpath.join(&#34;Pictures&#34;, name) in medias:
                 name = f&#34;{path.stem}_{uuid4()}{extension}&#34;
         else:
+            path = None
             name = getattr(path_or_file, &#34;name&#34;, None)
             if not name:
                 name = str(uuid4())
@@ -6015,7 +6017,7 @@ to the given family.</p>
             manifest.add_full_path(&#34;Pictures/&#34;)
         full_path = posixpath.join(&#34;Pictures&#34;, name)
         if path is None:
-            self.container.set_part(full_path, handler.read())
+            self.container.set_part(full_path, path_or_file.read())
         else:
             self.container.set_part(full_path, path.read_bytes())
         manifest.add_full_path(full_path, media_type)
@@ -6518,8 +6520,8 @@ def path(self):
 <span>def <span class="ident">add_file</span></span>(<span>self, path_or_file)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Insert a file from a path or a fike-like object in the container.
-Return the full path to reference it in the content.</p>
+<div class="desc"><p>Insert a file from a path or a file-like object in the container.</p>
+<p>Return the full path to reference in the content.</p>
 <h2 id="arguments">Arguments</h2>
 <p>path_or_file &ndash; str or Path or file-like</p>
 <p>Return: str (URI)</p></div>
@@ -6528,8 +6530,9 @@ Return the full path to reference it in the content.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def add_file(self, path_or_file):
-    &#34;&#34;&#34;Insert a file from a path or a fike-like object in the container.
-    Return the full path to reference it in the content.
+    &#34;&#34;&#34;Insert a file from a path or a file-like object in the container.
+
+    Return the full path to reference in the content.
 
     Arguments:
 
@@ -6550,6 +6553,7 @@ Return the full path to reference it in the content.</p>
         if posixpath.join(&#34;Pictures&#34;, name) in medias:
             name = f&#34;{path.stem}_{uuid4()}{extension}&#34;
     else:
+        path = None
         name = getattr(path_or_file, &#34;name&#34;, None)
         if not name:
             name = str(uuid4())
@@ -6560,7 +6564,7 @@ Return the full path to reference it in the content.</p>
         manifest.add_full_path(&#34;Pictures/&#34;)
     full_path = posixpath.join(&#34;Pictures&#34;, name)
     if path is None:
-        self.container.set_part(full_path, handler.read())
+        self.container.set_part(full_path, path_or_file.read())
     else:
         self.container.set_part(full_path, path.read_bytes())
     manifest.add_full_path(full_path, media_type)
@@ -9249,7 +9253,7 @@ Abstraction of the XML library behind.</p></div>
 
         Return: int
         &#34;&#34;&#34;
-        if isinstance(pattern, str):
+        if not isinstance(pattern, str):
             # Fail properly if the pattern is an non-ascii bytestring
             pattern = str(pattern)
         cpattern = re.compile(pattern)
@@ -14818,7 +14822,7 @@ split into two consecutive spans.</p>
 
     Return: int
     &#34;&#34;&#34;
-    if isinstance(pattern, str):
+    if not isinstance(pattern, str):
         # Fail properly if the pattern is an non-ascii bytestring
         pattern = str(pattern)
     cpattern = re.compile(pattern)

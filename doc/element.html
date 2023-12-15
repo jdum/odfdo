@@ -873,7 +873,7 @@ class Element:
 
         Return: int
         &#34;&#34;&#34;
-        if isinstance(pattern, str):
+        if not isinstance(pattern, str):
             # Fail properly if the pattern is an non-ascii bytestring
             pattern = str(pattern)
         cpattern = re.compile(pattern)
@@ -3641,7 +3641,7 @@ Abstraction of the XML library behind.</p></div>
 
         Return: int
         &#34;&#34;&#34;
-        if isinstance(pattern, str):
+        if not isinstance(pattern, str):
             # Fail properly if the pattern is an non-ascii bytestring
             pattern = str(pattern)
         cpattern = re.compile(pattern)
@@ -9210,7 +9210,7 @@ split into two consecutive spans.</p>
 
     Return: int
     &#34;&#34;&#34;
-    if isinstance(pattern, str):
+    if not isinstance(pattern, str):
         # Fail properly if the pattern is an non-ascii bytestring
         pattern = str(pattern)
     cpattern = re.compile(pattern)
