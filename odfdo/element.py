@@ -844,7 +844,7 @@ class Element:
 
         Return: int
         """
-        if isinstance(pattern, str):
+        if not isinstance(pattern, str):
             # Fail properly if the pattern is an non-ascii bytestring
             pattern = str(pattern)
         cpattern = re.compile(pattern)
