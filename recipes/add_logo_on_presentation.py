@@ -5,10 +5,10 @@ presentation slide deck.
 """
 from pathlib import Path
 
-from odfdo import Document, Frame
-
 # reading image size requires a graphic library
 from PIL import Image
+
+from odfdo import Document, Frame
 
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "add_logo"
 TARGET = "presentation.odp"

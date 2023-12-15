@@ -3,7 +3,7 @@ from odfdo import Document, Paragraph
 document = Document("text")
 body = document.body
 
-paragraph = Paragraph(("A paragraph with a footnote about some references."))
+paragraph = Paragraph("A paragraph with a footnote about some references.")
 body.append(paragraph)
 
 # Notes are quite complex so they deserve a dedicated API on paragraphs:
@@ -23,4 +23,4 @@ paragraph.insert_note(
 #
 # odfdo creates footnotes by default. To create endnotes (notes
 # that appear at the end of the document), give the
-# note_class=’endnote’ parameter.
+# note_class='endnote' parameter.

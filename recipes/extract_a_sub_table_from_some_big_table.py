@@ -37,7 +37,7 @@ def generate_big_table(table_name) -> Document:
         row = Row()
         values = []
         n = line
-        for i in range(cols):
+        for _i in range(cols):
             values.append(n)
             n = syracuse(n)
         row.set_values(values)

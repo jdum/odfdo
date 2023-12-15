@@ -2,7 +2,6 @@
 """Analyse a list of files and directory (recurse), open all ODF documents
 and copy pictures from documents in a directory.
 """
-import optparse
 import sys
 import time
 from hashlib import sha256

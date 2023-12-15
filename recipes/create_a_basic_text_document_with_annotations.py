@@ -34,7 +34,7 @@ def make_annotations(document):
         paragraph = Paragraph(LOREM[:240])
 
         # Adding Annotation
-        # Annotations are notes that don’t appear in the document but
+        # Annotations are notes that don't appear in the document but
         # typically on a side bar in a desktop application. So they are not printed.
 
         # Now we add some annotation on each paragraph

@@ -16,7 +16,7 @@ def analyse_list(document):
 
     # Any element is a context for navigating but only on the subtree it
     # contains. Just like the body was, but since the body contains all content,
-    # we didn’t see the difference.
+    # we didn't see the difference.
     # Let's try the lists:
     print("Number of available lists in the document:", len(body.get_lists()))
     print()
@@ -65,7 +65,7 @@ def analyse_list(document):
     9 : <odfdo.paragraph.Paragraph object at 0x1057617f0> "text:p"
     DC Comics H2G2 site
 
-    """  # noqa: E501
+    """  # noqa: RUF001
 
 
 def main():

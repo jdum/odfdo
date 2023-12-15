@@ -82,9 +82,7 @@ def generate_document():
     table = Table("Frequency Table")
     body.append(table)
 
-    sorted = [(value, key) for key, value in frequences.items()]
-    sorted.sort()
-    sorted.reverse()
+    sorted_keys = reversed([(value, key) for key, value in frequences.items()])
 
     # one solution :
 
@@ -95,8 +93,8 @@ def generate_document():
     #    table.append_row(row)
 
     # another solution :
-    sorted = [(k, v) for (v, k) in sorted]
-    table.set_values(sorted)
+    sorted_keys = [(k, v) for (v, k) in sorted_keys]
+    table.set_values(sorted_keys)
 
     print("Rows in the table :", len(table.get_rows()))
 

@@ -7,10 +7,10 @@ import os
 from pathlib import Path
 from tempfile import mkstemp
 
-from odfdo import Document, DrawPage, Frame
-
 # analyzing embedded image need Pillow library
 from PIL import Image
+
+from odfdo import Document, DrawPage, Frame
 
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "presentation_images_in_odt"
 TARGET = "presentation.odp"

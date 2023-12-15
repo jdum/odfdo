@@ -73,7 +73,7 @@ def main():
     - pictures with a title: 2
     - pictures with a description: 1
     - pictures with a caption: 0
-    """  # noqa: E501
+    """
 
 
 if __name__ == "__main__":

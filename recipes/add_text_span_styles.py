@@ -55,7 +55,6 @@ def add_styles(document):
     words = set(body.text_recursive.split())
     for word in words:
         style_name = random_style_name()
-        style = document.get_style("text", style_name)
         for paragraph in body.get_paragraphs() + body.get_headers():
             # apply style to each text matching with the regex of some word
             paragraph.set_span(style_name, regex=word)

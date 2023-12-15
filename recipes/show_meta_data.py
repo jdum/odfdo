@@ -29,7 +29,7 @@ def main():
     # a parameter.
     #
     # Here are the output of the get_xxx methods for metadata.
-    # (Notice that LpOD doesn’t increment editing cycles nor statistics
+    # (Notice that odfdo doesn't increment editing cycles nor statistics
     # when saving the document.
     # For the metadata using dates or durations, lpOD provides datatypes that
     # decode from and serialize back to strings.

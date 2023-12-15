@@ -6,10 +6,10 @@ page and lose some info.
 """
 from pathlib import Path
 
-from odfdo import Document, DrawPage, Frame
-
 # analyzing embedded image need Pillow library
 from PIL import Image
+
+from odfdo import Document, DrawPage, Frame
 
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "presentation_from_images"
 TARGET = "presentation.odp"

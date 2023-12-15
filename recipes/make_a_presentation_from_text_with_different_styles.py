@@ -20,7 +20,7 @@ azertyuiop azertyuiop azertyuiop azertyuiop azertyuiop azertyuiop azertyuiop
 azertyuiop azertyuiop azertyuiop azertyuiop azertyuiop azertyuiop azertyuiop azertyuiop
 azertyuiop azertyuiop azertyuiop azertyuiop azertyuiop azertyuiop azertyuiop azertyuiop azertyuiop
 end.
-""".splitlines()  # noqa: E501
+""".splitlines()
 
 
 def save_new(document: Document, name: str):

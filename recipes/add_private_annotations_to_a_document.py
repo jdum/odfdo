@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Add not printable annotations to a document.
 
-Annotations are notes that don’t appear in the document but typically
+Annotations are notes that don't appear in the document but typically
 on a side bar in a desktop application. So they are not printed.
 """
 from pathlib import Path
@@ -27,26 +27,22 @@ def base_document():
     body.append(Header(2, "Préparatifs d'expédition en Bretagne"))
     body.append(
         Paragraph(
-            (
-                "Sous le consulat de Lucius Domitius et d'Appius Claudius, "
-                "César, quittant les quartiers d'hiver pour aller en Italie, "
-                "comme il avait coutume de le faire chaque année, ordonne aux "
-                "lieutenants qu'il laissait à la tête des légions de construire, "
-                "pendant l'hiver, le plus de vaisseaux qu'il serait possible, "
-                "et de réparer les anciens."
-            )
+            "Sous le consulat de Lucius Domitius et d'Appius Claudius, "
+            "César, quittant les quartiers d'hiver pour aller en Italie, "
+            "comme il avait coutume de le faire chaque année, ordonne aux "
+            "lieutenants qu'il laissait à la tête des légions de construire, "
+            "pendant l'hiver, le plus de vaisseaux qu'il serait possible, "
+            "et de réparer les anciens."
         )
     )
     body.append(Header(2, "La Bretagne"))
     body.append(
         Paragraph(
-            (
-                "Cette île est de forme triangulaire ; l'un des côtés regarde "
-                "la Gaule. Des deux angles de ce côté, l'un est au levant, "
-                "vers le pays de Cantium, où abordent presque tous les vaisseaux "
-                "gaulois ; l'autre, plus bas, est au midi. La longueur de ce côté "
-                "est d'environ cinq cent mille pas. "
-            )
+            "Cette île est de forme triangulaire ; l'un des côtés regarde "
+            "la Gaule. Des deux angles de ce côté, l'un est au levant, "
+            "vers le pays de Cantium, où abordent presque tous les vaisseaux "
+            "gaulois ; l'autre, plus bas, est au midi. La longueur de ce côté "
+            "est d'environ cinq cent mille pas. "
         )
     )
     return document

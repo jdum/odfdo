@@ -33,7 +33,7 @@ def main():
         try:
             slide_position = index - 1
             slide = presentation_base.body.get_draw_page(position=slide_position)
-        except Exception:
+        except Exception:  # noqa: S112
             continue
         if slide is None:
             continue

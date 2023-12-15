@@ -5,7 +5,7 @@ body = document.body
 
 # Let's imagine the sample_styles.odt document contains an interesting style.
 #
-# So let’s first fetch the style:
+# So let's first fetch the style:
 try:
     odfdo_styles = Document("sample_styles.odt")
     highlight = odfdo_styles.get_style("text", display_name="Yellow Highlight")
@@ -17,7 +17,7 @@ except Exception:
 
 # We made some assumptions here:
 #
-# ‘text’              : The family of the style, text styles apply on
+# 'text'              : The family of the style, text styles apply on
 #                       individual characters.
 # ”Yellow Highlight”  : The name of the style as we see it in a desktop
 #                       application.

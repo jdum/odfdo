@@ -45,7 +45,7 @@ def main():
     save_new(document, TARGET)
 
 
-def _tree_remove_tag(element, context):
+def _tree_remove_tag(element, context):  # noqa: C901
     """Send back a copy of the element, without span styles. Element should be
     either paragraph or heading.
 

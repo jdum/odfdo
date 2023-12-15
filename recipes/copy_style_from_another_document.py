@@ -34,7 +34,7 @@ def save_new(document: Document, name: str):
 def main():
     # We want to change the styles of collection2.odt,
     # we know the odfdo_styles.odt document contains an interesting style,
-    # So let’s first fetch the style:
+    # So let's first fetch the style:
     style_document = Document(STYLE_SOURCE)
 
     # Open our document:
