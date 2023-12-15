@@ -23,12 +23,12 @@
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 """Document class, root of the ODF document
 """
-import os
 import posixpath
 from copy import deepcopy
 from mimetypes import guess_type
 from operator import itemgetter
 from pathlib import Path
+from typing import Union
 from uuid import uuid4
 
 from .const import (
@@ -54,7 +54,14 @@ from .xmlpart import XmlPart
 
 AUTOMATIC_PREFIX = "odfdo_auto_"
 
-underline_lvl = ["=", "-", ":", "`", "'", '"', "~", "^", "_", "*", "+"]
+UNDERLINE_LVL = ["=", "-", ":", "`", "'", '"', "~", "^", "_", "*", "+"]
+
+
+def _underline_string(level: int, name: str) -> str:
+    """Underline string of the name."""
+    if level >= len(UNDERLINE_LVL):
+        return "\n"
+    return underline_lvl[level] * len(name)
 
 
 def _show_styles(element, level=0):
@@ -66,10 +73,8 @@ def _show_styles(element, level=0):
         return None
     tag_name = element.tag
     output.append(tag_name)
-    # Underline and Overline the name
-    underline = underline_lvl[level] * len(tag_name)
-    underline = underline if level < len(underline_lvl) else "\n"
-    output.append(underline)
+    # Underline the name
+    output.append(_underline_string(level, tag_name))
     # Add a separation between name and attributes
     output[-1] += "\n"
     attrs = []
@@ -117,7 +122,7 @@ def _get_part_class(path):
 class Document:
     """Abstraction of the ODF document."""
 
-    def __init__(self, target="text"):
+    def __init__(self, target: Union[str, bytes, Path, Container, None] = "text"):
         # Cache of XML parts
         self.__xmlparts = {}
         # Cache of the body
@@ -391,8 +396,9 @@ class Document:
         return "\n".join(result) + "\n"
 
     def add_file(self, path_or_file):
-        """Insert a file from a path or a fike-like object in the container.
-        Return the full path to reference it in the content.
+        """Insert a file from a path or a file-like object in the container.
+
+        Return the full path to reference in the content.
 
         Arguments:
 
@@ -413,6 +419,7 @@ class Document:
             if posixpath.join("Pictures", name) in medias:
                 name = f"{path.stem}_{uuid4()}{extension}"
         else:
+            path = None
             name = getattr(path_or_file, "name", None)
             if not name:
                 name = str(uuid4())
@@ -423,7 +430,7 @@ class Document:
             manifest.add_full_path("Pictures/")
         full_path = posixpath.join("Pictures", name)
         if path is None:
-            self.container.set_part(full_path, handler.read())
+            self.container.set_part(full_path, path_or_file.read())
         else:
             self.container.set_part(full_path, path.read_bytes())
         manifest.add_full_path(full_path, media_type)
