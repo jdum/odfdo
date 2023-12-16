@@ -21,8 +21,10 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 
+from collections.abc import Iterable
 from pathlib import Path
-from unittest import TestCase, main
+
+import pytest
 
 from odfdo.const import ODF_CONTENT
 from odfdo.content import Content
@@ -31,31 +33,42 @@ from odfdo.document import Document
 SAMPLES = Path(__file__).parent / "samples"
 
 
-class ContentTestCase(TestCase):
-    def setUp(self):
-        self.document = document = Document(SAMPLES / "base_text.odt")
-        self.content = document.get_part(ODF_CONTENT)
-
-    def test_get_content(self):
-        self.assertTrue(type(self.content) is Content)
-
-    def test_get_body(self):
-        body = self.content.body
-        self.assertEqual(body.tag, "office:text")
-
-    def test_get_styles(self):
-        result = self.content.get_styles()
-        self.assertEqual(len(result), 5)
-
-    def test_get_styles_family(self):
-        result = self.content.get_styles("font-face")
-        self.assertEqual(len(result), 3)
-
-    def test_get_style(self):
-        style = self.content.get_style("section", "Sect1")
-        self.assertEqual(style.name, "Sect1")
-        self.assertEqual(style.family, "section")
+@pytest.fixture
+def base_content() -> Iterable[Content]:
+    document = Document(SAMPLES / "base_text.odt")
+    yield document.get_part(ODF_CONTENT)
 
 
-if __name__ == "__main__":
-    main()
+def test_get_content(base_content):
+    assert isinstance(base_content, Content)
+
+
+def test_get_body(base_content):
+    body = base_content.body
+    assert body.tag == "office:text"
+
+
+def test_get_styles(base_content):
+    result = base_content.get_styles()
+    assert len(result) == 5
+
+
+def test_get_styles_family(base_content):
+    result = base_content.get_styles("font-face")
+    assert len(result) == 3
+
+
+def test_get_style(base_content):
+    style = base_content.get_style("section", "Sect1")
+    assert style.name == "Sect1"
+    assert style.family == "section"
+
+
+def test_repr(base_content):
+    assert repr(base_content) == "<Content part_name=content.xml>"
+
+
+def test_str(base_content):
+    result = str(base_content)
+    assert "odfdo Test Case Document" in result
+    assert "This is a paragraph with a named style" in result

@@ -20,56 +20,60 @@
 # Authors: Romain Gauthier <romain@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 
+from collections.abc import Iterable
 from pathlib import Path
-from unittest import TestCase, main
 
+import pytest
+
+from odfdo import Element
 from odfdo.document import Document
 from odfdo.element import NEXT_SIBLING
 from odfdo.frame import Frame
 from odfdo.image import DrawImage
 
-SAMPLES = Path(__file__).parent / "samples"
+IMG_SAMPLE = Path(__file__).parent / "samples" / "frame_image.odp"
+IMG_PATH = "Pictures/100002010000012C00000042188DCB81589D2C10.png"
 
 
-class TestImage(TestCase):
-    def setUp(self):
-        self.document = document = Document(SAMPLES / "frame_image.odp")
-        self.body = document.body
-        self.path = "Pictures/100002010000012C00000042188DCB81589D2C10.png"
+@pytest.fixture
+def sample_body() -> Iterable[Element]:
+    document = Document(IMG_SAMPLE)
+    yield document.body
 
-    def test_create_image(self):
-        image = DrawImage(self.path)
-        expected = (
-            '<draw:image xlink:href="%s" xlink:type="simple" '
-            'xlink:show="embed" xlink:actuate="onLoad"/>' % self.path
-        )
-        self.assertEqual(image.serialize(), expected)
 
-    def test_get_image_list(self):
-        body = self.body
-        result = body.get_images()
-        self.assertEqual(len(result), 1)
-        element = result[0]
-        self.assertEqual(element.url, self.path)
+def test_create_image():
+    image = DrawImage(IMG_PATH)
+    expected = (
+        f'<draw:image xlink:href="{IMG_PATH}" xlink:type="simple" '
+        'xlink:show="embed" xlink:actuate="onLoad"/>'
+    )
+    assert image.serialize() == expected
 
-    def test_get_image_by_name(self):
-        body = self.body
-        element = body.get_image(name="odfdo")
-        self.assertEqual(element.url, self.path)
 
-    def test_get_image_by_position(self):
-        body = self.body
-        element = body.get_image(position=0)
-        self.assertEqual(element.url, self.path)
+def test_get_image_list(sample_body):
+    result = sample_body.get_images()
+    assert len(result) == 1
+    element = result[0]
+    assert element.url == IMG_PATH
 
-    def test_get_image_by_path(self):
-        body = self.body
-        element = body.get_image(url=".png")
-        self.assertEqual(element.url, self.path)
+
+def test_get_image_by_name(sample_body):
+    element = sample_body.get_image(name="odfdo")
+    assert element.url == IMG_PATH
+
+
+def test_get_image_by_position(sample_body):
+    element = sample_body.get_image(position=0)
+    assert element.url == IMG_PATH
+
+
+def test_get_image_by_path(sample_body):
+    element = sample_body.get_image(url=".png")
+    assert element.url == IMG_PATH
 
 
 def test_insert_image(tmp_path):
-    document = Document(SAMPLES / "frame_image.odp")
+    document = Document(IMG_SAMPLE)
     body = document.body
     path = "a/path"
     image = DrawImage(path)
@@ -84,5 +88,11 @@ def test_insert_image(tmp_path):
     assert element.url == path
 
 
-if __name__ == "__main__":
-    main()
+def test_repr(sample_body):
+    element = sample_body.get_image(name="odfdo")
+    assert repr(element) == "<DrawImage tag=draw:image>"
+
+
+def test_str(sample_body):
+    element = sample_body.get_image(name="odfdo")
+    assert str(element) == ""

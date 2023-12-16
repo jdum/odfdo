@@ -19,51 +19,46 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 
-from pathlib import Path
-from unittest import TestCase, main
+from collections.abc import Iterable
+
+import pytest
 
 from odfdo.element import Element, Text
 
-SAMPLES = Path(__file__).parent / "samples"
+
+@pytest.fixture
+def results() -> Iterable[Element]:
+    element = Element.from_tag("<text:p>text<text:span/>tail</text:p>")
+    yield element.xpath("descendant::text()")
 
 
-class TextTestCase(TestCase):
-    def setUp(self):
-        element = Element.from_tag("<text:p>text<text:span/>tail</text:p>")
-        self.results = element.xpath("descendant::text()")
-
-    def test_nodes(self):
-        self.assertEqual(len(self.results), 2)
-
-    def test_type(self):
-        self.assertTrue(type(self.results[0]) is Text)
-
-    def test_text(self):
-        text = self.results[0]
-        self.assertEqual(text, "text")
-        self.assertTrue(text.is_text() is True)
-        self.assertTrue(text.is_tail() is False)
-
-    def test_tail(self):
-        tail = self.results[1]
-        self.assertEqual(tail, "tail")
-        self.assertTrue(tail.is_text() is False)
-        self.assertTrue(tail.is_tail() is True)
+def test_nodes(results):
+    assert len(results) == 2
 
 
-class ParentTestCase(TestCase):
-    def setUp(self):
-        element = Element.from_tag("<text:p>text<text:span/>tail</text:p>")
-        self.results = element.xpath("descendant::text()")
-
-    def test_text(self):
-        text = self.results[0]
-        self.assertEqual(text.parent.tag, "text:p")
-
-    def test_tail(self):
-        tail = self.results[1]
-        self.assertEqual(tail.parent.tag, "text:span")
+def test_type(results):
+    assert isinstance(results[0], Text)
 
 
-if __name__ == "__main__":
-    main()
+def test_text(results):
+    text = results[0]
+    assert text == "text"
+    assert text.is_text() is True
+    assert text.is_tail() is False
+
+
+def test_tail(results):
+    tail = results[1]
+    assert tail == "tail"
+    assert tail.is_text() is False
+    assert tail.is_tail() is True
+
+
+def test_text_parent(results):
+    text = results[0]
+    assert text.parent.tag == "text:p"
+
+
+def test_tail_parent(results):
+    tail = results[1]
+    assert tail.parent.tag == "text:span"

@@ -115,6 +115,7 @@ ignore = [
 
 [tool.ruff.per-file-ignores]
 "recipes/accessing_a_single_element.py" = ["RUF001"]
+"tests/test_*" = ["S101"]
 
 [tool.coverage.report]
 skip_empty = true

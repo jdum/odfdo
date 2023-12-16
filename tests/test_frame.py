@@ -19,206 +19,217 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 
+from collections.abc import Iterable
 from pathlib import Path
-from unittest import TestCase, main
+
+import pytest
 
 from odfdo.document import Document
+from odfdo.element import Element
 from odfdo.frame import Frame
 from odfdo.header import Header
 
-SAMPLES = Path(__file__).parent / "samples"
+FRAME = Path(__file__).parent / "samples" / "frame_image.odp"
 ZOE = "你好 Zoé"
 
 
-class TestFrame(TestCase):
-    def setUp(self):
-        document = Document(SAMPLES / "frame_image.odp")
-        self.body = document.body
+@pytest.fixture
+def frame_body() -> Iterable[Element]:
+    document = Document(FRAME)
+    yield document.body
 
-    def test_create_frame(self):
-        frame = Frame("A Frame", size=("10cm", "10cm"), style="Graphics")
-        expected = (
+
+def test_create_frame():
+    frame = Frame("A Frame", size=("10cm", "10cm"), style="Graphics")
+    expected = (
+        '<draw:frame svg:width="10cm" svg:height="10cm" '
+        'draw:z-index="0" draw:name="A Frame" '
+        'draw:style-name="Graphics"/>'
+    )
+    assert frame.serialize() == expected
+
+
+def test_create_frame_page():
+    frame = Frame(
+        "Another Frame",
+        size=("10cm", "10cm"),
+        anchor_type="page",
+        anchor_page=1,
+        position=("10mm", "10mm"),
+        style="Graphics",
+    )
+    assert frame.serialize() in (
+        (
             '<draw:frame svg:width="10cm" svg:height="10cm" '
-            'draw:z-index="0" draw:name="A Frame" '
+            'draw:z-index="0" draw:name="Another Frame" '
+            'draw:style-name="Graphics" '
+            'svg:x="10mm" svg:y="10mm" '
+            'text:anchor-type="page" '
+            'text:anchor-page-number="1"/>'
+        ),
+        (
+            '<draw:frame svg:width="10cm" svg:height="10cm" '
+            'draw:z-index="0" draw:name="Another Frame" '
+            'text:anchor-type="page" text:anchor-page-number="1" '
+            'svg:x="10mm" svg:y="10mm" '
             'draw:style-name="Graphics"/>'
-        )
-        self.assertEqual(frame.serialize(), expected)
-
-    def test_create_frame_page(self):
-        frame = Frame(
-            "Another Frame",
-            size=("10cm", "10cm"),
-            anchor_type="page",
-            anchor_page=1,
-            position=("10mm", "10mm"),
-            style="Graphics",
-        )
-        self.assertIn(
-            frame.serialize(),
-            (
-                (
-                    '<draw:frame svg:width="10cm" svg:height="10cm" '
-                    'draw:z-index="0" draw:name="Another Frame" '
-                    'draw:style-name="Graphics" '
-                    'svg:x="10mm" svg:y="10mm" '
-                    'text:anchor-type="page" '
-                    'text:anchor-page-number="1"/>'
-                ),
-                (
-                    '<draw:frame svg:width="10cm" svg:height="10cm" '
-                    'draw:z-index="0" draw:name="Another Frame" '
-                    'text:anchor-type="page" text:anchor-page-number="1" '
-                    'svg:x="10mm" svg:y="10mm" '
-                    'draw:style-name="Graphics"/>'
-                ),
-            ),
-        )
-
-    def test_get_frame_list(self):
-        body = self.body
-        result = body.get_frames()
-        self.assertEqual(len(result), 4)
-
-    def test_get_frame_list_title(self):
-        body = self.body
-        result = body.get_frames(title="Intitulé")
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0].tag, "draw:frame")
-
-    def test_get_frame_by_name(self):
-        body = self.body
-        frame = body.get_frame(name="odfdo")
-        self.assertEqual(frame.tag, "draw:frame")
-
-    def test_get_frame_by_position(self):
-        body = self.body
-        frame = body.get_frame(position=3)
-        self.assertEqual(frame.presentation_class, "notes")
-
-    def test_get_frame_by_description(self):
-        body = self.body
-        frame = body.get_frame(description="描述")
-        self.assertEqual(frame.tag, "draw:frame")
-
-    def test_insert_frame(self):
-        body = self.body.clone
-        frame1 = Frame("frame1", size=("10cm", "10cm"), style="Graphics")
-        frame2 = Frame(
-            "frame2",
-            size=("10cm", "10cm"),
-            anchor_page=1,
-            position=("10mm", "10mm"),
-            style="Graphics",
-        )
-        body.append(frame1)
-        body.append(frame2)
-        result = body.get_frames(style="Graphics")
-        self.assertEqual(len(result), 2)
-        element = body.get_frame(name="frame1")
-        self.assertEqual(element.tag, "draw:frame")
-        element = body.get_frame(name="frame2")
-        self.assertEqual(element.tag, "draw:frame")
+        ),
+    )
 
 
-class TestImageFrame(TestCase):
-    def test_create_image_frame(self):
-        frame = Frame.image_frame("Pictures/zoe.jpg")
-        self.assertIn(
-            frame.serialize(),
-            (
-                (
-                    '<draw:frame svg:width="1cm" svg:height="1cm" '
-                    'draw:z-index="0">'
-                    '<draw:image xlink:href="Pictures/zoe.jpg" '
-                    'xlink:type="simple" xlink:show="embed" '
-                    'xlink:actuate="onLoad"/>'
-                    "</draw:frame>"
-                ),
-            ),
-        )
-
-    def test_create_image_frame_text(self):
-        frame = Frame.image_frame("Pictures/zoe.jpg", text=ZOE)
-        expected = (
-            '<draw:frame svg:width="1cm" svg:height="1cm" '
-            'draw:z-index="0">'
-            '<draw:image xlink:href="Pictures/zoe.jpg" '
-            'xlink:type="simple" xlink:show="embed" '
-            'xlink:actuate="onLoad">'
-            f"<text:p>{ZOE}</text:p>"
-            "</draw:image>"
-            "</draw:frame>"
-        )
-        self.assertEqual(frame.serialize(), expected)
+def test_get_frame_list(frame_body):
+    result = frame_body.get_frames()
+    assert len(result) == 4
 
 
-class TestTextFrame(TestCase):
-    def test_create_text_frame(self):
-        frame = Frame.text_frame(ZOE)
-        expected = (
-            '<draw:frame svg:width="1cm" svg:height="1cm" '
-            'draw:z-index="0">'
-            "<draw:text-box>"
-            "<text:p>%s</text:p>"
-            "</draw:text-box>"
-            "</draw:frame>"
-        ) % ZOE
-        self.assertEqual(frame.serialize(), expected)
-
-    def test_create_text_frame_element(self):
-        heading = Header(1, ZOE)
-        frame = Frame.text_frame(heading)
-        expected = (
-            '<draw:frame svg:width="1cm" svg:height="1cm" '
-            'draw:z-index="0">'
-            "<draw:text-box>"
-            '<text:h text:outline-level="1">%s</text:h>'
-            "</draw:text-box>"
-            "</draw:frame>"
-        ) % ZOE
-        self.assertEqual(frame.serialize(), expected)
+def test_get_frame_list_title(frame_body):
+    result = frame_body.get_frames(title="Intitulé")
+    assert len(result) == 1
+    assert result[0].tag == "draw:frame"
 
 
-class TestOdfFrame(TestCase):
-    def setUp(self):
-        document = Document(SAMPLES / "frame_image.odp")
-        self.body = document.body
-        self.size = size = ("1cm", "2mm")
-        self.position = position = ("3in", "4pt")
-        self.frame = Frame(size=size, position=position, anchor_type="paragraph")
-
-    def test_get_frame(self):
-        body = self.body
-        frame = body.get_frame()
-        self.assertTrue(isinstance(frame, Frame))
-
-    def test_get_frame_size(self):
-        self.assertEqual(self.frame.size, self.size)
-
-    def test_set_size(self):
-        frame = self.frame.clone
-        frame.size = self.position
-        self.assertEqual(frame.size, self.position)
-
-    def test_get_frame_position(self):
-        self.assertEqual(self.frame.position, self.position)
-
-    def test_set_frame_position(self):
-        frame = self.frame.clone
-        frame.position = self.size
-        self.assertEqual(frame.position, self.size)
-
-    def test_get_frame_anchor_type(self):
-        self.assertEqual(self.frame.anchor_type, "paragraph")
-
-    def test_set_frame_anchor_type(self):
-        frame = self.frame.clone
-        self.assertEqual(frame.anchor_page, None)
-        frame.anchor_type = "page"
-        frame.anchor_page = 3
-        self.assertEqual(frame.anchor_type, "page")
-        self.assertEqual(frame.anchor_page, 3)
+def test_get_frame_by_name(frame_body):
+    frame = frame_body.get_frame(name="odfdo")
+    assert frame.tag == "draw:frame"
 
 
-if __name__ == "__main__":
-    main()
+def test_get_frame_by_position(frame_body):
+    frame = frame_body.get_frame(position=3)
+    assert frame.presentation_class == "notes"
+
+
+def test_get_frame_by_description(frame_body):
+    frame = frame_body.get_frame(description="描述")
+    assert frame.tag == "draw:frame"
+
+
+def test_insert_frame(frame_body):
+    body = frame_body.clone
+    frame1 = Frame("frame1", size=("10cm", "10cm"), style="Graphics")
+    frame2 = Frame(
+        "frame2",
+        size=("10cm", "10cm"),
+        anchor_page=1,
+        position=("10mm", "10mm"),
+        style="Graphics",
+    )
+    body.append(frame1)
+    body.append(frame2)
+    result = body.get_frames(style="Graphics")
+    assert len(result) == 2
+    element = body.get_frame(name="frame1")
+    assert element.tag == "draw:frame"
+    element = body.get_frame(name="frame2")
+    assert element.tag == "draw:frame"
+
+
+def test_create_image_frame():
+    frame = Frame.image_frame("Pictures/zoe.jpg")
+    expected = (
+        '<draw:frame svg:width="1cm" svg:height="1cm" '
+        'draw:z-index="0">'
+        '<draw:image xlink:href="Pictures/zoe.jpg" '
+        'xlink:type="simple" xlink:show="embed" '
+        'xlink:actuate="onLoad"/>'
+        "</draw:frame>"
+    )
+    assert frame.serialize() == expected
+
+
+def test_create_image_frame_text():
+    frame = Frame.image_frame("Pictures/zoe.jpg", text=ZOE)
+    expected = (
+        '<draw:frame svg:width="1cm" svg:height="1cm" '
+        'draw:z-index="0">'
+        '<draw:image xlink:href="Pictures/zoe.jpg" '
+        'xlink:type="simple" xlink:show="embed" '
+        'xlink:actuate="onLoad">'
+        f"<text:p>{ZOE}</text:p>"
+        "</draw:image>"
+        "</draw:frame>"
+    )
+    assert frame.serialize() == expected
+
+
+def test_create_text_frame():
+    frame = Frame.text_frame(ZOE)
+    expected = (
+        '<draw:frame svg:width="1cm" svg:height="1cm" '
+        'draw:z-index="0">'
+        "<draw:text-box>"
+        f"<text:p>{ZOE}</text:p>"
+        "</draw:text-box>"
+        "</draw:frame>"
+    )
+    assert frame.serialize() == expected
+
+
+def test_create_text_frame_element():
+    heading = Header(1, ZOE)
+    frame = Frame.text_frame(heading)
+    expected = (
+        '<draw:frame svg:width="1cm" svg:height="1cm" '
+        'draw:z-index="0">'
+        "<draw:text-box>"
+        f'<text:h text:outline-level="1">{ZOE}</text:h>'
+        "</draw:text-box>"
+        "</draw:frame>"
+    )
+    assert frame.serialize() == expected
+
+
+def test_get_frame(frame_body):
+    body = frame_body
+    frame = body.get_frame()
+    assert isinstance(frame, Frame)
+
+
+def test_get_frame_size():
+    size = ("1cm", "2mm")
+    position = ("3in", "4pt")
+    frame = Frame(size=size, position=position, anchor_type="paragraph")
+    assert frame.size == size
+
+
+def test_set_size():
+    size = ("1cm", "2mm")
+    position = ("3in", "4pt")
+    frame = Frame(size=size, position=position, anchor_type="paragraph")
+    frame2 = frame.clone
+    frame.size = position
+    assert frame.size == position
+    assert frame2.size == size
+
+
+def test_get_frame_position():
+    size = ("1cm", "2mm")
+    position = ("3in", "4pt")
+    frame = Frame(size=size, position=position, anchor_type="paragraph")
+    assert frame.position == position
+
+
+def test_set_frame_position():
+    size = ("1cm", "2mm")
+    position = ("3in", "4pt")
+    frame = Frame(size=size, position=position, anchor_type="paragraph")
+    frame2 = frame.clone
+    frame2.position = size
+    assert frame2.position == size
+
+
+def test_get_frame_anchor_type():
+    size = ("1cm", "2mm")
+    position = ("3in", "4pt")
+    frame = Frame(size=size, position=position, anchor_type="paragraph")
+    assert frame.anchor_type == "paragraph"
+
+
+def test_set_frame_anchor_type():
+    size = ("1cm", "2mm")
+    position = ("3in", "4pt")
+    frame = Frame(size=size, position=position, anchor_type="paragraph")
+    assert frame.anchor_page is None
+    frame.anchor_type = "page"
+    frame.anchor_page = 3
+    assert frame.anchor_type == "page"
+    assert frame.anchor_page == 3

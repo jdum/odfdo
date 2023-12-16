@@ -40,6 +40,9 @@ class Content(XmlPart):
             self.get_element("//office:automatic-styles"),
         )
 
+    def __str__(self) -> str:
+        return str(self.body)
+
     # Public API
 
     def get_styles(self, family=None):

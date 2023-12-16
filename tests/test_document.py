@@ -465,3 +465,42 @@ def test_bg_image_show_styles():
     assert "common used:" not in automatic_styles
     no_styles = document.show_styles(automatic=False, common=False)
     assert no_styles == ""
+
+
+def test_repr_empty():
+    document = Document()
+    assert repr(document) == "<Document type=text path=None>"
+
+
+def test_repr_text():
+    document = Document(SAMPLES / "example.odt")
+    assert "example.odt" in repr(document)
+
+
+def test_repr_spreadsheet():
+    document = Document(SAMPLES / "simple_table.ods")
+    result = repr(document)
+    assert "type=spreadsheet" in result
+    assert "simple_table.ods" in result
+
+
+def test_str_empty():
+    document = Document()
+    document.body.clear()
+    assert str(document) == ""
+
+
+def test_str_text():
+    document = Document(SAMPLES / "example.odt")
+    result = str(document)
+    assert "odfdo Test Case Document" in result
+    assert "This is the second paragraph" in result
+    assert "First paragraph[*] of the second section" in result
+
+
+def test_str_spreadsheet():
+    document = Document(SAMPLES / "simple_table.ods")
+    result = str(document)
+    assert "1 1 1 2 3 3 3" in result
+    assert "A float" in result
+    assert "3.14" in result

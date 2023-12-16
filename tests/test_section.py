@@ -19,66 +19,68 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 
+from collections.abc import Iterable
 from pathlib import Path
-from unittest import TestCase, main
 
+import pytest
+
+from odfdo import Element
 from odfdo.document import Document
 from odfdo.section import Section
 
 SAMPLES = Path(__file__).parent / "samples"
 
 
-class TestSection(TestCase):
-    def setUp(self):
-        self.document = document = Document(SAMPLES / "base_text.odt")
-        self.body = document.body
-
-    def test_create_simple_section(self):
-        """The idea is to test only with the mandatory arguments (none
-        in this case), not to test odf_create_element which is done in
-        test_xmlpart.
-        """
-        element = Section()
-        expected = "<text:section/>"
-        self.assertEqual(element.serialize(), expected)
-
-    def test_create_complex_section(self):
-        """The idea is to test with all possible arguments. If some arguments
-        are contradictory or trigger different behaviours, test all those
-        combinations separately.
-        """
-        element = Section(style="Standard")
-        expected = '<text:section text:style-name="Standard"/>'
-        self.assertEqual(element.serialize(), expected)
-
-    def test_create_complex_section_with_name(self):
-        """Test the name argument."""
-        element = Section(name="SomeName")
-        expected = '<text:section text:name="SomeName"/>'
-        self.assertEqual(element.serialize(), expected)
-
-    def test_get_section_list(self):
-        body = self.body
-        sections = body.get_sections()
-        self.assertEqual(len(sections), 2)
-        second = sections[1]
-        name = second.name
-        self.assertEqual(name, "Section2")
-
-    def test_get_section_list_style(self):
-        body = self.body
-        sections = body.get_sections(style="Sect1")
-        self.assertEqual(len(sections), 2)
-        section = sections[0]
-        name = section.name
-        self.assertEqual(name, "Section1")
-
-    def test_get_section(self):
-        body = self.body
-        section = body.get_section(position=1)
-        name = section.name
-        self.assertEqual(name, "Section2")
+@pytest.fixture
+def body() -> Iterable[Element]:
+    document = Document(SAMPLES / "base_text.odt")
+    yield document.body
 
 
-if __name__ == "__main__":
-    main()
+def test_create_simple_section():
+    """The idea is to test only with the mandatory arguments (none
+    in this case), not to test odf_create_element which is done in
+    test_xmlpart.
+    """
+    element = Section()
+    expected = "<text:section/>"
+    assert element.serialize() == expected
+
+
+def test_create_complex_section():
+    """The idea is to test with all possible arguments. If some arguments
+    are contradictory or trigger different behaviours, test all those
+    combinations separately.
+    """
+    element = Section(style="Standard")
+    expected = '<text:section text:style-name="Standard"/>'
+    assert element.serialize() == expected
+
+
+def test_create_complex_section_with_name():
+    """Test the name argument."""
+    element = Section(name="SomeName")
+    expected = '<text:section text:name="SomeName"/>'
+    assert element.serialize() == expected
+
+
+def test_get_section_list(body):
+    sections = body.get_sections()
+    assert len(sections) == 2
+    second = sections[1]
+    name = second.name
+    assert name == "Section2"
+
+
+def test_get_section_list_style(body):
+    sections = body.get_sections(style="Sect1")
+    assert len(sections) == 2
+    section = sections[0]
+    name = section.name
+    assert name == "Section1"
+
+
+def test_get_section(body):
+    section = body.get_section(position=1)
+    name = section.name
+    assert name == "Section2"

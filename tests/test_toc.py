@@ -19,56 +19,83 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 
+from collections.abc import Iterable
 from pathlib import Path
-from unittest import TestCase, main
+
+import pytest
 
 from odfdo.document import Document
 from odfdo.toc import TOC
 
-SAMPLES = Path(__file__).parent / "samples"
+SAMPLE = Path(__file__).parent / "samples" / "toc.odt"
+SAMPLE_EXPECTED = [
+    "Table des matières",
+    "1. Level 1 title 1",
+    "1.1. Level 2 title 1",
+    "2. Level 1 title 2",
+    "2.1.1. Level 3 title 1",
+    "2.2. Level 2 title 2",
+    "3. Level 1 title 3",
+    "3.1. Level 2 title 1",
+    "3.1.1. Level 3 title 1",
+    "3.1.2. Level 3 title 2",
+    "3.2. Level 2 title 2",
+    "3.2.1. Level 3 title 1",
+    "3.2.2. Level 3 title 2",
+]
+
+
+@pytest.fixture
+def sample() -> Iterable[Document]:
+    document = Document(SAMPLE)
+    yield document
 
 
 def get_toc_lines(toc):
     return [paragraph.text for paragraph in toc.get_paragraphs()]
 
 
-class TOCTest(TestCase):
-    def setUp(self):
-        self.document = Document(SAMPLES / "toc.odt")
-        self.expected = [
-            "Table des matières",
-            "1. Level 1 title 1",
-            "1.1. Level 2 title 1",
-            "2. Level 1 title 2",
-            "2.1.1. Level 3 title 1",
-            "2.2. Level 2 title 2",
-            "3. Level 1 title 3",
-            "3.1. Level 2 title 1",
-            "3.1.1. Level 3 title 1",
-            "3.1.2. Level 3 title 2",
-            "3.2. Level 2 title 2",
-            "3.2.1. Level 3 title 1",
-            "3.2.2. Level 3 title 2",
-        ]
-
-    def test_toc_fill_unattached(self):
-        toc = TOC("Table des matières")
-        self.assertRaises(ValueError, toc.fill)
-
-    def test_toc_fill_unattached_document(self):
-        toc = TOC("Table des matières")
-        toc.fill(self.document)
-        toc_lines = get_toc_lines(toc)
-        self.assertEqual(toc_lines, self.expected)
-
-    def test_toc_fill_attached(self):
-        document = self.document.clone
-        toc = TOC("Table des matières")
-        document.body.append(toc)
+def test_toc_fill_unattached():
+    toc = TOC("Table des matières")
+    with pytest.raises(ValueError):
         toc.fill()
-        toc_lines = get_toc_lines(toc)
-        self.assertEqual(toc_lines, self.expected)
 
 
-if __name__ == "__main__":
-    main()
+def test_toc_fill_unattached_document(sample):
+    toc = TOC("Table des matières")
+    toc.fill(sample)
+    toc_lines = get_toc_lines(toc)
+    assert toc_lines == SAMPLE_EXPECTED
+
+
+def test_toc_fill_attached(sample):
+    document = sample.clone
+    toc = TOC("Table des matières")
+    document.body.append(toc)
+    toc.fill()
+    toc_lines = get_toc_lines(toc)
+    assert toc_lines == SAMPLE_EXPECTED
+
+
+def test_repr_empty():
+    toc = TOC("Table des matières")
+    assert repr(toc) == "<TOC tag=text:table-of-content>"
+
+
+def test_str_empty():
+    toc = TOC("Table des matières")
+    assert "Table des matières" in str(toc)
+
+
+def test_repr(sample):
+    toc = TOC("Table des matières")
+    toc.fill(sample)
+    assert repr(toc) == "<TOC tag=text:table-of-content>"
+
+
+def test_str(sample):
+    toc = TOC("Table des matières")
+    toc.fill(sample)
+    result = str(toc)
+    for line in SAMPLE_EXPECTED:
+        assert line in result

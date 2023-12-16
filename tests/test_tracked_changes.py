@@ -20,168 +20,169 @@
 # Authors: Romain Gauthier <romain@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 
+from collections import namedtuple
+from collections.abc import Iterable
 from datetime import datetime
 from pathlib import Path
-from unittest import TestCase, main
+
+import pytest
 
 from odfdo.document import Document
 from odfdo.tracked_changes import TrackedChanges
 
-SAMPLES = Path(__file__).parent / "samples"
+SAMPLE = Path(__file__).parent / "samples" / "tracked_changes.odt"
+
+Sample = namedtuple("Sample", ["doc", "changes"])
 
 
-class TestTrackedChanges(TestCase):
-    def setUp(self):
-        uri = SAMPLES / "tracked_changes.odt"
-        self.document = document = Document(uri)
-        self.body = document.body
-
-    def test_get_tracked_changes(self):
-        tracked_changes = self.body.get_tracked_changes()
-        self.assertTrue(isinstance(tracked_changes, TrackedChanges))
+@pytest.fixture
+def sample() -> Iterable[Sample]:
+    document = Document(SAMPLE)
+    yield Sample(doc=document, changes=document.body.get_tracked_changes())
 
 
-class TestChangedRegionTestCase(TestCase):
-    def setUp(self):
-        uri = SAMPLES / "tracked_changes.odt"
-        self.document = document = Document(uri)
-        self.tracked_changes = document.body.get_tracked_changes()
-
-    def test_get_changed_region_list(self):
-        regions = self.tracked_changes.get_changed_regions()
-        self.assertEqual(len(regions), 3)
-
-    def test_get_changed_region_list_creator(self):
-        creator = "Romain Gauthier"
-        tracked_changes = self.tracked_changes
-        regions = tracked_changes.get_changed_regions(creator=creator)
-        expected = (
-            '<text:changed-region xml:id="ct140266191788864" text:id="ct140266191788864">\n'
-            "  <text:deletion>\n"
-            "    <office:change-info>\n"
-            "      <dc:creator>Romain Gauthier</dc:creator>\n"
-            "      <dc:date>2009-08-21T19:27:00</dc:date>\n"
-            "    </office:change-info>\n"
-            '    <text:p text:style-name="Standard">les</text:p>\n'
-            "  </text:deletion>\n"
-            "</text:changed-region>\n"
-        )
-        self.assertEqual(regions[0].serialize(pretty=True), expected)
-
-    def test_get_changed_region_list_date(self):
-        date = datetime(2009, 8, 21, 17, 27, 00)
-        tracked_changes = self.tracked_changes
-        regions = tracked_changes.get_changed_regions(date=date)
-        expected = (
-            '<text:changed-region xml:id="ct140266193096800" text:id="ct140266193096800">\n'
-            "  <text:deletion>\n"
-            "    <office:change-info>\n"
-            "      <dc:creator>David Versmisse</dc:creator>\n"
-            "      <dc:date>2009-08-21T17:27:00</dc:date>\n"
-            "    </office:change-info>\n"
-            '    <text:p text:style-name="Standard">amis,</text:p>\n'
-            "  </text:deletion>\n"
-            "</text:changed-region>\n"
-        )
-        self.assertEqual(regions[0].serialize(pretty=True), expected)
-
-    def test_get_changed_region_list_regex(self):
-        tracked_changes = self.tracked_changes
-        regions = tracked_changes.get_changed_regions(content="amis")
-        expected = (
-            '<text:changed-region xml:id="ct140266193096800" text:id="ct140266193096800">\n'
-            "  <text:deletion>\n"
-            "    <office:change-info>\n"
-            "      <dc:creator>David Versmisse</dc:creator>\n"
-            "      <dc:date>2009-08-21T17:27:00</dc:date>\n"
-            "    </office:change-info>\n"
-            '    <text:p text:style-name="Standard">amis,</text:p>\n'
-            "  </text:deletion>\n"
-            "</text:changed-region>\n"
-        )
-        self.assertEqual(regions[0].serialize(pretty=True), expected)
-
-    def test_get_changed_region_by_id(self):
-        tracked_changes = self.tracked_changes
-        region = tracked_changes.get_changed_region(text_id="ct140266193096576")
-        self.assertEqual(
-            region.serialize(pretty=True),
-            (
-                '<text:changed-region xml:id="ct140266193096576" text:id="ct140266193096576">\n'
-                "  <text:insertion>\n"
-                "    <office:change-info>\n"
-                "      <dc:creator>Hervé Cauwelier</dc:creator>\n"
-                "      <dc:date>2009-08-21T18:27:00</dc:date>\n"
-                "    </office:change-info>\n"
-                "  </text:insertion>\n"
-                "</text:changed-region>\n"
-            ),
-        )
-
-    def test_get_changed_region_by_creator(self):
-        creator = "David Versmisse"
-        tracked_changes = self.tracked_changes
-        region = tracked_changes.get_changed_region(creator=creator)
-        expected = (
-            '<text:changed-region xml:id="ct140266193096800" text:id="ct140266193096800">\n'
-            "  <text:deletion>\n"
-            "    <office:change-info>\n"
-            "      <dc:creator>David Versmisse</dc:creator>\n"
-            "      <dc:date>2009-08-21T17:27:00</dc:date>\n"
-            "    </office:change-info>\n"
-            '    <text:p text:style-name="Standard">amis,</text:p>\n'
-            "  </text:deletion>\n"
-            "</text:changed-region>\n"
-        )
-        self.assertEqual(region.serialize(pretty=True), expected)
-
-    def test_get_changed_region_by_date(self):
-        date = datetime(2009, 8, 21, 18, 27, 00)
-        tracked_changes = self.tracked_changes
-        region = tracked_changes.get_changed_region(date=date)
-        self.assertEqual(
-            region.serialize(pretty=True),
-            (
-                '<text:changed-region xml:id="ct140266193096576" text:id="ct140266193096576">\n'
-                "  <text:insertion>\n"
-                "    <office:change-info>\n"
-                "      <dc:creator>Hervé Cauwelier</dc:creator>\n"
-                "      <dc:date>2009-08-21T18:27:00</dc:date>\n"
-                "    </office:change-info>\n"
-                "  </text:insertion>\n"
-                "</text:changed-region>\n"
-            ),
-        )
-
-    def test_get_changed_region_by_content(self):
-        tracked_changes = self.tracked_changes
-        region = tracked_changes.get_changed_region(content=r"les")
-        expected = (
-            '<text:changed-region xml:id="ct140266191788864" text:id="ct140266191788864">\n'
-            "  <text:deletion>\n"
-            "    <office:change-info>\n"
-            "      <dc:creator>Romain Gauthier</dc:creator>\n"
-            "      <dc:date>2009-08-21T19:27:00</dc:date>\n"
-            "    </office:change-info>\n"
-            '    <text:p text:style-name="Standard">les</text:p>\n'
-            "  </text:deletion>\n"
-            "</text:changed-region>\n"
-        )
-        self.assertEqual(region.serialize(pretty=True), expected)
+def test_instance_tracked_changes(sample):
+    assert isinstance(sample.changes, TrackedChanges)
 
 
-class TestChangesIdsTestCase(TestCase):
-    def setUp(self):
-        uri = SAMPLES / "tracked_changes.odt"
-        self.document = document = Document(uri)
-        self.body = document.body
-
-    def test_get_changes_ids(self):
-        paragraph = self.body.get_paragraph(content=r"Bonjour")
-        changes_ids = paragraph.get_changes_ids()
-        expected = ["ct140266191788864", "ct140266193096576", "ct140266193096800"]
-        self.assertEqual(changes_ids, expected)
+def test_get_changed_region_list(sample):
+    regions = sample.changes.get_changed_regions()
+    assert len(regions) == 3
 
 
-if __name__ == "__main__":
-    main()
+def test_get_changed_region_list_creator(sample):
+    creator = "Romain Gauthier"
+    tracked_changes = sample.changes
+    regions = tracked_changes.get_changed_regions(creator=creator)
+    expected = (
+        '<text:changed-region xml:id="ct140266191788864" text:id="ct140266191788864">\n'
+        "  <text:deletion>\n"
+        "    <office:change-info>\n"
+        "      <dc:creator>Romain Gauthier</dc:creator>\n"
+        "      <dc:date>2009-08-21T19:27:00</dc:date>\n"
+        "    </office:change-info>\n"
+        '    <text:p text:style-name="Standard">les</text:p>\n'
+        "  </text:deletion>\n"
+        "</text:changed-region>\n"
+    )
+    assert regions[0].serialize(pretty=True) == expected
+
+
+def test_get_changed_region_list_date(sample):
+    date = datetime(2009, 8, 21, 17, 27, 00)
+    tracked_changes = sample.changes
+    regions = tracked_changes.get_changed_regions(date=date)
+    expected = (
+        '<text:changed-region xml:id="ct140266193096800" text:id="ct140266193096800">\n'
+        "  <text:deletion>\n"
+        "    <office:change-info>\n"
+        "      <dc:creator>David Versmisse</dc:creator>\n"
+        "      <dc:date>2009-08-21T17:27:00</dc:date>\n"
+        "    </office:change-info>\n"
+        '    <text:p text:style-name="Standard">amis,</text:p>\n'
+        "  </text:deletion>\n"
+        "</text:changed-region>\n"
+    )
+    assert regions[0].serialize(pretty=True) == expected
+
+
+def test_get_changed_region_list_regex(sample):
+    tracked_changes = sample.changes
+    regions = tracked_changes.get_changed_regions(content="amis")
+    expected = (
+        '<text:changed-region xml:id="ct140266193096800" text:id="ct140266193096800">\n'
+        "  <text:deletion>\n"
+        "    <office:change-info>\n"
+        "      <dc:creator>David Versmisse</dc:creator>\n"
+        "      <dc:date>2009-08-21T17:27:00</dc:date>\n"
+        "    </office:change-info>\n"
+        '    <text:p text:style-name="Standard">amis,</text:p>\n'
+        "  </text:deletion>\n"
+        "</text:changed-region>\n"
+    )
+    assert regions[0].serialize(pretty=True) == expected
+
+
+def test_get_changed_region_by_id(sample):
+    tracked_changes = sample.changes
+    region = tracked_changes.get_changed_region(text_id="ct140266193096576")
+    expected = (
+        '<text:changed-region xml:id="ct140266193096576" text:id="ct140266193096576">\n'
+        "  <text:insertion>\n"
+        "    <office:change-info>\n"
+        "      <dc:creator>Hervé Cauwelier</dc:creator>\n"
+        "      <dc:date>2009-08-21T18:27:00</dc:date>\n"
+        "    </office:change-info>\n"
+        "  </text:insertion>\n"
+        "</text:changed-region>\n"
+    )
+    assert region.serialize(pretty=True) == expected
+
+
+def test_get_changed_region_by_creator(sample):
+    creator = "David Versmisse"
+    tracked_changes = sample.changes
+    region = tracked_changes.get_changed_region(creator=creator)
+    expected = (
+        '<text:changed-region xml:id="ct140266193096800" text:id="ct140266193096800">\n'
+        "  <text:deletion>\n"
+        "    <office:change-info>\n"
+        "      <dc:creator>David Versmisse</dc:creator>\n"
+        "      <dc:date>2009-08-21T17:27:00</dc:date>\n"
+        "    </office:change-info>\n"
+        '    <text:p text:style-name="Standard">amis,</text:p>\n'
+        "  </text:deletion>\n"
+        "</text:changed-region>\n"
+    )
+    assert region.serialize(pretty=True) == expected
+
+
+def test_get_changed_region_by_date(sample):
+    date = datetime(2009, 8, 21, 18, 27, 00)
+    tracked_changes = sample.changes
+    region = tracked_changes.get_changed_region(date=date)
+    expected = (
+        '<text:changed-region xml:id="ct140266193096576" text:id="ct140266193096576">\n'
+        "  <text:insertion>\n"
+        "    <office:change-info>\n"
+        "      <dc:creator>Hervé Cauwelier</dc:creator>\n"
+        "      <dc:date>2009-08-21T18:27:00</dc:date>\n"
+        "    </office:change-info>\n"
+        "  </text:insertion>\n"
+        "</text:changed-region>\n"
+    )
+    assert region.serialize(pretty=True) == expected
+
+
+def test_get_changed_region_by_content(sample):
+    tracked_changes = sample.changes
+    region = tracked_changes.get_changed_region(content=r"les")
+    expected = (
+        '<text:changed-region xml:id="ct140266191788864" text:id="ct140266191788864">\n'
+        "  <text:deletion>\n"
+        "    <office:change-info>\n"
+        "      <dc:creator>Romain Gauthier</dc:creator>\n"
+        "      <dc:date>2009-08-21T19:27:00</dc:date>\n"
+        "    </office:change-info>\n"
+        '    <text:p text:style-name="Standard">les</text:p>\n'
+        "  </text:deletion>\n"
+        "</text:changed-region>\n"
+    )
+    assert region.serialize(pretty=True) == expected
+
+
+def test_get_changes_ids(sample):
+    paragraph = sample.doc.body.get_paragraph(content=r"Bonjour")
+    changes_ids = paragraph.get_changes_ids()
+    expected = ["ct140266191788864", "ct140266193096576", "ct140266193096800"]
+    assert changes_ids == expected
+
+
+def test_repr(sample):
+    assert repr(sample.changes) == "<TrackedChanges tag=text:tracked-changes>"
+
+
+def test_str(sample):
+    result = str(sample.changes)
+    assert "Romain" in result
+    assert "2009-08-21" in result

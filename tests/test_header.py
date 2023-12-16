@@ -19,85 +19,84 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 
+from collections.abc import Iterable
 from pathlib import Path
-from unittest import TestCase, main
 
+import pytest
+
+from odfdo import Element
 from odfdo.document import Document
 from odfdo.header import Header
 
-SAMPLES = Path(__file__).parent / "samples"
+BASE_DOCUMENT = Path(__file__).parent / "samples" / "base_text.odt"
 
 
-class TestHeader(TestCase):
-    def setUp(self):
-        self.document = document = Document(SAMPLES / "base_text.odt")
-        self.body = document.body
-
-    def test_get_header_list(self):
-        body = self.body
-        headings = body.get_headers()
-        self.assertEqual(len(headings), 3)
-        second = headings[1]
-        text = second.text
-        self.assertEqual(text, "Level 2 Title")
-
-    def test_get_header_list_style(self):
-        body = self.body
-        headings = body.get_headers(style="Heading_20_2")
-        self.assertEqual(len(headings), 1)
-        heading = headings[0]
-        text = heading.text
-        self.assertEqual(text, "Level 2 Title")
-
-    def test_get_header_list_level(self):
-        body = self.body
-        headings = body.get_headers(outline_level=2)
-        self.assertEqual(len(headings), 1)
-        heading = headings[0]
-        text = heading.text
-        self.assertEqual(text, "Level 2 Title")
-
-    def test_get_header_list_style_level(self):
-        body = self.body
-        headings = body.get_headers(style="Heading_20_2", outline_level=2)
-        self.assertEqual(len(headings), 1)
-        heading = headings[0]
-        text = heading.text
-        self.assertEqual(text, "Level 2 Title")
-
-    def test_get_header_list_context(self):
-        body = self.body
-        section2 = body.get_section(position=1)
-        headings = section2.get_headers()
-        self.assertEqual(len(headings), 1)
-        heading = headings[0]
-        text = heading.text
-        self.assertEqual(text, "First Title of the Second Section")
-
-    def test_odf_heading(self):
-        body = self.body
-        heading = body.get_header()
-        self.assertTrue(isinstance(heading, Header))
-
-    def test_get_header(self):
-        body = self.body
-        heading = body.get_header(position=1)
-        text = heading.text
-        self.assertEqual(text, "Level 2 Title")
-
-    def test_get_header_level(self):
-        body = self.body
-        heading = body.get_header(outline_level=2)
-        text = heading.text
-        self.assertEqual(text, "Level 2 Title")
-
-    def test_insert_heading(self):
-        body = self.body.clone
-        heading = Header(2, "An inserted heading", style="Heading_20_2")
-        body.append(heading)
-        last_heading = body.get_headers()[-1]
-        self.assertEqual(last_heading.text, "An inserted heading")
+@pytest.fixture
+def base_body() -> Iterable[Element]:
+    document = Document(BASE_DOCUMENT)
+    yield document.body
 
 
-if __name__ == "__main__":
-    main()
+def test_get_header_list(base_body):
+    headings = base_body.get_headers()
+    assert len(headings) == 3
+    second = headings[1]
+    text = second.text
+    assert text == "Level 2 Title"
+
+
+def test_get_header_list_style(base_body):
+    headings = base_body.get_headers(style="Heading_20_2")
+    assert len(headings) == 1
+    heading = headings[0]
+    text = heading.text
+    assert text == "Level 2 Title"
+
+
+def test_get_header_list_level(base_body):
+    headings = base_body.get_headers(outline_level=2)
+    assert len(headings) == 1
+    heading = headings[0]
+    text = heading.text
+    assert text == "Level 2 Title"
+
+
+def test_get_header_list_style_level(base_body):
+    headings = base_body.get_headers(style="Heading_20_2", outline_level=2)
+    assert len(headings) == 1
+    heading = headings[0]
+    text = heading.text
+    assert text == "Level 2 Title"
+
+
+def test_get_header_list_context(base_body):
+    section2 = base_body.get_section(position=1)
+    headings = section2.get_headers()
+    assert len(headings) == 1
+    heading = headings[0]
+    text = heading.text
+    assert text == "First Title of the Second Section"
+
+
+def test_odf_heading(base_body):
+    heading = base_body.get_header()
+    assert isinstance(heading, Header)
+
+
+def test_get_header(base_body):
+    heading = base_body.get_header(position=1)
+    text = heading.text
+    assert text == "Level 2 Title"
+
+
+def test_get_header_level(base_body):
+    heading = base_body.get_header(outline_level=2)
+    text = heading.text
+    assert text == "Level 2 Title"
+
+
+def test_insert_heading(base_body):
+    heading = Header(2, "An inserted heading", style="Heading_20_2")
+    base_body.append(heading)
+    last_heading = base_body.get_headers()[-1]
+    assert last_heading.text == "An inserted heading"

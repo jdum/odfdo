@@ -19,7 +19,7 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
-"""XmlPart base class for XML parts
+"""XmlPart base class for XML parts.
 """
 from copy import deepcopy
 from io import BytesIO
@@ -31,6 +31,7 @@ from .element import Element
 
 class XmlPart:
     """Representation of an XML part.
+
     Abstraction of the XML library behind.
     """
 
@@ -48,6 +49,9 @@ class XmlPart:
             part = container.get_part(self.part_name)
             self.__tree = parse(BytesIO(part))  # noqa:S320
         return self.__tree
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} part_name={self.part_name}>"
 
     # Public API
 

@@ -1,7 +1,6 @@
 # Copyright 2018-2023 Jérôme Dumonteil
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 
-
 from odfdo.version import __version__
 
 

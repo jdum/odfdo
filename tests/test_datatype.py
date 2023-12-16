@@ -21,120 +21,134 @@
 
 from datetime import datetime, timedelta
 from decimal import Decimal
-from pathlib import Path
-from unittest import TestCase, main
+
+import pytest
 
 from odfdo.datatype import Boolean, DateTime, Duration, Unit
 
-SAMPLES = Path(__file__).parent / "samples"
+
+def test_datetime_encode():
+    date = datetime(2009, 0o6, 26, 11, 9, 36)
+    expected = "2009-06-26T11:09:36"
+    assert DateTime.encode(date) == expected
 
 
-class DateTimeTestCase(TestCase):
-    def test_encode(self):
-        date = datetime(2009, 0o6, 26, 11, 9, 36)
-        expected = "2009-06-26T11:09:36"
-        self.assertEqual(DateTime.encode(date), expected)
-
-    def test_decode(self):
-        date = "2009-06-29T14:33:21"
-        expected = datetime(2009, 6, 29, 14, 33, 21)
-        self.assertEqual(DateTime.decode(date), expected)
+def test_datetime_decode():
+    date = "2009-06-29T14:33:21"
+    expected = datetime(2009, 6, 29, 14, 33, 21)
+    assert DateTime.decode(date) == expected
 
 
-class DurationTestCase(TestCase):
-    def test_encode(self):
-        duration = timedelta(0, 53, 0, 0, 6)
-        expected = "PT00H06M53S"
-        self.assertEqual(Duration.encode(duration), expected)
-
-    def test_decode(self):
-        duration = "PT12H34M56S"
-        expected = timedelta(0, 56, 0, 0, 34, 12)
-        self.assertEqual(Duration.decode(duration), expected)
+def test_duration_encode():
+    duration = timedelta(0, 53, 0, 0, 6)
+    expected = "PT00H06M53S"
+    assert Duration.encode(duration) == expected
 
 
-class BooleanTestCase(TestCase):
-    def test_encode(self):
-        self.assertEqual(Boolean.encode(True), "true")
-        self.assertEqual(Boolean.encode(False), "false")
-        self.assertEqual(Boolean.encode("true"), "true")
-        self.assertEqual(Boolean.encode("false"), "false")
-
-    def test_bad_encode(self):
-        self.assertRaises(TypeError, Boolean.encode, "on")
-        self.assertRaises(TypeError, Boolean.encode, 1)
-
-    def test_decode(self):
-        self.assertEqual(Boolean.decode("true"), True)
-        self.assertEqual(Boolean.decode("false"), False)
-
-    def test_bad_decode(self):
-        self.assertRaises(ValueError, Boolean.decode, "True")
-        self.assertRaises(ValueError, Boolean.decode, "1")
+def test_duration_decode():
+    duration = "PT12H34M56S"
+    expected = timedelta(0, 56, 0, 0, 34, 12)
+    assert Duration.decode(duration) == expected
 
 
-class UnitTestCase(TestCase):
-    def test_str(self):
-        unit = Unit("1.847mm")
-        self.assertEqual(unit.value, Decimal("1.847"))
-        self.assertEqual(unit.unit, "mm")
-
-    def test_int(self):
-        unit = Unit(1)
-        self.assertEqual(unit.value, Decimal("1"))
-        self.assertEqual(unit.unit, "cm")
-
-    def test_float(self):
-        unit = Unit(3.14)
-        self.assertEqual(unit.value, Decimal("3.14"))
-        self.assertEqual(unit.unit, "cm")
-
-    def test_encode(self):
-        value = "1.847mm"
-        unit = Unit(value)
-        self.assertEqual(str(unit), value)
-
-    # TODO use other units once conversion implemented
-
-    def test_eq(self):
-        unit1 = Unit("2.54cm")
-        unit2 = Unit("2.54cm")
-        self.assertTrue(unit1 == unit2)
-
-    def test_lt(self):
-        unit1 = Unit("2.53cm")
-        unit2 = Unit("2.54cm")
-        self.assertTrue(unit1 < unit2)
-
-    def test_nlt(self):
-        unit1 = Unit("2.53cm")
-        unit2 = Unit("2.54cm")
-        self.assertFalse(unit1 > unit2)
-
-    def test_gt(self):
-        unit1 = Unit("2.54cm")
-        unit2 = Unit("2.53cm")
-        self.assertTrue(unit1 > unit2)
-
-    def test_ngt(self):
-        unit1 = Unit("2.54cm")
-        unit2 = Unit("2.53cm")
-        self.assertFalse(unit1 < unit2)
-
-    def test_le(self):
-        unit1 = Unit("2.54cm")
-        unit2 = Unit("2.54cm")
-        self.assertTrue(unit1 <= unit2)
-
-    def test_ge(self):
-        unit1 = Unit("2.54cm")
-        unit2 = Unit("2.54cm")
-        self.assertTrue(unit1 >= unit2)
-
-    def test_convert(self):
-        unit = Unit("10cm")
-        self.assertEqual(unit.convert("px"), Unit("283px"))
+def test_bool_encode():
+    assert Boolean.encode(True) == "true"
+    assert Boolean.encode(False) == "false"
+    assert Boolean.encode("true") == "true"
+    assert Boolean.encode("false") == "false"
 
 
-if __name__ == "__main__":
-    main()
+def test_bool_bad_encode_on():
+    with pytest.raises(TypeError):
+        Boolean.encode("on")
+
+
+def test_bool_bad_encode_one():
+    with pytest.raises(TypeError):
+        Boolean.encode(1)
+
+
+def test_bool_decode():
+    assert Boolean.decode("true") is True
+    assert Boolean.decode("false") is False
+
+
+def test_bool_bad_decode_true():
+    with pytest.raises(ValueError):
+        Boolean.decode("True")
+
+
+def test_bool_bad_encode_pne():
+    with pytest.raises(ValueError):
+        Boolean.decode("1")
+
+
+def test_str():
+    unit = Unit("1.847mm")
+    assert unit.value == Decimal("1.847")
+    assert unit.unit == "mm"
+
+
+def test_int():
+    unit = Unit(1)
+    assert unit.value == Decimal("1")
+    assert unit.unit == "cm"
+
+
+def test_float():
+    unit = Unit(3.14)
+    assert unit.value == Decimal("3.14")
+    assert unit.unit == "cm"
+
+
+def test_encode():
+    value = "1.847mm"
+    unit = Unit(value)
+    assert str(unit) == value
+
+
+def test_eq():
+    unit1 = Unit("2.54cm")
+    unit2 = Unit("2.54cm")
+    assert unit1 == unit2
+
+
+def test_lt():
+    unit1 = Unit("2.53cm")
+    unit2 = Unit("2.54cm")
+    assert unit1 < unit2
+
+
+def test_nlt():
+    unit1 = Unit("2.53cm")
+    unit2 = Unit("2.54cm")
+    assert not (unit1 > unit2)
+
+
+def test_gt():
+    unit1 = Unit("2.54cm")
+    unit2 = Unit("2.53cm")
+    assert unit1 > unit2
+
+
+def test_ngt():
+    unit1 = Unit("2.54cm")
+    unit2 = Unit("2.53cm")
+    assert not (unit1 < unit2)
+
+
+def test_le():
+    unit1 = Unit("2.54cm")
+    unit2 = Unit("2.54cm")
+    assert unit1 <= unit2
+
+
+def test_ge():
+    unit1 = Unit("2.54cm")
+    unit2 = Unit("2.54cm")
+    assert unit1 >= unit2
+
+
+def test_convert():
+    unit = Unit("10cm")
+    assert unit.convert("px") == Unit("283px")

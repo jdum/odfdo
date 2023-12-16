@@ -63,6 +63,9 @@ class Container:
         if path:
             self.open(path)
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} type={self.mimetype} path={self.path}>"
+
     def open(self, path_or_file):
         """Load the content of an ODF file."""
         self.__path_like = path_or_file
@@ -302,7 +305,10 @@ class Container:
     @property
     def mimetype(self):
         """Return unicode value of mimetype of the document."""
-        return self.get_part("mimetype").decode("utf8", "ignore")
+        try:
+            return self.get_part("mimetype").decode("utf8", "ignore")
+        except Exception:
+            return ""
 
     @mimetype.setter
     def mimetype(self, m):

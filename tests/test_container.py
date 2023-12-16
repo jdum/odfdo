@@ -273,3 +273,28 @@ def test_load_folder(tmp_path):
     new_container.del_part(path)
     with pytest.raises(ValueError):
         new_container.get_part(path)
+
+
+def test_repr_empty():
+    container = Container()
+    assert repr(container) == "<Container type= path=None>"
+
+
+def test_str_empty():
+    container = Container()
+    assert str(container) == repr(container)
+
+
+def test_repr():
+    container = Container()
+    container.open(SAMPLES / "example.odt")
+    result = repr(container)
+    assert result.startswith("<Container type=application/vnd.oasis.opendocument.text")
+    assert " path=" in result
+    assert result.endswith("amples/example.odt>")
+
+
+def test_str():
+    container = Container()
+    container.open(SAMPLES / "example.odt")
+    assert str(container) == repr(container)

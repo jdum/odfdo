@@ -20,9 +20,10 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 
+from collections.abc import Iterable
 from pathlib import Path
-from unittest import TestCase, main
 
+import pytest
 from lxml.etree import _ElementTree
 
 from odfdo.const import ODF_CONTENT
@@ -34,67 +35,76 @@ from odfdo.xmlpart import XmlPart
 SAMPLES = Path(__file__).parent / "samples"
 
 
-class XmlPartTestCase(TestCase):
-    def setUp(self):
-        self.container = Container()
-        self.container.open(SAMPLES / "example.odt")
-
-    def tearDown(self):
-        del self.container
-
-    def test_get_element_list(self):
-        content_part = XmlPart(ODF_CONTENT, self.container)
-        elements = content_part.get_elements("//text:p")
-        # The annotation paragraph is counted
-        self.assertEqual(len(elements), 8)
-
-    def test_tree(self):
-        # Testing a private but important method
-        content = XmlPart(ODF_CONTENT, self.container)
-        tree = content._XmlPart__get_tree()
-        self.assertTrue(isinstance(tree, _ElementTree))
-        self.assertNotEqual(content._XmlPart__tree, None)
-
-    def test_root(self):
-        content = XmlPart(ODF_CONTENT, self.container)
-        root = content.root
-        self.assertTrue(isinstance(root, Element))
-        self.assertEqual(root.tag, "office:document-content")
-        self.assertNotEqual(content._XmlPart__root, None)
-
-    def test_serialize(self):
-        container = self.container
-        content_bytes = container.get_part(ODF_CONTENT)
-        content_part = XmlPart(ODF_CONTENT, container)
-        # differences with lxml
-        serialized = content_part.serialize().replace(b"'", b"&apos;")
-        self.assertEqual(content_bytes, serialized)
-
-    def test_pretty_serialize(self):
-        # With pretty = True
-        element = Element.from_tag("<root><a>spam</a><b/></root>")
-        serialized = element.serialize(pretty=True)
-        expected = "<root>\n" "  <a>spam</a>\n" "  <b/>\n" "</root>\n"
-        self.assertEqual(serialized, expected)
-
-    def test_clone(self):
-        # Testing that the clone works on subclasses too
-        container = self.container
-        content = Content(ODF_CONTENT, container)
-        clone = content.clone
-        self.assertEqual(clone.part_name, content.part_name)
-        self.assertNotEqual(id(container), id(clone.container))
-        self.assertEqual(clone._XmlPart__tree, None)
-
-    def test_delete(self):
-        container = self.container
-        content = XmlPart(ODF_CONTENT, container)
-        paragraphs = content.get_elements("//text:p")
-        for paragraph in paragraphs:
-            content.delete_element(paragraph)
-        serialized = content.serialize()
-        self.assertEqual(serialized.count(b"<text:p"), 0)
+@pytest.fixture
+def exemple_container() -> Iterable[Container]:
+    container = Container()
+    container.open(SAMPLES / "example.odt")
+    yield container
 
 
-if __name__ == "__main__":
-    main()
+def test_get_element_list(exemple_container):
+    content_part = XmlPart(ODF_CONTENT, exemple_container)
+    elements = content_part.get_elements("//text:p")
+    # The annotation paragraph is counted
+    assert len(elements) == 8
+
+
+def test_tree(exemple_container):
+    # Testing a private but important method
+    content = XmlPart(ODF_CONTENT, exemple_container)
+    tree = content._XmlPart__get_tree()
+    assert isinstance(tree, _ElementTree)
+    assert content._XmlPart__tree is not None
+
+
+def test_root(exemple_container):
+    content = XmlPart(ODF_CONTENT, exemple_container)
+    root = content.root
+    assert isinstance(root, Element)
+    assert root.tag == "office:document-content"
+    assert content._XmlPart__root is not None
+
+
+def test_serialize(exemple_container):
+    content_bytes = exemple_container.get_part(ODF_CONTENT)
+    content_part = XmlPart(ODF_CONTENT, exemple_container)
+    # differences with lxml
+    serialized = content_part.serialize().replace(b"'", b"&apos;")
+    assert content_bytes == serialized
+
+
+def test_pretty_serialize():
+    # With pretty = True
+    element = Element.from_tag("<root><a>spam</a><b/></root>")
+    serialized = element.serialize(pretty=True)
+    expected = "<root>\n" "  <a>spam</a>\n" "  <b/>\n" "</root>\n"
+    assert serialized == expected
+
+
+def test_clone(exemple_container):
+    # Testing that the clone works on subclasses too
+    content = Content(ODF_CONTENT, exemple_container)
+    clone = content.clone
+    assert clone.part_name == content.part_name
+    assert id(exemple_container) != id(clone.container)
+    assert clone._XmlPart__tree is None
+
+
+def test_delete(exemple_container):
+    content = XmlPart(ODF_CONTENT, exemple_container)
+    paragraphs = content.get_elements("//text:p")
+    for paragraph in paragraphs:
+        content.delete_element(paragraph)
+    serialized = content.serialize()
+    assert serialized.count(b"<text:p") == 0
+
+
+def test_repr(exemple_container):
+    content_part = XmlPart(ODF_CONTENT, exemple_container)
+    result = repr(content_part)
+    assert result == "<XmlPart part_name=content.xml>"
+
+
+def test_str(exemple_container):
+    content_part = XmlPart(ODF_CONTENT, exemple_container)
+    assert str(content_part) == repr(content_part)

@@ -25,9 +25,10 @@
 NamedRange related classes
 """
 import contextlib
+import csv
+import os
 import string
 from bisect import bisect_left, insort
-from csv import Sniffer, reader, writer
 from decimal import Decimal as dec
 from io import StringIO
 from itertools import zip_longest
@@ -1650,6 +1651,31 @@ class Table(Element):
                     row = Row(width)
                     self._append(row)
         self._compute_table_cache()
+
+    def __str__(self) -> str:
+        def write_content(csv_writer):
+            for values in self.iter_values():
+                line = []
+                for value in values:
+                    if value is None:
+                        value = ""
+                    if isinstance(value, str):
+                        value = value.strip()
+                    line.append(value)
+                csv_writer.writerow(line)
+
+        out = StringIO(newline=os.linesep)
+        csv_writer = csv.writer(
+            out,
+            delimiter=" ",
+            doublequote=False,
+            escapechar="\\",
+            lineterminator=os.linesep,
+            quotechar='"',
+            quoting=csv.QUOTE_NONNUMERIC,
+        )
+        write_content(csv_writer)
+        return out.getvalue()
 
     def _translate_x_from_any(self, x):
         if isinstance(x, str):
@@ -3795,16 +3821,16 @@ class Table(Element):
     # Utilities
 
     def to_csv(self, path_or_file=None, dialect="excel"):
-        """
-        Write the table as CSV in the file. If the file is a string, it is
-        opened as a local path. Else a opened file-like is expected.
+        """Write the table as CSV in the file.
+
+        If the file is a string, it is opened as a local path. Else an
+        opened file-like is expected.
 
         Arguments:
 
             path_or_file -- str or file-like
 
             dialect -- str, python csv.dialect, can be 'excel', 'unix'...
-
         """
 
         def write_content(csv_writer):
@@ -3818,8 +3844,8 @@ class Table(Element):
                     line.append(value)
                 csv_writer.writerow(line)
 
-        out = StringIO()
-        csv_writer = writer(out, dialect=dialect)
+        out = StringIO(newline="")
+        csv_writer = csv.writer(out, dialect=dialect)
         write_content(csv_writer)
         if path_or_file is None:
             return out.getvalue()
@@ -4111,7 +4137,7 @@ def import_from_csv(
         data = path_or_file.read().splitlines(True)
     # Sniff the dialect
     sample = "".join(data[:100])
-    dialect = Sniffer().sniff(sample)
+    dialect = csv.Sniffer().sniff(sample)
     # We can overload the result
     if delimiter is not None:
         dialect.delimiter = delimiter
@@ -4120,9 +4146,9 @@ def import_from_csv(
     if lineterminator is not None:
         dialect.lineterminator = lineterminator
     # Make the rows
-    csv = reader(data, dialect)
+    reader = csv.reader(data, dialect)
     table = Table(name, style=style)
-    for line in csv:
+    for line in reader:
         row = Row()
         # rstrip line
         while line and not line[-1].strip():

@@ -19,53 +19,53 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 
+from collections.abc import Iterable
 from pathlib import Path
-from unittest import TestCase, main
 
+import pytest
+
+from odfdo import Element
 from odfdo.document import Document
 from odfdo.paragraph import Span
 
 SAMPLES = Path(__file__).parent / "samples"
 
 
-class TestSpan(TestCase):
-    def setUp(self):
-        self.document = document = Document(SAMPLES / "span_style.odt")
-        self.body = document.body
-
-    def test_create_span(self):
-        span = Span("my text", style="my_style")
-        expected = '<text:span text:style-name="my_style">' "my text" "</text:span>"
-        self.assertEqual(span.serialize(), expected)
-
-    def test_get_span_list(self):
-        body = self.body
-        result = body.get_spans()
-        self.assertEqual(len(result), 2)
-        element = result[0]
-        expected = '<text:span text:style-name="T1">' "moustache" "</text:span>"
-        self.assertEqual(element.serialize(), expected)
-
-    def test_get_span_list_style(self):
-        body = self.body
-        result = body.get_spans(style="T2")
-        self.assertEqual(len(result), 1)
-        element = result[0]
-        expected = '<text:span text:style-name="T2">' "rouge" "</text:span>"
-        self.assertEqual(element.serialize(), expected)
-
-    def test_get_span(self):
-        body = self.body
-        span = body.get_span(position=1)
-        expected = '<text:span text:style-name="T2">' "rouge" "</text:span>"
-        self.assertEqual(span.serialize(), expected)
-
-    def test_insert_span(self):
-        body = self.body.clone
-        span = Span("my_style", "my text")
-        paragraph = body.get_paragraph(position=0)
-        paragraph.append(span)
+@pytest.fixture
+def body() -> Iterable[Element]:
+    document = Document(SAMPLES / "span_style.odt")
+    yield document.body
 
 
-if __name__ == "__main__":
-    main()
+def test_create_span():
+    span = Span("my text", style="my_style")
+    expected = '<text:span text:style-name="my_style">my text</text:span>'
+    assert span.serialize() == expected
+
+
+def test_get_span_list(body):
+    result = body.get_spans()
+    assert len(result) == 2
+    element = result[0]
+    expected = '<text:span text:style-name="T1">moustache</text:span>'
+    assert element.serialize() == expected
+
+
+def test_get_span_list_style(body):
+    result = body.get_spans(style="T2")
+    assert len(result) == 1
+    element = result[0]
+    expected = '<text:span text:style-name="T2">rouge</text:span>'
+    assert element.serialize() == expected
+
+
+def test_get_span(body):
+    span = body.get_span(position=1)
+    expected = '<text:span text:style-name="T2">rouge</text:span>'
+    assert span.serialize() == expected
+
+
+def test_insert_span(body):
+    span = Span("my_style", "my text")
+    paragraph = body.get_paragraph(position=0)
+    paragraph.append(span)

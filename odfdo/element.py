@@ -294,6 +294,12 @@ class Element:
             self._do_init = False
             self.__element = tag_or_elem
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} tag={self.tag}>"
+
+    def __str__(self):
+        return self.text_recursive
+
     @classmethod
     def from_tag(cls, tag_or_elem):
         """Element class and subclass factory. Turn an lxml Element or ODF
@@ -339,9 +345,6 @@ class Element:
         # XML fragment
         root = fromstring(NAMESPACES_XML % tag)  # noqa:S320
         return root[0]
-
-    def __str__(self):
-        return f'{self!r} "{self.tag}"'
 
     @staticmethod
     def _generic_attrib_getter(attr_name, family=None):

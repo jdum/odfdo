@@ -90,6 +90,14 @@ class Link(ParagraphBase):
             if visited_style is not None:
                 self.visited_style = visited_style
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} tag={self.tag} link={self.url}>"
+
+    def __str__(self) -> str:
+        if self.name:
+            return f"[{self.name}]({self.url})"
+        return f"({self.url})"
+
 
 Link._define_attribut_property()
 

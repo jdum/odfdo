@@ -20,79 +20,89 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 
+from collections.abc import Iterable
 from pathlib import Path
-from unittest import TestCase, main
+
+import pytest
 
 from odfdo.const import ODF_MANIFEST, ODF_PRESENTATION
 from odfdo.document import Document
 from odfdo.manifest import Manifest
 
-SAMPLES = Path(__file__).parent / "samples"
+SAMPLE = Path(__file__).parent / "samples" / "frame_image.odp"
+IMG_PATH = "Pictures/100002010000012C00000042188DCB81589D2C10.png"
 
 
-class ManifestTestCase(TestCase):
-    def setUp(self):
-        self.document = Document(SAMPLES / "frame_image.odp")
-        self.manifest = self.document.get_part(ODF_MANIFEST)
-        self.image_path = "Pictures/100002010000012C00000042188DCB81589D2C10.png"
-
-    def test_get_manifest(self):
-        self.assertTrue(type(self.manifest) is Manifest)
-
-    def test_get_path_list(self):
-        results = self.manifest.get_paths()
-        self.assertEqual(len(results), 9)
-
-    def test_get_path_media_list(self):
-        results = self.manifest.get_path_medias()
-        self.assertEqual(len(results), 9)
-        root = results[0]
-        self.assertEqual(root, ("/", ODF_PRESENTATION))
-
-    def test_get_media_type_root(self):
-        self.assertEqual(self.manifest.get_media_type("/"), ODF_PRESENTATION)
-
-    def test_get_media_type_directory(self):
-        self.assertEqual(self.manifest.get_media_type("Pictures/"), None)
-
-    def test_get_media_type_other(self):
-        path = self.image_path
-        self.assertEqual(self.manifest.get_media_type(path), "image/png")
-
-    def test_get_media_type_missing(self):
-        self.assertTrue(self.manifest.get_media_type("LpOD") is None)
-
-    def test_set_media_type(self):
-        manifest = self.manifest.clone
-        path = self.image_path
-        self.assertEqual(manifest.get_media_type(path), "image/png")
-        manifest.set_media_type(path, "image/jpeg")
-        self.assertEqual(manifest.get_media_type(path), "image/jpeg")
-
-    def test_set_media_type_missing(self):
-        manifest = self.manifest.clone
-        self.assertRaises(KeyError, manifest.set_media_type, "LpOD", "")
-
-    def test_add_full_path(self):
-        manifest = self.manifest.clone
-        self.assertTrue(manifest.get_media_type("LpOD") is None)
-        manifest.add_full_path("LpOD", "")
-        self.assertEqual(manifest.get_media_type("LpOD"), "")
-
-    def test_add_full_path_existing(self):
-        manifest = self.manifest.clone
-        path = self.image_path
-        self.assertEqual(manifest.get_media_type(path), "image/png")
-        manifest.add_full_path(path, "image/jpeg")
-        self.assertEqual(manifest.get_media_type(path), "image/jpeg")
-
-    def test_del_full_path(self):
-        manifest = self.manifest.clone
-        path = self.image_path
-        self.assertEqual(manifest.get_media_type(path), "image/png")
-        manifest.del_full_path(path)
-        self.assertTrue(manifest.get_media_type(path) is None)
+@pytest.fixture
+def base_manifest() -> Iterable[Manifest]:
+    document = Document(SAMPLE)
+    yield document.get_part(ODF_MANIFEST)
 
 
-if __name__ == "__main__":
-    main()
+def test_get_manifest(base_manifest):
+    assert isinstance(base_manifest, Manifest)
+
+
+def test_get_path_list(base_manifest):
+    results = base_manifest.get_paths()
+    assert len(results) == 9
+
+
+def test_get_path_media_list(base_manifest):
+    results = base_manifest.get_path_medias()
+    assert len(results) == 9
+    root = results[0]
+    assert root == ("/", ODF_PRESENTATION)
+
+
+def test_get_media_type_root(base_manifest):
+    assert base_manifest.get_media_type("/") == ODF_PRESENTATION
+
+
+def test_get_media_type_directory(base_manifest):
+    assert base_manifest.get_media_type("Pictures/") is None
+
+
+def test_get_media_type_other(base_manifest):
+    assert base_manifest.get_media_type(IMG_PATH) == "image/png"
+
+
+def test_get_media_type_missing(base_manifest):
+    assert base_manifest.get_media_type("LpOD") is None
+
+
+def test_set_media_type(base_manifest):
+    assert base_manifest.get_media_type(IMG_PATH) == "image/png"
+    base_manifest.set_media_type(IMG_PATH, "image/jpeg")
+    assert base_manifest.get_media_type(IMG_PATH) == "image/jpeg"
+
+
+def test_set_media_type_missing(base_manifest):
+    with pytest.raises(KeyError):
+        base_manifest.set_media_type("LpOD", "")
+
+
+def test_add_full_path(base_manifest):
+    assert base_manifest.get_media_type("LpOD") is None
+    base_manifest.add_full_path("LpOD", "")
+    assert base_manifest.get_media_type("LpOD") == ""
+
+
+def test_add_full_path_existing(base_manifest):
+    assert base_manifest.get_media_type(IMG_PATH) == "image/png"
+    base_manifest.add_full_path(IMG_PATH, "image/jpeg")
+    assert base_manifest.get_media_type(IMG_PATH) == "image/jpeg"
+
+
+def test_del_full_path(base_manifest):
+    assert base_manifest.get_media_type(IMG_PATH) == "image/png"
+    base_manifest.del_full_path(IMG_PATH)
+    assert base_manifest.get_media_type(IMG_PATH) is None
+
+
+def test_repr(base_manifest):
+    assert repr(base_manifest) == "<Manifest part_name=META-INF/manifest.xml>"
+
+
+def test_str(base_manifest):
+    assert str(base_manifest) == repr(base_manifest)

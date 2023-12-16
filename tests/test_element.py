@@ -20,9 +20,12 @@
 # Authors: Romain Gauthier <romain@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 
+from collections import namedtuple
+from collections.abc import Iterable
 from pathlib import Path
 from re import compile
-from unittest import TestCase, main
+
+import pytest
 
 from odfdo.const import ODF_CONTENT
 from odfdo.container import Container
@@ -36,466 +39,462 @@ from odfdo.element import (
 from odfdo.xmlpart import XmlPart
 
 SAMPLES = Path(__file__).parent / "samples"
+EXAMPLE = SAMPLES / "example.odt"
+SPAN_STYLES = SAMPLES / "span_style.odt"
+SPECIAL_CHARS = 'using < & " characters'
 
+Sample = namedtuple("Sample", ["container", "content", "para", "anno", "span"])
 
-class CreateElementTestCase(TestCase):
-    def test_simple(self):
-        data = "<p>Template Element</p>"
-        element = Element.from_tag(data)
-        self.assertEqual(element.serialize(), data)
-
-    def test_namespace(self):
-        data = "<text:p>Template Element</text:p>"
-        element = Element.from_tag(data)
-        self.assertEqual(element.serialize(), data)
-
-    def test_qname(self):
-        element = Element.from_tag("text:p")
-        self.assertEqual(element.serialize(), "<text:p/>")
-
-
-class ElementTestCase(TestCase):
-    def setUp(self):
-        container = Container(SAMPLES / "example.odt")
-        self.container = container
-        self.content_part = content_part = XmlPart(ODF_CONTENT, container)
-        self.paragraph_element = content_part.get_element("//text:p[1]")
-        self.annotation_element = content_part.get_element("//office:annotation[1]")
-
-    def tearDown(self):
-        del self.annotation_element
-        del self.paragraph_element
-        del self.content_part
-        del self.container
-
-    def test_bad_python_element(self):
-        self.assertRaises(TypeError, Element, "<text:p/>")
-
-    def test_get_element_list(self):
-        content_part = self.content_part
-        elements = content_part.get_elements("//text:p")
-        # The annotation paragraph is counted
-        self.assertEqual(len(elements), 8)
-
-    def test_get_tagname(self):
-        element = self.paragraph_element
-        self.assertEqual(element.tag, "text:p")
-
-    def test_get_parent(self):
-        element = Element.from_tag("<text:p><text:span/></text:p>")
-        child = element.get_element("//text:span")
-        parent = child.parent
-        self.assertEqual(parent.tag, "text:p")
-
-    def test_get_root(self):
-        element = Element.from_tag("<text:p><text:span/></text:p>")
-        root = element.root
-        self.assertTrue(root.parent is None)
-
-    def test_clone(self):
-        element = self.paragraph_element
-        copy = element.clone
-        self.assertNotEqual(id(element), id(copy))
-        self.assertEqual(element.text, copy.text)
-
-    def test_delete_child(self):
-        element = Element.from_tag("<text:p><text:span/></text:p>")
-        child = element.get_element("//text:span")
-        element.delete(child)
-        self.assertEqual(element.serialize(), "<text:p/>")
-
-    def test_delete_self(self):
-        element = Element.from_tag("<text:p><text:span/></text:p>")
-        child = element.get_element("//text:span")
-        child.delete()
-        self.assertEqual(element.serialize(), "<text:p/>")
-
-    def test_delete_self_2(self):
-        element = Element.from_tag("<text:p><text:span/>keep</text:p>")
-        child = element.get_element("//text:span")
-        child.delete()
-        self.assertEqual(element.serialize(), "<text:p>keep</text:p>")
-
-    def test_delete_self_3(self):
-        element = Element.from_tag("<text:p>before<text:span/>keep</text:p>")
-        child = element.get_element("//text:span")
-        child.delete()
-        self.assertEqual(element.serialize(), "<text:p>beforekeep</text:p>")
-
-    def test_delete_self_4(self):
-        element = Element.from_tag(
-            "<text:p><tag>x</tag>before<text:span/>keep</text:p>"
-        )
-        child = element.get_element("//text:span")
-        child.delete()
-        self.assertEqual(element.serialize(), "<text:p><tag>x</tag>beforekeep</text:p>")
-
-    def test_delete_self_5(self):
-        element = Element.from_tag("<text:p><tag>x</tag><text:span/>keep</text:p>")
-        child = element.get_element("//text:span")
-        child.delete()
-        self.assertEqual(element.serialize(), "<text:p><tag>x</tag>keep</text:p>")
-
-    def test_delete_root(self):
-        element = Element.from_tag("<text:p><text:span/></text:p>")
-        root = element.root
-        self.assertRaises(ValueError, root.delete)
-
-
-class ElementAttributeTestCase(TestCase):
-    special_text = 'using < & " characters'
-
-    def setUp(self):
-        container = Container(SAMPLES / "example.odt")
-        self.container = container
-        content_part = XmlPart(ODF_CONTENT, container)
-        self.paragraph_element = content_part.get_element("//text:p[1]")
-
-    def test_get_attributes(self):
-        element = self.paragraph_element
-        attributes = element.attributes
-        excepted = {"text:style-name": "Text_20_body"}
-        self.assertEqual(attributes, excepted)
-
-    def test_get_attribute(self):
-        element = self.paragraph_element
-        unknown = element.get_attribute("style-name")
-        self.assertEqual(unknown, None)
-
-    def test_get_attribute_namespace(self):
-        element = self.paragraph_element
-        text = element.get_attribute("text:style-name")
-        self.assertTrue(isinstance(text, str))
-        self.assertEqual(text, "Text_20_body")
-
-    # XXX The same than test_get_attribute?
-    def test_get_attribute_none(self):
-        element = self.paragraph_element
-        dummy = element.get_attribute("and_now_for_sth_completely_different")
-        self.assertEqual(dummy, None)
-
-    def test_set_attribute(self):
-        element = self.paragraph_element
-        element.set_attribute("test", "a value")
-        self.assertEqual(element.get_attribute("test"), "a value")
-        element.del_attribute("test")
-
-    def test_set_attribute_namespace(self):
-        element = self.paragraph_element
-        element.set_attribute("text:style-name", "Note")
-        self.assertEqual(element.get_attribute("text:style-name"), "Note")
-        element.del_attribute("text:style-name")
-
-    def test_set_attribute_special(self):
-        element = self.paragraph_element
-        element.set_attribute("test", self.special_text)
-        self.assertEqual(element.get_attribute("test"), self.special_text)
-        element.del_attribute("test")
-
-    def test_del_attribute(self):
-        element = self.paragraph_element
-        element.set_attribute("test", "test")
-        element.del_attribute("test")
-        self.assertEqual(element.get_attribute("test"), None)
-
-    def test_del_attribute_namespace(self):
-        element = self.paragraph_element
-        element.set_attribute("text:style-name", "Note")
-        element.del_attribute("text:style-name")
-        self.assertEqual(element.get_attribute("text:style-name"), None)
-
-
-class ElementTextTestCase(TestCase):
-    special_text = 'using < & " characters'
-
-    def setUp(self):
-        container = Container(SAMPLES / "example.odt")
-        self.container = container
-        content_part = XmlPart(ODF_CONTENT, container)
-        self.annotation_element = content_part.get_element("//office:annotation[1]")
-        self.paragraph_element = content_part.get_element("//text:p[1]")
-
-    def test_get_text(self):
-        element = self.paragraph_element
-        text = element.text
-        self.assertEqual(text, "This is the first paragraph.")
-
-    def test_set_text(self):
-        element = self.paragraph_element
-        old_text = element.text
-        new_text = "A test"
-        element.text = new_text
-        self.assertEqual(element.text, new_text)
-        element.text = old_text
-        self.assertEqual(element.text, old_text)
-
-    def test_set_text_special(self):
-        element = self.paragraph_element
-        old_text = element.text
-        element.text = self.special_text
-        self.assertEqual(element.text, self.special_text)
-        element.text = old_text
-
-    def test_get_text_content(self):
-        element = self.annotation_element
-        text = element.text_content
-        self.assertEqual(text, "This is an annotation.\n" "With diacritical signs: éè")
-
-    def test_set_text_content(self):
-        element = self.annotation_element
-        old_text = element.text_content
-        text = "Have a break"
-        element.text_content = text
-        self.assertEqual(element.text_content, text)
-        element.text_content = old_text
-        self.assertEqual(element.text_content, old_text)
-
-
-class ElementTraverseTestCase(TestCase):
-    def setUp(self):
-        container = Container(SAMPLES / "example.odt")
-        self.container = container
-        self.content_part = content_part = XmlPart(ODF_CONTENT, container)
-        self.annotation_element = content_part.get_element("//office:annotation[1]")
-        self.paragraph_element = content_part.get_element("//text:p[1]")
-
-    def test_get_parent(self):
-        paragraph = self.paragraph_element
-        parent = paragraph.parent
-        self.assertEqual(parent.tag, "text:section")
-
-    def test_get_parent_root(self):
-        content = self.content_part
-        root = content.root
-        parent = root.parent
-        self.assertEqual(parent, None)
-
-    def test_insert_element_first_child(self):
-        element = Element.from_tag("<office:text><text:p/><text:p/></office:text>")
-        child = Element.from_tag("<text:h/>")
-        element.insert(child, FIRST_CHILD)
-        self.assertEqual(
-            element.serialize(),
-            "<office:text><text:h/><text:p/><text:p/></office:text>",
-        )
-
-    def test_insert_element_last_child(self):
-        element = Element.from_tag("<office:text><text:p/><text:p/></office:text>")
-        child = Element.from_tag("<text:h/>")
-        element.append(child)
-        self.assertEqual(
-            element.serialize(),
-            "<office:text><text:p/><text:p/><text:h/></office:text>",
-        )
-
-    def test_insert_element_next_sibling(self):
-        root = Element.from_tag("<office:text><text:p/><text:p/></office:text>")
-        element = root.get_elements("//text:p")[0]
-        sibling = Element.from_tag("<text:h/>")
-        element.insert(sibling, NEXT_SIBLING)
-        self.assertEqual(
-            root.serialize(), "<office:text><text:p/><text:h/><text:p/></office:text>"
-        )
-
-    def test_insert_element_prev_sibling(self):
-        root = Element.from_tag("<office:text><text:p/><text:p/></office:text>")
-        element = root.get_elements("//text:p")[0]
-        sibling = Element.from_tag("<text:h/>")
-        element.insert(sibling, PREV_SIBLING)
-        self.assertEqual(
-            root.serialize(), "<office:text><text:h/><text:p/><text:p/></office:text>"
-        )
-
-    def test_insert_element_bad_element(self):
-        element = Element.from_tag("text:p")
-        self.assertRaises(AttributeError, element.insert, "<text:span/>", FIRST_CHILD)
-
-    def test_insert_element_bad_position(self):
-        element = Element.from_tag("text:p")
-        child = Element.from_tag("text:span")
-        self.assertRaises(ValueError, element.insert, child, 999)
-
-    def test_children(self):
-        element = self.annotation_element
-        children = element.children
-        self.assertEqual(len(children), 4)
-        child = children[0]
-        self.assertEqual(child.tag, "dc:creator")
-        child = children[-1]
-        self.assertEqual(child.tag, "text:p")
-
-    def test_append_element(self):
-        element = Element.from_tag("text:p")
-        element.append("f")
-        element.append("oo1")
-        element.append(Element.from_tag("text:line-break"))
-        element.append("f")
-        element.append("oo2")
-        self.assertEqual(
-            element.serialize(), "<text:p>foo1<text:line-break/>foo2</text:p>"
-        )
-
-
-class SearchTestCase(TestCase):
-    def setUp(self):
-        self.container = Container(SAMPLES / "span_style.odt")
-        self.content = XmlPart(ODF_CONTENT, self.container)
-        self.paragraph = self.content.get_element("//text:p")
-        self.span = self.paragraph.get_element("//text:span")
-
-    def test_search_paragraph(self):
-        """Search text in a paragraph."""
-        pos = self.paragraph.search("ère")
-        return self.assertEqual(pos, 4)
-
-    def test_match_span(self):
-        """Search text in a span."""
-        pos = self.span.search("moust")
-        return self.assertEqual(pos, 0)
-
-    def test_match_inner_span(self):
-        """Search text in a span from the parent paragraph."""
-        pos = self.paragraph.search("roug")
-        return self.assertEqual(pos, 29)
-
-    def test_simple_regex(self):
-        """Search a simple regex."""
-        pos = self.paragraph.search("che roug")
-        return self.assertEqual(pos, 25)
-
-    def test_intermediate_regex(self):
-        """Search an intermediate regex."""
-        pos = self.paragraph.search("moustache (blanche|rouge)")
-        return self.assertEqual(pos, 19)
-
-    def test_complex_regex(self):
-        """Search a complex regex."""
-        # The (?<=...) part is pointless as we don't try to get groups from
-        # a MatchObject. However, it's a valid regex expression.
-        pos = self.paragraph.search(r"(?<=m)(ou)\w+(che) (blan\2|r\1ge)")
-        return self.assertEqual(pos, 20)
-
-    def test_compiled_regex(self):
-        """Search with a compiled pattern."""
-        pattern = compile(r"moustache")
-        pos = self.paragraph.search(pattern)
-        return self.assertEqual(pos, 19)
-
-    def test_failing_match(self):
-        """Test a regex that doesn't match."""
-        pos = self.paragraph.search("Le Père moustache")
-        return self.assertTrue(pos is None)
-
-
-class MatchTestCase(TestCase):
-    def setUp(self):
-        self.container = Container(SAMPLES / "span_style.odt")
-        self.content = XmlPart(ODF_CONTENT, self.container)
-        self.paragraph = self.content.get_element("//text:p")
-        self.span = self.paragraph.get_element("//text:span")
-
-    def test_match_paragraph(self):
-        """Match text in a paragraph."""
-        match = self.paragraph.match("ère")
-        return self.assertTrue(match)
-
-    def test_match_span(self):
-        """Match text in a span."""
-        match = self.span.match("moust")
-        return self.assertTrue(match)
-
-    def test_match_inner_span(self):
-        """Match text in a span from the parent paragraph."""
-        match = self.paragraph.match("roug")
-        return self.assertTrue(match)
-
-    def test_simple_regex(self):
-        """Match a simple regex."""
-        match = self.paragraph.match("che roug")
-        return self.assertTrue(match)
-
-    def test_intermediate_regex(self):
-        """Match an intermediate regex."""
-        match = self.paragraph.match("moustache (blanche|rouge)")
-        return self.assertTrue(match)
-
-    def test_complex_regex(self):
-        """Match a complex regex."""
-        # The (?<=...) part is pointless as we don't try to get groups from
-        # a MatchObject. However, it's a valid regex expression.
-        match = self.paragraph.match(r"(?<=m)(ou)\w+(che) (blan\2|r\1ge)")
-        return self.assertTrue(match)
-
-    def test_compiled_regex(self):
-        """Match with a compiled pattern."""
-        pattern = compile(r"moustache")
-        match = self.paragraph.match(pattern)
-        return self.assertTrue(match)
-
-    def test_failing_match(self):
-        """Test a regex that doesn't match."""
-        match = self.paragraph.match("Le Père moustache")
-        return self.assertFalse(match)
-
-
-class ReplaceTestCase(TestCase):
-    def setUp(self):
-        self.container = Container(SAMPLES / "span_style.odt")
-        self.content = XmlPart(ODF_CONTENT, self.container)
-        self.paragraph = self.content.get_element("//text:p")
-        self.span = self.paragraph.get_element("//text:span")
-
-    def test_count(self):
-        paragraph = self.paragraph
-        expected = paragraph.serialize()
-        count = paragraph.replace("ou")
-        self.assertEqual(count, 2)
-        # Ensure the orignal was not altered
-        self.assertEqual(paragraph.serialize(), expected)
-
-    def test_replace(self):
-        paragraph = self.paragraph
-        clone = paragraph.clone
-        count = clone.replace("moustache", "barbe")
-        self.assertEqual(count, 1)
-        expected = "Le Père Noël a une barbe rouge."
-        self.assertEqual(clone.text_recursive, expected)
-        # Ensure the orignal was not altered
-        self.assertNotEqual(clone.serialize(), paragraph.serialize())
-
-    def test_across_span(self):
-        paragraph = self.paragraph
-        count = paragraph.replace("moustache rouge")
-        self.assertEqual(count, 0)
-
-    def test_missing(self):
-        paragraph = self.paragraph
-        count = paragraph.replace("barbe")
-        self.assertEqual(count, 0)
-
-
-class XmlNamespaceTestCase(TestCase):
-    """We must be able to use the API with unknown prefix/namespace"""
-
-
-class RegisterTestCase(TestCase):
-    def setUp(self):
-        class dummy_element(Element):
-            _tag = "office:dummy1"
-            pass
-
-        self.dummy_element = dummy_element
-
-    def test_register(self):
-        register_element_class(self.dummy_element)
-        element = Element.from_tag("office:dummy1")
-        self.assertTrue(type(element) is self.dummy_element)
-
-    def test_unregistered(self):
-        element = Element.from_tag("office:dummy2")
-        self.assertTrue(type(element) is Element)
-        self.assertFalse(isinstance(element, self.dummy_element))
-
-
-if __name__ == "__main__":
-    main()
+
+class DummyElement(Element):
+    _tag = "office:dummy1"
+
+
+@pytest.fixture
+def sample() -> Iterable[Sample]:
+    container = Container(EXAMPLE)
+    content = XmlPart(ODF_CONTENT, container)
+    para = content.get_element("//text:p[1]")
+    anno = content.get_element("//office:annotation[1]")
+    span = ""
+    yield Sample(container=container, content=content, para=para, anno=anno, span=span)
+
+
+@pytest.fixture
+def span_styles() -> Iterable[Sample]:
+    container = Container(SPAN_STYLES)
+    content = XmlPart(ODF_CONTENT, container)
+    para = content.get_element("//text:p")
+    anno = ""
+    span = para.get_element("//text:span")
+    yield Sample(container=container, content=content, para=para, anno=anno, span=span)
+
+
+def test_create_simple():
+    data = "<p>Template Element</p>"
+    element = Element.from_tag(data)
+    assert element.serialize() == data
+
+
+def test_create_namespace():
+    data = "<text:p>Template Element</text:p>"
+    element = Element.from_tag(data)
+    assert element.serialize() == data
+
+
+def test_create_qname():
+    element = Element.from_tag("text:p")
+    assert element.serialize() == "<text:p/>"
+
+
+def test_bad_python_element():
+    with pytest.raises(TypeError):
+        Element("<text:p/>")
+
+
+def test_get_element_list(sample):
+    content_part = sample.content
+    elements = content_part.get_elements("//text:p")
+    # The annotation paragraph is counted
+    assert len(elements) == 8
+
+
+def test_get_tagname(sample):
+    element = sample.para
+    assert element.tag == "text:p"
+
+
+def test_get_parent():
+    element = Element.from_tag("<text:p><text:span/></text:p>")
+    child = element.get_element("//text:span")
+    parent = child.parent
+    assert parent.tag == "text:p"
+
+
+def test_get_root():
+    element = Element.from_tag("<text:p><text:span/></text:p>")
+    root = element.root
+    assert root.parent is None
+
+
+def test_clone(sample):
+    element = sample.para
+    copy = element.clone
+    assert id(element) != id(copy)
+    assert element.text == copy.text
+
+
+def test_delete_child():
+    element = Element.from_tag("<text:p><text:span/></text:p>")
+    child = element.get_element("//text:span")
+    element.delete(child)
+    assert element.serialize() == "<text:p/>"
+
+
+def test_delete_self():
+    element = Element.from_tag("<text:p><text:span/></text:p>")
+    child = element.get_element("//text:span")
+    child.delete()
+    assert element.serialize() == "<text:p/>"
+
+
+def test_delete_self_2():
+    element = Element.from_tag("<text:p><text:span/>keep</text:p>")
+    child = element.get_element("//text:span")
+    child.delete()
+    assert element.serialize() == "<text:p>keep</text:p>"
+
+
+def test_delete_self_3():
+    element = Element.from_tag("<text:p>before<text:span/>keep</text:p>")
+    child = element.get_element("//text:span")
+    child.delete()
+    assert element.serialize() == "<text:p>beforekeep</text:p>"
+
+
+def test_delete_self_4():
+    element = Element.from_tag("<text:p><tag>x</tag>before<text:span/>keep</text:p>")
+    child = element.get_element("//text:span")
+    child.delete()
+    assert element.serialize() == "<text:p><tag>x</tag>beforekeep</text:p>"
+
+
+def test_delete_self_5():
+    element = Element.from_tag("<text:p><tag>x</tag><text:span/>keep</text:p>")
+    child = element.get_element("//text:span")
+    child.delete()
+    assert element.serialize() == "<text:p><tag>x</tag>keep</text:p>"
+
+
+def test_delete_root():
+    element = Element.from_tag("<text:p><text:span/></text:p>")
+    root = element.root
+    pytest.raises(ValueError, root.delete)
+
+
+def test_get_attributes(sample):
+    element = sample.para
+    attributes = element.attributes
+    excepted = {"text:style-name": "Text_20_body"}
+    assert attributes == excepted
+
+
+def test_get_attribute(sample):
+    element = sample.para
+    unknown = element.get_attribute("style-name")
+    assert unknown is None
+
+
+def test_get_attribute_namespace(sample):
+    element = sample.para
+    text = element.get_attribute("text:style-name")
+    assert isinstance(text, str)
+    assert text == "Text_20_body"
+
+
+def test_get_attribute_none(sample):
+    element = sample.para
+    dummy = element.get_attribute("and_now_for_sth_completely_different")
+    assert dummy is None
+
+
+def test_set_attribute(sample):
+    element = sample.para
+    element.set_attribute("test", "a value")
+    assert element.get_attribute("test") == "a value"
+    element.del_attribute("test")
+
+
+def test_set_attribute_namespace(sample):
+    element = sample.para
+    element.set_attribute("text:style-name", "Note")
+    assert element.get_attribute("text:style-name") == "Note"
+    element.del_attribute("text:style-name")
+
+
+def test_set_attribute_special(sample):
+    element = sample.para
+    element.set_attribute("test", SPECIAL_CHARS)
+    assert element.get_attribute("test") == SPECIAL_CHARS
+    element.del_attribute("test")
+
+
+def test_del_attribute(sample):
+    element = sample.para
+    element.set_attribute("test", "test")
+    element.del_attribute("test")
+    assert element.get_attribute("test") is None
+
+
+def test_del_attribute_namespace(sample):
+    element = sample.para
+    element.set_attribute("text:style-name", "Note")
+    element.del_attribute("text:style-name")
+    assert element.get_attribute("text:style-name") is None
+
+
+def test_get_text(sample):
+    element = sample.para
+    text = element.text
+    assert text == "This is the first paragraph."
+
+
+def test_set_text(sample):
+    element = sample.para
+    old_text = element.text
+    new_text = "A test"
+    element.text = new_text
+    assert element.text == new_text
+    element.text = old_text
+    assert element.text == old_text
+
+
+def test_set_text_special(sample):
+    element = sample.para
+    old_text = element.text
+    element.text = SPECIAL_CHARS
+    assert element.text == SPECIAL_CHARS
+    element.text = old_text
+
+
+def test_get_text_content(sample):
+    element = sample.anno
+    text = element.text_content
+    expected = "This is an annotation.\nWith diacritical signs: éè"
+    assert text == expected
+
+
+def test_set_text_content(sample):
+    element = sample.anno
+    old_text = element.text_content
+    text = "Have a break"
+    element.text_content = text
+    assert element.text_content == text
+    element.text_content = old_text
+    assert element.text_content == old_text
+
+
+def test_get_parent2(sample):
+    paragraph = sample.para
+    parent = paragraph.parent
+    assert parent.tag == "text:section"
+
+
+def test_get_parent_root(sample):
+    content = sample.content
+    root = content.root
+    parent = root.parent
+    assert parent is None
+
+
+def test_insert_element_first_child():
+    element = Element.from_tag("<office:text><text:p/><text:p/></office:text>")
+    child = Element.from_tag("<text:h/>")
+    element.insert(child, FIRST_CHILD)
+    expected = "<office:text><text:h/><text:p/><text:p/></office:text>"
+    assert element.serialize() == expected
+
+
+def test_insert_element_last_child():
+    element = Element.from_tag("<office:text><text:p/><text:p/></office:text>")
+    child = Element.from_tag("<text:h/>")
+    expected = "<office:text><text:p/><text:p/><text:h/></office:text>"
+    element.append(child)
+    assert element.serialize() == expected
+
+
+def test_insert_element_next_sibling():
+    root = Element.from_tag("<office:text><text:p/><text:p/></office:text>")
+    element = root.get_elements("//text:p")[0]
+    sibling = Element.from_tag("<text:h/>")
+    expected = "<office:text><text:p/><text:h/><text:p/></office:text>"
+    element.insert(sibling, NEXT_SIBLING)
+    assert root.serialize() == expected
+
+
+def test_insert_element_prev_sibling():
+    root = Element.from_tag("<office:text><text:p/><text:p/></office:text>")
+    element = root.get_elements("//text:p")[0]
+    sibling = Element.from_tag("<text:h/>")
+    element.insert(sibling, PREV_SIBLING)
+    assert root.serialize() == "<office:text><text:h/><text:p/><text:p/></office:text>"
+
+
+def test_insert_element_bad_element():
+    element = Element.from_tag("text:p")
+    with pytest.raises(AttributeError):
+        element.insert("<text:span/>", FIRST_CHILD)
+
+
+def test_insert_element_bad_position():
+    element = Element.from_tag("text:p")
+    child = Element.from_tag("text:span")
+    with pytest.raises(ValueError):
+        element.insert(child, 999)
+
+
+def test_children(sample):
+    element = sample.anno
+    children = element.children
+    assert len(children) == 4
+    child = children[0]
+    assert child.tag == "dc:creator"
+    child = children[-1]
+    assert child.tag == "text:p"
+
+
+def test_append_element():
+    element = Element.from_tag("text:p")
+    element.append("f")
+    element.append("oo1")
+    element.append(Element.from_tag("text:line-break"))
+    element.append("f")
+    element.append("oo2")
+    assert element.serialize() == "<text:p>foo1<text:line-break/>foo2</text:p>"
+
+
+def test_search_paragraph(span_styles):
+    """Search text in a paragraph."""
+    pos = span_styles.para.search("ère")
+    expected = 4
+    assert pos == expected
+
+
+def test_match_span_search(span_styles):
+    """Search text in a span."""
+    pos = span_styles.span.search("moust")
+    assert pos == 0
+
+
+def test_match_inner_span_search(span_styles):
+    """Search text in a span from the parent paragraph."""
+    pos = span_styles.para.search("roug")
+    assert pos == 29
+
+
+def test_simple_regex_search(span_styles):
+    """Search a simple regex."""
+    pos = span_styles.para.search("che roug")
+    assert pos == 25
+
+
+def test_intermediate_regex_search(span_styles):
+    """Search an intermediate regex."""
+    pos = span_styles.para.search("moustache (blanche|rouge)")
+    assert pos == 19
+
+
+def test_complex_regex_search(span_styles):
+    """Search a complex regex."""
+    # The (?<=...) part is pointless as we don't try to get groups from
+    # a MatchObject. However, it's a valid regex expression.
+    pos = span_styles.para.search(r"(?<=m)(ou)\w+(che) (blan\2|r\1ge)")
+    assert pos == 20
+
+
+def test_compiled_regex_search(span_styles):
+    """Search with a compiled pattern."""
+    pattern = compile(r"moustache")
+    pos = span_styles.para.search(pattern)
+    assert pos == 19
+
+
+def test_failing_match_search(span_styles):
+    """Test a regex that doesn't match."""
+    pos = span_styles.para.search("Le Père moustache")
+    assert pos is None
+
+
+def test_match_paragraph(span_styles):
+    """Match text in a paragraph."""
+    match = span_styles.para.match("ère")
+    assert match
+
+
+def test_match_span(span_styles):
+    """Match text in a span."""
+    match = span_styles.span.match("moust")
+    assert match
+
+
+def test_match_inner_span(span_styles):
+    """Match text in a span from the parent paragraph."""
+    match = span_styles.para.match("roug")
+    assert match
+
+
+def test_simple_regex(span_styles):
+    """Match a simple regex."""
+    match = span_styles.para.match("che roug")
+    assert match
+
+
+def test_intermediate_regex(span_styles):
+    """Match an intermediate regex."""
+    match = span_styles.para.match("moustache (blanche|rouge)")
+    assert match
+
+
+def test_complex_regex(span_styles):
+    """Match a complex regex."""
+    # The (?<=...) part is pointless as we don't try to get groups from
+    # a MatchObject. However, it's a valid regex expression.
+    match = span_styles.para.match(r"(?<=m)(ou)\w+(che) (blan\2|r\1ge)")
+    assert match
+
+
+def test_compiled_regex(span_styles):
+    """Match with a compiled pattern."""
+    pattern = compile(r"moustache")
+    match = span_styles.para.match(pattern)
+    assert match
+
+
+def test_failing_match(span_styles):
+    """Test a regex that doesn't match."""
+    match = span_styles.para.match("Le Père moustache")
+    assert not match
+
+
+def test_count(span_styles):
+    paragraph = span_styles.para
+    expected = paragraph.serialize()
+    count = paragraph.replace("ou")
+    assert count == 2
+    # Ensure the orignal was not altered
+    assert paragraph.serialize() == expected
+
+
+def test_replace(span_styles):
+    paragraph = span_styles.para
+    clone = paragraph.clone
+    count = clone.replace("moustache", "barbe")
+    assert count == 1
+    expected = "Le Père Noël a une barbe rouge."
+    assert clone.text_recursive == expected
+    # Ensure the orignal was not altered
+    assert clone.serialize() != paragraph.serialize()
+
+
+def test_across_span(span_styles):
+    paragraph = span_styles.para
+    count = paragraph.replace("moustache rouge")
+    assert count == 0
+
+
+def test_missing(span_styles):
+    paragraph = span_styles.para
+    count = paragraph.replace("barbe")
+    assert count == 0
+
+
+def test_register():
+    register_element_class(DummyElement)
+    element = Element.from_tag("office:dummy1")
+    assert isinstance(element, DummyElement)
+
+
+def test_unregistered():
+    element = Element.from_tag("office:dummy2")
+    assert isinstance(element, Element)
+    assert not isinstance(element, DummyElement)

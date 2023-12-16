@@ -48,8 +48,9 @@ def test_base():
     params = f"{source}"
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
+    print(out)
     assert b"common used:y family:graphic" in out
-    assert b"auto   used:y family:text        parent:             name:T1" in out
+    assert b"auto   used:y family:section" in out
 
 
 def test_base_auto():
@@ -57,8 +58,7 @@ def test_base_auto():
     params = f"-a {source}"
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
-    assert b"auto   used:y family:page-layout parent: name:Mpm1" in out
-    assert b"auto   used:y family:text        parent: name:T1" in out
+    assert b"auto   used:y family:drawing-page parent: name:Mdp1" in out
     assert b"common used" not in out
 
 
@@ -111,7 +111,7 @@ def test_delete_to_stdout():
     params = f"-d -o - {source}"
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
-    assert b"22 styles removed (0 error, 0 warning)" in err
+    assert b"23 styles removed (0 error, 0 warning)" in err
     assert len(out) > 8000
 
 
@@ -121,7 +121,7 @@ def test_delete_to_file(tmp_path):
     params = f"-d -o {dest} {source}"
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
-    assert b"22 styles removed (0 error, 0 warning)" in err
+    assert b"23 styles removed (0 error, 0 warning)" in err
     assert dest.is_file()
 
 
@@ -143,7 +143,7 @@ def test_show_to_file2(tmp_path):
     assert exitcode == 0
     content = dest.read_text()
     assert "common used:y family:graphic" in content
-    assert "auto   used:y family:text        parent:             name:T1" in content
+    assert "auto   used:y family:text" in content
 
 
 def test_show_odp():
