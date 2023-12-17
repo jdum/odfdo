@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.xmlpart API documentation</title>
-<meta name="description" content="XmlPart base class for XML parts" />
+<meta name="description" content="XmlPart base class for XML parts." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,7 +22,7 @@
 <h1 class="title">Module <code>odfdo.xmlpart</code></h1>
 </header>
 <section id="section-intro">
-<p>XmlPart base class for XML parts</p>
+<p>XmlPart base class for XML parts.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -48,7 +48,7 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse &lt;david.versmisse@itaapy.com&gt;
 #          Hervé Cauwelier &lt;herve@itaapy.com&gt;
-&#34;&#34;&#34;XmlPart base class for XML parts
+&#34;&#34;&#34;XmlPart base class for XML parts.
 &#34;&#34;&#34;
 from copy import deepcopy
 from io import BytesIO
@@ -60,6 +60,7 @@ from .element import Element
 
 class XmlPart:
     &#34;&#34;&#34;Representation of an XML part.
+
     Abstraction of the XML library behind.
     &#34;&#34;&#34;
 
@@ -77,6 +78,9 @@ class XmlPart:
             part = container.get_part(self.part_name)
             self.__tree = parse(BytesIO(part))  # noqa:S320
         return self.__tree
+
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.__class__.__name__} part_name={self.part_name}&gt;&#34;
 
     # Public API
 
@@ -147,14 +151,15 @@ class XmlPart:
 <span>(</span><span>part_name, container)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Representation of an XML part.
-Abstraction of the XML library behind.</p></div>
+<div class="desc"><p>Representation of an XML part.</p>
+<p>Abstraction of the XML library behind.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class XmlPart:
     &#34;&#34;&#34;Representation of an XML part.
+
     Abstraction of the XML library behind.
     &#34;&#34;&#34;
 
@@ -172,6 +177,9 @@ Abstraction of the XML library behind.</p></div>
             part = container.get_part(self.part_name)
             self.__tree = parse(BytesIO(part))  # noqa:S320
         return self.__tree
+
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.__class__.__name__} part_name={self.part_name}&gt;&#34;
 
     # Public API
 

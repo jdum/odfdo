@@ -69,6 +69,9 @@ class Content(XmlPart):
             self.get_element(&#34;//office:automatic-styles&#34;),
         )
 
+    def __str__(self) -&gt; str:
+        return str(self.body)
+
     # Public API
 
     def get_styles(self, family=None):
@@ -133,8 +136,8 @@ class Content(XmlPart):
 <span>(</span><span>part_name, container)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Representation of an XML part.
-Abstraction of the XML library behind.</p></div>
+<div class="desc"><p>Representation of an XML part.</p>
+<p>Abstraction of the XML library behind.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -153,6 +156,9 @@ Abstraction of the XML library behind.</p></div>
             self.get_element(&#34;//office:font-face-decls&#34;),
             self.get_element(&#34;//office:automatic-styles&#34;),
         )
+
+    def __str__(self) -&gt; str:
+        return str(self.body)
 
     # Public API
 

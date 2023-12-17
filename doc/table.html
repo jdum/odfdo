@@ -56,9 +56,10 @@ NamedRange related classes</p>
 NamedRange related classes
 &#34;&#34;&#34;
 import contextlib
+import csv
+import os
 import string
 from bisect import bisect_left, insort
-from csv import Sniffer, reader, writer
 from decimal import Decimal as dec
 from io import StringIO
 from itertools import zip_longest
@@ -1681,6 +1682,31 @@ class Table(Element):
                     row = Row(width)
                     self._append(row)
         self._compute_table_cache()
+
+    def __str__(self) -&gt; str:
+        def write_content(csv_writer):
+            for values in self.iter_values():
+                line = []
+                for value in values:
+                    if value is None:
+                        value = &#34;&#34;
+                    if isinstance(value, str):
+                        value = value.strip()
+                    line.append(value)
+                csv_writer.writerow(line)
+
+        out = StringIO(newline=os.linesep)
+        csv_writer = csv.writer(
+            out,
+            delimiter=&#34; &#34;,
+            doublequote=False,
+            escapechar=&#34;\\&#34;,
+            lineterminator=os.linesep,
+            quotechar=&#39;&#34;&#39;,
+            quoting=csv.QUOTE_NONNUMERIC,
+        )
+        write_content(csv_writer)
+        return out.getvalue()
 
     def _translate_x_from_any(self, x):
         if isinstance(x, str):
@@ -3826,16 +3852,16 @@ class Table(Element):
     # Utilities
 
     def to_csv(self, path_or_file=None, dialect=&#34;excel&#34;):
-        &#34;&#34;&#34;
-        Write the table as CSV in the file. If the file is a string, it is
-        opened as a local path. Else a opened file-like is expected.
+        &#34;&#34;&#34;Write the table as CSV in the file.
+
+        If the file is a string, it is opened as a local path. Else an
+        opened file-like is expected.
 
         Arguments:
 
             path_or_file -- str or file-like
 
             dialect -- str, python csv.dialect, can be &#39;excel&#39;, &#39;unix&#39;...
-
         &#34;&#34;&#34;
 
         def write_content(csv_writer):
@@ -3849,8 +3875,8 @@ class Table(Element):
                     line.append(value)
                 csv_writer.writerow(line)
 
-        out = StringIO()
-        csv_writer = writer(out, dialect=dialect)
+        out = StringIO(newline=&#34;&#34;)
+        csv_writer = csv.writer(out, dialect=dialect)
         write_content(csv_writer)
         if path_or_file is None:
             return out.getvalue()
@@ -4142,7 +4168,7 @@ def import_from_csv(
         data = path_or_file.read().splitlines(True)
     # Sniff the dialect
     sample = &#34;&#34;.join(data[:100])
-    dialect = Sniffer().sniff(sample)
+    dialect = csv.Sniffer().sniff(sample)
     # We can overload the result
     if delimiter is not None:
         dialect.delimiter = delimiter
@@ -4151,9 +4177,9 @@ def import_from_csv(
     if lineterminator is not None:
         dialect.lineterminator = lineterminator
     # Make the rows
-    csv = reader(data, dialect)
+    reader = csv.reader(data, dialect)
     table = Table(name, style=style)
-    for line in csv:
+    for line in reader:
         row = Row()
         # rstrip line
         while line and not line[-1].strip():
@@ -4247,7 +4273,7 @@ important.</p>
         data = path_or_file.read().splitlines(True)
     # Sniff the dialect
     sample = &#34;&#34;.join(data[:100])
-    dialect = Sniffer().sniff(sample)
+    dialect = csv.Sniffer().sniff(sample)
     # We can overload the result
     if delimiter is not None:
         dialect.delimiter = delimiter
@@ -4256,9 +4282,9 @@ important.</p>
     if lineterminator is not None:
         dialect.lineterminator = lineterminator
     # Make the rows
-    csv = reader(data, dialect)
+    reader = csv.reader(data, dialect)
     table = Table(name, style=style)
-    for line in csv:
+    for line in reader:
         row = Row()
         # rstrip line
         while line and not line[-1].strip():
@@ -7992,6 +8018,31 @@ ensuiring model integrity.</p>
                     self._append(row)
         self._compute_table_cache()
 
+    def __str__(self) -&gt; str:
+        def write_content(csv_writer):
+            for values in self.iter_values():
+                line = []
+                for value in values:
+                    if value is None:
+                        value = &#34;&#34;
+                    if isinstance(value, str):
+                        value = value.strip()
+                    line.append(value)
+                csv_writer.writerow(line)
+
+        out = StringIO(newline=os.linesep)
+        csv_writer = csv.writer(
+            out,
+            delimiter=&#34; &#34;,
+            doublequote=False,
+            escapechar=&#34;\\&#34;,
+            lineterminator=os.linesep,
+            quotechar=&#39;&#34;&#39;,
+            quoting=csv.QUOTE_NONNUMERIC,
+        )
+        write_content(csv_writer)
+        return out.getvalue()
+
     def _translate_x_from_any(self, x):
         if isinstance(x, str):
             x, _ = _convert_coordinates(x)
@@ -10136,16 +10187,16 @@ ensuiring model integrity.</p>
     # Utilities
 
     def to_csv(self, path_or_file=None, dialect=&#34;excel&#34;):
-        &#34;&#34;&#34;
-        Write the table as CSV in the file. If the file is a string, it is
-        opened as a local path. Else a opened file-like is expected.
+        &#34;&#34;&#34;Write the table as CSV in the file.
+
+        If the file is a string, it is opened as a local path. Else an
+        opened file-like is expected.
 
         Arguments:
 
             path_or_file -- str or file-like
 
             dialect -- str, python csv.dialect, can be &#39;excel&#39;, &#39;unix&#39;...
-
         &#34;&#34;&#34;
 
         def write_content(csv_writer):
@@ -10159,8 +10210,8 @@ ensuiring model integrity.</p>
                     line.append(value)
                 csv_writer.writerow(line)
 
-        out = StringIO()
-        csv_writer = writer(out, dialect=dialect)
+        out = StringIO(newline=&#34;&#34;)
+        csv_writer = csv.writer(out, dialect=dialect)
         write_content(csv_writer)
         if path_or_file is None:
             return out.getvalue()
@@ -12594,8 +12645,9 @@ will create empty cells with no cell type (but eventually a style).</p>
 <span>def <span class="ident">to_csv</span></span>(<span>self, path_or_file=None, dialect='excel')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Write the table as CSV in the file. If the file is a string, it is
-opened as a local path. Else a opened file-like is expected.</p>
+<div class="desc"><p>Write the table as CSV in the file.</p>
+<p>If the file is a string, it is opened as a local path. Else an
+opened file-like is expected.</p>
 <h2 id="arguments">Arguments</h2>
 <p>path_or_file &ndash; str or file-like</p>
 <p>dialect &ndash; str, python csv.dialect, can be 'excel', 'unix'&hellip;</p></div>
@@ -12604,16 +12656,16 @@ opened as a local path. Else a opened file-like is expected.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def to_csv(self, path_or_file=None, dialect=&#34;excel&#34;):
-    &#34;&#34;&#34;
-    Write the table as CSV in the file. If the file is a string, it is
-    opened as a local path. Else a opened file-like is expected.
+    &#34;&#34;&#34;Write the table as CSV in the file.
+
+    If the file is a string, it is opened as a local path. Else an
+    opened file-like is expected.
 
     Arguments:
 
         path_or_file -- str or file-like
 
         dialect -- str, python csv.dialect, can be &#39;excel&#39;, &#39;unix&#39;...
-
     &#34;&#34;&#34;
 
     def write_content(csv_writer):
@@ -12627,8 +12679,8 @@ opened as a local path. Else a opened file-like is expected.</p>
                 line.append(value)
             csv_writer.writerow(line)
 
-    out = StringIO()
-    csv_writer = writer(out, dialect=dialect)
+    out = StringIO(newline=&#34;&#34;)
+    csv_writer = csv.writer(out, dialect=dialect)
     write_content(csv_writer)
     if path_or_file is None:
         return out.getvalue()

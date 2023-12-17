@@ -323,6 +323,12 @@ class Element:
             self._do_init = False
             self.__element = tag_or_elem
 
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.__class__.__name__} tag={self.tag}&gt;&#34;
+
+    def __str__(self):
+        return self.text_recursive
+
     @classmethod
     def from_tag(cls, tag_or_elem):
         &#34;&#34;&#34;Element class and subclass factory. Turn an lxml Element or ODF
@@ -368,9 +374,6 @@ class Element:
         # XML fragment
         root = fromstring(NAMESPACES_XML % tag)  # noqa:S320
         return root[0]
-
-    def __str__(self):
-        return f&#39;{self!r} &#34;{self.tag}&#34;&#39;
 
     @staticmethod
     def _generic_attrib_getter(attr_name, family=None):
@@ -3091,6 +3094,12 @@ Abstraction of the XML library behind.</p></div>
             self._do_init = False
             self.__element = tag_or_elem
 
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.__class__.__name__} tag={self.tag}&gt;&#34;
+
+    def __str__(self):
+        return self.text_recursive
+
     @classmethod
     def from_tag(cls, tag_or_elem):
         &#34;&#34;&#34;Element class and subclass factory. Turn an lxml Element or ODF
@@ -3136,9 +3145,6 @@ Abstraction of the XML library behind.</p></div>
         # XML fragment
         root = fromstring(NAMESPACES_XML % tag)  # noqa:S320
         return root[0]
-
-    def __str__(self):
-        return f&#39;{self!r} &#34;{self.tag}&#34;&#39;
 
     @staticmethod
     def _generic_attrib_getter(attr_name, family=None):

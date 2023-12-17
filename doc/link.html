@@ -119,6 +119,14 @@ class Link(ParagraphBase):
             if visited_style is not None:
                 self.visited_style = visited_style
 
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.__class__.__name__} tag={self.tag} link={self.url}&gt;&#34;
+
+    def __str__(self) -&gt; str:
+        if self.name:
+            return f&#34;[{self.name}]({self.url})&#34;
+        return f&#34;({self.url})&#34;
+
 
 Link._define_attribut_property()
 
@@ -216,7 +224,15 @@ register_element_class(Link)</code></pre>
             if style is not None:
                 self.style = style
             if visited_style is not None:
-                self.visited_style = visited_style</code></pre>
+                self.visited_style = visited_style
+
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.__class__.__name__} tag={self.tag} link={self.url}&gt;&#34;
+
+    def __str__(self) -&gt; str:
+        if self.name:
+            return f&#34;[{self.name}]({self.url})&#34;
+        return f&#34;({self.url})&#34;</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">

@@ -384,7 +384,7 @@ IndexTitleTemplate, TocEntryTemplate related classes</p></div>
 </dd>
 <dt><code class="name"><a title="odfdo.xmlpart" href="xmlpart.html">odfdo.xmlpart</a></code></dt>
 <dd>
-<div class="desc"><p>XmlPart base class for XML parts</p></div>
+<div class="desc"><p>XmlPart base class for XML parts.</p></div>
 </dd>
 </dl>
 </section>
@@ -4922,6 +4922,9 @@ def style(self):
         if path:
             self.open(path)
 
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.__class__.__name__} type={self.mimetype} path={self.path}&gt;&#34;
+
     def open(self, path_or_file):
         &#34;&#34;&#34;Load the content of an ODF file.&#34;&#34;&#34;
         self.__path_like = path_or_file
@@ -5161,7 +5164,10 @@ def style(self):
     @property
     def mimetype(self):
         &#34;&#34;&#34;Return unicode value of mimetype of the document.&#34;&#34;&#34;
-        return self.get_part(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
+        try:
+            return self.get_part(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
+        except Exception:
+            return &#34;&#34;
 
     @mimetype.setter
     def mimetype(self, m):
@@ -5334,7 +5340,10 @@ def clone(self):
 <pre><code class="python">@property
 def mimetype(self):
     &#34;&#34;&#34;Return unicode value of mimetype of the document.&#34;&#34;&#34;
-    return self.get_part(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)</code></pre>
+    try:
+        return self.get_part(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
+    except Exception:
+        return &#34;&#34;</code></pre>
 </details>
 </dd>
 </dl>
@@ -5514,8 +5523,8 @@ unless "packaging" is different.</p>
 <span>(</span><span>part_name, container)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Representation of an XML part.
-Abstraction of the XML library behind.</p></div>
+<div class="desc"><p>Representation of an XML part.</p>
+<p>Abstraction of the XML library behind.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -5534,6 +5543,9 @@ Abstraction of the XML library behind.</p></div>
             self.get_element(&#34;//office:font-face-decls&#34;),
             self.get_element(&#34;//office:automatic-styles&#34;),
         )
+
+    def __str__(self) -&gt; str:
+        return str(self.body)
 
     # Public API
 
@@ -5701,13 +5713,32 @@ to the given family.</p>
 <span>(</span><span>target: Union[str, bytes, pathlib.Path, <a title="odfdo.container.Container" href="container.html#odfdo.container.Container">Container</a>, ForwardRef(None)] = 'text')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Abstraction of the ODF document.</p></div>
+<div class="desc"><p>Abstraction of the ODF document.</p>
+<p>To create a new Document, several possibilities:</p>
+<pre><code>- Document() or Document("text") -&gt; an empty document of type text
+- Document("spreadsheet") -&gt; an empty document of type spreadsheet
+- Document("presentation") -&gt; an empty document of type presentation
+- Document("drawing") -&gt; an empty document of type drawing
+</code></pre>
+<p>If the argument is not a known type, or is a Path, Document will load
+the content of the file.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Document:
-    &#34;&#34;&#34;Abstraction of the ODF document.&#34;&#34;&#34;
+    &#34;&#34;&#34;Abstraction of the ODF document.
+
+    To create a new Document, several possibilities:
+
+        - Document() or Document(&#34;text&#34;) -&gt; an empty document of type text
+        - Document(&#34;spreadsheet&#34;) -&gt; an empty document of type spreadsheet
+        - Document(&#34;presentation&#34;) -&gt; an empty document of type presentation
+        - Document(&#34;drawing&#34;) -&gt; an empty document of type drawing
+
+    If the argument is not a known type, or is a Path, Document will load
+    the content of the file.
+    &#34;&#34;&#34;
 
     def __init__(self, target: Union[str, bytes, Path, Container, None] = &#34;text&#34;):
         # Cache of XML parts
@@ -5732,6 +5763,15 @@ to the given family.</p>
             return
         # let&#39;s assume we open a container on existing file
         self.container = Container(target)
+
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.__class__.__name__} type={self.get_type()} path={self.path}&gt;&#34;
+
+    def __str__(self) -&gt; str:
+        try:
+            return self.get_formatted_text()
+        except NotImplementedError:
+            return self.body.text_recursive
 
     @classmethod
     def new(cls, target=&#34;text&#34;):
@@ -5822,8 +5862,7 @@ to the given family.</p>
         self.container.mimetype = m
 
     def get_type(self):
-        &#34;&#34;&#34;
-        Get the ODF type (also called class) of this document.
+        &#34;&#34;&#34;Get the ODF type (also called class) of this document.
 
         Return: &#39;chart&#39;, &#39;database&#39;, &#39;formula&#39;, &#39;graphics&#39;,
             &#39;graphics-template&#39;, &#39;image&#39;, &#39;presentation&#39;,
@@ -5903,15 +5942,21 @@ to the given family.</p>
         &#34;&#34;&#34;Return content as text, with some formatting.&#34;&#34;&#34;
         # For the moment, only &#34;type=&#39;text&#39;&#34;
         doc_type = self.get_type()
-        if doc_type not in {
+        if doc_type == &#34;spreadsheet&#34;:
+            return self._tables_csv()
+        if doc_type in {
             &#34;text&#34;,
             &#34;text-template&#34;,
             &#34;presentation&#34;,
             &#34;presentation-template&#34;,
         }:
-            raise NotImplementedError(
-                &#39;Type of document &#34;%s&#34; not &#39; &#34;supported yet&#34; % doc_type
-            )
+            return self._formatted_text(rst_mode)
+        raise NotImplementedError(f&#39;Type of document &#34;{doc_type}&#34; not &#39; &#34;supported yet&#34;)
+
+    def _tables_csv(self):
+        return &#34;\n\n&#34;.join(str(table) for table in self.body.get_tables())
+
+    def _formatted_text(self, rst_mode):
         # Initialize an empty context
         context = {
             &#34;document&#34;: self,
@@ -6696,45 +6741,16 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
     &#34;&#34;&#34;Return content as text, with some formatting.&#34;&#34;&#34;
     # For the moment, only &#34;type=&#39;text&#39;&#34;
     doc_type = self.get_type()
-    if doc_type not in {
+    if doc_type == &#34;spreadsheet&#34;:
+        return self._tables_csv()
+    if doc_type in {
         &#34;text&#34;,
         &#34;text-template&#34;,
         &#34;presentation&#34;,
         &#34;presentation-template&#34;,
     }:
-        raise NotImplementedError(
-            &#39;Type of document &#34;%s&#34; not &#39; &#34;supported yet&#34; % doc_type
-        )
-    # Initialize an empty context
-    context = {
-        &#34;document&#34;: self,
-        &#34;footnotes&#34;: [],
-        &#34;endnotes&#34;: [],
-        &#34;annotations&#34;: [],
-        &#34;rst_mode&#34;: rst_mode,
-        &#34;img_counter&#34;: 0,
-        &#34;images&#34;: [],
-        &#34;no_img_level&#34;: 0,
-    }
-    body = self.body
-    # Get the text
-    result = []
-    for element in body.children:
-        # self._get_formatted_text_child(result, element, context, rst_mode)
-        if element.tag == &#34;table:table&#34;:
-            result.append(element.get_formatted_text(context))
-            return
-        result.append(element.get_formatted_text(context))
-        if context[&#34;footnotes&#34;]:
-            self._get_formatted_text_footnotes(result, context, rst_mode)
-        if context[&#34;annotations&#34;]:
-            self._get_formatted_text_annotations(result, context, rst_mode)
-        # Insert the images ref, only in rst mode
-        if context[&#34;images&#34;]:
-            self._get_formatted_text_images(result, context, rst_mode)
-    if context[&#34;endnotes&#34;]:
-        self._get_formatted_text_endnotes(result, context, rst_mode)
-    return &#34;&#34;.join(result)</code></pre>
+        return self._formatted_text(rst_mode)
+    raise NotImplementedError(f&#39;Type of document &#34;{doc_type}&#34; not &#39; &#34;supported yet&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.Document.get_part"><code class="name flex">
@@ -6912,8 +6928,7 @@ name (or all by default).</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_type(self):
-    &#34;&#34;&#34;
-    Get the ODF type (also called class) of this document.
+    &#34;&#34;&#34;Get the ODF type (also called class) of this document.
 
     Return: &#39;chart&#39;, &#39;database&#39;, &#39;formula&#39;, &#39;graphics&#39;,
         &#39;graphics-template&#39;, &#39;image&#39;, &#39;presentation&#39;,
@@ -8703,6 +8718,12 @@ Abstraction of the XML library behind.</p></div>
             self._do_init = False
             self.__element = tag_or_elem
 
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.__class__.__name__} tag={self.tag}&gt;&#34;
+
+    def __str__(self):
+        return self.text_recursive
+
     @classmethod
     def from_tag(cls, tag_or_elem):
         &#34;&#34;&#34;Element class and subclass factory. Turn an lxml Element or ODF
@@ -8748,9 +8769,6 @@ Abstraction of the XML library behind.</p></div>
         # XML fragment
         root = fromstring(NAMESPACES_XML % tag)  # noqa:S320
         return root[0]
-
-    def __str__(self):
-        return f&#39;{self!r} &#34;{self.tag}&#34;&#39;
 
     @staticmethod
     def _generic_attrib_getter(attr_name, family=None):
@@ -17609,7 +17627,15 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
             if style is not None:
                 self.style = style
             if visited_style is not None:
-                self.visited_style = visited_style</code></pre>
+                self.visited_style = visited_style
+
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.__class__.__name__} tag={self.tag} link={self.url}&gt;&#34;
+
+    def __str__(self) -&gt; str:
+        if self.name:
+            return f&#34;[{self.name}]({self.url})&#34;
+        return f&#34;({self.url})&#34;</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -18416,8 +18442,8 @@ string or Element as content.</p>
 <span>(</span><span>part_name, container)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Representation of an XML part.
-Abstraction of the XML library behind.</p></div>
+<div class="desc"><p>Representation of an XML part.</p>
+<p>Abstraction of the XML library behind.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -18683,8 +18709,8 @@ def make_file_entry(full_path, media_type):
 <span>(</span><span>part_name, container)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Representation of an XML part.
-Abstraction of the XML library behind.</p></div>
+<div class="desc"><p>Representation of an XML part.</p>
+<p>Abstraction of the XML library behind.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -28074,8 +28100,8 @@ same area. These will be copied.</p>
 <span>(</span><span>part_name, container)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Representation of an XML part.
-Abstraction of the XML library behind.</p></div>
+<div class="desc"><p>Representation of an XML part.</p>
+<p>Abstraction of the XML library behind.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -29680,6 +29706,31 @@ ensuiring model integrity.</p>
                     row = Row(width)
                     self._append(row)
         self._compute_table_cache()
+
+    def __str__(self) -&gt; str:
+        def write_content(csv_writer):
+            for values in self.iter_values():
+                line = []
+                for value in values:
+                    if value is None:
+                        value = &#34;&#34;
+                    if isinstance(value, str):
+                        value = value.strip()
+                    line.append(value)
+                csv_writer.writerow(line)
+
+        out = StringIO(newline=os.linesep)
+        csv_writer = csv.writer(
+            out,
+            delimiter=&#34; &#34;,
+            doublequote=False,
+            escapechar=&#34;\\&#34;,
+            lineterminator=os.linesep,
+            quotechar=&#39;&#34;&#39;,
+            quoting=csv.QUOTE_NONNUMERIC,
+        )
+        write_content(csv_writer)
+        return out.getvalue()
 
     def _translate_x_from_any(self, x):
         if isinstance(x, str):
@@ -31825,16 +31876,16 @@ ensuiring model integrity.</p>
     # Utilities
 
     def to_csv(self, path_or_file=None, dialect=&#34;excel&#34;):
-        &#34;&#34;&#34;
-        Write the table as CSV in the file. If the file is a string, it is
-        opened as a local path. Else a opened file-like is expected.
+        &#34;&#34;&#34;Write the table as CSV in the file.
+
+        If the file is a string, it is opened as a local path. Else an
+        opened file-like is expected.
 
         Arguments:
 
             path_or_file -- str or file-like
 
             dialect -- str, python csv.dialect, can be &#39;excel&#39;, &#39;unix&#39;...
-
         &#34;&#34;&#34;
 
         def write_content(csv_writer):
@@ -31848,8 +31899,8 @@ ensuiring model integrity.</p>
                     line.append(value)
                 csv_writer.writerow(line)
 
-        out = StringIO()
-        csv_writer = writer(out, dialect=dialect)
+        out = StringIO(newline=&#34;&#34;)
+        csv_writer = csv.writer(out, dialect=dialect)
         write_content(csv_writer)
         if path_or_file is None:
             return out.getvalue()
@@ -34283,8 +34334,9 @@ will create empty cells with no cell type (but eventually a style).</p>
 <span>def <span class="ident">to_csv</span></span>(<span>self, path_or_file=None, dialect='excel')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Write the table as CSV in the file. If the file is a string, it is
-opened as a local path. Else a opened file-like is expected.</p>
+<div class="desc"><p>Write the table as CSV in the file.</p>
+<p>If the file is a string, it is opened as a local path. Else an
+opened file-like is expected.</p>
 <h2 id="arguments">Arguments</h2>
 <p>path_or_file &ndash; str or file-like</p>
 <p>dialect &ndash; str, python csv.dialect, can be 'excel', 'unix'&hellip;</p></div>
@@ -34293,16 +34345,16 @@ opened as a local path. Else a opened file-like is expected.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def to_csv(self, path_or_file=None, dialect=&#34;excel&#34;):
-    &#34;&#34;&#34;
-    Write the table as CSV in the file. If the file is a string, it is
-    opened as a local path. Else a opened file-like is expected.
+    &#34;&#34;&#34;Write the table as CSV in the file.
+
+    If the file is a string, it is opened as a local path. Else an
+    opened file-like is expected.
 
     Arguments:
 
         path_or_file -- str or file-like
 
         dialect -- str, python csv.dialect, can be &#39;excel&#39;, &#39;unix&#39;...
-
     &#34;&#34;&#34;
 
     def write_content(csv_writer):
@@ -34316,8 +34368,8 @@ opened as a local path. Else a opened file-like is expected.</p>
                 line.append(value)
             csv_writer.writerow(line)
 
-    out = StringIO()
-    csv_writer = writer(out, dialect=dialect)
+    out = StringIO(newline=&#34;&#34;)
+    csv_writer = csv.writer(out, dialect=dialect)
     write_content(csv_writer)
     if path_or_file is None:
         return out.getvalue()
@@ -41166,14 +41218,15 @@ Abstraction of the XML library behind.</p></div>
 <span>(</span><span>part_name, container)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Representation of an XML part.
-Abstraction of the XML library behind.</p></div>
+<div class="desc"><p>Representation of an XML part.</p>
+<p>Abstraction of the XML library behind.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class XmlPart:
     &#34;&#34;&#34;Representation of an XML part.
+
     Abstraction of the XML library behind.
     &#34;&#34;&#34;
 
@@ -41191,6 +41244,9 @@ Abstraction of the XML library behind.</p></div>
             part = container.get_part(self.part_name)
             self.__tree = parse(BytesIO(part))  # noqa:S320
         return self.__tree
+
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.__class__.__name__} part_name={self.part_name}&gt;&#34;
 
     # Public API
 

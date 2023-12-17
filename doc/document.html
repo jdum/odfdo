@@ -90,7 +90,7 @@ def _underline_string(level: int, name: str) -&gt; str:
     &#34;&#34;&#34;Underline string of the name.&#34;&#34;&#34;
     if level &gt;= len(UNDERLINE_LVL):
         return &#34;\n&#34;
-    return underline_lvl[level] * len(name)
+    return UNDERLINE_LVL[level] * len(name)
 
 
 def _show_styles(element, level=0):
@@ -149,7 +149,18 @@ def _get_part_class(path):
 
 
 class Document:
-    &#34;&#34;&#34;Abstraction of the ODF document.&#34;&#34;&#34;
+    &#34;&#34;&#34;Abstraction of the ODF document.
+
+    To create a new Document, several possibilities:
+
+        - Document() or Document(&#34;text&#34;) -&gt; an empty document of type text
+        - Document(&#34;spreadsheet&#34;) -&gt; an empty document of type spreadsheet
+        - Document(&#34;presentation&#34;) -&gt; an empty document of type presentation
+        - Document(&#34;drawing&#34;) -&gt; an empty document of type drawing
+
+    If the argument is not a known type, or is a Path, Document will load
+    the content of the file.
+    &#34;&#34;&#34;
 
     def __init__(self, target: Union[str, bytes, Path, Container, None] = &#34;text&#34;):
         # Cache of XML parts
@@ -174,6 +185,15 @@ class Document:
             return
         # let&#39;s assume we open a container on existing file
         self.container = Container(target)
+
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.__class__.__name__} type={self.get_type()} path={self.path}&gt;&#34;
+
+    def __str__(self) -&gt; str:
+        try:
+            return self.get_formatted_text()
+        except NotImplementedError:
+            return self.body.text_recursive
 
     @classmethod
     def new(cls, target=&#34;text&#34;):
@@ -264,8 +284,7 @@ class Document:
         self.container.mimetype = m
 
     def get_type(self):
-        &#34;&#34;&#34;
-        Get the ODF type (also called class) of this document.
+        &#34;&#34;&#34;Get the ODF type (also called class) of this document.
 
         Return: &#39;chart&#39;, &#39;database&#39;, &#39;formula&#39;, &#39;graphics&#39;,
             &#39;graphics-template&#39;, &#39;image&#39;, &#39;presentation&#39;,
@@ -345,15 +364,21 @@ class Document:
         &#34;&#34;&#34;Return content as text, with some formatting.&#34;&#34;&#34;
         # For the moment, only &#34;type=&#39;text&#39;&#34;
         doc_type = self.get_type()
-        if doc_type not in {
+        if doc_type == &#34;spreadsheet&#34;:
+            return self._tables_csv()
+        if doc_type in {
             &#34;text&#34;,
             &#34;text-template&#34;,
             &#34;presentation&#34;,
             &#34;presentation-template&#34;,
         }:
-            raise NotImplementedError(
-                &#39;Type of document &#34;%s&#34; not &#39; &#34;supported yet&#34; % doc_type
-            )
+            return self._formatted_text(rst_mode)
+        raise NotImplementedError(f&#39;Type of document &#34;{doc_type}&#34; not &#39; &#34;supported yet&#34;)
+
+    def _tables_csv(self):
+        return &#34;\n\n&#34;.join(str(table) for table in self.body.get_tables())
+
+    def _formatted_text(self, rst_mode):
         # Initialize an empty context
         context = {
             &#34;document&#34;: self,
@@ -875,13 +900,32 @@ class Document:
 <span>(</span><span>target: Union[str, bytes, pathlib.Path, <a title="odfdo.container.Container" href="container.html#odfdo.container.Container">Container</a>, ForwardRef(None)] = 'text')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Abstraction of the ODF document.</p></div>
+<div class="desc"><p>Abstraction of the ODF document.</p>
+<p>To create a new Document, several possibilities:</p>
+<pre><code>- Document() or Document("text") -&gt; an empty document of type text
+- Document("spreadsheet") -&gt; an empty document of type spreadsheet
+- Document("presentation") -&gt; an empty document of type presentation
+- Document("drawing") -&gt; an empty document of type drawing
+</code></pre>
+<p>If the argument is not a known type, or is a Path, Document will load
+the content of the file.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Document:
-    &#34;&#34;&#34;Abstraction of the ODF document.&#34;&#34;&#34;
+    &#34;&#34;&#34;Abstraction of the ODF document.
+
+    To create a new Document, several possibilities:
+
+        - Document() or Document(&#34;text&#34;) -&gt; an empty document of type text
+        - Document(&#34;spreadsheet&#34;) -&gt; an empty document of type spreadsheet
+        - Document(&#34;presentation&#34;) -&gt; an empty document of type presentation
+        - Document(&#34;drawing&#34;) -&gt; an empty document of type drawing
+
+    If the argument is not a known type, or is a Path, Document will load
+    the content of the file.
+    &#34;&#34;&#34;
 
     def __init__(self, target: Union[str, bytes, Path, Container, None] = &#34;text&#34;):
         # Cache of XML parts
@@ -906,6 +950,15 @@ class Document:
             return
         # let&#39;s assume we open a container on existing file
         self.container = Container(target)
+
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.__class__.__name__} type={self.get_type()} path={self.path}&gt;&#34;
+
+    def __str__(self) -&gt; str:
+        try:
+            return self.get_formatted_text()
+        except NotImplementedError:
+            return self.body.text_recursive
 
     @classmethod
     def new(cls, target=&#34;text&#34;):
@@ -996,8 +1049,7 @@ class Document:
         self.container.mimetype = m
 
     def get_type(self):
-        &#34;&#34;&#34;
-        Get the ODF type (also called class) of this document.
+        &#34;&#34;&#34;Get the ODF type (also called class) of this document.
 
         Return: &#39;chart&#39;, &#39;database&#39;, &#39;formula&#39;, &#39;graphics&#39;,
             &#39;graphics-template&#39;, &#39;image&#39;, &#39;presentation&#39;,
@@ -1077,15 +1129,21 @@ class Document:
         &#34;&#34;&#34;Return content as text, with some formatting.&#34;&#34;&#34;
         # For the moment, only &#34;type=&#39;text&#39;&#34;
         doc_type = self.get_type()
-        if doc_type not in {
+        if doc_type == &#34;spreadsheet&#34;:
+            return self._tables_csv()
+        if doc_type in {
             &#34;text&#34;,
             &#34;text-template&#34;,
             &#34;presentation&#34;,
             &#34;presentation-template&#34;,
         }:
-            raise NotImplementedError(
-                &#39;Type of document &#34;%s&#34; not &#39; &#34;supported yet&#34; % doc_type
-            )
+            return self._formatted_text(rst_mode)
+        raise NotImplementedError(f&#39;Type of document &#34;{doc_type}&#34; not &#39; &#34;supported yet&#34;)
+
+    def _tables_csv(self):
+        return &#34;\n\n&#34;.join(str(table) for table in self.body.get_tables())
+
+    def _formatted_text(self, rst_mode):
         # Initialize an empty context
         context = {
             &#34;document&#34;: self,
@@ -1870,45 +1928,16 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
     &#34;&#34;&#34;Return content as text, with some formatting.&#34;&#34;&#34;
     # For the moment, only &#34;type=&#39;text&#39;&#34;
     doc_type = self.get_type()
-    if doc_type not in {
+    if doc_type == &#34;spreadsheet&#34;:
+        return self._tables_csv()
+    if doc_type in {
         &#34;text&#34;,
         &#34;text-template&#34;,
         &#34;presentation&#34;,
         &#34;presentation-template&#34;,
     }:
-        raise NotImplementedError(
-            &#39;Type of document &#34;%s&#34; not &#39; &#34;supported yet&#34; % doc_type
-        )
-    # Initialize an empty context
-    context = {
-        &#34;document&#34;: self,
-        &#34;footnotes&#34;: [],
-        &#34;endnotes&#34;: [],
-        &#34;annotations&#34;: [],
-        &#34;rst_mode&#34;: rst_mode,
-        &#34;img_counter&#34;: 0,
-        &#34;images&#34;: [],
-        &#34;no_img_level&#34;: 0,
-    }
-    body = self.body
-    # Get the text
-    result = []
-    for element in body.children:
-        # self._get_formatted_text_child(result, element, context, rst_mode)
-        if element.tag == &#34;table:table&#34;:
-            result.append(element.get_formatted_text(context))
-            return
-        result.append(element.get_formatted_text(context))
-        if context[&#34;footnotes&#34;]:
-            self._get_formatted_text_footnotes(result, context, rst_mode)
-        if context[&#34;annotations&#34;]:
-            self._get_formatted_text_annotations(result, context, rst_mode)
-        # Insert the images ref, only in rst mode
-        if context[&#34;images&#34;]:
-            self._get_formatted_text_images(result, context, rst_mode)
-    if context[&#34;endnotes&#34;]:
-        self._get_formatted_text_endnotes(result, context, rst_mode)
-    return &#34;&#34;.join(result)</code></pre>
+        return self._formatted_text(rst_mode)
+    raise NotImplementedError(f&#39;Type of document &#34;{doc_type}&#34; not &#39; &#34;supported yet&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.get_part"><code class="name flex">
@@ -2086,8 +2115,7 @@ name (or all by default).</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_type(self):
-    &#34;&#34;&#34;
-    Get the ODF type (also called class) of this document.
+    &#34;&#34;&#34;Get the ODF type (also called class) of this document.
 
     Return: &#39;chart&#39;, &#39;database&#39;, &#39;formula&#39;, &#39;graphics&#39;,
         &#39;graphics-template&#39;, &#39;image&#39;, &#39;presentation&#39;,

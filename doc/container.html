@@ -92,6 +92,9 @@ class Container:
         if path:
             self.open(path)
 
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.__class__.__name__} type={self.mimetype} path={self.path}&gt;&#34;
+
     def open(self, path_or_file):
         &#34;&#34;&#34;Load the content of an ODF file.&#34;&#34;&#34;
         self.__path_like = path_or_file
@@ -331,7 +334,10 @@ class Container:
     @property
     def mimetype(self):
         &#34;&#34;&#34;Return unicode value of mimetype of the document.&#34;&#34;&#34;
-        return self.get_part(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
+        try:
+            return self.get_part(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
+        except Exception:
+            return &#34;&#34;
 
     @mimetype.setter
     def mimetype(self, m):
@@ -493,6 +499,9 @@ class Container:
         if path:
             self.open(path)
 
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.__class__.__name__} type={self.mimetype} path={self.path}&gt;&#34;
+
     def open(self, path_or_file):
         &#34;&#34;&#34;Load the content of an ODF file.&#34;&#34;&#34;
         self.__path_like = path_or_file
@@ -732,7 +741,10 @@ class Container:
     @property
     def mimetype(self):
         &#34;&#34;&#34;Return unicode value of mimetype of the document.&#34;&#34;&#34;
-        return self.get_part(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
+        try:
+            return self.get_part(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
+        except Exception:
+            return &#34;&#34;
 
     @mimetype.setter
     def mimetype(self, m):
@@ -905,7 +917,10 @@ def clone(self):
 <pre><code class="python">@property
 def mimetype(self):
     &#34;&#34;&#34;Return unicode value of mimetype of the document.&#34;&#34;&#34;
-    return self.get_part(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)</code></pre>
+    try:
+        return self.get_part(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
+    except Exception:
+        return &#34;&#34;</code></pre>
 </details>
 </dd>
 </dl>
