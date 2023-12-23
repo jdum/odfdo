@@ -24,7 +24,6 @@ from .const import CSS3_COLORMAP
 from .datatype import Boolean
 from .element import Element, register_element_class
 from .image import DrawImage
-from .paragraph import Paragraph
 from .utils import (
     FALSE_FAMILY_MAP_REVERSE,
     FAMILY_MAPPING,
@@ -865,7 +864,8 @@ class Style(Element):
         # FIXME cyclic import
         for item in text_or_element:
             if isinstance(item, str):
-                paragraph = Paragraph(item, style=style)
+                paragraph = Element.from_tag("text:p")
+                paragraph.style = style
                 header_or_footer.append(paragraph)
             elif isinstance(item, Element):
                 header_or_footer.append(item)
