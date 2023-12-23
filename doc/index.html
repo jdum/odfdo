@@ -94,6 +94,7 @@ __all__ = [
     &#34;Note&#34;,
     &#34;PREV_SIBLING&#34;,
     &#34;Paragraph&#34;,
+    &#34;PageBreak&#34;,
     &#34;RectangleShape&#34;,
     &#34;Reference&#34;,
     &#34;ReferenceMark&#34;,
@@ -173,7 +174,7 @@ from .list import List, ListItem
 from .manifest import Manifest
 from .meta import Meta
 from .note import Annotation, AnnotationEnd, Note
-from .paragraph import LineBreak, Paragraph, Spacer, Span, Tab
+from .paragraph import LineBreak, PageBreak, Paragraph, Spacer, Span, Tab
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
 from .section import Section
 from .shapes import ConnectorShape, DrawGroup, EllipseShape, LineShape, RectangleShape
@@ -393,6 +394,26 @@ IndexTitleTemplate, TocEntryTemplate related classes</p></div>
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="odfdo.PageBreak"><code class="name flex">
+<span>def <span class="ident">PageBreak</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return an empty paragraph with a manual page break.</p>
+<p>Using this function requires to register the page break style with:
+document.add_page_break_style()</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def PageBreak():
+    &#34;&#34;&#34;Return an empty paragraph with a manual page break.
+
+    Using this function requires to register the page break style with:
+        document.add_page_break_style()
+    &#34;&#34;&#34;
+    return Paragraph(&#34;&#34;, style=&#34;odfdopagebreak&#34;)</code></pre>
+</details>
+</dd>
 <dt id="odfdo.create_table_cell_style"><code class="name flex">
 <span>def <span class="ident">create_table_cell_style</span></span>(<span>border=None, border_top=None, border_bottom=None, border_left=None, border_right=None, padding=None, padding_top=None, padding_bottom=None, padding_left=None, padding_right=None, background_color=None, shadow=None, color=None)</span>
 </code></dt>
@@ -6461,7 +6482,32 @@ the content of the file.</p></div>
                 part = document.get_part(url)
                 self.set_part(url, part)
                 media_type = document_manifest.get_media_type(url)
-                manifest.add_full_path(url, media_type)</code></pre>
+                manifest.add_full_path(url, media_type)
+
+    def add_page_break_style(self):
+        &#34;&#34;&#34;Ensure that the document contains the style required for a manual page break.
+
+        Then a manual page break can be added to the document with:
+            from paragraph import PageBreak
+            ...
+            document.body.append(PageBreak())
+
+        Note: this style uses the property &#39;fo:break-after&#39;, another
+        possibility coul be the property &#39;fo:break-before&#39;
+        &#34;&#34;&#34;
+        if existing := self.get_style(  # noqa: SIM102
+            family=&#34;paragraph&#34;,
+            name_or_element=&#34;odfdopagebreak&#34;,
+        ):
+            if properties := existing.get_properties():  # noqa: SIM102
+                if properties[&#34;fo:break-after&#34;] == &#34;page&#34;:
+                    return
+        style = (
+            &#39;&lt;style:style style:family=&#34;paragraph&#34; style:parent-style-name=&#34;Standard&#34; &#39;
+            &#39;style:name=&#34;odfdopagebreak&#34;&gt;&#39;
+            &#39;&lt;style:paragraph-properties fo:break-after=&#34;page&#34;/&gt;&lt;/style:style&gt;&#39;
+        )
+        self.insert_style(style, automatic=False)</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
@@ -6614,6 +6660,47 @@ def path(self):
         self.container.set_part(full_path, path.read_bytes())
     manifest.add_full_path(full_path, media_type)
     return full_path</code></pre>
+</details>
+</dd>
+<dt id="odfdo.Document.add_page_break_style"><code class="name flex">
+<span>def <span class="ident">add_page_break_style</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Ensure that the document contains the style required for a manual page break.</p>
+<p>Then a manual page break can be added to the document with:
+from paragraph import PageBreak
+&hellip;
+document.body.append(PageBreak())</p>
+<p>Note: this style uses the property 'fo:break-after', another
+possibility coul be the property 'fo:break-before'</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_page_break_style(self):
+    &#34;&#34;&#34;Ensure that the document contains the style required for a manual page break.
+
+    Then a manual page break can be added to the document with:
+        from paragraph import PageBreak
+        ...
+        document.body.append(PageBreak())
+
+    Note: this style uses the property &#39;fo:break-after&#39;, another
+    possibility coul be the property &#39;fo:break-before&#39;
+    &#34;&#34;&#34;
+    if existing := self.get_style(  # noqa: SIM102
+        family=&#34;paragraph&#34;,
+        name_or_element=&#34;odfdopagebreak&#34;,
+    ):
+        if properties := existing.get_properties():  # noqa: SIM102
+            if properties[&#34;fo:break-after&#34;] == &#34;page&#34;:
+                return
+    style = (
+        &#39;&lt;style:style style:family=&#34;paragraph&#34; style:parent-style-name=&#34;Standard&#34; &#39;
+        &#39;style:name=&#34;odfdopagebreak&#34;&gt;&#39;
+        &#39;&lt;style:paragraph-properties fo:break-after=&#34;page&#34;/&gt;&lt;/style:style&gt;&#39;
+    )
+    self.insert_style(style, automatic=False)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.Document.del_part"><code class="name flex">
@@ -27057,7 +27144,8 @@ break_after -- 'page', 'column' or 'auto'
         # FIXME cyclic import
         for item in text_or_element:
             if isinstance(item, str):
-                paragraph = Paragraph(item, style=style)
+                paragraph = Element.from_tag(&#34;text:p&#34;)
+                paragraph.style = style
                 header_or_footer.append(paragraph)
             elif isinstance(item, Element):
                 header_or_footer.append(item)
@@ -41484,6 +41572,7 @@ Text instances translated from the nodes found.</p></div>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="odfdo.PageBreak" href="#odfdo.PageBreak">PageBreak</a></code></li>
 <li><code><a title="odfdo.create_table_cell_style" href="#odfdo.create_table_cell_style">create_table_cell_style</a></code></li>
 <li><code><a title="odfdo.default_boolean_style" href="#odfdo.default_boolean_style">default_boolean_style</a></code></li>
 <li><code><a title="odfdo.default_currency_style" href="#odfdo.default_currency_style">default_currency_style</a></code></li>
@@ -41644,8 +41733,9 @@ Text instances translated from the nodes found.</p></div>
 </li>
 <li>
 <h4><code><a title="odfdo.Document" href="#odfdo.Document">Document</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="odfdo.Document.add_file" href="#odfdo.Document.add_file">add_file</a></code></li>
+<li><code><a title="odfdo.Document.add_page_break_style" href="#odfdo.Document.add_page_break_style">add_page_break_style</a></code></li>
 <li><code><a title="odfdo.Document.body" href="#odfdo.Document.body">body</a></code></li>
 <li><code><a title="odfdo.Document.clone" href="#odfdo.Document.clone">clone</a></code></li>
 <li><code><a title="odfdo.Document.del_part" href="#odfdo.Document.del_part">del_part</a></code></li>

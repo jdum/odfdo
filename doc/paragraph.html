@@ -64,6 +64,7 @@ from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMark
 
 __all__ = [
     &#34;LineBreak&#34;,
+    &#34;PageBreak&#34;,
     &#34;Paragraph&#34;,
     &#34;Spacer&#34;,
     &#34;Span&#34;,
@@ -790,6 +791,15 @@ class Span(Paragraph):
                 self.style = style
 
 
+def PageBreak():
+    &#34;&#34;&#34;Return an empty paragraph with a manual page break.
+
+    Using this function requires to register the page break style with:
+        document.add_page_break_style()
+    &#34;&#34;&#34;
+    return Paragraph(&#34;&#34;, style=&#34;odfdopagebreak&#34;)
+
+
 Span._define_attribut_property()
 
 register_element_class(Span)
@@ -801,6 +811,29 @@ register_element_class(Paragraph)</code></pre>
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="odfdo.paragraph.PageBreak"><code class="name flex">
+<span>def <span class="ident">PageBreak</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return an empty paragraph with a manual page break.</p>
+<p>Using this function requires to register the page break style with:
+document.add_page_break_style()</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def PageBreak():
+    &#34;&#34;&#34;Return an empty paragraph with a manual page break.
+
+    Using this function requires to register the page break style with:
+        document.add_page_break_style()
+    &#34;&#34;&#34;
+    return Paragraph(&#34;&#34;, style=&#34;odfdopagebreak&#34;)</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
@@ -3115,6 +3148,11 @@ information</p>
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="odfdo" href="index.html">odfdo</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="odfdo.paragraph.PageBreak" href="#odfdo.paragraph.PageBreak">PageBreak</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
