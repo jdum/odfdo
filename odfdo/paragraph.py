@@ -35,6 +35,7 @@ from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMark
 
 __all__ = [
     "LineBreak",
+    "PageBreak",
     "Paragraph",
     "Spacer",
     "Span",
@@ -759,6 +760,15 @@ class Span(Paragraph):
                 self.text = text
             if style:
                 self.style = style
+
+
+def PageBreak():
+    """Return an empty paragraph with a manual page break.
+
+    Using this function requires to register the page break style with:
+        document.add_page_break_style()
+    """
+    return Paragraph("", style="odfdopagebreak")
 
 
 Span._define_attribut_property()

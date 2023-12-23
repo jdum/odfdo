@@ -65,6 +65,7 @@ __all__ = [
     "Note",
     "PREV_SIBLING",
     "Paragraph",
+    "PageBreak",
     "RectangleShape",
     "Reference",
     "ReferenceMark",
@@ -144,7 +145,7 @@ from .list import List, ListItem
 from .manifest import Manifest
 from .meta import Meta
 from .note import Annotation, AnnotationEnd, Note
-from .paragraph import LineBreak, Paragraph, Spacer, Span, Tab
+from .paragraph import LineBreak, PageBreak, Paragraph, Spacer, Span, Tab
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
 from .section import Section
 from .shapes import ConnectorShape, DrawGroup, EllipseShape, LineShape, RectangleShape

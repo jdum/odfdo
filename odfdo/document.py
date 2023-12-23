@@ -855,3 +855,28 @@ class Document:
                 self.set_part(url, part)
                 media_type = document_manifest.get_media_type(url)
                 manifest.add_full_path(url, media_type)
+
+    def add_page_break_style(self):
+        """Ensure that the document contains the style required for a manual page break.
+
+        Then a manual page break can be added to the document with:
+            from paragraph import PageBreak
+            ...
+            document.body.append(PageBreak())
+
+        Note: this style uses the property 'fo:break-after', another
+        possibility coul be the property 'fo:break-before'
+        """
+        if existing := self.get_style(  # noqa: SIM102
+            family="paragraph",
+            name_or_element="odfdopagebreak",
+        ):
+            if properties := existing.get_properties():  # noqa: SIM102
+                if properties["fo:break-after"] == "page":
+                    return
+        style = (
+            '<style:style style:family="paragraph" style:parent-style-name="Standard" '
+            'style:name="odfdopagebreak">'
+            '<style:paragraph-properties fo:break-after="page"/></style:style>'
+        )
+        self.insert_style(style, automatic=False)

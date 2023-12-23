@@ -22,12 +22,10 @@
 
 from collections.abc import Iterable
 from pathlib import Path
-from unittest import TestCase, main
 
 import pytest
 
 from odfdo import Element
-from odfdo.const import ODF_CONTENT
 from odfdo.document import Document
 from odfdo.draw_page import DrawPage
 from odfdo.paragraph import Paragraph

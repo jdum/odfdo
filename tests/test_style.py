@@ -27,9 +27,7 @@ import pytest
 from odfdo import Element
 from odfdo.const import ODF_CONTENT
 from odfdo.document import Document
-from odfdo.style import (
-    Style,
-)
+from odfdo.style import Style
 
 SAMPLES = Path(__file__).parent / "samples"
 
