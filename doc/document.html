@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.document API documentation</title>
-<meta name="description" content="Document class, root of the ODF document" />
+<meta name="description" content="Document class, root of the ODF document." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,7 +22,7 @@
 <h1 class="title">Module <code>odfdo.document</code></h1>
 </header>
 <section id="section-intro">
-<p>Document class, root of the ODF document</p>
+<p>Document class, root of the ODF document.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -50,14 +50,16 @@
 #          Hervé Cauwelier &lt;herve@itaapy.com&gt;
 #          Romain Gauthier &lt;romain@itaapy.com&gt;
 #          Jerome Dumonteil &lt;jerome.dumonteil@itaapy.com&gt;
-&#34;&#34;&#34;Document class, root of the ODF document
+&#34;&#34;&#34;Document class, root of the ODF document.
 &#34;&#34;&#34;
+from __future__ import annotations
+
+import io
 import posixpath
 from copy import deepcopy
 from mimetypes import guess_type
 from operator import itemgetter
 from pathlib import Path
-from typing import Union
 from uuid import uuid4
 
 from .const import (
@@ -162,7 +164,9 @@ class Document:
     the content of the file.
     &#34;&#34;&#34;
 
-    def __init__(self, target: Union[str, bytes, Path, Container, None] = &#34;text&#34;):
+    def __init__(
+        self, target: str | bytes | Path | Container | io.BytesIO | None = &#34;text&#34;
+    ):
         # Cache of XML parts
         self.__xmlparts = {}
         # Cache of the body
@@ -179,39 +183,46 @@ class Document:
         if isinstance(target, Container):
             self.container = target
             return
-        if to_str(target) in ODF_TEMPLATES:
-            # assuming a new document from templates
-            self.container = Container.new(target)
+        if isinstance(target, (str, bytes)):
+            if to_str(target) in ODF_TEMPLATES:
+                # assuming a new document from templates
+                self.container = Container.from_template(to_str(target))
+                return
+            # let&#39;s assume we open a container on existing file
+            self.container = Container(to_str(target))
             return
-        # let&#39;s assume we open a container on existing file
-        self.container = Container(target)
+        if isinstance(target, io.BytesIO):
+            self.container = Container(target)
+            return
+        raise TypeError(f&#34;Unknown Document source type {target!r}&#34;)
 
     def __repr__(self) -&gt; str:
         return f&#34;&lt;{self.__class__.__name__} type={self.get_type()} path={self.path}&gt;&#34;
 
     def __str__(self) -&gt; str:
         try:
-            return self.get_formatted_text()
+            return str(self.get_formatted_text())
         except NotImplementedError:
             return self.body.text_recursive
 
     @classmethod
-    def new(cls, target=&#34;text&#34;):
-        doc = Document()
-        doc.container = Container.new(target)
-        return doc
+    def new(cls, target: str | Path = &#34;text&#34;) -&gt; Document:
+        &#34;&#34;&#34;Compatibility class method fro read from a templste.&#34;&#34;&#34;
+        document = Document()
+        document.container = Container.from_template(target)
+        return document
 
     # Public API
 
     @property
-    def path(self):
+    def path(self) -&gt; Path | None:
         &#34;&#34;&#34;Shortcut to Document.Container.path.&#34;&#34;&#34;
         if not self.container:
             return None
         return self.container.path
 
     @path.setter
-    def path(self, path_or_str):
+    def path(self, path_or_str: str | Path) -&gt; None:
         &#34;&#34;&#34;Shortcut to Document.Container.path
 
         Only accepting str or Path.&#34;&#34;&#34;
@@ -223,6 +234,8 @@ class Document:
         &#34;&#34;&#34;Return available part names with path inside the archive, e.g.
         [&#39;content.xml&#39;, ..., &#39;Pictures/100000000000032000000258912EB1C3.jpg&#39;]
         &#34;&#34;&#34;
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
         return self.container.get_parts()
 
     def get_part(self, path):
@@ -235,6 +248,8 @@ class Document:
 
         path formated as URI, so always use &#39;/&#39; separator
         &#34;&#34;&#34;
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
         # &#34;./ObjectReplacements/Object 1&#34;
         path = path.lstrip(&#34;./&#34;)
         path = _get_part_path(path)
@@ -256,6 +271,8 @@ class Document:
 
         path formated as URI, so always use &#39;/&#39; separator
         &#34;&#34;&#34;
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
         # &#34;./ObjectReplacements/Object 1&#34;
         path = path.lstrip(&#34;./&#34;)
         path = _get_part_path(path)
@@ -269,6 +286,8 @@ class Document:
         &#34;&#34;&#34;Mark a part for deletion. The path is relative to the archive,
         e.g. &#34;Pictures/1003200258912EB1C3.jpg&#34;
         &#34;&#34;&#34;
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
         path = _get_part_path(path)
         cls = _get_part_class(path)
         if path == ODF_MANIFEST or cls is not None:
@@ -281,6 +300,8 @@ class Document:
 
     @mimetype.setter
     def mimetype(self, m):
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
         self.container.mimetype = m
 
     def get_type(self):
@@ -922,7 +943,7 @@ class Document:
 <dl>
 <dt id="odfdo.document.Document"><code class="flex name class">
 <span>class <span class="ident">Document</span></span>
-<span>(</span><span>target: Union[str, bytes, pathlib.Path, <a title="odfdo.container.Container" href="container.html#odfdo.container.Container">Container</a>, ForwardRef(None)] = 'text')</span>
+<span>(</span><span>target: str | bytes | Path | Container | io.BytesIO | None = 'text')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Abstraction of the ODF document.</p>
@@ -952,7 +973,9 @@ the content of the file.</p></div>
     the content of the file.
     &#34;&#34;&#34;
 
-    def __init__(self, target: Union[str, bytes, Path, Container, None] = &#34;text&#34;):
+    def __init__(
+        self, target: str | bytes | Path | Container | io.BytesIO | None = &#34;text&#34;
+    ):
         # Cache of XML parts
         self.__xmlparts = {}
         # Cache of the body
@@ -969,39 +992,46 @@ the content of the file.</p></div>
         if isinstance(target, Container):
             self.container = target
             return
-        if to_str(target) in ODF_TEMPLATES:
-            # assuming a new document from templates
-            self.container = Container.new(target)
+        if isinstance(target, (str, bytes)):
+            if to_str(target) in ODF_TEMPLATES:
+                # assuming a new document from templates
+                self.container = Container.from_template(to_str(target))
+                return
+            # let&#39;s assume we open a container on existing file
+            self.container = Container(to_str(target))
             return
-        # let&#39;s assume we open a container on existing file
-        self.container = Container(target)
+        if isinstance(target, io.BytesIO):
+            self.container = Container(target)
+            return
+        raise TypeError(f&#34;Unknown Document source type {target!r}&#34;)
 
     def __repr__(self) -&gt; str:
         return f&#34;&lt;{self.__class__.__name__} type={self.get_type()} path={self.path}&gt;&#34;
 
     def __str__(self) -&gt; str:
         try:
-            return self.get_formatted_text()
+            return str(self.get_formatted_text())
         except NotImplementedError:
             return self.body.text_recursive
 
     @classmethod
-    def new(cls, target=&#34;text&#34;):
-        doc = Document()
-        doc.container = Container.new(target)
-        return doc
+    def new(cls, target: str | Path = &#34;text&#34;) -&gt; Document:
+        &#34;&#34;&#34;Compatibility class method fro read from a templste.&#34;&#34;&#34;
+        document = Document()
+        document.container = Container.from_template(target)
+        return document
 
     # Public API
 
     @property
-    def path(self):
+    def path(self) -&gt; Path | None:
         &#34;&#34;&#34;Shortcut to Document.Container.path.&#34;&#34;&#34;
         if not self.container:
             return None
         return self.container.path
 
     @path.setter
-    def path(self, path_or_str):
+    def path(self, path_or_str: str | Path) -&gt; None:
         &#34;&#34;&#34;Shortcut to Document.Container.path
 
         Only accepting str or Path.&#34;&#34;&#34;
@@ -1013,6 +1043,8 @@ the content of the file.</p></div>
         &#34;&#34;&#34;Return available part names with path inside the archive, e.g.
         [&#39;content.xml&#39;, ..., &#39;Pictures/100000000000032000000258912EB1C3.jpg&#39;]
         &#34;&#34;&#34;
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
         return self.container.get_parts()
 
     def get_part(self, path):
@@ -1025,6 +1057,8 @@ the content of the file.</p></div>
 
         path formated as URI, so always use &#39;/&#39; separator
         &#34;&#34;&#34;
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
         # &#34;./ObjectReplacements/Object 1&#34;
         path = path.lstrip(&#34;./&#34;)
         path = _get_part_path(path)
@@ -1046,6 +1080,8 @@ the content of the file.</p></div>
 
         path formated as URI, so always use &#39;/&#39; separator
         &#34;&#34;&#34;
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
         # &#34;./ObjectReplacements/Object 1&#34;
         path = path.lstrip(&#34;./&#34;)
         path = _get_part_path(path)
@@ -1059,6 +1095,8 @@ the content of the file.</p></div>
         &#34;&#34;&#34;Mark a part for deletion. The path is relative to the archive,
         e.g. &#34;Pictures/1003200258912EB1C3.jpg&#34;
         &#34;&#34;&#34;
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
         path = _get_part_path(path)
         cls = _get_part_class(path)
         if path == ODF_MANIFEST or cls is not None:
@@ -1071,6 +1109,8 @@ the content of the file.</p></div>
 
     @mimetype.setter
     def mimetype(self, m):
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
         self.container.mimetype = m
 
     def get_type(self):
@@ -1703,19 +1743,20 @@ the content of the file.</p></div>
 <h3>Static methods</h3>
 <dl>
 <dt id="odfdo.document.Document.new"><code class="name flex">
-<span>def <span class="ident">new</span></span>(<span>target='text')</span>
+<span>def <span class="ident">new</span></span>(<span>target: str | Path = 'text') ‑> <a title="odfdo.document.Document" href="#odfdo.document.Document">Document</a></span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Compatibility class method fro read from a templste.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@classmethod
-def new(cls, target=&#34;text&#34;):
-    doc = Document()
-    doc.container = Container.new(target)
-    return doc</code></pre>
+def new(cls, target: str | Path = &#34;text&#34;) -&gt; Document:
+    &#34;&#34;&#34;Compatibility class method fro read from a templste.&#34;&#34;&#34;
+    document = Document()
+    document.container = Container.from_template(target)
+    return document</code></pre>
 </details>
 </dd>
 </dl>
@@ -1780,7 +1821,7 @@ def mimetype(self):
     return self.container.mimetype</code></pre>
 </details>
 </dd>
-<dt id="odfdo.document.Document.path"><code class="name">var <span class="ident">path</span></code></dt>
+<dt id="odfdo.document.Document.path"><code class="name">var <span class="ident">path</span> : pathlib.Path | None</code></dt>
 <dd>
 <div class="desc"><p>Shortcut to Document.Container.path.</p></div>
 <details class="source">
@@ -1788,7 +1829,7 @@ def mimetype(self):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def path(self):
+def path(self) -&gt; Path | None:
     &#34;&#34;&#34;Shortcut to Document.Container.path.&#34;&#34;&#34;
     if not self.container:
         return None
@@ -1908,6 +1949,8 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
     &#34;&#34;&#34;Mark a part for deletion. The path is relative to the archive,
     e.g. &#34;Pictures/1003200258912EB1C3.jpg&#34;
     &#34;&#34;&#34;
+    if not self.container:
+        raise ValueError(&#34;Empty Container&#34;)
     path = _get_part_path(path)
     cls = _get_part_class(path)
     if path == ODF_MANIFEST or cls is not None:
@@ -2055,6 +2098,8 @@ its own API.</p>
 
     path formated as URI, so always use &#39;/&#39; separator
     &#34;&#34;&#34;
+    if not self.container:
+        raise ValueError(&#34;Empty Container&#34;)
     # &#34;./ObjectReplacements/Object 1&#34;
     path = path.lstrip(&#34;./&#34;)
     path = _get_part_path(path)
@@ -2085,6 +2130,8 @@ its own API.</p>
     &#34;&#34;&#34;Return available part names with path inside the archive, e.g.
     [&#39;content.xml&#39;, ..., &#39;Pictures/100000000000032000000258912EB1C3.jpg&#39;]
     &#34;&#34;&#34;
+    if not self.container:
+        raise ValueError(&#34;Empty Container&#34;)
     return self.container.get_parts()</code></pre>
 </details>
 </dd>
@@ -2465,6 +2512,8 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
 
     path formated as URI, so always use &#39;/&#39; separator
     &#34;&#34;&#34;
+    if not self.container:
+        raise ValueError(&#34;Empty Container&#34;)
     # &#34;./ObjectReplacements/Object 1&#34;
     path = path.lstrip(&#34;./&#34;)
     path = _get_part_path(path)

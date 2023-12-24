@@ -50,7 +50,7 @@
 #          Romain Gauthier &lt;romain@itaapy.com&gt;
 &#34;&#34;&#34;Styles class for styles.xml part
 &#34;&#34;&#34;
-from .utils import _get_element, _get_elements
+from .utils import make_xpath_query
 from .xmlpart import XmlPart
 
 CONTEXT_MAPPING = {
@@ -151,10 +151,15 @@ class Styles(XmlPart):
         return None
 
     def get_master_pages(self):
-        return _get_elements(self, &#34;descendant::style:master-page&#34;)
+        query = make_xpath_query(&#34;descendant::style:master-page&#34;)
+        return self.get_elements(query)
 
-    def get_master_page(self, position=0):
-        return _get_element(self, &#34;descendant::style:master-page&#34;, position)</code></pre>
+    def get_master_page(self, position: int = 0):
+        results = self.get_master_pages()
+        try:
+            return results[position]
+        except IndexError:
+            return None</code></pre>
 </details>
 </section>
 <section>
@@ -249,10 +254,15 @@ class Styles(XmlPart):
         return None
 
     def get_master_pages(self):
-        return _get_elements(self, &#34;descendant::style:master-page&#34;)
+        query = make_xpath_query(&#34;descendant::style:master-page&#34;)
+        return self.get_elements(query)
 
-    def get_master_page(self, position=0):
-        return _get_element(self, &#34;descendant::style:master-page&#34;, position)</code></pre>
+    def get_master_page(self, position: int = 0):
+        results = self.get_master_pages()
+        try:
+            return results[position]
+        except IndexError:
+            return None</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -261,7 +271,7 @@ class Styles(XmlPart):
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.styles.Styles.get_master_page"><code class="name flex">
-<span>def <span class="ident">get_master_page</span></span>(<span>self, position=0)</span>
+<span>def <span class="ident">get_master_page</span></span>(<span>self, position: int = 0)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -269,8 +279,12 @@ class Styles(XmlPart):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_master_page(self, position=0):
-    return _get_element(self, &#34;descendant::style:master-page&#34;, position)</code></pre>
+<pre><code class="python">def get_master_page(self, position: int = 0):
+    results = self.get_master_pages()
+    try:
+        return results[position]
+    except IndexError:
+        return None</code></pre>
 </details>
 </dd>
 <dt id="odfdo.styles.Styles.get_master_pages"><code class="name flex">
@@ -283,7 +297,8 @@ class Styles(XmlPart):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_master_pages(self):
-    return _get_elements(self, &#34;descendant::style:master-page&#34;)</code></pre>
+    query = make_xpath_query(&#34;descendant::style:master-page&#34;)
+    return self.get_elements(query)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.styles.Styles.get_style"><code class="name flex">

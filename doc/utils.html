@@ -51,10 +51,11 @@
 #          Romain Gauthier &lt;romain@itaapy.com&gt;
 &#34;&#34;&#34;get_value() and other utilities
 &#34;&#34;&#34;
+from __future__ import annotations
+
 import contextlib
 from datetime import date, datetime, timedelta
 from decimal import Decimal as dec
-from re import search
 
 from .const import ODF_PROPERTIES
 from .datatype import Boolean, Date, DateTime, Duration
@@ -78,20 +79,20 @@ DPI = 640 * dec(&#34;2.54&#34;) / 17
 ######################################################################
 
 
-def to_bytes(value):
+def to_bytes(value: str | bytes) -&gt; bytes:
     if isinstance(value, str):
         return value.encode(&#34;utf-8&#34;)
     return value
 
 
-def to_str(value):
+def to_str(value: str | bytes) -&gt; str:
     if isinstance(value, bytes):
         return value.decode(&#34;utf-8&#34;)
     return value
 
 
-def _make_xpath_query(  # noqa: C901
-    element_name,
+def make_xpath_query(  # noqa: C901
+    query_string: str,
     family=None,
     text_style=None,
     draw_id=None,
@@ -117,7 +118,7 @@ def _make_xpath_query(  # noqa: C901
     position=None,
     **kw,
 ):
-    query = [to_str(element_name)]
+    query = [query_string]
     attributes = kw
     if text_style:
         attributes[&#34;text:style-name&#34;] = text_style
@@ -319,58 +320,6 @@ def _merge_dicts(d, *args, **kw):
 # Non-public yet useful helpers
 
 
-def _get_elements(
-    context,
-    element_name,
-    content=None,
-    url=None,
-    svg_title=None,
-    svg_desc=None,
-    dc_creator=None,
-    dc_date=None,
-    **kw,
-):
-    query = _make_xpath_query(element_name, **kw)
-    elements = context.get_elements(query)
-    # Filter the elements with the regex (TODO use XPath)
-    if content is not None:
-        elements = [element for element in elements if element.match(content)]
-    if url is not None:
-        filtered = []
-        for element in elements:
-            url_attr = element.get_attribute(&#34;xlink:href&#34;)
-            if search(url, url_attr) is not None:
-                filtered.append(element)
-        elements = filtered
-    if dc_date is not None:
-        # XXX Date or DateTime?
-        dc_date = DateTime.encode(dc_date)
-    for variable, childname in [
-        (svg_title, &#34;svg:title&#34;),
-        (svg_desc, &#34;svg:desc&#34;),
-        (dc_creator, &#34;descendant::dc:creator&#34;),
-        (dc_date, &#34;descendant::dc:date&#34;),
-    ]:
-        if not variable:
-            continue
-        filtered = []
-        for element in elements:
-            child = element.get_element(childname)
-            if child and child.match(variable):
-                filtered.append(element)
-        elements = filtered
-    return elements
-
-
-def _get_element(context, element_name, position, **kw):
-    # TODO Transmit position not to load the whole list
-    result = _get_elements(context, element_name, **kw)
-    try:
-        return result[position]
-    except IndexError:
-        return None
-
-
 def _set_value_and_type(  # noqa: C901
     element,
     value=None,
@@ -527,7 +476,7 @@ def get_value(  # noqa: C901
             return (None, None)
         return None
 
-    raise ValueError(&#39;unexpected value type &#34;%s&#34;&#39; % value_type)
+    raise ValueError(f&#39;unexpected value type &#34;{value_type}&#34;&#39;)
 
 
 def set_value(element, value):
@@ -561,7 +510,7 @@ def set_value(element, value):
     raise ValueError(&#39;set_value: unexpected element &#34;%s&#34;&#39; % tag)
 
 
-def oooc_to_ooow(formula):
+def oooc_to_ooow(formula: str) -&gt; str:
     &#34;&#34;&#34;Convert (proprietary) formula from calc format to writer format.
 
     Arguments:
@@ -576,7 +525,7 @@ def oooc_to_ooow(formula):
     formula = formula.replace(&#34;[.&#34;, &#34;&lt;&#34;).replace(&#34;:.&#34;, &#34;:&#34;).replace(&#34;]&#34;, &#34;&gt;&#34;)
     # Convert functions
     formula = formula.replace(&#34;SUM(&#34;, &#34;sum &#34;).replace(&#34;)&#34;, &#34;&#34;)
-    return &#34;ooow:&#34; + formula
+    return f&#34;ooow:{formula}&#34;
 
 
 # def obsolete(old_name, new_func, *args, **kw):
@@ -591,11 +540,12 @@ def oooc_to_ooow(formula):
 #     return decorate
 
 
-def isiterable(obj):
-    if isinstance(obj, (str, bytes)):
+def isiterable(instance) -&gt; bool:
+    &#34;&#34;&#34;Return True if instance is iterable, but considering str and bytes as not iterable.&#34;&#34;&#34;
+    if isinstance(instance, (str, bytes)):
         return False
     try:
-        iter(obj)
+        iter(instance)
     except TypeError:
         return False
     return True</code></pre>
@@ -678,11 +628,31 @@ def isiterable(obj):
             return (None, None)
         return None
 
-    raise ValueError(&#39;unexpected value type &#34;%s&#34;&#39; % value_type)</code></pre>
+    raise ValueError(f&#39;unexpected value type &#34;{value_type}&#34;&#39;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.utils.isiterable"><code class="name flex">
-<span>def <span class="ident">isiterable</span></span>(<span>obj)</span>
+<span>def <span class="ident">isiterable</span></span>(<span>instance) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return True if instance is iterable, but considering str and bytes as not iterable.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def isiterable(instance) -&gt; bool:
+    &#34;&#34;&#34;Return True if instance is iterable, but considering str and bytes as not iterable.&#34;&#34;&#34;
+    if isinstance(instance, (str, bytes)):
+        return False
+    try:
+        iter(instance)
+    except TypeError:
+        return False
+    return True</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.make_xpath_query"><code class="name flex">
+<span>def <span class="ident">make_xpath_query</span></span>(<span>query_string: str, family=None, text_style=None, draw_id=None, draw_name=None, draw_style=None, draw_text_style=None, table_name=None, table_style=None, style_name=None, display_name=None, note_class=None, text_id=None, text_name=None, change_id=None, office_name=None, office_title=None, outline_level=None, level=None, page_layout=None, master_page=None, parent_style=None, presentation_class=None, position=None, **kw)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -690,18 +660,102 @@ def isiterable(obj):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def isiterable(obj):
-    if isinstance(obj, (str, bytes)):
-        return False
-    try:
-        iter(obj)
-    except TypeError:
-        return False
-    return True</code></pre>
+<pre><code class="python">def make_xpath_query(  # noqa: C901
+    query_string: str,
+    family=None,
+    text_style=None,
+    draw_id=None,
+    draw_name=None,
+    draw_style=None,
+    draw_text_style=None,
+    table_name=None,
+    table_style=None,
+    style_name=None,
+    display_name=None,
+    note_class=None,
+    text_id=None,
+    text_name=None,
+    change_id=None,
+    office_name=None,
+    office_title=None,
+    outline_level=None,
+    level=None,
+    page_layout=None,
+    master_page=None,
+    parent_style=None,
+    presentation_class=None,
+    position=None,
+    **kw,
+):
+    query = [query_string]
+    attributes = kw
+    if text_style:
+        attributes[&#34;text:style-name&#34;] = text_style
+    if family and family in FAMILY_ODF_STD:
+        attributes[&#34;style:family&#34;] = family
+    if draw_id:
+        attributes[&#34;draw:id&#34;] = draw_id
+    if draw_name:
+        attributes[&#34;draw:name&#34;] = draw_name
+    if draw_style:
+        attributes[&#34;draw:style-name&#34;] = draw_style
+    if draw_text_style:
+        attributes[&#34;draw:text-style-name&#34;] = draw_text_style
+    if table_name:
+        attributes[&#34;table:name&#34;] = table_name
+    if table_style:
+        attributes[&#34;table:style-name&#34;] = table_style
+    if style_name:
+        attributes[&#34;style:name&#34;] = style_name
+    if display_name:
+        attributes[&#34;style:display-name&#34;] = display_name
+    if note_class:
+        attributes[&#34;text:note-class&#34;] = note_class
+    if text_id:
+        attributes[&#34;text:id&#34;] = text_id
+    if text_name:
+        attributes[&#34;text:name&#34;] = text_name
+    if change_id:
+        attributes[&#34;text:change-id&#34;] = change_id
+    if office_name:
+        attributes[&#34;office:name&#34;] = office_name
+    if office_title:
+        attributes[&#34;office:title&#34;] = office_title
+    if outline_level:
+        attributes[&#34;text:outline-level&#34;] = outline_level
+    if level:
+        attributes[&#34;text:level&#34;] = level
+    if page_layout:
+        attributes[&#34;style:page-layout-name&#34;] = page_layout
+    if master_page:
+        attributes[&#34;draw:master-page-name&#34;] = master_page
+    if parent_style:
+        attributes[&#34;style:parent-style-name&#34;] = parent_style
+    if presentation_class:
+        attributes[&#34;presentation:class&#34;] = presentation_class
+    # Sort attributes for reproducible test cases
+    for qname in sorted(attributes):
+        value = attributes[qname]
+        if value is True:
+            query.append(f&#34;[@{to_str(qname)}]&#34;)
+        else:
+            query.append(f&#39;[@{to_str(qname)}=&#34;{value}&#34;]&#39;)
+    query = &#34;&#34;.join(query)
+    if position is not None:
+        # A position argument that mimics the behaviour of a python&#39;s list
+        if position &gt;= 0:
+            position = str(position + 1)
+        elif position == -1:
+            position = &#34;last()&#34;
+        else:
+            position = f&#34;last()-{abs(position) - 1}&#34;
+        query = f&#34;({query})[{position}]&#34;
+    # print(query)
+    return query</code></pre>
 </details>
 </dd>
 <dt id="odfdo.utils.oooc_to_ooow"><code class="name flex">
-<span>def <span class="ident">oooc_to_ooow</span></span>(<span>formula)</span>
+<span>def <span class="ident">oooc_to_ooow</span></span>(<span>formula: str) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Convert (proprietary) formula from calc format to writer format.</p>
@@ -712,7 +766,7 @@ def isiterable(obj):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def oooc_to_ooow(formula):
+<pre><code class="python">def oooc_to_ooow(formula: str) -&gt; str:
     &#34;&#34;&#34;Convert (proprietary) formula from calc format to writer format.
 
     Arguments:
@@ -727,7 +781,7 @@ def isiterable(obj):
     formula = formula.replace(&#34;[.&#34;, &#34;&lt;&#34;).replace(&#34;:.&#34;, &#34;:&#34;).replace(&#34;]&#34;, &#34;&gt;&#34;)
     # Convert functions
     formula = formula.replace(&#34;SUM(&#34;, &#34;sum &#34;).replace(&#34;)&#34;, &#34;&#34;)
-    return &#34;ooow:&#34; + formula</code></pre>
+    return f&#34;ooow:{formula}&#34;</code></pre>
 </details>
 </dd>
 <dt id="odfdo.utils.set_value"><code class="name flex">
@@ -771,7 +825,7 @@ def isiterable(obj):
 </details>
 </dd>
 <dt id="odfdo.utils.to_bytes"><code class="name flex">
-<span>def <span class="ident">to_bytes</span></span>(<span>value)</span>
+<span>def <span class="ident">to_bytes</span></span>(<span>value: str | bytes) ‑> bytes</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -779,14 +833,14 @@ def isiterable(obj):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def to_bytes(value):
+<pre><code class="python">def to_bytes(value: str | bytes) -&gt; bytes:
     if isinstance(value, str):
         return value.encode(&#34;utf-8&#34;)
     return value</code></pre>
 </details>
 </dd>
 <dt id="odfdo.utils.to_str"><code class="name flex">
-<span>def <span class="ident">to_str</span></span>(<span>value)</span>
+<span>def <span class="ident">to_str</span></span>(<span>value: str | bytes) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -794,7 +848,7 @@ def isiterable(obj):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def to_str(value):
+<pre><code class="python">def to_str(value: str | bytes) -&gt; str:
     if isinstance(value, bytes):
         return value.decode(&#34;utf-8&#34;)
     return value</code></pre>
@@ -820,6 +874,7 @@ def isiterable(obj):
 <ul class="two-column">
 <li><code><a title="odfdo.utils.get_value" href="#odfdo.utils.get_value">get_value</a></code></li>
 <li><code><a title="odfdo.utils.isiterable" href="#odfdo.utils.isiterable">isiterable</a></code></li>
+<li><code><a title="odfdo.utils.make_xpath_query" href="#odfdo.utils.make_xpath_query">make_xpath_query</a></code></li>
 <li><code><a title="odfdo.utils.oooc_to_ooow" href="#odfdo.utils.oooc_to_ooow">oooc_to_ooow</a></code></li>
 <li><code><a title="odfdo.utils.set_value" href="#odfdo.utils.set_value">set_value</a></code></li>
 <li><code><a title="odfdo.utils.to_bytes" href="#odfdo.utils.to_bytes">to_bytes</a></code></li>

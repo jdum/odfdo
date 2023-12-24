@@ -91,7 +91,7 @@ class XmlPart:
             self.__root = Element.from_tag(tree.getroot())
         return self.__root
 
-    def get_elements(self, xpath_query):
+    def get_elements(self, xpath_query: str):
         root = self.root
         return root.xpath(xpath_query)
 
@@ -190,7 +190,7 @@ class XmlPart:
             self.__root = Element.from_tag(tree.getroot())
         return self.__root
 
-    def get_elements(self, xpath_query):
+    def get_elements(self, xpath_query: str):
         root = self.root
         return root.xpath(xpath_query)
 
@@ -314,7 +314,7 @@ def root(self):
 </details>
 </dd>
 <dt id="odfdo.xmlpart.XmlPart.get_elements"><code class="name flex">
-<span>def <span class="ident">get_elements</span></span>(<span>self, xpath_query)</span>
+<span>def <span class="ident">get_elements</span></span>(<span>self, xpath_query: str)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -322,7 +322,7 @@ def root(self):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_elements(self, xpath_query):
+<pre><code class="python">def get_elements(self, xpath_query: str):
     root = self.root
     return root.xpath(xpath_query)</code></pre>
 </details>

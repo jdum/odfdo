@@ -6,7 +6,7 @@
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.tracked_changes API documentation</title>
 <meta name="description" content="TrackedChanges class for &#34;text:tracked-changes&#34; and related classes
-(ChangeInfo, TextInsertion, TextChange...)" />
+(ChangeInfo, TextInsertion, TextChange...)." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -24,7 +24,7 @@
 </header>
 <section id="section-intro">
 <p>TrackedChanges class for "text:tracked-changes" and related classes
-(ChangeInfo, TextInsertion, TextChange&hellip;)</p>
+(ChangeInfo, TextInsertion, TextChange&hellip;).</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -52,14 +52,15 @@
 #          Romain Gauthier &lt;romain@itaapy.com&gt;
 #          Jerome Dumonteil &lt;jerome.dumonteil@itaapy.com&gt;
 &#34;&#34;&#34;TrackedChanges class for &#34;text:tracked-changes&#34; and related classes
-(ChangeInfo, TextInsertion, TextChange...)
+(ChangeInfo, TextInsertion, TextChange...).
 &#34;&#34;&#34;
+from __future__ import annotations
+
 from datetime import datetime
 
 from .datatype import DateTime
 from .element import FIRST_CHILD, LAST_CHILD, Element, register_element_class
 from .paragraph import Paragraph
-from .utils import _get_element, _get_elements
 
 
 class ChangeInfo(Element):
@@ -385,7 +386,7 @@ class TextChangedRegion(Element):
             change_info=change_info, creator=creator, date=date, comments=comments
         )
 
-    def get_change_element(self):
+    def get_change_element(self) -&gt; Element | None:
         &#34;&#34;&#34;Get the change element child. It can be either: TextInsertion,
         TextDeletion, or TextFormatChange as an Element object.
 
@@ -396,7 +397,7 @@ class TextChangedRegion(Element):
             &#34;| descendant::text:deletion&#34;
             &#34;| descendant::text:format-change&#34;
         )
-        return _get_element(self, request, position=0)
+        return self._filtered_element(request, 0)
 
     def _get_text_id(self):
         return self.get_attribute(&#34;text:id&#34;)
@@ -438,8 +439,7 @@ class TrackedChanges(Element):
     _tag = &#34;text:tracked-changes&#34;
 
     def get_changed_regions(self, creator=None, date=None, content=None, role=None):
-        changed_regions = _get_elements(
-            self,
+        changed_regions = self._filtered_elements(
             &#34;text:changed-region&#34;,
             dc_creator=creator,
             dc_date=date,
@@ -457,10 +457,14 @@ class TrackedChanges(Element):
         return result
 
     def get_changed_region(
-        self, position=0, text_id=None, creator=None, date=None, content=None
-    ):
-        return _get_element(
-            self,
+        self,
+        position=0,
+        text_id=None,
+        creator=None,
+        date=None,
+        content=None,
+    ) -&gt; Element | None:
+        return self._filtered_element(
             &#34;text:changed-region&#34;,
             position,
             text_id=text_id,
@@ -1978,7 +1982,7 @@ deletion. "</p></div>
             change_info=change_info, creator=creator, date=date, comments=comments
         )
 
-    def get_change_element(self):
+    def get_change_element(self) -&gt; Element | None:
         &#34;&#34;&#34;Get the change element child. It can be either: TextInsertion,
         TextDeletion, or TextFormatChange as an Element object.
 
@@ -1989,7 +1993,7 @@ deletion. "</p></div>
             &#34;| descendant::text:deletion&#34;
             &#34;| descendant::text:format-change&#34;
         )
-        return _get_element(self, request, position=0)
+        return self._filtered_element(request, 0)
 
     def _get_text_id(self):
         return self.get_attribute(&#34;text:id&#34;)
@@ -2022,7 +2026,7 @@ deletion. "</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.tracked_changes.TextChangedRegion.get_change_element"><code class="name flex">
-<span>def <span class="ident">get_change_element</span></span>(<span>self)</span>
+<span>def <span class="ident">get_change_element</span></span>(<span>self) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the change element child. It can be either: TextInsertion,
@@ -2032,7 +2036,7 @@ TextDeletion, or TextFormatChange as an Element object.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_change_element(self):
+<pre><code class="python">def get_change_element(self) -&gt; Element | None:
     &#34;&#34;&#34;Get the change element child. It can be either: TextInsertion,
     TextDeletion, or TextFormatChange as an Element object.
 
@@ -2043,7 +2047,7 @@ TextDeletion, or TextFormatChange as an Element object.</p>
         &#34;| descendant::text:deletion&#34;
         &#34;| descendant::text:format-change&#34;
     )
-    return _get_element(self, request, position=0)</code></pre>
+    return self._filtered_element(request, 0)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangedRegion.get_change_info"><code class="name flex">
@@ -3136,8 +3140,7 @@ ignored.</p></div>
     _tag = &#34;text:tracked-changes&#34;
 
     def get_changed_regions(self, creator=None, date=None, content=None, role=None):
-        changed_regions = _get_elements(
-            self,
+        changed_regions = self._filtered_elements(
             &#34;text:changed-region&#34;,
             dc_creator=creator,
             dc_date=date,
@@ -3155,10 +3158,14 @@ ignored.</p></div>
         return result
 
     def get_changed_region(
-        self, position=0, text_id=None, creator=None, date=None, content=None
-    ):
-        return _get_element(
-            self,
+        self,
+        position=0,
+        text_id=None,
+        creator=None,
+        date=None,
+        content=None,
+    ) -&gt; Element | None:
+        return self._filtered_element(
             &#34;text:changed-region&#34;,
             position,
             text_id=text_id,
@@ -3174,7 +3181,7 @@ ignored.</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.tracked_changes.TrackedChanges.get_changed_region"><code class="name flex">
-<span>def <span class="ident">get_changed_region</span></span>(<span>self, position=0, text_id=None, creator=None, date=None, content=None)</span>
+<span>def <span class="ident">get_changed_region</span></span>(<span>self, position=0, text_id=None, creator=None, date=None, content=None) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -3183,10 +3190,14 @@ ignored.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_changed_region(
-    self, position=0, text_id=None, creator=None, date=None, content=None
-):
-    return _get_element(
-        self,
+    self,
+    position=0,
+    text_id=None,
+    creator=None,
+    date=None,
+    content=None,
+) -&gt; Element | None:
+    return self._filtered_element(
         &#34;text:changed-region&#34;,
         position,
         text_id=text_id,
@@ -3206,8 +3217,7 @@ ignored.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_changed_regions(self, creator=None, date=None, content=None, role=None):
-    changed_regions = _get_elements(
-        self,
+    changed_regions = self._filtered_elements(
         &#34;text:changed-region&#34;,
         dc_creator=creator,
         dc_date=date,

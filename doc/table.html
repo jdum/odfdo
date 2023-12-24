@@ -67,7 +67,12 @@ from pathlib import Path
 from textwrap import wrap
 
 from .datatype import Boolean, Date, DateTime, Duration
-from .element import Element, _xpath_compile, register_element_class
+from .element import (
+    Element,
+    _xpath_compile,
+    register_element_class,
+    register_element_class_list,
+)
 from .utils import _set_value_and_type, get_value, isiterable, to_str
 
 _xpath_row = _xpath_compile(&#34;table:table-row&#34;)
@@ -4191,7 +4196,7 @@ def import_from_csv(
     return table
 
 
-register_element_class(Cell, (Cell._tag, &#34;table:covered-table-cell&#34;))
+register_element_class_list(Cell, (Cell._tag, &#34;table:covered-table-cell&#34;))
 # register_element_class(CellCovered)
 register_element_class(HeaderRows)
 register_element_class(Row)
@@ -5387,8 +5392,8 @@ def style(self):
 <span>(</span><span>**kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Super class of all ODF classes. Representation of an XML element.
-Abstraction of the XML library behind.</p></div>
+<div class="desc"><p>Super class of all ODF classes.</p>
+<p>Representation of an XML element. Abstraction of the XML library behind.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>

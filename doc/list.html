@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.list API documentation</title>
-<meta name="description" content="List class for &#34;text:list&#34;" />
+<meta name="description" content="List class for &#34;text:list&#34;." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,7 +22,7 @@
 <h1 class="title">Module <code>odfdo.list</code></h1>
 </header>
 <section id="section-intro">
-<p>List class for "text:list"</p>
+<p>List class for "text:list".</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -48,8 +48,10 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
 #          Romain Gauthier &lt;romain@itaapy.com&gt;
-&#34;&#34;&#34;List class for &#34;text:list&#34;
+&#34;&#34;&#34;List class for &#34;text:list&#34;.
 &#34;&#34;&#34;
+from __future__ import annotations
+
 from .element import (
     FIRST_CHILD,
     NEXT_SIBLING,
@@ -58,7 +60,7 @@ from .element import (
     register_element_class,
 )
 from .paragraph import Paragraph
-from .utils import _get_element, _get_elements, isiterable
+from .utils import isiterable
 
 
 class ListItem(Element):
@@ -129,9 +131,9 @@ class List(Element):
 
         Return: list of Element
         &#34;&#34;&#34;
-        return _get_elements(self, &#34;text:list-item&#34;, content=content)
+        return self._filtered_elements(&#34;text:list-item&#34;, content=content)
 
-    def get_item(self, position=0, content=None):
+    def get_item(self, position: int = 0, content: str | None = None) -&gt; Element | None:
         &#34;&#34;&#34;Return the list item that matches the criteria. In nested lists,
         return the list item that really contains that content.
 
@@ -151,7 +153,7 @@ class List(Element):
                 if paragraph.match(content):
                     return paragraph.get_element(&#34;parent::text:list-item&#34;)
             return None
-        return _get_element(self, &#34;text:list-item&#34;, position)
+        return self._filtered_element(&#34;text:list-item&#34;, position)
 
     def set_list_header(self, text_or_element):
         if not isiterable(text_or_element):
@@ -288,9 +290,9 @@ afterwards.</p>
 
         Return: list of Element
         &#34;&#34;&#34;
-        return _get_elements(self, &#34;text:list-item&#34;, content=content)
+        return self._filtered_elements(&#34;text:list-item&#34;, content=content)
 
-    def get_item(self, position=0, content=None):
+    def get_item(self, position: int = 0, content: str | None = None) -&gt; Element | None:
         &#34;&#34;&#34;Return the list item that matches the criteria. In nested lists,
         return the list item that really contains that content.
 
@@ -310,7 +312,7 @@ afterwards.</p>
                 if paragraph.match(content):
                     return paragraph.get_element(&#34;parent::text:list-item&#34;)
             return None
-        return _get_element(self, &#34;text:list-item&#34;, position)
+        return self._filtered_element(&#34;text:list-item&#34;, position)
 
     def set_list_header(self, text_or_element):
         if not isiterable(text_or_element):
@@ -412,7 +414,7 @@ afterwards.</p>
 </details>
 </dd>
 <dt id="odfdo.list.List.get_item"><code class="name flex">
-<span>def <span class="ident">get_item</span></span>(<span>self, position=0, content=None)</span>
+<span>def <span class="ident">get_item</span></span>(<span>self, position: int = 0, content: str | None = None) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return the list item that matches the criteria. In nested lists,
@@ -425,7 +427,7 @@ return the list item that really contains that content.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_item(self, position=0, content=None):
+<pre><code class="python">def get_item(self, position: int = 0, content: str | None = None) -&gt; Element | None:
     &#34;&#34;&#34;Return the list item that matches the criteria. In nested lists,
     return the list item that really contains that content.
 
@@ -445,7 +447,7 @@ return the list item that really contains that content.</p>
             if paragraph.match(content):
                 return paragraph.get_element(&#34;parent::text:list-item&#34;)
         return None
-    return _get_element(self, &#34;text:list-item&#34;, position)</code></pre>
+    return self._filtered_element(&#34;text:list-item&#34;, position)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.list.List.get_items"><code class="name flex">
@@ -472,7 +474,7 @@ return the list item that really contains that content.</p>
 
     Return: list of Element
     &#34;&#34;&#34;
-    return _get_elements(self, &#34;text:list-item&#34;, content=content)</code></pre>
+    return self._filtered_elements(&#34;text:list-item&#34;, content=content)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.list.List.insert_item"><code class="name flex">

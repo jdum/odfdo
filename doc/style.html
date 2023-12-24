@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.style API documentation</title>
-<meta name="description" content="Style class for various style tags and BackgroundImage class" />
+<meta name="description" content="Style class for various style tags and BackgroundImage class." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,7 +22,7 @@
 <h1 class="title">Module <code>odfdo.style</code></h1>
 </header>
 <section id="section-intro">
-<p>Style class for various style tags and BackgroundImage class</p>
+<p>Style class for various style tags and BackgroundImage class.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -47,11 +47,13 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
-&#34;&#34;&#34;Style class for various style tags and BackgroundImage class
+&#34;&#34;&#34;Style class for various style tags and BackgroundImage class.
 &#34;&#34;&#34;
+from __future__ import annotations
+
 from .const import CSS3_COLORMAP
 from .datatype import Boolean
-from .element import Element, register_element_class
+from .element import Element, register_element_class, register_element_class_list
 from .image import DrawImage
 from .utils import (
     FALSE_FAMILY_MAP_REVERSE,
@@ -60,7 +62,6 @@ from .utils import (
     STYLES_TO_REGISTER,
     SUBCLASSED_STYLES,
     _expand_properties,
-    _get_element,
     _merge_dicts,
     isiterable,
     to_str,
@@ -740,7 +741,7 @@ class Style(Element):
 
     # list-style only:
 
-    def get_level_style(self, level):
+    def get_level_style(self, level) -&gt; Element | None:
         if self.family != &#34;list&#34;:
             return None
         level_styles = (
@@ -748,7 +749,7 @@ class Style(Element):
             &#34;|text:list-level-style-bullet&#34;
             &#34;|text:list-level-style-image)&#34;
         )
-        return _get_element(self, level_styles, 0, level=level)
+        return self._filtered_element(level_styles, 0, level=level)
 
     def set_level_style(  # noqa: C901
         self,
@@ -1090,7 +1091,7 @@ def default_currency_style():
 
 
 register_element_class(BackgroundImage)
-register_element_class(Style, STYLES_TO_REGISTER)</code></pre>
+register_element_class_list(Style, STYLES_TO_REGISTER)</code></pre>
 </details>
 </section>
 <section>
@@ -2361,7 +2362,7 @@ break_after -- 'page', 'column' or 'auto'
 
     # list-style only:
 
-    def get_level_style(self, level):
+    def get_level_style(self, level) -&gt; Element | None:
         if self.family != &#34;list&#34;:
             return None
         level_styles = (
@@ -2369,7 +2370,7 @@ break_after -- 'page', 'column' or 'auto'
             &#34;|text:list-level-style-bullet&#34;
             &#34;|text:list-level-style-image)&#34;
         )
-        return _get_element(self, level_styles, 0, level=level)
+        return self._filtered_element(level_styles, 0, level=level)
 
     def set_level_style(  # noqa: C901
         self,
@@ -2933,7 +2934,7 @@ identical to the style family by default.</p>
 </details>
 </dd>
 <dt id="odfdo.style.Style.get_level_style"><code class="name flex">
-<span>def <span class="ident">get_level_style</span></span>(<span>self, level)</span>
+<span>def <span class="ident">get_level_style</span></span>(<span>self, level) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2941,7 +2942,7 @@ identical to the style family by default.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_level_style(self, level):
+<pre><code class="python">def get_level_style(self, level) -&gt; Element | None:
     if self.family != &#34;list&#34;:
         return None
     level_styles = (
@@ -2949,7 +2950,7 @@ identical to the style family by default.</p>
         &#34;|text:list-level-style-bullet&#34;
         &#34;|text:list-level-style-image)&#34;
     )
-    return _get_element(self, level_styles, 0, level=level)</code></pre>
+    return self._filtered_element(level_styles, 0, level=level)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.style.Style.get_page_footer"><code class="name flex">

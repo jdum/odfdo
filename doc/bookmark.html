@@ -64,7 +64,7 @@ class Bookmark(Element):
     _tag = &#34;text:bookmark&#34;
     _properties = ((&#34;name&#34;, &#34;text:name&#34;),)
 
-    def __init__(self, name=&#34;&#34;, **kwargs):
+    def __init__(self, name: str = &#34;&#34;, **kwargs):
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
@@ -85,7 +85,7 @@ class BookmarkStart(Element):
     _tag = &#34;text:bookmark-start&#34;
     _properties = ((&#34;name&#34;, &#34;text:name&#34;),)
 
-    def __init__(self, name=&#34;&#34;, **kwargs):
+    def __init__(self, name: str = &#34;&#34;, **kwargs):
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
@@ -106,7 +106,7 @@ class BookmarkEnd(Element):
     _tag = &#34;text:bookmark-end&#34;
     _properties = ((&#34;name&#34;, &#34;text:name&#34;),)
 
-    def __init__(self, name=&#34;&#34;, **kwargs):
+    def __init__(self, name: str = &#34;&#34;, **kwargs):
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
@@ -130,7 +130,7 @@ register_element_class(BookmarkEnd)</code></pre>
 <dl>
 <dt id="odfdo.bookmark.Bookmark"><code class="flex name class">
 <span>class <span class="ident">Bookmark</span></span>
-<span>(</span><span>name='', **kwargs)</span>
+<span>(</span><span>name: str = '', **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Bookmark class for ODF "text:bookmark"</p>
@@ -152,7 +152,7 @@ register_element_class(BookmarkEnd)</code></pre>
     _tag = &#34;text:bookmark&#34;
     _properties = ((&#34;name&#34;, &#34;text:name&#34;),)
 
-    def __init__(self, name=&#34;&#34;, **kwargs):
+    def __init__(self, name: str = &#34;&#34;, **kwargs):
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name</code></pre>
@@ -299,7 +299,7 @@ register_element_class(BookmarkEnd)</code></pre>
 </dd>
 <dt id="odfdo.bookmark.BookmarkEnd"><code class="flex name class">
 <span>class <span class="ident">BookmarkEnd</span></span>
-<span>(</span><span>name='', **kwargs)</span>
+<span>(</span><span>name: str = '', **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>BookmarkEnd class for ODF "text:bookmark-end"</p>
@@ -321,7 +321,7 @@ register_element_class(BookmarkEnd)</code></pre>
     _tag = &#34;text:bookmark-end&#34;
     _properties = ((&#34;name&#34;, &#34;text:name&#34;),)
 
-    def __init__(self, name=&#34;&#34;, **kwargs):
+    def __init__(self, name: str = &#34;&#34;, **kwargs):
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name</code></pre>
@@ -468,7 +468,7 @@ register_element_class(BookmarkEnd)</code></pre>
 </dd>
 <dt id="odfdo.bookmark.BookmarkStart"><code class="flex name class">
 <span>class <span class="ident">BookmarkStart</span></span>
-<span>(</span><span>name='', **kwargs)</span>
+<span>(</span><span>name: str = '', **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>BookmarkStart class for ODF "text:bookmark-start"</p>
@@ -490,7 +490,7 @@ register_element_class(BookmarkEnd)</code></pre>
     _tag = &#34;text:bookmark-start&#34;
     _properties = ((&#34;name&#34;, &#34;text:name&#34;),)
 
-    def __init__(self, name=&#34;&#34;, **kwargs):
+    def __init__(self, name: str = &#34;&#34;, **kwargs):
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name</code></pre>
