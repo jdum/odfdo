@@ -18,11 +18,13 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""Style class for various style tags and BackgroundImage class
+"""Style class for various style tags and BackgroundImage class.
 """
+from __future__ import annotations
+
 from .const import CSS3_COLORMAP
 from .datatype import Boolean
-from .element import Element, register_element_class
+from .element import Element, register_element_class, register_element_class_list
 from .image import DrawImage
 from .utils import (
     FALSE_FAMILY_MAP_REVERSE,
@@ -31,7 +33,6 @@ from .utils import (
     STYLES_TO_REGISTER,
     SUBCLASSED_STYLES,
     _expand_properties,
-    _get_element,
     _merge_dicts,
     isiterable,
     to_str,
@@ -711,7 +712,7 @@ class Style(Element):
 
     # list-style only:
 
-    def get_level_style(self, level):
+    def get_level_style(self, level) -> Element | None:
         if self.family != "list":
             return None
         level_styles = (
@@ -719,7 +720,7 @@ class Style(Element):
             "|text:list-level-style-bullet"
             "|text:list-level-style-image)"
         )
-        return _get_element(self, level_styles, 0, level=level)
+        return self._filtered_element(level_styles, 0, level=level)
 
     def set_level_style(  # noqa: C901
         self,
@@ -1061,4 +1062,4 @@ def default_currency_style():
 
 
 register_element_class(BackgroundImage)
-register_element_class(Style, STYLES_TO_REGISTER)
+register_element_class_list(Style, STYLES_TO_REGISTER)

@@ -36,7 +36,12 @@ from pathlib import Path
 from textwrap import wrap
 
 from .datatype import Boolean, Date, DateTime, Duration
-from .element import Element, _xpath_compile, register_element_class
+from .element import (
+    Element,
+    _xpath_compile,
+    register_element_class,
+    register_element_class_list,
+)
 from .utils import _set_value_and_type, get_value, isiterable, to_str
 
 _xpath_row = _xpath_compile("table:table-row")
@@ -4160,7 +4165,7 @@ def import_from_csv(
     return table
 
 
-register_element_class(Cell, (Cell._tag, "table:covered-table-cell"))
+register_element_class_list(Cell, (Cell._tag, "table:covered-table-cell"))
 # register_element_class(CellCovered)
 register_element_class(HeaderRows)
 register_element_class(Row)

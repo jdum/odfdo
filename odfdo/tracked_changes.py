@@ -21,14 +21,15 @@
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 """TrackedChanges class for "text:tracked-changes" and related classes
-(ChangeInfo, TextInsertion, TextChange...)
+(ChangeInfo, TextInsertion, TextChange...).
 """
+from __future__ import annotations
+
 from datetime import datetime
 
 from .datatype import DateTime
 from .element import FIRST_CHILD, LAST_CHILD, Element, register_element_class
 from .paragraph import Paragraph
-from .utils import _get_element, _get_elements
 
 
 class ChangeInfo(Element):
@@ -354,7 +355,7 @@ class TextChangedRegion(Element):
             change_info=change_info, creator=creator, date=date, comments=comments
         )
 
-    def get_change_element(self):
+    def get_change_element(self) -> Element | None:
         """Get the change element child. It can be either: TextInsertion,
         TextDeletion, or TextFormatChange as an Element object.
 
@@ -365,7 +366,7 @@ class TextChangedRegion(Element):
             "| descendant::text:deletion"
             "| descendant::text:format-change"
         )
-        return _get_element(self, request, position=0)
+        return self._filtered_element(request, 0)
 
     def _get_text_id(self):
         return self.get_attribute("text:id")
@@ -407,8 +408,7 @@ class TrackedChanges(Element):
     _tag = "text:tracked-changes"
 
     def get_changed_regions(self, creator=None, date=None, content=None, role=None):
-        changed_regions = _get_elements(
-            self,
+        changed_regions = self._filtered_elements(
             "text:changed-region",
             dc_creator=creator,
             dc_date=date,
@@ -426,10 +426,14 @@ class TrackedChanges(Element):
         return result
 
     def get_changed_region(
-        self, position=0, text_id=None, creator=None, date=None, content=None
-    ):
-        return _get_element(
-            self,
+        self,
+        position=0,
+        text_id=None,
+        creator=None,
+        date=None,
+        content=None,
+    ) -> Element | None:
+        return self._filtered_element(
             "text:changed-region",
             position,
             text_id=text_id,

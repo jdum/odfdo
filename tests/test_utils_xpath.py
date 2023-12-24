@@ -21,21 +21,21 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 
-from odfdo.utils import _make_xpath_query
+from odfdo.utils import make_xpath_query
 
 
 def test_element():
-    query = _make_xpath_query("descendant::text:p")
+    query = make_xpath_query("descendant::text:p")
     assert query == "descendant::text:p"
 
 
 def test_attribute():
-    query = _make_xpath_query("descendant::text:p", text_style="Standard")
+    query = make_xpath_query("descendant::text:p", text_style="Standard")
     assert query == 'descendant::text:p[@text:style-name="Standard"]'
 
 
 def test_two_attributes():
-    query = _make_xpath_query(
+    query = make_xpath_query(
         "descendant::text:h", text_style="Standard", outline_level=1
     )
     expected = (
@@ -45,17 +45,17 @@ def test_two_attributes():
 
 
 def test_position():
-    query = _make_xpath_query("descendant::text:h", position=1)
+    query = make_xpath_query("descendant::text:h", position=1)
     assert query == "(descendant::text:h)[2]"
 
 
 def test_attribute_position():
-    query = _make_xpath_query("descendant::text:p", text_style="Standard", position=1)
+    query = make_xpath_query("descendant::text:p", text_style="Standard", position=1)
     assert query == '(descendant::text:p[@text:style-name="Standard"])[2]'
 
 
 def test_two_attributes_position():
-    query = _make_xpath_query(
+    query = make_xpath_query(
         "descendant::text:h", text_style="Standard", outline_level=1, position=1
     )
     expected = (

@@ -19,8 +19,10 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-"""List class for "text:list"
+"""List class for "text:list".
 """
+from __future__ import annotations
+
 from .element import (
     FIRST_CHILD,
     NEXT_SIBLING,
@@ -29,7 +31,7 @@ from .element import (
     register_element_class,
 )
 from .paragraph import Paragraph
-from .utils import _get_element, _get_elements, isiterable
+from .utils import isiterable
 
 
 class ListItem(Element):
@@ -100,9 +102,9 @@ class List(Element):
 
         Return: list of Element
         """
-        return _get_elements(self, "text:list-item", content=content)
+        return self._filtered_elements("text:list-item", content=content)
 
-    def get_item(self, position=0, content=None):
+    def get_item(self, position: int = 0, content: str | None = None) -> Element | None:
         """Return the list item that matches the criteria. In nested lists,
         return the list item that really contains that content.
 
@@ -122,7 +124,7 @@ class List(Element):
                 if paragraph.match(content):
                     return paragraph.get_element("parent::text:list-item")
             return None
-        return _get_element(self, "text:list-item", position)
+        return self._filtered_element("text:list-item", position)
 
     def set_list_header(self, text_or_element):
         if not isiterable(text_or_element):

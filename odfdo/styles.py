@@ -21,7 +21,7 @@
 #          Romain Gauthier <romain@itaapy.com>
 """Styles class for styles.xml part
 """
-from .utils import _get_element, _get_elements
+from .utils import make_xpath_query
 from .xmlpart import XmlPart
 
 CONTEXT_MAPPING = {
@@ -122,7 +122,12 @@ class Styles(XmlPart):
         return None
 
     def get_master_pages(self):
-        return _get_elements(self, "descendant::style:master-page")
+        query = make_xpath_query("descendant::style:master-page")
+        return self.get_elements(query)
 
-    def get_master_page(self, position=0):
-        return _get_element(self, "descendant::style:master-page", position)
+    def get_master_page(self, position: int = 0):
+        results = self.get_master_pages()
+        try:
+            return results[position]
+        except IndexError:
+            return None

@@ -19,8 +19,10 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
-"""Container class, ODF file management
+"""Container class, ODF file management.
 """
+from __future__ import annotations
+
 import contextlib
 import io
 import os
@@ -45,15 +47,10 @@ from .scriptutils import printwarn
 from .utils import to_bytes, to_str
 
 
-def template_path(template_short_name):
-    template_name = ODF_TEMPLATES[template_short_name]
-    return rso.files("odfdo.templates") / template_name
-
-
 class Container:
     """Representation of the ODF file."""
 
-    def __init__(self, path=None):
+    def __init__(self, path: Path | str | io.BytesIO | None = None):
         self.__parts = {}
         self.__parts_ts = {}
         self.__packaging = None
@@ -66,35 +63,41 @@ class Container:
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} type={self.mimetype} path={self.path}>"
 
-    def open(self, path_or_file):
+    def open(self, path_or_file: Path | str | io.BytesIO) -> None:
         """Load the content of an ODF file."""
         self.__path_like = path_or_file
-        if isinstance(path_or_file, (str, bytes, Path)):
+        if isinstance(path_or_file, (str, Path)):
             self.path = Path(path_or_file)
             if not self.path.exists():
                 raise FileNotFoundError(str(self.path))
-        if (self.path or isinstance(path_or_file, io.IOBase)) and is_zipfile(
+        if (self.path or isinstance(path_or_file, io.BytesIO)) and is_zipfile(
             path_or_file
         ):
             self.__packaging = "zip"
-            return self.__read_zip()
+            return self._read_zip()
         if self.path:
             is_folder = False
             with contextlib.suppress(OSError):
                 is_folder = self.path.is_dir()
             if is_folder:
                 self.__packaging = "folder"
-                return self.__read_folder()
-        raise ValueError(f"Document format not managed by odfdo: {type(path_or_file)}.")
+                return self._read_folder()
+        raise TypeError(f"Document format not managed by odfdo: {type(path_or_file)}.")
 
     @classmethod
-    def new(cls, path_or_file):
+    def from_template(cls, template: str | Path) -> Container:
         """Return a Container instance based on template argument."""
-        test_file = to_str(path_or_file)
-        if test_file in ODF_TEMPLATES:
-            path_or_file = template_path(test_file)
         template_container = cls()
-        template_container.open(path_or_file)
+        if template in ODF_TEMPLATES:
+            template_container = cls()
+            template_name = ODF_TEMPLATES[template]
+            with rso.as_file(
+                rso.files("odfdo.templates").joinpath(template_name)
+            ) as template_path:
+                template_container.open(template_path)
+        else:
+            # custome template
+            template_container.open(template)
         # Return a copy of the template container
         clone = template_container.clone
         # Change type from template to regular
@@ -106,7 +109,7 @@ class Container:
         clone.set_part(ODF_MANIFEST, manifest.serialize())
         return clone
 
-    def __read_zip(self):
+    def _read_zip(self) -> None:
         with ZipFile(self.__path_like) as zf:
             mimetype = zf.read("mimetype").decode("utf8", "ignore")
             if mimetype not in ODF_MIMETYPES:
@@ -120,9 +123,9 @@ class Container:
                     self.__parts[upath] = zf.read(name)
             self.__path_like = None
 
-    def __read_folder(self):
+    def _read_folder(self) -> None:
         try:
-            mimetype, timestamp = self.__get_folder_part("mimetype")
+            mimetype, timestamp = self._get_folder_part("mimetype")
         except OSError:
             printwarn("Corrupted or not an OpenDocument folder (missing mimetype)")
             mimetype = b""
@@ -134,7 +137,7 @@ class Container:
             self.__parts["mimetype"] = mimetype
             self.__parts_ts["mimetype"] = timestamp
 
-    def _parse_folder(self, folder):
+    def _parse_folder(self, folder: str) -> list[str]:
         parts = []
         root = self.path / folder
         for path in root.iterdir():
@@ -152,11 +155,11 @@ class Container:
                     parts.append(relative_path.as_posix() + "/")
         return parts
 
-    def __get_folder_parts(self):
+    def _get_folder_parts(self) -> list[str]:
         """Get the list of members in the ODF folder."""
         return self._parse_folder("")
 
-    def __get_folder_part(self, name):
+    def _get_folder_part(self, name: str) -> tuple[bytes, int]:
         """Get bytes of a part from the ODF folder, with timestamp."""
         path = self.path / name
         timestamp = path.stat().st_mtime
@@ -164,7 +167,7 @@ class Container:
             return (b"", timestamp)
         return (path.read_bytes(), timestamp)
 
-    def __get_folder_part_timestamp(self, name):
+    def _get_folder_part_timestamp(self, name: str) -> int:
         path = self.path / name
         try:
             timestamp = path.stat().st_mtime
@@ -172,7 +175,7 @@ class Container:
             timestamp = -1
         return timestamp
 
-    def __get_zip_part(self, name):
+    def _get_zip_part(self, name: str) -> bytes | None:
         """Get bytes of a part from the Zip ODF file. No cache."""
         try:
             with ZipFile(self.path) as zf:
@@ -185,7 +188,7 @@ class Container:
         except BadZipfile:
             return None
 
-    def __get_all_zip_part(self):
+    def _get_all_zip_part(self) -> None:
         """Read all parts. No cache."""
         try:
             with ZipFile(self.path) as zf:
@@ -198,7 +201,7 @@ class Container:
         except BadZipfile:
             pass
 
-    def __save_zip(self, target):
+    def _save_zip(self, target: str | Path | io.BytesIO) -> None:
         """Save a Zip ODF from the available parts."""
         parts = self.__parts
         with ZipFile(target, "w", compression=ZIP_DEFLATED) as filezip:
@@ -233,10 +236,10 @@ class Container:
             with contextlib.suppress(KeyError):
                 filezip.writestr(ODF_MANIFEST, parts[ODF_MANIFEST])
 
-    def __save_folder(self, folder):
+    def _save_folder(self, folder: str) -> None:
         """Save a folder ODF from the available parts."""
 
-        def dump(part_path, content):
+        def dump(part_path: str, content: bytes):
             if part_path.endswith("/"):  # folder
                 is_folder = True
                 pure_path = PurePath(folder, part_path[:-1])
@@ -259,7 +262,7 @@ class Container:
 
     # Public API
 
-    def get_parts(self):
+    def get_parts(self) -> list[str]:
         """Get the list of members."""
         if not self.path:
             # maybe a file like zip archive
@@ -274,11 +277,11 @@ class Container:
                         parts.append(PurePath(name).as_posix())
             return parts
         elif self.__packaging == "folder":
-            return self.__get_folder_parts()
+            return self._get_folder_parts()
         else:
             raise ValueError("Unable to provide parts of the document.")
 
-    def get_part(self, path):
+    def get_part(self, path: str) -> str | bytes | None:
         """Get the bytes of a part of the ODF."""
         path = str(path)
         if path in self.__parts:
@@ -287,23 +290,23 @@ class Container:
                 raise ValueError(f'Part "{path}" is deleted')
             if self.__packaging == "folder":
                 cache_ts = self.__parts_ts.get(path, -1)
-                current_ts = self.__get_folder_part_timestamp(path)
+                current_ts = self._get_folder_part_timestamp(path)
                 if current_ts != cache_ts:
-                    part, timestamp = self.__get_folder_part(path)
+                    part, timestamp = self._get_folder_part(path)
                     self.__parts[path] = part
                     self.__parts_ts[path] = timestamp
             return part
         if self.__packaging == "zip":
-            return self.__get_zip_part(path)
+            return self._get_zip_part(path)
         if self.__packaging == "folder":
-            part, timestamp = self.__get_folder_part(path)
+            part, timestamp = self._get_folder_part(path)
             self.__parts[path] = part
             self.__parts_ts[path] = timestamp
             return part
         return None
 
     @property
-    def mimetype(self):
+    def mimetype(self) -> str:
         """Return unicode value of mimetype of the document."""
         try:
             return self.get_part("mimetype").decode("utf8", "ignore")
@@ -311,29 +314,29 @@ class Container:
             return ""
 
     @mimetype.setter
-    def mimetype(self, m):
+    def mimetype(self, mimetype: str | bytes) -> None:
         """Set mimetype value of the document."""
-        self.__parts["mimetype"] = to_bytes(m)
+        self.__parts["mimetype"] = to_bytes(mimetype)
 
-    def set_part(self, path, data):
+    def set_part(self, path: str, data: str | bytes) -> None:
         """Replace or add a new part."""
         self.__parts[path] = data
 
-    def del_part(self, path):
+    def del_part(self, path: str) -> None:
         """Mark a part for deletion."""
         self.__parts[path] = None
 
     @property
-    def clone(self):
+    def clone(self) -> Container:
         """Make a copy of this container with no path."""
         if self.path and self.__packaging == "zip":
-            self.__get_all_zip_part()
+            self._get_all_zip_part()
         clone = deepcopy(self)
         clone.path = None
         return clone
 
     @staticmethod
-    def __do_backup(target):
+    def _do_backup(target: str | Path) -> None:
         path = Path(target)
         if not path.exists():
             return
@@ -348,7 +351,7 @@ class Container:
         except OSError as e:
             printwarn(str(e))
 
-    def _save_packaging(self, packaging):
+    def _save_packaging(self, packaging: str | None) -> str:
         if not packaging:
             packaging = self.__packaging if self.__packaging else "zip"
         packaging = packaging.strip().lower()
@@ -357,7 +360,7 @@ class Container:
             raise ValueError(f'Packaging of type "{packaging}" is not supported')
         return packaging
 
-    def _save_target(self, target):
+    def _save_target(self, target: str | Path | io.BytesIO | None) -> str | io.BytesIO:
         if target is None:
             target = self.path
         if isinstance(target, Path):
@@ -369,20 +372,20 @@ class Container:
                 target = target.split(".folder", 1)[0]
         return target
 
-    def _save_as_zip(self, target, backup):
-        if isinstance(target, str) and backup:
-            self.__do_backup(target)
-        self.__save_zip(target)
+    def _save_as_zip(self, target: str | Path | io.BytesIO, backup: bool) -> None:
+        if isinstance(target, (str, Path)) and backup:
+            self._do_backup(target)
+        self._save_zip(target)
 
-    def _save_as_folder(self, target, backup):
-        if not isinstance(target, str):
+    def _save_as_folder(self, target: str | Path, backup: bool) -> None:
+        if not isinstance(target, (str, Path)):
             raise TypeError(
-                f"Saving in folder format requires a folder name, not '{target}'"
+                f"Saving in folder format requires a folder name, not '{target!r}'"
             )
-        if not target.endswith(".folder"):
-            target = target + ".folder"
+        if not str(target).endswith(".folder"):
+            target = str(target) + ".folder"
         if backup:
-            self.__do_backup(target)
+            self._do_backup(target)
         else:
             path = Path(target)
             if path.exists():
@@ -390,9 +393,14 @@ class Container:
                     shutil.rmtree(path)
                 except OSError as e:
                     printwarn(str(e))
-        self.__save_folder(target)
+        self._save_folder(target)
 
-    def save(self, target=None, packaging=None, backup=False):
+    def save(
+        self,
+        target: str | Path | io.BytesIO | None,
+        packaging: str | None = None,
+        backup: bool = False,
+    ) -> None:
         """Save the container to the given target, a path or a file-like
         object.
 
@@ -415,6 +423,10 @@ class Container:
                 self.get_part(path)
         target = self._save_target(target)
         if packaging == "folder":
+            if isinstance(target, io.BytesIO):
+                raise TypeError(
+                    "Impossible to save on io.BytesIO with 'folder' packaging"
+                )
             self._save_as_folder(target, backup)
         else:
             # default:

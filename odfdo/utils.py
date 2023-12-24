@@ -22,10 +22,11 @@
 #          Romain Gauthier <romain@itaapy.com>
 """get_value() and other utilities
 """
+from __future__ import annotations
+
 import contextlib
 from datetime import date, datetime, timedelta
 from decimal import Decimal as dec
-from re import search
 
 from .const import ODF_PROPERTIES
 from .datatype import Boolean, Date, DateTime, Duration
@@ -49,20 +50,20 @@ DPI = 640 * dec("2.54") / 17
 ######################################################################
 
 
-def to_bytes(value):
+def to_bytes(value: str | bytes) -> bytes:
     if isinstance(value, str):
         return value.encode("utf-8")
     return value
 
 
-def to_str(value):
+def to_str(value: str | bytes) -> str:
     if isinstance(value, bytes):
         return value.decode("utf-8")
     return value
 
 
-def _make_xpath_query(  # noqa: C901
-    element_name,
+def make_xpath_query(  # noqa: C901
+    query_string: str,
     family=None,
     text_style=None,
     draw_id=None,
@@ -88,7 +89,7 @@ def _make_xpath_query(  # noqa: C901
     position=None,
     **kw,
 ):
-    query = [to_str(element_name)]
+    query = [query_string]
     attributes = kw
     if text_style:
         attributes["text:style-name"] = text_style
@@ -290,58 +291,6 @@ def _merge_dicts(d, *args, **kw):
 # Non-public yet useful helpers
 
 
-def _get_elements(
-    context,
-    element_name,
-    content=None,
-    url=None,
-    svg_title=None,
-    svg_desc=None,
-    dc_creator=None,
-    dc_date=None,
-    **kw,
-):
-    query = _make_xpath_query(element_name, **kw)
-    elements = context.get_elements(query)
-    # Filter the elements with the regex (TODO use XPath)
-    if content is not None:
-        elements = [element for element in elements if element.match(content)]
-    if url is not None:
-        filtered = []
-        for element in elements:
-            url_attr = element.get_attribute("xlink:href")
-            if search(url, url_attr) is not None:
-                filtered.append(element)
-        elements = filtered
-    if dc_date is not None:
-        # XXX Date or DateTime?
-        dc_date = DateTime.encode(dc_date)
-    for variable, childname in [
-        (svg_title, "svg:title"),
-        (svg_desc, "svg:desc"),
-        (dc_creator, "descendant::dc:creator"),
-        (dc_date, "descendant::dc:date"),
-    ]:
-        if not variable:
-            continue
-        filtered = []
-        for element in elements:
-            child = element.get_element(childname)
-            if child and child.match(variable):
-                filtered.append(element)
-        elements = filtered
-    return elements
-
-
-def _get_element(context, element_name, position, **kw):
-    # TODO Transmit position not to load the whole list
-    result = _get_elements(context, element_name, **kw)
-    try:
-        return result[position]
-    except IndexError:
-        return None
-
-
 def _set_value_and_type(  # noqa: C901
     element,
     value=None,
@@ -498,7 +447,7 @@ def get_value(  # noqa: C901
             return (None, None)
         return None
 
-    raise ValueError('unexpected value type "%s"' % value_type)
+    raise ValueError(f'unexpected value type "{value_type}"')
 
 
 def set_value(element, value):
@@ -532,7 +481,7 @@ def set_value(element, value):
     raise ValueError('set_value: unexpected element "%s"' % tag)
 
 
-def oooc_to_ooow(formula):
+def oooc_to_ooow(formula: str) -> str:
     """Convert (proprietary) formula from calc format to writer format.
 
     Arguments:
@@ -547,7 +496,7 @@ def oooc_to_ooow(formula):
     formula = formula.replace("[.", "<").replace(":.", ":").replace("]", ">")
     # Convert functions
     formula = formula.replace("SUM(", "sum ").replace(")", "")
-    return "ooow:" + formula
+    return f"ooow:{formula}"
 
 
 # def obsolete(old_name, new_func, *args, **kw):
@@ -562,11 +511,12 @@ def oooc_to_ooow(formula):
 #     return decorate
 
 
-def isiterable(obj):
-    if isinstance(obj, (str, bytes)):
+def isiterable(instance) -> bool:
+    """Return True if instance is iterable, but considering str and bytes as not iterable."""
+    if isinstance(instance, (str, bytes)):
         return False
     try:
-        iter(obj)
+        iter(instance)
     except TypeError:
         return False
     return True

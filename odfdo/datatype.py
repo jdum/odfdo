@@ -20,6 +20,9 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 """Data types (Boolean, Date, DateTime, Duration, Unit)
 """
+from __future__ import annotations
+
+import contextlib
 from datetime import datetime, timedelta
 from decimal import Decimal
 from functools import total_ordering
@@ -33,65 +36,69 @@ DURATION_FORMAT = "PT%02dH%02dM%02dS"
 
 
 class Boolean:
+    """Class for conversion between ODF boolean format and Python bool."""
+
     @staticmethod
-    def decode(data):
+    def decode(data: str) -> bool:
         if data == "true":
             return True
         elif data == "false":
             return False
-        raise ValueError(f'boolean "{data}" is invalid')
+        raise ValueError(f"boolean {data!r} is invalid")
 
     @staticmethod
-    def encode(value):
+    def encode(value: bool | str | bytes) -> str:
         if value is True or str(value).lower() == "true":
             return "true"
         elif value is False or str(value).lower() == "false":
             return "false"
-        raise TypeError(f'"{value}" is not a boolean')
+        raise TypeError(f"{value!r} is not a boolean")
 
 
 class Date:
+    """Class for conversion between ODF date formats and Python datetime."""
+
     @staticmethod
-    def decode(data):
+    def decode(data: str) -> datetime:
         return datetime.strptime(data, DATE_FORMAT)
 
     @staticmethod
-    def encode(value):
+    def encode(value: datetime) -> str:
         return value.strftime(DATE_FORMAT)
 
 
 class DateTime:
+    """Class for conversion between ODF date/hour formats and Python datetime."""
+
     @staticmethod
-    def decode(data):
+    def decode(data: str) -> datetime:
         if data.endswith("Z"):
             data = data[:-1] + "+0000"
-        try:
+
+        with contextlib.suppress(ValueError):
             # fix for nanoseconds:
             return datetime.strptime(data[0:26] + data[29:], DATETIME_FORMAT_MICRO)
-        except ValueError:
-            pass
-        try:
+        with contextlib.suppress(ValueError):
             return datetime.strptime(data, DATETIME_FORMAT_MICRO)
-        except ValueError:
-            pass
         return datetime.strptime(data, DATETIME_FORMAT)
 
     @staticmethod
-    def encode(value):
+    def encode(value: datetime) -> str:
         return value.strftime(DATETIME_FORMAT)
 
 
 class Duration:
-    """ISO 8601 format."""
+    """Class for conversion between ODF duration s (ISO 8601 format) and
+    Python timedelta"""
 
     @staticmethod
-    def decode(data):
+    def decode(data: str) -> timedelta:
         if data.startswith("P"):
             sign = 1
         elif data.startswith("-P"):
             sign = -1
         else:
-            raise ValueError("duration not valid")
+            raise ValueError(f"duration not valid {data!r}")
 
         days = 0
         hours = 0
@@ -116,7 +123,7 @@ class Duration:
                 buffer = ""
                 break
         if buffer != "":
-            raise ValueError("duration not valid")
+            raise ValueError(f"duration not valid {data!r}")
 
         return timedelta(
             days=sign * days,
@@ -126,9 +133,9 @@ class Duration:
         )
 
     @staticmethod
-    def encode(value):
+    def encode(value: timedelta) -> str:
         if not isinstance(value, timedelta):
-            raise TypeError("duration must be a timedelta")
+            raise TypeError(f"duration must be a timedelta: {value!r}")
 
         days = value.days
         if days < 0:
@@ -155,7 +162,9 @@ class Duration:
 
 @total_ordering
 class Unit:
-    def __init__(self, value, unit="cm"):
+    """Class for conversion between ODF units and Python types."""
+
+    def __init__(self, value: str | float | int | Decimal, unit: str = "cm"):
         if isinstance(value, str):
             digits = []
             nondigits = []
@@ -172,27 +181,27 @@ class Unit:
         self.value = Decimal(value)
         self.unit = unit
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.value) + self.unit
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{object.__repr__(self)} {self}"
 
-    def __lt__(self, other):
-        if type(other) is not type(self):
-            raise ValueError("can only compare Unit")
+    def __check_other(self, other: Unit) -> None:
+        if not isinstance(other, Unit):
+            raise TypeError(f"can only compare Unit: {other!r}")
         if self.unit != other.unit:
-            raise NotImplementedError("no conversion yet")
+            raise NotImplementedError(f"conversion not implemented yet {other!r}")
+
+    def __lt__(self, other: Unit) -> bool:
+        self.__check_other(other)
         return self.value < other.value
 
-    def __eq__(self, other):
-        if type(other) is not type(self):
-            raise ValueError("can only compare Unit")
-        if self.unit != other.unit:
-            raise NotImplementedError("no conversion yet")
+    def __eq__(self, other) -> bool:
+        self.__check_other(other)
         return self.value == other.value
 
-    def convert(self, unit, dpi=72):
+    def convert(self, unit: str, dpi: int = 72) -> Unit:
         if unit == "px":
             if self.unit == "in":
                 return Unit(int(self.value * dpi), "px")

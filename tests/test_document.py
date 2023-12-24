@@ -55,6 +55,7 @@ def test_non_existing():
 
 def test_text_template(tmp_path):
     template = _copied_template(tmp_path, "text.ott")
+    print(template)
     assert Document.new(template)
 
 

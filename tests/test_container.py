@@ -22,7 +22,6 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 
-from importlib import resources as rso
 from os.path import isfile, join
 from pathlib import Path
 
@@ -35,21 +34,13 @@ from odfdo.utils import to_bytes
 SAMPLES = Path(__file__).parent / "samples"
 
 
-def _copied_template(tmp_path, template):
-    src = rso.files("odfdo.templates") / template
-    dest = tmp_path / template
-    dest.write_bytes(src.read_bytes())
-    return dest
-
-
 def test_bad_template():
-    with pytest.raises(OSError):
-        Container.new(SAMPLES / "notexisting")
+    with pytest.raises(FileNotFoundError):
+        Container.from_template("notexisting")
 
 
 def test_text_template(tmp_path):
-    template = _copied_template(tmp_path, "text.ott")
-    container = Container.new(template)
+    container = Container.from_template("text")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["odt"])
@@ -57,8 +48,7 @@ def test_text_template(tmp_path):
 
 
 def test_spreadsheet_template(tmp_path):
-    template = _copied_template(tmp_path, "spreadsheet.ots")
-    container = Container.new(template)
+    container = Container.from_template("spreadsheet")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["ods"])
@@ -66,8 +56,7 @@ def test_spreadsheet_template(tmp_path):
 
 
 def test_presentation_template(tmp_path):
-    template = _copied_template(tmp_path, "presentation.otp")
-    container = Container.new(template)
+    container = Container.from_template("presentation")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["odp"])
@@ -75,8 +64,7 @@ def test_presentation_template(tmp_path):
 
 
 def test_drawing_template(tmp_path):
-    template = _copied_template(tmp_path, "drawing.otg")
-    container = Container.new(template)
+    container = Container.from_template("drawing")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["odg"])
@@ -84,22 +72,22 @@ def test_drawing_template(tmp_path):
 
 
 def test_bad_type():
-    with pytest.raises(IOError):
-        Container.new("foobar")
+    with pytest.raises(FileNotFoundError):
+        Container.from_template("foobar")
 
 
 def test_bad_type2():
-    with pytest.raises(ValueError):
-        Container.new(object)
+    with pytest.raises(TypeError):
+        Container.from_template(object)
 
 
 def test_bad_type3():
-    with pytest.raises(ValueError):
-        Container.new(None)
+    with pytest.raises(TypeError):
+        Container.from_template(None)
 
 
 def test_text_type():
-    container = Container.new("text")
+    container = Container.from_template("text")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["odt"])
@@ -107,7 +95,7 @@ def test_text_type():
 
 
 def test_spreadsheet_type():
-    container = Container.new("spreadsheet")
+    container = Container.from_template("spreadsheet")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["ods"])
@@ -115,7 +103,7 @@ def test_spreadsheet_type():
 
 
 def test_presentation_type():
-    container = Container.new("presentation")
+    container = Container.from_template("presentation")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["odp"])
@@ -123,7 +111,7 @@ def test_presentation_type():
 
 
 def test_drawing_type():
-    container = Container.new("drawing")
+    container = Container.from_template("drawing")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["odg"])
@@ -141,7 +129,7 @@ def test_filesystem():
 
 
 def test_clone():
-    container = Container.new("text")
+    container = Container.from_template("text")
     clone = container.clone
     assert clone.path is None
 

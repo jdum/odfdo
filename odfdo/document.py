@@ -21,14 +21,16 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Document class, root of the ODF document
+"""Document class, root of the ODF document.
 """
+from __future__ import annotations
+
+import io
 import posixpath
 from copy import deepcopy
 from mimetypes import guess_type
 from operator import itemgetter
 from pathlib import Path
-from typing import Union
 from uuid import uuid4
 
 from .const import (
@@ -133,7 +135,9 @@ class Document:
     the content of the file.
     """
 
-    def __init__(self, target: Union[str, bytes, Path, Container, None] = "text"):
+    def __init__(
+        self, target: str | bytes | Path | Container | io.BytesIO | None = "text"
+    ):
         # Cache of XML parts
         self.__xmlparts = {}
         # Cache of the body
@@ -150,39 +154,46 @@ class Document:
         if isinstance(target, Container):
             self.container = target
             return
-        if to_str(target) in ODF_TEMPLATES:
-            # assuming a new document from templates
-            self.container = Container.new(target)
+        if isinstance(target, (str, bytes)):
+            if to_str(target) in ODF_TEMPLATES:
+                # assuming a new document from templates
+                self.container = Container.from_template(to_str(target))
+                return
+            # let's assume we open a container on existing file
+            self.container = Container(to_str(target))
             return
-        # let's assume we open a container on existing file
-        self.container = Container(target)
+        if isinstance(target, io.BytesIO):
+            self.container = Container(target)
+            return
+        raise TypeError(f"Unknown Document source type {target!r}")
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} type={self.get_type()} path={self.path}>"
 
     def __str__(self) -> str:
         try:
-            return self.get_formatted_text()
+            return str(self.get_formatted_text())
         except NotImplementedError:
             return self.body.text_recursive
 
     @classmethod
-    def new(cls, target="text"):
-        doc = Document()
-        doc.container = Container.new(target)
-        return doc
+    def new(cls, target: str | Path = "text") -> Document:
+        """Compatibility class method fro read from a templste."""
+        document = Document()
+        document.container = Container.from_template(target)
+        return document
 
     # Public API
 
     @property
-    def path(self):
+    def path(self) -> Path | None:
         """Shortcut to Document.Container.path."""
         if not self.container:
             return None
         return self.container.path
 
     @path.setter
-    def path(self, path_or_str):
+    def path(self, path_or_str: str | Path) -> None:
         """Shortcut to Document.Container.path
 
         Only accepting str or Path."""
@@ -194,6 +205,8 @@ class Document:
         """Return available part names with path inside the archive, e.g.
         ['content.xml', ..., 'Pictures/100000000000032000000258912EB1C3.jpg']
         """
+        if not self.container:
+            raise ValueError("Empty Container")
         return self.container.get_parts()
 
     def get_part(self, path):
@@ -206,6 +219,8 @@ class Document:
 
         path formated as URI, so always use '/' separator
         """
+        if not self.container:
+            raise ValueError("Empty Container")
         # "./ObjectReplacements/Object 1"
         path = path.lstrip("./")
         path = _get_part_path(path)
@@ -227,6 +242,8 @@ class Document:
 
         path formated as URI, so always use '/' separator
         """
+        if not self.container:
+            raise ValueError("Empty Container")
         # "./ObjectReplacements/Object 1"
         path = path.lstrip("./")
         path = _get_part_path(path)
@@ -240,6 +257,8 @@ class Document:
         """Mark a part for deletion. The path is relative to the archive,
         e.g. "Pictures/1003200258912EB1C3.jpg"
         """
+        if not self.container:
+            raise ValueError("Empty Container")
         path = _get_part_path(path)
         cls = _get_part_class(path)
         if path == ODF_MANIFEST or cls is not None:
@@ -252,6 +271,8 @@ class Document:
 
     @mimetype.setter
     def mimetype(self, m):
+        if not self.container:
+            raise ValueError("Empty Container")
         self.container.mimetype = m
 
     def get_type(self):

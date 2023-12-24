@@ -62,7 +62,7 @@ class XmlPart:
             self.__root = Element.from_tag(tree.getroot())
         return self.__root
 
-    def get_elements(self, xpath_query):
+    def get_elements(self, xpath_query: str):
         root = self.root
         return root.xpath(xpath_query)
 
