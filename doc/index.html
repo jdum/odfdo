@@ -4993,16 +4993,20 @@ def style(self):
         return clone
 
     def _read_zip(self) -&gt; None:
+        if isinstance(self.__path_like, io.BytesIO):
+            self.__path_like.seek(0)
         with ZipFile(self.__path_like) as zf:
             mimetype = zf.read(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
             if mimetype not in ODF_MIMETYPES:
                 raise ValueError(f&#34;Document of unknown type {mimetype}&#34;)
             self.__parts[&#34;mimetype&#34;] = to_bytes(mimetype)
         if self.path is None:
+            if isinstance(self.__path_like, io.BytesIO):
+                self.__path_like.seek(0)
             # read the full file at once and forget file
             with ZipFile(self.__path_like) as zf:
                 for name in zf.namelist():
-                    upath = PurePath(name).as_posix()
+                    upath = normalize_path(name)
                     self.__parts[upath] = zf.read(name)
             self.__path_like = None
 
@@ -5062,10 +5066,7 @@ def style(self):
         &#34;&#34;&#34;Get bytes of a part from the Zip ODF file. No cache.&#34;&#34;&#34;
         try:
             with ZipFile(self.path) as zf:
-                if name.endswith(&#34;/&#34;):  # folder
-                    upath = PurePath(name[:-1]).as_posix() + &#34;/&#34;
-                else:
-                    upath = PurePath(name).as_posix()
+                upath = normalize_path(name)
                 self.__parts[upath] = zf.read(name)
                 return self.__parts[upath]
         except BadZipfile:
@@ -5076,10 +5077,7 @@ def style(self):
         try:
             with ZipFile(self.path) as zf:
                 for name in zf.namelist():
-                    if name.endswith(&#34;/&#34;):  # folder
-                        upath = PurePath(name[:-1]).as_posix() + &#34;/&#34;
-                    else:
-                        upath = PurePath(name).as_posix()
+                    upath = normalize_path(name)
                     self.__parts[upath] = zf.read(name)
         except BadZipfile:
             pass
@@ -5154,10 +5152,8 @@ def style(self):
             parts = []
             with ZipFile(self.path) as zf:
                 for name in zf.namelist():
-                    if name.endswith(&#34;/&#34;):
-                        parts.append(PurePath(name[:-1]).as_posix() + &#34;/&#34;)
-                    else:
-                        parts.append(PurePath(name).as_posix())
+                    upath = normalize_path(name)
+                    parts.append(upath)
             return parts
         elif self.__packaging == &#34;folder&#34;:
             return self._get_folder_parts()
@@ -5457,10 +5453,8 @@ def mimetype(self) -&gt; str:
         parts = []
         with ZipFile(self.path) as zf:
             for name in zf.namelist():
-                if name.endswith(&#34;/&#34;):
-                    parts.append(PurePath(name[:-1]).as_posix() + &#34;/&#34;)
-                else:
-                    parts.append(PurePath(name).as_posix())
+                upath = normalize_path(name)
+                parts.append(upath)
         return parts
     elif self.__packaging == &#34;folder&#34;:
         return self._get_folder_parts()
