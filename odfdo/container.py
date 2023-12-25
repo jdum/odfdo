@@ -47,6 +47,12 @@ from .scriptutils import printwarn
 from .utils import to_bytes, to_str
 
 
+def normalize_path(path: str) -> str:
+    if path.endswith("/"):  # folder
+        return PurePath(path[:-1]).as_posix() + "/"
+    return PurePath(path).as_posix()
+
+
 class Container:
     """Representation of the ODF file."""
 
@@ -110,16 +116,20 @@ class Container:
         return clone
 
     def _read_zip(self) -> None:
+        if isinstance(self.__path_like, io.BytesIO):
+            self.__path_like.seek(0)
         with ZipFile(self.__path_like) as zf:
             mimetype = zf.read("mimetype").decode("utf8", "ignore")
             if mimetype not in ODF_MIMETYPES:
                 raise ValueError(f"Document of unknown type {mimetype}")
             self.__parts["mimetype"] = to_bytes(mimetype)
         if self.path is None:
+            if isinstance(self.__path_like, io.BytesIO):
+                self.__path_like.seek(0)
             # read the full file at once and forget file
             with ZipFile(self.__path_like) as zf:
                 for name in zf.namelist():
-                    upath = PurePath(name).as_posix()
+                    upath = normalize_path(name)
                     self.__parts[upath] = zf.read(name)
             self.__path_like = None
 
@@ -179,10 +189,7 @@ class Container:
         """Get bytes of a part from the Zip ODF file. No cache."""
         try:
             with ZipFile(self.path) as zf:
-                if name.endswith("/"):  # folder
-                    upath = PurePath(name[:-1]).as_posix() + "/"
-                else:
-                    upath = PurePath(name).as_posix()
+                upath = normalize_path(name)
                 self.__parts[upath] = zf.read(name)
                 return self.__parts[upath]
         except BadZipfile:
@@ -193,10 +200,7 @@ class Container:
         try:
             with ZipFile(self.path) as zf:
                 for name in zf.namelist():
-                    if name.endswith("/"):  # folder
-                        upath = PurePath(name[:-1]).as_posix() + "/"
-                    else:
-                        upath = PurePath(name).as_posix()
+                    upath = normalize_path(name)
                     self.__parts[upath] = zf.read(name)
         except BadZipfile:
             pass
@@ -271,10 +275,8 @@ class Container:
             parts = []
             with ZipFile(self.path) as zf:
                 for name in zf.namelist():
-                    if name.endswith("/"):
-                        parts.append(PurePath(name[:-1]).as_posix() + "/")
-                    else:
-                        parts.append(PurePath(name).as_posix())
+                    upath = normalize_path(name)
+                    parts.append(upath)
             return parts
         elif self.__packaging == "folder":
             return self._get_folder_parts()
