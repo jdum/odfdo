@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odfdo"
-version = "3.4.6"
+version = "3.4.7"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 keywords = ["python", "library", "ODF", "OpenDocument"]
@@ -26,15 +26,15 @@ packages = [{ include = "odfdo" }]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4"
-lxml = "^4.0"
+lxml = "^5"
 
 [tool.poetry.group.docs.dependencies]
 pdoc3 = ">=0.10"
 
 [tool.poetry.group.dev.dependencies]
-poetry = ">=1.6"
+poetry = "~1.7"
 pytest = ">=7.0"
-tox = "^4"
+tox = ">=4"
 Pillow = ">=10.0.0"
 
 [tool.poetry.scripts]
