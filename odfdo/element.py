@@ -20,7 +20,7 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Element, super class of all ODF classes
+"""Element, super class of all ODF classes.
 """
 from __future__ import annotations
 

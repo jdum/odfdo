@@ -22,7 +22,7 @@
 """
 from __future__ import annotations
 
-from .const import CSS3_COLORMAP
+from .const import CSS3_COLORMAP, ODF_PROPERTIES
 from .datatype import Boolean
 from .element import Element, register_element_class, register_element_class_list
 from .image import DrawImage
@@ -32,11 +32,82 @@ from .utils import (
     FAMILY_ODF_STD,
     STYLES_TO_REGISTER,
     SUBCLASSED_STYLES,
-    _expand_properties,
-    _merge_dicts,
     isiterable,
     to_str,
 )
+
+# This mapping is not exhaustive, it only contains cases where replacing
+# '_' with '-' and adding the "fo:" prefix is not enough
+_PROPERTY_MAPPING = {  # text
+    "display": "text:display",
+    "family_generic": "style:font-family-generic",
+    "font": "style:font-name",
+    "outline": "style:text-outline",
+    "pitch": "style:font-pitch",
+    "size": "fo:font-size",
+    "style": "fo:font-style",
+    "underline": "style:text-underline-style",
+    "weight": "fo:font-weight",
+    # compliance with office suites
+    "font_family": "fo:font-family",
+    "font_style_name": "style:font-style-name",
+    # paragraph
+    "align-last": "fo:text-align-last",
+    "align": "fo:text-align",
+    "indent": "fo:text-indent",
+    "together": "fo:keep-together",
+    # frame position
+    "horizontal_pos": "style:horizontal-pos",
+    "horizontal_rel": "style:horizontal-rel",
+    "vertical_pos": "style:vertical-pos",
+    "vertical_rel": "style:vertical-rel",
+    # TODO 'page-break-before': 'fo:page-break-before',
+    # TODO 'page-break-after': 'fo:page-break-after',
+    "shadow": "fo:text-shadow",
+    # Graphic
+    "fill_color": "draw:fill-color",
+    "fill_image_height": "draw:fill-image-height",
+    "fill_image_width": "draw:fill-image-width",
+    "guide_distance": "draw:guide-distance",
+    "guide_overhang": "draw:guide-overhang",
+    "line_distance": "draw:line-distance",
+    "stroke": "draw:stroke",
+    "textarea_vertical_align": "draw:textarea-vertical-align",
+}
+
+
+def _map_key(key: str) -> str | None:
+    if key in ODF_PROPERTIES:
+        return key
+    key = _PROPERTY_MAPPING.get(key, key).replace("_", "-")
+    if ":" not in key:
+        key = f"fo:{key}"
+    if key in ODF_PROPERTIES:
+        return key
+    return None
+
+
+def _merge_dicts(dico: dict, *args: dict, **kw) -> dict:
+    """Merge two or more dictionaries into a new dictionary object."""
+    new_d = dico.copy()
+    for dic in args:
+        new_d.update(dic)
+    new_d.update(kw)
+    return new_d
+
+
+def _expand_properties_dict(properties: dict[str, str]) -> dict[str, str]:
+    expanded = {}
+    for key in sorted(properties.keys()):
+        prop_key = _map_key(key)
+        if not prop_key:
+            continue
+        expanded[prop_key] = to_str(properties[key])
+    return expanded
+
+
+def _expand_properties_list(properties: list[str]) -> list[str]:
+    return list(filter(None, (_map_key(key) for key in properties)))
 
 
 def hex2rgb(color):
@@ -301,7 +372,7 @@ class Style(Element):
 
     def __init__(  # noqa: C901
         self,
-        family=None,
+        family: str | None = None,
         name=None,
         display_name=None,
         parent_style=None,
@@ -560,7 +631,13 @@ class Style(Element):
             properties[child.tag] = child.attributes
         return properties
 
-    def set_properties(self, properties=None, style=None, area=None, **kw):
+    def set_properties(
+        self,
+        properties: dict[str, str] | None = None,
+        style: Style | None = None,
+        area: str | None = None,
+        **kw,
+    ) -> None:
         """Set the properties of the "area" type of this style. Properties
         are given either as a dict or as named arguments (or both). The area
         is identical to the style family by default. If the properties
@@ -580,13 +657,16 @@ class Style(Element):
         if properties is None:
             properties = {}
         if area is None:
-            area = self.family
-        element = self.get_element("style:%s-properties" % area)
+            if isinstance(self.family, bool):
+                area = None
+            else:
+                area = self.family
+        element = self.get_element(f"style:{area}-properties")
         if element is None:
-            element = Element.from_tag("style:%s-properties" % area)
+            element = Element.from_tag(f"style:{area}-properties")
             self.append(element)
         if properties or kw:
-            properties = _expand_properties(_merge_dicts(properties, kw))
+            properties = _expand_properties_dict(_merge_dicts(properties, kw))
         elif style is not None:
             properties = style.get_properties(area=area)
             if properties is None:
@@ -597,7 +677,11 @@ class Style(Element):
             else:
                 element.set_attribute(key, value)
 
-    def del_properties(self, properties=None, area=None):
+    def del_properties(
+        self,
+        properties: list[str] | None = None,
+        area: str | None = None,
+    ) -> None:
         """Delete the given properties, either by list argument or
         positional argument (or both). Remove only from the given area,
         identical to the style family by default.
@@ -612,10 +696,12 @@ class Style(Element):
             properties = []
         if area is None:
             area = self.family
-        element = self.get_element("style:%s-properties" % area)
+        element = self.get_element(f"style:{area}-properties")
         if element is None:
-            raise ValueError("properties element is inexistent")
-        for key in _expand_properties(properties):
+            raise ValueError(
+                f"properties element is inexistent for: style:{area}-properties"
+            )
+        for key in _expand_properties_list(properties):
             element.del_attribute(key)
 
     def set_background(  # noqa: C901

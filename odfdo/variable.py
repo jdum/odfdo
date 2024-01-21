@@ -21,10 +21,14 @@
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 """User fields and variable fields classes
 """
+from __future__ import annotations
+
+from typing import Any
+
 from .const import ODF_META
 from .datatype import Date, DateTime, Duration
 from .element import Element, register_element_class
-from .utils import _set_value_and_type
+from .element_typed import ElementTyped
 
 
 class VarDecls(Element):
@@ -47,7 +51,7 @@ class VarDecl(Element):
 VarDecl._define_attribut_property()
 
 
-class VarSet(Element):
+class VarSet(ElementTyped):
     _tag = "text:variable-set"
     _properties = (
         ("name", "text:name"),
@@ -71,19 +75,29 @@ class VarSet(Element):
                 self.name = name
             if style:
                 self.style = style
-            text = _set_value_and_type(
-                self, value=value, value_type=value_type, text=text
+            text = self.set_value_and_type(
+                value=value, value_type=value_type, text=text
             )
             if not display:
                 self.display = "none"
             else:
                 self.text = text
 
+    def set_value(self, value: Any) -> None:
+        name = self.get_attribute("text:name")
+        display = self.get_attribute("text:display")
+        self.clear()
+        text = self.set_value_and_type(value=value)
+        self.set_attribute("text:name", name)
+        if display is not None:
+            self.set_attribute("text:display", display)
+        self.text = text
+
 
 VarSet._define_attribut_property()
 
 
-class VarGet(Element):
+class VarGet(ElementTyped):
     _tag = "text:variable-get"
     _properties = (("name", "text:name"), ("style", "style:data-style-name"))
 
@@ -96,8 +110,8 @@ class VarGet(Element):
                 self.name = name
             if style:
                 self.style = style
-            text = _set_value_and_type(
-                self, value=value, value_type=value_type, text=text
+            text = self.set_value_and_type(
+                value=value, value_type=value_type, text=text
             )
             self.text = text
 
@@ -109,7 +123,7 @@ class UserFieldDecls(Element):
     _tag = "text:user-field-decls"
 
 
-class UserFieldDecl(Element):
+class UserFieldDecl(ElementTyped):
     _tag = "text:user-field-decl"
     _properties = (("name", "text:name"),)
 
@@ -118,13 +132,19 @@ class UserFieldDecl(Element):
         if self._do_init:
             if name:
                 self.name = name
-            _set_value_and_type(self, value=value, value_type=value_type)
+            self.set_value_and_type(value=value, value_type=value_type)
+
+    def set_value(self, value: Any) -> None:
+        name = self.get_attribute("text:name")
+        self.clear()
+        self.set_value_and_type(value=value)
+        self.set_attribute("text:name", name)
 
 
 UserFieldDecl._define_attribut_property()
 
 
-class UserFieldGet(Element):
+class UserFieldGet(ElementTyped):
     _tag = "text:user-field-get"
     _properties = (("name", "text:name"), ("style", "style:data-style-name"))
 
@@ -135,8 +155,8 @@ class UserFieldGet(Element):
         if self._do_init:
             if name:
                 self.name = name
-            text = _set_value_and_type(
-                self, value=value, value_type=value_type, text=text
+            text = self.set_value_and_type(
+                value=value, value_type=value_type, text=text
             )
             self.text = text
             if style:
@@ -153,7 +173,7 @@ class UserFieldInput(UserFieldGet):
 UserFieldInput._define_attribut_property()
 
 
-class UserDefined(Element):
+class UserDefined(ElementTyped):
     """Return a user defined field "text:user-defined". If the current
     document is provided, try to extract the content of the meta user defined
     field of same name.
@@ -200,8 +220,8 @@ class UserDefined(Element):
                         value = content.get("value", None)
                         value_type = content.get("value_type", None)
                         text = content.get("text", None)
-            text = _set_value_and_type(
-                self, value=value, value_type=value_type, text=text
+            text = self.set_value_and_type(
+                value=value, value_type=value_type, text=text
             )
             self.text = text
 

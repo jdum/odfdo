@@ -45,6 +45,7 @@ __all__ = [
     "DrawImage",
     "DrawPage",
     "Element",
+    "ElementTyped",
     "EllipseShape",
     "FIRST_CHILD",
     "Frame",
@@ -137,6 +138,7 @@ from .content import Content
 from .document import Document
 from .draw_page import DrawPage
 from .element import FIRST_CHILD, LAST_CHILD, NEXT_SIBLING, PREV_SIBLING, Element, Text
+from .element_typed import ElementTyped
 from .frame import Frame, default_frame_position_style
 from .header import Header
 from .image import DrawFillImage, DrawImage

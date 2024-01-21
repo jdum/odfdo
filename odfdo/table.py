@@ -42,7 +42,8 @@ from .element import (
     register_element_class,
     register_element_class_list,
 )
-from .utils import _set_value_and_type, get_value, isiterable, to_str
+from .element_typed import ElementTyped
+from .utils import get_value, isiterable, to_str
 
 _xpath_row = _xpath_compile("table:table-row")
 _xpath_row_idx = _xpath_compile("(table:table-row)[$idx]")
@@ -453,7 +454,7 @@ class HeaderRows(Element):
     _caching = True
 
 
-class Cell(Element):
+class Cell(ElementTyped):
     """ "table:table-cell" table cell element."""
 
     _tag = "table:table-cell"
@@ -655,8 +656,9 @@ class Cell(Element):
 
             currency -- str
         """
-        text = _set_value_and_type(
-            self, value=value, text=text, value_type=cell_type, currency=currency
+        self.clear()
+        text = self.set_value_and_type(
+            value=value, text=text, value_type=cell_type, currency=currency
         )
         if text is not None:
             self.text_content = text

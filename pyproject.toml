@@ -36,6 +36,7 @@ poetry = "~1.7"
 pytest = ">=7.0"
 tox = ">=4"
 Pillow = ">=10.0.0"
+lxml-stubs = "*"
 
 [tool.poetry.scripts]
 odfdo-diff = "odfdo.scripts.diff:main"
@@ -117,6 +118,16 @@ ignore = [
 [tool.ruff.per-file-ignores]
 "recipes/accessing_a_single_element.py" = ["RUF001"]
 "tests/test_*" = ["S101"]
+
+[tool.mypy]
+# files = ["odfdo"]
+check_untyped_defs = "True"
+# disallow_untyped_defs = "True"
+disallow_any_unimported = "True"
+no_implicit_optional = "True"
+warn_return_any = "False"
+warn_unused_ignores = "True"
+show_error_codes = "True"
 
 [tool.coverage.report]
 skip_empty = true

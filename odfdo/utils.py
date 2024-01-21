@@ -20,15 +20,15 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-"""get_value() and other utilities
+"""Utilities for Element(), notably get_value().
 """
 from __future__ import annotations
 
 import contextlib
 from datetime import date, datetime, timedelta
-from decimal import Decimal as dec
+from decimal import Decimal
+from typing import Any
 
-from .const import ODF_PROPERTIES
 from .datatype import Boolean, Date, DateTime, Duration
 
 # CELL_TYPES = 'boolean currency date float percentage string time'.split()
@@ -43,20 +43,20 @@ from .datatype import Boolean, Date, DateTime, Duration
 
 # This DPI is computed to have:
 # 640 px (width of your wiki) <==> 17 cm (width of a normal ODT page)
-DPI = 640 * dec("2.54") / 17
+DPI: Decimal = 640 * Decimal("2.54") / 17
 
 ######################################################################
 # Private API
 ######################################################################
 
 
-def to_bytes(value: str | bytes) -> bytes:
+def to_bytes(value: Any) -> Any:
     if isinstance(value, str):
         return value.encode("utf-8")
     return value
 
 
-def to_str(value: str | bytes) -> str:
+def to_str(value: Any) -> Any:
     if isinstance(value, bytes):
         return value.decode("utf-8")
     return value
@@ -64,31 +64,31 @@ def to_str(value: str | bytes) -> str:
 
 def make_xpath_query(  # noqa: C901
     query_string: str,
-    family=None,
-    text_style=None,
-    draw_id=None,
-    draw_name=None,
-    draw_style=None,
-    draw_text_style=None,
-    table_name=None,
-    table_style=None,
-    style_name=None,
-    display_name=None,
-    note_class=None,
-    text_id=None,
-    text_name=None,
-    change_id=None,
-    office_name=None,
-    office_title=None,
-    outline_level=None,
-    level=None,
-    page_layout=None,
-    master_page=None,
-    parent_style=None,
-    presentation_class=None,
-    position=None,
+    family: str | None = None,
+    text_style: str | None = None,
+    draw_id: str | None = None,
+    draw_name: str | None = None,
+    draw_style: str | None = None,
+    draw_text_style: str | None = None,
+    table_name: str | None = None,
+    table_style: str | None = None,
+    style_name: str | None = None,
+    display_name: str | None = None,
+    note_class: str | None = None,
+    text_id: str | None = None,
+    text_name: str | None = None,
+    change_id: str | None = None,
+    office_name: str | None = None,
+    office_title: str | None = None,
+    outline_level: str | int | None = None,
+    level: str | int | None = None,
+    page_layout: str | None = None,
+    master_page: str | None = None,
+    parent_style: str | None = None,
+    presentation_class: str | None = None,
+    position: int | None = None,
     **kw,
-):
+) -> str:
     query = [query_string]
     attributes = kw
     if text_style:
@@ -124,9 +124,9 @@ def make_xpath_query(  # noqa: C901
     if office_title:
         attributes["office:title"] = office_title
     if outline_level:
-        attributes["text:outline-level"] = outline_level
+        attributes["text:outline-level"] = str(outline_level)
     if level:
-        attributes["text:level"] = level
+        attributes["text:level"] = str(level)
     if page_layout:
         attributes["style:page-layout-name"] = page_layout
     if master_page:
@@ -142,29 +142,36 @@ def make_xpath_query(  # noqa: C901
             query.append(f"[@{to_str(qname)}]")
         else:
             query.append(f'[@{to_str(qname)}="{value}"]')
-    query = "".join(query)
+    query_str = "".join(query)
     if position is not None:
         # A position argument that mimics the behaviour of a python's list
         if position >= 0:
-            position = str(position + 1)
+            position_str = str(position + 1)
         elif position == -1:
-            position = "last()"
+            position_str = "last()"
         else:
-            position = f"last()-{abs(position) - 1}"
-        query = f"({query})[{position}]"
+            position_str = f"last()-{abs(position) - 1}"
+        query_str = f"({query_str})[{position_str}]"
     # print(query)
-    return query
+    return query_str
 
 
 # style:family as defined by ODF 1.2, e.g. xxx possibily for:
 # 'style:style style:family="xxx"'
-FAMILY_ODF_STD = set(
-    (
-        "chart drawing-page graphic paragraph"
-        " presentation ruby section table table-cell"
-        " table-column table-row text"
-    ).split()
-)
+FAMILY_ODF_STD = {
+    "chart",
+    "drawing-page",
+    "graphic",
+    "paragraph",
+    "presentation",
+    "ruby",
+    "section",
+    "table",
+    "table-cell",
+    "table-column",
+    "table-row",
+    "text",
+}
 
 _BASE_FAMILY_MAP = {k: "style:style" for k in FAMILY_ODF_STD}
 
@@ -186,14 +193,15 @@ _FALSE_FAMILY_MAP = {
     "tab-stop": "style:tab-stop",
 }
 
-OTHER_STYLES = set(
-    (
-        "style:default-style style:header-style"
-        " style:footer-style text:list-level-style-bullet"
-        " text:list-level-style-image"
-        " text:list-level-style-number"
-    ).split()
-)
+OTHER_STYLES = {
+    "style:default-style",
+    "style:footer-style",
+    "style:header-style",
+    "text:list-level-style-bullet",
+    "text:list-level-style-image",
+    "text:list-level-style-number",
+}
+
 SUBCLASS_STYLES = {"background-image"}
 
 FAMILY_MAPPING = {**_BASE_FAMILY_MAP, **_FALSE_FAMILY_MAP}
@@ -203,89 +211,11 @@ SUBCLASSED_STYLES = {"style:background-image"}
 STYLES_TO_REGISTER = (set(FAMILY_MAPPING.values()) | OTHER_STYLES) - SUBCLASSED_STYLES
 
 
-def _family_style_tagname(family):
-    if family not in FAMILY_MAPPING:
-        raise ValueError("unknown family: %s" % family)
-    return FAMILY_MAPPING[family]
-
-
-def _get_style_family(name):
-    for family, (tagname, _famattr) in FAMILY_MAPPING.items():
-        if tagname == name:
-            return family
-    return None
-
-
-def _expand_properties(properties):
-    # This mapping is not exhaustive, it only contains cases where replacing
-    # '_' with '-' and adding the "fo:" prefix is not enough
-    mapping = {  # text
-        "display": "text:display",
-        "family_generic": "style:font-family-generic",
-        "font": "style:font-name",
-        "outline": "style:text-outline",
-        "pitch": "style:font-pitch",
-        "size": "fo:font-size",
-        "style": "fo:font-style",
-        "underline": "style:text-underline-style",
-        "weight": "fo:font-weight",
-        # compliance with office suites
-        "font_family": "fo:font-family",
-        "font_style_name": "style:font-style-name",
-        # paragraph
-        "align-last": "fo:text-align-last",
-        "align": "fo:text-align",
-        "indent": "fo:text-indent",
-        "together": "fo:keep-together",
-        # frame position
-        "horizontal_pos": "style:horizontal-pos",
-        "horizontal_rel": "style:horizontal-rel",
-        "vertical_pos": "style:vertical-pos",
-        "vertical_rel": "style:vertical-rel",
-        # TODO 'page-break-before': 'fo:page-break-before',
-        # TODO 'page-break-after': 'fo:page-break-after',
-        "shadow": "fo:text-shadow",
-        # Graphic
-        "fill_color": "draw:fill-color",
-        "fill_image_height": "draw:fill-image-height",
-        "fill_image_width": "draw:fill-image-width",
-        "guide_distance": "draw:guide-distance",
-        "guide_overhang": "draw:guide-overhang",
-        "line_distance": "draw:line-distance",
-        "stroke": "draw:stroke",
-        "textarea_vertical_align": "draw:textarea-vertical-align",
-    }
-
-    def map_key(key):
-        if key in ODF_PROPERTIES:
-            return key
-        key = mapping.get(key, key).replace("_", "-")
-        if ":" not in key:
-            key = "fo:" + key
-        if key in ODF_PROPERTIES:
-            return key
-        return None
-
-    if isinstance(properties, dict):
-        expanded = {}
-        for key in sorted(properties.keys()):
-            prop_key = map_key(key)
-            if not prop_key:
-                continue
-            expanded[prop_key] = to_str(properties[key])
-
-    elif isinstance(properties, list):
-        expanded = list(filter(None, (map_key(key) for key in properties)))
-    return expanded
-
-
-def _merge_dicts(d, *args, **kw):
-    """Merge two or more dictionaries into a new dictionary object."""
-    new_d = d.copy()
-    for dic in args:
-        new_d.update(dic)
-    new_d.update(kw)
-    return new_d
+def _family_style_tagname(family: str) -> str:
+    try:
+        return FAMILY_MAPPING[family]
+    except KeyError as e:
+        raise ValueError(f"unknown family: {family}") from e
 
 
 # Non-public yet useful helpers
@@ -293,13 +223,13 @@ def _merge_dicts(d, *args, **kw):
 
 def _set_value_and_type(  # noqa: C901
     element,
-    value=None,
-    value_type=None,
-    text=None,
-    currency=None,
-):
+    value: Any,
+    value_type: str | None = None,
+    text: str | None = None,
+    currency: str | None = None,
+) -> str | None:
     # Remove possible previous value and type
-    for name in {
+    for name in (
         "office:value-type",
         "office:boolean-value",
         "office:value",
@@ -310,7 +240,7 @@ def _set_value_and_type(  # noqa: C901
         "office:currency",
         "calcext:value-type",
         "loext:value-type",
-    }:
+    ):
         with contextlib.suppress(KeyError):
             element.del_attribute(name)
     value = to_str(value)
@@ -318,8 +248,6 @@ def _set_value_and_type(  # noqa: C901
     text = to_str(text)
     currency = to_str(currency)
     if value is None:
-        with contextlib.suppress(KeyError):
-            element.del_attribute(name)
         element._erase_text_content()
         return text
     if isinstance(value, bool):
@@ -328,7 +256,7 @@ def _set_value_and_type(  # noqa: C901
         if text is None:
             text = "true" if value else "false"
         value = Boolean.encode(value)
-    elif isinstance(value, (int, float, dec)):
+    elif isinstance(value, (int, float, Decimal)):
         if value_type == "percentage":
             text = "%d %%" % int(value * 100)
         if value_type is None:
@@ -360,7 +288,7 @@ def _set_value_and_type(  # noqa: C901
             text = str(Duration.encode(value))
         value = Duration.encode(value)
     elif value is not None:
-        raise TypeError('type "%s" is unknown' % type(value))
+        raise TypeError(f'type "{type(value)}" is unknown')
 
     if value_type is not None:
         element.set_attribute("office:value-type", value_type)
@@ -402,7 +330,7 @@ def get_value(  # noqa: C901
             return (value, value_type)
         return value  # value is already decoded by get_attribute for booleans
     if value_type in {"float", "percentage", "currency"}:
-        value = dec(element.get_attribute("office:value"))
+        value = Decimal(element.get_attribute("office:value"))
         # Return 3 instead of 3.0 if possible
         if int(value) == value:
             if get_type:
@@ -450,37 +378,6 @@ def get_value(  # noqa: C901
     raise ValueError(f'unexpected value type "{value_type}"')
 
 
-def set_value(element, value):
-    """Only for "with office:value-type" elements"""
-    tag = element.tag
-    # A table:cell ?
-    if tag == "table:table-cell":
-        element.clear()
-        text = _set_value_and_type(element, value=value)
-        element.text_content = text
-        return
-    # A text:variable-set ?
-    if tag == "text:variable-set":
-        name = element.get_attribute("text:name")
-        display = element.get_attribute("text:display")
-        element.clear()
-        text = _set_value_and_type(element, value=value)
-        element.set_attribute("text:name", name)
-        if display is not None:
-            element.set_attribute("text:display", display)
-        element.text = text
-        return
-    # A text:user-field-decl ?
-    if tag == "text:user-field-decl":
-        name = element.get_attribute("text:name")
-        element.clear()
-        _set_value_and_type(element, value=value)
-        element.set_attribute("text:name", name)
-        return
-    # Else => error
-    raise ValueError('set_value: unexpected element "%s"' % tag)
-
-
 def oooc_to_ooow(formula: str) -> str:
     """Convert (proprietary) formula from calc format to writer format.
 
@@ -497,18 +394,6 @@ def oooc_to_ooow(formula: str) -> str:
     # Convert functions
     formula = formula.replace("SUM(", "sum ").replace(")", "")
     return f"ooow:{formula}"
-
-
-# def obsolete(old_name, new_func, *args, **kw):
-#     def decorate(*dec_args, **dec_kw):
-#         new_name = new_func.__name__
-#         if args:
-#             new_name += '(' + ', '.join(repr(x) for x in args) + ')'
-#         message = '"%s" is obsolete, call "%s" instead' % (old_name, new_name)
-#         warn(message, category=DeprecationWarning)
-#         return new_func(*(dec_args + args), **dec_kw)
-#
-#     return decorate
 
 
 def isiterable(instance) -> bool:

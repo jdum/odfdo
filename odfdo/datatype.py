@@ -23,7 +23,7 @@
 from __future__ import annotations
 
 import contextlib
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from functools import total_ordering
 
@@ -63,7 +63,7 @@ class Date:
         return datetime.strptime(data, DATE_FORMAT)
 
     @staticmethod
-    def encode(value: datetime) -> str:
+    def encode(value: datetime | date) -> str:
         return value.strftime(DATE_FORMAT)
 
 

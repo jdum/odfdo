@@ -22,7 +22,7 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 
 from odfdo.table import Cell
-from odfdo.utils import get_value, set_value
+from odfdo.utils import get_value
 from odfdo.variable import UserFieldDecl, VarSet
 
 ZOE = "你好 Zoé"
@@ -45,7 +45,7 @@ def test_get_with_user_field():
 
 def test_with_cell():
     cell = Cell(42)
-    set_value(cell, ZOE)
+    cell.set_value(ZOE)
     expected = (
         '<table:table-cell office:value-type="string" '
         'calcext:value-type="string" '
@@ -60,7 +60,7 @@ def test_with_cell():
 
 def test_with_variable():
     variable_set = VarSet(ZOE, 42)
-    set_value(variable_set, ZOE)
+    variable_set.set_value(ZOE)
     expected = (
         '<text:variable-set office:value-type="string" '
         'calcext:value-type="string" '
@@ -74,7 +74,7 @@ def test_with_variable():
 
 def test_with_user_field():
     user_field_decl = UserFieldDecl(ZOE, 42)
-    set_value(user_field_decl, ZOE)
+    user_field_decl.set_value(ZOE)
     expected = (
         '<text:user-field-decl office:value-type="string" '
         'calcext:value-type="string" '
