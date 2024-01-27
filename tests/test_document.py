@@ -223,19 +223,19 @@ def test_case_save_generator():
 def test_get_styles(tmp_path):
     document = Document(_copied_template(tmp_path, "lpod_styles.odt"))
     styles = document.get_styles()
-    assert len(styles) == 75
+    assert len(styles) == 83
 
 
 def test_get_styles_family_paragraph(tmp_path):
     document = Document(_copied_template(tmp_path, "lpod_styles.odt"))
     styles = document.get_styles(family="paragraph")
-    assert len(styles) == 33
+    assert len(styles) == 40
 
 
 def test_get_styles_family_paragraph_bytes(tmp_path):
     document = Document(_copied_template(tmp_path, "lpod_styles.odt"))
     styles = document.get_styles(family=b"paragraph")
-    assert len(styles) == 33
+    assert len(styles) == 40
 
 
 def test_get_styles_family_text(tmp_path):
