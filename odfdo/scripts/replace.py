@@ -56,7 +56,7 @@ def configure_parser() -> OptionParser:
     return parser
 
 
-def main():
+def main() -> None:
     parser = configure_parser()
     options, args = parser.parse_args()
 
@@ -106,7 +106,7 @@ def search_replace(
     replacement: str,
     input_path: str | None,
     output_path: str | None,
-):
+) -> None:
     document = read_document(input_path)
     body = document.body
     body.replace(pattern, replacement)

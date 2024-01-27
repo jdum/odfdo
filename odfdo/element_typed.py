@@ -28,7 +28,7 @@ from typing import Any
 
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element
-from .utils import to_str
+from .utils import bytes_to_str
 
 
 class ElementTyped(Element):
@@ -54,10 +54,14 @@ class ElementTyped(Element):
         ):
             with contextlib.suppress(KeyError):
                 self.del_attribute(name)
-        value = to_str(value)
-        value_type = to_str(value_type)
-        text = to_str(text)
-        currency = to_str(currency)
+        if isinstance(value, bytes):
+            value = bytes_to_str(value)
+        if isinstance(value_type, bytes):
+            value_type = bytes_to_str(value_type)
+        if isinstance(text, bytes):
+            text = bytes_to_str(text)
+        if isinstance(currency, bytes):
+            currency = bytes_to_str(currency)
         if value is None:
             self._erase_text_content()
             return text
@@ -91,7 +95,7 @@ class ElementTyped(Element):
             if value_type is None:
                 value_type = "string"
             if text is None:
-                text = str(value)
+                text = value
         elif isinstance(value, timedelta):
             if value_type is None:
                 value_type = "time"
@@ -99,7 +103,7 @@ class ElementTyped(Element):
                 text = str(Duration.encode(value))
             value = Duration.encode(value)
         elif value is not None:
-            raise TypeError(f'type "{type(value)}" is unknown')
+            raise TypeError(f"Type unknown: '{value!r}'")
 
         if value_type is not None:
             self.set_attribute("office:value-type", value_type)
@@ -120,3 +124,83 @@ class ElementTyped(Element):
             self.set_attribute("office:time-value", value)
 
         return text
+
+    def _get_typed_value(  # noqa: C901
+        self,
+        value_type: str | None = None,
+        try_get_text: bool = True,
+    ) -> tuple[Any, str | None]:
+        """Return Python typed value.
+
+        Only for "with office:value-type" elements, not for meta fields."""
+        value: Decimal | str | bool | None = None
+        if value_type is None:
+            read_value_type = self.get_attribute("office:value-type")
+            if isinstance(read_value_type, bool):
+                raise TypeError(
+                    f'Wrong type for "office:value-type": {type(read_value_type)}'
+                )
+            value_type = read_value_type
+        # value_type = to_str(value_type)
+        if value_type == "boolean":
+            value = self.get_attribute("office:boolean-value")
+            return (value, value_type)
+        if value_type in {"float", "percentage", "currency"}:
+            read_number = self.get_attribute("office:value")
+            if not isinstance(read_number, (Decimal, str)):
+                raise TypeError(f'Wrong type for "office:value": {type(read_number)}')
+            value = Decimal(read_number)
+            # Return 3 instead of 3.0 if possible
+            if int(value) == value:
+                return (int(value), value_type)
+            return (value, value_type)
+        if value_type == "date":
+            read_attribute = self.get_attribute("office:date-value")
+            if not isinstance(read_attribute, str):
+                raise TypeError(
+                    f'Wrong type for "office:date-value": {type(read_attribute)}'
+                )
+            if "T" in read_attribute:
+                return (DateTime.decode(read_attribute), value_type)
+            return (Date.decode(read_attribute), value_type)
+        if value_type == "string":
+            value = self.get_attribute("office:string-value")
+            if value is not None:
+                return (str(value), value_type)
+            if try_get_text:
+                list_value = [
+                    para.text_recursive for para in self.get_elements("text:p")
+                ]
+                if list_value:
+                    return ("\n".join(list_value), value_type)
+            return (None, value_type)
+        if value_type == "time":
+            read_value = self.get_attribute("office:time-value")
+            if not isinstance(read_value, str):
+                raise TypeError(
+                    f'Wrong type for "office:time-value": {type(read_value)}'
+                )
+            time_value = Duration.decode(read_value)
+            return (time_value, value_type)
+        if value_type is None:
+            return (None, None)
+        raise ValueError(f'Unexpected value type: "{value_type}"')
+
+    def get_value(
+        self,
+        value_type: str | None = None,
+        try_get_text: bool = True,
+        get_type: bool = False,
+    ) -> Any | tuple[Any, str]:
+        """Return Python typed value.
+
+        Only for "with office:value-type" elements, not for meta fields."""
+        if get_type:
+            return self._get_typed_value(
+                value_type=value_type,
+                try_get_text=try_get_text,
+            )
+        return self._get_typed_value(
+            value_type=value_type,
+            try_get_text=try_get_text,
+        )[0]

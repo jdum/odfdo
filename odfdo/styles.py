@@ -19,8 +19,12 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-"""Styles class for styles.xml part
+"""Styles class for styles.xml part.
 """
+from __future__ import annotations
+
+from .element import Element
+from .style import Style
 from .utils import make_xpath_query
 from .xmlpart import XmlPart
 
@@ -51,24 +55,26 @@ CONTEXT_MAPPING = {
 
 
 class Styles(XmlPart):
-    def _get_style_contexts(self, family, automatic=False):
+    def _get_style_contexts(
+        self, family: str, automatic: bool = False
+    ) -> list[Element]:
         if automatic:
-            return (self.get_element("//office:automatic-styles"),)
+            return [self.get_element("//office:automatic-styles")]
         if not family:
             # All possibilities
-            return (
+            return [
                 self.get_element("//office:automatic-styles"),
                 self.get_element("//office:styles"),
                 self.get_element("//office:master-styles"),
                 self.get_element("//office:font-face-decls"),
-            )
+            ]
         queries = CONTEXT_MAPPING.get(family)
         if queries is None:
             raise ValueError(f"unknown family: {family}")
         # print('q:', queries)
         return [self.get_element(query) for query in queries]
 
-    def get_styles(self, family="", automatic=False):
+    def get_styles(self, family: str = "", automatic: bool = False) -> list[Element]:
         """Return the list of styles in the Content part, optionally limited
         to the given family, optionaly limited to automatic styles.
 
@@ -91,7 +97,12 @@ class Styles(XmlPart):
             result.extend(context.get_styles(family=family))
         return result
 
-    def get_style(self, family, name_or_element=None, display_name=None):
+    def get_style(
+        self,
+        family: str,
+        name_or_element: str | Style | None = None,
+        display_name: str | None = None,
+    ) -> Style | None:
         """Return the style uniquely identified by the name/family pair. If
         the argument is already a style object, it will return it.
 
@@ -102,12 +113,12 @@ class Styles(XmlPart):
 
         Arguments:
 
-            name_or_element -- unicode, odf_style or None
-
             family -- 'paragraph', 'text',  'graphic', 'table', 'list',
                       'number', 'page-layout', 'master-page'
 
-            display_name -- unicode
+            name_or_element -- str, odf_style or None
+
+            display_name -- str or None
 
         Return: odf_style or None if not found
         """
@@ -115,17 +126,19 @@ class Styles(XmlPart):
             if context is None:
                 continue
             style = context.get_style(
-                family, name_or_element=name_or_element, display_name=display_name
+                family,
+                name_or_element=name_or_element,
+                display_name=display_name,
             )
             if style is not None:
-                return style
+                return style  # type: ignore
         return None
 
-    def get_master_pages(self):
+    def get_master_pages(self) -> list[Element]:
         query = make_xpath_query("descendant::style:master-page")
-        return self.get_elements(query)
+        return self.get_elements(query)  # type:ignore
 
-    def get_master_page(self, position: int = 0):
+    def get_master_page(self, position: int = 0) -> Element | None:
         results = self.get_master_pages()
         try:
             return results[position]

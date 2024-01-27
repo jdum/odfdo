@@ -19,9 +19,13 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 """Classes for ODF implementation of SMIL (Synchronized Multimedia
-Integration Language)
+Integration Language).
 """
-from .element import Element, register_element_class
+from __future__ import annotations
+
+from typing import Any
+
+from .element import Element, PropDef, register_element_class
 
 
 class AnimPar(Element):
@@ -38,11 +42,16 @@ class AnimPar(Element):
 
     _tag = "anim:par"
     _properties = (
-        ("presentation_node_type", "presentation:node-type"),
-        ("smil_begin", "smil:begin"),
+        PropDef("presentation_node_type", "presentation:node-type"),
+        PropDef("smil_begin", "smil:begin"),
     )
 
-    def __init__(self, presentation_node_type=None, smil_begin=None, **kwargs):
+    def __init__(
+        self,
+        presentation_node_type: str | None = None,
+        smil_begin: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(**kwargs)
         if self._do_init:
             if presentation_node_type:
@@ -67,9 +76,13 @@ class AnimSeq(Element):
     """
 
     _tag = "anim:seq"
-    _properties = (("presentation_node_type", "presentation:node-type"),)
+    _properties = (PropDef("presentation_node_type", "presentation:node-type"),)
 
-    def __init__(self, presentation_node_type=None, **kwargs):
+    def __init__(
+        self,
+        presentation_node_type: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(**kwargs)
         if self._do_init and presentation_node_type:
             self.presentation_node_type = presentation_node_type
@@ -98,24 +111,24 @@ class AnimTransFilter(Element):
 
     _tag = "anim:transitionFilter"
     _properties = (
-        ("smil_dur", "smil:dur"),
-        ("smil_type", "smil:type"),
-        ("smil_subtype", "smil:subtype"),
-        ("smil_direction", "smil:direction"),
-        ("smil_fadeColor", "smil:fadeColor"),
-        ("smil_mode", "smil:mode"),
+        PropDef("smil_dur", "smil:dur"),
+        PropDef("smil_type", "smil:type"),
+        PropDef("smil_subtype", "smil:subtype"),
+        PropDef("smil_direction", "smil:direction"),
+        PropDef("smil_fadeColor", "smil:fadeColor"),
+        PropDef("smil_mode", "smil:mode"),
     )
 
     def __init__(
         self,
-        smil_dur=None,
-        smil_type=None,
-        smil_subtype=None,
-        smil_direction=None,
-        smil_fadeColor=None,
-        smil_mode=None,
-        **kwargs,
-    ):
+        smil_dur: str | None = None,
+        smil_type: str | None = None,
+        smil_subtype: str | None = None,
+        smil_direction: str | None = None,
+        smil_fadeColor: str | None = None,
+        smil_mode: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(**kwargs)
         if self._do_init:
             if smil_dur:

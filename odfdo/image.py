@@ -18,9 +18,13 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""DrawImage class for "draw:image"
+"""DrawImage class for "draw:image".
 """
-from .element import Element, register_element_class
+from __future__ import annotations
+
+from typing import Any
+
+from .element import Element, PropDef, register_element_class
 
 
 class DrawImage(Element):
@@ -34,23 +38,23 @@ class DrawImage(Element):
     """
 
     _tag = "draw:image"
-    _properties = (
-        ("url", "xlink:href"),
-        ("type", "xlink:type"),
-        ("show", "xlink:show"),
-        ("actuate", "xlink:actuate"),
-        ("filter_name", "draw:filter-name"),
+    _properties: tuple[PropDef, ...] = (
+        PropDef("url", "xlink:href"),
+        PropDef("type", "xlink:type"),
+        PropDef("show", "xlink:show"),
+        PropDef("actuate", "xlink:actuate"),
+        PropDef("filter_name", "draw:filter-name"),
     )
 
     def __init__(
         self,
-        url="",
-        xlink_type="simple",
-        show="embed",
-        actuate="onLoad",
-        filter_name=None,
-        **kw,
-    ):
+        url: str = "",
+        xlink_type: str = "simple",
+        show: str = "embed",
+        actuate: str = "onLoad",
+        filter_name: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         """Initialisation of an DrawImage.
 
         Arguments:
@@ -64,10 +68,8 @@ class DrawImage(Element):
             actuate -- str
 
             filter_name -- str
-
-        Return: DrawImage
         """
-        super().__init__(**kw)
+        super().__init__(**kwargs)
         if self._do_init:
             self.url = url
             self.type = xlink_type
@@ -81,14 +83,21 @@ DrawImage._define_attribut_property()
 
 class DrawFillImage(DrawImage):
     _tag = "draw:fill-image"
-    _properties = (
-        ("display_name", "draw:display-name"),
-        ("name", "draw:name"),
-        ("height", "svg:height"),
-        ("width", "svg:width"),
+    _properties: tuple[PropDef, ...] = (
+        PropDef("display_name", "draw:display-name"),
+        PropDef("name", "draw:name"),
+        PropDef("height", "svg:height"),
+        PropDef("width", "svg:width"),
     )
 
-    def __init__(self, name=None, display_name=None, height=None, width=None, **kw):
+    def __init__(
+        self,
+        name: str | None = None,
+        display_name: str | None = None,
+        height: str | None = None,
+        width: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         """The "draw:fill-image" element specifies a link to a bitmap
         resource. Fill image are not available as automatic styles.
         The "draw:fill-image" element is usable within the following element:
@@ -103,10 +112,8 @@ class DrawFillImage(DrawImage):
             height -- str
 
             width -- str
-
-        Return: DrawFillImage
         """
-        super().__init__(**kw)
+        super().__init__(**kwargs)
         if self._do_init:
             self.name = name
             self.display_name = display_name

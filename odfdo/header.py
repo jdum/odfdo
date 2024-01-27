@@ -18,11 +18,14 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""Header class for "text:h"
+"""Header class for "text:h".
 """
-from re import sub
+from __future__ import annotations
 
-from .element import register_element_class
+from re import sub
+from typing import Any
+
+from .element import PropDef, register_element_class
 from .paragraph import Paragraph
 
 
@@ -31,22 +34,22 @@ class Header(Paragraph):
 
     _tag = "text:h"
     _properties = (
-        ("level", "text:outline-level"),
-        ("restart_numbering", "text:restart-numbering"),
-        ("start_value", "text:start-value"),
-        ("suppress_numbering", "text:suppress-numbering"),
+        PropDef("level", "text:outline-level"),
+        PropDef("restart_numbering", "text:restart-numbering"),
+        PropDef("start_value", "text:start-value"),
+        PropDef("suppress_numbering", "text:suppress-numbering"),
     )
 
     def __init__(
         self,
-        level=1,
-        text=None,
-        restart_numbering=False,
-        start_value=None,
-        suppress_numbering=False,
-        style=None,
-        **kwargs,
-    ):
+        level: int = 1,
+        text: str | None = None,
+        restart_numbering: bool = False,
+        start_value: int | None = None,
+        suppress_numbering: bool = False,
+        style: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         """Create a header element of the given style and level, containing the
         optional given text.
 
@@ -63,8 +66,6 @@ class Header(Paragraph):
             start_value -- int
 
             style -- str
-
-        Return: Header
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -73,14 +74,18 @@ class Header(Paragraph):
                 self.text = text
             if restart_numbering:
                 self.restart_numbering = True
-            if start_value:
+            if start_value is not None:
                 self.start_value = start_value
             if suppress_numbering:
                 self.suppress_numbering = True
             if style:
                 self.style = style
 
-    def get_formatted_text(self, context=None, simple=False):
+    def get_formatted_text(
+        self,
+        context: dict | None = None,
+        simple: bool = False,
+    ) -> str:
         if not context:
             context = {
                 "document": None,

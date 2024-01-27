@@ -24,26 +24,7 @@
 """
 from __future__ import annotations
 
-import contextlib
-from datetime import date, datetime, timedelta
-from decimal import Decimal
 from typing import Any
-
-from .datatype import Boolean, Date, DateTime, Duration
-
-# CELL_TYPES = 'boolean currency date float percentage string time'.split()
-
-# STYLE_FAMILIES = ('paragraph', 'text', 'section', 'table', 'table-column',
-#                   'table-row', 'table-cell', 'table-page', 'chart',
-#                   'default', 'drawing-page', 'graphic', 'presentation',
-#                   'control', 'ruby', 'list', 'number', 'page-layout',
-#                   'presentation-page-layout', 'font-face', 'master-page')
-
-# NOTE_CLASSES = ('footnote', 'endnote')
-
-# This DPI is computed to have:
-# 640 px (width of your wiki) <==> 17 cm (width of a normal ODT page)
-DPI: Decimal = 640 * Decimal("2.54") / 17
 
 ######################################################################
 # Private API
@@ -60,6 +41,14 @@ def to_str(value: Any) -> Any:
     if isinstance(value, bytes):
         return value.decode("utf-8")
     return value
+
+
+def str_to_bytes(text: str) -> bytes:
+    return text.encode("utf-8", "replace")
+
+
+def bytes_to_str(text: bytes) -> str:
+    return text.decode("utf-8", "ignore")
 
 
 def make_xpath_query(  # noqa: C901
@@ -87,10 +76,10 @@ def make_xpath_query(  # noqa: C901
     parent_style: str | None = None,
     presentation_class: str | None = None,
     position: int | None = None,
-    **kw,
+    **kwargs: str,
 ) -> str:
     query = [query_string]
-    attributes = kw
+    attributes = kwargs
     if text_style:
         attributes["text:style-name"] = text_style
     if family and family in FAMILY_ODF_STD:
@@ -218,164 +207,9 @@ def _family_style_tagname(family: str) -> str:
         raise ValueError(f"unknown family: {family}") from e
 
 
-# Non-public yet useful helpers
-
-
-def _set_value_and_type(  # noqa: C901
-    element,
-    value: Any,
-    value_type: str | None = None,
-    text: str | None = None,
-    currency: str | None = None,
-) -> str | None:
-    # Remove possible previous value and type
-    for name in (
-        "office:value-type",
-        "office:boolean-value",
-        "office:value",
-        "office:date-value",
-        "office:string-value",
-        "office:time-value",
-        "table:formula",
-        "office:currency",
-        "calcext:value-type",
-        "loext:value-type",
-    ):
-        with contextlib.suppress(KeyError):
-            element.del_attribute(name)
-    value = to_str(value)
-    value_type = to_str(value_type)
-    text = to_str(text)
-    currency = to_str(currency)
-    if value is None:
-        element._erase_text_content()
-        return text
-    if isinstance(value, bool):
-        if value_type is None:
-            value_type = "boolean"
-        if text is None:
-            text = "true" if value else "false"
-        value = Boolean.encode(value)
-    elif isinstance(value, (int, float, Decimal)):
-        if value_type == "percentage":
-            text = "%d %%" % int(value * 100)
-        if value_type is None:
-            value_type = "float"
-        if text is None:
-            text = str(value)
-        value = str(value)
-    elif isinstance(value, datetime):
-        if value_type is None:
-            value_type = "date"
-        if text is None:
-            text = str(DateTime.encode(value))
-        value = DateTime.encode(value)
-    elif isinstance(value, date):
-        if value_type is None:
-            value_type = "date"
-        if text is None:
-            text = str(Date.encode(value))
-        value = Date.encode(value)
-    elif isinstance(value, str):
-        if value_type is None:
-            value_type = "string"
-        if text is None:
-            text = str(value)
-    elif isinstance(value, timedelta):
-        if value_type is None:
-            value_type = "time"
-        if text is None:
-            text = str(Duration.encode(value))
-        value = Duration.encode(value)
-    elif value is not None:
-        raise TypeError(f'type "{type(value)}" is unknown')
-
-    if value_type is not None:
-        element.set_attribute("office:value-type", value_type)
-        element.set_attribute("calcext:value-type", value_type)
-    if value_type == "boolean":
-        element.set_attribute("office:boolean-value", value)
-    elif value_type == "currency":
-        element.set_attribute("office:value", value)
-        element.set_attribute("office:currency", currency)
-    elif value_type == "date":
-        element.set_attribute("office:date-value", value)
-    elif value_type in ("float", "percentage"):
-        element.set_attribute("office:value", value)
-        element.set_attribute("calcext:value", value)
-    elif value_type == "string":
-        element.set_attribute("office:string-value", value)
-    elif value_type == "time":
-        element.set_attribute("office:time-value", value)
-
-    return text
-
-
 ######################################################################
 # Public API
 ######################################################################
-def get_value(  # noqa: C901
-    element,
-    value_type=None,
-    try_get_text=True,
-    get_type=False,
-):
-    """Only for "with office:value-type" elements, not for meta fields"""
-    if value_type is None:
-        value_type = element.get_attribute("office:value-type")
-    # value_type = to_str(value_type)
-    if value_type == "boolean":
-        value = element.get_attribute("office:boolean-value")
-        if get_type:
-            return (value, value_type)
-        return value  # value is already decoded by get_attribute for booleans
-    if value_type in {"float", "percentage", "currency"}:
-        value = Decimal(element.get_attribute("office:value"))
-        # Return 3 instead of 3.0 if possible
-        if int(value) == value:
-            if get_type:
-                return (int(value), value_type)
-            return int(value)
-        if get_type:
-            return (value, value_type)
-        return value
-    if value_type == "date":
-        value = element.get_attribute("office:date-value")
-        if "T" in value:
-            if get_type:
-                return (DateTime.decode(value), value_type)
-            return DateTime.decode(value)
-        if get_type:
-            return (Date.decode(value), value_type)
-        return Date.decode(value)
-    if value_type == "string":
-        value = element.get_attribute("office:string-value")
-        if value is not None:
-            if get_type:
-                return (str(value), value_type)
-            return str(value)
-        if try_get_text:
-            value = []
-            for para in element.get_elements("text:p"):
-                value.append(para.text_recursive)
-            if value:
-                if get_type:
-                    return ("\n".join(value), value_type)
-                return "\n".join(value)
-        if get_type:
-            return (None, value_type)
-        return None
-    if value_type == "time":
-        value = Duration.decode(element.get_attribute("office:time-value"))
-        if get_type:
-            return (value, value_type)
-        return value
-    if value_type is None:
-        if get_type:
-            return (None, None)
-        return None
-
-    raise ValueError(f'unexpected value type "{value_type}"')
 
 
 def oooc_to_ooow(formula: str) -> str:
@@ -396,7 +230,7 @@ def oooc_to_ooow(formula: str) -> str:
     return f"ooow:{formula}"
 
 
-def isiterable(instance) -> bool:
+def isiterable(instance: Any) -> bool:
     """Return True if instance is iterable, but considering str and bytes as not iterable."""
     if isinstance(instance, (str, bytes)):
         return False

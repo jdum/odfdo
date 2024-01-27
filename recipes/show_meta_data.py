@@ -22,7 +22,9 @@ def main():
     document = read_source_document()
 
     # Metadata are accessible through the meta part:
-    meta = document.get_part("meta.xml")
+    # meta = document.get_part("meta.xml")
+    # or the shortcut:
+    meta = document.meta
 
     # You then get access to various getters and setters. The getters return
     # Python types and the respective setters take the same Python type as

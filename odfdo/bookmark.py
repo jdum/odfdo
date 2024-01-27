@@ -18,9 +18,13 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""Bookmark class for "text:bookmark"
+"""Bookmark class for "text:bookmark".
 """
-from .element import Element, register_element_class
+from __future__ import annotations
+
+from typing import Any
+
+from .element import Element, PropDef, register_element_class
 
 
 class Bookmark(Element):
@@ -33,9 +37,9 @@ class Bookmark(Element):
     """
 
     _tag = "text:bookmark"
-    _properties = (("name", "text:name"),)
+    _properties = (PropDef("name", "text:name"),)
 
-    def __init__(self, name: str = "", **kwargs):
+    def __init__(self, name: str = "", **kwargs: Any) -> None:
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
@@ -54,9 +58,9 @@ class BookmarkStart(Element):
     """
 
     _tag = "text:bookmark-start"
-    _properties = (("name", "text:name"),)
+    _properties = (PropDef("name", "text:name"),)
 
-    def __init__(self, name: str = "", **kwargs):
+    def __init__(self, name: str = "", **kwargs: Any) -> None:
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
@@ -75,9 +79,9 @@ class BookmarkEnd(Element):
     """
 
     _tag = "text:bookmark-end"
-    _properties = (("name", "text:name"),)
+    _properties = (PropDef("name", "text:name"),)
 
-    def __init__(self, name: str = "", **kwargs):
+    def __init__(self, name: str = "", **kwargs: Any) -> None:
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name

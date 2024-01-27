@@ -18,6 +18,7 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
+from __future__ import annotations
 
 import sys
 from difflib import ndiff, unified_diff
@@ -28,7 +29,7 @@ from time import ctime
 from odfdo import Document, __version__
 
 
-def main():
+def main() -> None:
     usage = "%prog <doc1.odt> <doc2.odt>"
     description = "Show a diff between doc1.odt and doc2.odt"
     parser = OptionParser(usage, version=__version__, description=description)
@@ -60,7 +61,7 @@ def main():
         sys.exit(1)
 
 
-def print_diff(path0, path1, ndiff):
+def print_diff(path0: str, path1: str, ndiff: bool) -> None:
     # Open the 2 documents, diff only for ODT
     doc0 = Document(path0)
     doc1 = Document(path1)
@@ -72,7 +73,7 @@ def print_diff(path0, path1, ndiff):
         print(make_diff(doc0, doc1, path0, path1))
 
 
-def make_ndiff(doc0, doc1):
+def make_ndiff(doc0: Document, doc1: Document) -> str:
     # Convert in text before the diff
     text0 = doc0.get_formatted_text(True).splitlines(True)
     text1 = doc1.get_formatted_text(True).splitlines(True)
@@ -80,7 +81,7 @@ def make_ndiff(doc0, doc1):
     return "".join(ndiff(text0, text1, None, None))
 
 
-def make_diff(doc0, doc1, path0, path1):
+def make_diff(doc0: Document, doc1: Document, path0: str, path1: str) -> str:
     # Convert in text before the diff
     text0 = doc0.get_formatted_text(True).splitlines(True)
     text1 = doc1.get_formatted_text(True).splitlines(True)

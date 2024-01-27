@@ -19,9 +19,13 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
-"""Section class for "text:section"
+"""Section class for "text:section".
 """
-from .element import Element, register_element_class
+from __future__ import annotations
+
+from typing import Any
+
+from .element import Element, PropDef, register_element_class
 
 
 class Section(Element):
@@ -32,28 +36,29 @@ class Section(Element):
         style -- str
 
         name -- str
-
-    Return: Section
     """
 
     _tag = "text:section"
     _properties = (
-        ("style", "text:style-name"),
-        ("name", "text:name"),
+        PropDef("style", "text:style-name"),
+        PropDef("name", "text:name"),
     )
 
-    def __init__(self, style=None, name=None, **kw):
-        super().__init__(**kw)
+    def __init__(
+        self,
+        style: str | None = None,
+        name: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
         if self._do_init:
             if style:
                 self.style = style
             if name:
                 self.name = name
 
-    def get_formatted_text(self, context):
-        result = []
-        for element in self.children:
-            result.append(element.get_formatted_text(context))
+    def get_formatted_text(self, context: dict | None = None) -> str:
+        result = [element.get_formatted_text(context) for element in self.children]
         result.append("\n")
         return "".join(result)
 

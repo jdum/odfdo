@@ -328,16 +328,112 @@ def test_string_value_property():
     assert cell.value == ""
 
 
+def test_string_value_property2_false():
+    cell = Cell()
+    cell.clear()
+    assert cell.string == ""
+    cell.string = "hop"
+    assert cell.string == "hop"
+    cell.string = "false"
+    assert cell.string == "false"
+    cell.string = "False"
+    assert cell.string == "False"
+    cell.string = False
+    assert cell.string == "False"
+
+
+def test_string_value_property2_true():
+    cell = Cell()
+    cell.clear()
+    assert cell.string == ""
+    cell.string = "hop"
+    assert cell.string == "hop"
+    cell.string = "true"
+    assert cell.string == "true"
+    cell.string = "True"
+    assert cell.string == "True"
+    cell.string = True
+    assert cell.string == "True"
+
+
+def test_string_value_property2_none():
+    cell = Cell()
+    cell.clear()
+    assert cell.string == ""
+    cell.string = "hop"
+    assert cell.string == "hop"
+    cell.string = "none"
+    assert cell.string == "none"
+    cell.string = "None"
+    assert cell.string == "None"
+    cell.string = None
+    assert cell.string == ""
+
+
+def test_string_value_property2_number():
+    cell = Cell()
+    cell.clear()
+    assert cell.string == ""
+    cell.string = "1.23"
+    assert cell.string == "1.23"
+    cell.string = 1.23
+    assert cell.string == "1.23"
+
+
 def test_value_property():
     cell = Cell(1.54, cell_type="currency", currency="EUR")
     cell.value = 1
     assert cell.value == 1
     cell.value = "2"
     assert cell.value == "2"
-    cell.value = "false"
+    cell.value = "hop"
+    assert cell.value == "hop"
+    cell.value = "éû"
+    assert cell.value == "éû"
+
+
+def test_value_property_bytes():
+    cell = Cell()
+    cell.clear()
+    assert cell.string == ""
+    cell.value = "éû".encode("utf8")
+    assert cell.value == "éû"
+
+
+def test_value_property_none():
+    cell = Cell()
+    cell.clear()
+    assert cell.string == ""
+    cell.value = None
+    assert cell.value is None
+    cell.value = "hop"
+    assert cell.value == "hop"
+    cell.value = None
+    assert cell.value is None
+
+
+def test_value_property_false():
+    cell = Cell()
+    cell.clear()
+    assert cell.string == ""
+    cell.value = False
     assert cell.value is False
+    cell.value = "False"
+    assert cell.value == "False"
+    cell.value = "false"
+    assert cell.value == "false"
+
+
+def test_value_property_true():
+    cell = Cell()
+    cell.clear()
+    assert cell.string == ""
     cell.value = True
     assert cell.value is True
+    cell.value = "True"
+    assert cell.value == "True"
+    cell.value = "true"
+    assert cell.value == "true"
 
 
 def test_value_property2():

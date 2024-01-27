@@ -19,15 +19,16 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""User fields and variable fields classes
+"""User fields and variable fields classes.
 """
 from __future__ import annotations
 
+from datetime import datetime, timedelta
 from typing import Any
 
-from .const import ODF_META
 from .datatype import Date, DateTime, Duration
-from .element import Element, register_element_class
+from .document import Document
+from .element import Element, PropDef, register_element_class
 from .element_typed import ElementTyped
 
 
@@ -37,10 +38,18 @@ class VarDecls(Element):
 
 class VarDecl(Element):
     _tag = "text:variable-decl"
-    _properties = (("name", "text:name"), ("value_type", "office:value-type"))
+    _properties = (
+        PropDef("name", "text:name"),
+        PropDef("value_type", "office:value-type"),
+    )
 
-    def __init__(self, name=None, value_type=None, **kw):
-        super().__init__(**kw)
+    def __init__(
+        self,
+        name: str | None = None,
+        value_type: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
         if self._do_init:
             if name:
                 self.name = name
@@ -54,22 +63,22 @@ VarDecl._define_attribut_property()
 class VarSet(ElementTyped):
     _tag = "text:variable-set"
     _properties = (
-        ("name", "text:name"),
-        ("style", "style:data-style-name"),
-        ("display", "text:display"),
+        PropDef("name", "text:name"),
+        PropDef("style", "style:data-style-name"),
+        PropDef("display", "text:display"),
     )
 
     def __init__(
         self,
-        name=None,
-        value=None,
-        value_type=None,
-        display=False,
-        text=None,
-        style=None,
-        **kw,
-    ):
-        super().__init__(**kw)
+        name: str | None = None,
+        value: Any = None,
+        value_type: str | None = None,
+        display: str | bool = False,
+        text: str | None = None,
+        style: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
         if self._do_init:
             if name:
                 self.name = name
@@ -81,7 +90,7 @@ class VarSet(ElementTyped):
             if not display:
                 self.display = "none"
             else:
-                self.text = text
+                self.text = text  # type: ignore
 
     def set_value(self, value: Any) -> None:
         name = self.get_attribute("text:name")
@@ -91,7 +100,8 @@ class VarSet(ElementTyped):
         self.set_attribute("text:name", name)
         if display is not None:
             self.set_attribute("text:display", display)
-        self.text = text
+        if isinstance(text, str):
+            self.text = text
 
 
 VarSet._define_attribut_property()
@@ -99,12 +109,21 @@ VarSet._define_attribut_property()
 
 class VarGet(ElementTyped):
     _tag = "text:variable-get"
-    _properties = (("name", "text:name"), ("style", "style:data-style-name"))
+    _properties = (
+        PropDef("name", "text:name"),
+        PropDef("style", "style:data-style-name"),
+    )
 
     def __init__(
-        self, name=None, value=None, value_type=None, text=None, style=None, **kw
-    ):
-        super().__init__(**kw)
+        self,
+        name: str | None = None,
+        value: Any = None,
+        value_type: str | None = None,
+        text: str | None = None,
+        style: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
         if self._do_init:
             if name:
                 self.name = name
@@ -113,7 +132,7 @@ class VarGet(ElementTyped):
             text = self.set_value_and_type(
                 value=value, value_type=value_type, text=text
             )
-            self.text = text
+            self.text = text  # type: ignore
 
 
 VarGet._define_attribut_property()
@@ -125,10 +144,16 @@ class UserFieldDecls(Element):
 
 class UserFieldDecl(ElementTyped):
     _tag = "text:user-field-decl"
-    _properties = (("name", "text:name"),)
+    _properties = (PropDef("name", "text:name"),)
 
-    def __init__(self, name=None, value=None, value_type=None, **kw):
-        super().__init__(**kw)
+    def __init__(
+        self,
+        name: str | None = None,
+        value: Any = None,
+        value_type: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
         if self._do_init:
             if name:
                 self.name = name
@@ -146,19 +171,29 @@ UserFieldDecl._define_attribut_property()
 
 class UserFieldGet(ElementTyped):
     _tag = "text:user-field-get"
-    _properties = (("name", "text:name"), ("style", "style:data-style-name"))
+    _properties = (
+        PropDef("name", "text:name"),
+        PropDef("style", "style:data-style-name"),
+    )
 
     def __init__(
-        self, name=None, value=None, value_type=None, text=None, style=None, **kw
-    ):
-        super().__init__(**kw)
+        self,
+        name: str | None = None,
+        value: Any = None,
+        value_type: str | None = None,
+        text: str | None = None,
+        style: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
         if self._do_init:
             if name:
                 self.name = name
             text = self.set_value_and_type(
                 value=value, value_type=value_type, text=text
             )
-            self.text = text
+            self.text = text  # type: ignore
+
             if style:
                 self.style = style
 
@@ -194,36 +229,38 @@ class UserDefined(ElementTyped):
     """
 
     _tag = "text:user-defined"
-    _properties = (("name", "text:name"), ("style", "style:data-style-name"))
+    _properties = (
+        PropDef("name", "text:name"),
+        PropDef("style", "style:data-style-name"),
+    )
 
     def __init__(
         self,
-        name=None,
-        value=None,
-        value_type=None,
-        text=None,
-        style=None,
-        from_document=None,
-        **kw,
-    ):
-        super().__init__(**kw)
+        name: str = "",
+        value: Any = None,
+        value_type: str | None = None,
+        text: str | None = None,
+        style: str | None = None,
+        from_document: Document | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
         if self._do_init:
             if name:
                 self.name = name
             if style:
                 self.style = style
             if from_document is not None:
-                meta_infos = from_document.get_part(ODF_META)
-                if meta_infos is not None:
-                    content = meta_infos.get_user_defined_metadata_of_name(name)
-                    if content is not None:
-                        value = content.get("value", None)
-                        value_type = content.get("value_type", None)
-                        text = content.get("text", None)
+                meta_infos = from_document.meta
+                content = meta_infos.get_user_defined_metadata_of_name(name)
+                if content is not None:
+                    value = content.get("value", None)
+                    value_type = content.get("value_type", None)
+                    text = content.get("text", None)
             text = self.set_value_and_type(
                 value=value, value_type=value_type, text=text
             )
-            self.text = text
+            self.text = text  # type: ignore
 
 
 UserDefined._define_attribut_property()
@@ -238,12 +275,17 @@ class VarPageNumber(Element):
 
     _tag = "text:page-number"
     _properties = (
-        ("select_page", "text:select-page"),
-        ("page_adjust", "text:page-adjust"),
+        PropDef("select_page", "text:select-page"),
+        PropDef("page_adjust", "text:page-adjust"),
     )
 
-    def __init__(self, select_page=None, page_adjust=None, **kw):
-        super().__init__(**kw)
+    def __init__(
+        self,
+        select_page: str | None = None,
+        page_adjust: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
         if self._do_init:
             if select_page is None:
                 select_page = "current"
@@ -262,25 +304,32 @@ class VarPageCount(Element):
 class VarDate(Element):
     _tag = "text:date"
     _properties = (
-        ("date", "text:date-value"),
-        ("fixed", "text:fixed"),
-        ("data_style", "style:data-style-name"),
-        ("date_adjust", "text:date-adjust"),
+        PropDef("date", "text:date-value"),
+        PropDef("fixed", "text:fixed"),
+        PropDef("data_style", "style:data-style-name"),
+        PropDef("date_adjust", "text:date-adjust"),
     )
 
     def __init__(
-        self, date=None, fixed=False, data_style=None, text=None, date_adjust=None, **kw
-    ):
-        super().__init__(**kw)
+        self,
+        date: datetime | None = None,
+        fixed: bool = False,
+        data_style: str | None = None,
+        text: str | None = None,
+        date_adjust: timedelta | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
         if self._do_init:
-            self.date = DateTime.encode(date)
+            if date:
+                self.date = DateTime.encode(date)
             if fixed:
                 self.fixed = True
             if data_style is not None:
                 self.data_style = data_style
-            if text is None:
+            if text is None and date is not None:
                 text = Date.encode(date)
-            self.text = text
+            self.text = text  # type: ignore
             if date_adjust is not None:
                 self.date_adjust = Duration.encode(date_adjust)
 
@@ -291,16 +340,22 @@ VarDate._define_attribut_property()
 class VarTime(Element):
     _tag = "text:time"
     _properties = (
-        ("time", "text:time-value"),
-        ("fixed", "text:fixed"),
-        ("data_style", "style:data-style-name"),
-        ("time_adjust", "text:time-adjust"),
+        PropDef("time", "text:time-value"),
+        PropDef("fixed", "text:fixed"),
+        PropDef("data_style", "style:data-style-name"),
+        PropDef("time_adjust", "text:time-adjust"),
     )
 
     def __init__(
-        self, time=None, fixed=False, data_style=None, text=None, time_adjust=None, **kw
-    ):
-        super().__init__(**kw)
+        self,
+        time: datetime,
+        fixed: bool = False,
+        data_style: str | None = None,
+        text: str | None = None,
+        time_adjust: timedelta | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
         if self._do_init:
             self.time = DateTime.encode(time)
             if fixed:
@@ -319,7 +374,10 @@ VarTime._define_attribut_property()
 
 class VarChapter(Element):
     _tag = "text:chapter"
-    _properties = (("display", "text:display"), ("outline_level", "text:outline-level"))
+    _properties = (
+        PropDef("display", "text:display"),
+        PropDef("outline_level", "text:outline-level"),
+    )
     DISPLAY_VALUE_CHOICE = {  # noqa: RUF012
         "number",
         "name",
@@ -328,11 +386,16 @@ class VarChapter(Element):
         "plain-number-and-name",
     }
 
-    def __init__(self, display="name", outline_level=None, **kw):
+    def __init__(
+        self,
+        display: str | None = "name",
+        outline_level: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         """display can be: 'number', 'name', 'number-and-name', 'plain-number' or
         'plain-number-and-name'
         """
-        super().__init__(**kw)
+        super().__init__(**kwargs)
         if self._do_init:
             if display not in VarChapter.DISPLAY_VALUE_CHOICE:
                 raise ValueError("unknown display value: %s" % display)
@@ -346,7 +409,10 @@ VarChapter._define_attribut_property()
 
 class VarFileName(Element):
     _tag = "text:file-name"
-    _properties = (("display", "text:display"), ("fixed", "text:fixed"))
+    _properties = (
+        PropDef("display", "text:display"),
+        PropDef("fixed", "text:fixed"),
+    )
     DISPLAY_VALUE_CHOICE = {  # noqa: RUF012
         "full",
         "path",
@@ -354,9 +420,14 @@ class VarFileName(Element):
         "name-and-extension",
     }
 
-    def __init__(self, display="full", fixed=False, **kw):
+    def __init__(
+        self,
+        display: str | None = "full",
+        fixed: bool = False,
+        **kwargs: Any,
+    ) -> None:
         """display can be: 'full', 'path', 'name' or 'name-and-extension'"""
-        super().__init__(**kw)
+        super().__init__(**kwargs)
         if self._do_init:
             if display not in VarFileName.DISPLAY_VALUE_CHOICE:
                 raise ValueError("unknown display value: %s" % display)
@@ -370,10 +441,10 @@ VarFileName._define_attribut_property()
 
 class VarInitialCreator(Element):
     _tag = "text:initial-creator"
-    _properties = (("fixed", "text:fixed"),)
+    _properties = (PropDef("fixed", "text:fixed"),)
 
-    def __init__(self, fixed=False, **kw):
-        super().__init__(**kw)
+    def __init__(self, fixed: bool = False, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
         if self._do_init and fixed:
             self.fixed = True
 
@@ -383,10 +454,18 @@ VarInitialCreator._define_attribut_property()
 
 class VarCreationDate(Element):
     _tag = "text:creation-date"
-    _properties = (("fixed", "text:fixed"), ("data_style", "style:data-style-name"))
+    _properties = (
+        PropDef("fixed", "text:fixed"),
+        PropDef("data_style", "style:data-style-name"),
+    )
 
-    def __init__(self, fixed=False, data_style=None, **kw):
-        super().__init__(**kw)
+    def __init__(
+        self,
+        fixed: bool = False,
+        data_style: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
         if self._do_init:
             if fixed:
                 self.fixed = True
@@ -399,10 +478,18 @@ VarCreationDate._define_attribut_property()
 
 class VarCreationTime(Element):
     _tag = "text:creation-time"
-    _properties = (("fixed", "text:fixed"), ("data_style", "style:data-style-name"))
+    _properties = (
+        PropDef("fixed", "text:fixed"),
+        PropDef("data_style", "style:data-style-name"),
+    )
 
-    def __init__(self, fixed=False, data_style=None, **kw):
-        super().__init__(**kw)
+    def __init__(
+        self,
+        fixed: bool = False,
+        data_style: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
         if self._do_init:
             if fixed:
                 self.fixed = True

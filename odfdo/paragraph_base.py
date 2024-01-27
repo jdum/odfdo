@@ -22,25 +22,35 @@
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 """Base class ParagraphBase and Spacer "text:s", Tab "text:tab", LineBreak
-"text:line-break"
+"text:line-break".
 """
-import re
+from __future__ import annotations
 
-from .element import Element, Text, register_element_class, to_str
+import re
+from typing import Any
+
+from .element import Element, PropDef, Text, register_element_class, to_str
 
 _rsplitter = re.compile("(\n|\t|  +)")
 _rspace = re.compile("^  +$")
 
 
-def _get_formatted_text(element, context, with_text=True):  # noqa: C901
+def _get_formatted_text(  # noqa: C901
+    element: Element,
+    context: dict | None = None,
+    with_text: bool = True,
+) -> str:
+    if context is None:
+        context = {}
     document = context.get("document", None)
     rst_mode = context.get("rst_mode", False)
 
-    result = []
+    result: list[str] = []
+    objects: list[Element | Text] = []
     if with_text:
         objects = element.xpath("*|text()")
     else:
-        objects = element.children
+        objects = [x for x in element.children]  # noqa: C416
     for obj in objects:
         if isinstance(obj, Text):
             result.append(obj)
@@ -59,7 +69,10 @@ def _get_formatted_text(element, context, with_text=True):  # noqa: C901
             if not text.strip():
                 result.append(text)
                 continue
-            style = obj.style
+            if hasattr(obj, "style"):
+                style = obj.style
+            else:
+                style = None
             if not style:
                 result.append(text)
                 continue
@@ -108,16 +121,16 @@ def _get_formatted_text(element, context, with_text=True):  # noqa: C901
             continue
         # Footnote or endnote
         if tag == "text:note":
-            note_class = obj.note_class
+            note_class = obj.note_class  # type:ignore
             container = {
                 "footnote": context["footnotes"],
                 "endnote": context["endnotes"],
             }[note_class]
-            citation = obj.citation
+            citation = obj.citation  # type:ignore
             if not citation:
                 # Would only happen with hand-made documents
                 citation = len(container)
-            body = obj.note_body
+            body = obj.note_body  # type:ignore
             container.append((citation, body))
             if rst_mode:
                 marker = {"footnote": " [#]_ ", "endnote": " [*]_ "}[note_class]
@@ -129,7 +142,7 @@ def _get_formatted_text(element, context, with_text=True):  # noqa: C901
             continue
         # Annotations
         if tag == "office:annotation":
-            context["annotations"].append(obj.note_body)
+            context["annotations"].append(obj.note_body)  # type:ignore
             if rst_mode:
                 result.append(" [#]_ ")
             else:
@@ -160,15 +173,13 @@ class Spacer(Element):
     """
 
     _tag = "text:s"
-    _properties = (("number", "text:c"),)
+    _properties: tuple[PropDef, ...] = (PropDef("number", "text:c"),)
 
-    def __init__(self, number=1, **kwargs):
+    def __init__(self, number: int = 1, **kwargs: Any):
         """
         Arguments:
 
             number -- int
-
-        Return: Space
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -191,15 +202,13 @@ class Tab(Element):
     """
 
     _tag = "text:tab"
-    _properties = (("position", "text:tab-ref"),)
+    _properties: tuple[PropDef, ...] = (PropDef("position", "text:tab-ref"),)
 
-    def __init__(self, position=None, **kwargs):
+    def __init__(self, position: int | None = None, **kwargs: Any) -> None:
         """
         Arguments:
 
             position -- int
-
-        Return: Tab
         """
         super().__init__(**kwargs)
         if self._do_init and position is not None and position >= 0:
@@ -210,14 +219,11 @@ Tab._define_attribut_property()
 
 
 class LineBreak(Element):
-    """This element represents a line break "text:line-break"
-
-    Return: LineBreak
-    """
+    """This element represents a line break "text:line-break" """
 
     _tag = "text:line-break"
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
 
 
@@ -225,12 +231,16 @@ class ParagraphBase(Element):
     """Base class for Paragraph like classes."""
 
     _tag = "text:p-odfdo-notodf"
-    _properties = (("style", "text:style-name"),)
+    _properties: tuple[PropDef, ...] = (PropDef("style", "text:style-name"),)
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
 
-    def get_formatted_text(self, context=None, simple=False):
+    def get_formatted_text(
+        self,
+        context: dict | None = None,
+        simple: bool = False,
+    ) -> str:
         if not context:
             context = {
                 "document": None,
@@ -248,7 +258,7 @@ class ParagraphBase(Element):
         else:
             return content + "\n\n"
 
-    def append_plain_text(self, text=""):
+    def append_plain_text(self, text: str = "") -> None:
         """Append plain text to the paragraph, replacing <CR>, <TAB>
         and multiple spaces by ODF corresponding tags.
         """

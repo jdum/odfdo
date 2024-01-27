@@ -51,8 +51,8 @@ def add_presentation(concat_presentation, path):
     concat_presentation.merge_styles_from(document)
     # add all slides
     dest_body = concat_presentation.body
-    dest_manifest = concat_presentation.get_part("manifest")
-    manifest = document.get_part("manifest")
+    dest_manifest = concat_presentation.manifest
+    manifest = document.manifest
     slides = document.body.get_draw_pages()
     print(f"- {path.name} has {len(slides)} slides")
     for slide in slides:

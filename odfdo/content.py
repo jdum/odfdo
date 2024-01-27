@@ -20,19 +20,27 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-"""Content class for content.xml part
+"""Content class for content.xml part.
 """
+from __future__ import annotations
+
+from odfdo.element import Element
+
+from .style import Style
 from .xmlpart import XmlPart
 
 
 class Content(XmlPart):
     @property
-    def body(self):
-        return self.root.document_body
+    def body(self) -> Element:
+        body = self.root.document_body
+        if not isinstance(body, Element):
+            raise ValueError("No body found in document")  # noqa:TRY004
+        return body
 
     # The following two seem useless but they match styles API
 
-    def _get_style_contexts(self, family):
+    def _get_style_contexts(self, family: str | None) -> tuple:
         if family == "font-face":
             return (self.get_element("//office:font-face-decls"),)
         return (
@@ -45,24 +53,29 @@ class Content(XmlPart):
 
     # Public API
 
-    def get_styles(self, family=None):
+    def get_styles(self, family: str | None = None) -> list[Style]:
         """Return the list of styles in the Content part, optionally limited
         to the given family.
 
         Arguments:
 
-            family -- str
+            family -- str or None
 
         Return: list of Style
         """
-        result = []
+        result: list[Style] = []
         for context in self._get_style_contexts(family):
             if context is None:
                 continue
             result.extend(context.get_styles(family=family))
         return result
 
-    def get_style(self, family, name_or_element=None, display_name=None):
+    def get_style(
+        self,
+        family: str,
+        name_or_element: str | Element | None = None,
+        display_name: str | None = None,
+    ) -> Style | None:
         """Return the style uniquely identified by the name/family pair. If
         the argument is already a style object, it will return it.
 
@@ -86,7 +99,9 @@ class Content(XmlPart):
             if context is None:
                 continue
             style = context.get_style(
-                family, name_or_element=name_or_element, display_name=display_name
+                family,
+                name_or_element=name_or_element,
+                display_name=display_name,
             )
             if style is not None:
                 return style

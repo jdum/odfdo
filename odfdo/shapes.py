@@ -20,9 +20,13 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 """Drawing classes ShapeBase, LineShape, RectangleShape, EllipseShape,
-ConnectorShape and DrawGroup
+ConnectorShape and DrawGroup.
 """
-from .element import Element, register_element_class
+from __future__ import annotations
+
+from typing import Any
+
+from .element import Element, PropDef, register_element_class
 from .frame import AnchorMix, PosMix, SizeMix, ZMix
 
 
@@ -30,29 +34,29 @@ class ShapeBase(Element, SizeMix, PosMix):
     """Base class for shapes"""
 
     _tag = "draw:shape-odfdo-notodf"
-    _properties = (
-        ("draw_id", "draw:id"),
-        ("layer", "draw:layer"),
-        ("width", "svg:width"),
-        ("height", "svg:height"),
-        ("pos_x", "svg:x"),
-        ("pos_y", "svg:y"),
-        ("presentation_class", "presentation:class"),
-        ("style", "draw:style-name"),
-        ("text_style", "draw:text-style-name"),
+    _properties: tuple[PropDef, ...] = (
+        PropDef("draw_id", "draw:id"),
+        PropDef("layer", "draw:layer"),
+        PropDef("width", "svg:width"),
+        PropDef("height", "svg:height"),
+        PropDef("pos_x", "svg:x"),
+        PropDef("pos_y", "svg:y"),
+        PropDef("presentation_class", "presentation:class"),
+        PropDef("style", "draw:style-name"),
+        PropDef("text_style", "draw:text-style-name"),
     )
 
     def __init__(
         self,
-        style=None,
-        text_style=None,
-        draw_id=None,
-        layer=None,
-        position=None,
-        size=None,
-        presentation_class=None,
-        **kwargs,
-    ):
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        position: tuple | None = None,
+        size: tuple | None = None,
+        presentation_class: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(**kwargs)
         if self._do_init:
             if style:
@@ -70,8 +74,8 @@ class ShapeBase(Element, SizeMix, PosMix):
             if presentation_class:
                 self.presentation_class = presentation_class
 
-    def get_formatted_text(self, context):
-        result = []
+    def get_formatted_text(self, context: dict | None = None) -> str:
+        result: list[str] = []
         for child in self.children:
             result.append(child.get_formatted_text(context))
         result.append("\n")
@@ -97,29 +101,27 @@ class LineShape(ShapeBase):
         p1 -- (str, str)
 
         p2 -- (str, str)
-
-    Return: LineShape
     """
 
     _tag = "draw:line"
-    _properties = (
-        ("x1", "svg:x1"),
-        ("y1", "svg:y1"),
-        ("x2", "svg:x2"),
-        ("y2", "svg:y2"),
+    _properties: tuple[PropDef, ...] = (
+        PropDef("x1", "svg:x1"),
+        PropDef("y1", "svg:y1"),
+        PropDef("x2", "svg:x2"),
+        PropDef("y2", "svg:y2"),
     )
 
     def __init__(
         self,
-        style=None,
-        text_style=None,
-        draw_id=None,
-        layer=None,
-        p1=None,
-        p2=None,
-        **kw,
-    ):
-        kw.update(
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        p1: tuple | None = None,
+        p2: tuple | None = None,
+        **kwargs: Any,
+    ) -> None:
+        kwargs.update(
             {
                 "style": style,
                 "text_style": text_style,
@@ -127,7 +129,7 @@ class LineShape(ShapeBase):
                 "layer": layer,
             }
         )
-        super().__init__(**kw)
+        super().__init__(**kwargs)
         if self._do_init:
             if p1:
                 self.x1 = p1[0]
@@ -153,27 +155,26 @@ class RectangleShape(ShapeBase):
 
         layer -- str
 
-        size -- (str, str)
-
         position -- (str, str)
 
-    Return: RectangleShape
+        size -- (str, str)
+
     """
 
     _tag = "draw:rect"
-    _properties = ()
+    _properties: tuple[PropDef, ...] = ()
 
     def __init__(
         self,
-        style=None,
-        text_style=None,
-        draw_id=None,
-        layer=None,
-        size=None,
-        position=None,
-        **kw,
-    ):
-        kw.update(
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        position: tuple | None = None,
+        size: tuple | None = None,
+        **kwargs: Any,
+    ) -> None:
+        kwargs.update(
             {
                 "style": style,
                 "text_style": text_style,
@@ -183,7 +184,7 @@ class RectangleShape(ShapeBase):
                 "position": position,
             }
         )
-        super().__init__(**kw)
+        super().__init__(**kwargs)
 
 
 RectangleShape._define_attribut_property()
@@ -202,27 +203,26 @@ class EllipseShape(ShapeBase):
 
         layer -- str
 
-        size -- (str, str)
-
         position -- (str, str)
 
-    Return: EllipseShape
+        size -- (str, str)
+
     """
 
     _tag = "draw:ellipse"
-    _properties = ()
+    _properties: tuple[PropDef, ...] = ()
 
     def __init__(
         self,
-        style=None,
-        text_style=None,
-        draw_id=None,
-        layer=None,
-        size=None,
-        position=None,
-        **kw,
-    ):
-        kw.update(
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        position: tuple | None = None,
+        size: tuple | None = None,
+        **kwargs: Any,
+    ) -> None:
+        kwargs.update(
             {
                 "style": style,
                 "text_style": text_style,
@@ -232,7 +232,7 @@ class EllipseShape(ShapeBase):
                 "position": position,
             }
         )
-        super().__init__(**kw)
+        super().__init__(**kwargs)
 
 
 EllipseShape._define_attribut_property()
@@ -258,35 +258,33 @@ class ConnectorShape(ShapeBase):
         p1 -- (str, str)
 
         p2 -- (str, str)
-
-    Return: ConnectorShape
     """
 
     _tag = "draw:connector"
-    _properties = (
-        ("start_shape", "draw:start-shape"),
-        ("end_shape", "draw:end-shape"),
-        ("start_glue_point", "draw:start-glue-point"),
-        ("end_glue_point", "draw:end-glue-point"),
-        ("x1", "svg:x1"),
-        ("y1", "svg:y1"),
-        ("x2", "svg:x2"),
-        ("y2", "svg:y2"),
+    _properties: tuple[PropDef, ...] = (
+        PropDef("start_shape", "draw:start-shape"),
+        PropDef("end_shape", "draw:end-shape"),
+        PropDef("start_glue_point", "draw:start-glue-point"),
+        PropDef("end_glue_point", "draw:end-glue-point"),
+        PropDef("x1", "svg:x1"),
+        PropDef("y1", "svg:y1"),
+        PropDef("x2", "svg:x2"),
+        PropDef("y2", "svg:y2"),
     )
 
     def __init__(
         self,
-        style=None,
-        text_style=None,
-        draw_id=None,
-        layer=None,
-        connected_shapes=None,
-        glue_points=None,
-        p1=None,
-        p2=None,
-        **kw,
-    ):
-        kw.update(
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        connected_shapes: tuple | None = None,
+        glue_points: tuple | None = None,
+        p1: tuple | None = None,
+        p2: tuple | None = None,
+        **kwargs: Any,
+    ) -> None:
+        kwargs.update(
             {
                 "style": style,
                 "text_style": text_style,
@@ -294,7 +292,7 @@ class ConnectorShape(ShapeBase):
                 "layer": layer,
             }
         )
-        super().__init__(**kw)
+        super().__init__(**kwargs)
         if self._do_init:
             if connected_shapes:
                 self.start_shape = connected_shapes[0].draw_id
@@ -342,38 +340,38 @@ class DrawGroup(Element, AnchorMix, ZMix, PosMix):
     """
 
     _tag = "draw:g"
-    _properties = (
-        ("draw_id", "draw:id"),
-        ("caption_id", "draw:caption-id"),
-        ("draw_class_names", "draw:class-names"),
-        ("name", "draw:name"),
-        ("style", "draw:style-name"),
+    _properties: tuple[PropDef, ...] = (
+        PropDef("draw_id", "draw:id"),
+        PropDef("caption_id", "draw:caption-id"),
+        PropDef("draw_class_names", "draw:class-names"),
+        PropDef("name", "draw:name"),
+        PropDef("style", "draw:style-name"),
         # ('z_index', 'draw:z-index'),
-        ("presentation_class_names", "presentation:class-names"),
-        ("presentation_style", "presentation:style-name"),
-        ("table_end_cell", "table:end-cell-address"),
-        ("table_end_x", "table:end-x"),
-        ("table_end_y", "table:end-y"),
-        ("table_background", "table:table-background"),
+        PropDef("presentation_class_names", "presentation:class-names"),
+        PropDef("presentation_style", "presentation:style-name"),
+        PropDef("table_end_cell", "table:end-cell-address"),
+        PropDef("table_end_x", "table:end-x"),
+        PropDef("table_end_y", "table:end-y"),
+        PropDef("table_background", "table:table-background"),
         # ('anchor_page', 'text:anchor-page-number'),
         # ('anchor_type', 'text:anchor-type'),
-        ("xml_id", "xml:id"),
-        ("pos_x", "svg:x"),
-        ("pos_y", "svg:y"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("pos_x", "svg:x"),
+        PropDef("pos_y", "svg:y"),
     )
 
     def __init__(
         self,
-        name=None,
-        draw_id=None,
-        style=None,
-        position=None,
-        z_index=0,
-        anchor_type=None,
-        anchor_page=None,
-        presentation_style=None,
-        **kwargs,
-    ):
+        name: str | None = None,
+        draw_id: str | None = None,
+        style: str | None = None,
+        position: tuple | None = None,
+        z_index: int = 0,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        presentation_style: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(**kwargs)
         if self._do_init:
             if z_index is not None:
@@ -397,7 +395,7 @@ class DrawGroup(Element, AnchorMix, ZMix, PosMix):
 DrawGroup._define_attribut_property()
 
 registered_shapes = [
-    s._tag for s in (LineShape, RectangleShape, EllipseShape, ConnectorShape)
+    s._tag for s in (LineShape, RectangleShape, EllipseShape, ConnectorShape)  # type: ignore
 ]
 register_element_class(LineShape)
 register_element_class(RectangleShape)

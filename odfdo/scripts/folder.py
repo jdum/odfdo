@@ -18,6 +18,7 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Jerome Dumonteil <jerome.dumonteil@itaapy.com>
+from __future__ import annotations
 
 import sys
 from optparse import OptionParser
@@ -26,7 +27,7 @@ from pathlib import Path
 from odfdo import Document, __version__
 
 
-def main():
+def main() -> None:
     usage = "%prog <input file_or_folder>"
     description = "Convert standard ODF file to folder, and reverse."
     parser = OptionParser(usage, version=__version__, description=description)
@@ -43,8 +44,8 @@ def main():
         sys.exit(1)
 
 
-def convert_folder(path):
-    path = Path(path)
+def convert_folder(path_str: str) -> None:
+    path = Path(path_str)
     if path.is_file():
         out_packaging = "folder"
     elif path.is_dir():

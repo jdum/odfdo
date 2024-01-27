@@ -66,13 +66,13 @@ def generate_document():
     # Presentation got a body in which elements are stored
     presentation_body = presentation.body
     presentation_body.clear()
-    presentation_manifest = presentation.get_part("manifest")
+    presentation_manifest = presentation.manifest
 
     # For each image, we create a page in the presentation and display the image
     # and some text on this frame
     # First, get all image elements available in document:
     images_source = doc_source.body.get_images()
-    manifest_source = doc_source.get_part("manifest")
+    manifest_source = doc_source.manifest
 
     for image in images_source:
         # we use the get_part function from odfdo to get the actual content

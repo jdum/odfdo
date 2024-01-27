@@ -19,9 +19,9 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
+from __future__ import annotations
 
-import sys
-from optparse import OptionParser
+from optparse import OptionParser, Values
 from pathlib import Path
 from shutil import rmtree
 
@@ -29,7 +29,7 @@ from odfdo import Document, __version__
 from odfdo.scriptutils import add_option_output, check_target_directory, printerr
 
 
-def clean_filename(name):
+def clean_filename(name: str) -> str:
     allowed_characters = {".", "-", "@"}
     result = []
     for char in name:
@@ -40,7 +40,7 @@ def clean_filename(name):
     return "_".join("".join(result).split())
 
 
-def dump_pictures(document, target):
+def dump_pictures(document: Document, target: str | Path) -> None:
     for part_name in document.get_parts():
         if not part_name.startswith("Pictures/"):
             continue
@@ -49,27 +49,32 @@ def dump_pictures(document, target):
             path.mkdir(parents=False, exist_ok=False)
         data = document.get_part(part_name)
         path = Path(target, part_name)
-        path.write_bytes(data)
+        path.write_bytes(data)  # type: ignore
 
 
-def spreadsheet_to_stdout(document):
+def spreadsheet_to_stdout(document: Document) -> None:
     body = document.body
     for table in body.get_tables():
-        table.rstrip(aggressive=True)
-        print(table.to_csv(None))
+        table.rstrip(aggressive=True)  # type: ignore
+        print(table.to_csv(None))  # type: ignore
 
 
-def spreadsheet_to_csv(document, output):
+def spreadsheet_to_csv(document: Document, output: Path) -> None:
     body = document.body
     for table in body.get_tables():
-        name = table.name
+        name = table.name  # type: ignore
         filename = clean_filename(name) + ".csv"
         print(filename)
-        table.rstrip(aggressive=True)
-        table.to_csv(output / filename)
+        table.rstrip(aggressive=True)  # type: ignore
+        table.to_csv(output / filename)  # type: ignore
 
 
-def show_output(container_url, options, doc, doc_type):
+def show_output(
+    container_url: str,
+    options: Values,
+    doc: Document,
+    doc_type: str,
+) -> None:
     output = Path(options.output)
     check_target_directory(str(output))
     if output.exists():
@@ -90,15 +95,15 @@ def show_output(container_url, options, doc, doc_type):
         spreadsheet_to_csv(doc, output)
     else:
         printerr(f"The OpenDocument format '{doc_type}' is not supported yet.")
-        sys.exit(1)
+        raise SystemExit(1)
 
 
-def show(container_url, options):
+def show(container_url: str, options: Values) -> None:
     try:
         doc = Document(container_url)
     except Exception as e:
         print(repr(e))
-        sys.exit(1)
+        raise SystemExit(1) from None
     doc_type = doc.get_type()
     # Test it! XXX for TEXT only
     # if doc_type == 'text':
@@ -121,10 +126,10 @@ def show(container_url, options):
             spreadsheet_to_stdout(doc)
     else:
         printerr(f"The OpenDocument format '{doc_type}' is not supported yet.")
-        sys.exit(1)
+        raise SystemExit(1)
 
 
-def main():
+def main() -> None:
     # Options initialisation
     usage = (
         "%prog [--styles] [--meta] [--no-content] [--rst] <file>\n"
@@ -175,7 +180,7 @@ def main():
     # Container
     if len(args) != 1:
         parser.print_help()
-        exit(1)
+        raise SystemExit(1)
     container_url = args[0]
     show(container_url, options)
 

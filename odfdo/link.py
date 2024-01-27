@@ -19,9 +19,13 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Link class for "text:a"
+"""Link class for "text:a".
 """
-from .element import register_element_class
+from __future__ import annotations
+
+from typing import Any
+
+from .element import PropDef, register_element_class
 from .paragraph_base import ParagraphBase
 
 
@@ -29,27 +33,27 @@ class Link(ParagraphBase):
     """Link class, "text:a" ODF element."""
 
     _tag = "text:a"
-    _properties = (
-        ("url", "xlink:href"),
-        ("name", "office:name"),
-        ("title", "office:title"),
-        ("target_frame", "office:target-frame-name"),
-        ("show", "xlink:show"),
-        ("visited_style", "text:visited-style-name"),
-        ("style", "text:style-name"),
+    _properties: tuple[PropDef, ...] = (
+        PropDef("url", "xlink:href"),
+        PropDef("name", "office:name"),
+        PropDef("title", "office:title"),
+        PropDef("target_frame", "office:target-frame-name"),
+        PropDef("show", "xlink:show"),
+        PropDef("visited_style", "text:visited-style-name"),
+        PropDef("style", "text:style-name"),
     )
 
     def __init__(
         self,
-        url="",
-        name=None,
-        title=None,
-        text=None,
-        target_frame=None,
-        style=None,
-        visited_style=None,
-        **kwargs,
-    ):
+        url: str | None = "",
+        name: str | None = None,
+        title: str | None = None,
+        text: str | None = None,
+        target_frame: str | None = None,
+        style: str | None = None,
+        visited_style: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         """
         Arguments:
 
@@ -63,11 +67,9 @@ class Link(ParagraphBase):
 
             target_frame -- '_self', '_blank', '_parent', '_top'
 
-            style -- string
+            style -- str
 
-            visited_style -- string
-
-        return: Link
+            visited_style -- str
         """
         super().__init__(**kwargs)
         if self._do_init:

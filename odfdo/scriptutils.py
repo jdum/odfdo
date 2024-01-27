@@ -18,36 +18,39 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""Utilities shared by the scripts
+"""Utilities shared by the scripts.
 """
-import sys
+from __future__ import annotations
+
 from io import StringIO
 from mimetypes import guess_type
+from optparse import OptionParser
 from os.path import exists, isfile
 from sys import stderr, stdin, stdout
+from typing import Any
 
 
-def check_target_file(path, kind="file"):
+def check_target_file(path: str, kind: str = "file") -> None:
     if exists(path):
-        message = 'The %s "%s" exists, overwrite it? [y/N]'
-        stderr.write(message % (kind, path))
+        message = f'The {kind} "{path}" exists, overwrite it? [y/n]'
+        stderr.write(message)
         stderr.flush()
         line = stdin.readline()
         line = line.strip().lower()
         if line != "y":
             stderr.write("Operation aborted\n")
             stderr.flush()
-            sys.exit(0)
+            raise SystemExit(0)
 
 
-def check_target_directory(path):
+def check_target_directory(path: str) -> None:
     return check_target_file(path, kind="directory")
 
 
 encoding_map = {"gzip": "application/x-gzip", "bzip2": "application/x-bzip2"}
 
 
-def get_mimetype(filename):
+def get_mimetype(filename: str) -> str | None:
     if not isfile(filename):
         return "application/x-directory"
     mimetype, encoding = guess_type(filename)
@@ -58,38 +61,41 @@ def get_mimetype(filename):
     return "application/octet-stream"
 
 
-def add_option_output(parser, metavar="FILE", complement=""):
+def add_option_output(
+    parser: OptionParser,
+    metavar: str = "FILE",
+    complement: str = "",
+) -> None:
     msg = f"dump the output into {metavar} {complement}"
     parser.add_option("-o", "--output", metavar=metavar, help=msg)
 
 
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
+def eprint(*args: Any, **kwargs: Any) -> None:
+    print(*args, file=stderr, **kwargs)
 
 
-def printinfo(*args, **kw):
-    indent = kw.get("indent", 0)
+def printinfo(*args: Any, **kwargs: Any) -> None:
+    indent = kwargs.get("indent", 0)
     if indent:
         stderr.write(" " * indent)
     output = " ".join(str(arg) for arg in args)
     eprint(output)
 
 
-def printwarn(*args, **kw):
-    printinfo("Warning:", *args, **kw)
+def printwarn(*args: Any, **kwargs: Any) -> None:
+    printinfo("Warning:", *args, **kwargs)
 
 
-def printerr(*args, **kw):
-    printinfo("Error:", *args, **kw)
+def printerr(*args: Any, **kwargs: Any) -> None:
+    printinfo("Error:", *args, **kwargs)
 
 
-# FIXME: still broken ?
 class StdoutWriter(StringIO):
     """Some proxy to write output to stdout in scripts. Because The zipfile
     module raises "IOError: [Errno 29] Illegal seek" when writing to stdout
     directly.
     """
 
-    def write(self, s):
-        stdout.write(s)
-        StringIO.write(self, s)
+    def write(self, info: str) -> int:
+        stdout.write(info)
+        return StringIO.write(self, info)

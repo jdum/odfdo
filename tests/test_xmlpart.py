@@ -52,7 +52,7 @@ def test_get_element_list(exemple_container):
 def test_tree(exemple_container):
     # Testing a private but important method
     content = XmlPart(ODF_CONTENT, exemple_container)
-    tree = content._XmlPart__get_tree()
+    tree = content._get_tree()
     assert isinstance(tree, _ElementTree)
     assert content._XmlPart__tree is not None
 

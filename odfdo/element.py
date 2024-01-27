@@ -29,11 +29,12 @@ import re
 import sys
 
 # from icecream import ic
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from copy import deepcopy
 from datetime import datetime, timedelta
 from decimal import Decimal
 from re import search
+from typing import Any, NamedTuple
 
 from lxml.etree import Element as lxml_Element
 from lxml.etree import (
@@ -49,9 +50,8 @@ from .datatype import Boolean, DateTime
 from .utils import (
     FAMILY_ODF_STD,
     _family_style_tagname,
-    get_value,
     make_xpath_query,
-    to_bytes,
+    str_to_bytes,
     to_str,
 )
 
@@ -106,7 +106,7 @@ STOPMARKER = 5
 
 ns_stripper = re.compile(r' xmlns:\w*="[\w:\-\/\.#]*"')
 
-__xpath_query_cache = {}
+__xpath_query_cache: dict[str, XPath] = {}
 
 # An empty XML document with all namespaces declared
 NAMESPACES_XML = b"""<?xml version="1.0" encoding="UTF-8"?>
@@ -156,6 +156,12 @@ NAMESPACES_XML = b"""<?xml version="1.0" encoding="UTF-8"?>
 """
 
 
+class PropDef(NamedTuple):
+    name: str
+    attr: str
+    family: str = ""
+
+
 def _decode_qname(qname: str) -> tuple[str | None, str]:
     """Turn a prefixed qualified name to a (uri, name) pair."""
     if ":" in qname:
@@ -178,14 +184,17 @@ def _uri_to_prefix(uri: str) -> str:
 
 def _get_prefixed_name(tag: str) -> str:
     """Replace lxml "{uri}name" syntax with "prefix:name" one."""
-    uri, name = to_str(tag).split("}", 1)
+    if "}" not in tag:
+        return f":{tag}"
+    uri, name = tag.split("}", 1)
     prefix = _uri_to_prefix(uri[1:])
     return f"{prefix}:{name}"
 
 
 def _get_lxml_tag(qname: str) -> str:
     """Replace "prefix:name" syntax with lxml "{uri}name" one."""
-    return "{%s}%s" % _decode_qname(qname)  # noqa:UP031
+    uri, name = _decode_qname(qname)
+    return f"{{{uri}}}{name}"
 
 
 def _get_lxml_tag_or_name(qname: str) -> str:
@@ -193,14 +202,14 @@ def _get_lxml_tag_or_name(qname: str) -> str:
     uri, name = _decode_qname(qname)
     if uri is None:
         return name
-    return "{%s}%s" % (uri, name)  # noqa:UP031
+    return f"{{{uri}}}{name}"
 
 
-def _xpath_compile(path: str | bytes) -> XPath:
-    return XPath(to_str(path), namespaces=ODF_NAMESPACES, regexp=False)
+def _xpath_compile(path: str) -> XPath:
+    return XPath(path, namespaces=ODF_NAMESPACES, regexp=False)
 
 
-def _find_query_in_cache(query: str | bytes) -> XPath:
+def _find_query_in_cache(query: str) -> XPath:
     xpath = __xpath_query_cache.get(query)
     if xpath is None:
         xpath = _xpath_compile(query)
@@ -215,10 +224,10 @@ _xpath_text_main_descendant = _find_query_in_cache(
     "descendant::text()[not (parent::office:annotation)]"
 )
 
-_class_registry = {}
+_class_registry: dict[str, type[Element]] = {}
 
 
-def register_element_class(cls: type) -> None:
+def register_element_class(cls: type[Element]) -> None:
     """Associate a qualified element name to a Python class that handles this
     type of element.
 
@@ -228,13 +237,13 @@ def register_element_class(cls: type) -> None:
 
     Arguments:
 
-        cls -- Python class
+        cls -- Python class, subtype of Element.
     """
     # Turn tag name into what lxml is expecting
     _register_element_class(cls, cls._tag)
 
 
-def register_element_class_list(cls: type, tag_list: Iterable[str]) -> None:
+def register_element_class_list(cls: type[Element], tag_list: Iterable[str]) -> None:
     """Associate a qualified element name to a Python class that handles this
     type of element.
 
@@ -257,7 +266,7 @@ def register_element_class_list(cls: type, tag_list: Iterable[str]) -> None:
         _register_element_class(cls, qname)
 
 
-def _register_element_class(cls: type, qname: str) -> None:
+def _register_element_class(cls: type[Element], qname: str) -> None:
     # Turn tag name into what lxml is expecting
     tag = _get_lxml_tag(qname)
     if tag not in _class_registry:
@@ -272,7 +281,10 @@ class Text(str):
     """
 
     # There's some black magic in inheriting from str
-    def __init__(self, text_result: _ElementUnicodeResult):
+    def __init__(
+        self,
+        text_result: _ElementUnicodeResult | _ElementStringResult,
+    ) -> None:
         self.__parent = text_result.getparent()
         self.__is_text = text_result.is_text
         self.__is_tail = text_result.is_tail
@@ -298,10 +310,11 @@ class Element:
     Representation of an XML element. Abstraction of the XML library behind.
     """
 
-    _tag = None
-    _caching = False
+    _tag: str = ""
+    _caching: bool = False
+    _properties: tuple[PropDef, ...] = ()
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         tag_or_elem = kwargs.pop("tag_or_elem", None)
         if tag_or_elem is None:
             # Instance for newly created object: create new lxml element and
@@ -339,13 +352,18 @@ class Element:
         """
         if isinstance(tag_or_elem, str):
             # assume the argument is a prefix:name tag
-            tag_or_elem = cls.make_etree_element(tag_or_elem)
-        tag = to_str(tag_or_elem.tag)
-        klass = _class_registry.get(tag, cls)
-        return klass(tag_or_elem=tag_or_elem)
+            elem = cls.make_etree_element(tag_or_elem)
+        else:
+            elem = tag_or_elem
+        klass = _class_registry.get(elem.tag, cls)
+        return klass(tag_or_elem=elem)
 
     @classmethod
-    def from_tag_for_clone(cls: type, tree_element: _Element, cache: tuple | None):
+    def from_tag_for_clone(
+        cls: type,
+        tree_element: _Element,
+        cache: tuple | None,
+    ) -> Element:
         tag = to_str(tree_element.tag)
         klass = _class_registry.get(tag, cls)
         element = klass(tag_or_elem=tree_element)
@@ -357,27 +375,30 @@ class Element:
         return element
 
     @staticmethod
-    def make_etree_element(tag: str | bytes) -> _Element:
-        if not isinstance(tag, (str, bytes)):
-            raise TypeError(f"tag is not str or bytes: {tag!r}")
-        btag = to_bytes(tag).strip()
-        if not btag:
-            raise ValueError("tag is empty")
-        if b"<" not in btag:
+    def make_etree_element(tag: str) -> _Element:
+        if not isinstance(tag, str):
+            raise TypeError(f"Tag is not str: {tag!r}")
+        tag = tag.strip()
+        if not tag:
+            raise ValueError("Tag is empty")
+        if "<" not in tag:
             # Qualified name
             # XXX don't build the element from scratch or lxml will pollute with
             # repeated namespace declarations
-            btag = b"<%s/>" % btag
+            tag = f"<{tag}/>"
         # XML fragment
-        root = fromstring(NAMESPACES_XML % btag)  # noqa:S320
+        root = fromstring(NAMESPACES_XML % str_to_bytes(tag))
         return root[0]
 
     @staticmethod
-    def _generic_attrib_getter(attr_name: str, family: str | None = None):
+    def _generic_attrib_getter(attr_name: str, family: str | None = None) -> Callable:
         name = _get_lxml_tag(attr_name)
 
-        def getter(self):
-            if family and self.family != family:
+        def getter(self: Element) -> str | bool | None:
+            try:
+                if family and self.family != family:  # type: ignore
+                    return None
+            except AttributeError:
                 return None
             value = self.__element.get(name)
             if value is None:
@@ -389,11 +410,14 @@ class Element:
         return getter
 
     @staticmethod
-    def _generic_attrib_setter(attr_name: str, family: str | None = None):
+    def _generic_attrib_setter(attr_name: str, family: str | None = None) -> Callable:
         name = _get_lxml_tag(attr_name)
 
-        def setter(self, value):
-            if family and self.family != family:
+        def setter(self: Element, value: Any) -> None:
+            try:
+                if family and self.family != family:  # type: ignore
+                    return None
+            except AttributeError:
                 return None
             if value is None:
                 with contextlib.suppress(KeyError):
@@ -406,61 +430,86 @@ class Element:
         return setter
 
     @classmethod
-    def _define_attribut_property(cls: type) -> None:
-        for tpl in cls._properties:
-            name = tpl[0]
-            attr = tpl[1]
-            if len(tpl) == 3:
-                family = tpl[2]
-            else:
-                family = None
+    def _define_attribut_property(cls: type[Element]) -> None:
+        for prop in cls._properties:
             setattr(
                 cls,
-                name,
+                prop.name,
                 property(
-                    cls._generic_attrib_getter(attr, family),
-                    cls._generic_attrib_setter(attr, family),
+                    cls._generic_attrib_getter(prop.attr, prop.family or None),
+                    cls._generic_attrib_setter(prop.attr, prop.family or None),
                     None,
-                    f"Get/set the attribute {attr}",
+                    f"Get/set the attribute {prop.attr}",
                 ),
             )
 
+    @staticmethod
+    def _make_before_regex(
+        before: str | None,
+        after: str | None,
+    ) -> re.Pattern:
+        # 1) before xor after is not None
+        if before is not None:
+            return re.compile(before)
+        else:
+            if after is None:
+                raise ValueError("Both 'before' and 'after' are None")
+            return re.compile(after)
+
+    @staticmethod
+    def _search_negative_position(
+        xpath_result: list,
+        regex: re.Pattern,
+    ) -> tuple[str, re.Match]:
+        # Found the last text that matches the regex
+        text = None
+        for a_text in xpath_result:
+            if regex.search(str(a_text)) is not None:
+                text = a_text
+        if text is None:
+            raise ValueError(f"Text not found: '{xpath_result}'")
+        if not isinstance(text, str):
+            raise TypeError(f"Text not found or text not of type str: '{text}'")
+        return text, list(regex.finditer(text))[-1]
+
+    @staticmethod
+    def _search_positive_position(
+        xpath_result: list,
+        regex: re.Pattern,
+        position: int,
+    ) -> tuple[str, re.Match]:
+        # Found the last text that matches the regex
+        count = 0
+        for text in xpath_result:
+            found_nb = len(regex.findall(str(text)))
+            if found_nb + count >= position + 1:
+                break
+            count += found_nb
+        else:
+            raise ValueError(f"Text not found: '{xpath_result}'")
+        if not isinstance(text, str):
+            raise TypeError(f"Text not found or text not of type str: '{text}'")
+        return text, list(regex.finditer(text))[position - count]
+
     def _insert_before_after(
         self,
-        current: Element,
-        element: Element,
+        current: _Element,
+        element: _Element,
         before: str | None,
         after: str | None,
         position: int,
         xpath_text: XPath,
     ) -> tuple[int, str]:
-        # 1) before xor after is not None
-        if before is not None:
-            regex = re.compile(before)
-        else:
-            regex = re.compile(after)
-
+        regex = self._make_before_regex(before, after)
+        xpath_result = xpath_text(current)
+        if not isinstance(xpath_result, list):
+            raise TypeError("Bad XPath result")
         # position = -1
         if position < 0:
-            # Found the last text that matches the regex
-            text = None
-            for a_text in xpath_text(current):
-                if regex.search(a_text) is not None:
-                    text = a_text
-            if text is None:
-                raise ValueError("text not found")
-            sre = list(regex.finditer(text))[-1]
+            text, sre = self._search_negative_position(xpath_result, regex)
         # position >= 0
         else:
-            count = 0
-            for text in xpath_text(current):
-                found_nb = len(regex.findall(text))
-                if found_nb + count >= position + 1:
-                    break
-                count += found_nb
-            else:
-                raise ValueError("text not found")
-            sre = list(regex.finditer(text))[position - count]
+            text, sre = self._search_positive_position(xpath_result, regex, position)
         # Compute pos
         if before is None:
             pos = sre.end()
@@ -470,22 +519,27 @@ class Element:
 
     def _insert_find_text(
         self,
-        current: Element,
-        element: Element,
+        current: _Element,
+        element: _Element,
         before: str | None,
         after: str | None,
         position: int,
         xpath_text: XPath,
     ) -> tuple[int, str]:
-        # Found the text
+        # Find the text
+        xpath_result = xpath_text(current)
+        if not isinstance(xpath_result, list):
+            raise TypeError("Bad XPath result")
         count = 0
-        for text in xpath_text(current):
+        for text in xpath_result:
+            if not isinstance(text, str):
+                continue
             found_nb = len(text)
             if found_nb + count >= position:
                 break
             count += found_nb
         else:
-            raise ValueError("text not found")
+            raise ValueError("Text not found")
         # We insert before the character
         pos = position - count
         return pos, text
@@ -520,7 +574,7 @@ class Element:
         """
         # not implemented: if main_text is True, filter out the annotations texts in computation.
         current = self.__element
-        element = element.__element
+        xelement = element.__element
 
         if main_text:
             xpath_text = _xpath_text_main_descendant
@@ -531,7 +585,7 @@ class Element:
         if (before is not None) ^ (after is not None):
             pos, text = self._insert_before_after(
                 current,
-                element,
+                xelement,
                 before,
                 after,
                 position,
@@ -541,11 +595,11 @@ class Element:
         elif before is None and after is None:
             # Hack if position is negative => quickly
             if position < 0:
-                current.append(element)
+                current.append(xelement)
                 return
             pos, text = self._insert_find_text(
                 current,
-                element,
+                xelement,
                 before,
                 after,
                 position,
@@ -559,18 +613,23 @@ class Element:
         text_after = text[pos:] if text[pos:] else None
 
         # Insert!
-        parent = text.getparent()
-        if text.is_text:
+        parent = text.getparent()  # type: ignore
+        if text.is_text:  # type: ignore
             parent.text = text_before
             element.tail = text_after
-            parent.insert(0, element)
+            parent.insert(0, xelement)
         else:
-            parent.addnext(element)
+            parent.addnext(xelement)
             parent.tail = text_before
             element.tail = text_after
 
-    def _insert_between(self, element: Element, from_: str, to: str) -> None:
-        """Unused. Insert the given empty element to wrap the text beginning with
+    def _insert_between(  # noqa: C901
+        self,
+        element: Element,
+        from_: str,
+        to: str,
+    ) -> None:
+        """Insert the given empty element to wrap the text beginning with
         "from_" and ending with "to".
 
         Example 1: '<p>toto tata titi</p>
@@ -609,19 +668,28 @@ class Element:
         """
         current = self.__element
         wrapper = element.__element
-        for text in _xpath_text_descendant(current):
+
+        xpath_result = _xpath_text_descendant(current)
+        if not isinstance(xpath_result, list):
+            raise TypeError("Bad XPath result")
+
+        for text in xpath_result:
+            if not isinstance(text, str):
+                raise TypeError("Text not found or text not of type str")
             if from_ not in text:
                 continue
             from_index = text.index(from_)
             text_before = text[:from_index]
             text_after = text[from_index:]
-            from_container = text.getparent()
+            from_container = text.getparent()  # type: ignore
+            if not isinstance(from_container, _Element):
+                raise TypeError("Bad XPath result")
             # Include from_index to match a single word
             to_index = text.find(to, from_index)
             if to_index >= 0:
                 # Simple case: "from" and "to" in the same element
                 to_end = to_index + len(to)
-                if text.is_text:
+                if text.is_text:  # type: ignore
                     from_container.text = text_before
                     wrapper.text = text[to_index:to_end]
                     wrapper.tail = text[to_end:]
@@ -631,17 +699,18 @@ class Element:
                     wrapper.text = text[to_index:to_end]
                     wrapper.tail = text[to_end:]
                     parent = from_container.getparent()
-                    index = parent.index(from_container)
-                    parent.insert(index + 1, wrapper)
+                    index = parent.index(from_container)  # type: ignore
+                    parent.insert(index + 1, wrapper)  # type: ignore
                 return
             else:
                 # Exit to the second part where we search for the end text
                 break
         else:
-            raise ValueError("start text not found")
+            raise ValueError("Start text not found")
+
         # The container is split in two
         container2 = deepcopy(from_container)
-        if text.is_text:
+        if text.is_text:  # type: ignore
             from_container.text = text_before
             from_container.tail = None
             container2.text = text_after
@@ -652,16 +721,25 @@ class Element:
         # Stack the copy into the surrounding element
         wrapper.append(container2)
         parent = from_container.getparent()
-        index = parent.index(from_container)
-        parent.insert(index + 1, wrapper)
-        for text in _xpath_text_descendant(wrapper):
+        index = parent.index(from_container)  # type: ignore
+        parent.insert(index + 1, wrapper)  # type: ignore
+
+        xpath_result = _xpath_text_descendant(wrapper)
+        if not isinstance(xpath_result, list):
+            raise TypeError("Bad XPath result")
+
+        for text in xpath_result:
+            if not isinstance(text, str):
+                raise TypeError("Text not found or text not of type str")
             if to not in text:
                 continue
             to_end = text.index(to) + len(to)
             text_before = text[:to_end]
             text_after = text[to_end:]
-            container_to = text.getparent()
-            if text.is_text:
+            container_to = text.getparent()  # type: ignore
+            if not isinstance(container_to, _Element):
+                raise TypeError("Bad XPath result")
+            if text.is_text:  # type: ignore
                 container_to.text = text_before
                 container_to.tail = text_after
             else:
@@ -669,9 +747,9 @@ class Element:
                 next_one = container_to.getnext()
                 if next_one is None:
                     next_one = container_to.getparent()
-                next_one.tail = text_after
+                next_one.tail = text_after  # type: ignore
             return
-        raise ValueError("end text not found")
+        raise ValueError("End text not found")
 
     @property
     def tag(self) -> str:
@@ -687,74 +765,90 @@ class Element:
 
     @tag.setter
     def tag(self, qname: str) -> None:
-        self.__element.tag = to_bytes(_get_lxml_tag(qname))
+        self.__element.tag = _get_lxml_tag(qname)
 
-    def elements_repeated_sequence(self, xpath_instance: XPath, name: str) -> list:
+    def elements_repeated_sequence(
+        self,
+        xpath_instance: XPath,
+        name: str,
+    ) -> list[tuple[int, int]]:
+        """Utility method for table module."""
         lxml_tag = _get_lxml_tag_or_name(name)
         element = self.__element
         sub_elements = xpath_instance(element)
-        result = []
+        if not isinstance(sub_elements, list):
+            raise TypeError("Bad XPath result.")
+        result: list[tuple[int, int]] = []
         idx = -1
         for sub_element in sub_elements:
+            if not isinstance(sub_element, _Element):
+                continue
             idx += 1
             value = sub_element.get(lxml_tag)
             if value is None:
                 result.append((idx, 1))
                 continue
             try:
-                value = int(value)
+                int_value = int(value)
             except ValueError:
-                value = 1
-            result.append((idx, max(value, 1)))
+                int_value = 1
+            result.append((idx, max(int_value, 1)))
         return result
 
     def get_elements(self, xpath_query: XPath | str) -> list[Element]:
+        cache: tuple | None = None
         element = self.__element
-        if isinstance(xpath_query, XPath):
-            result = xpath_query(element)
-        else:
-            new_xpath_query = _find_query_in_cache(to_bytes(xpath_query))
+        if isinstance(xpath_query, str):
+            new_xpath_query = _find_query_in_cache(xpath_query)
             result = new_xpath_query(element)
+        else:
+            result = xpath_query(element)
+        if not isinstance(result, list):
+            raise TypeError("Bad XPath result")
+
         if hasattr(self, "_tmap"):
             if hasattr(self, "_rmap"):
                 cache = (self._tmap, self._cmap, self._rmap)
             else:
                 cache = (self._tmap, self._cmap)
-        else:
-            cache = None
-        return [Element.from_tag_for_clone(e, cache) for e in result]
+        return [
+            Element.from_tag_for_clone(e, cache)
+            for e in result
+            if isinstance(e, _Element)
+        ]
 
     # fixme : need original get_element as wrapper of get_elements
 
     def get_element(self, xpath_query: XPath | str) -> Element | None:
         element = self.__element
-        result = element.xpath("(%s)[1]" % xpath_query, namespaces=ODF_NAMESPACES)
+        result = element.xpath(f"({xpath_query})[1]", namespaces=ODF_NAMESPACES)
         if result:
-            return Element.from_tag(result[0])
+            return Element.from_tag(result[0])  # type:ignore
         return None
 
     def _get_element_idx(self, xpath_query: XPath | str, idx: int) -> Element | None:
         element = self.__element
         result = element.xpath(f"({xpath_query})[{idx + 1}]", namespaces=ODF_NAMESPACES)
         if result:
-            return Element.from_tag(result[0])
+            return Element.from_tag(result[0])  # type:ignore
         return None
 
     def _get_element_idx2(self, xpath_instance: XPath, idx: int) -> Element | None:
         element = self.__element
         result = xpath_instance(element, idx=idx + 1)
         if result:
-            return Element.from_tag(result[0])
+            return Element.from_tag(result[0])  # type:ignore
         return None
 
     @property
     def attributes(self) -> dict[str, str]:
         return {
-            _get_prefixed_name(key): value
+            _get_prefixed_name(str(key)): str(value)
             for key, value in self.__element.attrib.items()
         }
 
     def get_attribute(self, name: str) -> str | bool | None:
+        """Return the attribute value as type str | bool | None."""
         element = self.__element
         lxml_tag = _get_lxml_tag_or_name(name)
         value = element.get(lxml_tag)
@@ -765,13 +859,25 @@ class Element:
         return str(value)
 
     def get_attribute_integer(self, name: str) -> int | None:
-        atr = self.get_attribute(name)
-        if atr is None:
-            return atr
+        """Return either the attribute as type int, or None."""
+        element = self.__element
+        lxml_tag = _get_lxml_tag_or_name(name)
+        value = element.get(lxml_tag)
+        if value is None:
+            return None
         try:
-            return int(atr)
+            return int(value)
         except ValueError:
             return None
+
+    def get_attribute_string(self, name: str) -> str | None:
+        """Return either the attribute as type str, or None."""
+        element = self.__element
+        lxml_tag = _get_lxml_tag_or_name(name)
+        value = element.get(lxml_tag)
+        if value is None:
+            return None
+        return str(value)
 
     def set_attribute(self, name: str, value: bool | str | None) -> None:
         element = self.__element
@@ -787,7 +893,7 @@ class Element:
     def set_style_attribute(self, name: str, value: Element | str) -> None:
         """Shortcut to accept a style object as a value."""
         if isinstance(value, Element):
-            value = value.name
+            value = str(value.name)  # type:ignore
         return self.set_attribute(name, value)
 
     def del_attribute(self, name: str) -> None:
@@ -796,30 +902,30 @@ class Element:
         del element.attrib[lxml_tag]
 
     @property
-    def text(self) -> Text | str:
+    def text(self) -> str:
         """Get / set the text content of the element."""
         return self.__element.text or ""
 
     @text.setter
-    def text(self, text: str | bytes | None):
+    def text(self, text: str | None) -> None:
         if text is None:
             text = ""
         try:
-            self.__element.text = to_str(text)
+            self.__element.text = text
         except TypeError as e:
-            raise TypeError(f'str type expected: "{type(text)}"') from e
+            raise TypeError(f'Str type expected: "{type(text)}"') from e
 
     @property
     def text_recursive(self) -> str:
-        return "".join(self.__element.itertext())
+        return "".join(str(x) for x in self.__element.itertext())
 
     @property
-    def tail(self) -> str:
+    def tail(self) -> str | None:
         """Get / set the text immediately following the element."""
         return self.__element.tail
 
     @tail.setter
-    def tail(self, text: str | None):
+    def tail(self, text: str | None) -> None:
         self.__element.tail = text or ""
 
     def search(self, pattern: str) -> int | None:
@@ -878,14 +984,14 @@ class Element:
         count = 0
         for text in self.xpath("descendant::text()"):
             if new is None:
-                count += len(cpattern.findall(text))
+                count += len(cpattern.findall(str(text)))
             else:
-                new_text, number = cpattern.subn(new, text)
+                new_text, number = cpattern.subn(new, str(text))
                 container = text.parent
-                if text.is_text():
-                    container.text = new_text
+                if text.is_text():  # type: ignore
+                    container.text = new_text  # type: ignore
                 else:
-                    container.tail = new_text
+                    container.tail = new_text  # type: ignore
                 count += number
         return count
 
@@ -897,7 +1003,7 @@ class Element:
         return Element.from_tag(root)
 
     @property
-    def parent(self) -> Element:
+    def parent(self) -> Element | None:
         element = self.__element
         parent = element.getparent()
         if parent is None:
@@ -926,7 +1032,11 @@ class Element:
     @property
     def children(self) -> list[Element]:
         element = self.__element
-        return [Element.from_tag(e) for e in element.getchildren()]
+        return [
+            Element.from_tag(e)
+            for e in element.iterchildren()
+            if isinstance(e, _Element)
+        ]
 
     def index(self, child: Element) -> int:
         """Return the position of the child in this element.
@@ -947,7 +1057,7 @@ class Element:
         )
 
     @text_content.setter
-    def text_content(self, text: str) -> None:
+    def text_content(self, text: str | None) -> None:
         paragraphs = self.get_elements("text:p")
         if not paragraphs:
             # E.g., text:p in draw:text-box in draw:frame
@@ -977,7 +1087,7 @@ class Element:
                 obsolete.delete()
 
     def is_empty(self) -> bool:
-        """Check if the element is empty : no text, no children, no tail
+        """Check if the element is empty : no text, no children, no tail.
 
         Return: Boolean
         """
@@ -986,7 +1096,7 @@ class Element:
             return False
         if element.text is not None:
             return False
-        if element.getchildren():
+        if list(element.iterchildren()):
             return False
         return True
 
@@ -998,15 +1108,15 @@ class Element:
         parent = self.parent
         if parent is None:
             return None, None
-        return parent._get_successor(target.parent)
+        return parent._get_successor(target.parent)  # type:ignore
 
     def _get_between_base(  # noqa:C901
         self,
         tag1: Element,
         tag2: Element,
     ) -> list[Element]:
-        def find_any_id(tag: Element) -> tuple[str, str, str]:
-            stag = tag.tag
+        def find_any_id(elem: Element) -> tuple[str, str, str]:
+            elem_tag = elem.tag
             for attribute in (
                 "text:id",
                 "text:change-id",
@@ -1015,50 +1125,75 @@ class Element:
                 "text:ref-name",
                 "xml:id",
             ):
-                idx = tag.get_attribute(attribute)
+                idx = elem.get_attribute(attribute)
                 if idx is not None:
-                    return stag, attribute, idx
-            raise ValueError("No Id found in %s" % tag.serialize())
+                    return elem_tag, attribute, str(idx)
+            raise ValueError(f"No Id found in {elem.serialize()}")
 
-        def common_ancestor(t1, a1, v1, t2, a2, v2):
+        def common_ancestor(
+            tag1: str,
+            attr1: str,
+            val1: str,
+            tag2: str,
+            attr2: str,
+            val2: str,
+        ) -> Element | None:
             root = self.root
-            request1 = f'descendant::{t1}[@{a1}="{v1}"]'
-            request2 = f'descendant::{t2}[@{a2}="{v2}"]'
-            up = root.xpath(request1)[0]
+            request1 = f'descendant::{tag1}[@{attr1}="{val1}"]'
+            request2 = f'descendant::{tag2}[@{attr2}="{val2}"]'
+            ancestor = root.xpath(request1)[0]
+            if ancestor is None:
+                return None
             while True:
                 # print "up",
-                up = up.parent
-                has_tag2 = up.xpath(request2)
+                new_ancestor = ancestor.parent
+                if new_ancestor is None:
+                    return None
+                has_tag2 = new_ancestor.xpath(request2)
+                ancestor = new_ancestor
                 if not has_tag2:
                     continue
                 # print 'found'
                 break
             # print up.serialize()
-            return up
+            return ancestor
 
-        t1, a1, v1 = find_any_id(tag1)
-        t2, a2, v2 = find_any_id(tag2)
-        ancestor = common_ancestor(t1, a1, v1, t2, a2, v2).clone
-        r1 = f'{t1}[@{a1}="{v1}"]'
-        r2 = f'{t2}[@{a2}="{v2}"]'
-        resu = ancestor.clone
-        for child in resu.children:
-            resu.delete(child)
-        resu.text = ""
-        resu.tail = ""
-        target = resu
+        elem1_tag, elem1_attr, elem1_val = find_any_id(tag1)
+        elem2_tag, elem2_attr, elem2_val = find_any_id(tag2)
+        ancestor_result = common_ancestor(
+            elem1_tag,
+            elem1_attr,
+            elem1_val,
+            elem2_tag,
+            elem2_attr,
+            elem2_val,
+        )
+        if ancestor_result is None:
+            raise RuntimeError(f"No common ancestor for {elem1_tag} {elem2_tag}")
+        ancestor = ancestor_result.clone
+        path1 = f'{elem1_tag}[@{elem1_attr}="{elem1_val}"]'
+        path2 = f'{elem2_tag}[@{elem2_attr}="{elem2_val}"]'
+        result = ancestor.clone
+        for child in result.children:
+            result.delete(child)
+        result.text = ""
+        result.tail = ""
+        target = result
         current = ancestor.children[0]
+
         state = 0
         while True:
+            if current is None:
+                raise RuntimeError(f"No current ancestor for {elem1_tag} {elem2_tag}")
             # print 'current', state, current.serialize()
             if state == 0:  # before tag 1
-                if current.xpath(f"descendant-or-self::{r1}"):
-                    if current.xpath(f"self::{r1}"):
+                if current.xpath(f"descendant-or-self::{path1}"):
+                    if current.xpath(f"self::{path1}"):
                         tail = current.tail
                         if tail:
                             # got a tail => the parent should be either t:p or t:h
                             target.text = tail
-                        current, target = current._get_successor(target)
+                        current, target = current._get_successor(target)  # type: ignore
                         state = 1
                         continue
                     # got T1 in chidren, need further analysis
@@ -1073,12 +1208,12 @@ class Element:
                     continue
                 else:
                     # before tag1 : forget element, go to next one
-                    current, target = current._get_successor(target)
+                    current, target = current._get_successor(target)  # type: ignore
                     continue
             elif state == 1:  # collect elements
                 further = False
-                if current.xpath(f"descendant-or-self::{r2}"):
-                    if current.xpath(f"self::{r2}"):
+                if current.xpath(f"descendant-or-self::{path2}"):
+                    if current.xpath(f"self::{path2}"):
                         # end of trip
                         break
                     # got T2 in chidren, need further analysis
@@ -1096,25 +1231,25 @@ class Element:
                     continue
                 # collect
                 target.append(current.clone)
-                current, target = current._get_successor(target)
+                current, target = current._get_successor(target)  # type: ignore
                 continue
         # Now resu should be the "parent" of inserted parts
         # - a text:h or text:p sigle item (simple case)
         # - a upper element, with some text:p, text:h in it => need to be
         #   stripped to have a list of text:p, text:h
-        if resu.tag in {"text:p", "text:h"}:
-            inner = [resu]
+        if result.tag in {"text:p", "text:h"}:
+            inner = [result]
         else:
-            inner = resu.children
+            inner = result.children
         return inner
 
     def get_between(
         self,
         tag1: Element,
         tag2: Element,
-        as_text=False,
-        clean=True,
-        no_header=True,
+        as_text: bool = False,
+        clean: bool = True,
+        no_header: bool = True,
     ) -> list | Element | str:
         """Returns elements between tag1 and tag2, tag1 and tag2 shall
         be unique and having an id attribute.
@@ -1159,11 +1294,12 @@ class Element:
             )
             request_self = " | ".join(["self::%s" % c for c in clean_tags])
             inner = [e for e in inner if not e.xpath(request_self)]
-            request = " | ".join(["descendant::%s" % c for c in clean_tags])
+            request = " | ".join([f"descendant::{tag}" for tag in clean_tags])
             for element in inner:
                 to_del = element.xpath(request)
-                for e in to_del:
-                    element.delete(e)
+                for elem in to_del:
+                    if isinstance(elem, Element):
+                        element.delete(elem)
         if no_header:  # crude replace t:h by t:p
             new_inner = []
             for element in inner:
@@ -1171,7 +1307,7 @@ class Element:
                     children = element.children
                     text = element.__element.text
                     para = Element.from_tag("text:p")
-                    para.text = text
+                    para.text = text or ""
                     for c in children:
                         para.append(c)
                     new_inner.append(para)
@@ -1210,32 +1346,32 @@ class Element:
         """
         # child_tag = element.tag
         current = self.__element
-        element = element.__element
+        _element = element.__element
         if start:
             text = current.text
             if text is not None:
                 current.text = None
-                tail = element.tail
+                tail = _element.tail
                 if tail is None:
                     tail = text
                 else:
                     tail = tail + text
-                element.tail = tail
+                _element.tail = tail
             position = 0
         if position is not None:
-            current.insert(position, element)
+            current.insert(position, _element)
         elif xmlposition is FIRST_CHILD:
-            current.insert(0, element)
+            current.insert(0, _element)
         elif xmlposition is LAST_CHILD:
-            current.append(element)
+            current.append(_element)
         elif xmlposition is NEXT_SIBLING:
             parent = current.getparent()
-            index = parent.index(current)
-            parent.insert(index + 1, element)
+            index = parent.index(current)  # type: ignore
+            parent.insert(index + 1, _element)  # type: ignore
         elif xmlposition is PREV_SIBLING:
             parent = current.getparent()
-            index = parent.index(current)
-            parent.insert(index, element)
+            index = parent.index(current)  # type: ignore
+            parent.insert(index, _element)  # type: ignore
         else:
             raise ValueError("(xml)position must be defined")
 
@@ -1249,11 +1385,9 @@ class Element:
     def append(self, str_or_element: str | Element) -> None:
         """Insert element or text in the last position."""
         current = self.__element
-
-        # Unicode ?
         if isinstance(str_or_element, str):
             # Has children ?
-            children = current.getchildren()
+            children = list(current.iterchildren())
             if children:
                 # Append to tail of the last child
                 last_child = children[-1]
@@ -1270,9 +1404,7 @@ class Element:
         elif isinstance(str_or_element, Element):
             current.append(str_or_element.__element)
         else:
-            raise TypeError(
-                'Element or unicode expected, not "%s"' % (type(str_or_element))
-            )
+            raise TypeError(f'Element or string expected, not "{type(str_or_element)}"')
 
     def delete(self, child: Element | None = None, keep_tail: bool = True) -> None:
         """Delete the given element from the XML tree. If no element is given,
@@ -1290,14 +1422,13 @@ class Element:
         if child is None:
             parent = self.parent
             if parent is None:
-                info = self.serialize()
-                raise ValueError("cannot delete the root element\n%s" % info)
+                raise ValueError(f"Can't delete the root element\n{self.serialize()}")
             child = self
         else:
             parent = self
         if keep_tail and child.__element.tail is not None:
             current = child.__element
-            tail = current.tail
+            tail = str(current.tail)
             current.tail = None
             prev = current.getprevious()
             if prev is not None:
@@ -1321,7 +1452,10 @@ class Element:
         current = self.__element
         current.replace(old_element.__element, new_element.__element)
 
-    def strip_elements(self, sub_elements: Element | Iterable[Element]):
+    def strip_elements(
+        self,
+        sub_elements: Element | Iterable[Element],
+    ) -> Element | list:
         """Remove the tags of provided elements, keeping inner childs and text.
 
         Return : the striped element.
@@ -1336,7 +1470,7 @@ class Element:
             return self
         if isinstance(sub_elements, Element):
             sub_elements = (sub_elements,)
-        replacer = to_bytes(_get_lxml_tag("text:this-will-be-removed"))
+        replacer = _get_lxml_tag("text:this-will-be-removed")
         for element in sub_elements:
             element.__element.tag = replacer
         strip = ("text:this-will-be-removed",)
@@ -1347,7 +1481,7 @@ class Element:
         strip: Iterable[str] | None = None,
         protect: Iterable[str] | None = None,
         default: str | None = "text:p",
-    ) -> Element:
+    ) -> Element | list:
         """Remove the tags listed in strip, recursively, keeping inner childs
         and text. Tags listed in protect stop the removal one level depth. If
         the first level element is stripped, default is used to embed the
@@ -1392,16 +1526,16 @@ class Element:
         strip: Iterable[str],
         protect: Iterable[str],
         protected: bool,
-    ) -> tuple[Element, bool]:
-        """sub method for strip_tags()"""
-        copy = element.clone
+    ) -> tuple[Element | list, bool]:
+        """Sub method for strip_tags()."""
+        element_clone = element.clone
         modified = False
         children = []
         if protect and element.tag in protect:
             protect_below = True
         else:
             protect_below = False
-        for child in copy.children:
+        for child in element_clone.children:
             striped_child, is_modified = Element._strip_tags(
                 child, strip, protect, protect_below
             )
@@ -1411,30 +1545,34 @@ class Element:
                 children.extend(striped_child)
             else:
                 children.append(striped_child)
+
+        text = element_clone.text
+        tail = element_clone.tail
         if not protected and strip and element.tag in strip:
-            element = []
-            modified = True
+            element_result: list[Element | str] = []
+            if text is not None:
+                element_result.append(text)
+            for child in children:
+                element_result.append(child)
+            if tail is not None:
+                element_result.append(tail)
+            return (element_result, True)
         else:
             if not modified:
                 return (element, False)
             element.clear()
             try:
-                for key, value in copy.attributes.items():
+                for key, value in element_clone.attributes.items():
                     element.set_attribute(key, value)
             except ValueError:
-                sys.stderr.write("strip_tags(): bad attribute in %s\n" % copy)
-        text = copy.text
-        tail = copy.tail
-        if text is not None:
-            element.append(text)
-        for child in children:
-            element.append(child)
-        if tail is not None:
-            if isinstance(element, list):
-                element.append(tail)
-            else:
+                sys.stderr.write(f"strip_tags(): bad attribute in {element_clone}\n")
+            if text is not None:
+                element.append(text)
+            for child in children:
+                element.append(child)
+            if tail is not None:
                 element.tail = tail
-        return (element, True)
+            return (element, True)
 
     def xpath(self, xpath_query: str) -> list[Element | Text]:
         """Apply XPath query to the element and its subtree. Return list of
@@ -1443,30 +1581,31 @@ class Element:
         element = self.__element
         xpath_instance = _find_query_in_cache(xpath_query)
         elements = xpath_instance(element)
-        result = []
-        for obj in elements:
-            if isinstance(obj, (_ElementStringResult, _ElementUnicodeResult)):
-                result.append(Text(obj))
-            elif isinstance(obj, _Element):
-                result.append(Element.from_tag(obj))
-            else:
-                result.append(obj)
+        result: list[Element | Text] = []
+        if hasattr(elements, "__iter__"):
+            for obj in elements:
+                if isinstance(obj, (_ElementStringResult, _ElementUnicodeResult)):
+                    result.append(Text(obj))
+                elif isinstance(obj, _Element):
+                    result.append(Element.from_tag(obj))
+                # else:
+                #     result.append(obj)
         return result
 
     def clear(self) -> None:
         """Remove text, children and attributes from the element."""
         self.__element.clear()
         if hasattr(self, "_tmap"):
-            self._tmap = []
+            self._tmap: list[int] = []
         if hasattr(self, "_cmap"):
-            self._cmap = []
+            self._cmap: list[int] = []
         if hasattr(self, "_rmap"):
-            self._rmap = []
+            self._rmap: list[int] = []
         if hasattr(self, "_indexes"):
             remember = False
             if "_rmap" in self._indexes:
                 remember = True
-            self._indexes = {}
+            self._indexes: dict[str, dict] = {}
             self._indexes["_cmap"] = {}
             self._indexes["_tmap"] = {}
             if remember:
@@ -2054,7 +2193,7 @@ class Element:
             self.append(named_expressions)
         # exists ?
         current = named_expressions.get_element(
-            f'table:named-range[@table:name="{named_range.name}"][1]'
+            f'table:named-range[@table:name="{named_range.name}"][1]'  # type:ignore
         )
         if current:
             named_expressions.delete(current)
@@ -2074,8 +2213,10 @@ class Element:
             return
         named_range.delete()
         named_expressions = self.get_element("table:named-expressions")
+        if not named_expressions:
+            return
         element = named_expressions.__element
-        children = len(element.getchildren())
+        children = list(element.iterchildren())
         if not children:
             self.delete(named_expressions)
 
@@ -2159,6 +2300,8 @@ class Element:
             if creator is not None and creator != annotation.dc_creator:
                 continue
             date = annotation.dc_date
+            if date is None:
+                continue
             if start_date is not None and date < start_date:
                 continue
             if end_date is not None and date >= end_date:
@@ -2241,9 +2384,10 @@ class Element:
         Return: list of unique str
         """
         name_xpath_query = _find_query_in_cache("//@office:name")
-        names = name_xpath_query(self.__element)
-        uniq_names = list(set(names))
-        return uniq_names
+        response = name_xpath_query(self.__element)
+        if not isinstance(response, list):
+            return []
+        return list({str(name) for name in response if name})
 
     # Variables
 
@@ -2261,7 +2405,7 @@ class Element:
             body.insert(Element.from_tag("text:variable-decls"), FIRST_CHILD)
             variable_decls = body.get_element("//text:variable-decls")
 
-        return variable_decls
+        return variable_decls  # type:ignore
 
     def get_variable_decl_list(self) -> list[Element]:
         """Return all the variable declarations.
@@ -2312,8 +2456,10 @@ class Element:
         )
 
     def get_variable_set_value(
-        self, name: str, value_type: str | None = None
-    ) -> tuple[bool | str | int | float | Decimal | datetime | timedelta | None, str]:
+        self,
+        name: str,
+        value_type: str | None = None,
+    ) -> bool | str | int | float | Decimal | datetime | timedelta | None:
         """Return the last value of the given variable name.
 
         Arguments:
@@ -2328,7 +2474,7 @@ class Element:
         variable_set = self.get_variable_set(name)
         if not variable_set:
             return None
-        return get_value(variable_set, value_type)
+        return variable_set.get_value(value_type)  # type: ignore
 
     # User fields
 
@@ -2381,7 +2527,7 @@ class Element:
         user_field_decl = self.get_user_field_decl(name)
         if user_field_decl is None:
             return None
-        return get_value(user_field_decl, value_type)
+        return user_field_decl.get_value(value_type)  # type: ignore
 
     # User defined fields
     # They are fields who should contain a copy of a user defined medtadata
@@ -2419,7 +2565,7 @@ class Element:
         user_defined = self.get_user_defined(name)
         if user_defined is None:
             return None
-        return get_value(user_defined, value_type)
+        return user_defined.get_value(value_type)  # type: ignore
 
     # Draw Pages
 
@@ -3246,7 +3392,7 @@ class Element:
         self,
         query_string: str,
         position: int,
-        **kwargs,
+        **kwargs: Any,
     ) -> Element | None:
         results = self._filtered_elements(query_string, **kwargs)
         try:
@@ -3263,9 +3409,9 @@ class Element:
         svg_desc: str | None = None,
         dc_creator: str | None = None,
         dc_date: datetime | None = None,
-        **kw,
+        **kwargs: Any,
     ) -> list[Element]:
-        query = make_xpath_query(query_string, **kw)
+        query = make_xpath_query(query_string, **kwargs)
         elements = self.get_elements(query)
         # Filter the elements with the regex (TODO use XPath)
         if content is not None:

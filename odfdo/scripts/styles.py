@@ -19,9 +19,11 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
+from __future__ import annotations
+
 import sys
 from io import BytesIO
-from optparse import OptionParser
+from optparse import OptionParser, Values
 from pathlib import Path
 
 from odfdo import Document, __version__
@@ -29,12 +31,12 @@ from odfdo.scriptutils import add_option_output, check_target_file, printerr, pr
 
 
 def show_styles(
-    document,
-    target=None,
-    automatic=True,
-    common=True,
-    properties=False,
-):
+    document: Document,
+    target: str | Path | None = None,
+    automatic: bool = True,
+    common: bool = True,
+    properties: bool = False,
+) -> None:
     """Show the different styles of a document and their properties."""
     styles_content = document.show_styles(
         automatic=automatic,
@@ -48,7 +50,11 @@ def show_styles(
     Path(target).write_text(styles_content)
 
 
-def delete_styles(document, target, pretty=True):
+def delete_styles(
+    document: Document,
+    target: str | Path,
+    pretty: bool = True,
+) -> None:
     number_deleted = document.delete_styles()
     document.save(target=target, pretty=pretty)
     printinfo(f"{number_deleted} styles removed (0 error, 0 warning).")
@@ -64,7 +70,7 @@ def delete_styles(document, target, pretty=True):
 #     return None
 
 
-def merge_presentation_styles(document, source):
+def merge_presentation_styles(document: Document, source: Document) -> None:
     # Apply master page found
     raise NotImplementedError("merge_presentation_styles")  # pragma: no cover
     # source_body = source.body
@@ -106,7 +112,12 @@ def merge_presentation_styles(document, source):
     #                     lst.set_style_attribute(list_style)
 
 
-def merge_styles(document, from_file, target=None, pretty=True):
+def merge_styles(
+    document: Document,
+    from_file: str | Path,
+    target: str | Path | None = None,
+    pretty: bool = True,
+) -> None:
     source = Document(from_file)
     document.delete_styles()
     document.merge_styles_from(source)
@@ -119,7 +130,7 @@ def merge_styles(document, from_file, target=None, pretty=True):
     printinfo("Done (0 error, 0 warning).")
 
 
-def style_tools(container_url, options):
+def style_tools(container_url: str, options: Values) -> None:
     doc = Document(container_url)
 
     if options.delete:
@@ -148,7 +159,7 @@ def style_tools(container_url, options):
         )
 
 
-def main():
+def main() -> None:
     # Options initialisation
     usage = "%prog [options] <file>"
     description = "A command line interface to manipulate styles of OpenDocument files."
@@ -190,14 +201,14 @@ def main():
     options, args = parser.parse_args()
     if len(args) != 1:
         parser.print_help()
-        sys.exit(1)
+        raise SystemExit(1)
 
     container_url = args[0]
     try:
         style_tools(container_url, options)
     except Exception as e:
         print(repr(e))
-        sys.exit(1)
+        raise SystemExit(1) from None
 
 
 if __name__ == "__main__":  # pragma: no cover

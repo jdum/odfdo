@@ -21,13 +21,18 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Paragraph class for "text:p", Span class for "text:span"
+"""Paragraph class for "text:p", Span class for "text:span".
 """
+from __future__ import annotations
+
 import re
+from collections.abc import Callable
+from datetime import datetime
 from functools import wraps  # for keeping trace of docstring with decorators
+from typing import Any
 
 from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
-from .element import FIRST_CHILD, NEXT_SIBLING, Element, register_element_class
+from .element import FIRST_CHILD, NEXT_SIBLING, Element, PropDef, register_element_class
 from .link import Link
 from .note import Annotation, AnnotationEnd, Note
 from .paragraph_base import LineBreak, ParagraphBase, Spacer, Tab
@@ -43,9 +48,9 @@ __all__ = [
 ]
 
 
-def _by_regex_offset(method):  # noqa: C901
+def _by_regex_offset(method: Callable) -> Callable:  # noqa: C901
     @wraps(method)
-    def wrapper(element, *args, **kwargs):  # noqa: C901
+    def wrapper(element: Element, *args: Any, **kwargs: Any) -> None:  # noqa: C901
         """Insert the result of method(element, ...) at the place matching the
         regex OR the positional arguments offset and length.
 
@@ -55,7 +60,7 @@ def _by_regex_offset(method):  # noqa: C901
 
             element -- self
 
-            regex -- unicode regular expression
+            regex -- str, regular expression
 
             offset -- int
 
@@ -67,27 +72,29 @@ def _by_regex_offset(method):  # noqa: C901
             length = kwargs.get("length", 0)
             counted = 0
             for text in element.xpath("//text()"):
-                if len(text) + counted <= offset:
-                    counted += len(text)
+                if len(text) + counted <= offset:  # type: ignore
+                    counted += len(text)  # type: ignore
                     continue
                 if length > 0:
-                    length = min(length, len(text))
+                    length = min(length, len(text))  # type: ignore
                 else:
-                    length = len(text)
+                    length = len(text)  # type: ignore
                 # Static information about the text node
                 container = text.parent
+                if container is None:
+                    continue
                 upper = container.parent
-                is_text = text.is_text()
+                is_text = text.is_text()  # type: ignore
                 start = offset - counted
                 end = start + length
                 # Do not use the text node as it changes at each loop
                 if is_text:
-                    text = container.text
+                    text_str = container.text or ""
                 else:
-                    text = container.tail
-                before = text[:start]
-                match = text[start:end]
-                tail = text[end:]
+                    text_str = container.tail or ""
+                before = text_str[:start]
+                match = text_str[start:end]
+                tail = text_str[end:]
                 result = method(element, match, tail, *args, **kwargs)
                 if is_text:
                     container.text = before
@@ -96,28 +103,31 @@ def _by_regex_offset(method):  # noqa: C901
                 else:
                     container.tail = before
                     # Insert as next sibling
-                    index = upper.index(container)
-                    upper.insert(result, position=index + 1)
+                    if upper:
+                        index = upper.index(container)
+                        upper.insert(result, position=index + 1)
                 return
         if regex:
             pattern = re.compile(regex)
             for text in element.xpath("descendant::text()"):
                 # Static information about the text node
                 container = text.parent
+                if container is None:
+                    continue
                 upper = container.parent
-                is_text = text.is_text()
+                is_text = text.is_text()  # type: ignore
                 # Group positions are calculated and static, so apply in
                 # reverse order to preserve positions
                 for group in reversed(list(pattern.finditer(text))):
                     start, end = group.span()
                     # Do not use the text node as it changes at each loop
                     if is_text:
-                        text = container.text
+                        text_str = container.text or ""
                     else:
-                        text = container.tail
-                    before = text[:start]
-                    match = text[start:end]
-                    tail = text[end:]
+                        text_str = container.tail or ""
+                    before = text_str[:start]
+                    match = text_str[start:end]
+                    tail = text_str[end:]
                     result = method(element, match, tail, *args, **kwargs)
                     if is_text:
                         container.text = before
@@ -126,8 +136,9 @@ def _by_regex_offset(method):  # noqa: C901
                     else:
                         container.tail = before
                         # Insert as next sibling
-                        index = upper.index(container)
-                        upper.insert(result, position=index + 1)
+                        if upper:
+                            index = upper.index(container)
+                            upper.insert(result, position=index + 1)
 
     return wrapper
 
@@ -140,7 +151,12 @@ class Paragraph(ParagraphBase):
 
     _tag = "text:p"
 
-    def __init__(self, text_or_element=None, style=None, **kwargs):
+    def __init__(
+        self,
+        text_or_element: str | Element | None = None,
+        style: str | None = None,
+        **kwargs: Any,
+    ):
         """Create a paragraph element of the given style containing the optional
         given text.
 
@@ -149,27 +165,25 @@ class Paragraph(ParagraphBase):
             text -- str or Element
 
             style -- str
-
-        Return: Paragraph
         """
         super().__init__(**kwargs)
         if self._do_init:
             if isinstance(text_or_element, Element):
                 self.append(text_or_element)
             else:
-                self.text = text_or_element
+                self.text = text_or_element  # type:ignore
             if style is not None:
                 self.style = style
 
     def insert_note(
         self,
-        note_element=None,
-        after=None,
-        note_class="footnote",
-        note_id=None,
-        citation=None,
-        body=None,
-    ):
+        note_element: Note | None = None,
+        after: str | Element | None = None,
+        note_class: str = "footnote",
+        note_id: str | None = None,
+        citation: str | None = None,
+        body: str | None = None,
+    ) -> None:
         if note_element is None:
             note_element = Note(
                 note_class=note_class, note_id=note_id, citation=citation, body=body
@@ -194,15 +208,15 @@ class Paragraph(ParagraphBase):
 
     def insert_annotation(  # noqa: C901
         self,
-        annotation_element=None,
-        before=None,
-        after=None,
-        position=0,
-        content=None,
-        body=None,
-        creator=None,
-        date=None,
-    ):
+        annotation_element: Annotation | None = None,
+        before: str | None = None,
+        after: str | Element | None = None,
+        position: int | tuple = 0,
+        content: str | Element | None = None,
+        body: str | None = None,
+        creator: str | None = None,
+        date: datetime | None = None,
+    ) -> Annotation:
         """Insert an annotation, at the position defined by the regex (before,
         after, content) or by positionnal argument (position). If content is
         provided, the annotation covers the full content regex. Else, the
@@ -221,11 +235,11 @@ class Paragraph(ParagraphBase):
 
         Arguments:
 
-            annotation_element -- Annotation or name
+            annotation_element -- Annotation or None
 
             before -- str regular expression or None
 
-            after -- str regular expression or None
+            after -- str regular expression or Element or None
 
             content -- str regular expression or None, or Element
 
@@ -245,7 +259,7 @@ class Paragraph(ParagraphBase):
         else:
             # XXX clone or modify the argument?
             if body:
-                annotation_element.body = body
+                annotation_element.note_body = body
             if creator:
                 annotation_element.dc_creator = creator
             if date:
@@ -303,7 +317,7 @@ class Paragraph(ParagraphBase):
 
         # Without "content" nor "position"
         if content is not None or not isinstance(position, int):
-            raise ValueError("bad arguments")
+            raise ValueError("Bad arguments")
 
         # Insert
         self._insert(
@@ -316,8 +330,12 @@ class Paragraph(ParagraphBase):
         return annotation_element
 
     def insert_annotation_end(
-        self, annotation_element, before=None, after=None, position=0
-    ):
+        self,
+        annotation_element: Annotation,
+        before: str | None = None,
+        after: str | None = None,
+        position: int = 0,
+    ) -> AnnotationEnd:
         """Insert an annotation end tag for an existing annotation. If some end
         tag already exists, replace it. Annotation end tag is set at the
         position defined by the regex (before or after).
@@ -357,8 +375,13 @@ class Paragraph(ParagraphBase):
         return end_tag
 
     def set_reference_mark(
-        self, name, before=None, after=None, position=0, content=None
-    ):
+        self,
+        name: str,
+        before: str | None = None,
+        after: str | None = None,
+        position: int = 0,
+        content: str | Element | None = None,
+    ) -> Element:
         """Insert a reference mark, at the position defined by the regex
         (before, after, content) or by positionnal argument (position). If
         content is provided, the annotation covers the full range content regex
@@ -382,7 +405,7 @@ class Paragraph(ParagraphBase):
 
             before -- str regular expression or None
 
-            after -- str regular expression or None, or Element
+            after -- str regular expression or None,
 
             content -- str regular expression or None, or Element
 
@@ -444,13 +467,21 @@ class Paragraph(ParagraphBase):
         # Insert a positional reference mark
         reference = ReferenceMark(name)
         self._insert(
-            reference, before=before, after=after, position=position, main_text=True
+            reference,
+            before=before,
+            after=after,
+            position=position,
+            main_text=True,
         )
         return reference
 
     def set_reference_mark_end(
-        self, reference_mark, before=None, after=None, position=0
-    ):
+        self,
+        reference_mark: Element,
+        before: str | None = None,
+        after: str | None = None,
+        position: int = 0,
+    ) -> ReferenceMarkEnd:
         """Insert/move a ReferenceMarkEnd for an existing reference mark. If
         some end tag already exists, replace it. Reference tag is set at the
         position defined by the regex (before or after).
@@ -488,11 +519,19 @@ class Paragraph(ParagraphBase):
         )
         return end_tag
 
-    def insert_variable(self, variable_element, after):
+    def insert_variable(self, variable_element: Element, after: str | None) -> None:
         self._insert(variable_element, after=after, main_text=True)
 
     @_by_regex_offset
-    def set_span(self, match, tail, style, regex=None, offset=None, length=0):
+    def set_span(
+        self,
+        match: str,
+        tail: str,
+        style: str,
+        regex: str | None = None,
+        offset: int | None = None,
+        length: int = 0,
+    ) -> Span:
         """
         set_span(style, regex=None, offset=None, length=0)
         Apply the given style to text content matching the regex OR the
@@ -502,7 +541,7 @@ class Paragraph(ParagraphBase):
 
         Arguments:
 
-            style -- style element or name
+            style -- str
 
             regex -- str regular expression
 
@@ -514,7 +553,7 @@ class Paragraph(ParagraphBase):
         span.tail = tail
         return span
 
-    def remove_spans(self, keep_heading=True):
+    def remove_spans(self, keep_heading: bool = True) -> Element | list:
         """Send back a copy of the element, without span styles.
         If keep_heading is True (default), the first level heading style is left
         unchanged.
@@ -526,7 +565,7 @@ class Paragraph(ParagraphBase):
             protect = None
         return self.strip_tags(strip=strip, protect=protect)
 
-    def remove_span(self, spans):
+    def remove_span(self, spans: Element | list[Element]) -> Element | list:
         """Send back a copy of the element, the spans (not a clone) removed.
 
         Arguments:
@@ -536,7 +575,15 @@ class Paragraph(ParagraphBase):
         return self.strip_elements(spans)
 
     @_by_regex_offset
-    def set_link(self, match, tail, url, regex=None, offset=None, length=0):
+    def set_link(
+        self,
+        match: str,
+        tail: str,
+        url: str,
+        regex: str | None = None,
+        offset: int | None = None,
+        length: int = 0,
+    ) -> Element:
         """
         set_link(url, regex=None, offset=None, length=0)
         Make a link to the provided url from text content matching the regex
@@ -558,12 +605,12 @@ class Paragraph(ParagraphBase):
         link.tail = tail
         return link
 
-    def remove_links(self):
+    def remove_links(self) -> Element | list:
         """Send back a copy of the element, without links tags."""
         strip = (Link._tag,)
         return self.strip_tags(strip=strip)
 
-    def remove_link(self, links):
+    def remove_link(self, links: Link | list[Link]) -> Element | list:
         """Send back a copy of the element (not a clone), with the sub links
            removed.
 
@@ -574,8 +621,14 @@ class Paragraph(ParagraphBase):
         return self.strip_elements(links)
 
     def insert_reference(
-        self, name, ref_format="", before=None, after=None, position=0, display=None
-    ):
+        self,
+        name: str,
+        ref_format: str = "",
+        before: str | None = None,
+        after: str | Element | None = None,
+        position: int = 0,
+        display: str | None = None,
+    ) -> None:
         """Create and insert a reference to a content marked by a reference
         mark. The Reference element ("text:reference-ref") represents a
         field that references a "text:reference-mark-start" or
@@ -621,7 +674,7 @@ class Paragraph(ParagraphBase):
                 body = self.root
             mark = body.get_reference_mark(name=name)
             if mark:
-                display = mark.referenced_text
+                display = mark.referenced_text  # type: ignore
         if not display:
             display = " "
         reference.text = display
@@ -633,8 +686,14 @@ class Paragraph(ParagraphBase):
             )
 
     def set_bookmark(
-        self, name, before=None, after=None, position=0, role=None, content=None
-    ):
+        self,
+        name: str,
+        before: str | None = None,
+        after: str | None = None,
+        position: int | tuple = 0,
+        role: str | None = None,
+        content: str | None = None,
+    ) -> Element | tuple[Element, Element]:
         """Insert a bookmark before or after the characters in the text which
         match the regex before/after. When the regex matches more of one part
         of the text, position can be set to choose which part must be used.
@@ -720,7 +779,7 @@ class Paragraph(ParagraphBase):
 
         # Role
         if role is None:
-            bookmark = Bookmark(name)
+            bookmark: Element = Bookmark(name)
         elif role == "start":
             bookmark = BookmarkStart(name)
         elif role == "end":
@@ -742,17 +801,23 @@ class Span(Paragraph):
     """
 
     _tag = "text:span"
-    _properties = (("style", "text:style-name"), ("class_names", "text:class-names"))
+    _properties = (
+        PropDef("style", "text:style-name"),
+        PropDef("class_names", "text:class-names"),
+    )
 
-    def __init__(self, text=None, style=None, **kwargs):
+    def __init__(
+        self,
+        text: str | None = None,
+        style: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         """
         Arguments:
 
             text -- str
 
             style -- str
-
-        Return: Span
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -762,7 +827,7 @@ class Span(Paragraph):
                 self.style = style
 
 
-def PageBreak():
+def PageBreak() -> Paragraph:
     """Return an empty paragraph with a manual page break.
 
     Using this function requires to register the page break style with:

@@ -19,53 +19,65 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
-"""Manifest class for manifest.xml part
+"""Manifest class for manifest.xml part.
 """
-from .element import Element
-from .utils import to_str
+from __future__ import annotations
+
+from .element import Element, Text
 from .xmlpart import XmlPart
 
 
 class Manifest(XmlPart):
-    def get_paths(self):
+    def get_paths(self) -> list[Element | Text]:
         """Return the list of full paths in the manifest.
 
         Return: list of str
         """
-        expr = "//manifest:file-entry/attribute::manifest:full-path"
-        return self.xpath(expr)
+        xpath_query = "//manifest:file-entry/attribute::manifest:full-path"
+        return self.xpath(xpath_query)
 
-    def get_path_medias(self):
+    def _file_entry(self, full_path: str) -> Element:
+        xpath_query = (
+            f'//manifest:file-entry[attribute::manifest:full-path="{full_path}"]'
+        )
+        result = self.xpath(xpath_query)
+        if not result:
+            raise KeyError(f"Path not found: '{full_path}'")
+        return result[0]  # type: ignore
+
+    def get_path_medias(self) -> list[tuple]:
         """Return the list of (full_path, media_type) pairs in the manifest.
 
         Return: list of str tuples
         """
-        expr = "//manifest:file-entry"
+        xpath_query = "//manifest:file-entry"
         result = []
-        for file_entry in self.xpath(expr):
+        for file_entry in self.xpath(xpath_query):
+            if not isinstance(file_entry, Element):
+                continue
             result.append(
                 (
-                    file_entry.get_attribute("manifest:full-path"),
-                    file_entry.get_attribute("manifest:media-type"),
+                    file_entry.get_attribute_string("manifest:full-path"),
+                    file_entry.get_attribute_string("manifest:media-type"),
                 )
             )
         return result
 
-    def get_media_type(self, full_path):
+    def get_media_type(self, full_path: str) -> str | None:
         """Get the media type of an existing path.
 
         Return: str
         """
-        expr = (
-            '//manifest:file-entry[attribute::manifest:full-path="%s"]'
+        xpath_query = (
+            f'//manifest:file-entry[attribute::manifest:full-path="{full_path}"]'
             "/attribute::manifest:media-type"
         )
-        result = self.xpath(expr % to_str(full_path))
+        result = self.xpath(xpath_query)
         if not result:
             return None
-        return to_str(result[0])
+        return str(result[0])
 
-    def set_media_type(self, full_path, media_type):
+    def set_media_type(self, full_path: str, media_type: str) -> None:
         """Set the media type of an existing path.
 
         Arguments:
@@ -74,23 +86,19 @@ class Manifest(XmlPart):
 
             media_type -- str
         """
-        expr = '//manifest:file-entry[attribute::manifest:full-path="%s"]'
-        result = self.xpath(expr % to_str(full_path))
-        if not result:
-            raise KeyError('path "%s" not found' % full_path)
-        file_entry = result[0]
+        file_entry = self._file_entry(full_path)
         file_entry.set_attribute("manifest:media-type", media_type)
 
     @staticmethod
-    def make_file_entry(full_path, media_type):
-        data = (
+    def make_file_entry(full_path: str, media_type: str) -> Element:
+        tag = (
             f"<manifest:file-entry "
-            f'manifest:media-type="{to_str(media_type)}" '
-            f'manifest:full-path="{to_str(full_path)}"/>'
+            f'manifest:media-type="{media_type}" '
+            f'manifest:full-path="{full_path}"/>'
         )
-        return Element.from_tag(data)
+        return Element.from_tag(tag)
 
-    def add_full_path(self, full_path, media_type=b""):
+    def add_full_path(self, full_path: str, media_type: str = "") -> None:
         # Existing?
         existing = self.get_media_type(full_path)
         if existing is not None:
@@ -98,11 +106,6 @@ class Manifest(XmlPart):
         root = self.root
         root.append(self.make_file_entry(full_path, media_type))
 
-    def del_full_path(self, full_path):
-        expr = '//manifest:file-entry[attribute::manifest:full-path="%s"]'
-        result = self.xpath(expr % to_str(full_path))
-        if not result:
-            raise KeyError('path "%s" not found' % full_path)
-        file_entry = result[0]
-        root = self.root
-        root.delete(file_entry)
+    def del_full_path(self, full_path: str) -> None:
+        file_entry = self._file_entry(full_path)
+        self.root.delete(file_entry)

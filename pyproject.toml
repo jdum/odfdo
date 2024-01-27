@@ -111,6 +111,8 @@ ignore = [
     "SIM108",
     # Standard pseudo-random generators are not suitable for cryptographic purposes
     "S311",
+    # Using `lxml` to parse untrusted data is known to be vulnerable to XML attacks
+    "S320",
     # Use `X | Y` for type annotations
     "UP007",
 ]
@@ -120,14 +122,14 @@ ignore = [
 "tests/test_*" = ["S101"]
 
 [tool.mypy]
-# files = ["odfdo"]
 check_untyped_defs = "True"
-# disallow_untyped_defs = "True"
+disallow_untyped_defs = "True"
 disallow_any_unimported = "True"
 no_implicit_optional = "True"
 warn_return_any = "False"
 warn_unused_ignores = "True"
 show_error_codes = "True"
+no_namespace_packages = "True"
 
 [tool.coverage.report]
 skip_empty = true

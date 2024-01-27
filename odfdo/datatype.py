@@ -18,7 +18,7 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""Data types (Boolean, Date, DateTime, Duration, Unit)
+"""Data types (Boolean, Date, DateTime, Duration, Unit).
 """
 from __future__ import annotations
 
@@ -187,25 +187,27 @@ class Unit:
     def __repr__(self) -> str:
         return f"{object.__repr__(self)} {self}"
 
-    def __check_other(self, other: Unit) -> None:
+    def _check_other(self, other: Unit) -> None:
         if not isinstance(other, Unit):
-            raise TypeError(f"can only compare Unit: {other!r}")
+            raise TypeError(f"Can only compare Unit: {other!r}")
         if self.unit != other.unit:
-            raise NotImplementedError(f"conversion not implemented yet {other!r}")
+            raise NotImplementedError(f"Conversion not implemented yet {other!r}")
 
     def __lt__(self, other: Unit) -> bool:
-        self.__check_other(other)
+        self._check_other(other)
         return self.value < other.value
 
-    def __eq__(self, other) -> bool:
-        self.__check_other(other)
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Unit):
+            return False
+        self._check_other(other)
         return self.value == other.value
 
-    def convert(self, unit: str, dpi: int = 72) -> Unit:
+    def convert(self, unit: str, dpi: int | Decimal | float = 72) -> Unit:
         if unit == "px":
             if self.unit == "in":
-                return Unit(int(self.value * dpi), "px")
+                return Unit(int(self.value * int(dpi)), "px")
             elif self.unit == "cm":
-                return Unit(int(self.value / Decimal("2.54") * dpi), "px")
+                return Unit(int(self.value / Decimal("2.54") * int(dpi)), "px")
             raise NotImplementedError(str(self.unit))
         raise NotImplementedError(str(unit))

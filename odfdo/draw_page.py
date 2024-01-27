@@ -18,9 +18,13 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""DrawPage class for "draw:page"
+"""DrawPage class for "draw:page".
 """
-from .element import Element, register_element_class
+from __future__ import annotations
+
+from typing import Any
+
+from .element import Element, PropDef, register_element_class
 from .shapes import registered_shapes
 from .smil import AnimPar, AnimTransFilter
 
@@ -30,22 +34,24 @@ class DrawPage(Element):
 
     _tag = "draw:page"
     _properties = (
-        ("name", "draw:name"),
-        ("draw_id", "draw:id"),
-        ("master_page", "draw:master-page-name"),
-        ("presentation_page_layout", "presentation:presentation-page-layout-name"),
-        ("style", "draw:style-name"),
+        PropDef("name", "draw:name"),
+        PropDef("draw_id", "draw:id"),
+        PropDef("master_page", "draw:master-page-name"),
+        PropDef(
+            "presentation_page_layout", "presentation:presentation-page-layout-name"
+        ),
+        PropDef("style", "draw:style-name"),
     )
 
     def __init__(
         self,
-        draw_id=None,
-        name=None,
-        master_page=None,
-        presentation_page_layout=None,
-        style=None,
-        **kw,
-    ):
+        draw_id: str | None = None,
+        name: str | None = None,
+        master_page: str | None = None,
+        presentation_page_layout: str | None = None,
+        style: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         """
         Arguments:
 
@@ -58,10 +64,8 @@ class DrawPage(Element):
             presentation_page_layout -- str
 
             style -- str
-
-        Return: DrawPage
         """
-        super().__init__(**kw)
+        super().__init__(**kwargs)
         if self._do_init:
             if draw_id:
                 self.draw_id = draw_id
@@ -74,7 +78,12 @@ class DrawPage(Element):
             if style:
                 self.style = style
 
-    def set_transition(self, smil_type, subtype=None, dur="2s"):
+    def set_transition(
+        self,
+        smil_type: str,
+        subtype: str | None = None,
+        dur: str = "2s",
+    ) -> None:
         # Create the new animation
         anim_page = AnimPar(presentation_node_type="timing-root")
         anim_begin = AnimPar(smil_begin=f"{self.draw_id}.begin")
@@ -93,21 +102,21 @@ class DrawPage(Element):
             self.delete(existing)
         self.append(anim_page)
 
-    def get_shapes(self):
+    def get_shapes(self) -> list[Element]:
         query = "(descendant::" + "|descendant::".join(registered_shapes) + ")"
         return self.get_elements(query)
 
-    def get_formatted_text(self, context):
-        result = []
-        for element in self.children:
-            if element.tag == "presentation:notes":
+    def get_formatted_text(self, context: dict | None = None) -> str:
+        result: list[str] = []
+        for child in self.children:
+            if child.tag == "presentation:notes":
                 # No need for an advanced odf_notes.get_formatted_text()
                 # because the text seems to be only contained in paragraphs
                 # and frames, that we already handle
-                for child in element.children:
-                    result.append(child.get_formatted_text(context))
+                for sub_child in child.children:
+                    result.append(sub_child.get_formatted_text(context))
                 result.append("\n")
-            result.append(element.get_formatted_text(context))
+            result.append(child.get_formatted_text(context))
         result.append("\n")
         return "".join(result)
 

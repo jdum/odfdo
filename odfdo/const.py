@@ -21,6 +21,8 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 """Constants, XML tags and ODF headers.
 """
+from __future__ import annotations
+
 ODF_TEMPLATES = {
     "text": "text.ott",
     "texte": "text.ott",
