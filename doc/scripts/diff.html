@@ -26,7 +26,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -46,6 +46,7 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse &lt;david.versmisse@itaapy.com&gt;
+from __future__ import annotations
 
 import sys
 from difflib import ndiff, unified_diff
@@ -56,7 +57,7 @@ from time import ctime
 from odfdo import Document, __version__
 
 
-def main():
+def main() -&gt; None:
     usage = &#34;%prog &lt;doc1.odt&gt; &lt;doc2.odt&gt;&#34;
     description = &#34;Show a diff between doc1.odt and doc2.odt&#34;
     parser = OptionParser(usage, version=__version__, description=description)
@@ -88,7 +89,7 @@ def main():
         sys.exit(1)
 
 
-def print_diff(path0, path1, ndiff):
+def print_diff(path0: str, path1: str, ndiff: bool) -&gt; None:
     # Open the 2 documents, diff only for ODT
     doc0 = Document(path0)
     doc1 = Document(path1)
@@ -100,7 +101,7 @@ def print_diff(path0, path1, ndiff):
         print(make_diff(doc0, doc1, path0, path1))
 
 
-def make_ndiff(doc0, doc1):
+def make_ndiff(doc0: Document, doc1: Document) -&gt; str:
     # Convert in text before the diff
     text0 = doc0.get_formatted_text(True).splitlines(True)
     text1 = doc1.get_formatted_text(True).splitlines(True)
@@ -108,7 +109,7 @@ def make_ndiff(doc0, doc1):
     return &#34;&#34;.join(ndiff(text0, text1, None, None))
 
 
-def make_diff(doc0, doc1, path0, path1):
+def make_diff(doc0: Document, doc1: Document, path0: str, path1: str) -&gt; str:
     # Convert in text before the diff
     text0 = doc0.get_formatted_text(True).splitlines(True)
     text1 = doc1.get_formatted_text(True).splitlines(True)
@@ -130,7 +131,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="odfdo.scripts.diff.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>)</span>
+<span>def <span class="ident">main</span></span>(<span>) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -138,7 +139,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def main():
+<pre><code class="python">def main() -&gt; None:
     usage = &#34;%prog &lt;doc1.odt&gt; &lt;doc2.odt&gt;&#34;
     description = &#34;Show a diff between doc1.odt and doc2.odt&#34;
     parser = OptionParser(usage, version=__version__, description=description)
@@ -171,7 +172,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 </details>
 </dd>
 <dt id="odfdo.scripts.diff.make_diff"><code class="name flex">
-<span>def <span class="ident">make_diff</span></span>(<span>doc0, doc1, path0, path1)</span>
+<span>def <span class="ident">make_diff</span></span>(<span>doc0: Document, doc1: Document, path0: str, path1: str) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -179,7 +180,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_diff(doc0, doc1, path0, path1):
+<pre><code class="python">def make_diff(doc0: Document, doc1: Document, path0: str, path1: str) -&gt; str:
     # Convert in text before the diff
     text0 = doc0.get_formatted_text(True).splitlines(True)
     text1 = doc1.get_formatted_text(True).splitlines(True)
@@ -190,7 +191,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 </details>
 </dd>
 <dt id="odfdo.scripts.diff.make_ndiff"><code class="name flex">
-<span>def <span class="ident">make_ndiff</span></span>(<span>doc0, doc1)</span>
+<span>def <span class="ident">make_ndiff</span></span>(<span>doc0: Document, doc1: Document) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -198,7 +199,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def make_ndiff(doc0, doc1):
+<pre><code class="python">def make_ndiff(doc0: Document, doc1: Document) -&gt; str:
     # Convert in text before the diff
     text0 = doc0.get_formatted_text(True).splitlines(True)
     text1 = doc1.get_formatted_text(True).splitlines(True)
@@ -207,7 +208,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 </details>
 </dd>
 <dt id="odfdo.scripts.diff.print_diff"><code class="name flex">
-<span>def <span class="ident">print_diff</span></span>(<span>path0, path1, ndiff)</span>
+<span>def <span class="ident">print_diff</span></span>(<span>path0: str, path1: str, ndiff: bool) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -215,7 +216,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def print_diff(path0, path1, ndiff):
+<pre><code class="python">def print_diff(path0: str, path1: str, ndiff: bool) -&gt; None:
     # Open the 2 documents, diff only for ODT
     doc0 = Document(path0)
     doc1 = Document(path1)

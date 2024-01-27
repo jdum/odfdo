@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.manifest API documentation</title>
-<meta name="description" content="Manifest class for manifest.xml part" />
+<meta name="description" content="Manifest class for manifest.xml part." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,12 +22,12 @@
 <h1 class="title">Module <code>odfdo.manifest</code></h1>
 </header>
 <section id="section-intro">
-<p>Manifest class for manifest.xml part</p>
+<p>Manifest class for manifest.xml part.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -48,53 +48,65 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse &lt;david.versmisse@itaapy.com&gt;
 #          Hervé Cauwelier &lt;herve@itaapy.com&gt;
-&#34;&#34;&#34;Manifest class for manifest.xml part
+&#34;&#34;&#34;Manifest class for manifest.xml part.
 &#34;&#34;&#34;
-from .element import Element
-from .utils import to_str
+from __future__ import annotations
+
+from .element import Element, Text
 from .xmlpart import XmlPart
 
 
 class Manifest(XmlPart):
-    def get_paths(self):
+    def get_paths(self) -&gt; list[Element | Text]:
         &#34;&#34;&#34;Return the list of full paths in the manifest.
 
         Return: list of str
         &#34;&#34;&#34;
-        expr = &#34;//manifest:file-entry/attribute::manifest:full-path&#34;
-        return self.xpath(expr)
+        xpath_query = &#34;//manifest:file-entry/attribute::manifest:full-path&#34;
+        return self.xpath(xpath_query)
 
-    def get_path_medias(self):
+    def _file_entry(self, full_path: str) -&gt; Element:
+        xpath_query = (
+            f&#39;//manifest:file-entry[attribute::manifest:full-path=&#34;{full_path}&#34;]&#39;
+        )
+        result = self.xpath(xpath_query)
+        if not result:
+            raise KeyError(f&#34;Path not found: &#39;{full_path}&#39;&#34;)
+        return result[0]  # type: ignore
+
+    def get_path_medias(self) -&gt; list[tuple]:
         &#34;&#34;&#34;Return the list of (full_path, media_type) pairs in the manifest.
 
         Return: list of str tuples
         &#34;&#34;&#34;
-        expr = &#34;//manifest:file-entry&#34;
+        xpath_query = &#34;//manifest:file-entry&#34;
         result = []
-        for file_entry in self.xpath(expr):
+        for file_entry in self.xpath(xpath_query):
+            if not isinstance(file_entry, Element):
+                continue
             result.append(
                 (
-                    file_entry.get_attribute(&#34;manifest:full-path&#34;),
-                    file_entry.get_attribute(&#34;manifest:media-type&#34;),
+                    file_entry.get_attribute_string(&#34;manifest:full-path&#34;),
+                    file_entry.get_attribute_string(&#34;manifest:media-type&#34;),
                 )
             )
         return result
 
-    def get_media_type(self, full_path):
+    def get_media_type(self, full_path: str) -&gt; str | None:
         &#34;&#34;&#34;Get the media type of an existing path.
 
         Return: str
         &#34;&#34;&#34;
-        expr = (
-            &#39;//manifest:file-entry[attribute::manifest:full-path=&#34;%s&#34;]&#39;
+        xpath_query = (
+            f&#39;//manifest:file-entry[attribute::manifest:full-path=&#34;{full_path}&#34;]&#39;
             &#34;/attribute::manifest:media-type&#34;
         )
-        result = self.xpath(expr % to_str(full_path))
+        result = self.xpath(xpath_query)
         if not result:
             return None
-        return to_str(result[0])
+        return str(result[0])
 
-    def set_media_type(self, full_path, media_type):
+    def set_media_type(self, full_path: str, media_type: str) -&gt; None:
         &#34;&#34;&#34;Set the media type of an existing path.
 
         Arguments:
@@ -103,23 +115,19 @@ class Manifest(XmlPart):
 
             media_type -- str
         &#34;&#34;&#34;
-        expr = &#39;//manifest:file-entry[attribute::manifest:full-path=&#34;%s&#34;]&#39;
-        result = self.xpath(expr % to_str(full_path))
-        if not result:
-            raise KeyError(&#39;path &#34;%s&#34; not found&#39; % full_path)
-        file_entry = result[0]
+        file_entry = self._file_entry(full_path)
         file_entry.set_attribute(&#34;manifest:media-type&#34;, media_type)
 
     @staticmethod
-    def make_file_entry(full_path, media_type):
-        data = (
+    def make_file_entry(full_path: str, media_type: str) -&gt; Element:
+        tag = (
             f&#34;&lt;manifest:file-entry &#34;
-            f&#39;manifest:media-type=&#34;{to_str(media_type)}&#34; &#39;
-            f&#39;manifest:full-path=&#34;{to_str(full_path)}&#34;/&gt;&#39;
+            f&#39;manifest:media-type=&#34;{media_type}&#34; &#39;
+            f&#39;manifest:full-path=&#34;{full_path}&#34;/&gt;&#39;
         )
-        return Element.from_tag(data)
+        return Element.from_tag(tag)
 
-    def add_full_path(self, full_path, media_type=b&#34;&#34;):
+    def add_full_path(self, full_path: str, media_type: str = &#34;&#34;) -&gt; None:
         # Existing?
         existing = self.get_media_type(full_path)
         if existing is not None:
@@ -127,14 +135,9 @@ class Manifest(XmlPart):
         root = self.root
         root.append(self.make_file_entry(full_path, media_type))
 
-    def del_full_path(self, full_path):
-        expr = &#39;//manifest:file-entry[attribute::manifest:full-path=&#34;%s&#34;]&#39;
-        result = self.xpath(expr % to_str(full_path))
-        if not result:
-            raise KeyError(&#39;path &#34;%s&#34; not found&#39; % full_path)
-        file_entry = result[0]
-        root = self.root
-        root.delete(file_entry)</code></pre>
+    def del_full_path(self, full_path: str) -&gt; None:
+        file_entry = self._file_entry(full_path)
+        self.root.delete(file_entry)</code></pre>
 </details>
 </section>
 <section>
@@ -148,7 +151,7 @@ class Manifest(XmlPart):
 <dl>
 <dt id="odfdo.manifest.Manifest"><code class="flex name class">
 <span>class <span class="ident">Manifest</span></span>
-<span>(</span><span>part_name, container)</span>
+<span>(</span><span>part_name: str, container: Container)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Representation of an XML part.</p>
@@ -158,45 +161,56 @@ class Manifest(XmlPart):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Manifest(XmlPart):
-    def get_paths(self):
+    def get_paths(self) -&gt; list[Element | Text]:
         &#34;&#34;&#34;Return the list of full paths in the manifest.
 
         Return: list of str
         &#34;&#34;&#34;
-        expr = &#34;//manifest:file-entry/attribute::manifest:full-path&#34;
-        return self.xpath(expr)
+        xpath_query = &#34;//manifest:file-entry/attribute::manifest:full-path&#34;
+        return self.xpath(xpath_query)
 
-    def get_path_medias(self):
+    def _file_entry(self, full_path: str) -&gt; Element:
+        xpath_query = (
+            f&#39;//manifest:file-entry[attribute::manifest:full-path=&#34;{full_path}&#34;]&#39;
+        )
+        result = self.xpath(xpath_query)
+        if not result:
+            raise KeyError(f&#34;Path not found: &#39;{full_path}&#39;&#34;)
+        return result[0]  # type: ignore
+
+    def get_path_medias(self) -&gt; list[tuple]:
         &#34;&#34;&#34;Return the list of (full_path, media_type) pairs in the manifest.
 
         Return: list of str tuples
         &#34;&#34;&#34;
-        expr = &#34;//manifest:file-entry&#34;
+        xpath_query = &#34;//manifest:file-entry&#34;
         result = []
-        for file_entry in self.xpath(expr):
+        for file_entry in self.xpath(xpath_query):
+            if not isinstance(file_entry, Element):
+                continue
             result.append(
                 (
-                    file_entry.get_attribute(&#34;manifest:full-path&#34;),
-                    file_entry.get_attribute(&#34;manifest:media-type&#34;),
+                    file_entry.get_attribute_string(&#34;manifest:full-path&#34;),
+                    file_entry.get_attribute_string(&#34;manifest:media-type&#34;),
                 )
             )
         return result
 
-    def get_media_type(self, full_path):
+    def get_media_type(self, full_path: str) -&gt; str | None:
         &#34;&#34;&#34;Get the media type of an existing path.
 
         Return: str
         &#34;&#34;&#34;
-        expr = (
-            &#39;//manifest:file-entry[attribute::manifest:full-path=&#34;%s&#34;]&#39;
+        xpath_query = (
+            f&#39;//manifest:file-entry[attribute::manifest:full-path=&#34;{full_path}&#34;]&#39;
             &#34;/attribute::manifest:media-type&#34;
         )
-        result = self.xpath(expr % to_str(full_path))
+        result = self.xpath(xpath_query)
         if not result:
             return None
-        return to_str(result[0])
+        return str(result[0])
 
-    def set_media_type(self, full_path, media_type):
+    def set_media_type(self, full_path: str, media_type: str) -&gt; None:
         &#34;&#34;&#34;Set the media type of an existing path.
 
         Arguments:
@@ -205,23 +219,19 @@ class Manifest(XmlPart):
 
             media_type -- str
         &#34;&#34;&#34;
-        expr = &#39;//manifest:file-entry[attribute::manifest:full-path=&#34;%s&#34;]&#39;
-        result = self.xpath(expr % to_str(full_path))
-        if not result:
-            raise KeyError(&#39;path &#34;%s&#34; not found&#39; % full_path)
-        file_entry = result[0]
+        file_entry = self._file_entry(full_path)
         file_entry.set_attribute(&#34;manifest:media-type&#34;, media_type)
 
     @staticmethod
-    def make_file_entry(full_path, media_type):
-        data = (
+    def make_file_entry(full_path: str, media_type: str) -&gt; Element:
+        tag = (
             f&#34;&lt;manifest:file-entry &#34;
-            f&#39;manifest:media-type=&#34;{to_str(media_type)}&#34; &#39;
-            f&#39;manifest:full-path=&#34;{to_str(full_path)}&#34;/&gt;&#39;
+            f&#39;manifest:media-type=&#34;{media_type}&#34; &#39;
+            f&#39;manifest:full-path=&#34;{full_path}&#34;/&gt;&#39;
         )
-        return Element.from_tag(data)
+        return Element.from_tag(tag)
 
-    def add_full_path(self, full_path, media_type=b&#34;&#34;):
+    def add_full_path(self, full_path: str, media_type: str = &#34;&#34;) -&gt; None:
         # Existing?
         existing = self.get_media_type(full_path)
         if existing is not None:
@@ -229,14 +239,9 @@ class Manifest(XmlPart):
         root = self.root
         root.append(self.make_file_entry(full_path, media_type))
 
-    def del_full_path(self, full_path):
-        expr = &#39;//manifest:file-entry[attribute::manifest:full-path=&#34;%s&#34;]&#39;
-        result = self.xpath(expr % to_str(full_path))
-        if not result:
-            raise KeyError(&#39;path &#34;%s&#34; not found&#39; % full_path)
-        file_entry = result[0]
-        root = self.root
-        root.delete(file_entry)</code></pre>
+    def del_full_path(self, full_path: str) -&gt; None:
+        file_entry = self._file_entry(full_path)
+        self.root.delete(file_entry)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -245,7 +250,7 @@ class Manifest(XmlPart):
 <h3>Static methods</h3>
 <dl>
 <dt id="odfdo.manifest.Manifest.make_file_entry"><code class="name flex">
-<span>def <span class="ident">make_file_entry</span></span>(<span>full_path, media_type)</span>
+<span>def <span class="ident">make_file_entry</span></span>(<span>full_path: str, media_type: str) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -254,20 +259,20 @@ class Manifest(XmlPart):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def make_file_entry(full_path, media_type):
-    data = (
+def make_file_entry(full_path: str, media_type: str) -&gt; Element:
+    tag = (
         f&#34;&lt;manifest:file-entry &#34;
-        f&#39;manifest:media-type=&#34;{to_str(media_type)}&#34; &#39;
-        f&#39;manifest:full-path=&#34;{to_str(full_path)}&#34;/&gt;&#39;
+        f&#39;manifest:media-type=&#34;{media_type}&#34; &#39;
+        f&#39;manifest:full-path=&#34;{full_path}&#34;/&gt;&#39;
     )
-    return Element.from_tag(data)</code></pre>
+    return Element.from_tag(tag)</code></pre>
 </details>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.manifest.Manifest.add_full_path"><code class="name flex">
-<span>def <span class="ident">add_full_path</span></span>(<span>self, full_path, media_type=b'')</span>
+<span>def <span class="ident">add_full_path</span></span>(<span>self, full_path: str, media_type: str = '') ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -275,7 +280,7 @@ def make_file_entry(full_path, media_type):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_full_path(self, full_path, media_type=b&#34;&#34;):
+<pre><code class="python">def add_full_path(self, full_path: str, media_type: str = &#34;&#34;) -&gt; None:
     # Existing?
     existing = self.get_media_type(full_path)
     if existing is not None:
@@ -285,7 +290,7 @@ def make_file_entry(full_path, media_type):
 </details>
 </dd>
 <dt id="odfdo.manifest.Manifest.del_full_path"><code class="name flex">
-<span>def <span class="ident">del_full_path</span></span>(<span>self, full_path)</span>
+<span>def <span class="ident">del_full_path</span></span>(<span>self, full_path: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -293,18 +298,13 @@ def make_file_entry(full_path, media_type):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def del_full_path(self, full_path):
-    expr = &#39;//manifest:file-entry[attribute::manifest:full-path=&#34;%s&#34;]&#39;
-    result = self.xpath(expr % to_str(full_path))
-    if not result:
-        raise KeyError(&#39;path &#34;%s&#34; not found&#39; % full_path)
-    file_entry = result[0]
-    root = self.root
-    root.delete(file_entry)</code></pre>
+<pre><code class="python">def del_full_path(self, full_path: str) -&gt; None:
+    file_entry = self._file_entry(full_path)
+    self.root.delete(file_entry)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.manifest.Manifest.get_media_type"><code class="name flex">
-<span>def <span class="ident">get_media_type</span></span>(<span>self, full_path)</span>
+<span>def <span class="ident">get_media_type</span></span>(<span>self, full_path: str) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the media type of an existing path.</p>
@@ -313,23 +313,23 @@ def make_file_entry(full_path, media_type):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_media_type(self, full_path):
+<pre><code class="python">def get_media_type(self, full_path: str) -&gt; str | None:
     &#34;&#34;&#34;Get the media type of an existing path.
 
     Return: str
     &#34;&#34;&#34;
-    expr = (
-        &#39;//manifest:file-entry[attribute::manifest:full-path=&#34;%s&#34;]&#39;
+    xpath_query = (
+        f&#39;//manifest:file-entry[attribute::manifest:full-path=&#34;{full_path}&#34;]&#39;
         &#34;/attribute::manifest:media-type&#34;
     )
-    result = self.xpath(expr % to_str(full_path))
+    result = self.xpath(xpath_query)
     if not result:
         return None
-    return to_str(result[0])</code></pre>
+    return str(result[0])</code></pre>
 </details>
 </dd>
 <dt id="odfdo.manifest.Manifest.get_path_medias"><code class="name flex">
-<span>def <span class="ident">get_path_medias</span></span>(<span>self)</span>
+<span>def <span class="ident">get_path_medias</span></span>(<span>self) ‑> list[tuple]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return the list of (full_path, media_type) pairs in the manifest.</p>
@@ -338,25 +338,27 @@ def make_file_entry(full_path, media_type):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_path_medias(self):
+<pre><code class="python">def get_path_medias(self) -&gt; list[tuple]:
     &#34;&#34;&#34;Return the list of (full_path, media_type) pairs in the manifest.
 
     Return: list of str tuples
     &#34;&#34;&#34;
-    expr = &#34;//manifest:file-entry&#34;
+    xpath_query = &#34;//manifest:file-entry&#34;
     result = []
-    for file_entry in self.xpath(expr):
+    for file_entry in self.xpath(xpath_query):
+        if not isinstance(file_entry, Element):
+            continue
         result.append(
             (
-                file_entry.get_attribute(&#34;manifest:full-path&#34;),
-                file_entry.get_attribute(&#34;manifest:media-type&#34;),
+                file_entry.get_attribute_string(&#34;manifest:full-path&#34;),
+                file_entry.get_attribute_string(&#34;manifest:media-type&#34;),
             )
         )
     return result</code></pre>
 </details>
 </dd>
 <dt id="odfdo.manifest.Manifest.get_paths"><code class="name flex">
-<span>def <span class="ident">get_paths</span></span>(<span>self)</span>
+<span>def <span class="ident">get_paths</span></span>(<span>self) ‑> list[<a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | <a title="odfdo.element.Text" href="element.html#odfdo.element.Text">Text</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return the list of full paths in the manifest.</p>
@@ -365,17 +367,17 @@ def make_file_entry(full_path, media_type):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_paths(self):
+<pre><code class="python">def get_paths(self) -&gt; list[Element | Text]:
     &#34;&#34;&#34;Return the list of full paths in the manifest.
 
     Return: list of str
     &#34;&#34;&#34;
-    expr = &#34;//manifest:file-entry/attribute::manifest:full-path&#34;
-    return self.xpath(expr)</code></pre>
+    xpath_query = &#34;//manifest:file-entry/attribute::manifest:full-path&#34;
+    return self.xpath(xpath_query)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.manifest.Manifest.set_media_type"><code class="name flex">
-<span>def <span class="ident">set_media_type</span></span>(<span>self, full_path, media_type)</span>
+<span>def <span class="ident">set_media_type</span></span>(<span>self, full_path: str, media_type: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the media type of an existing path.</p>
@@ -386,7 +388,7 @@ def make_file_entry(full_path, media_type):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_media_type(self, full_path, media_type):
+<pre><code class="python">def set_media_type(self, full_path: str, media_type: str) -&gt; None:
     &#34;&#34;&#34;Set the media type of an existing path.
 
     Arguments:
@@ -395,11 +397,7 @@ def make_file_entry(full_path, media_type):
 
         media_type -- str
     &#34;&#34;&#34;
-    expr = &#39;//manifest:file-entry[attribute::manifest:full-path=&#34;%s&#34;]&#39;
-    result = self.xpath(expr % to_str(full_path))
-    if not result:
-        raise KeyError(&#39;path &#34;%s&#34; not found&#39; % full_path)
-    file_entry = result[0]
+    file_entry = self._file_entry(full_path)
     file_entry.set_attribute(&#34;manifest:media-type&#34;, media_type)</code></pre>
 </details>
 </dd>

@@ -26,7 +26,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -47,9 +47,11 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
 #          Romain Gauthier &lt;romain@itaapy.com&gt;
+from __future__ import annotations
+
 import sys
 from io import BytesIO
-from optparse import OptionParser
+from optparse import OptionParser, Values
 from pathlib import Path
 
 from odfdo import Document, __version__
@@ -57,12 +59,12 @@ from odfdo.scriptutils import add_option_output, check_target_file, printerr, pr
 
 
 def show_styles(
-    document,
-    target=None,
-    automatic=True,
-    common=True,
-    properties=False,
-):
+    document: Document,
+    target: str | Path | None = None,
+    automatic: bool = True,
+    common: bool = True,
+    properties: bool = False,
+) -&gt; None:
     &#34;&#34;&#34;Show the different styles of a document and their properties.&#34;&#34;&#34;
     styles_content = document.show_styles(
         automatic=automatic,
@@ -76,7 +78,11 @@ def show_styles(
     Path(target).write_text(styles_content)
 
 
-def delete_styles(document, target, pretty=True):
+def delete_styles(
+    document: Document,
+    target: str | Path,
+    pretty: bool = True,
+) -&gt; None:
     number_deleted = document.delete_styles()
     document.save(target=target, pretty=pretty)
     printinfo(f&#34;{number_deleted} styles removed (0 error, 0 warning).&#34;)
@@ -92,7 +98,7 @@ def delete_styles(document, target, pretty=True):
 #     return None
 
 
-def merge_presentation_styles(document, source):
+def merge_presentation_styles(document: Document, source: Document) -&gt; None:
     # Apply master page found
     raise NotImplementedError(&#34;merge_presentation_styles&#34;)  # pragma: no cover
     # source_body = source.body
@@ -134,7 +140,12 @@ def merge_presentation_styles(document, source):
     #                     lst.set_style_attribute(list_style)
 
 
-def merge_styles(document, from_file, target=None, pretty=True):
+def merge_styles(
+    document: Document,
+    from_file: str | Path,
+    target: str | Path | None = None,
+    pretty: bool = True,
+) -&gt; None:
     source = Document(from_file)
     document.delete_styles()
     document.merge_styles_from(source)
@@ -147,7 +158,7 @@ def merge_styles(document, from_file, target=None, pretty=True):
     printinfo(&#34;Done (0 error, 0 warning).&#34;)
 
 
-def style_tools(container_url, options):
+def style_tools(container_url: str, options: Values) -&gt; None:
     doc = Document(container_url)
 
     if options.delete:
@@ -176,7 +187,7 @@ def style_tools(container_url, options):
         )
 
 
-def main():
+def main() -&gt; None:
     # Options initialisation
     usage = &#34;%prog [options] &lt;file&gt;&#34;
     description = &#34;A command line interface to manipulate styles of OpenDocument files.&#34;
@@ -218,14 +229,14 @@ def main():
     options, args = parser.parse_args()
     if len(args) != 1:
         parser.print_help()
-        sys.exit(1)
+        raise SystemExit(1)
 
     container_url = args[0]
     try:
         style_tools(container_url, options)
     except Exception as e:
         print(repr(e))
-        sys.exit(1)
+        raise SystemExit(1) from None
 
 
 if __name__ == &#34;__main__&#34;:  # pragma: no cover
@@ -240,7 +251,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="odfdo.scripts.styles.delete_styles"><code class="name flex">
-<span>def <span class="ident">delete_styles</span></span>(<span>document, target, pretty=True)</span>
+<span>def <span class="ident">delete_styles</span></span>(<span>document: Document, target: str | Path, pretty: bool = True) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -248,7 +259,11 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def delete_styles(document, target, pretty=True):
+<pre><code class="python">def delete_styles(
+    document: Document,
+    target: str | Path,
+    pretty: bool = True,
+) -&gt; None:
     number_deleted = document.delete_styles()
     document.save(target=target, pretty=pretty)
     printinfo(f&#34;{number_deleted} styles removed (0 error, 0 warning).&#34;)
@@ -257,7 +272,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 </details>
 </dd>
 <dt id="odfdo.scripts.styles.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>)</span>
+<span>def <span class="ident">main</span></span>(<span>) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -265,7 +280,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def main():
+<pre><code class="python">def main() -&gt; None:
     # Options initialisation
     usage = &#34;%prog [options] &lt;file&gt;&#34;
     description = &#34;A command line interface to manipulate styles of OpenDocument files.&#34;
@@ -307,18 +322,18 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
     options, args = parser.parse_args()
     if len(args) != 1:
         parser.print_help()
-        sys.exit(1)
+        raise SystemExit(1)
 
     container_url = args[0]
     try:
         style_tools(container_url, options)
     except Exception as e:
         print(repr(e))
-        sys.exit(1)</code></pre>
+        raise SystemExit(1) from None</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scripts.styles.merge_presentation_styles"><code class="name flex">
-<span>def <span class="ident">merge_presentation_styles</span></span>(<span>document, source)</span>
+<span>def <span class="ident">merge_presentation_styles</span></span>(<span>document: Document, source: Document) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -326,7 +341,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def merge_presentation_styles(document, source):
+<pre><code class="python">def merge_presentation_styles(document: Document, source: Document) -&gt; None:
     # Apply master page found
     raise NotImplementedError(&#34;merge_presentation_styles&#34;)  # pragma: no cover
     # source_body = source.body
@@ -369,7 +384,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 </details>
 </dd>
 <dt id="odfdo.scripts.styles.merge_styles"><code class="name flex">
-<span>def <span class="ident">merge_styles</span></span>(<span>document, from_file, target=None, pretty=True)</span>
+<span>def <span class="ident">merge_styles</span></span>(<span>document: Document, from_file: str | Path, target: str | Path | None = None, pretty: bool = True) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -377,7 +392,12 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def merge_styles(document, from_file, target=None, pretty=True):
+<pre><code class="python">def merge_styles(
+    document: Document,
+    from_file: str | Path,
+    target: str | Path | None = None,
+    pretty: bool = True,
+) -&gt; None:
     source = Document(from_file)
     document.delete_styles()
     document.merge_styles_from(source)
@@ -391,7 +411,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 </details>
 </dd>
 <dt id="odfdo.scripts.styles.show_styles"><code class="name flex">
-<span>def <span class="ident">show_styles</span></span>(<span>document, target=None, automatic=True, common=True, properties=False)</span>
+<span>def <span class="ident">show_styles</span></span>(<span>document: Document, target: str | Path | None = None, automatic: bool = True, common: bool = True, properties: bool = False) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Show the different styles of a document and their properties.</p></div>
@@ -400,12 +420,12 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def show_styles(
-    document,
-    target=None,
-    automatic=True,
-    common=True,
-    properties=False,
-):
+    document: Document,
+    target: str | Path | None = None,
+    automatic: bool = True,
+    common: bool = True,
+    properties: bool = False,
+) -&gt; None:
     &#34;&#34;&#34;Show the different styles of a document and their properties.&#34;&#34;&#34;
     styles_content = document.show_styles(
         automatic=automatic,
@@ -420,7 +440,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 </details>
 </dd>
 <dt id="odfdo.scripts.styles.style_tools"><code class="name flex">
-<span>def <span class="ident">style_tools</span></span>(<span>container_url, options)</span>
+<span>def <span class="ident">style_tools</span></span>(<span>container_url: str, options: Values) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -428,7 +448,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def style_tools(container_url, options):
+<pre><code class="python">def style_tools(container_url: str, options: Values) -&gt; None:
     doc = Document(container_url)
 
     if options.delete:

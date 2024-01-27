@@ -1,4 +1,4 @@
-# Copyright 2018-2023 Jérôme Dumonteil
+# Copyright 2018-2024 Jérôme Dumonteil
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 
 import io

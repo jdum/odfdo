@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.datatype API documentation</title>
-<meta name="description" content="Data types (Boolean, Date, DateTime, Duration, Unit)" />
+<meta name="description" content="Data types (Boolean, Date, DateTime, Duration, Unit)." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,12 +22,12 @@
 <h1 class="title">Module <code>odfdo.datatype</code></h1>
 </header>
 <section id="section-intro">
-<p>Data types (Boolean, Date, DateTime, Duration, Unit)</p>
+<p>Data types (Boolean, Date, DateTime, Duration, Unit).</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -47,12 +47,12 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
-&#34;&#34;&#34;Data types (Boolean, Date, DateTime, Duration, Unit)
+&#34;&#34;&#34;Data types (Boolean, Date, DateTime, Duration, Unit).
 &#34;&#34;&#34;
 from __future__ import annotations
 
 import contextlib
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from functools import total_ordering
 
@@ -92,7 +92,7 @@ class Date:
         return datetime.strptime(data, DATE_FORMAT)
 
     @staticmethod
-    def encode(value: datetime) -&gt; str:
+    def encode(value: datetime | date) -&gt; str:
         return value.strftime(DATE_FORMAT)
 
 
@@ -216,26 +216,28 @@ class Unit:
     def __repr__(self) -&gt; str:
         return f&#34;{object.__repr__(self)} {self}&#34;
 
-    def __check_other(self, other: Unit) -&gt; None:
+    def _check_other(self, other: Unit) -&gt; None:
         if not isinstance(other, Unit):
-            raise TypeError(f&#34;can only compare Unit: {other!r}&#34;)
+            raise TypeError(f&#34;Can only compare Unit: {other!r}&#34;)
         if self.unit != other.unit:
-            raise NotImplementedError(f&#34;conversion not implemented yet {other!r}&#34;)
+            raise NotImplementedError(f&#34;Conversion not implemented yet {other!r}&#34;)
 
     def __lt__(self, other: Unit) -&gt; bool:
-        self.__check_other(other)
+        self._check_other(other)
         return self.value &lt; other.value
 
-    def __eq__(self, other) -&gt; bool:
-        self.__check_other(other)
+    def __eq__(self, other: object) -&gt; bool:
+        if not isinstance(other, Unit):
+            return False
+        self._check_other(other)
         return self.value == other.value
 
-    def convert(self, unit: str, dpi: int = 72) -&gt; Unit:
+    def convert(self, unit: str, dpi: int | Decimal | float = 72) -&gt; Unit:
         if unit == &#34;px&#34;:
             if self.unit == &#34;in&#34;:
-                return Unit(int(self.value * dpi), &#34;px&#34;)
+                return Unit(int(self.value * int(dpi)), &#34;px&#34;)
             elif self.unit == &#34;cm&#34;:
-                return Unit(int(self.value / Decimal(&#34;2.54&#34;) * dpi), &#34;px&#34;)
+                return Unit(int(self.value / Decimal(&#34;2.54&#34;) * int(dpi)), &#34;px&#34;)
             raise NotImplementedError(str(self.unit))
         raise NotImplementedError(str(unit))</code></pre>
 </details>
@@ -334,7 +336,7 @@ def encode(value: bool | str | bytes) -&gt; str:
         return datetime.strptime(data, DATE_FORMAT)
 
     @staticmethod
-    def encode(value: datetime) -&gt; str:
+    def encode(value: datetime | date) -&gt; str:
         return value.strftime(DATE_FORMAT)</code></pre>
 </details>
 <h3>Static methods</h3>
@@ -354,7 +356,7 @@ def decode(data: str) -&gt; datetime:
 </details>
 </dd>
 <dt id="odfdo.datatype.Date.encode"><code class="name flex">
-<span>def <span class="ident">encode</span></span>(<span>value: datetime) ‑> str</span>
+<span>def <span class="ident">encode</span></span>(<span>value: datetime | date) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -363,7 +365,7 @@ def decode(data: str) -&gt; datetime:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def encode(value: datetime) -&gt; str:
+def encode(value: datetime | date) -&gt; str:
     return value.strftime(DATE_FORMAT)</code></pre>
 </details>
 </dd>
@@ -648,33 +650,35 @@ class Unit:
     def __repr__(self) -&gt; str:
         return f&#34;{object.__repr__(self)} {self}&#34;
 
-    def __check_other(self, other: Unit) -&gt; None:
+    def _check_other(self, other: Unit) -&gt; None:
         if not isinstance(other, Unit):
-            raise TypeError(f&#34;can only compare Unit: {other!r}&#34;)
+            raise TypeError(f&#34;Can only compare Unit: {other!r}&#34;)
         if self.unit != other.unit:
-            raise NotImplementedError(f&#34;conversion not implemented yet {other!r}&#34;)
+            raise NotImplementedError(f&#34;Conversion not implemented yet {other!r}&#34;)
 
     def __lt__(self, other: Unit) -&gt; bool:
-        self.__check_other(other)
+        self._check_other(other)
         return self.value &lt; other.value
 
-    def __eq__(self, other) -&gt; bool:
-        self.__check_other(other)
+    def __eq__(self, other: object) -&gt; bool:
+        if not isinstance(other, Unit):
+            return False
+        self._check_other(other)
         return self.value == other.value
 
-    def convert(self, unit: str, dpi: int = 72) -&gt; Unit:
+    def convert(self, unit: str, dpi: int | Decimal | float = 72) -&gt; Unit:
         if unit == &#34;px&#34;:
             if self.unit == &#34;in&#34;:
-                return Unit(int(self.value * dpi), &#34;px&#34;)
+                return Unit(int(self.value * int(dpi)), &#34;px&#34;)
             elif self.unit == &#34;cm&#34;:
-                return Unit(int(self.value / Decimal(&#34;2.54&#34;) * dpi), &#34;px&#34;)
+                return Unit(int(self.value / Decimal(&#34;2.54&#34;) * int(dpi)), &#34;px&#34;)
             raise NotImplementedError(str(self.unit))
         raise NotImplementedError(str(unit))</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.datatype.Unit.convert"><code class="name flex">
-<span>def <span class="ident">convert</span></span>(<span>self, unit: str, dpi: int = 72) ‑> <a title="odfdo.datatype.Unit" href="#odfdo.datatype.Unit">Unit</a></span>
+<span>def <span class="ident">convert</span></span>(<span>self, unit: str, dpi: int | Decimal | float = 72) ‑> <a title="odfdo.datatype.Unit" href="#odfdo.datatype.Unit">Unit</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -682,12 +686,12 @@ class Unit:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def convert(self, unit: str, dpi: int = 72) -&gt; Unit:
+<pre><code class="python">def convert(self, unit: str, dpi: int | Decimal | float = 72) -&gt; Unit:
     if unit == &#34;px&#34;:
         if self.unit == &#34;in&#34;:
-            return Unit(int(self.value * dpi), &#34;px&#34;)
+            return Unit(int(self.value * int(dpi)), &#34;px&#34;)
         elif self.unit == &#34;cm&#34;:
-            return Unit(int(self.value / Decimal(&#34;2.54&#34;) * dpi), &#34;px&#34;)
+            return Unit(int(self.value / Decimal(&#34;2.54&#34;) * int(dpi)), &#34;px&#34;)
         raise NotImplementedError(str(self.unit))
     raise NotImplementedError(str(unit))</code></pre>
 </details>

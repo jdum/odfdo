@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.link API documentation</title>
-<meta name="description" content="Link class for &#34;text:a&#34;" />
+<meta name="description" content="Link class for &#34;text:a&#34;." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,12 +22,12 @@
 <h1 class="title">Module <code>odfdo.link</code></h1>
 </header>
 <section id="section-intro">
-<p>Link class for "text:a"</p>
+<p>Link class for "text:a".</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -48,9 +48,13 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
 #          Jerome Dumonteil &lt;jerome.dumonteil@itaapy.com&gt;
-&#34;&#34;&#34;Link class for &#34;text:a&#34;
+&#34;&#34;&#34;Link class for &#34;text:a&#34;.
 &#34;&#34;&#34;
-from .element import register_element_class
+from __future__ import annotations
+
+from typing import Any
+
+from .element import PropDef, register_element_class
 from .paragraph_base import ParagraphBase
 
 
@@ -58,27 +62,27 @@ class Link(ParagraphBase):
     &#34;&#34;&#34;Link class, &#34;text:a&#34; ODF element.&#34;&#34;&#34;
 
     _tag = &#34;text:a&#34;
-    _properties = (
-        (&#34;url&#34;, &#34;xlink:href&#34;),
-        (&#34;name&#34;, &#34;office:name&#34;),
-        (&#34;title&#34;, &#34;office:title&#34;),
-        (&#34;target_frame&#34;, &#34;office:target-frame-name&#34;),
-        (&#34;show&#34;, &#34;xlink:show&#34;),
-        (&#34;visited_style&#34;, &#34;text:visited-style-name&#34;),
-        (&#34;style&#34;, &#34;text:style-name&#34;),
+    _properties: tuple[PropDef, ...] = (
+        PropDef(&#34;url&#34;, &#34;xlink:href&#34;),
+        PropDef(&#34;name&#34;, &#34;office:name&#34;),
+        PropDef(&#34;title&#34;, &#34;office:title&#34;),
+        PropDef(&#34;target_frame&#34;, &#34;office:target-frame-name&#34;),
+        PropDef(&#34;show&#34;, &#34;xlink:show&#34;),
+        PropDef(&#34;visited_style&#34;, &#34;text:visited-style-name&#34;),
+        PropDef(&#34;style&#34;, &#34;text:style-name&#34;),
     )
 
     def __init__(
         self,
-        url=&#34;&#34;,
-        name=None,
-        title=None,
-        text=None,
-        target_frame=None,
-        style=None,
-        visited_style=None,
-        **kwargs,
-    ):
+        url: str | None = &#34;&#34;,
+        name: str | None = None,
+        title: str | None = None,
+        text: str | None = None,
+        target_frame: str | None = None,
+        style: str | None = None,
+        visited_style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         &#34;&#34;&#34;
         Arguments:
 
@@ -92,11 +96,9 @@ class Link(ParagraphBase):
 
             target_frame -- &#39;_self&#39;, &#39;_blank&#39;, &#39;_parent&#39;, &#39;_top&#39;
 
-            style -- string
+            style -- str
 
-            visited_style -- string
-
-        return: Link
+            visited_style -- str
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
@@ -144,7 +146,7 @@ register_element_class(Link)</code></pre>
 <dl>
 <dt id="odfdo.link.Link"><code class="flex name class">
 <span>class <span class="ident">Link</span></span>
-<span>(</span><span>url='', name=None, title=None, text=None, target_frame=None, style=None, visited_style=None, **kwargs)</span>
+<span>(</span><span>url: str | None = '', name: str | None = None, title: str | None = None, text: str | None = None, target_frame: str | None = None, style: str | None = None, visited_style: str | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Link class, "text:a" ODF element.</p>
@@ -154,9 +156,8 @@ register_element_class(Link)</code></pre>
 <p>title &ndash; str</p>
 <p>text &ndash; str</p>
 <p>target_frame &ndash; '_self', '_blank', '_parent', '_top'</p>
-<p>style &ndash; string</p>
-<p>visited_style &ndash; string</p>
-<p>return: Link</p></div>
+<p>style &ndash; str</p>
+<p>visited_style &ndash; str</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -165,27 +166,27 @@ register_element_class(Link)</code></pre>
     &#34;&#34;&#34;Link class, &#34;text:a&#34; ODF element.&#34;&#34;&#34;
 
     _tag = &#34;text:a&#34;
-    _properties = (
-        (&#34;url&#34;, &#34;xlink:href&#34;),
-        (&#34;name&#34;, &#34;office:name&#34;),
-        (&#34;title&#34;, &#34;office:title&#34;),
-        (&#34;target_frame&#34;, &#34;office:target-frame-name&#34;),
-        (&#34;show&#34;, &#34;xlink:show&#34;),
-        (&#34;visited_style&#34;, &#34;text:visited-style-name&#34;),
-        (&#34;style&#34;, &#34;text:style-name&#34;),
+    _properties: tuple[PropDef, ...] = (
+        PropDef(&#34;url&#34;, &#34;xlink:href&#34;),
+        PropDef(&#34;name&#34;, &#34;office:name&#34;),
+        PropDef(&#34;title&#34;, &#34;office:title&#34;),
+        PropDef(&#34;target_frame&#34;, &#34;office:target-frame-name&#34;),
+        PropDef(&#34;show&#34;, &#34;xlink:show&#34;),
+        PropDef(&#34;visited_style&#34;, &#34;text:visited-style-name&#34;),
+        PropDef(&#34;style&#34;, &#34;text:style-name&#34;),
     )
 
     def __init__(
         self,
-        url=&#34;&#34;,
-        name=None,
-        title=None,
-        text=None,
-        target_frame=None,
-        style=None,
-        visited_style=None,
-        **kwargs,
-    ):
+        url: str | None = &#34;&#34;,
+        name: str | None = None,
+        title: str | None = None,
+        text: str | None = None,
+        target_frame: str | None = None,
+        style: str | None = None,
+        visited_style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         &#34;&#34;&#34;
         Arguments:
 
@@ -199,11 +200,9 @@ register_element_class(Link)</code></pre>
 
             target_frame -- &#39;_self&#39;, &#39;_blank&#39;, &#39;_parent&#39;, &#39;_top&#39;
 
-            style -- string
+            style -- str
 
-            visited_style -- string
-
-        return: Link
+            visited_style -- str
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
@@ -241,15 +240,18 @@ register_element_class(Link)</code></pre>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.link.Link.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dt id="odfdo.link.Link.name"><code class="name">var <span class="ident">name</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute office:name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -259,15 +261,18 @@ register_element_class(Link)</code></pre>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.link.Link.show"><code class="name">var <span class="ident">show</span></code></dt>
+<dt id="odfdo.link.Link.show"><code class="name">var <span class="ident">show</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute xlink:show</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -277,15 +282,18 @@ register_element_class(Link)</code></pre>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.link.Link.target_frame"><code class="name">var <span class="ident">target_frame</span></code></dt>
+<dt id="odfdo.link.Link.target_frame"><code class="name">var <span class="ident">target_frame</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute office:target-frame-name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -295,15 +303,18 @@ register_element_class(Link)</code></pre>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.link.Link.title"><code class="name">var <span class="ident">title</span></code></dt>
+<dt id="odfdo.link.Link.title"><code class="name">var <span class="ident">title</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute office:title</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -313,15 +324,18 @@ register_element_class(Link)</code></pre>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.link.Link.url"><code class="name">var <span class="ident">url</span></code></dt>
+<dt id="odfdo.link.Link.url"><code class="name">var <span class="ident">url</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute xlink:href</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -331,15 +345,18 @@ register_element_class(Link)</code></pre>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.link.Link.visited_style"><code class="name">var <span class="ident">visited_style</span></code></dt>
+<dt id="odfdo.link.Link.visited_style"><code class="name">var <span class="ident">visited_style</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:visited-style-name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -363,12 +380,16 @@ register_element_class(Link)</code></pre>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.paragraph_base.ParagraphBase.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.paragraph_base.ParagraphBase.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.paragraph_base.ParagraphBase.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.paragraph_base.ParagraphBase.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>

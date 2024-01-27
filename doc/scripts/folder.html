@@ -26,7 +26,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -46,6 +46,7 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Jerome Dumonteil &lt;jerome.dumonteil@itaapy.com&gt;
+from __future__ import annotations
 
 import sys
 from optparse import OptionParser
@@ -54,7 +55,7 @@ from pathlib import Path
 from odfdo import Document, __version__
 
 
-def main():
+def main() -&gt; None:
     usage = &#34;%prog &lt;input file_or_folder&gt;&#34;
     description = &#34;Convert standard ODF file to folder, and reverse.&#34;
     parser = OptionParser(usage, version=__version__, description=description)
@@ -71,8 +72,8 @@ def main():
         sys.exit(1)
 
 
-def convert_folder(path):
-    path = Path(path)
+def convert_folder(path_str: str) -&gt; None:
+    path = Path(path_str)
     if path.is_file():
         out_packaging = &#34;folder&#34;
     elif path.is_dir():
@@ -95,7 +96,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="odfdo.scripts.folder.convert_folder"><code class="name flex">
-<span>def <span class="ident">convert_folder</span></span>(<span>path)</span>
+<span>def <span class="ident">convert_folder</span></span>(<span>path_str: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -103,8 +104,8 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def convert_folder(path):
-    path = Path(path)
+<pre><code class="python">def convert_folder(path_str: str) -&gt; None:
+    path = Path(path_str)
     if path.is_file():
         out_packaging = &#34;folder&#34;
     elif path.is_dir():
@@ -116,7 +117,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 </details>
 </dd>
 <dt id="odfdo.scripts.folder.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>)</span>
+<span>def <span class="ident">main</span></span>(<span>) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -124,7 +125,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def main():
+<pre><code class="python">def main() -&gt; None:
     usage = &#34;%prog &lt;input file_or_folder&gt;&#34;
     description = &#34;Convert standard ODF file to folder, and reverse.&#34;
     parser = OptionParser(usage, version=__version__, description=description)

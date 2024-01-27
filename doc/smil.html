@@ -6,7 +6,7 @@
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.smil API documentation</title>
 <meta name="description" content="Classes for ODF implementation of SMIL (Synchronized Multimedia
-Integration Language)" />
+Integration Language)." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -24,12 +24,12 @@ Integration Language)" />
 </header>
 <section id="section-intro">
 <p>Classes for ODF implementation of SMIL (Synchronized Multimedia
-Integration Language)</p>
+Integration Language).</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -50,9 +50,13 @@ Integration Language)</p>
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse &lt;david.versmisse@itaapy.com&gt;
 &#34;&#34;&#34;Classes for ODF implementation of SMIL (Synchronized Multimedia
-Integration Language)
+Integration Language).
 &#34;&#34;&#34;
-from .element import Element, register_element_class
+from __future__ import annotations
+
+from typing import Any
+
+from .element import Element, PropDef, register_element_class
 
 
 class AnimPar(Element):
@@ -69,11 +73,16 @@ class AnimPar(Element):
 
     _tag = &#34;anim:par&#34;
     _properties = (
-        (&#34;presentation_node_type&#34;, &#34;presentation:node-type&#34;),
-        (&#34;smil_begin&#34;, &#34;smil:begin&#34;),
+        PropDef(&#34;presentation_node_type&#34;, &#34;presentation:node-type&#34;),
+        PropDef(&#34;smil_begin&#34;, &#34;smil:begin&#34;),
     )
 
-    def __init__(self, presentation_node_type=None, smil_begin=None, **kwargs):
+    def __init__(
+        self,
+        presentation_node_type: str | None = None,
+        smil_begin: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         super().__init__(**kwargs)
         if self._do_init:
             if presentation_node_type:
@@ -98,9 +107,13 @@ class AnimSeq(Element):
     &#34;&#34;&#34;
 
     _tag = &#34;anim:seq&#34;
-    _properties = ((&#34;presentation_node_type&#34;, &#34;presentation:node-type&#34;),)
+    _properties = (PropDef(&#34;presentation_node_type&#34;, &#34;presentation:node-type&#34;),)
 
-    def __init__(self, presentation_node_type=None, **kwargs):
+    def __init__(
+        self,
+        presentation_node_type: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         super().__init__(**kwargs)
         if self._do_init and presentation_node_type:
             self.presentation_node_type = presentation_node_type
@@ -129,24 +142,24 @@ class AnimTransFilter(Element):
 
     _tag = &#34;anim:transitionFilter&#34;
     _properties = (
-        (&#34;smil_dur&#34;, &#34;smil:dur&#34;),
-        (&#34;smil_type&#34;, &#34;smil:type&#34;),
-        (&#34;smil_subtype&#34;, &#34;smil:subtype&#34;),
-        (&#34;smil_direction&#34;, &#34;smil:direction&#34;),
-        (&#34;smil_fadeColor&#34;, &#34;smil:fadeColor&#34;),
-        (&#34;smil_mode&#34;, &#34;smil:mode&#34;),
+        PropDef(&#34;smil_dur&#34;, &#34;smil:dur&#34;),
+        PropDef(&#34;smil_type&#34;, &#34;smil:type&#34;),
+        PropDef(&#34;smil_subtype&#34;, &#34;smil:subtype&#34;),
+        PropDef(&#34;smil_direction&#34;, &#34;smil:direction&#34;),
+        PropDef(&#34;smil_fadeColor&#34;, &#34;smil:fadeColor&#34;),
+        PropDef(&#34;smil_mode&#34;, &#34;smil:mode&#34;),
     )
 
     def __init__(
         self,
-        smil_dur=None,
-        smil_type=None,
-        smil_subtype=None,
-        smil_direction=None,
-        smil_fadeColor=None,
-        smil_mode=None,
-        **kwargs,
-    ):
+        smil_dur: str | None = None,
+        smil_type: str | None = None,
+        smil_subtype: str | None = None,
+        smil_direction: str | None = None,
+        smil_fadeColor: str | None = None,
+        smil_mode: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         super().__init__(**kwargs)
         if self._do_init:
             if smil_dur:
@@ -181,7 +194,7 @@ register_element_class(AnimTransFilter)</code></pre>
 <dl>
 <dt id="odfdo.smil.AnimPar"><code class="flex name class">
 <span>class <span class="ident">AnimPar</span></span>
-<span>(</span><span>presentation_node_type=None, smil_begin=None, **kwargs)</span>
+<span>(</span><span>presentation_node_type: str | None = None, smil_begin: str | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>A container for SMIL Presentation Animations.</p>
@@ -208,11 +221,16 @@ and interactive-sequence</p>
 
     _tag = &#34;anim:par&#34;
     _properties = (
-        (&#34;presentation_node_type&#34;, &#34;presentation:node-type&#34;),
-        (&#34;smil_begin&#34;, &#34;smil:begin&#34;),
+        PropDef(&#34;presentation_node_type&#34;, &#34;presentation:node-type&#34;),
+        PropDef(&#34;smil_begin&#34;, &#34;smil:begin&#34;),
     )
 
-    def __init__(self, presentation_node_type=None, smil_begin=None, **kwargs):
+    def __init__(
+        self,
+        presentation_node_type: str | None = None,
+        smil_begin: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         super().__init__(**kwargs)
         if self._do_init:
             if presentation_node_type:
@@ -226,15 +244,18 @@ and interactive-sequence</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.smil.AnimPar.presentation_node_type"><code class="name">var <span class="ident">presentation_node_type</span></code></dt>
+<dt id="odfdo.smil.AnimPar.presentation_node_type"><code class="name">var <span class="ident">presentation_node_type</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute presentation:node-type</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -244,15 +265,18 @@ and interactive-sequence</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.smil.AnimPar.smil_begin"><code class="name">var <span class="ident">smil_begin</span></code></dt>
+<dt id="odfdo.smil.AnimPar.smil_begin"><code class="name">var <span class="ident">smil_begin</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute smil:begin</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -275,12 +299,16 @@ and interactive-sequence</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -380,7 +408,7 @@ and interactive-sequence</p>
 </dd>
 <dt id="odfdo.smil.AnimSeq"><code class="flex name class">
 <span>class <span class="ident">AnimSeq</span></span>
-<span>(</span><span>presentation_node_type=None, **kwargs)</span>
+<span>(</span><span>presentation_node_type: str | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>TA container for SMIL Presentation Animations. Animations
@@ -407,9 +435,13 @@ and interactive-sequence</p></div>
     &#34;&#34;&#34;
 
     _tag = &#34;anim:seq&#34;
-    _properties = ((&#34;presentation_node_type&#34;, &#34;presentation:node-type&#34;),)
+    _properties = (PropDef(&#34;presentation_node_type&#34;, &#34;presentation:node-type&#34;),)
 
-    def __init__(self, presentation_node_type=None, **kwargs):
+    def __init__(
+        self,
+        presentation_node_type: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         super().__init__(**kwargs)
         if self._do_init and presentation_node_type:
             self.presentation_node_type = presentation_node_type</code></pre>
@@ -420,15 +452,18 @@ and interactive-sequence</p></div>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.smil.AnimSeq.presentation_node_type"><code class="name">var <span class="ident">presentation_node_type</span></code></dt>
+<dt id="odfdo.smil.AnimSeq.presentation_node_type"><code class="name">var <span class="ident">presentation_node_type</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute presentation:node-type</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -451,12 +486,16 @@ and interactive-sequence</p></div>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -556,7 +595,7 @@ and interactive-sequence</p></div>
 </dd>
 <dt id="odfdo.smil.AnimTransFilter"><code class="flex name class">
 <span>class <span class="ident">AnimTransFilter</span></span>
-<span>(</span><span>smil_dur=None, smil_type=None, smil_subtype=None, smil_direction=None, smil_fadeColor=None, smil_mode=None, **kwargs)</span>
+<span>(</span><span>smil_dur: str | None = None, smil_type: str | None = None, smil_subtype: str | None = None, smil_direction: str | None = None, smil_fadeColor: str | None = None, smil_mode: str | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Class to make a beautiful transition between two frames.</p>
@@ -592,24 +631,24 @@ to get a list of all types/subtypes</p>
 
     _tag = &#34;anim:transitionFilter&#34;
     _properties = (
-        (&#34;smil_dur&#34;, &#34;smil:dur&#34;),
-        (&#34;smil_type&#34;, &#34;smil:type&#34;),
-        (&#34;smil_subtype&#34;, &#34;smil:subtype&#34;),
-        (&#34;smil_direction&#34;, &#34;smil:direction&#34;),
-        (&#34;smil_fadeColor&#34;, &#34;smil:fadeColor&#34;),
-        (&#34;smil_mode&#34;, &#34;smil:mode&#34;),
+        PropDef(&#34;smil_dur&#34;, &#34;smil:dur&#34;),
+        PropDef(&#34;smil_type&#34;, &#34;smil:type&#34;),
+        PropDef(&#34;smil_subtype&#34;, &#34;smil:subtype&#34;),
+        PropDef(&#34;smil_direction&#34;, &#34;smil:direction&#34;),
+        PropDef(&#34;smil_fadeColor&#34;, &#34;smil:fadeColor&#34;),
+        PropDef(&#34;smil_mode&#34;, &#34;smil:mode&#34;),
     )
 
     def __init__(
         self,
-        smil_dur=None,
-        smil_type=None,
-        smil_subtype=None,
-        smil_direction=None,
-        smil_fadeColor=None,
-        smil_mode=None,
-        **kwargs,
-    ):
+        smil_dur: str | None = None,
+        smil_type: str | None = None,
+        smil_subtype: str | None = None,
+        smil_direction: str | None = None,
+        smil_fadeColor: str | None = None,
+        smil_mode: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         super().__init__(**kwargs)
         if self._do_init:
             if smil_dur:
@@ -631,15 +670,18 @@ to get a list of all types/subtypes</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.smil.AnimTransFilter.smil_direction"><code class="name">var <span class="ident">smil_direction</span></code></dt>
+<dt id="odfdo.smil.AnimTransFilter.smil_direction"><code class="name">var <span class="ident">smil_direction</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute smil:direction</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -649,15 +691,18 @@ to get a list of all types/subtypes</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.smil.AnimTransFilter.smil_dur"><code class="name">var <span class="ident">smil_dur</span></code></dt>
+<dt id="odfdo.smil.AnimTransFilter.smil_dur"><code class="name">var <span class="ident">smil_dur</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute smil:dur</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -667,15 +712,18 @@ to get a list of all types/subtypes</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.smil.AnimTransFilter.smil_fadeColor"><code class="name">var <span class="ident">smil_fadeColor</span></code></dt>
+<dt id="odfdo.smil.AnimTransFilter.smil_fadeColor"><code class="name">var <span class="ident">smil_fadeColor</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute smil:fadeColor</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -685,15 +733,18 @@ to get a list of all types/subtypes</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.smil.AnimTransFilter.smil_mode"><code class="name">var <span class="ident">smil_mode</span></code></dt>
+<dt id="odfdo.smil.AnimTransFilter.smil_mode"><code class="name">var <span class="ident">smil_mode</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute smil:mode</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -703,15 +754,18 @@ to get a list of all types/subtypes</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.smil.AnimTransFilter.smil_subtype"><code class="name">var <span class="ident">smil_subtype</span></code></dt>
+<dt id="odfdo.smil.AnimTransFilter.smil_subtype"><code class="name">var <span class="ident">smil_subtype</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute smil:subtype</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -721,15 +775,18 @@ to get a list of all types/subtypes</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.smil.AnimTransFilter.smil_type"><code class="name">var <span class="ident">smil_type</span></code></dt>
+<dt id="odfdo.smil.AnimTransFilter.smil_type"><code class="name">var <span class="ident">smil_type</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute smil:type</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -752,12 +809,16 @@ to get a list of all types/subtypes</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>

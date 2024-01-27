@@ -27,7 +27,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -56,8 +56,8 @@ import contextlib
 import io
 import os
 import shutil
+import time
 from copy import deepcopy
-from importlib import resources as rso
 from pathlib import Path, PurePath
 from zipfile import ZIP_DEFLATED, ZIP_STORED, BadZipfile, ZipFile, is_zipfile
 
@@ -69,11 +69,9 @@ from .const import (
     ODF_MIMETYPES,
     ODF_SETTINGS,
     ODF_STYLES,
-    ODF_TEMPLATES,
 )
-from .manifest import Manifest
 from .scriptutils import printwarn
-from .utils import to_bytes, to_str
+from .utils import bytes_to_str, str_to_bytes
 
 
 def normalize_path(path: str) -&gt; str:
@@ -85,13 +83,12 @@ def normalize_path(path: str) -&gt; str:
 class Container:
     &#34;&#34;&#34;Representation of the ODF file.&#34;&#34;&#34;
 
-    def __init__(self, path: Path | str | io.BytesIO | None = None):
-        self.__parts = {}
-        self.__parts_ts = {}
-        self.__packaging = None
-        self.__path_like = None
-        self.__packaging = &#34;zip&#34;
-        self.path = None  # or Path
+    def __init__(self, path: Path | str | io.BytesIO | None = None) -&gt; None:
+        self.__parts: dict[str, bytes | None] = {}
+        self.__parts_ts: dict[str, int] = {}
+        self.__path_like: Path | str | io.BytesIO | None = None
+        self.__packaging: str = &#34;zip&#34;
+        self.path: Path | None = None  # or Path
         if path:
             self.open(path)
 
@@ -119,44 +116,19 @@ class Container:
                 return self._read_folder()
         raise TypeError(f&#34;Document format not managed by odfdo: {type(path_or_file)}.&#34;)
 
-    @classmethod
-    def from_template(cls, template: str | Path) -&gt; Container:
-        &#34;&#34;&#34;Return a Container instance based on template argument.&#34;&#34;&#34;
-        template_container = cls()
-        if template in ODF_TEMPLATES:
-            template_container = cls()
-            template_name = ODF_TEMPLATES[template]
-            with rso.as_file(
-                rso.files(&#34;odfdo.templates&#34;).joinpath(template_name)
-            ) as template_path:
-                template_container.open(template_path)
-        else:
-            # custome template
-            template_container.open(template)
-        # Return a copy of the template container
-        clone = template_container.clone
-        # Change type from template to regular
-        mimetype = clone.mimetype.replace(&#34;-template&#34;, &#34;&#34;)
-        clone.mimetype = mimetype
-        # Update the manifest
-        manifest = Manifest(ODF_MANIFEST, clone)
-        manifest.set_media_type(&#34;/&#34;, mimetype)
-        clone.set_part(ODF_MANIFEST, manifest.serialize())
-        return clone
-
     def _read_zip(self) -&gt; None:
         if isinstance(self.__path_like, io.BytesIO):
             self.__path_like.seek(0)
-        with ZipFile(self.__path_like) as zf:
-            mimetype = zf.read(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
+        with ZipFile(self.__path_like) as zf:  # type: ignore
+            mimetype = bytes_to_str(zf.read(&#34;mimetype&#34;))
             if mimetype not in ODF_MIMETYPES:
                 raise ValueError(f&#34;Document of unknown type {mimetype}&#34;)
-            self.__parts[&#34;mimetype&#34;] = to_bytes(mimetype)
+            self.__parts[&#34;mimetype&#34;] = str_to_bytes(mimetype)
         if self.path is None:
             if isinstance(self.__path_like, io.BytesIO):
                 self.__path_like.seek(0)
             # read the full file at once and forget file
-            with ZipFile(self.__path_like) as zf:
+            with ZipFile(self.__path_like) as zf:  # type: ignore
                 for name in zf.namelist():
                     upath = normalize_path(name)
                     self.__parts[upath] = zf.read(name)
@@ -168,16 +140,17 @@ class Container:
         except OSError:
             printwarn(&#34;Corrupted or not an OpenDocument folder (missing mimetype)&#34;)
             mimetype = b&#34;&#34;
-            timestamp = None
-        if to_str(mimetype) not in ODF_MIMETYPES:
-            message = f&#34;Document of unknown type {mimetype}, try with ODF Text.&#34;
+            timestamp = int(time.time())
+        if bytes_to_str(mimetype) not in ODF_MIMETYPES:
+            message = f&#34;Document of unknown type {mimetype!r}, try with ODF Text.&#34;
             printwarn(message)
-            mimetype = to_bytes(ODF_EXTENSIONS[&#34;odt&#34;])
-            self.__parts[&#34;mimetype&#34;] = mimetype
+            self.__parts[&#34;mimetype&#34;] = str_to_bytes(ODF_EXTENSIONS[&#34;odt&#34;])
             self.__parts_ts[&#34;mimetype&#34;] = timestamp
 
     def _parse_folder(self, folder: str) -&gt; list[str]:
         parts = []
+        if self.path is None:
+            raise ValueError(&#34;Document path is not defined&#34;)
         root = self.path / folder
         for path in root.iterdir():
             if path.name.startswith(&#34;.&#34;):  # no hidden files
@@ -186,7 +159,7 @@ class Container:
             if path.is_file():
                 parts.append(relative_path.as_posix())
             if path.is_dir():
-                sub_parts = self._parse_folder(relative_path)
+                sub_parts = self._parse_folder(str(relative_path))
                 if sub_parts:
                     parts.extend(sub_parts)
                 else:
@@ -200,22 +173,28 @@ class Container:
 
     def _get_folder_part(self, name: str) -&gt; tuple[bytes, int]:
         &#34;&#34;&#34;Get bytes of a part from the ODF folder, with timestamp.&#34;&#34;&#34;
+        if self.path is None:
+            raise ValueError(&#34;Document path is not defined&#34;)
         path = self.path / name
-        timestamp = path.stat().st_mtime
+        timestamp = int(path.stat().st_mtime)
         if path.is_dir():
             return (b&#34;&#34;, timestamp)
         return (path.read_bytes(), timestamp)
 
     def _get_folder_part_timestamp(self, name: str) -&gt; int:
+        if self.path is None:
+            raise ValueError(&#34;Document path is not defined&#34;)
         path = self.path / name
         try:
-            timestamp = path.stat().st_mtime
+            timestamp = int(path.stat().st_mtime)
         except OSError:
             timestamp = -1
         return timestamp
 
     def _get_zip_part(self, name: str) -&gt; bytes | None:
         &#34;&#34;&#34;Get bytes of a part from the Zip ODF file. No cache.&#34;&#34;&#34;
+        if self.path is None:
+            raise ValueError(&#34;Document path is not defined&#34;)
         try:
             with ZipFile(self.path) as zf:
                 upath = normalize_path(name)
@@ -226,6 +205,8 @@ class Container:
 
     def _get_all_zip_part(self) -&gt; None:
         &#34;&#34;&#34;Read all parts. No cache.&#34;&#34;&#34;
+        if self.path is None:
+            raise ValueError(&#34;Document path is not defined&#34;)
         try:
             with ZipFile(self.path) as zf:
                 for name in zf.namelist():
@@ -246,8 +227,11 @@ class Container:
                 printwarn(f&#34;Missing &#39;{ODF_MANIFEST}&#39;&#34;)
             # &#34;Pretty-save&#34; parts in some order
             # mimetype requires to be first and uncompressed
+            mimetype = parts.get(&#34;mimetype&#34;)
+            if mimetype is None:
+                raise ValueError(&#34;Mimetype is not defined&#34;)
             try:
-                filezip.writestr(&#34;mimetype&#34;, parts[&#34;mimetype&#34;], ZIP_STORED)
+                filezip.writestr(&#34;mimetype&#34;, mimetype, ZIP_STORED)
                 part_names.remove(&#34;mimetype&#34;)
             except (ValueError, KeyError):
                 printwarn(&#34;Missing &#39;mimetype&#39;&#34;)
@@ -256,7 +240,10 @@ class Container:
                 if path not in parts:
                     printwarn(f&#34;Missing &#39;{path}&#39;&#34;)
                     continue
-                filezip.writestr(path, parts[path])
+                part = parts[path]
+                if part is None:
+                    continue
+                filezip.writestr(path, part)
                 part_names.remove(path)
             # Everything else
             for path in part_names:
@@ -267,12 +254,14 @@ class Container:
                 filezip.writestr(path, data)
             # Manifest
             with contextlib.suppress(KeyError):
-                filezip.writestr(ODF_MANIFEST, parts[ODF_MANIFEST])
+                part = parts[ODF_MANIFEST]
+                if part is not None:
+                    filezip.writestr(ODF_MANIFEST, part)
 
-    def _save_folder(self, folder: str) -&gt; None:
+    def _save_folder(self, folder: Path | str) -&gt; None:
         &#34;&#34;&#34;Save a folder ODF from the available parts.&#34;&#34;&#34;
 
-        def dump(part_path: str, content: bytes):
+        def dump(part_path: str, content: bytes) -&gt; None:
             if part_path.endswith(&#34;/&#34;):  # folder
                 is_folder = True
                 pure_path = PurePath(folder, part_path[:-1])
@@ -310,7 +299,7 @@ class Container:
         elif self.__packaging == &#34;folder&#34;:
             return self._get_folder_parts()
         else:
-            raise ValueError(&#34;Unable to provide parts of the document.&#34;)
+            raise ValueError(&#34;Unable to provide parts of the document&#34;)
 
     def get_part(self, path: str) -&gt; str | bytes | None:
         &#34;&#34;&#34;Get the bytes of a part of the ODF.&#34;&#34;&#34;
@@ -338,18 +327,24 @@ class Container:
 
     @property
     def mimetype(self) -&gt; str:
-        &#34;&#34;&#34;Return unicode value of mimetype of the document.&#34;&#34;&#34;
-        try:
-            return self.get_part(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
-        except Exception:
-            return &#34;&#34;
+        &#34;&#34;&#34;Return str value of mimetype of the document.&#34;&#34;&#34;
+        with contextlib.suppress(Exception):
+            b_mimetype = self.get_part(&#34;mimetype&#34;)
+            if isinstance(b_mimetype, bytes):
+                return bytes_to_str(b_mimetype)
+        return &#34;&#34;
 
     @mimetype.setter
     def mimetype(self, mimetype: str | bytes) -&gt; None:
         &#34;&#34;&#34;Set mimetype value of the document.&#34;&#34;&#34;
-        self.__parts[&#34;mimetype&#34;] = to_bytes(mimetype)
+        if isinstance(mimetype, str):
+            self.__parts[&#34;mimetype&#34;] = str_to_bytes(mimetype)
+        elif isinstance(mimetype, bytes):
+            self.__parts[&#34;mimetype&#34;] = mimetype
+        else:
+            raise TypeError(f&#39;Wrong mimetype &#34;{mimetype!r}&#34;&#39;)
 
-    def set_part(self, path: str, data: str | bytes) -&gt; None:
+    def set_part(self, path: str, data: bytes) -&gt; None:
         &#34;&#34;&#34;Replace or add a new part.&#34;&#34;&#34;
         self.__parts[path] = data
 
@@ -401,7 +396,7 @@ class Container:
                 target = target[:-1]
             while target.endswith(&#34;.folder&#34;):
                 target = target.split(&#34;.folder&#34;, 1)[0]
-        return target
+        return target  # type: ignore
 
     def _save_as_zip(self, target: str | Path | io.BytesIO, backup: bool) -&gt; None:
         if isinstance(target, (str, Path)) and backup:
@@ -504,13 +499,12 @@ class Container:
 <pre><code class="python">class Container:
     &#34;&#34;&#34;Representation of the ODF file.&#34;&#34;&#34;
 
-    def __init__(self, path: Path | str | io.BytesIO | None = None):
-        self.__parts = {}
-        self.__parts_ts = {}
-        self.__packaging = None
-        self.__path_like = None
-        self.__packaging = &#34;zip&#34;
-        self.path = None  # or Path
+    def __init__(self, path: Path | str | io.BytesIO | None = None) -&gt; None:
+        self.__parts: dict[str, bytes | None] = {}
+        self.__parts_ts: dict[str, int] = {}
+        self.__path_like: Path | str | io.BytesIO | None = None
+        self.__packaging: str = &#34;zip&#34;
+        self.path: Path | None = None  # or Path
         if path:
             self.open(path)
 
@@ -538,44 +532,19 @@ class Container:
                 return self._read_folder()
         raise TypeError(f&#34;Document format not managed by odfdo: {type(path_or_file)}.&#34;)
 
-    @classmethod
-    def from_template(cls, template: str | Path) -&gt; Container:
-        &#34;&#34;&#34;Return a Container instance based on template argument.&#34;&#34;&#34;
-        template_container = cls()
-        if template in ODF_TEMPLATES:
-            template_container = cls()
-            template_name = ODF_TEMPLATES[template]
-            with rso.as_file(
-                rso.files(&#34;odfdo.templates&#34;).joinpath(template_name)
-            ) as template_path:
-                template_container.open(template_path)
-        else:
-            # custome template
-            template_container.open(template)
-        # Return a copy of the template container
-        clone = template_container.clone
-        # Change type from template to regular
-        mimetype = clone.mimetype.replace(&#34;-template&#34;, &#34;&#34;)
-        clone.mimetype = mimetype
-        # Update the manifest
-        manifest = Manifest(ODF_MANIFEST, clone)
-        manifest.set_media_type(&#34;/&#34;, mimetype)
-        clone.set_part(ODF_MANIFEST, manifest.serialize())
-        return clone
-
     def _read_zip(self) -&gt; None:
         if isinstance(self.__path_like, io.BytesIO):
             self.__path_like.seek(0)
-        with ZipFile(self.__path_like) as zf:
-            mimetype = zf.read(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
+        with ZipFile(self.__path_like) as zf:  # type: ignore
+            mimetype = bytes_to_str(zf.read(&#34;mimetype&#34;))
             if mimetype not in ODF_MIMETYPES:
                 raise ValueError(f&#34;Document of unknown type {mimetype}&#34;)
-            self.__parts[&#34;mimetype&#34;] = to_bytes(mimetype)
+            self.__parts[&#34;mimetype&#34;] = str_to_bytes(mimetype)
         if self.path is None:
             if isinstance(self.__path_like, io.BytesIO):
                 self.__path_like.seek(0)
             # read the full file at once and forget file
-            with ZipFile(self.__path_like) as zf:
+            with ZipFile(self.__path_like) as zf:  # type: ignore
                 for name in zf.namelist():
                     upath = normalize_path(name)
                     self.__parts[upath] = zf.read(name)
@@ -587,16 +556,17 @@ class Container:
         except OSError:
             printwarn(&#34;Corrupted or not an OpenDocument folder (missing mimetype)&#34;)
             mimetype = b&#34;&#34;
-            timestamp = None
-        if to_str(mimetype) not in ODF_MIMETYPES:
-            message = f&#34;Document of unknown type {mimetype}, try with ODF Text.&#34;
+            timestamp = int(time.time())
+        if bytes_to_str(mimetype) not in ODF_MIMETYPES:
+            message = f&#34;Document of unknown type {mimetype!r}, try with ODF Text.&#34;
             printwarn(message)
-            mimetype = to_bytes(ODF_EXTENSIONS[&#34;odt&#34;])
-            self.__parts[&#34;mimetype&#34;] = mimetype
+            self.__parts[&#34;mimetype&#34;] = str_to_bytes(ODF_EXTENSIONS[&#34;odt&#34;])
             self.__parts_ts[&#34;mimetype&#34;] = timestamp
 
     def _parse_folder(self, folder: str) -&gt; list[str]:
         parts = []
+        if self.path is None:
+            raise ValueError(&#34;Document path is not defined&#34;)
         root = self.path / folder
         for path in root.iterdir():
             if path.name.startswith(&#34;.&#34;):  # no hidden files
@@ -605,7 +575,7 @@ class Container:
             if path.is_file():
                 parts.append(relative_path.as_posix())
             if path.is_dir():
-                sub_parts = self._parse_folder(relative_path)
+                sub_parts = self._parse_folder(str(relative_path))
                 if sub_parts:
                     parts.extend(sub_parts)
                 else:
@@ -619,22 +589,28 @@ class Container:
 
     def _get_folder_part(self, name: str) -&gt; tuple[bytes, int]:
         &#34;&#34;&#34;Get bytes of a part from the ODF folder, with timestamp.&#34;&#34;&#34;
+        if self.path is None:
+            raise ValueError(&#34;Document path is not defined&#34;)
         path = self.path / name
-        timestamp = path.stat().st_mtime
+        timestamp = int(path.stat().st_mtime)
         if path.is_dir():
             return (b&#34;&#34;, timestamp)
         return (path.read_bytes(), timestamp)
 
     def _get_folder_part_timestamp(self, name: str) -&gt; int:
+        if self.path is None:
+            raise ValueError(&#34;Document path is not defined&#34;)
         path = self.path / name
         try:
-            timestamp = path.stat().st_mtime
+            timestamp = int(path.stat().st_mtime)
         except OSError:
             timestamp = -1
         return timestamp
 
     def _get_zip_part(self, name: str) -&gt; bytes | None:
         &#34;&#34;&#34;Get bytes of a part from the Zip ODF file. No cache.&#34;&#34;&#34;
+        if self.path is None:
+            raise ValueError(&#34;Document path is not defined&#34;)
         try:
             with ZipFile(self.path) as zf:
                 upath = normalize_path(name)
@@ -645,6 +621,8 @@ class Container:
 
     def _get_all_zip_part(self) -&gt; None:
         &#34;&#34;&#34;Read all parts. No cache.&#34;&#34;&#34;
+        if self.path is None:
+            raise ValueError(&#34;Document path is not defined&#34;)
         try:
             with ZipFile(self.path) as zf:
                 for name in zf.namelist():
@@ -665,8 +643,11 @@ class Container:
                 printwarn(f&#34;Missing &#39;{ODF_MANIFEST}&#39;&#34;)
             # &#34;Pretty-save&#34; parts in some order
             # mimetype requires to be first and uncompressed
+            mimetype = parts.get(&#34;mimetype&#34;)
+            if mimetype is None:
+                raise ValueError(&#34;Mimetype is not defined&#34;)
             try:
-                filezip.writestr(&#34;mimetype&#34;, parts[&#34;mimetype&#34;], ZIP_STORED)
+                filezip.writestr(&#34;mimetype&#34;, mimetype, ZIP_STORED)
                 part_names.remove(&#34;mimetype&#34;)
             except (ValueError, KeyError):
                 printwarn(&#34;Missing &#39;mimetype&#39;&#34;)
@@ -675,7 +656,10 @@ class Container:
                 if path not in parts:
                     printwarn(f&#34;Missing &#39;{path}&#39;&#34;)
                     continue
-                filezip.writestr(path, parts[path])
+                part = parts[path]
+                if part is None:
+                    continue
+                filezip.writestr(path, part)
                 part_names.remove(path)
             # Everything else
             for path in part_names:
@@ -686,12 +670,14 @@ class Container:
                 filezip.writestr(path, data)
             # Manifest
             with contextlib.suppress(KeyError):
-                filezip.writestr(ODF_MANIFEST, parts[ODF_MANIFEST])
+                part = parts[ODF_MANIFEST]
+                if part is not None:
+                    filezip.writestr(ODF_MANIFEST, part)
 
-    def _save_folder(self, folder: str) -&gt; None:
+    def _save_folder(self, folder: Path | str) -&gt; None:
         &#34;&#34;&#34;Save a folder ODF from the available parts.&#34;&#34;&#34;
 
-        def dump(part_path: str, content: bytes):
+        def dump(part_path: str, content: bytes) -&gt; None:
             if part_path.endswith(&#34;/&#34;):  # folder
                 is_folder = True
                 pure_path = PurePath(folder, part_path[:-1])
@@ -729,7 +715,7 @@ class Container:
         elif self.__packaging == &#34;folder&#34;:
             return self._get_folder_parts()
         else:
-            raise ValueError(&#34;Unable to provide parts of the document.&#34;)
+            raise ValueError(&#34;Unable to provide parts of the document&#34;)
 
     def get_part(self, path: str) -&gt; str | bytes | None:
         &#34;&#34;&#34;Get the bytes of a part of the ODF.&#34;&#34;&#34;
@@ -757,18 +743,24 @@ class Container:
 
     @property
     def mimetype(self) -&gt; str:
-        &#34;&#34;&#34;Return unicode value of mimetype of the document.&#34;&#34;&#34;
-        try:
-            return self.get_part(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
-        except Exception:
-            return &#34;&#34;
+        &#34;&#34;&#34;Return str value of mimetype of the document.&#34;&#34;&#34;
+        with contextlib.suppress(Exception):
+            b_mimetype = self.get_part(&#34;mimetype&#34;)
+            if isinstance(b_mimetype, bytes):
+                return bytes_to_str(b_mimetype)
+        return &#34;&#34;
 
     @mimetype.setter
     def mimetype(self, mimetype: str | bytes) -&gt; None:
         &#34;&#34;&#34;Set mimetype value of the document.&#34;&#34;&#34;
-        self.__parts[&#34;mimetype&#34;] = to_bytes(mimetype)
+        if isinstance(mimetype, str):
+            self.__parts[&#34;mimetype&#34;] = str_to_bytes(mimetype)
+        elif isinstance(mimetype, bytes):
+            self.__parts[&#34;mimetype&#34;] = mimetype
+        else:
+            raise TypeError(f&#39;Wrong mimetype &#34;{mimetype!r}&#34;&#39;)
 
-    def set_part(self, path: str, data: str | bytes) -&gt; None:
+    def set_part(self, path: str, data: bytes) -&gt; None:
         &#34;&#34;&#34;Replace or add a new part.&#34;&#34;&#34;
         self.__parts[path] = data
 
@@ -820,7 +812,7 @@ class Container:
                 target = target[:-1]
             while target.endswith(&#34;.folder&#34;):
                 target = target.split(&#34;.folder&#34;, 1)[0]
-        return target
+        return target  # type: ignore
 
     def _save_as_zip(self, target: str | Path | io.BytesIO, backup: bool) -&gt; None:
         if isinstance(target, (str, Path)) and backup:
@@ -882,44 +874,6 @@ class Container:
             # default:
             self._save_as_zip(target, backup)</code></pre>
 </details>
-<h3>Static methods</h3>
-<dl>
-<dt id="odfdo.container.Container.from_template"><code class="name flex">
-<span>def <span class="ident">from_template</span></span>(<span>template: str | Path) ‑> <a title="odfdo.container.Container" href="#odfdo.container.Container">Container</a></span>
-</code></dt>
-<dd>
-<div class="desc"><p>Return a Container instance based on template argument.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@classmethod
-def from_template(cls, template: str | Path) -&gt; Container:
-    &#34;&#34;&#34;Return a Container instance based on template argument.&#34;&#34;&#34;
-    template_container = cls()
-    if template in ODF_TEMPLATES:
-        template_container = cls()
-        template_name = ODF_TEMPLATES[template]
-        with rso.as_file(
-            rso.files(&#34;odfdo.templates&#34;).joinpath(template_name)
-        ) as template_path:
-            template_container.open(template_path)
-    else:
-        # custome template
-        template_container.open(template)
-    # Return a copy of the template container
-    clone = template_container.clone
-    # Change type from template to regular
-    mimetype = clone.mimetype.replace(&#34;-template&#34;, &#34;&#34;)
-    clone.mimetype = mimetype
-    # Update the manifest
-    manifest = Manifest(ODF_MANIFEST, clone)
-    manifest.set_media_type(&#34;/&#34;, mimetype)
-    clone.set_part(ODF_MANIFEST, manifest.serialize())
-    return clone</code></pre>
-</details>
-</dd>
-</dl>
 <h3>Instance variables</h3>
 <dl>
 <dt id="odfdo.container.Container.clone"><code class="name">var <span class="ident">clone</span> : <a title="odfdo.container.Container" href="#odfdo.container.Container">Container</a></code></dt>
@@ -941,18 +895,19 @@ def clone(self) -&gt; Container:
 </dd>
 <dt id="odfdo.container.Container.mimetype"><code class="name">var <span class="ident">mimetype</span> : str</code></dt>
 <dd>
-<div class="desc"><p>Return unicode value of mimetype of the document.</p></div>
+<div class="desc"><p>Return str value of mimetype of the document.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
 def mimetype(self) -&gt; str:
-    &#34;&#34;&#34;Return unicode value of mimetype of the document.&#34;&#34;&#34;
-    try:
-        return self.get_part(&#34;mimetype&#34;).decode(&#34;utf8&#34;, &#34;ignore&#34;)
-    except Exception:
-        return &#34;&#34;</code></pre>
+    &#34;&#34;&#34;Return str value of mimetype of the document.&#34;&#34;&#34;
+    with contextlib.suppress(Exception):
+        b_mimetype = self.get_part(&#34;mimetype&#34;)
+        if isinstance(b_mimetype, bytes):
+            return bytes_to_str(b_mimetype)
+    return &#34;&#34;</code></pre>
 </details>
 </dd>
 </dl>
@@ -1030,7 +985,7 @@ def mimetype(self) -&gt; str:
     elif self.__packaging == &#34;folder&#34;:
         return self._get_folder_parts()
     else:
-        raise ValueError(&#34;Unable to provide parts of the document.&#34;)</code></pre>
+        raise ValueError(&#34;Unable to provide parts of the document&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.container.Container.open"><code class="name flex">
@@ -1119,7 +1074,7 @@ unless "packaging" is different.</p>
 </details>
 </dd>
 <dt id="odfdo.container.Container.set_part"><code class="name flex">
-<span>def <span class="ident">set_part</span></span>(<span>self, path: str, data: str | bytes) ‑> None</span>
+<span>def <span class="ident">set_part</span></span>(<span>self, path: str, data: bytes) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Replace or add a new part.</p></div>
@@ -1127,7 +1082,7 @@ unless "packaging" is different.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_part(self, path: str, data: str | bytes) -&gt; None:
+<pre><code class="python">def set_part(self, path: str, data: bytes) -&gt; None:
     &#34;&#34;&#34;Replace or add a new part.&#34;&#34;&#34;
     self.__parts[path] = data</code></pre>
 </details>
@@ -1160,7 +1115,6 @@ unless "packaging" is different.</p>
 <ul class="two-column">
 <li><code><a title="odfdo.container.Container.clone" href="#odfdo.container.Container.clone">clone</a></code></li>
 <li><code><a title="odfdo.container.Container.del_part" href="#odfdo.container.Container.del_part">del_part</a></code></li>
-<li><code><a title="odfdo.container.Container.from_template" href="#odfdo.container.Container.from_template">from_template</a></code></li>
 <li><code><a title="odfdo.container.Container.get_part" href="#odfdo.container.Container.get_part">get_part</a></code></li>
 <li><code><a title="odfdo.container.Container.get_parts" href="#odfdo.container.Container.get_parts">get_parts</a></code></li>
 <li><code><a title="odfdo.container.Container.mimetype" href="#odfdo.container.Container.mimetype">mimetype</a></code></li>

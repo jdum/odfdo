@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.paragraph API documentation</title>
-<meta name="description" content="Paragraph class for &#34;text:p&#34;, Span class for &#34;text:span&#34;" />
+<meta name="description" content="Paragraph class for &#34;text:p&#34;, Span class for &#34;text:span&#34;." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,12 +22,12 @@
 <h1 class="title">Module <code>odfdo.paragraph</code></h1>
 </header>
 <section id="section-intro">
-<p>Paragraph class for "text:p", Span class for "text:span"</p>
+<p>Paragraph class for "text:p", Span class for "text:span".</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -50,13 +50,18 @@
 #          Hervé Cauwelier &lt;herve@itaapy.com&gt;
 #          Romain Gauthier &lt;romain@itaapy.com&gt;
 #          Jerome Dumonteil &lt;jerome.dumonteil@itaapy.com&gt;
-&#34;&#34;&#34;Paragraph class for &#34;text:p&#34;, Span class for &#34;text:span&#34;
+&#34;&#34;&#34;Paragraph class for &#34;text:p&#34;, Span class for &#34;text:span&#34;.
 &#34;&#34;&#34;
+from __future__ import annotations
+
 import re
+from collections.abc import Callable
+from datetime import datetime
 from functools import wraps  # for keeping trace of docstring with decorators
+from typing import Any
 
 from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
-from .element import FIRST_CHILD, NEXT_SIBLING, Element, register_element_class
+from .element import FIRST_CHILD, NEXT_SIBLING, Element, PropDef, register_element_class
 from .link import Link
 from .note import Annotation, AnnotationEnd, Note
 from .paragraph_base import LineBreak, ParagraphBase, Spacer, Tab
@@ -72,9 +77,9 @@ __all__ = [
 ]
 
 
-def _by_regex_offset(method):  # noqa: C901
+def _by_regex_offset(method: Callable) -&gt; Callable:  # noqa: C901
     @wraps(method)
-    def wrapper(element, *args, **kwargs):  # noqa: C901
+    def wrapper(element: Element, *args: Any, **kwargs: Any) -&gt; None:  # noqa: C901
         &#34;&#34;&#34;Insert the result of method(element, ...) at the place matching the
         regex OR the positional arguments offset and length.
 
@@ -84,7 +89,7 @@ def _by_regex_offset(method):  # noqa: C901
 
             element -- self
 
-            regex -- unicode regular expression
+            regex -- str, regular expression
 
             offset -- int
 
@@ -96,27 +101,29 @@ def _by_regex_offset(method):  # noqa: C901
             length = kwargs.get(&#34;length&#34;, 0)
             counted = 0
             for text in element.xpath(&#34;//text()&#34;):
-                if len(text) + counted &lt;= offset:
-                    counted += len(text)
+                if len(text) + counted &lt;= offset:  # type: ignore
+                    counted += len(text)  # type: ignore
                     continue
                 if length &gt; 0:
-                    length = min(length, len(text))
+                    length = min(length, len(text))  # type: ignore
                 else:
-                    length = len(text)
+                    length = len(text)  # type: ignore
                 # Static information about the text node
                 container = text.parent
+                if container is None:
+                    continue
                 upper = container.parent
-                is_text = text.is_text()
+                is_text = text.is_text()  # type: ignore
                 start = offset - counted
                 end = start + length
                 # Do not use the text node as it changes at each loop
                 if is_text:
-                    text = container.text
+                    text_str = container.text or &#34;&#34;
                 else:
-                    text = container.tail
-                before = text[:start]
-                match = text[start:end]
-                tail = text[end:]
+                    text_str = container.tail or &#34;&#34;
+                before = text_str[:start]
+                match = text_str[start:end]
+                tail = text_str[end:]
                 result = method(element, match, tail, *args, **kwargs)
                 if is_text:
                     container.text = before
@@ -125,28 +132,31 @@ def _by_regex_offset(method):  # noqa: C901
                 else:
                     container.tail = before
                     # Insert as next sibling
-                    index = upper.index(container)
-                    upper.insert(result, position=index + 1)
+                    if upper:
+                        index = upper.index(container)
+                        upper.insert(result, position=index + 1)
                 return
         if regex:
             pattern = re.compile(regex)
             for text in element.xpath(&#34;descendant::text()&#34;):
                 # Static information about the text node
                 container = text.parent
+                if container is None:
+                    continue
                 upper = container.parent
-                is_text = text.is_text()
+                is_text = text.is_text()  # type: ignore
                 # Group positions are calculated and static, so apply in
                 # reverse order to preserve positions
                 for group in reversed(list(pattern.finditer(text))):
                     start, end = group.span()
                     # Do not use the text node as it changes at each loop
                     if is_text:
-                        text = container.text
+                        text_str = container.text or &#34;&#34;
                     else:
-                        text = container.tail
-                    before = text[:start]
-                    match = text[start:end]
-                    tail = text[end:]
+                        text_str = container.tail or &#34;&#34;
+                    before = text_str[:start]
+                    match = text_str[start:end]
+                    tail = text_str[end:]
                     result = method(element, match, tail, *args, **kwargs)
                     if is_text:
                         container.text = before
@@ -155,8 +165,9 @@ def _by_regex_offset(method):  # noqa: C901
                     else:
                         container.tail = before
                         # Insert as next sibling
-                        index = upper.index(container)
-                        upper.insert(result, position=index + 1)
+                        if upper:
+                            index = upper.index(container)
+                            upper.insert(result, position=index + 1)
 
     return wrapper
 
@@ -169,7 +180,12 @@ class Paragraph(ParagraphBase):
 
     _tag = &#34;text:p&#34;
 
-    def __init__(self, text_or_element=None, style=None, **kwargs):
+    def __init__(
+        self,
+        text_or_element: str | Element | None = None,
+        style: str | None = None,
+        **kwargs: Any,
+    ):
         &#34;&#34;&#34;Create a paragraph element of the given style containing the optional
         given text.
 
@@ -178,27 +194,25 @@ class Paragraph(ParagraphBase):
             text -- str or Element
 
             style -- str
-
-        Return: Paragraph
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
             if isinstance(text_or_element, Element):
                 self.append(text_or_element)
             else:
-                self.text = text_or_element
+                self.text = text_or_element  # type:ignore
             if style is not None:
                 self.style = style
 
     def insert_note(
         self,
-        note_element=None,
-        after=None,
-        note_class=&#34;footnote&#34;,
-        note_id=None,
-        citation=None,
-        body=None,
-    ):
+        note_element: Note | None = None,
+        after: str | Element | None = None,
+        note_class: str = &#34;footnote&#34;,
+        note_id: str | None = None,
+        citation: str | None = None,
+        body: str | None = None,
+    ) -&gt; None:
         if note_element is None:
             note_element = Note(
                 note_class=note_class, note_id=note_id, citation=citation, body=body
@@ -223,15 +237,15 @@ class Paragraph(ParagraphBase):
 
     def insert_annotation(  # noqa: C901
         self,
-        annotation_element=None,
-        before=None,
-        after=None,
-        position=0,
-        content=None,
-        body=None,
-        creator=None,
-        date=None,
-    ):
+        annotation_element: Annotation | None = None,
+        before: str | None = None,
+        after: str | Element | None = None,
+        position: int | tuple = 0,
+        content: str | Element | None = None,
+        body: str | None = None,
+        creator: str | None = None,
+        date: datetime | None = None,
+    ) -&gt; Annotation:
         &#34;&#34;&#34;Insert an annotation, at the position defined by the regex (before,
         after, content) or by positionnal argument (position). If content is
         provided, the annotation covers the full content regex. Else, the
@@ -250,11 +264,11 @@ class Paragraph(ParagraphBase):
 
         Arguments:
 
-            annotation_element -- Annotation or name
+            annotation_element -- Annotation or None
 
             before -- str regular expression or None
 
-            after -- str regular expression or None
+            after -- str regular expression or Element or None
 
             content -- str regular expression or None, or Element
 
@@ -274,7 +288,7 @@ class Paragraph(ParagraphBase):
         else:
             # XXX clone or modify the argument?
             if body:
-                annotation_element.body = body
+                annotation_element.note_body = body
             if creator:
                 annotation_element.dc_creator = creator
             if date:
@@ -332,7 +346,7 @@ class Paragraph(ParagraphBase):
 
         # Without &#34;content&#34; nor &#34;position&#34;
         if content is not None or not isinstance(position, int):
-            raise ValueError(&#34;bad arguments&#34;)
+            raise ValueError(&#34;Bad arguments&#34;)
 
         # Insert
         self._insert(
@@ -345,8 +359,12 @@ class Paragraph(ParagraphBase):
         return annotation_element
 
     def insert_annotation_end(
-        self, annotation_element, before=None, after=None, position=0
-    ):
+        self,
+        annotation_element: Annotation,
+        before: str | None = None,
+        after: str | None = None,
+        position: int = 0,
+    ) -&gt; AnnotationEnd:
         &#34;&#34;&#34;Insert an annotation end tag for an existing annotation. If some end
         tag already exists, replace it. Annotation end tag is set at the
         position defined by the regex (before or after).
@@ -386,8 +404,13 @@ class Paragraph(ParagraphBase):
         return end_tag
 
     def set_reference_mark(
-        self, name, before=None, after=None, position=0, content=None
-    ):
+        self,
+        name: str,
+        before: str | None = None,
+        after: str | None = None,
+        position: int = 0,
+        content: str | Element | None = None,
+    ) -&gt; Element:
         &#34;&#34;&#34;Insert a reference mark, at the position defined by the regex
         (before, after, content) or by positionnal argument (position). If
         content is provided, the annotation covers the full range content regex
@@ -411,7 +434,7 @@ class Paragraph(ParagraphBase):
 
             before -- str regular expression or None
 
-            after -- str regular expression or None, or Element
+            after -- str regular expression or None,
 
             content -- str regular expression or None, or Element
 
@@ -473,13 +496,21 @@ class Paragraph(ParagraphBase):
         # Insert a positional reference mark
         reference = ReferenceMark(name)
         self._insert(
-            reference, before=before, after=after, position=position, main_text=True
+            reference,
+            before=before,
+            after=after,
+            position=position,
+            main_text=True,
         )
         return reference
 
     def set_reference_mark_end(
-        self, reference_mark, before=None, after=None, position=0
-    ):
+        self,
+        reference_mark: Element,
+        before: str | None = None,
+        after: str | None = None,
+        position: int = 0,
+    ) -&gt; ReferenceMarkEnd:
         &#34;&#34;&#34;Insert/move a ReferenceMarkEnd for an existing reference mark. If
         some end tag already exists, replace it. Reference tag is set at the
         position defined by the regex (before or after).
@@ -517,11 +548,19 @@ class Paragraph(ParagraphBase):
         )
         return end_tag
 
-    def insert_variable(self, variable_element, after):
+    def insert_variable(self, variable_element: Element, after: str | None) -&gt; None:
         self._insert(variable_element, after=after, main_text=True)
 
     @_by_regex_offset
-    def set_span(self, match, tail, style, regex=None, offset=None, length=0):
+    def set_span(
+        self,
+        match: str,
+        tail: str,
+        style: str,
+        regex: str | None = None,
+        offset: int | None = None,
+        length: int = 0,
+    ) -&gt; Span:
         &#34;&#34;&#34;
         set_span(style, regex=None, offset=None, length=0)
         Apply the given style to text content matching the regex OR the
@@ -531,7 +570,7 @@ class Paragraph(ParagraphBase):
 
         Arguments:
 
-            style -- style element or name
+            style -- str
 
             regex -- str regular expression
 
@@ -543,7 +582,7 @@ class Paragraph(ParagraphBase):
         span.tail = tail
         return span
 
-    def remove_spans(self, keep_heading=True):
+    def remove_spans(self, keep_heading: bool = True) -&gt; Element | list:
         &#34;&#34;&#34;Send back a copy of the element, without span styles.
         If keep_heading is True (default), the first level heading style is left
         unchanged.
@@ -555,7 +594,7 @@ class Paragraph(ParagraphBase):
             protect = None
         return self.strip_tags(strip=strip, protect=protect)
 
-    def remove_span(self, spans):
+    def remove_span(self, spans: Element | list[Element]) -&gt; Element | list:
         &#34;&#34;&#34;Send back a copy of the element, the spans (not a clone) removed.
 
         Arguments:
@@ -565,7 +604,15 @@ class Paragraph(ParagraphBase):
         return self.strip_elements(spans)
 
     @_by_regex_offset
-    def set_link(self, match, tail, url, regex=None, offset=None, length=0):
+    def set_link(
+        self,
+        match: str,
+        tail: str,
+        url: str,
+        regex: str | None = None,
+        offset: int | None = None,
+        length: int = 0,
+    ) -&gt; Element:
         &#34;&#34;&#34;
         set_link(url, regex=None, offset=None, length=0)
         Make a link to the provided url from text content matching the regex
@@ -587,12 +634,12 @@ class Paragraph(ParagraphBase):
         link.tail = tail
         return link
 
-    def remove_links(self):
+    def remove_links(self) -&gt; Element | list:
         &#34;&#34;&#34;Send back a copy of the element, without links tags.&#34;&#34;&#34;
         strip = (Link._tag,)
         return self.strip_tags(strip=strip)
 
-    def remove_link(self, links):
+    def remove_link(self, links: Link | list[Link]) -&gt; Element | list:
         &#34;&#34;&#34;Send back a copy of the element (not a clone), with the sub links
            removed.
 
@@ -603,8 +650,14 @@ class Paragraph(ParagraphBase):
         return self.strip_elements(links)
 
     def insert_reference(
-        self, name, ref_format=&#34;&#34;, before=None, after=None, position=0, display=None
-    ):
+        self,
+        name: str,
+        ref_format: str = &#34;&#34;,
+        before: str | None = None,
+        after: str | Element | None = None,
+        position: int = 0,
+        display: str | None = None,
+    ) -&gt; None:
         &#34;&#34;&#34;Create and insert a reference to a content marked by a reference
         mark. The Reference element (&#34;text:reference-ref&#34;) represents a
         field that references a &#34;text:reference-mark-start&#34; or
@@ -650,7 +703,7 @@ class Paragraph(ParagraphBase):
                 body = self.root
             mark = body.get_reference_mark(name=name)
             if mark:
-                display = mark.referenced_text
+                display = mark.referenced_text  # type: ignore
         if not display:
             display = &#34; &#34;
         reference.text = display
@@ -662,8 +715,14 @@ class Paragraph(ParagraphBase):
             )
 
     def set_bookmark(
-        self, name, before=None, after=None, position=0, role=None, content=None
-    ):
+        self,
+        name: str,
+        before: str | None = None,
+        after: str | None = None,
+        position: int | tuple = 0,
+        role: str | None = None,
+        content: str | None = None,
+    ) -&gt; Element | tuple[Element, Element]:
         &#34;&#34;&#34;Insert a bookmark before or after the characters in the text which
         match the regex before/after. When the regex matches more of one part
         of the text, position can be set to choose which part must be used.
@@ -749,7 +808,7 @@ class Paragraph(ParagraphBase):
 
         # Role
         if role is None:
-            bookmark = Bookmark(name)
+            bookmark: Element = Bookmark(name)
         elif role == &#34;start&#34;:
             bookmark = BookmarkStart(name)
         elif role == &#34;end&#34;:
@@ -771,17 +830,23 @@ class Span(Paragraph):
     &#34;&#34;&#34;
 
     _tag = &#34;text:span&#34;
-    _properties = ((&#34;style&#34;, &#34;text:style-name&#34;), (&#34;class_names&#34;, &#34;text:class-names&#34;))
+    _properties = (
+        PropDef(&#34;style&#34;, &#34;text:style-name&#34;),
+        PropDef(&#34;class_names&#34;, &#34;text:class-names&#34;),
+    )
 
-    def __init__(self, text=None, style=None, **kwargs):
+    def __init__(
+        self,
+        text: str | None = None,
+        style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         &#34;&#34;&#34;
         Arguments:
 
             text -- str
 
             style -- str
-
-        Return: Span
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
@@ -791,7 +856,7 @@ class Span(Paragraph):
                 self.style = style
 
 
-def PageBreak():
+def PageBreak() -&gt; Paragraph:
     &#34;&#34;&#34;Return an empty paragraph with a manual page break.
 
     Using this function requires to register the page break style with:
@@ -814,7 +879,7 @@ register_element_class(Paragraph)</code></pre>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="odfdo.paragraph.PageBreak"><code class="name flex">
-<span>def <span class="ident">PageBreak</span></span>(<span>)</span>
+<span>def <span class="ident">PageBreak</span></span>(<span>) ‑> <a title="odfdo.paragraph.Paragraph" href="#odfdo.paragraph.Paragraph">Paragraph</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return an empty paragraph with a manual page break.</p>
@@ -824,7 +889,7 @@ document.add_page_break_style()</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def PageBreak():
+<pre><code class="python">def PageBreak() -&gt; Paragraph:
     &#34;&#34;&#34;Return an empty paragraph with a manual page break.
 
     Using this function requires to register the page break style with:
@@ -840,24 +905,20 @@ document.add_page_break_style()</p></div>
 <dl>
 <dt id="odfdo.paragraph.LineBreak"><code class="flex name class">
 <span>class <span class="ident">LineBreak</span></span>
-<span>(</span><span>**kwargs)</span>
+<span>(</span><span>**kwargs: Any)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>This element represents a line break "text:line-break"</p>
-<p>Return: LineBreak</p></div>
+<div class="desc"><p>This element represents a line break "text:line-break"</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class LineBreak(Element):
-    &#34;&#34;&#34;This element represents a line break &#34;text:line-break&#34;
-
-    Return: LineBreak
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;This element represents a line break &#34;text:line-break&#34; &#34;&#34;&#34;
 
     _tag = &#34;text:line-break&#34;
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -&gt; None:
         super().__init__(**kwargs)</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -876,12 +937,16 @@ document.add_page_break_style()</p></div>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -981,7 +1046,7 @@ document.add_page_break_style()</p></div>
 </dd>
 <dt id="odfdo.paragraph.Paragraph"><code class="flex name class">
 <span>class <span class="ident">Paragraph</span></span>
-<span>(</span><span>text_or_element=None, style=None, **kwargs)</span>
+<span>(</span><span>text_or_element: str | Element | None = None, style: str | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Specialised element for paragraphs "text:p". The "text:p" element
@@ -991,8 +1056,7 @@ file.</p>
 given text.</p>
 <h2 id="arguments">Arguments</h2>
 <p>text &ndash; str or Element</p>
-<p>style &ndash; str</p>
-<p>Return: Paragraph</p></div>
+<p>style &ndash; str</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1005,7 +1069,12 @@ given text.</p>
 
     _tag = &#34;text:p&#34;
 
-    def __init__(self, text_or_element=None, style=None, **kwargs):
+    def __init__(
+        self,
+        text_or_element: str | Element | None = None,
+        style: str | None = None,
+        **kwargs: Any,
+    ):
         &#34;&#34;&#34;Create a paragraph element of the given style containing the optional
         given text.
 
@@ -1014,27 +1083,25 @@ given text.</p>
             text -- str or Element
 
             style -- str
-
-        Return: Paragraph
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
             if isinstance(text_or_element, Element):
                 self.append(text_or_element)
             else:
-                self.text = text_or_element
+                self.text = text_or_element  # type:ignore
             if style is not None:
                 self.style = style
 
     def insert_note(
         self,
-        note_element=None,
-        after=None,
-        note_class=&#34;footnote&#34;,
-        note_id=None,
-        citation=None,
-        body=None,
-    ):
+        note_element: Note | None = None,
+        after: str | Element | None = None,
+        note_class: str = &#34;footnote&#34;,
+        note_id: str | None = None,
+        citation: str | None = None,
+        body: str | None = None,
+    ) -&gt; None:
         if note_element is None:
             note_element = Note(
                 note_class=note_class, note_id=note_id, citation=citation, body=body
@@ -1059,15 +1126,15 @@ given text.</p>
 
     def insert_annotation(  # noqa: C901
         self,
-        annotation_element=None,
-        before=None,
-        after=None,
-        position=0,
-        content=None,
-        body=None,
-        creator=None,
-        date=None,
-    ):
+        annotation_element: Annotation | None = None,
+        before: str | None = None,
+        after: str | Element | None = None,
+        position: int | tuple = 0,
+        content: str | Element | None = None,
+        body: str | None = None,
+        creator: str | None = None,
+        date: datetime | None = None,
+    ) -&gt; Annotation:
         &#34;&#34;&#34;Insert an annotation, at the position defined by the regex (before,
         after, content) or by positionnal argument (position). If content is
         provided, the annotation covers the full content regex. Else, the
@@ -1086,11 +1153,11 @@ given text.</p>
 
         Arguments:
 
-            annotation_element -- Annotation or name
+            annotation_element -- Annotation or None
 
             before -- str regular expression or None
 
-            after -- str regular expression or None
+            after -- str regular expression or Element or None
 
             content -- str regular expression or None, or Element
 
@@ -1110,7 +1177,7 @@ given text.</p>
         else:
             # XXX clone or modify the argument?
             if body:
-                annotation_element.body = body
+                annotation_element.note_body = body
             if creator:
                 annotation_element.dc_creator = creator
             if date:
@@ -1168,7 +1235,7 @@ given text.</p>
 
         # Without &#34;content&#34; nor &#34;position&#34;
         if content is not None or not isinstance(position, int):
-            raise ValueError(&#34;bad arguments&#34;)
+            raise ValueError(&#34;Bad arguments&#34;)
 
         # Insert
         self._insert(
@@ -1181,8 +1248,12 @@ given text.</p>
         return annotation_element
 
     def insert_annotation_end(
-        self, annotation_element, before=None, after=None, position=0
-    ):
+        self,
+        annotation_element: Annotation,
+        before: str | None = None,
+        after: str | None = None,
+        position: int = 0,
+    ) -&gt; AnnotationEnd:
         &#34;&#34;&#34;Insert an annotation end tag for an existing annotation. If some end
         tag already exists, replace it. Annotation end tag is set at the
         position defined by the regex (before or after).
@@ -1222,8 +1293,13 @@ given text.</p>
         return end_tag
 
     def set_reference_mark(
-        self, name, before=None, after=None, position=0, content=None
-    ):
+        self,
+        name: str,
+        before: str | None = None,
+        after: str | None = None,
+        position: int = 0,
+        content: str | Element | None = None,
+    ) -&gt; Element:
         &#34;&#34;&#34;Insert a reference mark, at the position defined by the regex
         (before, after, content) or by positionnal argument (position). If
         content is provided, the annotation covers the full range content regex
@@ -1247,7 +1323,7 @@ given text.</p>
 
             before -- str regular expression or None
 
-            after -- str regular expression or None, or Element
+            after -- str regular expression or None,
 
             content -- str regular expression or None, or Element
 
@@ -1309,13 +1385,21 @@ given text.</p>
         # Insert a positional reference mark
         reference = ReferenceMark(name)
         self._insert(
-            reference, before=before, after=after, position=position, main_text=True
+            reference,
+            before=before,
+            after=after,
+            position=position,
+            main_text=True,
         )
         return reference
 
     def set_reference_mark_end(
-        self, reference_mark, before=None, after=None, position=0
-    ):
+        self,
+        reference_mark: Element,
+        before: str | None = None,
+        after: str | None = None,
+        position: int = 0,
+    ) -&gt; ReferenceMarkEnd:
         &#34;&#34;&#34;Insert/move a ReferenceMarkEnd for an existing reference mark. If
         some end tag already exists, replace it. Reference tag is set at the
         position defined by the regex (before or after).
@@ -1353,11 +1437,19 @@ given text.</p>
         )
         return end_tag
 
-    def insert_variable(self, variable_element, after):
+    def insert_variable(self, variable_element: Element, after: str | None) -&gt; None:
         self._insert(variable_element, after=after, main_text=True)
 
     @_by_regex_offset
-    def set_span(self, match, tail, style, regex=None, offset=None, length=0):
+    def set_span(
+        self,
+        match: str,
+        tail: str,
+        style: str,
+        regex: str | None = None,
+        offset: int | None = None,
+        length: int = 0,
+    ) -&gt; Span:
         &#34;&#34;&#34;
         set_span(style, regex=None, offset=None, length=0)
         Apply the given style to text content matching the regex OR the
@@ -1367,7 +1459,7 @@ given text.</p>
 
         Arguments:
 
-            style -- style element or name
+            style -- str
 
             regex -- str regular expression
 
@@ -1379,7 +1471,7 @@ given text.</p>
         span.tail = tail
         return span
 
-    def remove_spans(self, keep_heading=True):
+    def remove_spans(self, keep_heading: bool = True) -&gt; Element | list:
         &#34;&#34;&#34;Send back a copy of the element, without span styles.
         If keep_heading is True (default), the first level heading style is left
         unchanged.
@@ -1391,7 +1483,7 @@ given text.</p>
             protect = None
         return self.strip_tags(strip=strip, protect=protect)
 
-    def remove_span(self, spans):
+    def remove_span(self, spans: Element | list[Element]) -&gt; Element | list:
         &#34;&#34;&#34;Send back a copy of the element, the spans (not a clone) removed.
 
         Arguments:
@@ -1401,7 +1493,15 @@ given text.</p>
         return self.strip_elements(spans)
 
     @_by_regex_offset
-    def set_link(self, match, tail, url, regex=None, offset=None, length=0):
+    def set_link(
+        self,
+        match: str,
+        tail: str,
+        url: str,
+        regex: str | None = None,
+        offset: int | None = None,
+        length: int = 0,
+    ) -&gt; Element:
         &#34;&#34;&#34;
         set_link(url, regex=None, offset=None, length=0)
         Make a link to the provided url from text content matching the regex
@@ -1423,12 +1523,12 @@ given text.</p>
         link.tail = tail
         return link
 
-    def remove_links(self):
+    def remove_links(self) -&gt; Element | list:
         &#34;&#34;&#34;Send back a copy of the element, without links tags.&#34;&#34;&#34;
         strip = (Link._tag,)
         return self.strip_tags(strip=strip)
 
-    def remove_link(self, links):
+    def remove_link(self, links: Link | list[Link]) -&gt; Element | list:
         &#34;&#34;&#34;Send back a copy of the element (not a clone), with the sub links
            removed.
 
@@ -1439,8 +1539,14 @@ given text.</p>
         return self.strip_elements(links)
 
     def insert_reference(
-        self, name, ref_format=&#34;&#34;, before=None, after=None, position=0, display=None
-    ):
+        self,
+        name: str,
+        ref_format: str = &#34;&#34;,
+        before: str | None = None,
+        after: str | Element | None = None,
+        position: int = 0,
+        display: str | None = None,
+    ) -&gt; None:
         &#34;&#34;&#34;Create and insert a reference to a content marked by a reference
         mark. The Reference element (&#34;text:reference-ref&#34;) represents a
         field that references a &#34;text:reference-mark-start&#34; or
@@ -1486,7 +1592,7 @@ given text.</p>
                 body = self.root
             mark = body.get_reference_mark(name=name)
             if mark:
-                display = mark.referenced_text
+                display = mark.referenced_text  # type: ignore
         if not display:
             display = &#34; &#34;
         reference.text = display
@@ -1498,8 +1604,14 @@ given text.</p>
             )
 
     def set_bookmark(
-        self, name, before=None, after=None, position=0, role=None, content=None
-    ):
+        self,
+        name: str,
+        before: str | None = None,
+        after: str | None = None,
+        position: int | tuple = 0,
+        role: str | None = None,
+        content: str | None = None,
+    ) -&gt; Element | tuple[Element, Element]:
         &#34;&#34;&#34;Insert a bookmark before or after the characters in the text which
         match the regex before/after. When the regex matches more of one part
         of the text, position can be set to choose which part must be used.
@@ -1585,7 +1697,7 @@ given text.</p>
 
         # Role
         if role is None:
-            bookmark = Bookmark(name)
+            bookmark: Element = Bookmark(name)
         elif role == &#34;start&#34;:
             bookmark = BookmarkStart(name)
         elif role == &#34;end&#34;:
@@ -1613,7 +1725,7 @@ given text.</p>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.paragraph.Paragraph.insert_annotation"><code class="name flex">
-<span>def <span class="ident">insert_annotation</span></span>(<span>self, annotation_element=None, before=None, after=None, position=0, content=None, body=None, creator=None, date=None)</span>
+<span>def <span class="ident">insert_annotation</span></span>(<span>self, annotation_element: Annotation | None = None, before: str | None = None, after: str | Element | None = None, position: int | tuple = 0, content: str | Element | None = None, body: str | None = None, creator: str | None = None, date: datetime | None = None) ‑> <a title="odfdo.note.Annotation" href="note.html#odfdo.note.Annotation">Annotation</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Insert an annotation, at the position defined by the regex (before,
@@ -1629,9 +1741,9 @@ positions, the position value is the index of matching place to use.</p>
 the annotation is created from the body, creator and optional date
 (current date by default).</p>
 <h2 id="arguments">Arguments</h2>
-<p>annotation_element &ndash; Annotation or name</p>
+<p>annotation_element &ndash; Annotation or None</p>
 <p>before &ndash; str regular expression or None</p>
-<p>after &ndash; str regular expression or None</p>
+<p>after &ndash; str regular expression or Element or None</p>
 <p>content &ndash; str regular expression or None, or Element</p>
 <p>position &ndash; int or tuple of int</p>
 <p>body &ndash; str or Element</p>
@@ -1643,15 +1755,15 @@ the annotation is created from the body, creator and optional date
 </summary>
 <pre><code class="python">def insert_annotation(  # noqa: C901
     self,
-    annotation_element=None,
-    before=None,
-    after=None,
-    position=0,
-    content=None,
-    body=None,
-    creator=None,
-    date=None,
-):
+    annotation_element: Annotation | None = None,
+    before: str | None = None,
+    after: str | Element | None = None,
+    position: int | tuple = 0,
+    content: str | Element | None = None,
+    body: str | None = None,
+    creator: str | None = None,
+    date: datetime | None = None,
+) -&gt; Annotation:
     &#34;&#34;&#34;Insert an annotation, at the position defined by the regex (before,
     after, content) or by positionnal argument (position). If content is
     provided, the annotation covers the full content regex. Else, the
@@ -1670,11 +1782,11 @@ the annotation is created from the body, creator and optional date
 
     Arguments:
 
-        annotation_element -- Annotation or name
+        annotation_element -- Annotation or None
 
         before -- str regular expression or None
 
-        after -- str regular expression or None
+        after -- str regular expression or Element or None
 
         content -- str regular expression or None, or Element
 
@@ -1694,7 +1806,7 @@ the annotation is created from the body, creator and optional date
     else:
         # XXX clone or modify the argument?
         if body:
-            annotation_element.body = body
+            annotation_element.note_body = body
         if creator:
             annotation_element.dc_creator = creator
         if date:
@@ -1752,7 +1864,7 @@ the annotation is created from the body, creator and optional date
 
     # Without &#34;content&#34; nor &#34;position&#34;
     if content is not None or not isinstance(position, int):
-        raise ValueError(&#34;bad arguments&#34;)
+        raise ValueError(&#34;Bad arguments&#34;)
 
     # Insert
     self._insert(
@@ -1766,7 +1878,7 @@ the annotation is created from the body, creator and optional date
 </details>
 </dd>
 <dt id="odfdo.paragraph.Paragraph.insert_annotation_end"><code class="name flex">
-<span>def <span class="ident">insert_annotation_end</span></span>(<span>self, annotation_element, before=None, after=None, position=0)</span>
+<span>def <span class="ident">insert_annotation_end</span></span>(<span>self, annotation_element: Annotation, before: str | None = None, after: str | None = None, position: int = 0) ‑> <a title="odfdo.note.AnnotationEnd" href="note.html#odfdo.note.AnnotationEnd">AnnotationEnd</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Insert an annotation end tag for an existing annotation. If some end
@@ -1784,8 +1896,12 @@ positions, the position value is the index of matching place to use.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def insert_annotation_end(
-    self, annotation_element, before=None, after=None, position=0
-):
+    self,
+    annotation_element: Annotation,
+    before: str | None = None,
+    after: str | None = None,
+    position: int = 0,
+) -&gt; AnnotationEnd:
     &#34;&#34;&#34;Insert an annotation end tag for an existing annotation. If some end
     tag already exists, replace it. Annotation end tag is set at the
     position defined by the regex (before or after).
@@ -1826,7 +1942,7 @@ positions, the position value is the index of matching place to use.</p>
 </details>
 </dd>
 <dt id="odfdo.paragraph.Paragraph.insert_note"><code class="name flex">
-<span>def <span class="ident">insert_note</span></span>(<span>self, note_element=None, after=None, note_class='footnote', note_id=None, citation=None, body=None)</span>
+<span>def <span class="ident">insert_note</span></span>(<span>self, note_element: Note | None = None, after: str | Element | None = None, note_class: str = 'footnote', note_id: str | None = None, citation: str | None = None, body: str | None = None) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1836,13 +1952,13 @@ positions, the position value is the index of matching place to use.</p>
 </summary>
 <pre><code class="python">def insert_note(
     self,
-    note_element=None,
-    after=None,
-    note_class=&#34;footnote&#34;,
-    note_id=None,
-    citation=None,
-    body=None,
-):
+    note_element: Note | None = None,
+    after: str | Element | None = None,
+    note_class: str = &#34;footnote&#34;,
+    note_id: str | None = None,
+    citation: str | None = None,
+    body: str | None = None,
+) -&gt; None:
     if note_element is None:
         note_element = Note(
             note_class=note_class, note_id=note_id, citation=citation, body=body
@@ -1867,7 +1983,7 @@ positions, the position value is the index of matching place to use.</p>
 </details>
 </dd>
 <dt id="odfdo.paragraph.Paragraph.insert_reference"><code class="name flex">
-<span>def <span class="ident">insert_reference</span></span>(<span>self, name, ref_format='', before=None, after=None, position=0, display=None)</span>
+<span>def <span class="ident">insert_reference</span></span>(<span>self, name: str, ref_format: str = '', before: str | None = None, after: str | Element | None = None, position: int = 0, display: str | None = None) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Create and insert a reference to a content marked by a reference
@@ -1900,8 +2016,14 @@ this element.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def insert_reference(
-    self, name, ref_format=&#34;&#34;, before=None, after=None, position=0, display=None
-):
+    self,
+    name: str,
+    ref_format: str = &#34;&#34;,
+    before: str | None = None,
+    after: str | Element | None = None,
+    position: int = 0,
+    display: str | None = None,
+) -&gt; None:
     &#34;&#34;&#34;Create and insert a reference to a content marked by a reference
     mark. The Reference element (&#34;text:reference-ref&#34;) represents a
     field that references a &#34;text:reference-mark-start&#34; or
@@ -1947,7 +2069,7 @@ this element.</p>
             body = self.root
         mark = body.get_reference_mark(name=name)
         if mark:
-            display = mark.referenced_text
+            display = mark.referenced_text  # type: ignore
     if not display:
         display = &#34; &#34;
     reference.text = display
@@ -1960,7 +2082,7 @@ this element.</p>
 </details>
 </dd>
 <dt id="odfdo.paragraph.Paragraph.insert_variable"><code class="name flex">
-<span>def <span class="ident">insert_variable</span></span>(<span>self, variable_element, after)</span>
+<span>def <span class="ident">insert_variable</span></span>(<span>self, variable_element: Element, after: str | None) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1968,12 +2090,12 @@ this element.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_variable(self, variable_element, after):
+<pre><code class="python">def insert_variable(self, variable_element: Element, after: str | None) -&gt; None:
     self._insert(variable_element, after=after, main_text=True)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.paragraph.Paragraph.remove_link"><code class="name flex">
-<span>def <span class="ident">remove_link</span></span>(<span>self, links)</span>
+<span>def <span class="ident">remove_link</span></span>(<span>self, links: Link | list[Link]) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | list</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Send back a copy of the element (not a clone), with the sub links
@@ -1984,7 +2106,7 @@ removed.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def remove_link(self, links):
+<pre><code class="python">def remove_link(self, links: Link | list[Link]) -&gt; Element | list:
     &#34;&#34;&#34;Send back a copy of the element (not a clone), with the sub links
        removed.
 
@@ -1996,7 +2118,7 @@ removed.</p>
 </details>
 </dd>
 <dt id="odfdo.paragraph.Paragraph.remove_links"><code class="name flex">
-<span>def <span class="ident">remove_links</span></span>(<span>self)</span>
+<span>def <span class="ident">remove_links</span></span>(<span>self) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | list</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Send back a copy of the element, without links tags.</p></div>
@@ -2004,14 +2126,14 @@ removed.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def remove_links(self):
+<pre><code class="python">def remove_links(self) -&gt; Element | list:
     &#34;&#34;&#34;Send back a copy of the element, without links tags.&#34;&#34;&#34;
     strip = (Link._tag,)
     return self.strip_tags(strip=strip)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.paragraph.Paragraph.remove_span"><code class="name flex">
-<span>def <span class="ident">remove_span</span></span>(<span>self, spans)</span>
+<span>def <span class="ident">remove_span</span></span>(<span>self, spans: Element | list[Element]) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | list</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Send back a copy of the element, the spans (not a clone) removed.</p>
@@ -2021,7 +2143,7 @@ removed.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def remove_span(self, spans):
+<pre><code class="python">def remove_span(self, spans: Element | list[Element]) -&gt; Element | list:
     &#34;&#34;&#34;Send back a copy of the element, the spans (not a clone) removed.
 
     Arguments:
@@ -2032,7 +2154,7 @@ removed.</p>
 </details>
 </dd>
 <dt id="odfdo.paragraph.Paragraph.remove_spans"><code class="name flex">
-<span>def <span class="ident">remove_spans</span></span>(<span>self, keep_heading=True)</span>
+<span>def <span class="ident">remove_spans</span></span>(<span>self, keep_heading: bool = True) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | list</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Send back a copy of the element, without span styles.
@@ -2042,7 +2164,7 @@ unchanged.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def remove_spans(self, keep_heading=True):
+<pre><code class="python">def remove_spans(self, keep_heading: bool = True) -&gt; Element | list:
     &#34;&#34;&#34;Send back a copy of the element, without span styles.
     If keep_heading is True (default), the first level heading style is left
     unchanged.
@@ -2056,7 +2178,7 @@ unchanged.</p></div>
 </details>
 </dd>
 <dt id="odfdo.paragraph.Paragraph.set_bookmark"><code class="name flex">
-<span>def <span class="ident">set_bookmark</span></span>(<span>self, name, before=None, after=None, position=0, role=None, content=None)</span>
+<span>def <span class="ident">set_bookmark</span></span>(<span>self, name: str, before: str | None = None, after: str | None = None, position: int | tuple = 0, role: str | None = None, content: str | None = None) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | tuple[<a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a>, <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Insert a bookmark before or after the characters in the text which
@@ -2090,8 +2212,14 @@ paragraph.set_bookmark("bookmark", position=20, role="end")</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_bookmark(
-    self, name, before=None, after=None, position=0, role=None, content=None
-):
+    self,
+    name: str,
+    before: str | None = None,
+    after: str | None = None,
+    position: int | tuple = 0,
+    role: str | None = None,
+    content: str | None = None,
+) -&gt; Element | tuple[Element, Element]:
     &#34;&#34;&#34;Insert a bookmark before or after the characters in the text which
     match the regex before/after. When the regex matches more of one part
     of the text, position can be set to choose which part must be used.
@@ -2177,7 +2305,7 @@ paragraph.set_bookmark("bookmark", position=20, role="end")</p>
 
     # Role
     if role is None:
-        bookmark = Bookmark(name)
+        bookmark: Element = Bookmark(name)
     elif role == &#34;start&#34;:
         bookmark = BookmarkStart(name)
     elif role == &#34;end&#34;:
@@ -2194,7 +2322,7 @@ paragraph.set_bookmark("bookmark", position=20, role="end")</p>
 </details>
 </dd>
 <dt id="odfdo.paragraph.Paragraph.set_link"><code class="name flex">
-<span>def <span class="ident">set_link</span></span>(<span>self, match, tail, url, regex=None, offset=None, length=0)</span>
+<span>def <span class="ident">set_link</span></span>(<span>self, match: str, tail: str, url: str, regex: str | None = None, offset: int | None = None, length: int = 0) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>set_link(url, regex=None, offset=None, length=0)
@@ -2211,7 +2339,15 @@ OR the positional arguments offset and length.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@_by_regex_offset
-def set_link(self, match, tail, url, regex=None, offset=None, length=0):
+def set_link(
+    self,
+    match: str,
+    tail: str,
+    url: str,
+    regex: str | None = None,
+    offset: int | None = None,
+    length: int = 0,
+) -&gt; Element:
     &#34;&#34;&#34;
     set_link(url, regex=None, offset=None, length=0)
     Make a link to the provided url from text content matching the regex
@@ -2235,7 +2371,7 @@ def set_link(self, match, tail, url, regex=None, offset=None, length=0):
 </details>
 </dd>
 <dt id="odfdo.paragraph.Paragraph.set_reference_mark"><code class="name flex">
-<span>def <span class="ident">set_reference_mark</span></span>(<span>self, name, before=None, after=None, position=0, content=None)</span>
+<span>def <span class="ident">set_reference_mark</span></span>(<span>self, name: str, before: str | None = None, after: str | None = None, position: int = 0, content: str | Element | None = None) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Insert a reference mark, at the position defined by the regex
@@ -2254,7 +2390,7 @@ mark range.</p>
 <h2 id="arguments">Arguments</h2>
 <p>name &ndash; str</p>
 <p>before &ndash; str regular expression or None</p>
-<p>after &ndash; str regular expression or None, or Element</p>
+<p>after &ndash; str regular expression or None,</p>
 <p>content &ndash; str regular expression or None, or Element</p>
 <p>position &ndash; int or tuple of int</p>
 <p>Return: the created ReferenceMark or ReferenceMarkStart</p></div>
@@ -2263,8 +2399,13 @@ mark range.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_reference_mark(
-    self, name, before=None, after=None, position=0, content=None
-):
+    self,
+    name: str,
+    before: str | None = None,
+    after: str | None = None,
+    position: int = 0,
+    content: str | Element | None = None,
+) -&gt; Element:
     &#34;&#34;&#34;Insert a reference mark, at the position defined by the regex
     (before, after, content) or by positionnal argument (position). If
     content is provided, the annotation covers the full range content regex
@@ -2288,7 +2429,7 @@ mark range.</p>
 
         before -- str regular expression or None
 
-        after -- str regular expression or None, or Element
+        after -- str regular expression or None,
 
         content -- str regular expression or None, or Element
 
@@ -2350,13 +2491,17 @@ mark range.</p>
     # Insert a positional reference mark
     reference = ReferenceMark(name)
     self._insert(
-        reference, before=before, after=after, position=position, main_text=True
+        reference,
+        before=before,
+        after=after,
+        position=position,
+        main_text=True,
     )
     return reference</code></pre>
 </details>
 </dd>
 <dt id="odfdo.paragraph.Paragraph.set_reference_mark_end"><code class="name flex">
-<span>def <span class="ident">set_reference_mark_end</span></span>(<span>self, reference_mark, before=None, after=None, position=0)</span>
+<span>def <span class="ident">set_reference_mark_end</span></span>(<span>self, reference_mark: Element, before: str | None = None, after: str | None = None, position: int = 0) ‑> <a title="odfdo.reference.ReferenceMarkEnd" href="reference.html#odfdo.reference.ReferenceMarkEnd">ReferenceMarkEnd</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Insert/move a ReferenceMarkEnd for an existing reference mark. If
@@ -2374,8 +2519,12 @@ positions, the position value is the index of matching place to use.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def set_reference_mark_end(
-    self, reference_mark, before=None, after=None, position=0
-):
+    self,
+    reference_mark: Element,
+    before: str | None = None,
+    after: str | None = None,
+    position: int = 0,
+) -&gt; ReferenceMarkEnd:
     &#34;&#34;&#34;Insert/move a ReferenceMarkEnd for an existing reference mark. If
     some end tag already exists, replace it. Reference tag is set at the
     position defined by the regex (before or after).
@@ -2415,7 +2564,7 @@ positions, the position value is the index of matching place to use.</p>
 </details>
 </dd>
 <dt id="odfdo.paragraph.Paragraph.set_span"><code class="name flex">
-<span>def <span class="ident">set_span</span></span>(<span>self, match, tail, style, regex=None, offset=None, length=0)</span>
+<span>def <span class="ident">set_span</span></span>(<span>self, match: str, tail: str, style: str, regex: str | None = None, offset: int | None = None, length: int = 0) ‑> <a title="odfdo.paragraph.Span" href="#odfdo.paragraph.Span">Span</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>set_span(style, regex=None, offset=None, length=0)
@@ -2423,7 +2572,7 @@ Apply the given style to text content matching the regex OR the
 positional arguments offset and length.</p>
 <p>(match, tail: provided by regex decorator)</p>
 <h2 id="arguments">Arguments</h2>
-<p>style &ndash; style element or name</p>
+<p>style &ndash; str</p>
 <p>regex &ndash; str regular expression</p>
 <p>offset &ndash; int</p>
 <p>length &ndash; int</p></div>
@@ -2432,7 +2581,15 @@ positional arguments offset and length.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@_by_regex_offset
-def set_span(self, match, tail, style, regex=None, offset=None, length=0):
+def set_span(
+    self,
+    match: str,
+    tail: str,
+    style: str,
+    regex: str | None = None,
+    offset: int | None = None,
+    length: int = 0,
+) -&gt; Span:
     &#34;&#34;&#34;
     set_span(style, regex=None, offset=None, length=0)
     Apply the given style to text content matching the regex OR the
@@ -2442,7 +2599,7 @@ def set_span(self, match, tail, style, regex=None, offset=None, length=0):
 
     Arguments:
 
-        style -- style element or name
+        style -- str
 
         regex -- str regular expression
 
@@ -2469,12 +2626,16 @@ def set_span(self, match, tail, style, regex=None, offset=None, length=0):
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.paragraph_base.ParagraphBase.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.paragraph_base.ParagraphBase.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.paragraph_base.ParagraphBase.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.paragraph_base.ParagraphBase.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -2575,7 +2736,7 @@ def set_span(self, match, tail, style, regex=None, offset=None, length=0):
 </dd>
 <dt id="odfdo.paragraph.Spacer"><code class="flex name class">
 <span>class <span class="ident">Spacer</span></span>
-<span>(</span><span>number=1, **kwargs)</span>
+<span>(</span><span>number: int = 1, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This element shall be used to represent the second and all following “ “
@@ -2584,8 +2745,7 @@ Note: It is not an error if the character preceding the element is not a
 white space character, but it is good practice to use this element only for
 the second and all following SPACE characters in a sequence.</p>
 <h2 id="arguments">Arguments</h2>
-<p>number &ndash; int</p>
-<p>Return: Space</p></div>
+<p>number &ndash; int</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2599,15 +2759,13 @@ the second and all following SPACE characters in a sequence.</p>
     &#34;&#34;&#34;
 
     _tag = &#34;text:s&#34;
-    _properties = ((&#34;number&#34;, &#34;text:c&#34;),)
+    _properties: tuple[PropDef, ...] = (PropDef(&#34;number&#34;, &#34;text:c&#34;),)
 
-    def __init__(self, number=1, **kwargs):
+    def __init__(self, number: int = 1, **kwargs: Any):
         &#34;&#34;&#34;
         Arguments:
 
             number -- int
-
-        Return: Space
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
@@ -2619,15 +2777,18 @@ the second and all following SPACE characters in a sequence.</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.paragraph.Spacer.number"><code class="name">var <span class="ident">number</span></code></dt>
+<dt id="odfdo.paragraph.Spacer.number"><code class="name">var <span class="ident">number</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:c</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -2650,12 +2811,16 @@ the second and all following SPACE characters in a sequence.</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -2755,15 +2920,14 @@ the second and all following SPACE characters in a sequence.</p>
 </dd>
 <dt id="odfdo.paragraph.Span"><code class="flex name class">
 <span>class <span class="ident">Span</span></span>
-<span>(</span><span>text=None, style=None, **kwargs)</span>
+<span>(</span><span>text: str | None = None, style: str | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Create a span element "text:span" of the given style containing the optional
 given text.</p>
 <h2 id="arguments">Arguments</h2>
 <p>text &ndash; str</p>
-<p>style &ndash; str</p>
-<p>Return: Span</p></div>
+<p>style &ndash; str</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2774,17 +2938,23 @@ given text.</p>
     &#34;&#34;&#34;
 
     _tag = &#34;text:span&#34;
-    _properties = ((&#34;style&#34;, &#34;text:style-name&#34;), (&#34;class_names&#34;, &#34;text:class-names&#34;))
+    _properties = (
+        PropDef(&#34;style&#34;, &#34;text:style-name&#34;),
+        PropDef(&#34;class_names&#34;, &#34;text:class-names&#34;),
+    )
 
-    def __init__(self, text=None, style=None, **kwargs):
+    def __init__(
+        self,
+        text: str | None = None,
+        style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         &#34;&#34;&#34;
         Arguments:
 
             text -- str
 
             style -- str
-
-        Return: Span
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
@@ -2801,15 +2971,18 @@ given text.</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.paragraph.Span.class_names"><code class="name">var <span class="ident">class_names</span></code></dt>
+<dt id="odfdo.paragraph.Span.class_names"><code class="name">var <span class="ident">class_names</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:class-names</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -2833,12 +3006,16 @@ given text.</p>
 <li><code><a title="odfdo.paragraph.Paragraph.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -2951,7 +3128,7 @@ given text.</p>
 </dd>
 <dt id="odfdo.paragraph.Tab"><code class="flex name class">
 <span>class <span class="ident">Tab</span></span>
-<span>(</span><span>position=None, **kwargs)</span>
+<span>(</span><span>position: int | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This element represents the [UNICODE] tab character (HORIZONTAL
@@ -2963,8 +3140,7 @@ oriented consumers to determine the tab/tab-stop association. Layout
 oriented consumers should determine the tab positions based on the style
 information</p>
 <h2 id="arguments">Arguments</h2>
-<p>position &ndash; int</p>
-<p>Return: Tab</p></div>
+<p>position &ndash; int</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2982,15 +3158,13 @@ information</p>
     &#34;&#34;&#34;
 
     _tag = &#34;text:tab&#34;
-    _properties = ((&#34;position&#34;, &#34;text:tab-ref&#34;),)
+    _properties: tuple[PropDef, ...] = (PropDef(&#34;position&#34;, &#34;text:tab-ref&#34;),)
 
-    def __init__(self, position=None, **kwargs):
+    def __init__(self, position: int | None = None, **kwargs: Any) -&gt; None:
         &#34;&#34;&#34;
         Arguments:
 
             position -- int
-
-        Return: Tab
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init and position is not None and position &gt;= 0:
@@ -3002,15 +3176,18 @@ information</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.paragraph.Tab.position"><code class="name">var <span class="ident">position</span></code></dt>
+<dt id="odfdo.paragraph.Tab.position"><code class="name">var <span class="ident">position</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:tab-ref</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -3033,12 +3210,16 @@ information</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>

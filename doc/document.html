@@ -27,7 +27,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -56,10 +56,13 @@ from __future__ import annotations
 
 import io
 import posixpath
+from contextlib import suppress
 from copy import deepcopy
+from importlib import resources as rso
 from mimetypes import guess_type
 from operator import itemgetter
 from pathlib import Path
+from typing import Any
 from uuid import uuid4
 
 from .const import (
@@ -75,12 +78,9 @@ from .content import Content
 from .element import Element
 from .manifest import Manifest
 from .meta import Meta
-
-# from .style import registered_styles
+from .style import Style
 from .styles import Styles
-from .utils import FAMILY_ODF_STD, to_str
-
-# from utils import obsolete
+from .utils import FAMILY_ODF_STD, bytes_to_str
 from .xmlpart import XmlPart
 
 AUTOMATIC_PREFIX = &#34;odfdo_auto_&#34;
@@ -95,8 +95,8 @@ def _underline_string(level: int, name: str) -&gt; str:
     return UNDERLINE_LVL[level] * len(name)
 
 
-def _show_styles(element, level=0):
-    output = []
+def _show_styles(element: Element, level: int = 0) -&gt; str | None:
+    output: list[str] = []
     attributes = element.attributes
     children = element.children
     # Don&#39;t show the empty elements
@@ -108,8 +108,9 @@ def _show_styles(element, level=0):
     output.append(_underline_string(level, tag_name))
     # Add a separation between name and attributes
     output[-1] += &#34;\n&#34;
-    attrs = []
+
     # Attributes
+    attrs: list[str] = []
     for key, value in attributes.items():
         attrs.append(f&#34;{key}: {value}&#34;)
     if attrs:
@@ -117,11 +118,12 @@ def _show_styles(element, level=0):
         # Add a separation between attributes and children
         attrs[-1] += &#34;\n&#34;
         output.extend(attrs)
+
     # Children
     # Sort children according to their names
-    children = [(child.tag, child) for child in children]
-    children.sort()
-    children = [child for name, child in children]
+    children2 = [(child.tag, child) for child in children]
+    children2.sort()
+    children = [child for name, child in children2]
     for child in children:
         child_output = _show_styles(child, level + 1)
         if child_output:
@@ -129,8 +131,8 @@ def _show_styles(element, level=0):
     return &#34;\n&#34;.join(output)
 
 
-# Transition to real path of XML parts
-def _get_part_path(path):
+def _get_part_path(path: str) -&gt; str:
+    &#34;&#34;&#34;Transition to real path of XML parts&#34;&#34;&#34;
     return {
         &#34;content&#34;: ODF_CONTENT,
         &#34;meta&#34;: ODF_META,
@@ -140,7 +142,9 @@ def _get_part_path(path):
     }.get(path, path)
 
 
-def _get_part_class(path):
+def _get_part_class(
+    path: str,
+) -&gt; type[XmlPart] | None:
     return {
         ODF_CONTENT: Content,
         ODF_META: Meta,
@@ -150,30 +154,69 @@ def _get_part_class(path):
     }.get(path)
 
 
+def container_from_template(template: str | Path | io.BytesIO) -&gt; Container:
+    &#34;&#34;&#34;Return a Container instance based on template argument.
+
+    Internal use only.&#34;&#34;&#34;
+    template_container = Container()
+    if isinstance(template, str) and template in ODF_TEMPLATES:
+        template = ODF_TEMPLATES[template]
+        with rso.as_file(
+            rso.files(&#34;odfdo.templates&#34;).joinpath(template)
+        ) as template_path:
+            template_container.open(template_path)
+    else:
+        # custome template
+        template_container.open(template)
+    # Return a copy of the template container
+    container = template_container.clone
+    # Change type from template to regular
+    mimetype = container.mimetype.replace(&#34;-template&#34;, &#34;&#34;)
+    container.mimetype = mimetype
+    # Update the manifest
+    manifest = Manifest(ODF_MANIFEST, container)
+    manifest.set_media_type(&#34;/&#34;, mimetype)
+    container.set_part(ODF_MANIFEST, manifest.serialize())
+    return container
+
+
 class Document:
     &#34;&#34;&#34;Abstraction of the ODF document.
 
     To create a new Document, several possibilities:
 
-        - Document() or Document(&#34;text&#34;) -&gt; an empty document of type text
-        - Document(&#34;spreadsheet&#34;) -&gt; an empty document of type spreadsheet
-        - Document(&#34;presentation&#34;) -&gt; an empty document of type presentation
-        - Document(&#34;drawing&#34;) -&gt; an empty document of type drawing
+        - Document() or Document(&#34;text&#34;) -&gt; an &#34;empty&#34; document of type text
+        - Document(&#34;spreadsheet&#34;) -&gt; an &#34;empty&#34; document of type spreadsheet
+        - Document(&#34;presentation&#34;) -&gt; an &#34;empty&#34; document of type presentation
+        - Document(&#34;drawing&#34;) -&gt; an &#34;empty&#34; document of type drawing
 
-    If the argument is not a known type, or is a Path, Document will load
-    the content of the file.
+        Meaning of “empty”: these documents are copies of the default
+        templates documents provided with this library, which, as templates,
+        are not really empty. It may be useful to clear the newly created
+        document: document.body.clear(), or adjust meta informations like
+        description or default language: document.meta.set_language(&#39;fr-FR&#39;)
+
+    If the argument is not a known template type, or is a Path,
+    Document(file) will load the content of the ODF file.
+
+    To explicitly create a document from a custom template, use the
+    Document.new(path) method whose argument is the path to the template file.
     &#34;&#34;&#34;
 
     def __init__(
-        self, target: str | bytes | Path | Container | io.BytesIO | None = &#34;text&#34;
-    ):
+        self,
+        target: str | bytes | Path | Container | io.BytesIO | None = &#34;text&#34;,
+    ) -&gt; None:
         # Cache of XML parts
-        self.__xmlparts = {}
+        self.__xmlparts: dict[str, XmlPart] = {}
         # Cache of the body
-        self.__body = None
-        self.container = None
+        self.__body: Element | None = None
+        self.container: Container | None = None
+        if isinstance(target, bytes):
+            # eager conversion
+            target = bytes_to_str(target)
         if target is None:
-            # empty document
+            # empty document, you probably don&#39;t wnat this.
             self.container = Container()
             return
         if isinstance(target, Path):
@@ -181,20 +224,21 @@ class Document:
             self.container = Container(target)
             return
         if isinstance(target, Container):
+            # special internal case, use an existing container
             self.container = target
             return
-        if isinstance(target, (str, bytes)):
-            if to_str(target) in ODF_TEMPLATES:
+        if isinstance(target, str):
+            if target in ODF_TEMPLATES:
                 # assuming a new document from templates
-                self.container = Container.from_template(to_str(target))
+                self.container = container_from_template(target)
                 return
             # let&#39;s assume we open a container on existing file
-            self.container = Container(to_str(target))
+            self.container = Container(target)
             return
         if isinstance(target, io.BytesIO):
             self.container = Container(target)
             return
-        raise TypeError(f&#34;Unknown Document source type {target!r}&#34;)
+        raise TypeError(f&#34;Unknown Document source type: &#39;{target!r}&#39;&#34;)
 
     def __repr__(self) -&gt; str:
         return f&#34;&lt;{self.__class__.__name__} type={self.get_type()} path={self.path}&gt;&#34;
@@ -206,11 +250,19 @@ class Document:
             return self.body.text_recursive
 
     @classmethod
-    def new(cls, target: str | Path = &#34;text&#34;) -&gt; Document:
-        &#34;&#34;&#34;Compatibility class method fro read from a templste.&#34;&#34;&#34;
-        document = Document()
-        document.container = Container.from_template(target)
-        return document
+    def new(cls, template: str | Path | io.BytesIO = &#34;text&#34;) -&gt; Document:
+        &#34;&#34;&#34;Create a Document from a template.
+
+        The template argument is expected to be the path to a ODF template.
+
+        Arguments:
+
+            template -- str or Path or file-like (io.BytesIO)
+
+        Return : ODF document -- Document
+        &#34;&#34;&#34;
+        container = container_from_template(template)
+        return cls(container)
 
     # Public API
 
@@ -230,7 +282,7 @@ class Document:
             return
         self.container.path = Path(path_or_str)
 
-    def get_parts(self):
+    def get_parts(self) -&gt; list[str]:
         &#34;&#34;&#34;Return available part names with path inside the archive, e.g.
         [&#39;content.xml&#39;, ..., &#39;Pictures/100000000000032000000258912EB1C3.jpg&#39;]
         &#34;&#34;&#34;
@@ -238,7 +290,7 @@ class Document:
             raise ValueError(&#34;Empty Container&#34;)
         return self.container.get_parts()
 
-    def get_part(self, path):
+    def get_part(self, path: str) -&gt; XmlPart | str | bytes | None:
         &#34;&#34;&#34;Return the bytes of the given part. The path is relative to the
         archive, e.g. &#34;Pictures/1003200258912EB1C3.jpg&#34;.
 
@@ -254,18 +306,16 @@ class Document:
         path = path.lstrip(&#34;./&#34;)
         path = _get_part_path(path)
         cls = _get_part_class(path)
-        container = self.container
         # Raw bytes
         if cls is None:
-            return container.get_part(path)
+            return self.container.get_part(path)
         # XML part
-        xmlparts = self.__xmlparts
-        part = xmlparts.get(path)
+        part = self.__xmlparts.get(path)
         if part is None:
-            xmlparts[path] = part = cls(path, container)
+            self.__xmlparts[path] = part = cls(path, self.container)
         return part
 
-    def set_part(self, path, data):
+    def set_part(self, path: str, data: bytes) -&gt; None:
         &#34;&#34;&#34;Set the bytes of the given part. The path is relative to the
         archive, e.g. &#34;Pictures/1003200258912EB1C3.jpg&#34;.
 
@@ -279,10 +329,11 @@ class Document:
         cls = _get_part_class(path)
         # XML part overwritten
         if cls is not None:
-            del self.__xmlparts[path]
-        return self.container.set_part(path, data)
+            with suppress(KeyError):
+                self.__xmlparts[path]
+        self.container.set_part(path, data)
 
-    def del_part(self, path):
+    def del_part(self, path: str) -&gt; None:
         &#34;&#34;&#34;Mark a part for deletion. The path is relative to the archive,
         e.g. &#34;Pictures/1003200258912EB1C3.jpg&#34;
         &#34;&#34;&#34;
@@ -291,20 +342,22 @@ class Document:
         path = _get_part_path(path)
         cls = _get_part_class(path)
         if path == ODF_MANIFEST or cls is not None:
-            raise ValueError(&#39;part &#34;%s&#34; is mandatory&#39; % path)
-        return self.container.del_part(path)
+            raise ValueError(f&#34;part &#39;{path}&#39; is mandatory&#34;)
+        self.container.del_part(path)
 
     @property
-    def mimetype(self):
+    def mimetype(self) -&gt; str:
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
         return self.container.mimetype
 
     @mimetype.setter
-    def mimetype(self, m):
+    def mimetype(self, mimetype: str) -&gt; None:
         if not self.container:
             raise ValueError(&#34;Empty Container&#34;)
-        self.container.mimetype = m
+        self.container.mimetype = mimetype
 
-    def get_type(self):
+    def get_type(self) -&gt; str:
         &#34;&#34;&#34;Get the ODF type (also called class) of this document.
 
         Return: &#39;chart&#39;, &#39;database&#39;, &#39;formula&#39;, &#39;graphics&#39;,
@@ -319,16 +372,37 @@ class Document:
         return self.mimetype.rsplit(&#34;.&#34;, 1)[-1]
 
     @property
-    def body(self):
+    def body(self) -&gt; Element:
         &#34;&#34;&#34;Return the body element of the content part, where actual content
         is stored.
         &#34;&#34;&#34;
         if self.__body is None:
-            content = self.get_part(ODF_CONTENT)
-            self.__body = content.body
+            self.__body = self.content.body
         return self.__body
 
-    def _get_formatted_text_footnotes(self, result, context, rst_mode):
+    @property
+    def meta(self) -&gt; Meta:
+        &#34;&#34;&#34;Return the meta part (meta.xml) of the document, where meta data
+        are stored.&#34;&#34;&#34;
+        metadata = self.get_part(ODF_META)
+        if metadata is None or not isinstance(metadata, Meta):
+            raise ValueError(&#34;Empty Meta&#34;)
+        return metadata
+
+    @property
+    def manifest(self) -&gt; Manifest:
+        &#34;&#34;&#34;Return the manifest part (manifest.xml) of the document.&#34;&#34;&#34;
+        manifest = self.get_part(ODF_MANIFEST)
+        if manifest is None or not isinstance(manifest, Manifest):
+            raise ValueError(&#34;Empty Manifest&#34;)
+        return manifest
+
+    def _get_formatted_text_footnotes(
+        self,
+        result: list[str],
+        context: dict,
+        rst_mode: bool,
+    ) -&gt; None:
         # Separate text from notes
         if rst_mode:
             result.append(&#34;\n&#34;)
@@ -344,7 +418,12 @@ class Document:
         # Reset for the next paragraph
         context[&#34;footnotes&#34;] = []
 
-    def _get_formatted_text_annotations(self, result, context, rst_mode):
+    def _get_formatted_text_annotations(
+        self,
+        result: list[str],
+        context: dict,
+        rst_mode: bool,
+    ) -&gt; None:
         # Insert the annotations
         # With a separation
         if rst_mode:
@@ -358,7 +437,12 @@ class Document:
                 result.append(f&#34;[*] {annotation}\n&#34;)
         context[&#34;annotations&#34;] = []
 
-    def _get_formatted_text_images(self, result, context, rst_mode):
+    def _get_formatted_text_images(
+        self,
+        result: list[str],
+        context: dict,
+        rst_mode: bool,
+    ) -&gt; None:
         # Insert the images ref, only in rst mode
         result.append(&#34;\n&#34;)
         for ref, filename, (width, height) in context[&#34;images&#34;]:
@@ -369,7 +453,12 @@ class Document:
                 result.append(f&#34;   :height: {height}\n&#34;)
         context[&#34;images&#34;] = []
 
-    def _get_formatted_text_endnotes(self, result, context, rst_mode):
+    def _get_formatted_text_endnotes(
+        self,
+        result: list[str],
+        context: dict,
+        rst_mode: bool,
+    ) -&gt; None:
         # Append the end notes
         if rst_mode:
             result.append(&#34;\n\n&#34;)
@@ -381,7 +470,7 @@ class Document:
             else:
                 result.append(f&#34;({citation}) {body}\n&#34;)
 
-    def get_formatted_text(self, rst_mode=False):
+    def get_formatted_text(self, rst_mode: bool = False) -&gt; str:
         &#34;&#34;&#34;Return content as text, with some formatting.&#34;&#34;&#34;
         # For the moment, only &#34;type=&#39;text&#39;&#34;
         doc_type = self.get_type()
@@ -394,12 +483,12 @@ class Document:
             &#34;presentation-template&#34;,
         }:
             return self._formatted_text(rst_mode)
-        raise NotImplementedError(f&#39;Type of document &#34;{doc_type}&#34; not &#39; &#34;supported yet&#34;)
+        raise NotImplementedError(f&#34;Type of document &#39;{doc_type}&#39; not supported yet&#34;)
 
-    def _tables_csv(self):
+    def _tables_csv(self) -&gt; str:
         return &#34;\n\n&#34;.join(str(table) for table in self.body.get_tables())
 
-    def _formatted_text(self, rst_mode):
+    def _formatted_text(self, rst_mode: bool) -&gt; str:
         # Initialize an empty context
         context = {
             &#34;document&#34;: self,
@@ -414,12 +503,12 @@ class Document:
         body = self.body
         # Get the text
         result = []
-        for element in body.children:
+        for child in body.children:
             # self._get_formatted_text_child(result, element, context, rst_mode)
-            if element.tag == &#34;table:table&#34;:
-                result.append(element.get_formatted_text(context))
-                return
-            result.append(element.get_formatted_text(context))
+            # if child.tag == &#34;table:table&#34;:
+            #     result.append(child.get_formatted_text(context))
+            #     return
+            result.append(child.get_formatted_text(context))
             if context[&#34;footnotes&#34;]:
                 self._get_formatted_text_footnotes(result, context, rst_mode)
             if context[&#34;annotations&#34;]:
@@ -431,17 +520,16 @@ class Document:
             self._get_formatted_text_endnotes(result, context, rst_mode)
         return &#34;&#34;.join(result)
 
-    def get_formated_meta(self):
+    def get_formated_meta(self) -&gt; str:
         &#34;&#34;&#34;Return meta informations as text, with some formatting.&#34;&#34;&#34;
-        result = []
-
-        meta = self.get_part(ODF_META)
+        result: list[str] = []
 
         # Simple values
-        def print_info(name, value):
+        def print_info(name: str, value: Any) -&gt; None:
             if value:
                 result.append(f&#34;{name}: {value}&#34;)
 
+        meta = self.meta
         print_info(&#34;Title&#34;, meta.get_title())
         print_info(&#34;Subject&#34;, meta.get_subject())
         print_info(&#34;Language&#34;, meta.get_language())
@@ -456,21 +544,22 @@ class Document:
         # Statistic
         result.append(&#34;Statistic:&#34;)
         statistic = meta.get_statistic()
-        for name, value in statistic.items():
-            result.append(f&#34;  - {name[5:].replace(&#39;-&#39;, &#39; &#39;).capitalize()}: {value}&#34;)
+        if statistic:
+            for name, data in statistic.items():
+                result.append(f&#34;  - {name[5:].replace(&#39;-&#39;, &#39; &#39;).capitalize()}: {data}&#34;)
 
         # User defined metadata
         result.append(&#34;User defined metadata:&#34;)
         user_metadata = meta.get_user_defined_metadata()
-        for name, value in user_metadata.items():
-            result.append(f&#34;  - {name}: {value}&#34;)
+        for name, data2 in user_metadata.items():
+            result.append(f&#34;  - {name}: {data2}&#34;)
 
         # And the description
         print_info(&#34;Description&#34;, meta.get_description())
 
         return &#34;\n&#34;.join(result) + &#34;\n&#34;
 
-    def add_file(self, path_or_file):
+    def add_file(self, path_or_file: str | Path) -&gt; str:
         &#34;&#34;&#34;Insert a file from a path or a file-like object in the container.
 
         Return the full path to reference in the content.
@@ -481,9 +570,11 @@ class Document:
 
         Return: str (URI)
         &#34;&#34;&#34;
-        name = None
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
+        name = &#34;&#34;
         # Folder for added files (FIXME hard-coded and copied)
-        manifest = self.get_part(ODF_MANIFEST)
+        manifest = self.manifest
         medias = manifest.get_paths()
         # uuid = str(uuid4())
 
@@ -512,7 +603,7 @@ class Document:
         return full_path
 
     @property
-    def clone(self):
+    def clone(self) -&gt; Document:
         &#34;&#34;&#34;Return an exact copy of the document.
 
         Return: Document
@@ -524,13 +615,21 @@ class Document:
             elif name == &#34;_Document__xmlparts&#34;:
                 setattr(clone, name, {})
             elif name == &#34;container&#34;:
+                if not self.container:
+                    raise ValueError(&#34;Empty Container&#34;)
                 setattr(clone, name, self.container.clone)
             else:
                 value = deepcopy(getattr(self, name))
                 setattr(clone, name, value)
         return clone
 
-    def save(self, target=None, packaging=None, pretty=False, backup=False):
+    def save(
+        self,
+        target: str | Path | io.BytesIO | None = None,
+        packaging: str = &#34;zip&#34;,
+        pretty: bool = False,
+        backup: bool = False,
+    ) -&gt; None:
         &#34;&#34;&#34;Save the document, at the same place it was opened or at the given
         target path. Target can also be a file-like object. It can be saved
         as a Zip file (default) or as files in a folder (for debugging
@@ -546,9 +645,10 @@ class Document:
 
             backup -- bool
         &#34;&#34;&#34;
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
         # Some advertising
-        meta = self.get_part(ODF_META)
-        meta.set_generator_default()
+        self.meta.set_generator_default()
         # Synchronize data with container
         container = self.container
         for path, part in self.__xmlparts.items():
@@ -557,17 +657,41 @@ class Document:
         # Save the container
         container.save(target, packaging=packaging, backup=backup)
 
+    @property
+    def content(self) -&gt; Content:
+        content: Content | None = self.get_part(ODF_CONTENT)  # type:ignore
+        if content is None:
+            raise ValueError(&#34;Empty Content&#34;)
+        return content
+
+    @property
+    def styles(self) -&gt; Styles:
+        styles: Styles | None = self.get_part(ODF_STYLES)  # type:ignore
+        if styles is None:
+            raise ValueError(&#34;Empty Styles&#34;)
+        return styles
+
     # Styles over several parts
 
-    def get_styles(self, family=None, automatic=False):
-        content = self.get_part(ODF_CONTENT)
-        styles = self.get_part(ODF_STYLES)
-        family = to_str(family)
-        return content.get_styles(family=family) + styles.get_styles(
+    def get_styles(
+        self,
+        family: str | bytes = &#34;&#34;,
+        automatic: bool = False,
+    ) -&gt; list[Style | Element]:
+        # compatibility with old versions:
+
+        if isinstance(family, bytes):
+            family = bytes_to_str(family)
+        return self.content.get_styles(family=family) + self.styles.get_styles(
             family=family, automatic=automatic
         )
 
-    def get_style(self, family, name_or_element=None, display_name=None):
+    def get_style(
+        self,
+        family: str,
+        name_or_element: str | Style | None = None,
+        display_name: str | None = None,
+    ) -&gt; Style | None:
         &#34;&#34;&#34;Return the style uniquely identified by the name/family pair. If
         the argument is already a style object, it will return it.
 
@@ -588,26 +712,25 @@ class Document:
         Return: Style or None if not found.
         &#34;&#34;&#34;
         # 1. content.xml
-        family = to_str(family)
-        content = self.get_part(ODF_CONTENT)
-        element = content.get_style(
+        element = self.content.get_style(
             family, name_or_element=name_or_element, display_name=display_name
         )
         if element is not None:
             return element
         # 2. styles.xml
-        styles = self.get_part(ODF_STYLES)
-        return styles.get_style(
-            family, name_or_element=name_or_element, display_name=display_name
+        return self.styles.get_style(
+            family,
+            name_or_element=name_or_element,
+            display_name=display_name,
         )
 
     @staticmethod
-    def _pseudo_style_attribute(style_element, attribute):
+    def _pseudo_style_attribute(style_element: Style | Element, attribute: str) -&gt; Any:
         if hasattr(style_element, attribute):
             return getattr(style_element, attribute)
         return &#34;&#34;
 
-    def _set_automatic_name(self, style, family):
+    def _set_automatic_name(self, style: Style, family: str) -&gt; None:
         &#34;&#34;&#34;Generate a name for the new automatic style.&#34;&#34;&#34;
         if not hasattr(style, &#34;name&#34;):
             # do nothing
@@ -624,41 +747,122 @@ class Document:
             except ValueError:
                 continue
             max_index = max(max_index, index)
+
         style.name = f&#34;{AUTOMATIC_PREFIX}{max_index+1}&#34;
 
-    def _insert_style_standard(self, style, name, family, automatic, default):
+    def _insert_style_get_common_styles(
+        self,
+        family: str,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        style_container = self.styles.get_element(&#34;office:styles&#34;)
+        existing = self.styles.get_style(family, name)
+        return existing, style_container
+
+    def _insert_style_get_automatic_styles(
+        self,
+        style: Style,
+        family: str,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        style_container = self.content.get_element(&#34;office:automatic-styles&#34;)
+        # A name ?
+        if name:
+            if hasattr(style, &#34;name&#34;):
+                style.name = name
+            existing = self.content.get_style(family, name)
+        else:
+            self._set_automatic_name(style, family)
+            existing = None
+        return existing, style_container
+
+    def _insert_style_get_default_styles(
+        self,
+        style: Style,
+        family: str,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        style_container = self.styles.get_element(&#34;office:styles&#34;)
+        style.tag = &#34;style:default-style&#34;
+        if name:
+            style.del_attribute(&#34;style:name&#34;)
+        existing = self.styles.get_style(family)
+        return existing, style_container
+
+    def _insert_style_get_master_page(
+        self,
+        family: str,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        style_container = self.styles.get_element(&#34;office:master-styles&#34;)
+        existing = self.styles.get_style(family, name)
+        return existing, style_container
+
+    def _insert_style_get_font_face_default(
+        self,
+        family: str,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        style_container = self.styles.get_element(&#34;office:font-face-decls&#34;)
+        existing = self.styles.get_style(family, name)
+        return existing, style_container
+
+    def _insert_style_get_font_face(
+        self,
+        family: str,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        style_container = self.content.get_element(&#34;office:font-face-decls&#34;)
+        existing = self.content.get_style(family, name)
+        return existing, style_container
+
+    def _insert_style_get_page_layout(
+        self,
+        family: str,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        # force to automatic
+        style_container = self.styles.get_element(&#34;office:automatic-styles&#34;)
+        existing = self.styles.get_style(family, name)
+        return existing, style_container
+
+    def _insert_style_get_draw_fill_image(
+        self,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        # special case for &#39;draw:fill-image&#39; pseudo style
+        # not family and style_element.__class__.__name__ == &#34;DrawFillImage&#34;
+        style_container = self.styles.get_element(&#34;office:styles&#34;)
+        existing = self.styles.get_style(&#34;&#34;, name)
+        return existing, style_container
+
+    def _insert_style_standard(
+        self,
+        style: Style,
+        name: str,
+        family: str,
+        automatic: bool,
+        default: bool,
+    ) -&gt; tuple[Any, Any]:
         # Common style
         if name and automatic is False and default is False:
-            part = self.get_part(ODF_STYLES)
-            container = part.get_element(&#34;office:styles&#34;)
-            existing = part.get_style(family, name)
+            return self._insert_style_get_common_styles(family, name)
         # Automatic style
         elif automatic is True and default is False:
-            part = self.get_part(ODF_CONTENT)
-            container = part.get_element(&#34;office:automatic-styles&#34;)
-            # A name ?
-            if name:
-                if hasattr(style, &#34;name&#34;):
-                    style.name = name
-                existing = part.get_style(family, name)
-            else:
-                self._set_automatic_name(style, family)
-                existing = None
+            return self._insert_style_get_automatic_styles(style, family, name)
         # Default style
         elif automatic is False and default is True:
-            part = self.get_part(ODF_STYLES)
-            container = part.get_element(&#34;office:styles&#34;)
-            # Force default style
-            style.tag = &#34;style:default-style&#34;
-            if name:
-                style.del_attribute(&#34;style:name&#34;)
-            existing = part.get_style(family)
-        # Error
+            return self._insert_style_get_default_styles(style, family, name)
         else:
-            raise AttributeError(&#34;invalid combination of arguments&#34;)
-        return existing, container
+            raise AttributeError(&#34;Invalid combination of arguments&#34;)
 
-    def insert_style(self, style, name=None, automatic=False, default=False):
+    def insert_style(  # noqa: C901
+        self,
+        style: Style | str,
+        name: str = &#34;&#34;,
+        automatic: bool = False,
+        default: bool = False,
+    ) -&gt; Any:
         &#34;&#34;&#34;Insert the given style object in the document, as required by the
         style family and type.
 
@@ -694,55 +898,55 @@ class Document:
 
         # if style is a str, assume it is the Style definition
         if isinstance(style, str):
-            style = Element.from_tag(style)
+            style_element: Style = Element.from_tag(style)  # type: ignore
+        else:
+            style_element = style
+        if not isinstance(style_element, Element):
+            raise TypeError(f&#34;Unknown Style type: &#39;{style!r}&#39;&#34;)
 
         # Get family and name
-        family = self._pseudo_style_attribute(style, &#34;family&#34;)
+        family = self._pseudo_style_attribute(style_element, &#34;family&#34;)
         if not name:
-            name = self._pseudo_style_attribute(style, &#34;name&#34;)
+            name = self._pseudo_style_attribute(style_element, &#34;name&#34;)
 
         # Master page style
         if family == &#34;master-page&#34;:
-            part = self.get_part(ODF_STYLES)
-            container = part.get_element(&#34;office:master-styles&#34;)
-            existing = part.get_style(family, name)
+            existing, style_container = self._insert_style_get_master_page(family, name)
         # Font face declarations
         elif family == &#34;font-face&#34;:
             if default:
-                part = self.get_part(ODF_STYLES)
+                existing, style_container = self._insert_style_get_font_face_default(
+                    family, name
+                )
             else:
-                part = self.get_part(ODF_CONTENT)
-            container = part.get_element(&#34;office:font-face-decls&#34;)
-            existing = part.get_style(family, name)
+                existing, style_container = self._insert_style_get_font_face(
+                    family, name
+                )
         # page layout style
         elif family == &#34;page-layout&#34;:
-            part = self.get_part(ODF_STYLES)
-            # force to automatic
-            container = part.get_element(&#34;office:automatic-styles&#34;)
-            existing = part.get_style(family, name)
+            existing, style_container = self._insert_style_get_page_layout(family, name)
         # Common style
         elif family in FAMILY_ODF_STD or family in {&#34;number&#34;}:
-            existing, container = self._insert_style_standard(
-                style, name, family, automatic, default
+            existing, style_container = self._insert_style_standard(
+                style_element, name, family, automatic, default
             )
-        elif not family and style.__class__.__name__ == &#34;DrawFillImage&#34;:
+        elif not family and style_element.__class__.__name__ == &#34;DrawFillImage&#34;:
             # special case for &#39;draw:fill-image&#39; pseudo style
-            part = self.get_part(ODF_STYLES)
-            container = part.get_element(&#34;office:styles&#34;)
-            existing = part.get_style(&#34;&#34;, name)
+            existing, style_container = self._insert_style_get_draw_fill_image(name)
         # Invalid style
         else:
             raise ValueError(
-                f&#34;invalid style: {style}, tag:{style.tag}, family:{family}&#34;
+                &#34;Invalid style: &#34;
+                f&#34;{style_element}, tag:{style_element.tag}, family:{family}&#34;
             )
 
         # Insert it!
         if existing is not None:
-            container.delete(existing)
-        container.append(style)
-        return self._pseudo_style_attribute(style, &#34;name&#34;)
+            style_container.delete(existing)
+        style_container.append(style_element)
+        return self._pseudo_style_attribute(style_element, &#34;name&#34;)
 
-    def get_styled_elements(self, name=True):
+    def get_styled_elements(self, name: str = &#34;&#34;) -&gt; list[Element]:
         &#34;&#34;&#34;Brute-force to find paragraphs, tables, etc. using the given style
         name (or all by default).
 
@@ -752,18 +956,21 @@ class Document:
 
         Return: list
         &#34;&#34;&#34;
-        content = self.get_part(ODF_CONTENT)
         # Header, footer, etc. have styles too
-        styles = self.get_part(ODF_STYLES)
-        return content.root.get_styled_elements(name) + styles.root.get_styled_elements(
+        return self.content.root.get_styled_elements(
             name
-        )
+        ) + self.styles.root.get_styled_elements(name)
 
-    def show_styles(self, automatic=True, common=True, properties=False):
+    def show_styles(
+        self,
+        automatic: bool = True,
+        common: bool = True,
+        properties: bool = False,
+    ) -&gt; str:
         infos = []
         for style in self.get_styles():
             try:
-                name = style.name
+                name = style.name  # type: ignore
             except AttributeError:
                 print(&#34;--------------&#34;)
                 print(style.__class__)
@@ -772,7 +979,7 @@ class Document:
             if style.__class__.__name__ == &#34;DrawFillImage&#34;:
                 family = &#34;&#34;
             else:
-                family = style.family
+                family = str(style.family)  # type: ignore
             parent = style.parent
             is_auto = parent and parent.tag == &#34;office:automatic-styles&#34;
             if is_auto and automatic is False or not is_auto and common is False:
@@ -787,7 +994,7 @@ class Document:
                     &#34;name&#34;: name or &#34;&#34;,
                     &#34;display_name&#34;: self._pseudo_style_attribute(style, &#34;display_name&#34;)
                     or &#34;&#34;,
-                    &#34;properties&#34;: style.get_properties() if properties else None,
+                    &#34;properties&#34;: style.get_properties() if properties else None,  # type: ignore
                 }
             )
         if not infos:
@@ -796,8 +1003,8 @@ class Document:
         infos.sort(key=itemgetter(&#34;family&#34;, &#34;name&#34;))
         # Show common and used first
         infos.sort(key=itemgetter(&#34;type&#34;, &#34;used&#34;), reverse=True)
-        max_family = str(max([len(x[&#34;family&#34;]) for x in infos]))
-        max_parent = str(max([len(x[&#34;parent&#34;]) for x in infos]))
+        max_family = str(max([len(x[&#34;family&#34;]) for x in infos]))  # type: ignore
+        max_parent = str(max([len(x[&#34;parent&#34;]) for x in infos]))  # type: ignore
         formater = (
             &#34;%(type)s used:%(used)s family:%(family)-0&#34;
             + max_family
@@ -809,15 +1016,15 @@ class Document:
         for info in infos:
             line = formater % info
             if info[&#34;display_name&#34;]:
-                line += &#34; display_name:&#34; + info[&#34;display_name&#34;]
+                line += &#34; display_name:&#34; + info[&#34;display_name&#34;]  # type: ignore
             output.append(line)
             if info[&#34;properties&#34;]:
-                for name, value in info[&#34;properties&#34;].items():
+                for name, value in info[&#34;properties&#34;].items():  # type: ignore
                     output.append(f&#34;   - {name}: {value}&#34;)
         output.append(&#34;&#34;)
         return &#34;\n&#34;.join(output)
 
-    def delete_styles(self):
+    def delete_styles(self) -&gt; int:
         &#34;&#34;&#34;Remove all style information from content and all styles.
 
         Return: number of deleted styles
@@ -836,40 +1043,38 @@ class Document:
                 except KeyError:
                     continue
         # Then remove supposedly orphaned styles
-        i = 0
+        deleted = 0
         for style in self.get_styles():
-            if style.name is None:
+            if style.name is None:  # type: ignore
                 # Don&#39;t delete default styles
                 continue
             # elif type(style) is odf_master_page:
             #    # Don&#39;t suppress header and footer, just styling was removed
             #    continue
             style.delete()
-            i += 1
-        return i
+            deleted += 1
+        return deleted
 
-    def merge_styles_from(self, document):
+    def merge_styles_from(self, document: Document) -&gt; None:
         &#34;&#34;&#34;Copy all the styles of a document into ourself.
 
         Styles with the same type and name will be replaced, so only unique
         styles will be preserved.
         &#34;&#34;&#34;
-        styles = self.get_part(ODF_STYLES)
-        content = self.get_part(ODF_CONTENT)
-        manifest = self.get_part(ODF_MANIFEST)
-        document_manifest = document.get_part(ODF_MANIFEST)
+        manifest = self.manifest
+        document_manifest = document.manifest
         for style in document.get_styles():
             tagname = style.tag
             family = self._pseudo_style_attribute(style, &#34;family&#34;)
-            stylename = style.name
+            stylename = style.name  # type: ignore
             container = style.parent
-            container_name = container.tag
-            partname = container.parent.tag
+            container_name = container.tag  # type: ignore
+            partname = container.parent.tag  # type: ignore
             # The destination part
             if partname == &#34;office:document-styles&#34;:
-                part = styles
+                part: Content | Styles = self.styles
             elif partname == &#34;office:document-content&#34;:
-                part = content
+                part = self.content
             else:
                 raise NotImplementedError(partname)
             # Implemented containers
@@ -880,7 +1085,7 @@ class Document:
                 &#34;office:font-face-decls&#34;,
             }:
                 raise NotImplementedError(container_name)
-            dest = part.get_element(&#34;//%s&#34; % container_name)
+            dest = part.get_element(f&#34;//{container_name}&#34;)
             # Implemented style types
             # if tagname not in registered_styles:
             #    raise NotImplementedError(tagname)
@@ -892,21 +1097,21 @@ class Document:
             if tagname == &#34;style:master-page&#34;:
                 query = &#34;descendant::draw:image&#34;
                 for image in style.get_elements(query):
-                    url = image.url
-                    part = document.get_part(url)
+                    url = image.url  # type: ignore
+                    part_url = document.get_part(url)
                     # Manually add the part to keep the name
-                    self.set_part(url, part)
+                    self.set_part(url, part_url)  # type: ignore
                     media_type = document_manifest.get_media_type(url)
-                    manifest.add_full_path(url, media_type)
+                    manifest.add_full_path(url, media_type)  # type: ignore
             # Copy images from the fill-image
             elif tagname == &#34;draw:fill-image&#34;:
-                url = style.url
-                part = document.get_part(url)
-                self.set_part(url, part)
+                url = style.url  # type: ignore
+                part_url = document.get_part(url)
+                self.set_part(url, part_url)  # type: ignore
                 media_type = document_manifest.get_media_type(url)
-                manifest.add_full_path(url, media_type)
+                manifest.add_full_path(url, media_type)  # type: ignore
 
-    def add_page_break_style(self):
+    def add_page_break_style(self) -&gt; None:
         &#34;&#34;&#34;Ensure that the document contains the style required for a manual page break.
 
         Then a manual page break can be added to the document with:
@@ -915,7 +1120,7 @@ class Document:
             document.body.append(PageBreak())
 
         Note: this style uses the property &#39;fo:break-after&#39;, another
-        possibility coul be the property &#39;fo:break-before&#39;
+        possibility could be the property &#39;fo:break-before&#39;
         &#34;&#34;&#34;
         if existing := self.get_style(  # noqa: SIM102
             family=&#34;paragraph&#34;,
@@ -937,6 +1142,45 @@ class Document:
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="odfdo.document.container_from_template"><code class="name flex">
+<span>def <span class="ident">container_from_template</span></span>(<span>template: str | Path | io.BytesIO) ‑> <a title="odfdo.container.Container" href="container.html#odfdo.container.Container">Container</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a Container instance based on template argument.</p>
+<p>Internal use only.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def container_from_template(template: str | Path | io.BytesIO) -&gt; Container:
+    &#34;&#34;&#34;Return a Container instance based on template argument.
+
+    Internal use only.&#34;&#34;&#34;
+    template_container = Container()
+    if isinstance(template, str) and template in ODF_TEMPLATES:
+        template = ODF_TEMPLATES[template]
+        with rso.as_file(
+            rso.files(&#34;odfdo.templates&#34;).joinpath(template)
+        ) as template_path:
+            template_container.open(template_path)
+    else:
+        # custome template
+        template_container.open(template)
+    # Return a copy of the template container
+    container = template_container.clone
+    # Change type from template to regular
+    mimetype = container.mimetype.replace(&#34;-template&#34;, &#34;&#34;)
+    container.mimetype = mimetype
+    # Update the manifest
+    manifest = Manifest(ODF_MANIFEST, container)
+    manifest.set_media_type(&#34;/&#34;, mimetype)
+    container.set_part(ODF_MANIFEST, manifest.serialize())
+    return container</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
@@ -948,13 +1192,21 @@ class Document:
 <dd>
 <div class="desc"><p>Abstraction of the ODF document.</p>
 <p>To create a new Document, several possibilities:</p>
-<pre><code>- Document() or Document("text") -&gt; an empty document of type text
-- Document("spreadsheet") -&gt; an empty document of type spreadsheet
-- Document("presentation") -&gt; an empty document of type presentation
-- Document("drawing") -&gt; an empty document of type drawing
+<pre><code>- Document() or Document("text") -&gt; an "empty" document of type text
+- Document("spreadsheet") -&gt; an "empty" document of type spreadsheet
+- Document("presentation") -&gt; an "empty" document of type presentation
+- Document("drawing") -&gt; an "empty" document of type drawing
+
+Meaning of “empty”: these documents are copies of the default
+templates documents provided with this library, which, as templates,
+are not really empty. It may be useful to clear the newly created
+document: document.body.clear(), or adjust meta informations like
+description or default language: document.meta.set_language('fr-FR')
 </code></pre>
-<p>If the argument is not a known type, or is a Path, Document will load
-the content of the file.</p></div>
+<p>If the argument is not a known template type, or is a Path,
+Document(file) will load the content of the ODF file.</p>
+<p>To explicitly create a document from a custom template, use the
+Document.new(path) method whose argument is the path to the template file.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -964,25 +1216,38 @@ the content of the file.</p></div>
 
     To create a new Document, several possibilities:
 
-        - Document() or Document(&#34;text&#34;) -&gt; an empty document of type text
-        - Document(&#34;spreadsheet&#34;) -&gt; an empty document of type spreadsheet
-        - Document(&#34;presentation&#34;) -&gt; an empty document of type presentation
-        - Document(&#34;drawing&#34;) -&gt; an empty document of type drawing
+        - Document() or Document(&#34;text&#34;) -&gt; an &#34;empty&#34; document of type text
+        - Document(&#34;spreadsheet&#34;) -&gt; an &#34;empty&#34; document of type spreadsheet
+        - Document(&#34;presentation&#34;) -&gt; an &#34;empty&#34; document of type presentation
+        - Document(&#34;drawing&#34;) -&gt; an &#34;empty&#34; document of type drawing
 
-    If the argument is not a known type, or is a Path, Document will load
-    the content of the file.
+        Meaning of “empty”: these documents are copies of the default
+        templates documents provided with this library, which, as templates,
+        are not really empty. It may be useful to clear the newly created
+        document: document.body.clear(), or adjust meta informations like
+        description or default language: document.meta.set_language(&#39;fr-FR&#39;)
+
+    If the argument is not a known template type, or is a Path,
+    Document(file) will load the content of the ODF file.
+
+    To explicitly create a document from a custom template, use the
+    Document.new(path) method whose argument is the path to the template file.
     &#34;&#34;&#34;
 
     def __init__(
-        self, target: str | bytes | Path | Container | io.BytesIO | None = &#34;text&#34;
-    ):
+        self,
+        target: str | bytes | Path | Container | io.BytesIO | None = &#34;text&#34;,
+    ) -&gt; None:
         # Cache of XML parts
-        self.__xmlparts = {}
+        self.__xmlparts: dict[str, XmlPart] = {}
         # Cache of the body
-        self.__body = None
-        self.container = None
+        self.__body: Element | None = None
+        self.container: Container | None = None
+        if isinstance(target, bytes):
+            # eager conversion
+            target = bytes_to_str(target)
         if target is None:
-            # empty document
+            # empty document, you probably don&#39;t wnat this.
             self.container = Container()
             return
         if isinstance(target, Path):
@@ -990,20 +1255,21 @@ the content of the file.</p></div>
             self.container = Container(target)
             return
         if isinstance(target, Container):
+            # special internal case, use an existing container
             self.container = target
             return
-        if isinstance(target, (str, bytes)):
-            if to_str(target) in ODF_TEMPLATES:
+        if isinstance(target, str):
+            if target in ODF_TEMPLATES:
                 # assuming a new document from templates
-                self.container = Container.from_template(to_str(target))
+                self.container = container_from_template(target)
                 return
             # let&#39;s assume we open a container on existing file
-            self.container = Container(to_str(target))
+            self.container = Container(target)
             return
         if isinstance(target, io.BytesIO):
             self.container = Container(target)
             return
-        raise TypeError(f&#34;Unknown Document source type {target!r}&#34;)
+        raise TypeError(f&#34;Unknown Document source type: &#39;{target!r}&#39;&#34;)
 
     def __repr__(self) -&gt; str:
         return f&#34;&lt;{self.__class__.__name__} type={self.get_type()} path={self.path}&gt;&#34;
@@ -1015,11 +1281,19 @@ the content of the file.</p></div>
             return self.body.text_recursive
 
     @classmethod
-    def new(cls, target: str | Path = &#34;text&#34;) -&gt; Document:
-        &#34;&#34;&#34;Compatibility class method fro read from a templste.&#34;&#34;&#34;
-        document = Document()
-        document.container = Container.from_template(target)
-        return document
+    def new(cls, template: str | Path | io.BytesIO = &#34;text&#34;) -&gt; Document:
+        &#34;&#34;&#34;Create a Document from a template.
+
+        The template argument is expected to be the path to a ODF template.
+
+        Arguments:
+
+            template -- str or Path or file-like (io.BytesIO)
+
+        Return : ODF document -- Document
+        &#34;&#34;&#34;
+        container = container_from_template(template)
+        return cls(container)
 
     # Public API
 
@@ -1039,7 +1313,7 @@ the content of the file.</p></div>
             return
         self.container.path = Path(path_or_str)
 
-    def get_parts(self):
+    def get_parts(self) -&gt; list[str]:
         &#34;&#34;&#34;Return available part names with path inside the archive, e.g.
         [&#39;content.xml&#39;, ..., &#39;Pictures/100000000000032000000258912EB1C3.jpg&#39;]
         &#34;&#34;&#34;
@@ -1047,7 +1321,7 @@ the content of the file.</p></div>
             raise ValueError(&#34;Empty Container&#34;)
         return self.container.get_parts()
 
-    def get_part(self, path):
+    def get_part(self, path: str) -&gt; XmlPart | str | bytes | None:
         &#34;&#34;&#34;Return the bytes of the given part. The path is relative to the
         archive, e.g. &#34;Pictures/1003200258912EB1C3.jpg&#34;.
 
@@ -1063,18 +1337,16 @@ the content of the file.</p></div>
         path = path.lstrip(&#34;./&#34;)
         path = _get_part_path(path)
         cls = _get_part_class(path)
-        container = self.container
         # Raw bytes
         if cls is None:
-            return container.get_part(path)
+            return self.container.get_part(path)
         # XML part
-        xmlparts = self.__xmlparts
-        part = xmlparts.get(path)
+        part = self.__xmlparts.get(path)
         if part is None:
-            xmlparts[path] = part = cls(path, container)
+            self.__xmlparts[path] = part = cls(path, self.container)
         return part
 
-    def set_part(self, path, data):
+    def set_part(self, path: str, data: bytes) -&gt; None:
         &#34;&#34;&#34;Set the bytes of the given part. The path is relative to the
         archive, e.g. &#34;Pictures/1003200258912EB1C3.jpg&#34;.
 
@@ -1088,10 +1360,11 @@ the content of the file.</p></div>
         cls = _get_part_class(path)
         # XML part overwritten
         if cls is not None:
-            del self.__xmlparts[path]
-        return self.container.set_part(path, data)
+            with suppress(KeyError):
+                self.__xmlparts[path]
+        self.container.set_part(path, data)
 
-    def del_part(self, path):
+    def del_part(self, path: str) -&gt; None:
         &#34;&#34;&#34;Mark a part for deletion. The path is relative to the archive,
         e.g. &#34;Pictures/1003200258912EB1C3.jpg&#34;
         &#34;&#34;&#34;
@@ -1100,20 +1373,22 @@ the content of the file.</p></div>
         path = _get_part_path(path)
         cls = _get_part_class(path)
         if path == ODF_MANIFEST or cls is not None:
-            raise ValueError(&#39;part &#34;%s&#34; is mandatory&#39; % path)
-        return self.container.del_part(path)
+            raise ValueError(f&#34;part &#39;{path}&#39; is mandatory&#34;)
+        self.container.del_part(path)
 
     @property
-    def mimetype(self):
+    def mimetype(self) -&gt; str:
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
         return self.container.mimetype
 
     @mimetype.setter
-    def mimetype(self, m):
+    def mimetype(self, mimetype: str) -&gt; None:
         if not self.container:
             raise ValueError(&#34;Empty Container&#34;)
-        self.container.mimetype = m
+        self.container.mimetype = mimetype
 
-    def get_type(self):
+    def get_type(self) -&gt; str:
         &#34;&#34;&#34;Get the ODF type (also called class) of this document.
 
         Return: &#39;chart&#39;, &#39;database&#39;, &#39;formula&#39;, &#39;graphics&#39;,
@@ -1128,16 +1403,37 @@ the content of the file.</p></div>
         return self.mimetype.rsplit(&#34;.&#34;, 1)[-1]
 
     @property
-    def body(self):
+    def body(self) -&gt; Element:
         &#34;&#34;&#34;Return the body element of the content part, where actual content
         is stored.
         &#34;&#34;&#34;
         if self.__body is None:
-            content = self.get_part(ODF_CONTENT)
-            self.__body = content.body
+            self.__body = self.content.body
         return self.__body
 
-    def _get_formatted_text_footnotes(self, result, context, rst_mode):
+    @property
+    def meta(self) -&gt; Meta:
+        &#34;&#34;&#34;Return the meta part (meta.xml) of the document, where meta data
+        are stored.&#34;&#34;&#34;
+        metadata = self.get_part(ODF_META)
+        if metadata is None or not isinstance(metadata, Meta):
+            raise ValueError(&#34;Empty Meta&#34;)
+        return metadata
+
+    @property
+    def manifest(self) -&gt; Manifest:
+        &#34;&#34;&#34;Return the manifest part (manifest.xml) of the document.&#34;&#34;&#34;
+        manifest = self.get_part(ODF_MANIFEST)
+        if manifest is None or not isinstance(manifest, Manifest):
+            raise ValueError(&#34;Empty Manifest&#34;)
+        return manifest
+
+    def _get_formatted_text_footnotes(
+        self,
+        result: list[str],
+        context: dict,
+        rst_mode: bool,
+    ) -&gt; None:
         # Separate text from notes
         if rst_mode:
             result.append(&#34;\n&#34;)
@@ -1153,7 +1449,12 @@ the content of the file.</p></div>
         # Reset for the next paragraph
         context[&#34;footnotes&#34;] = []
 
-    def _get_formatted_text_annotations(self, result, context, rst_mode):
+    def _get_formatted_text_annotations(
+        self,
+        result: list[str],
+        context: dict,
+        rst_mode: bool,
+    ) -&gt; None:
         # Insert the annotations
         # With a separation
         if rst_mode:
@@ -1167,7 +1468,12 @@ the content of the file.</p></div>
                 result.append(f&#34;[*] {annotation}\n&#34;)
         context[&#34;annotations&#34;] = []
 
-    def _get_formatted_text_images(self, result, context, rst_mode):
+    def _get_formatted_text_images(
+        self,
+        result: list[str],
+        context: dict,
+        rst_mode: bool,
+    ) -&gt; None:
         # Insert the images ref, only in rst mode
         result.append(&#34;\n&#34;)
         for ref, filename, (width, height) in context[&#34;images&#34;]:
@@ -1178,7 +1484,12 @@ the content of the file.</p></div>
                 result.append(f&#34;   :height: {height}\n&#34;)
         context[&#34;images&#34;] = []
 
-    def _get_formatted_text_endnotes(self, result, context, rst_mode):
+    def _get_formatted_text_endnotes(
+        self,
+        result: list[str],
+        context: dict,
+        rst_mode: bool,
+    ) -&gt; None:
         # Append the end notes
         if rst_mode:
             result.append(&#34;\n\n&#34;)
@@ -1190,7 +1501,7 @@ the content of the file.</p></div>
             else:
                 result.append(f&#34;({citation}) {body}\n&#34;)
 
-    def get_formatted_text(self, rst_mode=False):
+    def get_formatted_text(self, rst_mode: bool = False) -&gt; str:
         &#34;&#34;&#34;Return content as text, with some formatting.&#34;&#34;&#34;
         # For the moment, only &#34;type=&#39;text&#39;&#34;
         doc_type = self.get_type()
@@ -1203,12 +1514,12 @@ the content of the file.</p></div>
             &#34;presentation-template&#34;,
         }:
             return self._formatted_text(rst_mode)
-        raise NotImplementedError(f&#39;Type of document &#34;{doc_type}&#34; not &#39; &#34;supported yet&#34;)
+        raise NotImplementedError(f&#34;Type of document &#39;{doc_type}&#39; not supported yet&#34;)
 
-    def _tables_csv(self):
+    def _tables_csv(self) -&gt; str:
         return &#34;\n\n&#34;.join(str(table) for table in self.body.get_tables())
 
-    def _formatted_text(self, rst_mode):
+    def _formatted_text(self, rst_mode: bool) -&gt; str:
         # Initialize an empty context
         context = {
             &#34;document&#34;: self,
@@ -1223,12 +1534,12 @@ the content of the file.</p></div>
         body = self.body
         # Get the text
         result = []
-        for element in body.children:
+        for child in body.children:
             # self._get_formatted_text_child(result, element, context, rst_mode)
-            if element.tag == &#34;table:table&#34;:
-                result.append(element.get_formatted_text(context))
-                return
-            result.append(element.get_formatted_text(context))
+            # if child.tag == &#34;table:table&#34;:
+            #     result.append(child.get_formatted_text(context))
+            #     return
+            result.append(child.get_formatted_text(context))
             if context[&#34;footnotes&#34;]:
                 self._get_formatted_text_footnotes(result, context, rst_mode)
             if context[&#34;annotations&#34;]:
@@ -1240,17 +1551,16 @@ the content of the file.</p></div>
             self._get_formatted_text_endnotes(result, context, rst_mode)
         return &#34;&#34;.join(result)
 
-    def get_formated_meta(self):
+    def get_formated_meta(self) -&gt; str:
         &#34;&#34;&#34;Return meta informations as text, with some formatting.&#34;&#34;&#34;
-        result = []
-
-        meta = self.get_part(ODF_META)
+        result: list[str] = []
 
         # Simple values
-        def print_info(name, value):
+        def print_info(name: str, value: Any) -&gt; None:
             if value:
                 result.append(f&#34;{name}: {value}&#34;)
 
+        meta = self.meta
         print_info(&#34;Title&#34;, meta.get_title())
         print_info(&#34;Subject&#34;, meta.get_subject())
         print_info(&#34;Language&#34;, meta.get_language())
@@ -1265,21 +1575,22 @@ the content of the file.</p></div>
         # Statistic
         result.append(&#34;Statistic:&#34;)
         statistic = meta.get_statistic()
-        for name, value in statistic.items():
-            result.append(f&#34;  - {name[5:].replace(&#39;-&#39;, &#39; &#39;).capitalize()}: {value}&#34;)
+        if statistic:
+            for name, data in statistic.items():
+                result.append(f&#34;  - {name[5:].replace(&#39;-&#39;, &#39; &#39;).capitalize()}: {data}&#34;)
 
         # User defined metadata
         result.append(&#34;User defined metadata:&#34;)
         user_metadata = meta.get_user_defined_metadata()
-        for name, value in user_metadata.items():
-            result.append(f&#34;  - {name}: {value}&#34;)
+        for name, data2 in user_metadata.items():
+            result.append(f&#34;  - {name}: {data2}&#34;)
 
         # And the description
         print_info(&#34;Description&#34;, meta.get_description())
 
         return &#34;\n&#34;.join(result) + &#34;\n&#34;
 
-    def add_file(self, path_or_file):
+    def add_file(self, path_or_file: str | Path) -&gt; str:
         &#34;&#34;&#34;Insert a file from a path or a file-like object in the container.
 
         Return the full path to reference in the content.
@@ -1290,9 +1601,11 @@ the content of the file.</p></div>
 
         Return: str (URI)
         &#34;&#34;&#34;
-        name = None
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
+        name = &#34;&#34;
         # Folder for added files (FIXME hard-coded and copied)
-        manifest = self.get_part(ODF_MANIFEST)
+        manifest = self.manifest
         medias = manifest.get_paths()
         # uuid = str(uuid4())
 
@@ -1321,7 +1634,7 @@ the content of the file.</p></div>
         return full_path
 
     @property
-    def clone(self):
+    def clone(self) -&gt; Document:
         &#34;&#34;&#34;Return an exact copy of the document.
 
         Return: Document
@@ -1333,13 +1646,21 @@ the content of the file.</p></div>
             elif name == &#34;_Document__xmlparts&#34;:
                 setattr(clone, name, {})
             elif name == &#34;container&#34;:
+                if not self.container:
+                    raise ValueError(&#34;Empty Container&#34;)
                 setattr(clone, name, self.container.clone)
             else:
                 value = deepcopy(getattr(self, name))
                 setattr(clone, name, value)
         return clone
 
-    def save(self, target=None, packaging=None, pretty=False, backup=False):
+    def save(
+        self,
+        target: str | Path | io.BytesIO | None = None,
+        packaging: str = &#34;zip&#34;,
+        pretty: bool = False,
+        backup: bool = False,
+    ) -&gt; None:
         &#34;&#34;&#34;Save the document, at the same place it was opened or at the given
         target path. Target can also be a file-like object. It can be saved
         as a Zip file (default) or as files in a folder (for debugging
@@ -1355,9 +1676,10 @@ the content of the file.</p></div>
 
             backup -- bool
         &#34;&#34;&#34;
+        if not self.container:
+            raise ValueError(&#34;Empty Container&#34;)
         # Some advertising
-        meta = self.get_part(ODF_META)
-        meta.set_generator_default()
+        self.meta.set_generator_default()
         # Synchronize data with container
         container = self.container
         for path, part in self.__xmlparts.items():
@@ -1366,17 +1688,41 @@ the content of the file.</p></div>
         # Save the container
         container.save(target, packaging=packaging, backup=backup)
 
+    @property
+    def content(self) -&gt; Content:
+        content: Content | None = self.get_part(ODF_CONTENT)  # type:ignore
+        if content is None:
+            raise ValueError(&#34;Empty Content&#34;)
+        return content
+
+    @property
+    def styles(self) -&gt; Styles:
+        styles: Styles | None = self.get_part(ODF_STYLES)  # type:ignore
+        if styles is None:
+            raise ValueError(&#34;Empty Styles&#34;)
+        return styles
+
     # Styles over several parts
 
-    def get_styles(self, family=None, automatic=False):
-        content = self.get_part(ODF_CONTENT)
-        styles = self.get_part(ODF_STYLES)
-        family = to_str(family)
-        return content.get_styles(family=family) + styles.get_styles(
+    def get_styles(
+        self,
+        family: str | bytes = &#34;&#34;,
+        automatic: bool = False,
+    ) -&gt; list[Style | Element]:
+        # compatibility with old versions:
+
+        if isinstance(family, bytes):
+            family = bytes_to_str(family)
+        return self.content.get_styles(family=family) + self.styles.get_styles(
             family=family, automatic=automatic
         )
 
-    def get_style(self, family, name_or_element=None, display_name=None):
+    def get_style(
+        self,
+        family: str,
+        name_or_element: str | Style | None = None,
+        display_name: str | None = None,
+    ) -&gt; Style | None:
         &#34;&#34;&#34;Return the style uniquely identified by the name/family pair. If
         the argument is already a style object, it will return it.
 
@@ -1397,26 +1743,25 @@ the content of the file.</p></div>
         Return: Style or None if not found.
         &#34;&#34;&#34;
         # 1. content.xml
-        family = to_str(family)
-        content = self.get_part(ODF_CONTENT)
-        element = content.get_style(
+        element = self.content.get_style(
             family, name_or_element=name_or_element, display_name=display_name
         )
         if element is not None:
             return element
         # 2. styles.xml
-        styles = self.get_part(ODF_STYLES)
-        return styles.get_style(
-            family, name_or_element=name_or_element, display_name=display_name
+        return self.styles.get_style(
+            family,
+            name_or_element=name_or_element,
+            display_name=display_name,
         )
 
     @staticmethod
-    def _pseudo_style_attribute(style_element, attribute):
+    def _pseudo_style_attribute(style_element: Style | Element, attribute: str) -&gt; Any:
         if hasattr(style_element, attribute):
             return getattr(style_element, attribute)
         return &#34;&#34;
 
-    def _set_automatic_name(self, style, family):
+    def _set_automatic_name(self, style: Style, family: str) -&gt; None:
         &#34;&#34;&#34;Generate a name for the new automatic style.&#34;&#34;&#34;
         if not hasattr(style, &#34;name&#34;):
             # do nothing
@@ -1433,41 +1778,122 @@ the content of the file.</p></div>
             except ValueError:
                 continue
             max_index = max(max_index, index)
+
         style.name = f&#34;{AUTOMATIC_PREFIX}{max_index+1}&#34;
 
-    def _insert_style_standard(self, style, name, family, automatic, default):
+    def _insert_style_get_common_styles(
+        self,
+        family: str,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        style_container = self.styles.get_element(&#34;office:styles&#34;)
+        existing = self.styles.get_style(family, name)
+        return existing, style_container
+
+    def _insert_style_get_automatic_styles(
+        self,
+        style: Style,
+        family: str,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        style_container = self.content.get_element(&#34;office:automatic-styles&#34;)
+        # A name ?
+        if name:
+            if hasattr(style, &#34;name&#34;):
+                style.name = name
+            existing = self.content.get_style(family, name)
+        else:
+            self._set_automatic_name(style, family)
+            existing = None
+        return existing, style_container
+
+    def _insert_style_get_default_styles(
+        self,
+        style: Style,
+        family: str,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        style_container = self.styles.get_element(&#34;office:styles&#34;)
+        style.tag = &#34;style:default-style&#34;
+        if name:
+            style.del_attribute(&#34;style:name&#34;)
+        existing = self.styles.get_style(family)
+        return existing, style_container
+
+    def _insert_style_get_master_page(
+        self,
+        family: str,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        style_container = self.styles.get_element(&#34;office:master-styles&#34;)
+        existing = self.styles.get_style(family, name)
+        return existing, style_container
+
+    def _insert_style_get_font_face_default(
+        self,
+        family: str,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        style_container = self.styles.get_element(&#34;office:font-face-decls&#34;)
+        existing = self.styles.get_style(family, name)
+        return existing, style_container
+
+    def _insert_style_get_font_face(
+        self,
+        family: str,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        style_container = self.content.get_element(&#34;office:font-face-decls&#34;)
+        existing = self.content.get_style(family, name)
+        return existing, style_container
+
+    def _insert_style_get_page_layout(
+        self,
+        family: str,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        # force to automatic
+        style_container = self.styles.get_element(&#34;office:automatic-styles&#34;)
+        existing = self.styles.get_style(family, name)
+        return existing, style_container
+
+    def _insert_style_get_draw_fill_image(
+        self,
+        name: str,
+    ) -&gt; tuple[Any, Any]:
+        # special case for &#39;draw:fill-image&#39; pseudo style
+        # not family and style_element.__class__.__name__ == &#34;DrawFillImage&#34;
+        style_container = self.styles.get_element(&#34;office:styles&#34;)
+        existing = self.styles.get_style(&#34;&#34;, name)
+        return existing, style_container
+
+    def _insert_style_standard(
+        self,
+        style: Style,
+        name: str,
+        family: str,
+        automatic: bool,
+        default: bool,
+    ) -&gt; tuple[Any, Any]:
         # Common style
         if name and automatic is False and default is False:
-            part = self.get_part(ODF_STYLES)
-            container = part.get_element(&#34;office:styles&#34;)
-            existing = part.get_style(family, name)
+            return self._insert_style_get_common_styles(family, name)
         # Automatic style
         elif automatic is True and default is False:
-            part = self.get_part(ODF_CONTENT)
-            container = part.get_element(&#34;office:automatic-styles&#34;)
-            # A name ?
-            if name:
-                if hasattr(style, &#34;name&#34;):
-                    style.name = name
-                existing = part.get_style(family, name)
-            else:
-                self._set_automatic_name(style, family)
-                existing = None
+            return self._insert_style_get_automatic_styles(style, family, name)
         # Default style
         elif automatic is False and default is True:
-            part = self.get_part(ODF_STYLES)
-            container = part.get_element(&#34;office:styles&#34;)
-            # Force default style
-            style.tag = &#34;style:default-style&#34;
-            if name:
-                style.del_attribute(&#34;style:name&#34;)
-            existing = part.get_style(family)
-        # Error
+            return self._insert_style_get_default_styles(style, family, name)
         else:
-            raise AttributeError(&#34;invalid combination of arguments&#34;)
-        return existing, container
+            raise AttributeError(&#34;Invalid combination of arguments&#34;)
 
-    def insert_style(self, style, name=None, automatic=False, default=False):
+    def insert_style(  # noqa: C901
+        self,
+        style: Style | str,
+        name: str = &#34;&#34;,
+        automatic: bool = False,
+        default: bool = False,
+    ) -&gt; Any:
         &#34;&#34;&#34;Insert the given style object in the document, as required by the
         style family and type.
 
@@ -1503,55 +1929,55 @@ the content of the file.</p></div>
 
         # if style is a str, assume it is the Style definition
         if isinstance(style, str):
-            style = Element.from_tag(style)
+            style_element: Style = Element.from_tag(style)  # type: ignore
+        else:
+            style_element = style
+        if not isinstance(style_element, Element):
+            raise TypeError(f&#34;Unknown Style type: &#39;{style!r}&#39;&#34;)
 
         # Get family and name
-        family = self._pseudo_style_attribute(style, &#34;family&#34;)
+        family = self._pseudo_style_attribute(style_element, &#34;family&#34;)
         if not name:
-            name = self._pseudo_style_attribute(style, &#34;name&#34;)
+            name = self._pseudo_style_attribute(style_element, &#34;name&#34;)
 
         # Master page style
         if family == &#34;master-page&#34;:
-            part = self.get_part(ODF_STYLES)
-            container = part.get_element(&#34;office:master-styles&#34;)
-            existing = part.get_style(family, name)
+            existing, style_container = self._insert_style_get_master_page(family, name)
         # Font face declarations
         elif family == &#34;font-face&#34;:
             if default:
-                part = self.get_part(ODF_STYLES)
+                existing, style_container = self._insert_style_get_font_face_default(
+                    family, name
+                )
             else:
-                part = self.get_part(ODF_CONTENT)
-            container = part.get_element(&#34;office:font-face-decls&#34;)
-            existing = part.get_style(family, name)
+                existing, style_container = self._insert_style_get_font_face(
+                    family, name
+                )
         # page layout style
         elif family == &#34;page-layout&#34;:
-            part = self.get_part(ODF_STYLES)
-            # force to automatic
-            container = part.get_element(&#34;office:automatic-styles&#34;)
-            existing = part.get_style(family, name)
+            existing, style_container = self._insert_style_get_page_layout(family, name)
         # Common style
         elif family in FAMILY_ODF_STD or family in {&#34;number&#34;}:
-            existing, container = self._insert_style_standard(
-                style, name, family, automatic, default
+            existing, style_container = self._insert_style_standard(
+                style_element, name, family, automatic, default
             )
-        elif not family and style.__class__.__name__ == &#34;DrawFillImage&#34;:
+        elif not family and style_element.__class__.__name__ == &#34;DrawFillImage&#34;:
             # special case for &#39;draw:fill-image&#39; pseudo style
-            part = self.get_part(ODF_STYLES)
-            container = part.get_element(&#34;office:styles&#34;)
-            existing = part.get_style(&#34;&#34;, name)
+            existing, style_container = self._insert_style_get_draw_fill_image(name)
         # Invalid style
         else:
             raise ValueError(
-                f&#34;invalid style: {style}, tag:{style.tag}, family:{family}&#34;
+                &#34;Invalid style: &#34;
+                f&#34;{style_element}, tag:{style_element.tag}, family:{family}&#34;
             )
 
         # Insert it!
         if existing is not None:
-            container.delete(existing)
-        container.append(style)
-        return self._pseudo_style_attribute(style, &#34;name&#34;)
+            style_container.delete(existing)
+        style_container.append(style_element)
+        return self._pseudo_style_attribute(style_element, &#34;name&#34;)
 
-    def get_styled_elements(self, name=True):
+    def get_styled_elements(self, name: str = &#34;&#34;) -&gt; list[Element]:
         &#34;&#34;&#34;Brute-force to find paragraphs, tables, etc. using the given style
         name (or all by default).
 
@@ -1561,18 +1987,21 @@ the content of the file.</p></div>
 
         Return: list
         &#34;&#34;&#34;
-        content = self.get_part(ODF_CONTENT)
         # Header, footer, etc. have styles too
-        styles = self.get_part(ODF_STYLES)
-        return content.root.get_styled_elements(name) + styles.root.get_styled_elements(
+        return self.content.root.get_styled_elements(
             name
-        )
+        ) + self.styles.root.get_styled_elements(name)
 
-    def show_styles(self, automatic=True, common=True, properties=False):
+    def show_styles(
+        self,
+        automatic: bool = True,
+        common: bool = True,
+        properties: bool = False,
+    ) -&gt; str:
         infos = []
         for style in self.get_styles():
             try:
-                name = style.name
+                name = style.name  # type: ignore
             except AttributeError:
                 print(&#34;--------------&#34;)
                 print(style.__class__)
@@ -1581,7 +2010,7 @@ the content of the file.</p></div>
             if style.__class__.__name__ == &#34;DrawFillImage&#34;:
                 family = &#34;&#34;
             else:
-                family = style.family
+                family = str(style.family)  # type: ignore
             parent = style.parent
             is_auto = parent and parent.tag == &#34;office:automatic-styles&#34;
             if is_auto and automatic is False or not is_auto and common is False:
@@ -1596,7 +2025,7 @@ the content of the file.</p></div>
                     &#34;name&#34;: name or &#34;&#34;,
                     &#34;display_name&#34;: self._pseudo_style_attribute(style, &#34;display_name&#34;)
                     or &#34;&#34;,
-                    &#34;properties&#34;: style.get_properties() if properties else None,
+                    &#34;properties&#34;: style.get_properties() if properties else None,  # type: ignore
                 }
             )
         if not infos:
@@ -1605,8 +2034,8 @@ the content of the file.</p></div>
         infos.sort(key=itemgetter(&#34;family&#34;, &#34;name&#34;))
         # Show common and used first
         infos.sort(key=itemgetter(&#34;type&#34;, &#34;used&#34;), reverse=True)
-        max_family = str(max([len(x[&#34;family&#34;]) for x in infos]))
-        max_parent = str(max([len(x[&#34;parent&#34;]) for x in infos]))
+        max_family = str(max([len(x[&#34;family&#34;]) for x in infos]))  # type: ignore
+        max_parent = str(max([len(x[&#34;parent&#34;]) for x in infos]))  # type: ignore
         formater = (
             &#34;%(type)s used:%(used)s family:%(family)-0&#34;
             + max_family
@@ -1618,15 +2047,15 @@ the content of the file.</p></div>
         for info in infos:
             line = formater % info
             if info[&#34;display_name&#34;]:
-                line += &#34; display_name:&#34; + info[&#34;display_name&#34;]
+                line += &#34; display_name:&#34; + info[&#34;display_name&#34;]  # type: ignore
             output.append(line)
             if info[&#34;properties&#34;]:
-                for name, value in info[&#34;properties&#34;].items():
+                for name, value in info[&#34;properties&#34;].items():  # type: ignore
                     output.append(f&#34;   - {name}: {value}&#34;)
         output.append(&#34;&#34;)
         return &#34;\n&#34;.join(output)
 
-    def delete_styles(self):
+    def delete_styles(self) -&gt; int:
         &#34;&#34;&#34;Remove all style information from content and all styles.
 
         Return: number of deleted styles
@@ -1645,40 +2074,38 @@ the content of the file.</p></div>
                 except KeyError:
                     continue
         # Then remove supposedly orphaned styles
-        i = 0
+        deleted = 0
         for style in self.get_styles():
-            if style.name is None:
+            if style.name is None:  # type: ignore
                 # Don&#39;t delete default styles
                 continue
             # elif type(style) is odf_master_page:
             #    # Don&#39;t suppress header and footer, just styling was removed
             #    continue
             style.delete()
-            i += 1
-        return i
+            deleted += 1
+        return deleted
 
-    def merge_styles_from(self, document):
+    def merge_styles_from(self, document: Document) -&gt; None:
         &#34;&#34;&#34;Copy all the styles of a document into ourself.
 
         Styles with the same type and name will be replaced, so only unique
         styles will be preserved.
         &#34;&#34;&#34;
-        styles = self.get_part(ODF_STYLES)
-        content = self.get_part(ODF_CONTENT)
-        manifest = self.get_part(ODF_MANIFEST)
-        document_manifest = document.get_part(ODF_MANIFEST)
+        manifest = self.manifest
+        document_manifest = document.manifest
         for style in document.get_styles():
             tagname = style.tag
             family = self._pseudo_style_attribute(style, &#34;family&#34;)
-            stylename = style.name
+            stylename = style.name  # type: ignore
             container = style.parent
-            container_name = container.tag
-            partname = container.parent.tag
+            container_name = container.tag  # type: ignore
+            partname = container.parent.tag  # type: ignore
             # The destination part
             if partname == &#34;office:document-styles&#34;:
-                part = styles
+                part: Content | Styles = self.styles
             elif partname == &#34;office:document-content&#34;:
-                part = content
+                part = self.content
             else:
                 raise NotImplementedError(partname)
             # Implemented containers
@@ -1689,7 +2116,7 @@ the content of the file.</p></div>
                 &#34;office:font-face-decls&#34;,
             }:
                 raise NotImplementedError(container_name)
-            dest = part.get_element(&#34;//%s&#34; % container_name)
+            dest = part.get_element(f&#34;//{container_name}&#34;)
             # Implemented style types
             # if tagname not in registered_styles:
             #    raise NotImplementedError(tagname)
@@ -1701,21 +2128,21 @@ the content of the file.</p></div>
             if tagname == &#34;style:master-page&#34;:
                 query = &#34;descendant::draw:image&#34;
                 for image in style.get_elements(query):
-                    url = image.url
-                    part = document.get_part(url)
+                    url = image.url  # type: ignore
+                    part_url = document.get_part(url)
                     # Manually add the part to keep the name
-                    self.set_part(url, part)
+                    self.set_part(url, part_url)  # type: ignore
                     media_type = document_manifest.get_media_type(url)
-                    manifest.add_full_path(url, media_type)
+                    manifest.add_full_path(url, media_type)  # type: ignore
             # Copy images from the fill-image
             elif tagname == &#34;draw:fill-image&#34;:
-                url = style.url
-                part = document.get_part(url)
-                self.set_part(url, part)
+                url = style.url  # type: ignore
+                part_url = document.get_part(url)
+                self.set_part(url, part_url)  # type: ignore
                 media_type = document_manifest.get_media_type(url)
-                manifest.add_full_path(url, media_type)
+                manifest.add_full_path(url, media_type)  # type: ignore
 
-    def add_page_break_style(self):
+    def add_page_break_style(self) -&gt; None:
         &#34;&#34;&#34;Ensure that the document contains the style required for a manual page break.
 
         Then a manual page break can be added to the document with:
@@ -1724,7 +2151,7 @@ the content of the file.</p></div>
             document.body.append(PageBreak())
 
         Note: this style uses the property &#39;fo:break-after&#39;, another
-        possibility coul be the property &#39;fo:break-before&#39;
+        possibility could be the property &#39;fo:break-before&#39;
         &#34;&#34;&#34;
         if existing := self.get_style(  # noqa: SIM102
             family=&#34;paragraph&#34;,
@@ -1743,26 +2170,38 @@ the content of the file.</p></div>
 <h3>Static methods</h3>
 <dl>
 <dt id="odfdo.document.Document.new"><code class="name flex">
-<span>def <span class="ident">new</span></span>(<span>target: str | Path = 'text') ‑> <a title="odfdo.document.Document" href="#odfdo.document.Document">Document</a></span>
+<span>def <span class="ident">new</span></span>(<span>template: str | Path | io.BytesIO = 'text') ‑> <a title="odfdo.document.Document" href="#odfdo.document.Document">Document</a></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Compatibility class method fro read from a templste.</p></div>
+<div class="desc"><p>Create a Document from a template.</p>
+<p>The template argument is expected to be the path to a ODF template.</p>
+<h2 id="arguments">Arguments</h2>
+<p>template &ndash; str or Path or file-like (io.BytesIO)</p>
+<p>Return : ODF document &ndash; Document</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@classmethod
-def new(cls, target: str | Path = &#34;text&#34;) -&gt; Document:
-    &#34;&#34;&#34;Compatibility class method fro read from a templste.&#34;&#34;&#34;
-    document = Document()
-    document.container = Container.from_template(target)
-    return document</code></pre>
+def new(cls, template: str | Path | io.BytesIO = &#34;text&#34;) -&gt; Document:
+    &#34;&#34;&#34;Create a Document from a template.
+
+    The template argument is expected to be the path to a ODF template.
+
+    Arguments:
+
+        template -- str or Path or file-like (io.BytesIO)
+
+    Return : ODF document -- Document
+    &#34;&#34;&#34;
+    container = container_from_template(template)
+    return cls(container)</code></pre>
 </details>
 </dd>
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.document.Document.body"><code class="name">var <span class="ident">body</span></code></dt>
+<dt id="odfdo.document.Document.body"><code class="name">var <span class="ident">body</span> : <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></code></dt>
 <dd>
 <div class="desc"><p>Return the body element of the content part, where actual content
 is stored.</p></div>
@@ -1771,17 +2210,16 @@ is stored.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def body(self):
+def body(self) -&gt; Element:
     &#34;&#34;&#34;Return the body element of the content part, where actual content
     is stored.
     &#34;&#34;&#34;
     if self.__body is None:
-        content = self.get_part(ODF_CONTENT)
-        self.__body = content.body
+        self.__body = self.content.body
     return self.__body</code></pre>
 </details>
 </dd>
-<dt id="odfdo.document.Document.clone"><code class="name">var <span class="ident">clone</span></code></dt>
+<dt id="odfdo.document.Document.clone"><code class="name">var <span class="ident">clone</span> : <a title="odfdo.document.Document" href="#odfdo.document.Document">Document</a></code></dt>
 <dd>
 <div class="desc"><p>Return an exact copy of the document.</p>
 <p>Return: Document</p></div>
@@ -1790,7 +2228,7 @@ def body(self):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def clone(self):
+def clone(self) -&gt; Document:
     &#34;&#34;&#34;Return an exact copy of the document.
 
     Return: Document
@@ -1802,6 +2240,8 @@ def clone(self):
         elif name == &#34;_Document__xmlparts&#34;:
             setattr(clone, name, {})
         elif name == &#34;container&#34;:
+            if not self.container:
+                raise ValueError(&#34;Empty Container&#34;)
             setattr(clone, name, self.container.clone)
         else:
             value = deepcopy(getattr(self, name))
@@ -1809,7 +2249,7 @@ def clone(self):
     return clone</code></pre>
 </details>
 </dd>
-<dt id="odfdo.document.Document.mimetype"><code class="name">var <span class="ident">mimetype</span></code></dt>
+<dt id="odfdo.document.Document.content"><code class="name">var <span class="ident">content</span> : <a title="odfdo.content.Content" href="content.html#odfdo.content.Content">Content</a></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -1817,7 +2257,58 @@ def clone(self):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def mimetype(self):
+def content(self) -&gt; Content:
+    content: Content | None = self.get_part(ODF_CONTENT)  # type:ignore
+    if content is None:
+        raise ValueError(&#34;Empty Content&#34;)
+    return content</code></pre>
+</details>
+</dd>
+<dt id="odfdo.document.Document.manifest"><code class="name">var <span class="ident">manifest</span> : <a title="odfdo.manifest.Manifest" href="manifest.html#odfdo.manifest.Manifest">Manifest</a></code></dt>
+<dd>
+<div class="desc"><p>Return the manifest part (manifest.xml) of the document.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def manifest(self) -&gt; Manifest:
+    &#34;&#34;&#34;Return the manifest part (manifest.xml) of the document.&#34;&#34;&#34;
+    manifest = self.get_part(ODF_MANIFEST)
+    if manifest is None or not isinstance(manifest, Manifest):
+        raise ValueError(&#34;Empty Manifest&#34;)
+    return manifest</code></pre>
+</details>
+</dd>
+<dt id="odfdo.document.Document.meta"><code class="name">var <span class="ident">meta</span> : <a title="odfdo.meta.Meta" href="meta.html#odfdo.meta.Meta">Meta</a></code></dt>
+<dd>
+<div class="desc"><p>Return the meta part (meta.xml) of the document, where meta data
+are stored.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def meta(self) -&gt; Meta:
+    &#34;&#34;&#34;Return the meta part (meta.xml) of the document, where meta data
+    are stored.&#34;&#34;&#34;
+    metadata = self.get_part(ODF_META)
+    if metadata is None or not isinstance(metadata, Meta):
+        raise ValueError(&#34;Empty Meta&#34;)
+    return metadata</code></pre>
+</details>
+</dd>
+<dt id="odfdo.document.Document.mimetype"><code class="name">var <span class="ident">mimetype</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def mimetype(self) -&gt; str:
+    if not self.container:
+        raise ValueError(&#34;Empty Container&#34;)
     return self.container.mimetype</code></pre>
 </details>
 </dd>
@@ -1836,11 +2327,26 @@ def path(self) -&gt; Path | None:
     return self.container.path</code></pre>
 </details>
 </dd>
+<dt id="odfdo.document.Document.styles"><code class="name">var <span class="ident">styles</span> : <a title="odfdo.styles.Styles" href="styles.html#odfdo.styles.Styles">Styles</a></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def styles(self) -&gt; Styles:
+    styles: Styles | None = self.get_part(ODF_STYLES)  # type:ignore
+    if styles is None:
+        raise ValueError(&#34;Empty Styles&#34;)
+    return styles</code></pre>
+</details>
+</dd>
 </dl>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.document.Document.add_file"><code class="name flex">
-<span>def <span class="ident">add_file</span></span>(<span>self, path_or_file)</span>
+<span>def <span class="ident">add_file</span></span>(<span>self, path_or_file: str | Path) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Insert a file from a path or a file-like object in the container.</p>
@@ -1852,7 +2358,7 @@ def path(self) -&gt; Path | None:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_file(self, path_or_file):
+<pre><code class="python">def add_file(self, path_or_file: str | Path) -&gt; str:
     &#34;&#34;&#34;Insert a file from a path or a file-like object in the container.
 
     Return the full path to reference in the content.
@@ -1863,9 +2369,11 @@ def path(self) -&gt; Path | None:
 
     Return: str (URI)
     &#34;&#34;&#34;
-    name = None
+    if not self.container:
+        raise ValueError(&#34;Empty Container&#34;)
+    name = &#34;&#34;
     # Folder for added files (FIXME hard-coded and copied)
-    manifest = self.get_part(ODF_MANIFEST)
+    manifest = self.manifest
     medias = manifest.get_paths()
     # uuid = str(uuid4())
 
@@ -1895,7 +2403,7 @@ def path(self) -&gt; Path | None:
 </details>
 </dd>
 <dt id="odfdo.document.Document.add_page_break_style"><code class="name flex">
-<span>def <span class="ident">add_page_break_style</span></span>(<span>self)</span>
+<span>def <span class="ident">add_page_break_style</span></span>(<span>self) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Ensure that the document contains the style required for a manual page break.</p>
@@ -1904,12 +2412,12 @@ from paragraph import PageBreak
 &hellip;
 document.body.append(PageBreak())</p>
 <p>Note: this style uses the property 'fo:break-after', another
-possibility coul be the property 'fo:break-before'</p></div>
+possibility could be the property 'fo:break-before'</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_page_break_style(self):
+<pre><code class="python">def add_page_break_style(self) -&gt; None:
     &#34;&#34;&#34;Ensure that the document contains the style required for a manual page break.
 
     Then a manual page break can be added to the document with:
@@ -1918,7 +2426,7 @@ possibility coul be the property 'fo:break-before'</p></div>
         document.body.append(PageBreak())
 
     Note: this style uses the property &#39;fo:break-after&#39;, another
-    possibility coul be the property &#39;fo:break-before&#39;
+    possibility could be the property &#39;fo:break-before&#39;
     &#34;&#34;&#34;
     if existing := self.get_style(  # noqa: SIM102
         family=&#34;paragraph&#34;,
@@ -1936,7 +2444,7 @@ possibility coul be the property 'fo:break-before'</p></div>
 </details>
 </dd>
 <dt id="odfdo.document.Document.del_part"><code class="name flex">
-<span>def <span class="ident">del_part</span></span>(<span>self, path)</span>
+<span>def <span class="ident">del_part</span></span>(<span>self, path: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Mark a part for deletion. The path is relative to the archive,
@@ -1945,7 +2453,7 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def del_part(self, path):
+<pre><code class="python">def del_part(self, path: str) -&gt; None:
     &#34;&#34;&#34;Mark a part for deletion. The path is relative to the archive,
     e.g. &#34;Pictures/1003200258912EB1C3.jpg&#34;
     &#34;&#34;&#34;
@@ -1954,12 +2462,12 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
     path = _get_part_path(path)
     cls = _get_part_class(path)
     if path == ODF_MANIFEST or cls is not None:
-        raise ValueError(&#39;part &#34;%s&#34; is mandatory&#39; % path)
-    return self.container.del_part(path)</code></pre>
+        raise ValueError(f&#34;part &#39;{path}&#39; is mandatory&#34;)
+    self.container.del_part(path)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.delete_styles"><code class="name flex">
-<span>def <span class="ident">delete_styles</span></span>(<span>self)</span>
+<span>def <span class="ident">delete_styles</span></span>(<span>self) ‑> int</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Remove all style information from content and all styles.</p>
@@ -1968,7 +2476,7 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def delete_styles(self):
+<pre><code class="python">def delete_styles(self) -&gt; int:
     &#34;&#34;&#34;Remove all style information from content and all styles.
 
     Return: number of deleted styles
@@ -1987,21 +2495,21 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
             except KeyError:
                 continue
     # Then remove supposedly orphaned styles
-    i = 0
+    deleted = 0
     for style in self.get_styles():
-        if style.name is None:
+        if style.name is None:  # type: ignore
             # Don&#39;t delete default styles
             continue
         # elif type(style) is odf_master_page:
         #    # Don&#39;t suppress header and footer, just styling was removed
         #    continue
         style.delete()
-        i += 1
-    return i</code></pre>
+        deleted += 1
+    return deleted</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.get_formated_meta"><code class="name flex">
-<span>def <span class="ident">get_formated_meta</span></span>(<span>self)</span>
+<span>def <span class="ident">get_formated_meta</span></span>(<span>self) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return meta informations as text, with some formatting.</p></div>
@@ -2009,17 +2517,16 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_formated_meta(self):
+<pre><code class="python">def get_formated_meta(self) -&gt; str:
     &#34;&#34;&#34;Return meta informations as text, with some formatting.&#34;&#34;&#34;
-    result = []
-
-    meta = self.get_part(ODF_META)
+    result: list[str] = []
 
     # Simple values
-    def print_info(name, value):
+    def print_info(name: str, value: Any) -&gt; None:
         if value:
             result.append(f&#34;{name}: {value}&#34;)
 
+    meta = self.meta
     print_info(&#34;Title&#34;, meta.get_title())
     print_info(&#34;Subject&#34;, meta.get_subject())
     print_info(&#34;Language&#34;, meta.get_language())
@@ -2034,14 +2541,15 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
     # Statistic
     result.append(&#34;Statistic:&#34;)
     statistic = meta.get_statistic()
-    for name, value in statistic.items():
-        result.append(f&#34;  - {name[5:].replace(&#39;-&#39;, &#39; &#39;).capitalize()}: {value}&#34;)
+    if statistic:
+        for name, data in statistic.items():
+            result.append(f&#34;  - {name[5:].replace(&#39;-&#39;, &#39; &#39;).capitalize()}: {data}&#34;)
 
     # User defined metadata
     result.append(&#34;User defined metadata:&#34;)
     user_metadata = meta.get_user_defined_metadata()
-    for name, value in user_metadata.items():
-        result.append(f&#34;  - {name}: {value}&#34;)
+    for name, data2 in user_metadata.items():
+        result.append(f&#34;  - {name}: {data2}&#34;)
 
     # And the description
     print_info(&#34;Description&#34;, meta.get_description())
@@ -2050,7 +2558,7 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
 </details>
 </dd>
 <dt id="odfdo.document.Document.get_formatted_text"><code class="name flex">
-<span>def <span class="ident">get_formatted_text</span></span>(<span>self, rst_mode=False)</span>
+<span>def <span class="ident">get_formatted_text</span></span>(<span>self, rst_mode: bool = False) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return content as text, with some formatting.</p></div>
@@ -2058,7 +2566,7 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_formatted_text(self, rst_mode=False):
+<pre><code class="python">def get_formatted_text(self, rst_mode: bool = False) -&gt; str:
     &#34;&#34;&#34;Return content as text, with some formatting.&#34;&#34;&#34;
     # For the moment, only &#34;type=&#39;text&#39;&#34;
     doc_type = self.get_type()
@@ -2071,11 +2579,11 @@ e.g. "Pictures/1003200258912EB1C3.jpg"</p></div>
         &#34;presentation-template&#34;,
     }:
         return self._formatted_text(rst_mode)
-    raise NotImplementedError(f&#39;Type of document &#34;{doc_type}&#34; not &#39; &#34;supported yet&#34;)</code></pre>
+    raise NotImplementedError(f&#34;Type of document &#39;{doc_type}&#39; not supported yet&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.get_part"><code class="name flex">
-<span>def <span class="ident">get_part</span></span>(<span>self, path)</span>
+<span>def <span class="ident">get_part</span></span>(<span>self, path: str) ‑> <a title="odfdo.xmlpart.XmlPart" href="xmlpart.html#odfdo.xmlpart.XmlPart">XmlPart</a> | str | bytes | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return the bytes of the given part. The path is relative to the
@@ -2088,7 +2596,7 @@ its own API.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_part(self, path):
+<pre><code class="python">def get_part(self, path: str) -&gt; XmlPart | str | bytes | None:
     &#34;&#34;&#34;Return the bytes of the given part. The path is relative to the
     archive, e.g. &#34;Pictures/1003200258912EB1C3.jpg&#34;.
 
@@ -2104,20 +2612,18 @@ its own API.</p>
     path = path.lstrip(&#34;./&#34;)
     path = _get_part_path(path)
     cls = _get_part_class(path)
-    container = self.container
     # Raw bytes
     if cls is None:
-        return container.get_part(path)
+        return self.container.get_part(path)
     # XML part
-    xmlparts = self.__xmlparts
-    part = xmlparts.get(path)
+    part = self.__xmlparts.get(path)
     if part is None:
-        xmlparts[path] = part = cls(path, container)
+        self.__xmlparts[path] = part = cls(path, self.container)
     return part</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.get_parts"><code class="name flex">
-<span>def <span class="ident">get_parts</span></span>(<span>self)</span>
+<span>def <span class="ident">get_parts</span></span>(<span>self) ‑> list[str]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return available part names with path inside the archive, e.g.
@@ -2126,7 +2632,7 @@ its own API.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_parts(self):
+<pre><code class="python">def get_parts(self) -&gt; list[str]:
     &#34;&#34;&#34;Return available part names with path inside the archive, e.g.
     [&#39;content.xml&#39;, ..., &#39;Pictures/100000000000032000000258912EB1C3.jpg&#39;]
     &#34;&#34;&#34;
@@ -2136,7 +2642,7 @@ its own API.</p>
 </details>
 </dd>
 <dt id="odfdo.document.Document.get_style"><code class="name flex">
-<span>def <span class="ident">get_style</span></span>(<span>self, family, name_or_element=None, display_name=None)</span>
+<span>def <span class="ident">get_style</span></span>(<span>self, family: str, name_or_element: str | Style | None = None, display_name: str | None = None) ‑> <a title="odfdo.style.Style" href="style.html#odfdo.style.Style">Style</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return the style uniquely identified by the name/family pair. If
@@ -2155,7 +2661,12 @@ desktop application, use display_name instead.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_style(self, family, name_or_element=None, display_name=None):
+<pre><code class="python">def get_style(
+    self,
+    family: str,
+    name_or_element: str | Style | None = None,
+    display_name: str | None = None,
+) -&gt; Style | None:
     &#34;&#34;&#34;Return the style uniquely identified by the name/family pair. If
     the argument is already a style object, it will return it.
 
@@ -2176,22 +2687,21 @@ desktop application, use display_name instead.</p>
     Return: Style or None if not found.
     &#34;&#34;&#34;
     # 1. content.xml
-    family = to_str(family)
-    content = self.get_part(ODF_CONTENT)
-    element = content.get_style(
+    element = self.content.get_style(
         family, name_or_element=name_or_element, display_name=display_name
     )
     if element is not None:
         return element
     # 2. styles.xml
-    styles = self.get_part(ODF_STYLES)
-    return styles.get_style(
-        family, name_or_element=name_or_element, display_name=display_name
+    return self.styles.get_style(
+        family,
+        name_or_element=name_or_element,
+        display_name=display_name,
     )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.get_styled_elements"><code class="name flex">
-<span>def <span class="ident">get_styled_elements</span></span>(<span>self, name=True)</span>
+<span>def <span class="ident">get_styled_elements</span></span>(<span>self, name: str = '') ‑> list[<a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Brute-force to find paragraphs, tables, etc. using the given style
@@ -2203,7 +2713,7 @@ name (or all by default).</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_styled_elements(self, name=True):
+<pre><code class="python">def get_styled_elements(self, name: str = &#34;&#34;) -&gt; list[Element]:
     &#34;&#34;&#34;Brute-force to find paragraphs, tables, etc. using the given style
     name (or all by default).
 
@@ -2213,16 +2723,14 @@ name (or all by default).</p>
 
     Return: list
     &#34;&#34;&#34;
-    content = self.get_part(ODF_CONTENT)
     # Header, footer, etc. have styles too
-    styles = self.get_part(ODF_STYLES)
-    return content.root.get_styled_elements(name) + styles.root.get_styled_elements(
+    return self.content.root.get_styled_elements(
         name
-    )</code></pre>
+    ) + self.styles.root.get_styled_elements(name)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.get_styles"><code class="name flex">
-<span>def <span class="ident">get_styles</span></span>(<span>self, family=None, automatic=False)</span>
+<span>def <span class="ident">get_styles</span></span>(<span>self, family: str | bytes = '', automatic: bool = False) ‑> list[<a title="odfdo.style.Style" href="style.html#odfdo.style.Style">Style</a> | <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2230,17 +2738,22 @@ name (or all by default).</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_styles(self, family=None, automatic=False):
-    content = self.get_part(ODF_CONTENT)
-    styles = self.get_part(ODF_STYLES)
-    family = to_str(family)
-    return content.get_styles(family=family) + styles.get_styles(
+<pre><code class="python">def get_styles(
+    self,
+    family: str | bytes = &#34;&#34;,
+    automatic: bool = False,
+) -&gt; list[Style | Element]:
+    # compatibility with old versions:
+
+    if isinstance(family, bytes):
+        family = bytes_to_str(family)
+    return self.content.get_styles(family=family) + self.styles.get_styles(
         family=family, automatic=automatic
     )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.get_type"><code class="name flex">
-<span>def <span class="ident">get_type</span></span>(<span>self)</span>
+<span>def <span class="ident">get_type</span></span>(<span>self) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the ODF type (also called class) of this document.</p>
@@ -2252,7 +2765,7 @@ name (or all by default).</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_type(self):
+<pre><code class="python">def get_type(self) -&gt; str:
     &#34;&#34;&#34;Get the ODF type (also called class) of this document.
 
     Return: &#39;chart&#39;, &#39;database&#39;, &#39;formula&#39;, &#39;graphics&#39;,
@@ -2268,7 +2781,7 @@ name (or all by default).</p>
 </details>
 </dd>
 <dt id="odfdo.document.Document.insert_style"><code class="name flex">
-<span>def <span class="ident">insert_style</span></span>(<span>self, style, name=None, automatic=False, default=False)</span>
+<span>def <span class="ident">insert_style</span></span>(<span>self, style: Style | str, name: str = '', automatic: bool = False, default: bool = False) ‑> Any</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Insert the given style object in the document, as required by the
@@ -2295,7 +2808,13 @@ graphic, presentation, control and ruby.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_style(self, style, name=None, automatic=False, default=False):
+<pre><code class="python">def insert_style(  # noqa: C901
+    self,
+    style: Style | str,
+    name: str = &#34;&#34;,
+    automatic: bool = False,
+    default: bool = False,
+) -&gt; Any:
     &#34;&#34;&#34;Insert the given style object in the document, as required by the
     style family and type.
 
@@ -2331,57 +2850,57 @@ graphic, presentation, control and ruby.</p>
 
     # if style is a str, assume it is the Style definition
     if isinstance(style, str):
-        style = Element.from_tag(style)
+        style_element: Style = Element.from_tag(style)  # type: ignore
+    else:
+        style_element = style
+    if not isinstance(style_element, Element):
+        raise TypeError(f&#34;Unknown Style type: &#39;{style!r}&#39;&#34;)
 
     # Get family and name
-    family = self._pseudo_style_attribute(style, &#34;family&#34;)
+    family = self._pseudo_style_attribute(style_element, &#34;family&#34;)
     if not name:
-        name = self._pseudo_style_attribute(style, &#34;name&#34;)
+        name = self._pseudo_style_attribute(style_element, &#34;name&#34;)
 
     # Master page style
     if family == &#34;master-page&#34;:
-        part = self.get_part(ODF_STYLES)
-        container = part.get_element(&#34;office:master-styles&#34;)
-        existing = part.get_style(family, name)
+        existing, style_container = self._insert_style_get_master_page(family, name)
     # Font face declarations
     elif family == &#34;font-face&#34;:
         if default:
-            part = self.get_part(ODF_STYLES)
+            existing, style_container = self._insert_style_get_font_face_default(
+                family, name
+            )
         else:
-            part = self.get_part(ODF_CONTENT)
-        container = part.get_element(&#34;office:font-face-decls&#34;)
-        existing = part.get_style(family, name)
+            existing, style_container = self._insert_style_get_font_face(
+                family, name
+            )
     # page layout style
     elif family == &#34;page-layout&#34;:
-        part = self.get_part(ODF_STYLES)
-        # force to automatic
-        container = part.get_element(&#34;office:automatic-styles&#34;)
-        existing = part.get_style(family, name)
+        existing, style_container = self._insert_style_get_page_layout(family, name)
     # Common style
     elif family in FAMILY_ODF_STD or family in {&#34;number&#34;}:
-        existing, container = self._insert_style_standard(
-            style, name, family, automatic, default
+        existing, style_container = self._insert_style_standard(
+            style_element, name, family, automatic, default
         )
-    elif not family and style.__class__.__name__ == &#34;DrawFillImage&#34;:
+    elif not family and style_element.__class__.__name__ == &#34;DrawFillImage&#34;:
         # special case for &#39;draw:fill-image&#39; pseudo style
-        part = self.get_part(ODF_STYLES)
-        container = part.get_element(&#34;office:styles&#34;)
-        existing = part.get_style(&#34;&#34;, name)
+        existing, style_container = self._insert_style_get_draw_fill_image(name)
     # Invalid style
     else:
         raise ValueError(
-            f&#34;invalid style: {style}, tag:{style.tag}, family:{family}&#34;
+            &#34;Invalid style: &#34;
+            f&#34;{style_element}, tag:{style_element.tag}, family:{family}&#34;
         )
 
     # Insert it!
     if existing is not None:
-        container.delete(existing)
-    container.append(style)
-    return self._pseudo_style_attribute(style, &#34;name&#34;)</code></pre>
+        style_container.delete(existing)
+    style_container.append(style_element)
+    return self._pseudo_style_attribute(style_element, &#34;name&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.merge_styles_from"><code class="name flex">
-<span>def <span class="ident">merge_styles_from</span></span>(<span>self, document)</span>
+<span>def <span class="ident">merge_styles_from</span></span>(<span>self, document: <a title="odfdo.document.Document" href="#odfdo.document.Document">Document</a>) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Copy all the styles of a document into ourself.</p>
@@ -2391,28 +2910,26 @@ styles will be preserved.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def merge_styles_from(self, document):
+<pre><code class="python">def merge_styles_from(self, document: Document) -&gt; None:
     &#34;&#34;&#34;Copy all the styles of a document into ourself.
 
     Styles with the same type and name will be replaced, so only unique
     styles will be preserved.
     &#34;&#34;&#34;
-    styles = self.get_part(ODF_STYLES)
-    content = self.get_part(ODF_CONTENT)
-    manifest = self.get_part(ODF_MANIFEST)
-    document_manifest = document.get_part(ODF_MANIFEST)
+    manifest = self.manifest
+    document_manifest = document.manifest
     for style in document.get_styles():
         tagname = style.tag
         family = self._pseudo_style_attribute(style, &#34;family&#34;)
-        stylename = style.name
+        stylename = style.name  # type: ignore
         container = style.parent
-        container_name = container.tag
-        partname = container.parent.tag
+        container_name = container.tag  # type: ignore
+        partname = container.parent.tag  # type: ignore
         # The destination part
         if partname == &#34;office:document-styles&#34;:
-            part = styles
+            part: Content | Styles = self.styles
         elif partname == &#34;office:document-content&#34;:
-            part = content
+            part = self.content
         else:
             raise NotImplementedError(partname)
         # Implemented containers
@@ -2423,7 +2940,7 @@ styles will be preserved.</p></div>
             &#34;office:font-face-decls&#34;,
         }:
             raise NotImplementedError(container_name)
-        dest = part.get_element(&#34;//%s&#34; % container_name)
+        dest = part.get_element(f&#34;//{container_name}&#34;)
         # Implemented style types
         # if tagname not in registered_styles:
         #    raise NotImplementedError(tagname)
@@ -2435,23 +2952,23 @@ styles will be preserved.</p></div>
         if tagname == &#34;style:master-page&#34;:
             query = &#34;descendant::draw:image&#34;
             for image in style.get_elements(query):
-                url = image.url
-                part = document.get_part(url)
+                url = image.url  # type: ignore
+                part_url = document.get_part(url)
                 # Manually add the part to keep the name
-                self.set_part(url, part)
+                self.set_part(url, part_url)  # type: ignore
                 media_type = document_manifest.get_media_type(url)
-                manifest.add_full_path(url, media_type)
+                manifest.add_full_path(url, media_type)  # type: ignore
         # Copy images from the fill-image
         elif tagname == &#34;draw:fill-image&#34;:
-            url = style.url
-            part = document.get_part(url)
-            self.set_part(url, part)
+            url = style.url  # type: ignore
+            part_url = document.get_part(url)
+            self.set_part(url, part_url)  # type: ignore
             media_type = document_manifest.get_media_type(url)
-            manifest.add_full_path(url, media_type)</code></pre>
+            manifest.add_full_path(url, media_type)  # type: ignore</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.save"><code class="name flex">
-<span>def <span class="ident">save</span></span>(<span>self, target=None, packaging=None, pretty=False, backup=False)</span>
+<span>def <span class="ident">save</span></span>(<span>self, target: str | Path | io.BytesIO | None = None, packaging: str = 'zip', pretty: bool = False, backup: bool = False) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Save the document, at the same place it was opened or at the given
@@ -2467,7 +2984,13 @@ purpose). XML parts can be pretty printed.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def save(self, target=None, packaging=None, pretty=False, backup=False):
+<pre><code class="python">def save(
+    self,
+    target: str | Path | io.BytesIO | None = None,
+    packaging: str = &#34;zip&#34;,
+    pretty: bool = False,
+    backup: bool = False,
+) -&gt; None:
     &#34;&#34;&#34;Save the document, at the same place it was opened or at the given
     target path. Target can also be a file-like object. It can be saved
     as a Zip file (default) or as files in a folder (for debugging
@@ -2483,9 +3006,10 @@ purpose). XML parts can be pretty printed.</p>
 
         backup -- bool
     &#34;&#34;&#34;
+    if not self.container:
+        raise ValueError(&#34;Empty Container&#34;)
     # Some advertising
-    meta = self.get_part(ODF_META)
-    meta.set_generator_default()
+    self.meta.set_generator_default()
     # Synchronize data with container
     container = self.container
     for path, part in self.__xmlparts.items():
@@ -2496,7 +3020,7 @@ purpose). XML parts can be pretty printed.</p>
 </details>
 </dd>
 <dt id="odfdo.document.Document.set_part"><code class="name flex">
-<span>def <span class="ident">set_part</span></span>(<span>self, path, data)</span>
+<span>def <span class="ident">set_part</span></span>(<span>self, path: str, data: bytes) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the bytes of the given part. The path is relative to the
@@ -2506,7 +3030,7 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_part(self, path, data):
+<pre><code class="python">def set_part(self, path: str, data: bytes) -&gt; None:
     &#34;&#34;&#34;Set the bytes of the given part. The path is relative to the
     archive, e.g. &#34;Pictures/1003200258912EB1C3.jpg&#34;.
 
@@ -2520,12 +3044,13 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
     cls = _get_part_class(path)
     # XML part overwritten
     if cls is not None:
-        del self.__xmlparts[path]
-    return self.container.set_part(path, data)</code></pre>
+        with suppress(KeyError):
+            self.__xmlparts[path]
+    self.container.set_part(path, data)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.document.Document.show_styles"><code class="name flex">
-<span>def <span class="ident">show_styles</span></span>(<span>self, automatic=True, common=True, properties=False)</span>
+<span>def <span class="ident">show_styles</span></span>(<span>self, automatic: bool = True, common: bool = True, properties: bool = False) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2533,11 +3058,16 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def show_styles(self, automatic=True, common=True, properties=False):
+<pre><code class="python">def show_styles(
+    self,
+    automatic: bool = True,
+    common: bool = True,
+    properties: bool = False,
+) -&gt; str:
     infos = []
     for style in self.get_styles():
         try:
-            name = style.name
+            name = style.name  # type: ignore
         except AttributeError:
             print(&#34;--------------&#34;)
             print(style.__class__)
@@ -2546,7 +3076,7 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
         if style.__class__.__name__ == &#34;DrawFillImage&#34;:
             family = &#34;&#34;
         else:
-            family = style.family
+            family = str(style.family)  # type: ignore
         parent = style.parent
         is_auto = parent and parent.tag == &#34;office:automatic-styles&#34;
         if is_auto and automatic is False or not is_auto and common is False:
@@ -2561,7 +3091,7 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
                 &#34;name&#34;: name or &#34;&#34;,
                 &#34;display_name&#34;: self._pseudo_style_attribute(style, &#34;display_name&#34;)
                 or &#34;&#34;,
-                &#34;properties&#34;: style.get_properties() if properties else None,
+                &#34;properties&#34;: style.get_properties() if properties else None,  # type: ignore
             }
         )
     if not infos:
@@ -2570,8 +3100,8 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
     infos.sort(key=itemgetter(&#34;family&#34;, &#34;name&#34;))
     # Show common and used first
     infos.sort(key=itemgetter(&#34;type&#34;, &#34;used&#34;), reverse=True)
-    max_family = str(max([len(x[&#34;family&#34;]) for x in infos]))
-    max_parent = str(max([len(x[&#34;parent&#34;]) for x in infos]))
+    max_family = str(max([len(x[&#34;family&#34;]) for x in infos]))  # type: ignore
+    max_parent = str(max([len(x[&#34;parent&#34;]) for x in infos]))  # type: ignore
     formater = (
         &#34;%(type)s used:%(used)s family:%(family)-0&#34;
         + max_family
@@ -2583,10 +3113,10 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
     for info in infos:
         line = formater % info
         if info[&#34;display_name&#34;]:
-            line += &#34; display_name:&#34; + info[&#34;display_name&#34;]
+            line += &#34; display_name:&#34; + info[&#34;display_name&#34;]  # type: ignore
         output.append(line)
         if info[&#34;properties&#34;]:
-            for name, value in info[&#34;properties&#34;].items():
+            for name, value in info[&#34;properties&#34;].items():  # type: ignore
                 output.append(f&#34;   - {name}: {value}&#34;)
     output.append(&#34;&#34;)
     return &#34;\n&#34;.join(output)</code></pre>
@@ -2608,6 +3138,11 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
 <li><code><a title="odfdo" href="index.html">odfdo</a></code></li>
 </ul>
 </li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="odfdo.document.container_from_template" href="#odfdo.document.container_from_template">container_from_template</a></code></li>
+</ul>
+</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
@@ -2617,6 +3152,7 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
 <li><code><a title="odfdo.document.Document.add_page_break_style" href="#odfdo.document.Document.add_page_break_style">add_page_break_style</a></code></li>
 <li><code><a title="odfdo.document.Document.body" href="#odfdo.document.Document.body">body</a></code></li>
 <li><code><a title="odfdo.document.Document.clone" href="#odfdo.document.Document.clone">clone</a></code></li>
+<li><code><a title="odfdo.document.Document.content" href="#odfdo.document.Document.content">content</a></code></li>
 <li><code><a title="odfdo.document.Document.del_part" href="#odfdo.document.Document.del_part">del_part</a></code></li>
 <li><code><a title="odfdo.document.Document.delete_styles" href="#odfdo.document.Document.delete_styles">delete_styles</a></code></li>
 <li><code><a title="odfdo.document.Document.get_formated_meta" href="#odfdo.document.Document.get_formated_meta">get_formated_meta</a></code></li>
@@ -2628,13 +3164,16 @@ archive, e.g. "Pictures/1003200258912EB1C3.jpg".</p>
 <li><code><a title="odfdo.document.Document.get_styles" href="#odfdo.document.Document.get_styles">get_styles</a></code></li>
 <li><code><a title="odfdo.document.Document.get_type" href="#odfdo.document.Document.get_type">get_type</a></code></li>
 <li><code><a title="odfdo.document.Document.insert_style" href="#odfdo.document.Document.insert_style">insert_style</a></code></li>
+<li><code><a title="odfdo.document.Document.manifest" href="#odfdo.document.Document.manifest">manifest</a></code></li>
 <li><code><a title="odfdo.document.Document.merge_styles_from" href="#odfdo.document.Document.merge_styles_from">merge_styles_from</a></code></li>
+<li><code><a title="odfdo.document.Document.meta" href="#odfdo.document.Document.meta">meta</a></code></li>
 <li><code><a title="odfdo.document.Document.mimetype" href="#odfdo.document.Document.mimetype">mimetype</a></code></li>
 <li><code><a title="odfdo.document.Document.new" href="#odfdo.document.Document.new">new</a></code></li>
 <li><code><a title="odfdo.document.Document.path" href="#odfdo.document.Document.path">path</a></code></li>
 <li><code><a title="odfdo.document.Document.save" href="#odfdo.document.Document.save">save</a></code></li>
 <li><code><a title="odfdo.document.Document.set_part" href="#odfdo.document.Document.set_part">set_part</a></code></li>
 <li><code><a title="odfdo.document.Document.show_styles" href="#odfdo.document.Document.show_styles">show_styles</a></code></li>
+<li><code><a title="odfdo.document.Document.styles" href="#odfdo.document.Document.styles">styles</a></code></li>
 </ul>
 </li>
 </ul>

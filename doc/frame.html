@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.frame API documentation</title>
-<meta name="description" content="Frame class for &#34;draw:frame&#34;" />
+<meta name="description" content="Frame class for &#34;draw:frame&#34;." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,12 +22,12 @@
 <h1 class="title">Module <code>odfdo.frame</code></h1>
 </header>
 <section id="section-intro">
-<p>Frame class for "draw:frame"</p>
+<p>Frame class for "draw:frame".</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -48,23 +48,32 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse &lt;david.versmisse@itaapy.com&gt;
 #          Hervé Cauwelier &lt;herve@itaapy.com&gt;
-&#34;&#34;&#34;Frame class for &#34;draw:frame&#34;
+&#34;&#34;&#34;Frame class for &#34;draw:frame&#34;.
 &#34;&#34;&#34;
+from __future__ import annotations
+
+from collections.abc import Iterable
+from decimal import Decimal
+from typing import Any
+
 from .datatype import Unit
-from .element import Element, register_element_class
+from .element import Element, PropDef, register_element_class
 from .image import DrawImage
 from .paragraph import Paragraph
 from .style import Style
-from .utils import DPI, isiterable
+
+# This DPI is computed to have:
+# 640 px (width of your wiki) &lt;==&gt; 17 cm (width of a normal ODT page)
+DPI: Decimal = 640 * Decimal(&#34;2.54&#34;) / 17
 
 
 def default_frame_position_style(
-    name=&#34;FramePosition&#34;,
-    horizontal_pos=&#34;from-left&#34;,
-    vertical_pos=&#34;from-top&#34;,
-    horizontal_rel=&#34;paragraph&#34;,
-    vertical_rel=&#34;paragraph&#34;,
-):
+    name: str = &#34;FramePosition&#34;,
+    horizontal_pos: str = &#34;from-left&#34;,
+    vertical_pos: str = &#34;from-top&#34;,
+    horizontal_rel: str = &#34;paragraph&#34;,
+    vertical_rel: str = &#34;paragraph&#34;,
+) -&gt; Style:
     &#34;&#34;&#34;Helper style for positioning frames in desktop applications that need
     it.
 
@@ -98,31 +107,31 @@ class AnchorMix:
     }
 
     @property
-    def anchor_type(self):
-        &#34;getter/setter&#34;
-        return self.get_attribute(&#34;text:anchor-type&#34;)
+    def anchor_type(self) -&gt; str | None:
+        &#34;Anchor_type getter/setter.&#34;
+        return self.get_attribute_string(&#34;text:anchor-type&#34;)  # type: ignore
 
     @anchor_type.setter
-    def anchor_type(self, anchor_type):
+    def anchor_type(self, anchor_type: str) -&gt; None:
         if anchor_type not in self.ANCHOR_VALUE_CHOICE:
-            raise ValueError(&#34;anchor_type not valid: %s&#34; % anchor_type)
-        self.set_attribute(&#34;text:anchor-type&#34;, anchor_type)
+            raise TypeError(f&#34;anchor_type not valid: &#39;{anchor_type!r}&#39;&#34;)
+        self.set_attribute(&#34;text:anchor-type&#34;, anchor_type)  # type: ignore
 
     @property
-    def anchor_page(self):
+    def anchor_page(self) -&gt; int | None:
         &#34;&#34;&#34;getter/setter for the number of the page when the anchor type is
         &#39;page&#39;.
 
         type : int or None
         &#34;&#34;&#34;
-        anchor_page = self.get_attribute(&#34;text:anchor-page-number&#34;)
+        anchor_page = self.get_attribute(&#34;text:anchor-page-number&#34;)  # type: ignore
         if anchor_page is None:
             return None
         return int(anchor_page)
 
     @anchor_page.setter
-    def anchor_page(self, anchor_page):
-        self.set_attribute(&#34;text:anchor-page-number&#34;, anchor_page)
+    def anchor_page(self, anchor_page: int | None) -&gt; None:
+        self.set_attribute(&#34;text:anchor-page-number&#34;, anchor_page)  # type: ignore
 
 
 class PosMix:
@@ -136,13 +145,13 @@ class PosMix:
     &#34;&#34;&#34;
 
     @property
-    def position(self):
+    def position(self) -&gt; tuple:
         &#34;getter/setter&#34;
-        get_attr = self.get_attribute
+        get_attr = self.get_attribute  # type: ignore
         return get_attr(&#34;svg:x&#34;), get_attr(&#34;svg:y&#34;)
 
     @position.setter
-    def position(self, position):
+    def position(self, position: tuple | list) -&gt; None:
         self.pos_x = position[0]
         self.pos_y = position[1]
 
@@ -154,32 +163,32 @@ class ZMix:
     &#34;&#34;&#34;
 
     @property
-    def z_index(self):
+    def z_index(self) -&gt; int | None:
         &#34;getter/setter&#34;
-        z_index = self.get_attribute(&#34;draw:z-index&#34;)
+        z_index = self.get_attribute(&#34;draw:z-index&#34;)  # type: ignore
         if z_index is None:
             return None
         return int(z_index)
 
     @z_index.setter
-    def z_index(self, z_index):
-        self.set_attribute(&#34;draw:z-index&#34;, z_index)
+    def z_index(self, z_index: int) -&gt; None:
+        self.set_attribute(&#34;draw:z-index&#34;, z_index)  # type: ignore
 
 
 class SizeMix:
-    &#34;&#34;&#34;Size of the frame
+    &#34;&#34;&#34;Size of the frame.
 
     Size is a (width, height) tuple with items including the unit,
     e.g. (&#39;10cm&#39;, &#39;15cm&#39;).
     &#34;&#34;&#34;
 
     @property
-    def size(self):
+    def size(self) -&gt; tuple:
         &#34;getter/setter&#34;
         return (self.width, self.height)
 
     @size.setter
-    def size(self, size):
+    def size(self, size: tuple | list) -&gt; None:
         self.width = size[0]
         self.height = size[1]
 
@@ -193,33 +202,33 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
 
     _tag = &#34;draw:frame&#34;
     _properties = (
-        (&#34;name&#34;, &#34;draw:name&#34;),
-        (&#34;draw_id&#34;, &#34;draw:id&#34;),
-        (&#34;width&#34;, &#34;svg:width&#34;),
-        (&#34;height&#34;, &#34;svg:height&#34;),
-        (&#34;style&#34;, &#34;draw:style-name&#34;),
-        (&#34;pos_x&#34;, &#34;svg:x&#34;),
-        (&#34;pos_y&#34;, &#34;svg:y&#34;),
-        (&#34;presentation_class&#34;, &#34;presentation:class&#34;),
-        (&#34;layer&#34;, &#34;draw:layer&#34;),
-        (&#34;presentation_style&#34;, &#34;presentation:style-name&#34;),
+        PropDef(&#34;name&#34;, &#34;draw:name&#34;),
+        PropDef(&#34;draw_id&#34;, &#34;draw:id&#34;),
+        PropDef(&#34;width&#34;, &#34;svg:width&#34;),
+        PropDef(&#34;height&#34;, &#34;svg:height&#34;),
+        PropDef(&#34;style&#34;, &#34;draw:style-name&#34;),
+        PropDef(&#34;pos_x&#34;, &#34;svg:x&#34;),
+        PropDef(&#34;pos_y&#34;, &#34;svg:y&#34;),
+        PropDef(&#34;presentation_class&#34;, &#34;presentation:class&#34;),
+        PropDef(&#34;layer&#34;, &#34;draw:layer&#34;),
+        PropDef(&#34;presentation_style&#34;, &#34;presentation:style-name&#34;),
     )
 
     def __init__(  # noqa:  C901
         self,
-        name=None,
-        draw_id=None,
-        style=None,
-        position=None,
-        size=(&#34;1cm&#34;, &#34;1cm&#34;),
-        z_index=0,
-        presentation_class=None,
-        anchor_type=None,
-        anchor_page=None,
-        layer=None,
-        presentation_style=None,
-        **kwargs,
-    ):
+        name: str | None = None,
+        draw_id: str | None = None,
+        style: str | None = None,
+        position: tuple | None = None,
+        size: tuple = (&#34;1cm&#34;, &#34;1cm&#34;),
+        z_index: int = 0,
+        presentation_class: str | None = None,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        layer: str | None = None,
+        presentation_style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         &#34;&#34;&#34;Create a frame element of the given size. Position is relative to the
         context the frame is inserted in. If positioned by page, give the page
         number and the x, y position.
@@ -256,8 +265,6 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
             layer -- str
 
             presentation_style -- str
-
-        Return: Frame
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
@@ -287,21 +294,21 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
     @classmethod
     def image_frame(
         cls,
-        image,
-        text=None,
-        name=None,
-        draw_id=None,
-        style=None,
-        position=None,
-        size=(&#34;1cm&#34;, &#34;1cm&#34;),
-        z_index=0,
-        presentation_class=None,
-        anchor_type=None,
-        anchor_page=None,
-        layer=None,
-        presentation_style=None,
-        **kwargs,
-    ):
+        image: Element | str,
+        text: str | None = None,
+        name: str | None = None,
+        draw_id: str | None = None,
+        style: str | None = None,
+        position: tuple | None = None,
+        size: tuple = (&#34;1cm&#34;, &#34;1cm&#34;),
+        z_index: int = 0,
+        presentation_class: str | None = None,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        layer: str | None = None,
+        presentation_style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; Element:
         &#34;&#34;&#34;Create a ready-to-use image, since image must be embedded in a
         frame.
 
@@ -339,21 +346,21 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
     @classmethod
     def text_frame(
         cls,
-        text_or_element=None,
-        text_style=None,
-        name=None,
-        draw_id=None,
-        style=None,
-        position=None,
-        size=(&#34;1cm&#34;, &#34;1cm&#34;),
-        z_index=0,
-        presentation_class=None,
-        anchor_type=None,
-        anchor_page=None,
-        layer=None,
-        presentation_style=None,
-        **kwargs,
-    ):
+        text_or_element: Iterable[Element] | Element | str,
+        text_style: str | None = None,
+        name: str | None = None,
+        draw_id: str | None = None,
+        style: str | None = None,
+        position: tuple | None = None,
+        size: tuple = (&#34;1cm&#34;, &#34;1cm&#34;),
+        z_index: int = 0,
+        presentation_class: str | None = None,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        layer: str | None = None,
+        presentation_style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; Element:
         &#34;&#34;&#34;Create a ready-to-use text box, since text box must be embedded in
         a frame.
 
@@ -388,14 +395,14 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
         return frame
 
     @property
-    def text_content(self):
+    def text_content(self) -&gt; str:
         text_box = self.get_element(&#34;draw:text-box&#34;)
         if text_box is None:
-            return None
+            return &#34;&#34;
         return text_box.text_content
 
     @text_content.setter
-    def text_content(self, text_or_element):
+    def text_content(self, text_or_element: Element | str) -&gt; None:
         text_box = self.get_element(&#34;draw:text-box&#34;)
         if text_box is None:
             text_box = Element.from_tag(&#34;draw:text-box&#34;)
@@ -406,10 +413,16 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
         else:
             text_box.text_content = text_or_element
 
-    def get_image(self, position=0, name=None, url=None, content=None):
+    def get_image(
+        self,
+        position: int = 0,
+        name: str | None = None,
+        url: str | None = None,
+        content: str | None = None,
+    ) -&gt; Element | None:
         return self.get_element(&#34;draw:image&#34;)
 
-    def set_image(self, url_or_element):
+    def set_image(self, url_or_element: Element | str) -&gt; Element:
         image = self.get_image()
         if image is None:
             if isinstance(url_or_element, Element):
@@ -424,28 +437,49 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
                 image = url_or_element
                 self.append(image)
             else:
-                image.set_url(url_or_element)
+                image.set_url(url_or_element)  # type: ignore
         return image
 
-    def get_text_box(self):
+    def get_text_box(self) -&gt; Element | None:
         return self.get_element(&#34;draw:text-box&#34;)
 
-    def set_text_box(self, text_or_element=None, text_style=None):
+    def set_text_box(
+        self,
+        text_or_element: Iterable[Element | str] | Element | str,
+        text_style: str | None = None,
+    ) -&gt; Element:
         text_box = self.get_text_box()
         if text_box is None:
             text_box = Element.from_tag(&#34;draw:text-box&#34;)
             self.append(text_box)
         else:
             text_box.clear()
-        if not isiterable(text_or_element):
-            text_or_element = [text_or_element]
-        for item in text_or_element:
+        if isinstance(text_or_element, (Element, str)):
+            text_or_element_list: Iterable[Element | str] = [text_or_element]
+        else:
+            text_or_element_list = text_or_element
+        for item in text_or_element_list:
             if isinstance(item, str):
-                item = Paragraph(item, style=text_style)
-            text_box.append(item)
+                text_box.append(Paragraph(item, style=text_style))
+            else:
+                text_box.append(item)
         return text_box
 
-    def get_formatted_text(self, context):  # noqa:  C901
+    @staticmethod
+    def _get_formatted_text_subresult(context: dict, element: Element) -&gt; str:
+        str_list = [&#34;  &#34;]
+        for child in element.children:
+            str_list.append(child.get_formatted_text(context))
+        subresult = &#34;&#34;.join(str_list)
+        subresult = subresult.replace(&#34;\n&#34;, &#34;\n  &#34;)
+        return subresult.rstrip(&#34; &#34;)
+
+    def get_formatted_text(  # noqa:  C901
+        self,
+        context: dict | None = None,
+    ) -&gt; str:
+        if not context:
+            context = {}
         result = []
         for element in self.children:
             tag = element.tag
@@ -465,25 +499,19 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
                     # Insert or not ?
                     if context[&#34;no_img_level&#34;]:
                         context[&#34;img_counter&#34;] += 1
-                        ref = &#34;|img%d|&#34; % context[&#34;img_counter&#34;]
+                        ref = f&#34;|img{context[&#39;img_counter&#39;]}|&#34;
                         result.append(ref)
                         context[&#34;images&#34;].append((ref, filename, (width, height)))
                     else:
-                        result.append(&#34;\n.. image:: %s\n&#34; % filename)
+                        result.append(f&#34;\n.. image:: {filename}\n&#34;)
                         if width is not None:
-                            result.append(&#34;   :width: %s\n&#34; % width)
+                            result.append(f&#34;   :width: {width}\n&#34;)
                         if height is not None:
-                            result.append(&#34;   :height: %s\n&#34; % height)
+                            result.append(f&#34;   :height: {height}\n&#34;)
                 else:
-                    result.append(&#34;[Image %s]\n&#34; % element.get_attribute(&#34;xlink:href&#34;))
+                    result.append(f&#34;[Image {element.get_attribute(&#39;xlink:href&#39;)}]\n&#34;)
             elif tag == &#34;draw:text-box&#34;:
-                subresult = [&#34;  &#34;]
-                for e in element.children:
-                    subresult.append(e.get_formatted_text(context))
-                subresult = &#34;&#34;.join(subresult)
-                subresult = subresult.replace(&#34;\n&#34;, &#34;\n  &#34;)
-                subresult.rstrip(&#34; &#34;)
-                result.append(subresult)
+                result.append(self._get_formatted_text_subresult(context, element))
             else:
                 result.append(element.get_formatted_text(context))
         result.append(&#34;\n&#34;)
@@ -503,7 +531,7 @@ register_element_class(Frame)</code></pre>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="odfdo.frame.default_frame_position_style"><code class="name flex">
-<span>def <span class="ident">default_frame_position_style</span></span>(<span>name='FramePosition', horizontal_pos='from-left', vertical_pos='from-top', horizontal_rel='paragraph', vertical_rel='paragraph')</span>
+<span>def <span class="ident">default_frame_position_style</span></span>(<span>name: str = 'FramePosition', horizontal_pos: str = 'from-left', vertical_pos: str = 'from-top', horizontal_rel: str = 'paragraph', vertical_rel: str = 'paragraph') ‑> <a title="odfdo.style.Style" href="style.html#odfdo.style.Style">Style</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Helper style for positioning frames in desktop applications that need
@@ -516,12 +544,12 @@ with this style as the parent.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def default_frame_position_style(
-    name=&#34;FramePosition&#34;,
-    horizontal_pos=&#34;from-left&#34;,
-    vertical_pos=&#34;from-top&#34;,
-    horizontal_rel=&#34;paragraph&#34;,
-    vertical_rel=&#34;paragraph&#34;,
-):
+    name: str = &#34;FramePosition&#34;,
+    horizontal_pos: str = &#34;from-left&#34;,
+    vertical_pos: str = &#34;from-top&#34;,
+    horizontal_rel: str = &#34;paragraph&#34;,
+    vertical_rel: str = &#34;paragraph&#34;,
+) -&gt; Style:
     &#34;&#34;&#34;Helper style for positioning frames in desktop applications that need
     it.
 
@@ -570,31 +598,31 @@ with this style as the parent.</p></div>
     }
 
     @property
-    def anchor_type(self):
-        &#34;getter/setter&#34;
-        return self.get_attribute(&#34;text:anchor-type&#34;)
+    def anchor_type(self) -&gt; str | None:
+        &#34;Anchor_type getter/setter.&#34;
+        return self.get_attribute_string(&#34;text:anchor-type&#34;)  # type: ignore
 
     @anchor_type.setter
-    def anchor_type(self, anchor_type):
+    def anchor_type(self, anchor_type: str) -&gt; None:
         if anchor_type not in self.ANCHOR_VALUE_CHOICE:
-            raise ValueError(&#34;anchor_type not valid: %s&#34; % anchor_type)
-        self.set_attribute(&#34;text:anchor-type&#34;, anchor_type)
+            raise TypeError(f&#34;anchor_type not valid: &#39;{anchor_type!r}&#39;&#34;)
+        self.set_attribute(&#34;text:anchor-type&#34;, anchor_type)  # type: ignore
 
     @property
-    def anchor_page(self):
+    def anchor_page(self) -&gt; int | None:
         &#34;&#34;&#34;getter/setter for the number of the page when the anchor type is
         &#39;page&#39;.
 
         type : int or None
         &#34;&#34;&#34;
-        anchor_page = self.get_attribute(&#34;text:anchor-page-number&#34;)
+        anchor_page = self.get_attribute(&#34;text:anchor-page-number&#34;)  # type: ignore
         if anchor_page is None:
             return None
         return int(anchor_page)
 
     @anchor_page.setter
-    def anchor_page(self, anchor_page):
-        self.set_attribute(&#34;text:anchor-page-number&#34;, anchor_page)</code></pre>
+    def anchor_page(self, anchor_page: int | None) -&gt; None:
+        self.set_attribute(&#34;text:anchor-page-number&#34;, anchor_page)  # type: ignore</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -610,7 +638,7 @@ with this style as the parent.</p></div>
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.frame.AnchorMix.anchor_page"><code class="name">var <span class="ident">anchor_page</span></code></dt>
+<dt id="odfdo.frame.AnchorMix.anchor_page"><code class="name">var <span class="ident">anchor_page</span> : int | None</code></dt>
 <dd>
 <div class="desc"><p>getter/setter for the number of the page when the anchor type is
 'page'.</p>
@@ -620,36 +648,36 @@ with this style as the parent.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def anchor_page(self):
+def anchor_page(self) -&gt; int | None:
     &#34;&#34;&#34;getter/setter for the number of the page when the anchor type is
     &#39;page&#39;.
 
     type : int or None
     &#34;&#34;&#34;
-    anchor_page = self.get_attribute(&#34;text:anchor-page-number&#34;)
+    anchor_page = self.get_attribute(&#34;text:anchor-page-number&#34;)  # type: ignore
     if anchor_page is None:
         return None
     return int(anchor_page)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.frame.AnchorMix.anchor_type"><code class="name">var <span class="ident">anchor_type</span></code></dt>
+<dt id="odfdo.frame.AnchorMix.anchor_type"><code class="name">var <span class="ident">anchor_type</span> : str | None</code></dt>
 <dd>
-<div class="desc"><p>getter/setter</p></div>
+<div class="desc"><p>Anchor_type getter/setter.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def anchor_type(self):
-    &#34;getter/setter&#34;
-    return self.get_attribute(&#34;text:anchor-type&#34;)</code></pre>
+def anchor_type(self) -&gt; str | None:
+    &#34;Anchor_type getter/setter.&#34;
+    return self.get_attribute_string(&#34;text:anchor-type&#34;)  # type: ignore</code></pre>
 </details>
 </dd>
 </dl>
 </dd>
 <dt id="odfdo.frame.Frame"><code class="flex name class">
 <span>class <span class="ident">Frame</span></span>
-<span>(</span><span>name=None, draw_id=None, style=None, position=None, size=('1cm', '1cm'), z_index=0, presentation_class=None, anchor_type=None, anchor_page=None, layer=None, presentation_style=None, **kwargs)</span>
+<span>(</span><span>name: str | None = None, draw_id: str | None = None, style: str | None = None, position: tuple | None = None, size: tuple = ('1cm', '1cm'), z_index: int = 0, presentation_class: str | None = None, anchor_type: str | None = None, anchor_page: int | None = None, layer: str | None = None, presentation_style: str | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>ODF Frame "draw:frame"</p>
@@ -675,8 +703,7 @@ Frame.text_frame()</p>
 <p>anchor_type &ndash; 'page', 'frame', 'paragraph', 'char' or 'as-char'</p>
 <p>anchor_page &ndash; int, page number is anchor_type is 'page'</p>
 <p>layer &ndash; str</p>
-<p>presentation_style &ndash; str</p>
-<p>Return: Frame</p></div>
+<p>presentation_style &ndash; str</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -690,33 +717,33 @@ Frame.text_frame()</p>
 
     _tag = &#34;draw:frame&#34;
     _properties = (
-        (&#34;name&#34;, &#34;draw:name&#34;),
-        (&#34;draw_id&#34;, &#34;draw:id&#34;),
-        (&#34;width&#34;, &#34;svg:width&#34;),
-        (&#34;height&#34;, &#34;svg:height&#34;),
-        (&#34;style&#34;, &#34;draw:style-name&#34;),
-        (&#34;pos_x&#34;, &#34;svg:x&#34;),
-        (&#34;pos_y&#34;, &#34;svg:y&#34;),
-        (&#34;presentation_class&#34;, &#34;presentation:class&#34;),
-        (&#34;layer&#34;, &#34;draw:layer&#34;),
-        (&#34;presentation_style&#34;, &#34;presentation:style-name&#34;),
+        PropDef(&#34;name&#34;, &#34;draw:name&#34;),
+        PropDef(&#34;draw_id&#34;, &#34;draw:id&#34;),
+        PropDef(&#34;width&#34;, &#34;svg:width&#34;),
+        PropDef(&#34;height&#34;, &#34;svg:height&#34;),
+        PropDef(&#34;style&#34;, &#34;draw:style-name&#34;),
+        PropDef(&#34;pos_x&#34;, &#34;svg:x&#34;),
+        PropDef(&#34;pos_y&#34;, &#34;svg:y&#34;),
+        PropDef(&#34;presentation_class&#34;, &#34;presentation:class&#34;),
+        PropDef(&#34;layer&#34;, &#34;draw:layer&#34;),
+        PropDef(&#34;presentation_style&#34;, &#34;presentation:style-name&#34;),
     )
 
     def __init__(  # noqa:  C901
         self,
-        name=None,
-        draw_id=None,
-        style=None,
-        position=None,
-        size=(&#34;1cm&#34;, &#34;1cm&#34;),
-        z_index=0,
-        presentation_class=None,
-        anchor_type=None,
-        anchor_page=None,
-        layer=None,
-        presentation_style=None,
-        **kwargs,
-    ):
+        name: str | None = None,
+        draw_id: str | None = None,
+        style: str | None = None,
+        position: tuple | None = None,
+        size: tuple = (&#34;1cm&#34;, &#34;1cm&#34;),
+        z_index: int = 0,
+        presentation_class: str | None = None,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        layer: str | None = None,
+        presentation_style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         &#34;&#34;&#34;Create a frame element of the given size. Position is relative to the
         context the frame is inserted in. If positioned by page, give the page
         number and the x, y position.
@@ -753,8 +780,6 @@ Frame.text_frame()</p>
             layer -- str
 
             presentation_style -- str
-
-        Return: Frame
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
@@ -784,21 +809,21 @@ Frame.text_frame()</p>
     @classmethod
     def image_frame(
         cls,
-        image,
-        text=None,
-        name=None,
-        draw_id=None,
-        style=None,
-        position=None,
-        size=(&#34;1cm&#34;, &#34;1cm&#34;),
-        z_index=0,
-        presentation_class=None,
-        anchor_type=None,
-        anchor_page=None,
-        layer=None,
-        presentation_style=None,
-        **kwargs,
-    ):
+        image: Element | str,
+        text: str | None = None,
+        name: str | None = None,
+        draw_id: str | None = None,
+        style: str | None = None,
+        position: tuple | None = None,
+        size: tuple = (&#34;1cm&#34;, &#34;1cm&#34;),
+        z_index: int = 0,
+        presentation_class: str | None = None,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        layer: str | None = None,
+        presentation_style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; Element:
         &#34;&#34;&#34;Create a ready-to-use image, since image must be embedded in a
         frame.
 
@@ -836,21 +861,21 @@ Frame.text_frame()</p>
     @classmethod
     def text_frame(
         cls,
-        text_or_element=None,
-        text_style=None,
-        name=None,
-        draw_id=None,
-        style=None,
-        position=None,
-        size=(&#34;1cm&#34;, &#34;1cm&#34;),
-        z_index=0,
-        presentation_class=None,
-        anchor_type=None,
-        anchor_page=None,
-        layer=None,
-        presentation_style=None,
-        **kwargs,
-    ):
+        text_or_element: Iterable[Element] | Element | str,
+        text_style: str | None = None,
+        name: str | None = None,
+        draw_id: str | None = None,
+        style: str | None = None,
+        position: tuple | None = None,
+        size: tuple = (&#34;1cm&#34;, &#34;1cm&#34;),
+        z_index: int = 0,
+        presentation_class: str | None = None,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        layer: str | None = None,
+        presentation_style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; Element:
         &#34;&#34;&#34;Create a ready-to-use text box, since text box must be embedded in
         a frame.
 
@@ -885,14 +910,14 @@ Frame.text_frame()</p>
         return frame
 
     @property
-    def text_content(self):
+    def text_content(self) -&gt; str:
         text_box = self.get_element(&#34;draw:text-box&#34;)
         if text_box is None:
-            return None
+            return &#34;&#34;
         return text_box.text_content
 
     @text_content.setter
-    def text_content(self, text_or_element):
+    def text_content(self, text_or_element: Element | str) -&gt; None:
         text_box = self.get_element(&#34;draw:text-box&#34;)
         if text_box is None:
             text_box = Element.from_tag(&#34;draw:text-box&#34;)
@@ -903,10 +928,16 @@ Frame.text_frame()</p>
         else:
             text_box.text_content = text_or_element
 
-    def get_image(self, position=0, name=None, url=None, content=None):
+    def get_image(
+        self,
+        position: int = 0,
+        name: str | None = None,
+        url: str | None = None,
+        content: str | None = None,
+    ) -&gt; Element | None:
         return self.get_element(&#34;draw:image&#34;)
 
-    def set_image(self, url_or_element):
+    def set_image(self, url_or_element: Element | str) -&gt; Element:
         image = self.get_image()
         if image is None:
             if isinstance(url_or_element, Element):
@@ -921,28 +952,49 @@ Frame.text_frame()</p>
                 image = url_or_element
                 self.append(image)
             else:
-                image.set_url(url_or_element)
+                image.set_url(url_or_element)  # type: ignore
         return image
 
-    def get_text_box(self):
+    def get_text_box(self) -&gt; Element | None:
         return self.get_element(&#34;draw:text-box&#34;)
 
-    def set_text_box(self, text_or_element=None, text_style=None):
+    def set_text_box(
+        self,
+        text_or_element: Iterable[Element | str] | Element | str,
+        text_style: str | None = None,
+    ) -&gt; Element:
         text_box = self.get_text_box()
         if text_box is None:
             text_box = Element.from_tag(&#34;draw:text-box&#34;)
             self.append(text_box)
         else:
             text_box.clear()
-        if not isiterable(text_or_element):
-            text_or_element = [text_or_element]
-        for item in text_or_element:
+        if isinstance(text_or_element, (Element, str)):
+            text_or_element_list: Iterable[Element | str] = [text_or_element]
+        else:
+            text_or_element_list = text_or_element
+        for item in text_or_element_list:
             if isinstance(item, str):
-                item = Paragraph(item, style=text_style)
-            text_box.append(item)
+                text_box.append(Paragraph(item, style=text_style))
+            else:
+                text_box.append(item)
         return text_box
 
-    def get_formatted_text(self, context):  # noqa:  C901
+    @staticmethod
+    def _get_formatted_text_subresult(context: dict, element: Element) -&gt; str:
+        str_list = [&#34;  &#34;]
+        for child in element.children:
+            str_list.append(child.get_formatted_text(context))
+        subresult = &#34;&#34;.join(str_list)
+        subresult = subresult.replace(&#34;\n&#34;, &#34;\n  &#34;)
+        return subresult.rstrip(&#34; &#34;)
+
+    def get_formatted_text(  # noqa:  C901
+        self,
+        context: dict | None = None,
+    ) -&gt; str:
+        if not context:
+            context = {}
         result = []
         for element in self.children:
             tag = element.tag
@@ -962,25 +1014,19 @@ Frame.text_frame()</p>
                     # Insert or not ?
                     if context[&#34;no_img_level&#34;]:
                         context[&#34;img_counter&#34;] += 1
-                        ref = &#34;|img%d|&#34; % context[&#34;img_counter&#34;]
+                        ref = f&#34;|img{context[&#39;img_counter&#39;]}|&#34;
                         result.append(ref)
                         context[&#34;images&#34;].append((ref, filename, (width, height)))
                     else:
-                        result.append(&#34;\n.. image:: %s\n&#34; % filename)
+                        result.append(f&#34;\n.. image:: {filename}\n&#34;)
                         if width is not None:
-                            result.append(&#34;   :width: %s\n&#34; % width)
+                            result.append(f&#34;   :width: {width}\n&#34;)
                         if height is not None:
-                            result.append(&#34;   :height: %s\n&#34; % height)
+                            result.append(f&#34;   :height: {height}\n&#34;)
                 else:
-                    result.append(&#34;[Image %s]\n&#34; % element.get_attribute(&#34;xlink:href&#34;))
+                    result.append(f&#34;[Image {element.get_attribute(&#39;xlink:href&#39;)}]\n&#34;)
             elif tag == &#34;draw:text-box&#34;:
-                subresult = [&#34;  &#34;]
-                for e in element.children:
-                    subresult.append(e.get_formatted_text(context))
-                subresult = &#34;&#34;.join(subresult)
-                subresult = subresult.replace(&#34;\n&#34;, &#34;\n  &#34;)
-                subresult.rstrip(&#34; &#34;)
-                result.append(subresult)
+                result.append(self._get_formatted_text_subresult(context, element))
             else:
                 result.append(element.get_formatted_text(context))
         result.append(&#34;\n&#34;)
@@ -997,7 +1043,7 @@ Frame.text_frame()</p>
 <h3>Static methods</h3>
 <dl>
 <dt id="odfdo.frame.Frame.image_frame"><code class="name flex">
-<span>def <span class="ident">image_frame</span></span>(<span>image, text=None, name=None, draw_id=None, style=None, position=None, size=('1cm', '1cm'), z_index=0, presentation_class=None, anchor_type=None, anchor_page=None, layer=None, presentation_style=None, **kwargs)</span>
+<span>def <span class="ident">image_frame</span></span>(<span>image: Element | str, text: str | None = None, name: str | None = None, draw_id: str | None = None, style: str | None = None, position: tuple | None = None, size: tuple = ('1cm', '1cm'), z_index: int = 0, presentation_class: str | None = None, anchor_type: str | None = None, anchor_page: int | None = None, layer: str | None = None, presentation_style: str | None = None, **kwargs: Any) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Create a ready-to-use image, since image must be embedded in a
@@ -1015,21 +1061,21 @@ frame.</p>
 <pre><code class="python">@classmethod
 def image_frame(
     cls,
-    image,
-    text=None,
-    name=None,
-    draw_id=None,
-    style=None,
-    position=None,
-    size=(&#34;1cm&#34;, &#34;1cm&#34;),
-    z_index=0,
-    presentation_class=None,
-    anchor_type=None,
-    anchor_page=None,
-    layer=None,
-    presentation_style=None,
-    **kwargs,
-):
+    image: Element | str,
+    text: str | None = None,
+    name: str | None = None,
+    draw_id: str | None = None,
+    style: str | None = None,
+    position: tuple | None = None,
+    size: tuple = (&#34;1cm&#34;, &#34;1cm&#34;),
+    z_index: int = 0,
+    presentation_class: str | None = None,
+    anchor_type: str | None = None,
+    anchor_page: int | None = None,
+    layer: str | None = None,
+    presentation_style: str | None = None,
+    **kwargs: Any,
+) -&gt; Element:
     &#34;&#34;&#34;Create a ready-to-use image, since image must be embedded in a
     frame.
 
@@ -1066,7 +1112,7 @@ def image_frame(
 </details>
 </dd>
 <dt id="odfdo.frame.Frame.text_frame"><code class="name flex">
-<span>def <span class="ident">text_frame</span></span>(<span>text_or_element=None, text_style=None, name=None, draw_id=None, style=None, position=None, size=('1cm', '1cm'), z_index=0, presentation_class=None, anchor_type=None, anchor_page=None, layer=None, presentation_style=None, **kwargs)</span>
+<span>def <span class="ident">text_frame</span></span>(<span>text_or_element: Iterable[Element] | Element | str, text_style: str | None = None, name: str | None = None, draw_id: str | None = None, style: str | None = None, position: tuple | None = None, size: tuple = ('1cm', '1cm'), z_index: int = 0, presentation_class: str | None = None, anchor_type: str | None = None, anchor_page: int | None = None, layer: str | None = None, presentation_style: str | None = None, **kwargs: Any) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Create a ready-to-use text box, since text box must be embedded in
@@ -1085,21 +1131,21 @@ of the text box.</p>
 <pre><code class="python">@classmethod
 def text_frame(
     cls,
-    text_or_element=None,
-    text_style=None,
-    name=None,
-    draw_id=None,
-    style=None,
-    position=None,
-    size=(&#34;1cm&#34;, &#34;1cm&#34;),
-    z_index=0,
-    presentation_class=None,
-    anchor_type=None,
-    anchor_page=None,
-    layer=None,
-    presentation_style=None,
-    **kwargs,
-):
+    text_or_element: Iterable[Element] | Element | str,
+    text_style: str | None = None,
+    name: str | None = None,
+    draw_id: str | None = None,
+    style: str | None = None,
+    position: tuple | None = None,
+    size: tuple = (&#34;1cm&#34;, &#34;1cm&#34;),
+    z_index: int = 0,
+    presentation_class: str | None = None,
+    anchor_type: str | None = None,
+    anchor_page: int | None = None,
+    layer: str | None = None,
+    presentation_style: str | None = None,
+    **kwargs: Any,
+) -&gt; Element:
     &#34;&#34;&#34;Create a ready-to-use text box, since text box must be embedded in
     a frame.
 
@@ -1137,15 +1183,18 @@ def text_frame(
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.frame.Frame.draw_id"><code class="name">var <span class="ident">draw_id</span></code></dt>
+<dt id="odfdo.frame.Frame.draw_id"><code class="name">var <span class="ident">draw_id</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:id</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1155,15 +1204,18 @@ def text_frame(
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.frame.Frame.height"><code class="name">var <span class="ident">height</span></code></dt>
+<dt id="odfdo.frame.Frame.height"><code class="name">var <span class="ident">height</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:height</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1173,15 +1225,18 @@ def text_frame(
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.frame.Frame.layer"><code class="name">var <span class="ident">layer</span></code></dt>
+<dt id="odfdo.frame.Frame.layer"><code class="name">var <span class="ident">layer</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:layer</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1191,15 +1246,18 @@ def text_frame(
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.frame.Frame.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dt id="odfdo.frame.Frame.name"><code class="name">var <span class="ident">name</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1209,15 +1267,18 @@ def text_frame(
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.frame.Frame.pos_x"><code class="name">var <span class="ident">pos_x</span></code></dt>
+<dt id="odfdo.frame.Frame.pos_x"><code class="name">var <span class="ident">pos_x</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:x</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1227,15 +1288,18 @@ def text_frame(
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.frame.Frame.pos_y"><code class="name">var <span class="ident">pos_y</span></code></dt>
+<dt id="odfdo.frame.Frame.pos_y"><code class="name">var <span class="ident">pos_y</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:y</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1245,15 +1309,18 @@ def text_frame(
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.frame.Frame.presentation_class"><code class="name">var <span class="ident">presentation_class</span></code></dt>
+<dt id="odfdo.frame.Frame.presentation_class"><code class="name">var <span class="ident">presentation_class</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute presentation:class</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1263,15 +1330,18 @@ def text_frame(
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.frame.Frame.presentation_style"><code class="name">var <span class="ident">presentation_style</span></code></dt>
+<dt id="odfdo.frame.Frame.presentation_style"><code class="name">var <span class="ident">presentation_style</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute presentation:style-name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1281,15 +1351,18 @@ def text_frame(
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.frame.Frame.style"><code class="name">var <span class="ident">style</span></code></dt>
+<dt id="odfdo.frame.Frame.style"><code class="name">var <span class="ident">style</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:style-name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1299,15 +1372,18 @@ def text_frame(
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.frame.Frame.width"><code class="name">var <span class="ident">width</span></code></dt>
+<dt id="odfdo.frame.Frame.width"><code class="name">var <span class="ident">width</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:width</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1321,7 +1397,7 @@ def text_frame(
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.frame.Frame.get_text_box"><code class="name flex">
-<span>def <span class="ident">get_text_box</span></span>(<span>self)</span>
+<span>def <span class="ident">get_text_box</span></span>(<span>self) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1329,12 +1405,12 @@ def text_frame(
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_text_box(self):
+<pre><code class="python">def get_text_box(self) -&gt; Element | None:
     return self.get_element(&#34;draw:text-box&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.frame.Frame.set_image"><code class="name flex">
-<span>def <span class="ident">set_image</span></span>(<span>self, url_or_element)</span>
+<span>def <span class="ident">set_image</span></span>(<span>self, url_or_element: Element | str) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1342,7 +1418,7 @@ def text_frame(
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_image(self, url_or_element):
+<pre><code class="python">def set_image(self, url_or_element: Element | str) -&gt; Element:
     image = self.get_image()
     if image is None:
         if isinstance(url_or_element, Element):
@@ -1357,12 +1433,12 @@ def text_frame(
             image = url_or_element
             self.append(image)
         else:
-            image.set_url(url_or_element)
+            image.set_url(url_or_element)  # type: ignore
     return image</code></pre>
 </details>
 </dd>
 <dt id="odfdo.frame.Frame.set_text_box"><code class="name flex">
-<span>def <span class="ident">set_text_box</span></span>(<span>self, text_or_element=None, text_style=None)</span>
+<span>def <span class="ident">set_text_box</span></span>(<span>self, text_or_element: Iterable[Element | str] | Element | str, text_style: str | None = None) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1370,19 +1446,26 @@ def text_frame(
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_text_box(self, text_or_element=None, text_style=None):
+<pre><code class="python">def set_text_box(
+    self,
+    text_or_element: Iterable[Element | str] | Element | str,
+    text_style: str | None = None,
+) -&gt; Element:
     text_box = self.get_text_box()
     if text_box is None:
         text_box = Element.from_tag(&#34;draw:text-box&#34;)
         self.append(text_box)
     else:
         text_box.clear()
-    if not isiterable(text_or_element):
-        text_or_element = [text_or_element]
-    for item in text_or_element:
+    if isinstance(text_or_element, (Element, str)):
+        text_or_element_list: Iterable[Element | str] = [text_or_element]
+    else:
+        text_or_element_list = text_or_element
+    for item in text_or_element_list:
         if isinstance(item, str):
-            item = Paragraph(item, style=text_style)
-        text_box.append(item)
+            text_box.append(Paragraph(item, style=text_style))
+        else:
+            text_box.append(item)
     return text_box</code></pre>
 </details>
 </dd>
@@ -1399,12 +1482,16 @@ def text_frame(
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -1547,13 +1634,13 @@ e.g. ('10cm', '15cm').</p></div>
     &#34;&#34;&#34;
 
     @property
-    def position(self):
+    def position(self) -&gt; tuple:
         &#34;getter/setter&#34;
-        get_attr = self.get_attribute
+        get_attr = self.get_attribute  # type: ignore
         return get_attr(&#34;svg:x&#34;), get_attr(&#34;svg:y&#34;)
 
     @position.setter
-    def position(self, position):
+    def position(self, position: tuple | list) -&gt; None:
         self.pos_x = position[0]
         self.pos_y = position[1]</code></pre>
 </details>
@@ -1565,7 +1652,7 @@ e.g. ('10cm', '15cm').</p></div>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.frame.PosMix.position"><code class="name">var <span class="ident">position</span></code></dt>
+<dt id="odfdo.frame.PosMix.position"><code class="name">var <span class="ident">position</span> : tuple</code></dt>
 <dd>
 <div class="desc"><p>getter/setter</p></div>
 <details class="source">
@@ -1573,9 +1660,9 @@ e.g. ('10cm', '15cm').</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def position(self):
+def position(self) -&gt; tuple:
     &#34;getter/setter&#34;
-    get_attr = self.get_attribute
+    get_attr = self.get_attribute  # type: ignore
     return get_attr(&#34;svg:x&#34;), get_attr(&#34;svg:y&#34;)</code></pre>
 </details>
 </dd>
@@ -1585,7 +1672,7 @@ def position(self):
 <span>class <span class="ident">SizeMix</span></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Size of the frame</p>
+<div class="desc"><p>Size of the frame.</p>
 <p>Size is a (width, height) tuple with items including the unit,
 e.g. ('10cm', '15cm').</p></div>
 <details class="source">
@@ -1593,19 +1680,19 @@ e.g. ('10cm', '15cm').</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class SizeMix:
-    &#34;&#34;&#34;Size of the frame
+    &#34;&#34;&#34;Size of the frame.
 
     Size is a (width, height) tuple with items including the unit,
     e.g. (&#39;10cm&#39;, &#39;15cm&#39;).
     &#34;&#34;&#34;
 
     @property
-    def size(self):
+    def size(self) -&gt; tuple:
         &#34;getter/setter&#34;
         return (self.width, self.height)
 
     @size.setter
-    def size(self, size):
+    def size(self, size: tuple | list) -&gt; None:
         self.width = size[0]
         self.height = size[1]</code></pre>
 </details>
@@ -1616,7 +1703,7 @@ e.g. ('10cm', '15cm').</p></div>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.frame.SizeMix.size"><code class="name">var <span class="ident">size</span></code></dt>
+<dt id="odfdo.frame.SizeMix.size"><code class="name">var <span class="ident">size</span> : tuple</code></dt>
 <dd>
 <div class="desc"><p>getter/setter</p></div>
 <details class="source">
@@ -1624,7 +1711,7 @@ e.g. ('10cm', '15cm').</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def size(self):
+def size(self) -&gt; tuple:
     &#34;getter/setter&#34;
     return (self.width, self.height)</code></pre>
 </details>
@@ -1648,16 +1735,16 @@ def size(self):
     &#34;&#34;&#34;
 
     @property
-    def z_index(self):
+    def z_index(self) -&gt; int | None:
         &#34;getter/setter&#34;
-        z_index = self.get_attribute(&#34;draw:z-index&#34;)
+        z_index = self.get_attribute(&#34;draw:z-index&#34;)  # type: ignore
         if z_index is None:
             return None
         return int(z_index)
 
     @z_index.setter
-    def z_index(self, z_index):
-        self.set_attribute(&#34;draw:z-index&#34;, z_index)</code></pre>
+    def z_index(self, z_index: int) -&gt; None:
+        self.set_attribute(&#34;draw:z-index&#34;, z_index)  # type: ignore</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -1666,7 +1753,7 @@ def size(self):
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.frame.ZMix.z_index"><code class="name">var <span class="ident">z_index</span></code></dt>
+<dt id="odfdo.frame.ZMix.z_index"><code class="name">var <span class="ident">z_index</span> : int | None</code></dt>
 <dd>
 <div class="desc"><p>getter/setter</p></div>
 <details class="source">
@@ -1674,9 +1761,9 @@ def size(self):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def z_index(self):
+def z_index(self) -&gt; int | None:
     &#34;getter/setter&#34;
-    z_index = self.get_attribute(&#34;draw:z-index&#34;)
+    z_index = self.get_attribute(&#34;draw:z-index&#34;)  # type: ignore
     if z_index is None:
         return None
     return int(z_index)</code></pre>

@@ -27,7 +27,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -50,12 +50,16 @@
 #          Hervé Cauwelier &lt;herve@itaapy.com&gt;
 &#34;&#34;&#34;XmlPart base class for XML parts.
 &#34;&#34;&#34;
+from __future__ import annotations
+
 from copy import deepcopy
 from io import BytesIO
+from typing import Any
 
-from lxml.etree import parse, tostring
+from lxml.etree import _ElementTree, parse, tostring
 
-from .element import Element
+from .container import Container
+from .element import Element, Text
 
 
 class XmlPart:
@@ -64,19 +68,18 @@ class XmlPart:
     Abstraction of the XML library behind.
     &#34;&#34;&#34;
 
-    def __init__(self, part_name, container):
+    def __init__(self, part_name: str, container: Container) -&gt; None:
         self.part_name = part_name
         self.container = container
 
         # Internal state
-        self.__tree = None
-        self.__root = None
+        self.__tree: _ElementTree | None = None
+        self.__root: Element | None = None
 
-    def __get_tree(self):
+    def _get_tree(self) -&gt; _ElementTree:
         if self.__tree is None:
-            container = self.container
-            part = container.get_part(self.part_name)
-            self.__tree = parse(BytesIO(part))  # noqa:S320
+            part = self.container.get_part(self.part_name)
+            self.__tree = parse(BytesIO(part))  # type: ignore
         return self.__tree
 
     def __repr__(self) -&gt; str:
@@ -85,26 +88,26 @@ class XmlPart:
     # Public API
 
     @property
-    def root(self):
+    def root(self) -&gt; Element:
         if self.__root is None:
-            tree = self.__get_tree()
+            tree = self._get_tree()
             self.__root = Element.from_tag(tree.getroot())
         return self.__root
 
-    def get_elements(self, xpath_query: str):
+    def get_elements(self, xpath_query: str) -&gt; list[Element | Text]:
         root = self.root
         return root.xpath(xpath_query)
 
-    def get_element(self, xpath_query):
+    def get_element(self, xpath_query: str) -&gt; Any:
         result = self.get_elements(xpath_query)
         if not result:
             return None
         return result[0]
 
-    def delete_element(self, child):
+    def delete_element(self, child: Element) -&gt; None:
         child.delete()
 
-    def xpath(self, xpath_query):
+    def xpath(self, xpath_query: str) -&gt; list[Element | Text]:
         &#34;&#34;&#34;Apply XPath query to the XML part. Return list of Element or
         Text instances translated from the nodes found.
         &#34;&#34;&#34;
@@ -112,7 +115,7 @@ class XmlPart:
         return root.xpath(xpath_query)
 
     @property
-    def clone(self):
+    def clone(self) -&gt; XmlPart:
         clone = object.__new__(self.__class__)
         for name in self.__dict__:
             if name == &#34;container&#34;:
@@ -125,15 +128,15 @@ class XmlPart:
                 setattr(clone, name, value)
         return clone
 
-    def serialize(self, pretty=False):
-        tree = self.__get_tree()
+    def serialize(self, pretty: bool = False) -&gt; bytes:
+        tree = self._get_tree()
         # Lxml declaration is too exotic to me
         data = [b&#39;&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;&#39;]
-        tree = tostring(tree, pretty_print=pretty, encoding=&#34;UTF-8&#34;)
+        bytes_tree = tostring(tree, pretty_print=pretty, encoding=&#34;utf-8&#34;)
         # Lxml with pretty_print is adding a empty line
         if pretty:
-            tree = tree.strip()
-        data.append(tree)
+            bytes_tree = bytes_tree.strip()
+        data.append(bytes_tree)
         return b&#34;\n&#34;.join(data)</code></pre>
 </details>
 </section>
@@ -148,7 +151,7 @@ class XmlPart:
 <dl>
 <dt id="odfdo.xmlpart.XmlPart"><code class="flex name class">
 <span>class <span class="ident">XmlPart</span></span>
-<span>(</span><span>part_name, container)</span>
+<span>(</span><span>part_name: str, container: Container)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Representation of an XML part.</p>
@@ -163,19 +166,18 @@ class XmlPart:
     Abstraction of the XML library behind.
     &#34;&#34;&#34;
 
-    def __init__(self, part_name, container):
+    def __init__(self, part_name: str, container: Container) -&gt; None:
         self.part_name = part_name
         self.container = container
 
         # Internal state
-        self.__tree = None
-        self.__root = None
+        self.__tree: _ElementTree | None = None
+        self.__root: Element | None = None
 
-    def __get_tree(self):
+    def _get_tree(self) -&gt; _ElementTree:
         if self.__tree is None:
-            container = self.container
-            part = container.get_part(self.part_name)
-            self.__tree = parse(BytesIO(part))  # noqa:S320
+            part = self.container.get_part(self.part_name)
+            self.__tree = parse(BytesIO(part))  # type: ignore
         return self.__tree
 
     def __repr__(self) -&gt; str:
@@ -184,26 +186,26 @@ class XmlPart:
     # Public API
 
     @property
-    def root(self):
+    def root(self) -&gt; Element:
         if self.__root is None:
-            tree = self.__get_tree()
+            tree = self._get_tree()
             self.__root = Element.from_tag(tree.getroot())
         return self.__root
 
-    def get_elements(self, xpath_query: str):
+    def get_elements(self, xpath_query: str) -&gt; list[Element | Text]:
         root = self.root
         return root.xpath(xpath_query)
 
-    def get_element(self, xpath_query):
+    def get_element(self, xpath_query: str) -&gt; Any:
         result = self.get_elements(xpath_query)
         if not result:
             return None
         return result[0]
 
-    def delete_element(self, child):
+    def delete_element(self, child: Element) -&gt; None:
         child.delete()
 
-    def xpath(self, xpath_query):
+    def xpath(self, xpath_query: str) -&gt; list[Element | Text]:
         &#34;&#34;&#34;Apply XPath query to the XML part. Return list of Element or
         Text instances translated from the nodes found.
         &#34;&#34;&#34;
@@ -211,7 +213,7 @@ class XmlPart:
         return root.xpath(xpath_query)
 
     @property
-    def clone(self):
+    def clone(self) -&gt; XmlPart:
         clone = object.__new__(self.__class__)
         for name in self.__dict__:
             if name == &#34;container&#34;:
@@ -224,15 +226,15 @@ class XmlPart:
                 setattr(clone, name, value)
         return clone
 
-    def serialize(self, pretty=False):
-        tree = self.__get_tree()
+    def serialize(self, pretty: bool = False) -&gt; bytes:
+        tree = self._get_tree()
         # Lxml declaration is too exotic to me
         data = [b&#39;&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;&#39;]
-        tree = tostring(tree, pretty_print=pretty, encoding=&#34;UTF-8&#34;)
+        bytes_tree = tostring(tree, pretty_print=pretty, encoding=&#34;utf-8&#34;)
         # Lxml with pretty_print is adding a empty line
         if pretty:
-            tree = tree.strip()
-        data.append(tree)
+            bytes_tree = bytes_tree.strip()
+        data.append(bytes_tree)
         return b&#34;\n&#34;.join(data)</code></pre>
 </details>
 <h3>Subclasses</h3>
@@ -244,7 +246,7 @@ class XmlPart:
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.xmlpart.XmlPart.clone"><code class="name">var <span class="ident">clone</span></code></dt>
+<dt id="odfdo.xmlpart.XmlPart.clone"><code class="name">var <span class="ident">clone</span> : <a title="odfdo.xmlpart.XmlPart" href="#odfdo.xmlpart.XmlPart">XmlPart</a></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -252,7 +254,7 @@ class XmlPart:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def clone(self):
+def clone(self) -&gt; XmlPart:
     clone = object.__new__(self.__class__)
     for name in self.__dict__:
         if name == &#34;container&#34;:
@@ -266,7 +268,7 @@ def clone(self):
     return clone</code></pre>
 </details>
 </dd>
-<dt id="odfdo.xmlpart.XmlPart.root"><code class="name">var <span class="ident">root</span></code></dt>
+<dt id="odfdo.xmlpart.XmlPart.root"><code class="name">var <span class="ident">root</span> : <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -274,9 +276,9 @@ def clone(self):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def root(self):
+def root(self) -&gt; Element:
     if self.__root is None:
-        tree = self.__get_tree()
+        tree = self._get_tree()
         self.__root = Element.from_tag(tree.getroot())
     return self.__root</code></pre>
 </details>
@@ -285,7 +287,7 @@ def root(self):
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.xmlpart.XmlPart.delete_element"><code class="name flex">
-<span>def <span class="ident">delete_element</span></span>(<span>self, child)</span>
+<span>def <span class="ident">delete_element</span></span>(<span>self, child: Element) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -293,12 +295,12 @@ def root(self):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def delete_element(self, child):
+<pre><code class="python">def delete_element(self, child: Element) -&gt; None:
     child.delete()</code></pre>
 </details>
 </dd>
 <dt id="odfdo.xmlpart.XmlPart.get_element"><code class="name flex">
-<span>def <span class="ident">get_element</span></span>(<span>self, xpath_query)</span>
+<span>def <span class="ident">get_element</span></span>(<span>self, xpath_query: str) ‑> Any</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -306,7 +308,7 @@ def root(self):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_element(self, xpath_query):
+<pre><code class="python">def get_element(self, xpath_query: str) -&gt; Any:
     result = self.get_elements(xpath_query)
     if not result:
         return None
@@ -314,7 +316,7 @@ def root(self):
 </details>
 </dd>
 <dt id="odfdo.xmlpart.XmlPart.get_elements"><code class="name flex">
-<span>def <span class="ident">get_elements</span></span>(<span>self, xpath_query: str)</span>
+<span>def <span class="ident">get_elements</span></span>(<span>self, xpath_query: str) ‑> list[<a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | <a title="odfdo.element.Text" href="element.html#odfdo.element.Text">Text</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -322,13 +324,13 @@ def root(self):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_elements(self, xpath_query: str):
+<pre><code class="python">def get_elements(self, xpath_query: str) -&gt; list[Element | Text]:
     root = self.root
     return root.xpath(xpath_query)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.xmlpart.XmlPart.serialize"><code class="name flex">
-<span>def <span class="ident">serialize</span></span>(<span>self, pretty=False)</span>
+<span>def <span class="ident">serialize</span></span>(<span>self, pretty: bool = False) ‑> bytes</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -336,20 +338,20 @@ def root(self):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def serialize(self, pretty=False):
-    tree = self.__get_tree()
+<pre><code class="python">def serialize(self, pretty: bool = False) -&gt; bytes:
+    tree = self._get_tree()
     # Lxml declaration is too exotic to me
     data = [b&#39;&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;&#39;]
-    tree = tostring(tree, pretty_print=pretty, encoding=&#34;UTF-8&#34;)
+    bytes_tree = tostring(tree, pretty_print=pretty, encoding=&#34;utf-8&#34;)
     # Lxml with pretty_print is adding a empty line
     if pretty:
-        tree = tree.strip()
-    data.append(tree)
+        bytes_tree = bytes_tree.strip()
+    data.append(bytes_tree)
     return b&#34;\n&#34;.join(data)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.xmlpart.XmlPart.xpath"><code class="name flex">
-<span>def <span class="ident">xpath</span></span>(<span>self, xpath_query)</span>
+<span>def <span class="ident">xpath</span></span>(<span>self, xpath_query: str) ‑> list[<a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | <a title="odfdo.element.Text" href="element.html#odfdo.element.Text">Text</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Apply XPath query to the XML part. Return list of Element or
@@ -358,7 +360,7 @@ Text instances translated from the nodes found.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def xpath(self, xpath_query):
+<pre><code class="python">def xpath(self, xpath_query: str) -&gt; list[Element | Text]:
     &#34;&#34;&#34;Apply XPath query to the XML part. Return list of Element or
     Text instances translated from the nodes found.
     &#34;&#34;&#34;

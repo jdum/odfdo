@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.utils API documentation</title>
-<meta name="description" content="get_value() and other utilities" />
+<meta name="description" content="Utilities for Element(), notably get_value()." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,12 +22,12 @@
 <h1 class="title">Module <code>odfdo.utils</code></h1>
 </header>
 <section id="section-intro">
-<p>get_value() and other utilities</p>
+<p>Utilities for Element(), notably get_value().</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -49,77 +49,66 @@
 # Authors: David Versmisse &lt;david.versmisse@itaapy.com&gt;
 #          Hervé Cauwelier &lt;herve@itaapy.com&gt;
 #          Romain Gauthier &lt;romain@itaapy.com&gt;
-&#34;&#34;&#34;get_value() and other utilities
+&#34;&#34;&#34;Utilities for Element(), notably get_value().
 &#34;&#34;&#34;
 from __future__ import annotations
 
-import contextlib
-from datetime import date, datetime, timedelta
-from decimal import Decimal as dec
-
-from .const import ODF_PROPERTIES
-from .datatype import Boolean, Date, DateTime, Duration
-
-# CELL_TYPES = &#39;boolean currency date float percentage string time&#39;.split()
-
-# STYLE_FAMILIES = (&#39;paragraph&#39;, &#39;text&#39;, &#39;section&#39;, &#39;table&#39;, &#39;table-column&#39;,
-#                   &#39;table-row&#39;, &#39;table-cell&#39;, &#39;table-page&#39;, &#39;chart&#39;,
-#                   &#39;default&#39;, &#39;drawing-page&#39;, &#39;graphic&#39;, &#39;presentation&#39;,
-#                   &#39;control&#39;, &#39;ruby&#39;, &#39;list&#39;, &#39;number&#39;, &#39;page-layout&#39;,
-#                   &#39;presentation-page-layout&#39;, &#39;font-face&#39;, &#39;master-page&#39;)
-
-# NOTE_CLASSES = (&#39;footnote&#39;, &#39;endnote&#39;)
-
-# This DPI is computed to have:
-# 640 px (width of your wiki) &lt;==&gt; 17 cm (width of a normal ODT page)
-DPI = 640 * dec(&#34;2.54&#34;) / 17
+from typing import Any
 
 ######################################################################
 # Private API
 ######################################################################
 
 
-def to_bytes(value: str | bytes) -&gt; bytes:
+def to_bytes(value: Any) -&gt; Any:
     if isinstance(value, str):
         return value.encode(&#34;utf-8&#34;)
     return value
 
 
-def to_str(value: str | bytes) -&gt; str:
+def to_str(value: Any) -&gt; Any:
     if isinstance(value, bytes):
         return value.decode(&#34;utf-8&#34;)
     return value
 
 
+def str_to_bytes(text: str) -&gt; bytes:
+    return text.encode(&#34;utf-8&#34;, &#34;replace&#34;)
+
+
+def bytes_to_str(text: bytes) -&gt; str:
+    return text.decode(&#34;utf-8&#34;, &#34;ignore&#34;)
+
+
 def make_xpath_query(  # noqa: C901
     query_string: str,
-    family=None,
-    text_style=None,
-    draw_id=None,
-    draw_name=None,
-    draw_style=None,
-    draw_text_style=None,
-    table_name=None,
-    table_style=None,
-    style_name=None,
-    display_name=None,
-    note_class=None,
-    text_id=None,
-    text_name=None,
-    change_id=None,
-    office_name=None,
-    office_title=None,
-    outline_level=None,
-    level=None,
-    page_layout=None,
-    master_page=None,
-    parent_style=None,
-    presentation_class=None,
-    position=None,
-    **kw,
-):
+    family: str | None = None,
+    text_style: str | None = None,
+    draw_id: str | None = None,
+    draw_name: str | None = None,
+    draw_style: str | None = None,
+    draw_text_style: str | None = None,
+    table_name: str | None = None,
+    table_style: str | None = None,
+    style_name: str | None = None,
+    display_name: str | None = None,
+    note_class: str | None = None,
+    text_id: str | None = None,
+    text_name: str | None = None,
+    change_id: str | None = None,
+    office_name: str | None = None,
+    office_title: str | None = None,
+    outline_level: str | int | None = None,
+    level: str | int | None = None,
+    page_layout: str | None = None,
+    master_page: str | None = None,
+    parent_style: str | None = None,
+    presentation_class: str | None = None,
+    position: int | None = None,
+    **kwargs: str,
+) -&gt; str:
     query = [query_string]
-    attributes = kw
+    attributes = kwargs
     if text_style:
         attributes[&#34;text:style-name&#34;] = text_style
     if family and family in FAMILY_ODF_STD:
@@ -153,9 +142,9 @@ def make_xpath_query(  # noqa: C901
     if office_title:
         attributes[&#34;office:title&#34;] = office_title
     if outline_level:
-        attributes[&#34;text:outline-level&#34;] = outline_level
+        attributes[&#34;text:outline-level&#34;] = str(outline_level)
     if level:
-        attributes[&#34;text:level&#34;] = level
+        attributes[&#34;text:level&#34;] = str(level)
     if page_layout:
         attributes[&#34;style:page-layout-name&#34;] = page_layout
     if master_page:
@@ -171,29 +160,36 @@ def make_xpath_query(  # noqa: C901
             query.append(f&#34;[@{to_str(qname)}]&#34;)
         else:
             query.append(f&#39;[@{to_str(qname)}=&#34;{value}&#34;]&#39;)
-    query = &#34;&#34;.join(query)
+    query_str = &#34;&#34;.join(query)
     if position is not None:
         # A position argument that mimics the behaviour of a python&#39;s list
         if position &gt;= 0:
-            position = str(position + 1)
+            position_str = str(position + 1)
         elif position == -1:
-            position = &#34;last()&#34;
+            position_str = &#34;last()&#34;
         else:
-            position = f&#34;last()-{abs(position) - 1}&#34;
-        query = f&#34;({query})[{position}]&#34;
+            position_str = f&#34;last()-{abs(position) - 1}&#34;
+        query_str = f&#34;({query_str})[{position_str}]&#34;
     # print(query)
-    return query
+    return query_str
 
 
 # style:family as defined by ODF 1.2, e.g. xxx possibily for:
 # &#39;style:style style:family=&#34;xxx&#34;&#39;
-FAMILY_ODF_STD = set(
-    (
-        &#34;chart drawing-page graphic paragraph&#34;
-        &#34; presentation ruby section table table-cell&#34;
-        &#34; table-column table-row text&#34;
-    ).split()
-)
+FAMILY_ODF_STD = {
+    &#34;chart&#34;,
+    &#34;drawing-page&#34;,
+    &#34;graphic&#34;,
+    &#34;paragraph&#34;,
+    &#34;presentation&#34;,
+    &#34;ruby&#34;,
+    &#34;section&#34;,
+    &#34;table&#34;,
+    &#34;table-cell&#34;,
+    &#34;table-column&#34;,
+    &#34;table-row&#34;,
+    &#34;text&#34;,
+}
 
 _BASE_FAMILY_MAP = {k: &#34;style:style&#34; for k in FAMILY_ODF_STD}
 
@@ -215,14 +211,15 @@ _FALSE_FAMILY_MAP = {
     &#34;tab-stop&#34;: &#34;style:tab-stop&#34;,
 }
 
-OTHER_STYLES = set(
-    (
-        &#34;style:default-style style:header-style&#34;
-        &#34; style:footer-style text:list-level-style-bullet&#34;
-        &#34; text:list-level-style-image&#34;
-        &#34; text:list-level-style-number&#34;
-    ).split()
-)
+OTHER_STYLES = {
+    &#34;style:default-style&#34;,
+    &#34;style:footer-style&#34;,
+    &#34;style:header-style&#34;,
+    &#34;text:list-level-style-bullet&#34;,
+    &#34;text:list-level-style-image&#34;,
+    &#34;text:list-level-style-number&#34;,
+}
+
 SUBCLASS_STYLES = {&#34;background-image&#34;}
 
 FAMILY_MAPPING = {**_BASE_FAMILY_MAP, **_FALSE_FAMILY_MAP}
@@ -232,282 +229,16 @@ SUBCLASSED_STYLES = {&#34;style:background-image&#34;}
 STYLES_TO_REGISTER = (set(FAMILY_MAPPING.values()) | OTHER_STYLES) - SUBCLASSED_STYLES
 
 
-def _family_style_tagname(family):
-    if family not in FAMILY_MAPPING:
-        raise ValueError(&#34;unknown family: %s&#34; % family)
-    return FAMILY_MAPPING[family]
-
-
-def _get_style_family(name):
-    for family, (tagname, _famattr) in FAMILY_MAPPING.items():
-        if tagname == name:
-            return family
-    return None
-
-
-def _expand_properties(properties):
-    # This mapping is not exhaustive, it only contains cases where replacing
-    # &#39;_&#39; with &#39;-&#39; and adding the &#34;fo:&#34; prefix is not enough
-    mapping = {  # text
-        &#34;display&#34;: &#34;text:display&#34;,
-        &#34;family_generic&#34;: &#34;style:font-family-generic&#34;,
-        &#34;font&#34;: &#34;style:font-name&#34;,
-        &#34;outline&#34;: &#34;style:text-outline&#34;,
-        &#34;pitch&#34;: &#34;style:font-pitch&#34;,
-        &#34;size&#34;: &#34;fo:font-size&#34;,
-        &#34;style&#34;: &#34;fo:font-style&#34;,
-        &#34;underline&#34;: &#34;style:text-underline-style&#34;,
-        &#34;weight&#34;: &#34;fo:font-weight&#34;,
-        # compliance with office suites
-        &#34;font_family&#34;: &#34;fo:font-family&#34;,
-        &#34;font_style_name&#34;: &#34;style:font-style-name&#34;,
-        # paragraph
-        &#34;align-last&#34;: &#34;fo:text-align-last&#34;,
-        &#34;align&#34;: &#34;fo:text-align&#34;,
-        &#34;indent&#34;: &#34;fo:text-indent&#34;,
-        &#34;together&#34;: &#34;fo:keep-together&#34;,
-        # frame position
-        &#34;horizontal_pos&#34;: &#34;style:horizontal-pos&#34;,
-        &#34;horizontal_rel&#34;: &#34;style:horizontal-rel&#34;,
-        &#34;vertical_pos&#34;: &#34;style:vertical-pos&#34;,
-        &#34;vertical_rel&#34;: &#34;style:vertical-rel&#34;,
-        # TODO &#39;page-break-before&#39;: &#39;fo:page-break-before&#39;,
-        # TODO &#39;page-break-after&#39;: &#39;fo:page-break-after&#39;,
-        &#34;shadow&#34;: &#34;fo:text-shadow&#34;,
-        # Graphic
-        &#34;fill_color&#34;: &#34;draw:fill-color&#34;,
-        &#34;fill_image_height&#34;: &#34;draw:fill-image-height&#34;,
-        &#34;fill_image_width&#34;: &#34;draw:fill-image-width&#34;,
-        &#34;guide_distance&#34;: &#34;draw:guide-distance&#34;,
-        &#34;guide_overhang&#34;: &#34;draw:guide-overhang&#34;,
-        &#34;line_distance&#34;: &#34;draw:line-distance&#34;,
-        &#34;stroke&#34;: &#34;draw:stroke&#34;,
-        &#34;textarea_vertical_align&#34;: &#34;draw:textarea-vertical-align&#34;,
-    }
-
-    def map_key(key):
-        if key in ODF_PROPERTIES:
-            return key
-        key = mapping.get(key, key).replace(&#34;_&#34;, &#34;-&#34;)
-        if &#34;:&#34; not in key:
-            key = &#34;fo:&#34; + key
-        if key in ODF_PROPERTIES:
-            return key
-        return None
-
-    if isinstance(properties, dict):
-        expanded = {}
-        for key in sorted(properties.keys()):
-            prop_key = map_key(key)
-            if not prop_key:
-                continue
-            expanded[prop_key] = to_str(properties[key])
-
-    elif isinstance(properties, list):
-        expanded = list(filter(None, (map_key(key) for key in properties)))
-    return expanded
-
-
-def _merge_dicts(d, *args, **kw):
-    &#34;&#34;&#34;Merge two or more dictionaries into a new dictionary object.&#34;&#34;&#34;
-    new_d = d.copy()
-    for dic in args:
-        new_d.update(dic)
-    new_d.update(kw)
-    return new_d
-
-
-# Non-public yet useful helpers
-
-
-def _set_value_and_type(  # noqa: C901
-    element,
-    value=None,
-    value_type=None,
-    text=None,
-    currency=None,
-):
-    # Remove possible previous value and type
-    for name in {
-        &#34;office:value-type&#34;,
-        &#34;office:boolean-value&#34;,
-        &#34;office:value&#34;,
-        &#34;office:date-value&#34;,
-        &#34;office:string-value&#34;,
-        &#34;office:time-value&#34;,
-        &#34;table:formula&#34;,
-        &#34;office:currency&#34;,
-        &#34;calcext:value-type&#34;,
-        &#34;loext:value-type&#34;,
-    }:
-        with contextlib.suppress(KeyError):
-            element.del_attribute(name)
-    value = to_str(value)
-    value_type = to_str(value_type)
-    text = to_str(text)
-    currency = to_str(currency)
-    if value is None:
-        with contextlib.suppress(KeyError):
-            element.del_attribute(name)
-        element._erase_text_content()
-        return text
-    if isinstance(value, bool):
-        if value_type is None:
-            value_type = &#34;boolean&#34;
-        if text is None:
-            text = &#34;true&#34; if value else &#34;false&#34;
-        value = Boolean.encode(value)
-    elif isinstance(value, (int, float, dec)):
-        if value_type == &#34;percentage&#34;:
-            text = &#34;%d %%&#34; % int(value * 100)
-        if value_type is None:
-            value_type = &#34;float&#34;
-        if text is None:
-            text = str(value)
-        value = str(value)
-    elif isinstance(value, datetime):
-        if value_type is None:
-            value_type = &#34;date&#34;
-        if text is None:
-            text = str(DateTime.encode(value))
-        value = DateTime.encode(value)
-    elif isinstance(value, date):
-        if value_type is None:
-            value_type = &#34;date&#34;
-        if text is None:
-            text = str(Date.encode(value))
-        value = Date.encode(value)
-    elif isinstance(value, str):
-        if value_type is None:
-            value_type = &#34;string&#34;
-        if text is None:
-            text = str(value)
-    elif isinstance(value, timedelta):
-        if value_type is None:
-            value_type = &#34;time&#34;
-        if text is None:
-            text = str(Duration.encode(value))
-        value = Duration.encode(value)
-    elif value is not None:
-        raise TypeError(&#39;type &#34;%s&#34; is unknown&#39; % type(value))
-
-    if value_type is not None:
-        element.set_attribute(&#34;office:value-type&#34;, value_type)
-        element.set_attribute(&#34;calcext:value-type&#34;, value_type)
-    if value_type == &#34;boolean&#34;:
-        element.set_attribute(&#34;office:boolean-value&#34;, value)
-    elif value_type == &#34;currency&#34;:
-        element.set_attribute(&#34;office:value&#34;, value)
-        element.set_attribute(&#34;office:currency&#34;, currency)
-    elif value_type == &#34;date&#34;:
-        element.set_attribute(&#34;office:date-value&#34;, value)
-    elif value_type in (&#34;float&#34;, &#34;percentage&#34;):
-        element.set_attribute(&#34;office:value&#34;, value)
-        element.set_attribute(&#34;calcext:value&#34;, value)
-    elif value_type == &#34;string&#34;:
-        element.set_attribute(&#34;office:string-value&#34;, value)
-    elif value_type == &#34;time&#34;:
-        element.set_attribute(&#34;office:time-value&#34;, value)
-
-    return text
+def _family_style_tagname(family: str) -&gt; str:
+    try:
+        return FAMILY_MAPPING[family]
+    except KeyError as e:
+        raise ValueError(f&#34;unknown family: {family}&#34;) from e
 
 
 ######################################################################
 # Public API
 ######################################################################
-def get_value(  # noqa: C901
-    element,
-    value_type=None,
-    try_get_text=True,
-    get_type=False,
-):
-    &#34;&#34;&#34;Only for &#34;with office:value-type&#34; elements, not for meta fields&#34;&#34;&#34;
-    if value_type is None:
-        value_type = element.get_attribute(&#34;office:value-type&#34;)
-    # value_type = to_str(value_type)
-    if value_type == &#34;boolean&#34;:
-        value = element.get_attribute(&#34;office:boolean-value&#34;)
-        if get_type:
-            return (value, value_type)
-        return value  # value is already decoded by get_attribute for booleans
-    if value_type in {&#34;float&#34;, &#34;percentage&#34;, &#34;currency&#34;}:
-        value = dec(element.get_attribute(&#34;office:value&#34;))
-        # Return 3 instead of 3.0 if possible
-        if int(value) == value:
-            if get_type:
-                return (int(value), value_type)
-            return int(value)
-        if get_type:
-            return (value, value_type)
-        return value
-    if value_type == &#34;date&#34;:
-        value = element.get_attribute(&#34;office:date-value&#34;)
-        if &#34;T&#34; in value:
-            if get_type:
-                return (DateTime.decode(value), value_type)
-            return DateTime.decode(value)
-        if get_type:
-            return (Date.decode(value), value_type)
-        return Date.decode(value)
-    if value_type == &#34;string&#34;:
-        value = element.get_attribute(&#34;office:string-value&#34;)
-        if value is not None:
-            if get_type:
-                return (str(value), value_type)
-            return str(value)
-        if try_get_text:
-            value = []
-            for para in element.get_elements(&#34;text:p&#34;):
-                value.append(para.text_recursive)
-            if value:
-                if get_type:
-                    return (&#34;\n&#34;.join(value), value_type)
-                return &#34;\n&#34;.join(value)
-        if get_type:
-            return (None, value_type)
-        return None
-    if value_type == &#34;time&#34;:
-        value = Duration.decode(element.get_attribute(&#34;office:time-value&#34;))
-        if get_type:
-            return (value, value_type)
-        return value
-    if value_type is None:
-        if get_type:
-            return (None, None)
-        return None
-
-    raise ValueError(f&#39;unexpected value type &#34;{value_type}&#34;&#39;)
-
-
-def set_value(element, value):
-    &#34;&#34;&#34;Only for &#34;with office:value-type&#34; elements&#34;&#34;&#34;
-    tag = element.tag
-    # A table:cell ?
-    if tag == &#34;table:table-cell&#34;:
-        element.clear()
-        text = _set_value_and_type(element, value=value)
-        element.text_content = text
-        return
-    # A text:variable-set ?
-    if tag == &#34;text:variable-set&#34;:
-        name = element.get_attribute(&#34;text:name&#34;)
-        display = element.get_attribute(&#34;text:display&#34;)
-        element.clear()
-        text = _set_value_and_type(element, value=value)
-        element.set_attribute(&#34;text:name&#34;, name)
-        if display is not None:
-            element.set_attribute(&#34;text:display&#34;, display)
-        element.text = text
-        return
-    # A text:user-field-decl ?
-    if tag == &#34;text:user-field-decl&#34;:
-        name = element.get_attribute(&#34;text:name&#34;)
-        element.clear()
-        _set_value_and_type(element, value=value)
-        element.set_attribute(&#34;text:name&#34;, name)
-        return
-    # Else =&gt; error
-    raise ValueError(&#39;set_value: unexpected element &#34;%s&#34;&#39; % tag)
 
 
 def oooc_to_ooow(formula: str) -&gt; str:
@@ -528,19 +259,7 @@ def oooc_to_ooow(formula: str) -&gt; str:
     return f&#34;ooow:{formula}&#34;
 
 
-# def obsolete(old_name, new_func, *args, **kw):
-#     def decorate(*dec_args, **dec_kw):
-#         new_name = new_func.__name__
-#         if args:
-#             new_name += &#39;(&#39; + &#39;, &#39;.join(repr(x) for x in args) + &#39;)&#39;
-#         message = &#39;&#34;%s&#34; is obsolete, call &#34;%s&#34; instead&#39; % (old_name, new_name)
-#         warn(message, category=DeprecationWarning)
-#         return new_func(*(dec_args + args), **dec_kw)
-#
-#     return decorate
-
-
-def isiterable(instance) -&gt; bool:
+def isiterable(instance: Any) -&gt; bool:
     &#34;&#34;&#34;Return True if instance is iterable, but considering str and bytes as not iterable.&#34;&#34;&#34;
     if isinstance(instance, (str, bytes)):
         return False
@@ -558,81 +277,21 @@ def isiterable(instance) -&gt; bool:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="odfdo.utils.get_value"><code class="name flex">
-<span>def <span class="ident">get_value</span></span>(<span>element, value_type=None, try_get_text=True, get_type=False)</span>
+<dt id="odfdo.utils.bytes_to_str"><code class="name flex">
+<span>def <span class="ident">bytes_to_str</span></span>(<span>text: bytes) ‑> str</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Only for "with office:value-type" elements, not for meta fields</p></div>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_value(  # noqa: C901
-    element,
-    value_type=None,
-    try_get_text=True,
-    get_type=False,
-):
-    &#34;&#34;&#34;Only for &#34;with office:value-type&#34; elements, not for meta fields&#34;&#34;&#34;
-    if value_type is None:
-        value_type = element.get_attribute(&#34;office:value-type&#34;)
-    # value_type = to_str(value_type)
-    if value_type == &#34;boolean&#34;:
-        value = element.get_attribute(&#34;office:boolean-value&#34;)
-        if get_type:
-            return (value, value_type)
-        return value  # value is already decoded by get_attribute for booleans
-    if value_type in {&#34;float&#34;, &#34;percentage&#34;, &#34;currency&#34;}:
-        value = dec(element.get_attribute(&#34;office:value&#34;))
-        # Return 3 instead of 3.0 if possible
-        if int(value) == value:
-            if get_type:
-                return (int(value), value_type)
-            return int(value)
-        if get_type:
-            return (value, value_type)
-        return value
-    if value_type == &#34;date&#34;:
-        value = element.get_attribute(&#34;office:date-value&#34;)
-        if &#34;T&#34; in value:
-            if get_type:
-                return (DateTime.decode(value), value_type)
-            return DateTime.decode(value)
-        if get_type:
-            return (Date.decode(value), value_type)
-        return Date.decode(value)
-    if value_type == &#34;string&#34;:
-        value = element.get_attribute(&#34;office:string-value&#34;)
-        if value is not None:
-            if get_type:
-                return (str(value), value_type)
-            return str(value)
-        if try_get_text:
-            value = []
-            for para in element.get_elements(&#34;text:p&#34;):
-                value.append(para.text_recursive)
-            if value:
-                if get_type:
-                    return (&#34;\n&#34;.join(value), value_type)
-                return &#34;\n&#34;.join(value)
-        if get_type:
-            return (None, value_type)
-        return None
-    if value_type == &#34;time&#34;:
-        value = Duration.decode(element.get_attribute(&#34;office:time-value&#34;))
-        if get_type:
-            return (value, value_type)
-        return value
-    if value_type is None:
-        if get_type:
-            return (None, None)
-        return None
-
-    raise ValueError(f&#39;unexpected value type &#34;{value_type}&#34;&#39;)</code></pre>
+<pre><code class="python">def bytes_to_str(text: bytes) -&gt; str:
+    return text.decode(&#34;utf-8&#34;, &#34;ignore&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.utils.isiterable"><code class="name flex">
-<span>def <span class="ident">isiterable</span></span>(<span>instance) ‑> bool</span>
+<span>def <span class="ident">isiterable</span></span>(<span>instance: Any) ‑> bool</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return True if instance is iterable, but considering str and bytes as not iterable.</p></div>
@@ -640,7 +299,7 @@ def isiterable(instance) -&gt; bool:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def isiterable(instance) -&gt; bool:
+<pre><code class="python">def isiterable(instance: Any) -&gt; bool:
     &#34;&#34;&#34;Return True if instance is iterable, but considering str and bytes as not iterable.&#34;&#34;&#34;
     if isinstance(instance, (str, bytes)):
         return False
@@ -652,7 +311,7 @@ def isiterable(instance) -&gt; bool:
 </details>
 </dd>
 <dt id="odfdo.utils.make_xpath_query"><code class="name flex">
-<span>def <span class="ident">make_xpath_query</span></span>(<span>query_string: str, family=None, text_style=None, draw_id=None, draw_name=None, draw_style=None, draw_text_style=None, table_name=None, table_style=None, style_name=None, display_name=None, note_class=None, text_id=None, text_name=None, change_id=None, office_name=None, office_title=None, outline_level=None, level=None, page_layout=None, master_page=None, parent_style=None, presentation_class=None, position=None, **kw)</span>
+<span>def <span class="ident">make_xpath_query</span></span>(<span>query_string: str, family: str | None = None, text_style: str | None = None, draw_id: str | None = None, draw_name: str | None = None, draw_style: str | None = None, draw_text_style: str | None = None, table_name: str | None = None, table_style: str | None = None, style_name: str | None = None, display_name: str | None = None, note_class: str | None = None, text_id: str | None = None, text_name: str | None = None, change_id: str | None = None, office_name: str | None = None, office_title: str | None = None, outline_level: str | int | None = None, level: str | int | None = None, page_layout: str | None = None, master_page: str | None = None, parent_style: str | None = None, presentation_class: str | None = None, position: int | None = None, **kwargs: str) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -662,33 +321,33 @@ def isiterable(instance) -&gt; bool:
 </summary>
 <pre><code class="python">def make_xpath_query(  # noqa: C901
     query_string: str,
-    family=None,
-    text_style=None,
-    draw_id=None,
-    draw_name=None,
-    draw_style=None,
-    draw_text_style=None,
-    table_name=None,
-    table_style=None,
-    style_name=None,
-    display_name=None,
-    note_class=None,
-    text_id=None,
-    text_name=None,
-    change_id=None,
-    office_name=None,
-    office_title=None,
-    outline_level=None,
-    level=None,
-    page_layout=None,
-    master_page=None,
-    parent_style=None,
-    presentation_class=None,
-    position=None,
-    **kw,
-):
+    family: str | None = None,
+    text_style: str | None = None,
+    draw_id: str | None = None,
+    draw_name: str | None = None,
+    draw_style: str | None = None,
+    draw_text_style: str | None = None,
+    table_name: str | None = None,
+    table_style: str | None = None,
+    style_name: str | None = None,
+    display_name: str | None = None,
+    note_class: str | None = None,
+    text_id: str | None = None,
+    text_name: str | None = None,
+    change_id: str | None = None,
+    office_name: str | None = None,
+    office_title: str | None = None,
+    outline_level: str | int | None = None,
+    level: str | int | None = None,
+    page_layout: str | None = None,
+    master_page: str | None = None,
+    parent_style: str | None = None,
+    presentation_class: str | None = None,
+    position: int | None = None,
+    **kwargs: str,
+) -&gt; str:
     query = [query_string]
-    attributes = kw
+    attributes = kwargs
     if text_style:
         attributes[&#34;text:style-name&#34;] = text_style
     if family and family in FAMILY_ODF_STD:
@@ -722,9 +381,9 @@ def isiterable(instance) -&gt; bool:
     if office_title:
         attributes[&#34;office:title&#34;] = office_title
     if outline_level:
-        attributes[&#34;text:outline-level&#34;] = outline_level
+        attributes[&#34;text:outline-level&#34;] = str(outline_level)
     if level:
-        attributes[&#34;text:level&#34;] = level
+        attributes[&#34;text:level&#34;] = str(level)
     if page_layout:
         attributes[&#34;style:page-layout-name&#34;] = page_layout
     if master_page:
@@ -740,18 +399,18 @@ def isiterable(instance) -&gt; bool:
             query.append(f&#34;[@{to_str(qname)}]&#34;)
         else:
             query.append(f&#39;[@{to_str(qname)}=&#34;{value}&#34;]&#39;)
-    query = &#34;&#34;.join(query)
+    query_str = &#34;&#34;.join(query)
     if position is not None:
         # A position argument that mimics the behaviour of a python&#39;s list
         if position &gt;= 0:
-            position = str(position + 1)
+            position_str = str(position + 1)
         elif position == -1:
-            position = &#34;last()&#34;
+            position_str = &#34;last()&#34;
         else:
-            position = f&#34;last()-{abs(position) - 1}&#34;
-        query = f&#34;({query})[{position}]&#34;
+            position_str = f&#34;last()-{abs(position) - 1}&#34;
+        query_str = f&#34;({query_str})[{position_str}]&#34;
     # print(query)
-    return query</code></pre>
+    return query_str</code></pre>
 </details>
 </dd>
 <dt id="odfdo.utils.oooc_to_ooow"><code class="name flex">
@@ -784,48 +443,8 @@ def isiterable(instance) -&gt; bool:
     return f&#34;ooow:{formula}&#34;</code></pre>
 </details>
 </dd>
-<dt id="odfdo.utils.set_value"><code class="name flex">
-<span>def <span class="ident">set_value</span></span>(<span>element, value)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Only for "with office:value-type" elements</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set_value(element, value):
-    &#34;&#34;&#34;Only for &#34;with office:value-type&#34; elements&#34;&#34;&#34;
-    tag = element.tag
-    # A table:cell ?
-    if tag == &#34;table:table-cell&#34;:
-        element.clear()
-        text = _set_value_and_type(element, value=value)
-        element.text_content = text
-        return
-    # A text:variable-set ?
-    if tag == &#34;text:variable-set&#34;:
-        name = element.get_attribute(&#34;text:name&#34;)
-        display = element.get_attribute(&#34;text:display&#34;)
-        element.clear()
-        text = _set_value_and_type(element, value=value)
-        element.set_attribute(&#34;text:name&#34;, name)
-        if display is not None:
-            element.set_attribute(&#34;text:display&#34;, display)
-        element.text = text
-        return
-    # A text:user-field-decl ?
-    if tag == &#34;text:user-field-decl&#34;:
-        name = element.get_attribute(&#34;text:name&#34;)
-        element.clear()
-        _set_value_and_type(element, value=value)
-        element.set_attribute(&#34;text:name&#34;, name)
-        return
-    # Else =&gt; error
-    raise ValueError(&#39;set_value: unexpected element &#34;%s&#34;&#39; % tag)</code></pre>
-</details>
-</dd>
-<dt id="odfdo.utils.to_bytes"><code class="name flex">
-<span>def <span class="ident">to_bytes</span></span>(<span>value: str | bytes) ‑> bytes</span>
+<dt id="odfdo.utils.str_to_bytes"><code class="name flex">
+<span>def <span class="ident">str_to_bytes</span></span>(<span>text: str) ‑> bytes</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -833,14 +452,27 @@ def isiterable(instance) -&gt; bool:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def to_bytes(value: str | bytes) -&gt; bytes:
+<pre><code class="python">def str_to_bytes(text: str) -&gt; bytes:
+    return text.encode(&#34;utf-8&#34;, &#34;replace&#34;)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.to_bytes"><code class="name flex">
+<span>def <span class="ident">to_bytes</span></span>(<span>value: Any) ‑> Any</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_bytes(value: Any) -&gt; Any:
     if isinstance(value, str):
         return value.encode(&#34;utf-8&#34;)
     return value</code></pre>
 </details>
 </dd>
 <dt id="odfdo.utils.to_str"><code class="name flex">
-<span>def <span class="ident">to_str</span></span>(<span>value: str | bytes) ‑> str</span>
+<span>def <span class="ident">to_str</span></span>(<span>value: Any) ‑> Any</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -848,7 +480,7 @@ def isiterable(instance) -&gt; bool:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def to_str(value: str | bytes) -&gt; str:
+<pre><code class="python">def to_str(value: Any) -&gt; Any:
     if isinstance(value, bytes):
         return value.decode(&#34;utf-8&#34;)
     return value</code></pre>
@@ -872,11 +504,11 @@ def isiterable(instance) -&gt; bool:
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
-<li><code><a title="odfdo.utils.get_value" href="#odfdo.utils.get_value">get_value</a></code></li>
+<li><code><a title="odfdo.utils.bytes_to_str" href="#odfdo.utils.bytes_to_str">bytes_to_str</a></code></li>
 <li><code><a title="odfdo.utils.isiterable" href="#odfdo.utils.isiterable">isiterable</a></code></li>
 <li><code><a title="odfdo.utils.make_xpath_query" href="#odfdo.utils.make_xpath_query">make_xpath_query</a></code></li>
 <li><code><a title="odfdo.utils.oooc_to_ooow" href="#odfdo.utils.oooc_to_ooow">oooc_to_ooow</a></code></li>
-<li><code><a title="odfdo.utils.set_value" href="#odfdo.utils.set_value">set_value</a></code></li>
+<li><code><a title="odfdo.utils.str_to_bytes" href="#odfdo.utils.str_to_bytes">str_to_bytes</a></code></li>
 <li><code><a title="odfdo.utils.to_bytes" href="#odfdo.utils.to_bytes">to_bytes</a></code></li>
 <li><code><a title="odfdo.utils.to_str" href="#odfdo.utils.to_str">to_str</a></code></li>
 </ul>

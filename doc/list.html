@@ -27,7 +27,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -52,15 +52,18 @@
 &#34;&#34;&#34;
 from __future__ import annotations
 
+from collections.abc import Iterable
+from typing import Any
+
 from .element import (
     FIRST_CHILD,
     NEXT_SIBLING,
     PREV_SIBLING,
     Element,
+    PropDef,
     register_element_class,
 )
 from .paragraph import Paragraph
-from .utils import isiterable
 
 
 class ListItem(Element):
@@ -68,15 +71,17 @@ class ListItem(Element):
 
     _tag = &#34;text:list-item&#34;
 
-    def __init__(self, text_or_element=None, **kwargs):
+    def __init__(
+        self,
+        text_or_element: str | Element | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         &#34;&#34;&#34;Create a list item element, optionaly passing at creation time a
         string or Element as content.
 
         Arguments:
 
             text_or_element -- str or ODF Element
-
-        Return: ListItem
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
@@ -85,16 +90,21 @@ class ListItem(Element):
             elif isinstance(text_or_element, Element):
                 self.append(text_or_element)
             elif text_or_element is not None:
-                raise TypeError(&#34;expected str or Element&#34;)
+                raise TypeError(&#34;Expected str or Element&#34;)
 
 
 class List(Element):
     &#34;&#34;&#34;ODF List &#34;text:list&#34;.&#34;&#34;&#34;
 
     _tag = &#34;text:list&#34;
-    _properties = ((&#34;style&#34;, &#34;text:style-name&#34;),)
+    _properties = (PropDef(&#34;style&#34;, &#34;text:style-name&#34;),)
 
-    def __init__(self, list_content=None, style=None, **kwargs):
+    def __init__(
+        self,
+        list_content: str | Element | Iterable[str | Element] | None = None,
+        style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         &#34;&#34;&#34;Create a list element, optionaly loading the list by a list of
         item (str or elements).
 
@@ -104,23 +114,22 @@ class List(Element):
 
         Arguments:
 
-            list_content -- a list of str or Element
+            list_content -- str or Element, or a list of str or Element
 
             style -- str
-
-        Return: List
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
             if list_content:
-                if not isiterable(list_content):
-                    list_content = [list_content]
-                for item in list_content:
-                    self.append(ListItem(item))
+                if isinstance(list_content, (Element, str)):
+                    self.append(ListItem(list_content))
+                elif hasattr(list_content, &#34;__iter__&#34;):
+                    for item in list_content:
+                        self.append(ListItem(item))
             if style is not None:
                 self.style = style
 
-    def get_items(self, content=None):
+    def get_items(self, content: str | None = None) -&gt; list[Element]:
         &#34;&#34;&#34;Return all the list items that match the criteria.
 
         Arguments:
@@ -133,7 +142,11 @@ class List(Element):
         &#34;&#34;&#34;
         return self._filtered_elements(&#34;text:list-item&#34;, content=content)
 
-    def get_item(self, position: int = 0, content: str | None = None) -&gt; Element | None:
+    def get_item(
+        self,
+        position: int = 0,
+        content: str | None = None,
+    ) -&gt; Element | None:
         &#34;&#34;&#34;Return the list item that matches the criteria. In nested lists,
         return the list item that really contains that content.
 
@@ -155,21 +168,33 @@ class List(Element):
             return None
         return self._filtered_element(&#34;text:list-item&#34;, position)
 
-    def set_list_header(self, text_or_element):
-        if not isiterable(text_or_element):
-            text_or_element = [text_or_element]
+    def set_list_header(
+        self,
+        text_or_element: str | Element | Iterable[str | Element],
+    ) -&gt; None:
+        if isinstance(text_or_element, (str, Element)):
+            actual_list: list[str | Element] | tuple = [text_or_element]
+        elif isinstance(text_or_element, (list, tuple)):
+            actual_list = text_or_element
+        else:
+            raise TypeError
         # Remove existing header
         for element in self.get_elements(&#34;text:p&#34;):
             self.delete(element)
-        for paragraph in reversed(text_or_element):
+        for paragraph in reversed(actual_list):
             if isinstance(paragraph, str):
                 paragraph = Paragraph(paragraph)
             self.insert(paragraph, FIRST_CHILD)
 
-    def insert_item(self, item, position=None, before=None, after=None):
+    def insert_item(
+        self,
+        item: ListItem | str | Element | None,
+        position: int | None = None,
+        before: Element | None = None,
+        after: Element | None = None,
+    ) -&gt; None:
         if not isinstance(item, ListItem):
             item = ListItem(item)
-
         if before is not None:
             before.insert(item, xmlposition=PREV_SIBLING)
         elif after is not None:
@@ -177,16 +202,20 @@ class List(Element):
         elif position is not None:
             self.insert(item, position=position)
         else:
-            raise ValueError(&#34;position must be defined&#34;)
+            raise ValueError(&#34;Position must be defined&#34;)
 
-    def append_item(self, item):
+    def append_item(
+        self,
+        item: ListItem | str | Element | None,
+    ) -&gt; None:
         if not isinstance(item, ListItem):
             item = ListItem(item)
         self.append(item)
 
-    def get_formatted_text(self, context):
+    def get_formatted_text(self, context: dict | None = None) -&gt; str:
+        if context is None:
+            context = {}
         rst_mode = context[&#34;rst_mode&#34;]
-
         result = []
         if rst_mode:
             result.append(&#34;\n&#34;)
@@ -203,11 +232,12 @@ class List(Element):
                     # (inner title)
                     return text
                 textbuf.append(text)
-            textbuf = &#34;&#34;.join(textbuf)
-            textbuf = textbuf.strip(&#34;\n&#34;)
+            text_sum = &#34;&#34;.join(textbuf)
+            text_sum = text_sum.strip(&#34;\n&#34;)
             # Indent the text
-            textbuf = &#34;- %s\n&#34; % textbuf.replace(&#34;\n&#34;, &#34;\n  &#34;)
-            result.append(textbuf)
+            text_sum = text_sum.replace(&#34;\n&#34;, &#34;\n  &#34;)
+            text_sum = f&#34;- {text_sum}\n&#34;
+            result.append(text_sum)
         if rst_mode:
             result.append(&#34;\n&#34;)
         return &#34;&#34;.join(result)
@@ -230,7 +260,7 @@ register_element_class(List)</code></pre>
 <dl>
 <dt id="odfdo.list.List"><code class="flex name class">
 <span>class <span class="ident">List</span></span>
-<span>(</span><span>list_content=None, style=None, **kwargs)</span>
+<span>(</span><span>list_content: str | Element | Iterable[str | Element] | None = None, style: str | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>ODF List "text:list".</p>
@@ -240,9 +270,8 @@ item (str or elements).</p>
 To create more complex lists, first create an empty list, and fill it
 afterwards.</p>
 <h2 id="arguments">Arguments</h2>
-<p>list_content &ndash; a list of str or Element</p>
-<p>style &ndash; str</p>
-<p>Return: List</p></div>
+<p>list_content &ndash; str or Element, or a list of str or Element</p>
+<p>style &ndash; str</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -251,9 +280,14 @@ afterwards.</p>
     &#34;&#34;&#34;ODF List &#34;text:list&#34;.&#34;&#34;&#34;
 
     _tag = &#34;text:list&#34;
-    _properties = ((&#34;style&#34;, &#34;text:style-name&#34;),)
+    _properties = (PropDef(&#34;style&#34;, &#34;text:style-name&#34;),)
 
-    def __init__(self, list_content=None, style=None, **kwargs):
+    def __init__(
+        self,
+        list_content: str | Element | Iterable[str | Element] | None = None,
+        style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         &#34;&#34;&#34;Create a list element, optionaly loading the list by a list of
         item (str or elements).
 
@@ -263,23 +297,22 @@ afterwards.</p>
 
         Arguments:
 
-            list_content -- a list of str or Element
+            list_content -- str or Element, or a list of str or Element
 
             style -- str
-
-        Return: List
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
             if list_content:
-                if not isiterable(list_content):
-                    list_content = [list_content]
-                for item in list_content:
-                    self.append(ListItem(item))
+                if isinstance(list_content, (Element, str)):
+                    self.append(ListItem(list_content))
+                elif hasattr(list_content, &#34;__iter__&#34;):
+                    for item in list_content:
+                        self.append(ListItem(item))
             if style is not None:
                 self.style = style
 
-    def get_items(self, content=None):
+    def get_items(self, content: str | None = None) -&gt; list[Element]:
         &#34;&#34;&#34;Return all the list items that match the criteria.
 
         Arguments:
@@ -292,7 +325,11 @@ afterwards.</p>
         &#34;&#34;&#34;
         return self._filtered_elements(&#34;text:list-item&#34;, content=content)
 
-    def get_item(self, position: int = 0, content: str | None = None) -&gt; Element | None:
+    def get_item(
+        self,
+        position: int = 0,
+        content: str | None = None,
+    ) -&gt; Element | None:
         &#34;&#34;&#34;Return the list item that matches the criteria. In nested lists,
         return the list item that really contains that content.
 
@@ -314,21 +351,33 @@ afterwards.</p>
             return None
         return self._filtered_element(&#34;text:list-item&#34;, position)
 
-    def set_list_header(self, text_or_element):
-        if not isiterable(text_or_element):
-            text_or_element = [text_or_element]
+    def set_list_header(
+        self,
+        text_or_element: str | Element | Iterable[str | Element],
+    ) -&gt; None:
+        if isinstance(text_or_element, (str, Element)):
+            actual_list: list[str | Element] | tuple = [text_or_element]
+        elif isinstance(text_or_element, (list, tuple)):
+            actual_list = text_or_element
+        else:
+            raise TypeError
         # Remove existing header
         for element in self.get_elements(&#34;text:p&#34;):
             self.delete(element)
-        for paragraph in reversed(text_or_element):
+        for paragraph in reversed(actual_list):
             if isinstance(paragraph, str):
                 paragraph = Paragraph(paragraph)
             self.insert(paragraph, FIRST_CHILD)
 
-    def insert_item(self, item, position=None, before=None, after=None):
+    def insert_item(
+        self,
+        item: ListItem | str | Element | None,
+        position: int | None = None,
+        before: Element | None = None,
+        after: Element | None = None,
+    ) -&gt; None:
         if not isinstance(item, ListItem):
             item = ListItem(item)
-
         if before is not None:
             before.insert(item, xmlposition=PREV_SIBLING)
         elif after is not None:
@@ -336,16 +385,20 @@ afterwards.</p>
         elif position is not None:
             self.insert(item, position=position)
         else:
-            raise ValueError(&#34;position must be defined&#34;)
+            raise ValueError(&#34;Position must be defined&#34;)
 
-    def append_item(self, item):
+    def append_item(
+        self,
+        item: ListItem | str | Element | None,
+    ) -&gt; None:
         if not isinstance(item, ListItem):
             item = ListItem(item)
         self.append(item)
 
-    def get_formatted_text(self, context):
+    def get_formatted_text(self, context: dict | None = None) -&gt; str:
+        if context is None:
+            context = {}
         rst_mode = context[&#34;rst_mode&#34;]
-
         result = []
         if rst_mode:
             result.append(&#34;\n&#34;)
@@ -362,11 +415,12 @@ afterwards.</p>
                     # (inner title)
                     return text
                 textbuf.append(text)
-            textbuf = &#34;&#34;.join(textbuf)
-            textbuf = textbuf.strip(&#34;\n&#34;)
+            text_sum = &#34;&#34;.join(textbuf)
+            text_sum = text_sum.strip(&#34;\n&#34;)
             # Indent the text
-            textbuf = &#34;- %s\n&#34; % textbuf.replace(&#34;\n&#34;, &#34;\n  &#34;)
-            result.append(textbuf)
+            text_sum = text_sum.replace(&#34;\n&#34;, &#34;\n  &#34;)
+            text_sum = f&#34;- {text_sum}\n&#34;
+            result.append(text_sum)
         if rst_mode:
             result.append(&#34;\n&#34;)
         return &#34;&#34;.join(result)</code></pre>
@@ -377,15 +431,18 @@ afterwards.</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.list.List.style"><code class="name">var <span class="ident">style</span></code></dt>
+<dt id="odfdo.list.List.style"><code class="name">var <span class="ident">style</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:style-name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -399,7 +456,7 @@ afterwards.</p>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.list.List.append_item"><code class="name flex">
-<span>def <span class="ident">append_item</span></span>(<span>self, item)</span>
+<span>def <span class="ident">append_item</span></span>(<span>self, item: <a title="odfdo.list.ListItem" href="#odfdo.list.ListItem">ListItem</a> | str | Element | None) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -407,7 +464,10 @@ afterwards.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def append_item(self, item):
+<pre><code class="python">def append_item(
+    self,
+    item: ListItem | str | Element | None,
+) -&gt; None:
     if not isinstance(item, ListItem):
         item = ListItem(item)
     self.append(item)</code></pre>
@@ -427,7 +487,11 @@ return the list item that really contains that content.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_item(self, position: int = 0, content: str | None = None) -&gt; Element | None:
+<pre><code class="python">def get_item(
+    self,
+    position: int = 0,
+    content: str | None = None,
+) -&gt; Element | None:
     &#34;&#34;&#34;Return the list item that matches the criteria. In nested lists,
     return the list item that really contains that content.
 
@@ -451,7 +515,7 @@ return the list item that really contains that content.</p>
 </details>
 </dd>
 <dt id="odfdo.list.List.get_items"><code class="name flex">
-<span>def <span class="ident">get_items</span></span>(<span>self, content=None)</span>
+<span>def <span class="ident">get_items</span></span>(<span>self, content: str | None = None) ‑> list[<a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return all the list items that match the criteria.</p>
@@ -463,7 +527,7 @@ return the list item that really contains that content.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_items(self, content=None):
+<pre><code class="python">def get_items(self, content: str | None = None) -&gt; list[Element]:
     &#34;&#34;&#34;Return all the list items that match the criteria.
 
     Arguments:
@@ -478,7 +542,7 @@ return the list item that really contains that content.</p>
 </details>
 </dd>
 <dt id="odfdo.list.List.insert_item"><code class="name flex">
-<span>def <span class="ident">insert_item</span></span>(<span>self, item, position=None, before=None, after=None)</span>
+<span>def <span class="ident">insert_item</span></span>(<span>self, item: <a title="odfdo.list.ListItem" href="#odfdo.list.ListItem">ListItem</a> | str | Element | None, position: int | None = None, before: Element | None = None, after: Element | None = None) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -486,10 +550,15 @@ return the list item that really contains that content.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def insert_item(self, item, position=None, before=None, after=None):
+<pre><code class="python">def insert_item(
+    self,
+    item: ListItem | str | Element | None,
+    position: int | None = None,
+    before: Element | None = None,
+    after: Element | None = None,
+) -&gt; None:
     if not isinstance(item, ListItem):
         item = ListItem(item)
-
     if before is not None:
         before.insert(item, xmlposition=PREV_SIBLING)
     elif after is not None:
@@ -497,11 +566,11 @@ return the list item that really contains that content.</p>
     elif position is not None:
         self.insert(item, position=position)
     else:
-        raise ValueError(&#34;position must be defined&#34;)</code></pre>
+        raise ValueError(&#34;Position must be defined&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.list.List.set_list_header"><code class="name flex">
-<span>def <span class="ident">set_list_header</span></span>(<span>self, text_or_element)</span>
+<span>def <span class="ident">set_list_header</span></span>(<span>self, text_or_element: str | Element | Iterable[str | Element]) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -509,13 +578,20 @@ return the list item that really contains that content.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_list_header(self, text_or_element):
-    if not isiterable(text_or_element):
-        text_or_element = [text_or_element]
+<pre><code class="python">def set_list_header(
+    self,
+    text_or_element: str | Element | Iterable[str | Element],
+) -&gt; None:
+    if isinstance(text_or_element, (str, Element)):
+        actual_list: list[str | Element] | tuple = [text_or_element]
+    elif isinstance(text_or_element, (list, tuple)):
+        actual_list = text_or_element
+    else:
+        raise TypeError
     # Remove existing header
     for element in self.get_elements(&#34;text:p&#34;):
         self.delete(element)
-    for paragraph in reversed(text_or_element):
+    for paragraph in reversed(actual_list):
         if isinstance(paragraph, str):
             paragraph = Paragraph(paragraph)
         self.insert(paragraph, FIRST_CHILD)</code></pre>
@@ -534,12 +610,16 @@ return the list item that really contains that content.</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -639,15 +719,14 @@ return the list item that really contains that content.</p>
 </dd>
 <dt id="odfdo.list.ListItem"><code class="flex name class">
 <span>class <span class="ident">ListItem</span></span>
-<span>(</span><span>text_or_element=None, **kwargs)</span>
+<span>(</span><span>text_or_element: str | Element | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>ODF element "text:list-item", item of a List.</p>
 <p>Create a list item element, optionaly passing at creation time a
 string or Element as content.</p>
 <h2 id="arguments">Arguments</h2>
-<p>text_or_element &ndash; str or ODF Element</p>
-<p>Return: ListItem</p></div>
+<p>text_or_element &ndash; str or ODF Element</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -657,15 +736,17 @@ string or Element as content.</p>
 
     _tag = &#34;text:list-item&#34;
 
-    def __init__(self, text_or_element=None, **kwargs):
+    def __init__(
+        self,
+        text_or_element: str | Element | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         &#34;&#34;&#34;Create a list item element, optionaly passing at creation time a
         string or Element as content.
 
         Arguments:
 
             text_or_element -- str or ODF Element
-
-        Return: ListItem
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
@@ -674,7 +755,7 @@ string or Element as content.</p>
             elif isinstance(text_or_element, Element):
                 self.append(text_or_element)
             elif text_or_element is not None:
-                raise TypeError(&#34;expected str or Element&#34;)</code></pre>
+                raise TypeError(&#34;Expected str or Element&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -692,12 +773,16 @@ string or Element as content.</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>

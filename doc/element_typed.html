@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>odfdo.draw_page API documentation</title>
-<meta name="description" content="DrawPage class for &#34;draw:page&#34;." />
+<title>odfdo.element_typed API documentation</title>
+<meta name="description" content="ElmentTyped subclass of Element." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,10 +19,10 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>odfdo.draw_page</code></h1>
+<h1 class="title">Module <code>odfdo.element_typed</code></h1>
 </header>
 <section id="section-intro">
-<p>DrawPage class for "draw:page".</p>
+<p>ElmentTyped subclass of Element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -46,113 +46,193 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-# Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
-&#34;&#34;&#34;DrawPage class for &#34;draw:page&#34;.
+&#34;&#34;&#34;ElmentTyped subclass of Element.
 &#34;&#34;&#34;
 from __future__ import annotations
 
+import contextlib
+from datetime import date, datetime, timedelta
+from decimal import Decimal
 from typing import Any
 
-from .element import Element, PropDef, register_element_class
-from .shapes import registered_shapes
-from .smil import AnimPar, AnimTransFilter
+from .datatype import Boolean, Date, DateTime, Duration
+from .element import Element
+from .utils import bytes_to_str
 
 
-class DrawPage(Element):
-    &#34;&#34;&#34;ODF draw page &#34;draw:page&#34;, for pages of presentation and drawings.&#34;&#34;&#34;
-
-    _tag = &#34;draw:page&#34;
-    _properties = (
-        PropDef(&#34;name&#34;, &#34;draw:name&#34;),
-        PropDef(&#34;draw_id&#34;, &#34;draw:id&#34;),
-        PropDef(&#34;master_page&#34;, &#34;draw:master-page-name&#34;),
-        PropDef(
-            &#34;presentation_page_layout&#34;, &#34;presentation:presentation-page-layout-name&#34;
-        ),
-        PropDef(&#34;style&#34;, &#34;draw:style-name&#34;),
-    )
-
-    def __init__(
+class ElementTyped(Element):
+    def set_value_and_type(  # noqa: C901
         self,
-        draw_id: str | None = None,
-        name: str | None = None,
-        master_page: str | None = None,
-        presentation_page_layout: str | None = None,
-        style: str | None = None,
-        **kwargs: Any,
-    ) -&gt; None:
-        &#34;&#34;&#34;
-        Arguments:
+        value: Any,
+        value_type: str | None = None,
+        text: str | None = None,
+        currency: str | None = None,
+    ) -&gt; str | None:
+        # Remove possible previous value and type
+        for name in (
+            &#34;office:value-type&#34;,
+            &#34;office:boolean-value&#34;,
+            &#34;office:value&#34;,
+            &#34;office:date-value&#34;,
+            &#34;office:string-value&#34;,
+            &#34;office:time-value&#34;,
+            &#34;table:formula&#34;,
+            &#34;office:currency&#34;,
+            &#34;calcext:value-type&#34;,
+            &#34;loext:value-type&#34;,
+        ):
+            with contextlib.suppress(KeyError):
+                self.del_attribute(name)
+        if isinstance(value, bytes):
+            value = bytes_to_str(value)
+        if isinstance(value_type, bytes):
+            value_type = bytes_to_str(value_type)
+        if isinstance(text, bytes):
+            text = bytes_to_str(text)
+        if isinstance(currency, bytes):
+            currency = bytes_to_str(currency)
+        if value is None:
+            self._erase_text_content()
+            return text
+        if isinstance(value, bool):
+            if value_type is None:
+                value_type = &#34;boolean&#34;
+            if text is None:
+                text = &#34;true&#34; if value else &#34;false&#34;
+            value = Boolean.encode(value)
+        elif isinstance(value, (int, float, Decimal)):
+            if value_type == &#34;percentage&#34;:
+                text = &#34;%d %%&#34; % int(value * 100)
+            if value_type is None:
+                value_type = &#34;float&#34;
+            if text is None:
+                text = str(value)
+            value = str(value)
+        elif isinstance(value, datetime):
+            if value_type is None:
+                value_type = &#34;date&#34;
+            if text is None:
+                text = str(DateTime.encode(value))
+            value = DateTime.encode(value)
+        elif isinstance(value, date):
+            if value_type is None:
+                value_type = &#34;date&#34;
+            if text is None:
+                text = str(Date.encode(value))
+            value = Date.encode(value)
+        elif isinstance(value, str):
+            if value_type is None:
+                value_type = &#34;string&#34;
+            if text is None:
+                text = value
+        elif isinstance(value, timedelta):
+            if value_type is None:
+                value_type = &#34;time&#34;
+            if text is None:
+                text = str(Duration.encode(value))
+            value = Duration.encode(value)
+        elif value is not None:
+            raise TypeError(f&#34;Type unknown: &#39;{value!r}&#39;&#34;)
 
-            draw_id -- str
+        if value_type is not None:
+            self.set_attribute(&#34;office:value-type&#34;, value_type)
+            self.set_attribute(&#34;calcext:value-type&#34;, value_type)
+        if value_type == &#34;boolean&#34;:
+            self.set_attribute(&#34;office:boolean-value&#34;, value)
+        elif value_type == &#34;currency&#34;:
+            self.set_attribute(&#34;office:value&#34;, value)
+            self.set_attribute(&#34;office:currency&#34;, currency)
+        elif value_type == &#34;date&#34;:
+            self.set_attribute(&#34;office:date-value&#34;, value)
+        elif value_type in (&#34;float&#34;, &#34;percentage&#34;):
+            self.set_attribute(&#34;office:value&#34;, value)
+            self.set_attribute(&#34;calcext:value&#34;, value)
+        elif value_type == &#34;string&#34;:
+            self.set_attribute(&#34;office:string-value&#34;, value)
+        elif value_type == &#34;time&#34;:
+            self.set_attribute(&#34;office:time-value&#34;, value)
 
-            name -- str
+        return text
 
-            master_page -- str
-
-            presentation_page_layout -- str
-
-            style -- str
-        &#34;&#34;&#34;
-        super().__init__(**kwargs)
-        if self._do_init:
-            if draw_id:
-                self.draw_id = draw_id
-            if name:
-                self.name = name
-            if master_page:
-                self.master_page = master_page
-            if presentation_page_layout:
-                self.presentation_page_layout = presentation_page_layout
-            if style:
-                self.style = style
-
-    def set_transition(
+    def _get_typed_value(  # noqa: C901
         self,
-        smil_type: str,
-        subtype: str | None = None,
-        dur: str = &#34;2s&#34;,
-    ) -&gt; None:
-        # Create the new animation
-        anim_page = AnimPar(presentation_node_type=&#34;timing-root&#34;)
-        anim_begin = AnimPar(smil_begin=f&#34;{self.draw_id}.begin&#34;)
-        transition = AnimTransFilter(
-            smil_dur=dur, smil_type=smil_type, smil_subtype=subtype
-        )
-        anim_page.append(anim_begin)
-        anim_begin.append(transition)
+        value_type: str | None = None,
+        try_get_text: bool = True,
+    ) -&gt; tuple[Any, str | None]:
+        &#34;&#34;&#34;Return Python typed value.
 
-        # Replace when already a transition:
-        #   anim:seq =&gt; After the frame&#39;s transition
-        #   cf page 349 of OpenDocument-v1.0-os.pdf
-        #   Conclusion: We must delete the first child &#39;anim:par&#39;
-        existing = self.get_element(&#34;anim:par&#34;)
-        if existing:
-            self.delete(existing)
-        self.append(anim_page)
+        Only for &#34;with office:value-type&#34; elements, not for meta fields.&#34;&#34;&#34;
+        value: Decimal | str | bool | None = None
+        if value_type is None:
+            read_value_type = self.get_attribute(&#34;office:value-type&#34;)
+            if isinstance(read_value_type, bool):
+                raise TypeError(
+                    f&#39;Wrong type for &#34;office:value-type&#34;: {type(read_value_type)}&#39;
+                )
+            value_type = read_value_type
+        # value_type = to_str(value_type)
+        if value_type == &#34;boolean&#34;:
+            value = self.get_attribute(&#34;office:boolean-value&#34;)
+            return (value, value_type)
+        if value_type in {&#34;float&#34;, &#34;percentage&#34;, &#34;currency&#34;}:
+            read_number = self.get_attribute(&#34;office:value&#34;)
+            if not isinstance(read_number, (Decimal, str)):
+                raise TypeError(f&#39;Wrong type for &#34;office:value&#34;: {type(read_number)}&#39;)
+            value = Decimal(read_number)
+            # Return 3 instead of 3.0 if possible
+            if int(value) == value:
+                return (int(value), value_type)
+            return (value, value_type)
+        if value_type == &#34;date&#34;:
+            read_attribute = self.get_attribute(&#34;office:date-value&#34;)
+            if not isinstance(read_attribute, str):
+                raise TypeError(
+                    f&#39;Wrong type for &#34;office:date-value&#34;: {type(read_attribute)}&#39;
+                )
+            if &#34;T&#34; in read_attribute:
+                return (DateTime.decode(read_attribute), value_type)
+            return (Date.decode(read_attribute), value_type)
+        if value_type == &#34;string&#34;:
+            value = self.get_attribute(&#34;office:string-value&#34;)
+            if value is not None:
+                return (str(value), value_type)
+            if try_get_text:
+                list_value = [
+                    para.text_recursive for para in self.get_elements(&#34;text:p&#34;)
+                ]
+                if list_value:
+                    return (&#34;\n&#34;.join(list_value), value_type)
+            return (None, value_type)
+        if value_type == &#34;time&#34;:
+            read_value = self.get_attribute(&#34;office:time-value&#34;)
+            if not isinstance(read_value, str):
+                raise TypeError(
+                    f&#39;Wrong type for &#34;office:time-value&#34;: {type(read_value)}&#39;
+                )
+            time_value = Duration.decode(read_value)
+            return (time_value, value_type)
+        if value_type is None:
+            return (None, None)
+        raise ValueError(f&#39;Unexpected value type: &#34;{value_type}&#34;&#39;)
 
-    def get_shapes(self) -&gt; list[Element]:
-        query = &#34;(descendant::&#34; + &#34;|descendant::&#34;.join(registered_shapes) + &#34;)&#34;
-        return self.get_elements(query)
+    def get_value(
+        self,
+        value_type: str | None = None,
+        try_get_text: bool = True,
+        get_type: bool = False,
+    ) -&gt; Any | tuple[Any, str]:
+        &#34;&#34;&#34;Return Python typed value.
 
-    def get_formatted_text(self, context: dict | None = None) -&gt; str:
-        result: list[str] = []
-        for child in self.children:
-            if child.tag == &#34;presentation:notes&#34;:
-                # No need for an advanced odf_notes.get_formatted_text()
-                # because the text seems to be only contained in paragraphs
-                # and frames, that we already handle
-                for sub_child in child.children:
-                    result.append(sub_child.get_formatted_text(context))
-                result.append(&#34;\n&#34;)
-            result.append(child.get_formatted_text(context))
-        result.append(&#34;\n&#34;)
-        return &#34;&#34;.join(result)
-
-
-DrawPage._define_attribut_property()
-
-register_element_class(DrawPage)</code></pre>
+        Only for &#34;with office:value-type&#34; elements, not for meta fields.&#34;&#34;&#34;
+        if get_type:
+            return self._get_typed_value(
+                value_type=value_type,
+                try_get_text=try_get_text,
+            )
+        return self._get_typed_value(
+            value_type=value_type,
+            try_get_text=try_get_text,
+        )[0]</code></pre>
 </details>
 </section>
 <section>
@@ -164,243 +244,238 @@ register_element_class(DrawPage)</code></pre>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="odfdo.draw_page.DrawPage"><code class="flex name class">
-<span>class <span class="ident">DrawPage</span></span>
-<span>(</span><span>draw_id: str | None = None, name: str | None = None, master_page: str | None = None, presentation_page_layout: str | None = None, style: str | None = None, **kwargs: Any)</span>
+<dt id="odfdo.element_typed.ElementTyped"><code class="flex name class">
+<span>class <span class="ident">ElementTyped</span></span>
+<span>(</span><span>**kwargs: Any)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>ODF draw page "draw:page", for pages of presentation and drawings.</p>
-<h2 id="arguments">Arguments</h2>
-<p>draw_id &ndash; str</p>
-<p>name &ndash; str</p>
-<p>master_page &ndash; str</p>
-<p>presentation_page_layout &ndash; str</p>
-<p>style &ndash; str</p></div>
+<div class="desc"><p>Super class of all ODF classes.</p>
+<p>Representation of an XML element. Abstraction of the XML library behind.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class DrawPage(Element):
-    &#34;&#34;&#34;ODF draw page &#34;draw:page&#34;, for pages of presentation and drawings.&#34;&#34;&#34;
-
-    _tag = &#34;draw:page&#34;
-    _properties = (
-        PropDef(&#34;name&#34;, &#34;draw:name&#34;),
-        PropDef(&#34;draw_id&#34;, &#34;draw:id&#34;),
-        PropDef(&#34;master_page&#34;, &#34;draw:master-page-name&#34;),
-        PropDef(
-            &#34;presentation_page_layout&#34;, &#34;presentation:presentation-page-layout-name&#34;
-        ),
-        PropDef(&#34;style&#34;, &#34;draw:style-name&#34;),
-    )
-
-    def __init__(
+<pre><code class="python">class ElementTyped(Element):
+    def set_value_and_type(  # noqa: C901
         self,
-        draw_id: str | None = None,
-        name: str | None = None,
-        master_page: str | None = None,
-        presentation_page_layout: str | None = None,
-        style: str | None = None,
-        **kwargs: Any,
-    ) -&gt; None:
-        &#34;&#34;&#34;
-        Arguments:
+        value: Any,
+        value_type: str | None = None,
+        text: str | None = None,
+        currency: str | None = None,
+    ) -&gt; str | None:
+        # Remove possible previous value and type
+        for name in (
+            &#34;office:value-type&#34;,
+            &#34;office:boolean-value&#34;,
+            &#34;office:value&#34;,
+            &#34;office:date-value&#34;,
+            &#34;office:string-value&#34;,
+            &#34;office:time-value&#34;,
+            &#34;table:formula&#34;,
+            &#34;office:currency&#34;,
+            &#34;calcext:value-type&#34;,
+            &#34;loext:value-type&#34;,
+        ):
+            with contextlib.suppress(KeyError):
+                self.del_attribute(name)
+        if isinstance(value, bytes):
+            value = bytes_to_str(value)
+        if isinstance(value_type, bytes):
+            value_type = bytes_to_str(value_type)
+        if isinstance(text, bytes):
+            text = bytes_to_str(text)
+        if isinstance(currency, bytes):
+            currency = bytes_to_str(currency)
+        if value is None:
+            self._erase_text_content()
+            return text
+        if isinstance(value, bool):
+            if value_type is None:
+                value_type = &#34;boolean&#34;
+            if text is None:
+                text = &#34;true&#34; if value else &#34;false&#34;
+            value = Boolean.encode(value)
+        elif isinstance(value, (int, float, Decimal)):
+            if value_type == &#34;percentage&#34;:
+                text = &#34;%d %%&#34; % int(value * 100)
+            if value_type is None:
+                value_type = &#34;float&#34;
+            if text is None:
+                text = str(value)
+            value = str(value)
+        elif isinstance(value, datetime):
+            if value_type is None:
+                value_type = &#34;date&#34;
+            if text is None:
+                text = str(DateTime.encode(value))
+            value = DateTime.encode(value)
+        elif isinstance(value, date):
+            if value_type is None:
+                value_type = &#34;date&#34;
+            if text is None:
+                text = str(Date.encode(value))
+            value = Date.encode(value)
+        elif isinstance(value, str):
+            if value_type is None:
+                value_type = &#34;string&#34;
+            if text is None:
+                text = value
+        elif isinstance(value, timedelta):
+            if value_type is None:
+                value_type = &#34;time&#34;
+            if text is None:
+                text = str(Duration.encode(value))
+            value = Duration.encode(value)
+        elif value is not None:
+            raise TypeError(f&#34;Type unknown: &#39;{value!r}&#39;&#34;)
 
-            draw_id -- str
+        if value_type is not None:
+            self.set_attribute(&#34;office:value-type&#34;, value_type)
+            self.set_attribute(&#34;calcext:value-type&#34;, value_type)
+        if value_type == &#34;boolean&#34;:
+            self.set_attribute(&#34;office:boolean-value&#34;, value)
+        elif value_type == &#34;currency&#34;:
+            self.set_attribute(&#34;office:value&#34;, value)
+            self.set_attribute(&#34;office:currency&#34;, currency)
+        elif value_type == &#34;date&#34;:
+            self.set_attribute(&#34;office:date-value&#34;, value)
+        elif value_type in (&#34;float&#34;, &#34;percentage&#34;):
+            self.set_attribute(&#34;office:value&#34;, value)
+            self.set_attribute(&#34;calcext:value&#34;, value)
+        elif value_type == &#34;string&#34;:
+            self.set_attribute(&#34;office:string-value&#34;, value)
+        elif value_type == &#34;time&#34;:
+            self.set_attribute(&#34;office:time-value&#34;, value)
 
-            name -- str
+        return text
 
-            master_page -- str
-
-            presentation_page_layout -- str
-
-            style -- str
-        &#34;&#34;&#34;
-        super().__init__(**kwargs)
-        if self._do_init:
-            if draw_id:
-                self.draw_id = draw_id
-            if name:
-                self.name = name
-            if master_page:
-                self.master_page = master_page
-            if presentation_page_layout:
-                self.presentation_page_layout = presentation_page_layout
-            if style:
-                self.style = style
-
-    def set_transition(
+    def _get_typed_value(  # noqa: C901
         self,
-        smil_type: str,
-        subtype: str | None = None,
-        dur: str = &#34;2s&#34;,
-    ) -&gt; None:
-        # Create the new animation
-        anim_page = AnimPar(presentation_node_type=&#34;timing-root&#34;)
-        anim_begin = AnimPar(smil_begin=f&#34;{self.draw_id}.begin&#34;)
-        transition = AnimTransFilter(
-            smil_dur=dur, smil_type=smil_type, smil_subtype=subtype
-        )
-        anim_page.append(anim_begin)
-        anim_begin.append(transition)
+        value_type: str | None = None,
+        try_get_text: bool = True,
+    ) -&gt; tuple[Any, str | None]:
+        &#34;&#34;&#34;Return Python typed value.
 
-        # Replace when already a transition:
-        #   anim:seq =&gt; After the frame&#39;s transition
-        #   cf page 349 of OpenDocument-v1.0-os.pdf
-        #   Conclusion: We must delete the first child &#39;anim:par&#39;
-        existing = self.get_element(&#34;anim:par&#34;)
-        if existing:
-            self.delete(existing)
-        self.append(anim_page)
+        Only for &#34;with office:value-type&#34; elements, not for meta fields.&#34;&#34;&#34;
+        value: Decimal | str | bool | None = None
+        if value_type is None:
+            read_value_type = self.get_attribute(&#34;office:value-type&#34;)
+            if isinstance(read_value_type, bool):
+                raise TypeError(
+                    f&#39;Wrong type for &#34;office:value-type&#34;: {type(read_value_type)}&#39;
+                )
+            value_type = read_value_type
+        # value_type = to_str(value_type)
+        if value_type == &#34;boolean&#34;:
+            value = self.get_attribute(&#34;office:boolean-value&#34;)
+            return (value, value_type)
+        if value_type in {&#34;float&#34;, &#34;percentage&#34;, &#34;currency&#34;}:
+            read_number = self.get_attribute(&#34;office:value&#34;)
+            if not isinstance(read_number, (Decimal, str)):
+                raise TypeError(f&#39;Wrong type for &#34;office:value&#34;: {type(read_number)}&#39;)
+            value = Decimal(read_number)
+            # Return 3 instead of 3.0 if possible
+            if int(value) == value:
+                return (int(value), value_type)
+            return (value, value_type)
+        if value_type == &#34;date&#34;:
+            read_attribute = self.get_attribute(&#34;office:date-value&#34;)
+            if not isinstance(read_attribute, str):
+                raise TypeError(
+                    f&#39;Wrong type for &#34;office:date-value&#34;: {type(read_attribute)}&#39;
+                )
+            if &#34;T&#34; in read_attribute:
+                return (DateTime.decode(read_attribute), value_type)
+            return (Date.decode(read_attribute), value_type)
+        if value_type == &#34;string&#34;:
+            value = self.get_attribute(&#34;office:string-value&#34;)
+            if value is not None:
+                return (str(value), value_type)
+            if try_get_text:
+                list_value = [
+                    para.text_recursive for para in self.get_elements(&#34;text:p&#34;)
+                ]
+                if list_value:
+                    return (&#34;\n&#34;.join(list_value), value_type)
+            return (None, value_type)
+        if value_type == &#34;time&#34;:
+            read_value = self.get_attribute(&#34;office:time-value&#34;)
+            if not isinstance(read_value, str):
+                raise TypeError(
+                    f&#39;Wrong type for &#34;office:time-value&#34;: {type(read_value)}&#39;
+                )
+            time_value = Duration.decode(read_value)
+            return (time_value, value_type)
+        if value_type is None:
+            return (None, None)
+        raise ValueError(f&#39;Unexpected value type: &#34;{value_type}&#34;&#39;)
 
-    def get_shapes(self) -&gt; list[Element]:
-        query = &#34;(descendant::&#34; + &#34;|descendant::&#34;.join(registered_shapes) + &#34;)&#34;
-        return self.get_elements(query)
+    def get_value(
+        self,
+        value_type: str | None = None,
+        try_get_text: bool = True,
+        get_type: bool = False,
+    ) -&gt; Any | tuple[Any, str]:
+        &#34;&#34;&#34;Return Python typed value.
 
-    def get_formatted_text(self, context: dict | None = None) -&gt; str:
-        result: list[str] = []
-        for child in self.children:
-            if child.tag == &#34;presentation:notes&#34;:
-                # No need for an advanced odf_notes.get_formatted_text()
-                # because the text seems to be only contained in paragraphs
-                # and frames, that we already handle
-                for sub_child in child.children:
-                    result.append(sub_child.get_formatted_text(context))
-                result.append(&#34;\n&#34;)
-            result.append(child.get_formatted_text(context))
-        result.append(&#34;\n&#34;)
-        return &#34;&#34;.join(result)</code></pre>
+        Only for &#34;with office:value-type&#34; elements, not for meta fields.&#34;&#34;&#34;
+        if get_type:
+            return self._get_typed_value(
+                value_type=value_type,
+                try_get_text=try_get_text,
+            )
+        return self._get_typed_value(
+            value_type=value_type,
+            try_get_text=try_get_text,
+        )[0]</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
 </ul>
-<h3>Instance variables</h3>
-<dl>
-<dt id="odfdo.draw_page.DrawPage.draw_id"><code class="name">var <span class="ident">draw_id</span> : str | bool | None</code></dt>
-<dd>
-<div class="desc"><p>Get/set the attribute draw:id</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
-    try:
-        if family and self.family != family:  # type: ignore
-            return None
-    except AttributeError:
-        return None
-    value = self.__element.get(name)
-    if value is None:
-        return None
-    elif value in (&#34;true&#34;, &#34;false&#34;):
-        return Boolean.decode(value)
-    return str(value)</code></pre>
-</details>
-</dd>
-<dt id="odfdo.draw_page.DrawPage.master_page"><code class="name">var <span class="ident">master_page</span> : str | bool | None</code></dt>
-<dd>
-<div class="desc"><p>Get/set the attribute draw:master-page-name</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
-    try:
-        if family and self.family != family:  # type: ignore
-            return None
-    except AttributeError:
-        return None
-    value = self.__element.get(name)
-    if value is None:
-        return None
-    elif value in (&#34;true&#34;, &#34;false&#34;):
-        return Boolean.decode(value)
-    return str(value)</code></pre>
-</details>
-</dd>
-<dt id="odfdo.draw_page.DrawPage.name"><code class="name">var <span class="ident">name</span> : str | bool | None</code></dt>
-<dd>
-<div class="desc"><p>Get/set the attribute draw:name</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
-    try:
-        if family and self.family != family:  # type: ignore
-            return None
-    except AttributeError:
-        return None
-    value = self.__element.get(name)
-    if value is None:
-        return None
-    elif value in (&#34;true&#34;, &#34;false&#34;):
-        return Boolean.decode(value)
-    return str(value)</code></pre>
-</details>
-</dd>
-<dt id="odfdo.draw_page.DrawPage.presentation_page_layout"><code class="name">var <span class="ident">presentation_page_layout</span> : str | bool | None</code></dt>
-<dd>
-<div class="desc"><p>Get/set the attribute presentation:presentation-page-layout-name</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
-    try:
-        if family and self.family != family:  # type: ignore
-            return None
-    except AttributeError:
-        return None
-    value = self.__element.get(name)
-    if value is None:
-        return None
-    elif value in (&#34;true&#34;, &#34;false&#34;):
-        return Boolean.decode(value)
-    return str(value)</code></pre>
-</details>
-</dd>
-<dt id="odfdo.draw_page.DrawPage.style"><code class="name">var <span class="ident">style</span> : str | bool | None</code></dt>
-<dd>
-<div class="desc"><p>Get/set the attribute draw:style-name</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
-    try:
-        if family and self.family != family:  # type: ignore
-            return None
-    except AttributeError:
-        return None
-    value = self.__element.get(name)
-    if value is None:
-        return None
-    elif value in (&#34;true&#34;, &#34;false&#34;):
-        return Boolean.decode(value)
-    return str(value)</code></pre>
-</details>
-</dd>
-</dl>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="odfdo.table.Cell" href="table.html#odfdo.table.Cell">Cell</a></li>
+<li><a title="odfdo.variable.UserDefined" href="variable.html#odfdo.variable.UserDefined">UserDefined</a></li>
+<li><a title="odfdo.variable.UserFieldDecl" href="variable.html#odfdo.variable.UserFieldDecl">UserFieldDecl</a></li>
+<li><a title="odfdo.variable.UserFieldGet" href="variable.html#odfdo.variable.UserFieldGet">UserFieldGet</a></li>
+<li><a title="odfdo.variable.VarGet" href="variable.html#odfdo.variable.VarGet">VarGet</a></li>
+<li><a title="odfdo.variable.VarSet" href="variable.html#odfdo.variable.VarSet">VarSet</a></li>
+</ul>
 <h3>Methods</h3>
 <dl>
-<dt id="odfdo.draw_page.DrawPage.get_shapes"><code class="name flex">
-<span>def <span class="ident">get_shapes</span></span>(<span>self) ‑> list[<a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a>]</span>
+<dt id="odfdo.element_typed.ElementTyped.get_value"><code class="name flex">
+<span>def <span class="ident">get_value</span></span>(<span>self, value_type: str | None = None, try_get_text: bool = True, get_type: bool = False) ‑> typing.Any | tuple[typing.Any, str]</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Return Python typed value.</p>
+<p>Only for "with office:value-type" elements, not for meta fields.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_shapes(self) -&gt; list[Element]:
-    query = &#34;(descendant::&#34; + &#34;|descendant::&#34;.join(registered_shapes) + &#34;)&#34;
-    return self.get_elements(query)</code></pre>
+<pre><code class="python">def get_value(
+    self,
+    value_type: str | None = None,
+    try_get_text: bool = True,
+    get_type: bool = False,
+) -&gt; Any | tuple[Any, str]:
+    &#34;&#34;&#34;Return Python typed value.
+
+    Only for &#34;with office:value-type&#34; elements, not for meta fields.&#34;&#34;&#34;
+    if get_type:
+        return self._get_typed_value(
+            value_type=value_type,
+            try_get_text=try_get_text,
+        )
+    return self._get_typed_value(
+        value_type=value_type,
+        try_get_text=try_get_text,
+    )[0]</code></pre>
 </details>
 </dd>
-<dt id="odfdo.draw_page.DrawPage.set_transition"><code class="name flex">
-<span>def <span class="ident">set_transition</span></span>(<span>self, smil_type: str, subtype: str | None = None, dur: str = '2s') ‑> None</span>
+<dt id="odfdo.element_typed.ElementTyped.set_value_and_type"><code class="name flex">
+<span>def <span class="ident">set_value_and_type</span></span>(<span>self, value: Any, value_type: str | None = None, text: str | None = None, currency: str | None = None) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -408,29 +483,98 @@ register_element_class(DrawPage)</code></pre>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_transition(
+<pre><code class="python">def set_value_and_type(  # noqa: C901
     self,
-    smil_type: str,
-    subtype: str | None = None,
-    dur: str = &#34;2s&#34;,
-) -&gt; None:
-    # Create the new animation
-    anim_page = AnimPar(presentation_node_type=&#34;timing-root&#34;)
-    anim_begin = AnimPar(smil_begin=f&#34;{self.draw_id}.begin&#34;)
-    transition = AnimTransFilter(
-        smil_dur=dur, smil_type=smil_type, smil_subtype=subtype
-    )
-    anim_page.append(anim_begin)
-    anim_begin.append(transition)
+    value: Any,
+    value_type: str | None = None,
+    text: str | None = None,
+    currency: str | None = None,
+) -&gt; str | None:
+    # Remove possible previous value and type
+    for name in (
+        &#34;office:value-type&#34;,
+        &#34;office:boolean-value&#34;,
+        &#34;office:value&#34;,
+        &#34;office:date-value&#34;,
+        &#34;office:string-value&#34;,
+        &#34;office:time-value&#34;,
+        &#34;table:formula&#34;,
+        &#34;office:currency&#34;,
+        &#34;calcext:value-type&#34;,
+        &#34;loext:value-type&#34;,
+    ):
+        with contextlib.suppress(KeyError):
+            self.del_attribute(name)
+    if isinstance(value, bytes):
+        value = bytes_to_str(value)
+    if isinstance(value_type, bytes):
+        value_type = bytes_to_str(value_type)
+    if isinstance(text, bytes):
+        text = bytes_to_str(text)
+    if isinstance(currency, bytes):
+        currency = bytes_to_str(currency)
+    if value is None:
+        self._erase_text_content()
+        return text
+    if isinstance(value, bool):
+        if value_type is None:
+            value_type = &#34;boolean&#34;
+        if text is None:
+            text = &#34;true&#34; if value else &#34;false&#34;
+        value = Boolean.encode(value)
+    elif isinstance(value, (int, float, Decimal)):
+        if value_type == &#34;percentage&#34;:
+            text = &#34;%d %%&#34; % int(value * 100)
+        if value_type is None:
+            value_type = &#34;float&#34;
+        if text is None:
+            text = str(value)
+        value = str(value)
+    elif isinstance(value, datetime):
+        if value_type is None:
+            value_type = &#34;date&#34;
+        if text is None:
+            text = str(DateTime.encode(value))
+        value = DateTime.encode(value)
+    elif isinstance(value, date):
+        if value_type is None:
+            value_type = &#34;date&#34;
+        if text is None:
+            text = str(Date.encode(value))
+        value = Date.encode(value)
+    elif isinstance(value, str):
+        if value_type is None:
+            value_type = &#34;string&#34;
+        if text is None:
+            text = value
+    elif isinstance(value, timedelta):
+        if value_type is None:
+            value_type = &#34;time&#34;
+        if text is None:
+            text = str(Duration.encode(value))
+        value = Duration.encode(value)
+    elif value is not None:
+        raise TypeError(f&#34;Type unknown: &#39;{value!r}&#39;&#34;)
 
-    # Replace when already a transition:
-    #   anim:seq =&gt; After the frame&#39;s transition
-    #   cf page 349 of OpenDocument-v1.0-os.pdf
-    #   Conclusion: We must delete the first child &#39;anim:par&#39;
-    existing = self.get_element(&#34;anim:par&#34;)
-    if existing:
-        self.delete(existing)
-    self.append(anim_page)</code></pre>
+    if value_type is not None:
+        self.set_attribute(&#34;office:value-type&#34;, value_type)
+        self.set_attribute(&#34;calcext:value-type&#34;, value_type)
+    if value_type == &#34;boolean&#34;:
+        self.set_attribute(&#34;office:boolean-value&#34;, value)
+    elif value_type == &#34;currency&#34;:
+        self.set_attribute(&#34;office:value&#34;, value)
+        self.set_attribute(&#34;office:currency&#34;, currency)
+    elif value_type == &#34;date&#34;:
+        self.set_attribute(&#34;office:date-value&#34;, value)
+    elif value_type in (&#34;float&#34;, &#34;percentage&#34;):
+        self.set_attribute(&#34;office:value&#34;, value)
+        self.set_attribute(&#34;calcext:value&#34;, value)
+    elif value_type == &#34;string&#34;:
+        self.set_attribute(&#34;office:string-value&#34;, value)
+    elif value_type == &#34;time&#34;:
+        self.set_attribute(&#34;office:time-value&#34;, value)
+
+    return text</code></pre>
 </details>
 </dd>
 </dl>
@@ -570,15 +714,10 @@ register_element_class(DrawPage)</code></pre>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="odfdo.draw_page.DrawPage" href="#odfdo.draw_page.DrawPage">DrawPage</a></code></h4>
+<h4><code><a title="odfdo.element_typed.ElementTyped" href="#odfdo.element_typed.ElementTyped">ElementTyped</a></code></h4>
 <ul class="">
-<li><code><a title="odfdo.draw_page.DrawPage.draw_id" href="#odfdo.draw_page.DrawPage.draw_id">draw_id</a></code></li>
-<li><code><a title="odfdo.draw_page.DrawPage.get_shapes" href="#odfdo.draw_page.DrawPage.get_shapes">get_shapes</a></code></li>
-<li><code><a title="odfdo.draw_page.DrawPage.master_page" href="#odfdo.draw_page.DrawPage.master_page">master_page</a></code></li>
-<li><code><a title="odfdo.draw_page.DrawPage.name" href="#odfdo.draw_page.DrawPage.name">name</a></code></li>
-<li><code><a title="odfdo.draw_page.DrawPage.presentation_page_layout" href="#odfdo.draw_page.DrawPage.presentation_page_layout">presentation_page_layout</a></code></li>
-<li><code><a title="odfdo.draw_page.DrawPage.set_transition" href="#odfdo.draw_page.DrawPage.set_transition">set_transition</a></code></li>
-<li><code><a title="odfdo.draw_page.DrawPage.style" href="#odfdo.draw_page.DrawPage.style">style</a></code></li>
+<li><code><a title="odfdo.element_typed.ElementTyped.get_value" href="#odfdo.element_typed.ElementTyped.get_value">get_value</a></code></li>
+<li><code><a title="odfdo.element_typed.ElementTyped.set_value_and_type" href="#odfdo.element_typed.ElementTyped.set_value_and_type">set_value_and_type</a></code></li>
 </ul>
 </li>
 </ul>

@@ -29,7 +29,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -57,6 +57,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
 from .datatype import DateTime
 from .element import FIRST_CHILD, LAST_CHILD, Element, register_element_class
@@ -76,18 +77,23 @@ class ChangeInfo(Element):
 
          creator -- str (or None)
 
-         date -- datetime
+         date -- datetime (or None)
     &#34;&#34;&#34;
 
     _tag = &#34;office:change-info&#34;
 
-    def __init__(self, creator=None, date=None, **kwargs):
+    def __init__(
+        self,
+        creator: str | None = None,
+        date: datetime | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         super().__init__(**kwargs)
         if self._do_init:
             self.set_dc_creator(creator)
             self.set_dc_date(date)
 
-    def set_dc_creator(self, creator=None):
+    def set_dc_creator(self, creator: str | None = None) -&gt; None:
         &#34;&#34;&#34;Set the creator of the change. Default for creator is &#39;Unknown&#39;.
 
         Arguments:
@@ -102,12 +108,12 @@ class ChangeInfo(Element):
             creator = &#34;Unknown&#34;
         element.text = creator
 
-    def set_dc_date(self, date=None):
+    def set_dc_date(self, date: datetime | None = None) -&gt; None:
         &#34;&#34;&#34;Set the date of the change. If date is None, use current time.
 
         Arguments:
 
-            date -- datetime
+            date -- datetime (or None)
         &#34;&#34;&#34;
         if date is None:
             date = datetime.now()
@@ -118,7 +124,7 @@ class ChangeInfo(Element):
             self.insert(element, xmlposition=LAST_CHILD)
         element.text = dcdate
 
-    def get_comments(self, joined=True):
+    def get_comments(self, joined: bool = True) -&gt; str | list[str]:
         &#34;&#34;&#34;Get text content of the comments. If joined is True (default), the
         text of different paragraphs is concatenated, else a list of strings,
         one per paragraph, is returned.
@@ -127,17 +133,17 @@ class ChangeInfo(Element):
 
             joined -- boolean (default is True)
 
-        Return: str or list of unicode.
+        Return: str or list of str.
         &#34;&#34;&#34;
         content = self.get_paragraphs()
         if content is None:
             content = []
-        text = [para.get_formatted_text(simple=True) for para in content]
+        text = [para.get_formatted_text(simple=True) for para in content]  # type: ignore
         if joined:
             return &#34;\n&#34;.join(text)
         return text
 
-    def set_comments(self, text=&#34;&#34;, replace=True):
+    def set_comments(self, text: str = &#34;&#34;, replace: bool = True) -&gt; None:
         &#34;&#34;&#34;Set the text content of the comments. If replace is True (default),
         the new text replace old comments, else it is added at the end.
 
@@ -168,48 +174,68 @@ class TextInsertion(Element):
 
     _tag = &#34;text:insertion&#34;
 
-    def get_deleted(self, as_text=False, no_header=False):
+    def get_deleted(
+        self,
+        as_text: bool = False,
+        no_header: bool = False,
+    ) -&gt; str | list[Element] | None:
         &#34;&#34;&#34;Return: None.&#34;&#34;&#34;
         if as_text:
             return &#34;&#34;
         return None
 
-    def get_inserted(self, as_text=False, no_header=False, clean=True):
+    def get_inserted(
+        self,
+        as_text: bool = False,
+        no_header: bool = False,
+        clean: bool = True,
+    ) -&gt; str | Element | list[Element] | None:
         &#34;&#34;&#34;Shortcut to text:change-start.get_inserted(). Return the content
         between text:change-start and text:change-end.
 
-        If no content exists (deletion tag), returns None (or str if text flag
-        is True).
-        if pragraph is True: returns the content embedded in a Paragraph.
-        If text is True: returns the annotated text.
-        By default: returns a list of Text or Element.
+        If as_text is True: returns the text content.
+        If no_header is True: existing Heading are changed in Paragraph
+        If no_header is True: existing text:h are changed in text:p
+        By default: returns a list of Element, cleaned and with headers
 
         Arguments:
 
-            paragraph -- boolean
+            as_text -- boolean
 
-            text -- boolean
+            clean -- boolean
 
-        Return: list or Paragraph or text
+            no_header -- boolean
+
+        Return: list or Element or text
         &#34;&#34;&#34;
-        cr = self.parent  # text:changed-region
-        idx = cr.get_id()
+        current = self.parent  # text:changed-region
+        if not current:
+            raise ValueError
+        idx = current.get_id()  # type: ignore
         body = self.document_body
         if not body:
             body = self.root
         text_change = body.get_text_change_start(idx=idx)
-        return text_change.get_inserted(
+        if not text_change:
+            raise ValueError
+        return text_change.get_inserted(  # type: ignore
             as_text=as_text, no_header=no_header, clean=clean
         )
 
-    def get_change_info(self):
+    def get_change_info(self) -&gt; Element | None:
         &#34;&#34;&#34;Get the ChangeInfo child of the element.
 
         Return: ChangeInfo element.
         &#34;&#34;&#34;
         return self.get_element(&#34;descendant::office:change-info&#34;)
 
-    def set_change_info(self, change_info=None, creator=None, date=None, comments=None):
+    def set_change_info(
+        self,
+        change_info: Element | None = None,
+        creator: str | None = None,
+        date: datetime | None = None,
+        comments: Element | list[Element] | None = None,
+    ) -&gt; None:
         &#34;&#34;&#34;Set the ChangeInfo element for the change element. If change_info
         is not provided, creator, date and comments will be used to build a
         suitable change info element. Default for creator is &#39;Unknown&#39;,
@@ -225,22 +251,24 @@ class TextInsertion(Element):
 
              date -- datetime (or None)
 
-             comments -- list of Paragraph elements (or None)
+             comments -- Paragraph or list of Paragraph elements (or None)
         &#34;&#34;&#34;
         if change_info is None:
             new_change_info = ChangeInfo(creator, date)
             if comments is not None:
-                if isinstance(comments, Paragraph):
+                if isinstance(comments, Element):
                     # single pararagraph comment
-                    comments = [comments]
+                    comments_list = [comments]
+                else:
+                    comments_list = comments
                 # assume iterable of Paragraph
-                for paragraph in comments:
+                for paragraph in comments_list:
                     if not isinstance(paragraph, Paragraph):
-                        raise TypeError(f&#34;{paragraph} is not a Paragraph.&#34;)
+                        raise TypeError(f&#34;Not a Paragraph: &#39;{paragraph!r}&#39;&#34;)
                     new_change_info.insert(paragraph, xmlposition=LAST_CHILD)
         else:
             if not isinstance(change_info, ChangeInfo):
-                raise ValueError(&#34;%s is not a ChangeInfo&#34; % change_info)
+                raise TypeError(f&#34;Not a ChangeInfo: &#39;{change_info!r}&#39;&#34;)
             new_change_info = change_info
 
         old = self.get_change_info()
@@ -279,7 +307,11 @@ class TextDeletion(TextInsertion):
 
     _tag = &#34;text:deletion&#34;
 
-    def get_deleted(self, as_text=False, no_header=False):
+    def get_deleted(
+        self,
+        as_text: bool = False,
+        no_header: bool = False,
+    ) -&gt; str | list[Element] | None:
         &#34;&#34;&#34;Get the deleted informations stored in the TextDeletion.
         If as_text is True: returns the text content.
         If no_header is True: existing Heading are changed in Paragraph
@@ -293,7 +325,7 @@ class TextDeletion(TextInsertion):
         Return: Paragraph and Header list
         &#34;&#34;&#34;
         children = self.children
-        inner = [e for e in children if e.tag != &#34;office:change-info&#34;]
+        inner = [elem for elem in children if elem.tag != &#34;office:change-info&#34;]
         if no_header:  # crude replace t:h by t:p
             new_inner = []
             for element in inner:
@@ -302,17 +334,17 @@ class TextDeletion(TextInsertion):
                     text = element.text
                     para = Element.from_tag(&#34;text:p&#34;)
                     para.text = text
-                    for c in children:
-                        para.append(c)
+                    for child in children:
+                        para.append(child)
                     new_inner.append(para)
                 else:
                     new_inner.append(element)
             inner = new_inner
         if as_text:
-            return &#34;\n&#34;.join([e.get_formatted_text(context=None) for e in inner])
+            return &#34;\n&#34;.join([elem.get_formatted_text(context=None) for elem in inner])
         return inner
 
-    def set_deleted(self, paragraph_or_list):
+    def set_deleted(self, paragraph_or_list: Element | list[Element]) -&gt; None:
         &#34;&#34;&#34;Set the deleted informations stored in the TextDeletion. An
         actual content that was deleted is expected, embeded in a Paragraph
         element or Header.
@@ -321,15 +353,20 @@ class TextDeletion(TextInsertion):
 
             paragraph_or_list -- Paragraph or Header element (or list)
         &#34;&#34;&#34;
-        for element in self.get_deleted():
-            self.delete(element)
+        for element in self.get_deleted():  # type: ignore
+            self.delete(element)  # type: ignore
         if isinstance(paragraph_or_list, Element):
             paragraph_or_list = [paragraph_or_list]
         for element in paragraph_or_list:
             self.append(element)
 
-    def get_inserted(self, as_text=False, no_header=False, clean=True):
-        &#34;&#34;&#34;Return None (or u&#39;&#39;).&#34;&#34;&#34;
+    def get_inserted(
+        self,
+        as_text: bool = False,
+        no_header: bool = False,
+        clean: bool = True,
+    ) -&gt; str | Element | list[Element] | None:
+        &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         if as_text:
             return &#34;&#34;
         return None
@@ -369,7 +406,7 @@ class TextChangedRegion(Element):
 
     _tag = &#34;text:changed-region&#34;
 
-    def get_change_info(self):
+    def get_change_info(self) -&gt; Element | None:
         &#34;&#34;&#34;Shortcut to get the ChangeInfo element of the change
         element child.
 
@@ -377,12 +414,30 @@ class TextChangedRegion(Element):
         &#34;&#34;&#34;
         return self.get_element(&#34;descendant::office:change-info&#34;)
 
-    def set_change_info(self, change_info=None, creator=None, date=None, comments=None):
+    def set_change_info(
+        self,
+        change_info: Element | None = None,
+        creator: str | None = None,
+        date: datetime | None = None,
+        comments: Element | list[Element] | None = None,
+    ) -&gt; None:
         &#34;&#34;&#34;Shortcut to set the ChangeInfo element of the sub change element.
         See TextInsertion.set_change_info() for details.
+
+        Arguments:
+
+             change_info -- ChangeInfo element (or None)
+
+             cretor -- str (or None)
+
+             date -- datetime (or None)
+
+             comments -- Paragraph or list of Paragraph elements (or None)
         &#34;&#34;&#34;
         child = self.get_change_element()
-        child.set_change_info(
+        if not child:
+            raise ValueError
+        child.set_change_info(  # type: ignore
             change_info=change_info, creator=creator, date=date, comments=comments
         )
 
@@ -399,27 +454,27 @@ class TextChangedRegion(Element):
         )
         return self._filtered_element(request, 0)
 
-    def _get_text_id(self):
-        return self.get_attribute(&#34;text:id&#34;)
+    def _get_text_id(self) -&gt; str | None:
+        return self.get_attribute_string(&#34;text:id&#34;)
 
-    def _set_text_id(self, text_id):
-        return self.set_attribute(&#34;text:id&#34;, text_id)
+    def _set_text_id(self, text_id: str) -&gt; None:
+        self.set_attribute(&#34;text:id&#34;, text_id)
 
-    def _get_xml_id(self):
-        return self.get_attribute(&#34;xml:id&#34;)
+    def _get_xml_id(self) -&gt; str | None:
+        return self.get_attribute_string(&#34;xml:id&#34;)
 
-    def _set_xml_id(self, xml_id):
-        return self.set_attribute(&#34;xml:id&#34;, xml_id)
+    def _set_xml_id(self, xml_id: str) -&gt; None:
+        self.set_attribute(&#34;xml:id&#34;, xml_id)
 
-    def get_id(self):
+    def get_id(self) -&gt; str | None:
         &#34;&#34;&#34;Get the &#34;text:id&#34; attribute.
 
         Return: str
         &#34;&#34;&#34;
         return self._get_text_id()
 
-    def set_id(self, idx):
-        &#34;&#34;&#34;Set both the &#34;text:id&#34; and &#34;xml:id&#34; attributes.&#34;&#34;&#34;
+    def set_id(self, idx: str) -&gt; None:
+        &#34;&#34;&#34;Set both the &#34;text:id&#34; and &#34;xml:id&#34; attributes with same value.&#34;&#34;&#34;
         self._set_text_id(idx)
         self._set_xml_id(idx)
 
@@ -438,7 +493,13 @@ class TrackedChanges(Element):
 
     _tag = &#34;text:tracked-changes&#34;
 
-    def get_changed_regions(self, creator=None, date=None, content=None, role=None):
+    def get_changed_regions(
+        self,
+        creator: str | None = None,
+        date: datetime | None = None,
+        content: str | None = None,
+        role: str | None = None,
+    ) -&gt; list[Element]:
         changed_regions = self._filtered_elements(
             &#34;text:changed-region&#34;,
             dc_creator=creator,
@@ -447,22 +508,22 @@ class TrackedChanges(Element):
         )
         if role is None:
             return changed_regions
-        result = []
-        for cr in changed_regions:
-            ce = cr.get_change_element()
-            if not ce:
+        result: list[Element] = []
+        for regien in changed_regions:
+            changed = regien.get_change_element()  # type: ignore
+            if not changed:
                 continue
-            if ce.tag.endswith(role):
-                result.append(cr)
+            if changed.tag.endswith(role):
+                result.append(regien)
         return result
 
     def get_changed_region(
         self,
-        position=0,
-        text_id=None,
-        creator=None,
-        date=None,
-        content=None,
+        position: int = 0,
+        text_id: str | None = None,
+        creator: str | None = None,
+        date: datetime | None = None,
+        content: str | None = None,
     ) -&gt; Element | None:
         return self._filtered_element(
             &#34;text:changed-region&#34;,
@@ -481,50 +542,80 @@ class TextChange(Element):
 
     _tag = &#34;text:change&#34;
 
-    def get_id(self):
-        return self.get_attribute(&#34;text:change-id&#34;)
+    def get_id(self) -&gt; str | None:
+        return self.get_attribute_string(&#34;text:change-id&#34;)
 
-    def set_id(self, idx):
-        return self.set_attribute(&#34;text:change-id&#34;, idx)
+    def set_id(self, idx: str) -&gt; None:
+        self.set_attribute(&#34;text:change-id&#34;, idx)
 
-    def _get_tracked_changes(self):
+    def _get_tracked_changes(self) -&gt; Element | None:
         body = self.document_body
+        if not body:
+            raise ValueError
         return body.get_tracked_changes()
 
-    def get_changed_region(self, tracked_changes=None):
+    def get_changed_region(
+        self,
+        tracked_changes: Element | None = None,
+    ) -&gt; Element | None:
         if not tracked_changes:
             tracked_changes = self._get_tracked_changes()
         idx = self.get_id()
-        return tracked_changes.get_changed_region(text_id=idx)
+        return tracked_changes.get_changed_region(text_id=idx)  # type: ignore
 
-    def get_change_info(self, tracked_changes=None):
-        cr = self.get_changed_region(tracked_changes=tracked_changes)
-        return cr.get_change_info()
+    def get_change_info(
+        self,
+        tracked_changes: Element | None = None,
+    ) -&gt; Element | None:
+        changed_region = self.get_changed_region(tracked_changes=tracked_changes)
+        if not changed_region:
+            return None
+        return changed_region.get_change_info()  # type: ignore
 
-    def get_change_element(self, tracked_changes=None):
-        cr = self.get_changed_region(tracked_changes=tracked_changes)
-        return cr.get_change_element()
+    def get_change_element(
+        self,
+        tracked_changes: Element | None = None,
+    ) -&gt; Element | None:
+        changed_region = self.get_changed_region(tracked_changes=tracked_changes)
+        if not changed_region:
+            return None
+        return changed_region.get_change_element()  # type: ignore
 
     def get_deleted(
-        self, tracked_changes=None, as_text=False, no_header=False, clean=True
-    ):
+        self,
+        tracked_changes: Element | None = None,
+        as_text: bool = False,
+        no_header: bool = False,
+        clean: bool = True,
+    ) -&gt; Element | None:
         &#34;&#34;&#34;Shortcut to get the deleted informations stored in the
         TextDeletion stored in the tracked changes.
 
         Return: Paragraph (or None).&#34;
         &#34;&#34;&#34;
-        ce = self.get_change_element(tracked_changes=tracked_changes)
-        return ce.get_deleted(as_text=as_text, no_header=no_header, clean=clean)
+        changed = self.get_change_element(tracked_changes=tracked_changes)
+        if not changed:
+            return None
+        return changed.get_deleted(  # type: ignore
+            as_text=as_text,
+            no_header=no_header,
+            clean=clean,
+        )
 
-    def get_inserted(self, *args, **kwargs):
+    def get_inserted(
+        self,
+        as_text: bool = False,
+        no_header: bool = False,
+        clean: bool = True,
+    ) -&gt; str | Element | list[Element] | None:
         &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None
 
-    def get_start(self):
+    def get_start(self) -&gt; TextChangeStart | None:
         &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None
 
-    def get_end(self):
+    def get_end(self) -&gt; TextChangeEnd | None:
         &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None
 
@@ -537,7 +628,7 @@ class TextChangeEnd(TextChange):
 
     _tag = &#34;text:change-end&#34;
 
-    def get_start(self):
+    def get_start(self) -&gt; TextChangeStart | None:
         &#34;&#34;&#34;Return the corresponding annotation starting tag or None.&#34;&#34;&#34;
         idx = self.get_id()
         parent = self.parent
@@ -546,17 +637,22 @@ class TextChangeEnd(TextChange):
         body = self.document_body
         if not body:
             body = self.root
-        return body.get_text_change_start(idx=idx)
+        return body.get_text_change_start(idx=idx)  # type: ignore
 
-    def get_end(self):
+    def get_end(self) -&gt; TextChangeEnd | None:
         &#34;&#34;&#34;Return self.&#34;&#34;&#34;
         return self
 
-    def get_deleted(self, *args, **kwargs):
+    def get_deleted(self, *args: Any, **kwargs: Any) -&gt; Element | None:
         &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None
 
-    def get_inserted(self, as_text=False, no_header=False, clean=True):
+    def get_inserted(
+        self,
+        as_text: bool = False,
+        no_header: bool = False,
+        clean: bool = True,
+    ) -&gt; str | Element | list[Element] | None:
         &#34;&#34;&#34;Return the content between text:change-start and text:change-end.
 
         If no content exists (deletion tag), returns None (or &#39;&#39; if text flag
@@ -565,7 +661,6 @@ class TextChangeEnd(TextChange):
         If clean is True: suppress unwanted tags (deletions marks, ...)
         If no_header is True: existing text:h are changed in text:p
         By default: returns a list of Element, cleaned and with headers
-        By default: returns a list of Text or Element.
 
         Arguments:
 
@@ -575,7 +670,7 @@ class TextChangeEnd(TextChange):
 
             no_header -- boolean
 
-        Return: list or Paragraph or text
+        Return: list or Element or text
         &#34;&#34;&#34;
 
         # idx = self.get_id()
@@ -601,11 +696,11 @@ class TextChangeStart(TextChangeEnd):
 
     _tag = &#34;text:change-start&#34;
 
-    def get_start(self):
+    def get_start(self) -&gt; TextChangeStart:
         &#34;&#34;&#34;Return self.&#34;&#34;&#34;
         return self
 
-    def get_end(self):
+    def get_end(self) -&gt; TextChangeEnd:
         &#34;&#34;&#34;Return the corresponding change-end tag or None.&#34;&#34;&#34;
         idx = self.get_id()
         parent = self.parent
@@ -614,9 +709,13 @@ class TextChangeStart(TextChangeEnd):
         body = self.document_body
         if not body:
             body = self.root
-        return body.get_text_change_end(idx=idx)
+        return body.get_text_change_end(idx=idx)  # type: ignore
 
-    def delete(self, child=None, keep_tail=True):
+    def delete(
+        self,
+        child: Element | None = None,
+        keep_tail: bool = True,
+    ) -&gt; None:
         &#34;&#34;&#34;Delete the given element from the XML tree. If no element is given,
         &#34;self&#34; is deleted. The XML library may allow to continue to use an
         element now &#34;orphan&#34; as long as you have a reference to it.
@@ -642,7 +741,7 @@ class TextChangeStart(TextChangeEnd):
         if end:
             end.delete()
         # act like normal delete
-        return super().delete()
+        super().delete()
 
 
 register_element_class(ChangeInfo)
@@ -667,7 +766,7 @@ register_element_class(TextChangeStart)</code></pre>
 <dl>
 <dt id="odfdo.tracked_changes.ChangeInfo"><code class="flex name class">
 <span>class <span class="ident">ChangeInfo</span></span>
-<span>(</span><span>creator=None, date=None, **kwargs)</span>
+<span>(</span><span>creator: str | None = None, date: datetime | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The "office:change-info" element represents who made a change and when.
@@ -679,7 +778,7 @@ on the change.</p>
 <p>Arguments:</p>
 <pre><code> creator -- str (or None)
 
- date -- datetime
+ date -- datetime (or None)
 </code></pre></div>
 <details class="source">
 <summary>
@@ -698,18 +797,23 @@ on the change.</p>
 
          creator -- str (or None)
 
-         date -- datetime
+         date -- datetime (or None)
     &#34;&#34;&#34;
 
     _tag = &#34;office:change-info&#34;
 
-    def __init__(self, creator=None, date=None, **kwargs):
+    def __init__(
+        self,
+        creator: str | None = None,
+        date: datetime | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         super().__init__(**kwargs)
         if self._do_init:
             self.set_dc_creator(creator)
             self.set_dc_date(date)
 
-    def set_dc_creator(self, creator=None):
+    def set_dc_creator(self, creator: str | None = None) -&gt; None:
         &#34;&#34;&#34;Set the creator of the change. Default for creator is &#39;Unknown&#39;.
 
         Arguments:
@@ -724,12 +828,12 @@ on the change.</p>
             creator = &#34;Unknown&#34;
         element.text = creator
 
-    def set_dc_date(self, date=None):
+    def set_dc_date(self, date: datetime | None = None) -&gt; None:
         &#34;&#34;&#34;Set the date of the change. If date is None, use current time.
 
         Arguments:
 
-            date -- datetime
+            date -- datetime (or None)
         &#34;&#34;&#34;
         if date is None:
             date = datetime.now()
@@ -740,7 +844,7 @@ on the change.</p>
             self.insert(element, xmlposition=LAST_CHILD)
         element.text = dcdate
 
-    def get_comments(self, joined=True):
+    def get_comments(self, joined: bool = True) -&gt; str | list[str]:
         &#34;&#34;&#34;Get text content of the comments. If joined is True (default), the
         text of different paragraphs is concatenated, else a list of strings,
         one per paragraph, is returned.
@@ -749,17 +853,17 @@ on the change.</p>
 
             joined -- boolean (default is True)
 
-        Return: str or list of unicode.
+        Return: str or list of str.
         &#34;&#34;&#34;
         content = self.get_paragraphs()
         if content is None:
             content = []
-        text = [para.get_formatted_text(simple=True) for para in content]
+        text = [para.get_formatted_text(simple=True) for para in content]  # type: ignore
         if joined:
             return &#34;\n&#34;.join(text)
         return text
 
-    def set_comments(self, text=&#34;&#34;, replace=True):
+    def set_comments(self, text: str = &#34;&#34;, replace: bool = True) -&gt; None:
         &#34;&#34;&#34;Set the text content of the comments. If replace is True (default),
         the new text replace old comments, else it is added at the end.
 
@@ -783,7 +887,7 @@ on the change.</p>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.tracked_changes.ChangeInfo.get_comments"><code class="name flex">
-<span>def <span class="ident">get_comments</span></span>(<span>self, joined=True)</span>
+<span>def <span class="ident">get_comments</span></span>(<span>self, joined: bool = True) ‑> str | list[str]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get text content of the comments. If joined is True (default), the
@@ -791,12 +895,12 @@ text of different paragraphs is concatenated, else a list of strings,
 one per paragraph, is returned.</p>
 <h2 id="arguments">Arguments</h2>
 <p>joined &ndash; boolean (default is True)</p>
-<p>Return: str or list of unicode.</p></div>
+<p>Return: str or list of str.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_comments(self, joined=True):
+<pre><code class="python">def get_comments(self, joined: bool = True) -&gt; str | list[str]:
     &#34;&#34;&#34;Get text content of the comments. If joined is True (default), the
     text of different paragraphs is concatenated, else a list of strings,
     one per paragraph, is returned.
@@ -805,19 +909,19 @@ one per paragraph, is returned.</p>
 
         joined -- boolean (default is True)
 
-    Return: str or list of unicode.
+    Return: str or list of str.
     &#34;&#34;&#34;
     content = self.get_paragraphs()
     if content is None:
         content = []
-    text = [para.get_formatted_text(simple=True) for para in content]
+    text = [para.get_formatted_text(simple=True) for para in content]  # type: ignore
     if joined:
         return &#34;\n&#34;.join(text)
     return text</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.ChangeInfo.set_comments"><code class="name flex">
-<span>def <span class="ident">set_comments</span></span>(<span>self, text='', replace=True)</span>
+<span>def <span class="ident">set_comments</span></span>(<span>self, text: str = '', replace: bool = True) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the text content of the comments. If replace is True (default),
@@ -829,7 +933,7 @@ the new text replace old comments, else it is added at the end.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_comments(self, text=&#34;&#34;, replace=True):
+<pre><code class="python">def set_comments(self, text: str = &#34;&#34;, replace: bool = True) -&gt; None:
     &#34;&#34;&#34;Set the text content of the comments. If replace is True (default),
     the new text replace old comments, else it is added at the end.
 
@@ -848,7 +952,7 @@ the new text replace old comments, else it is added at the end.</p>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.ChangeInfo.set_dc_creator"><code class="name flex">
-<span>def <span class="ident">set_dc_creator</span></span>(<span>self, creator=None)</span>
+<span>def <span class="ident">set_dc_creator</span></span>(<span>self, creator: str | None = None) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the creator of the change. Default for creator is 'Unknown'.</p>
@@ -858,7 +962,7 @@ the new text replace old comments, else it is added at the end.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_dc_creator(self, creator=None):
+<pre><code class="python">def set_dc_creator(self, creator: str | None = None) -&gt; None:
     &#34;&#34;&#34;Set the creator of the change. Default for creator is &#39;Unknown&#39;.
 
     Arguments:
@@ -875,22 +979,22 @@ the new text replace old comments, else it is added at the end.</p>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.ChangeInfo.set_dc_date"><code class="name flex">
-<span>def <span class="ident">set_dc_date</span></span>(<span>self, date=None)</span>
+<span>def <span class="ident">set_dc_date</span></span>(<span>self, date: datetime | None = None) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the date of the change. If date is None, use current time.</p>
 <h2 id="arguments">Arguments</h2>
-<p>date &ndash; datetime</p></div>
+<p>date &ndash; datetime (or None)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_dc_date(self, date=None):
+<pre><code class="python">def set_dc_date(self, date: datetime | None = None) -&gt; None:
     &#34;&#34;&#34;Set the date of the change. If date is None, use current time.
 
     Arguments:
 
-        date -- datetime
+        date -- datetime (or None)
     &#34;&#34;&#34;
     if date is None:
         date = datetime.now()
@@ -915,12 +1019,16 @@ the new text replace old comments, else it is added at the end.</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -1020,7 +1128,7 @@ the new text replace old comments, else it is added at the end.</p>
 </dd>
 <dt id="odfdo.tracked_changes.TextChange"><code class="flex name class">
 <span>class <span class="ident">TextChange</span></span>
-<span>(</span><span>**kwargs)</span>
+<span>(</span><span>**kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The TextChange "text:change" element marks a position in an empty
@@ -1036,50 +1144,80 @@ region where text has been deleted.</p></div>
 
     _tag = &#34;text:change&#34;
 
-    def get_id(self):
-        return self.get_attribute(&#34;text:change-id&#34;)
+    def get_id(self) -&gt; str | None:
+        return self.get_attribute_string(&#34;text:change-id&#34;)
 
-    def set_id(self, idx):
-        return self.set_attribute(&#34;text:change-id&#34;, idx)
+    def set_id(self, idx: str) -&gt; None:
+        self.set_attribute(&#34;text:change-id&#34;, idx)
 
-    def _get_tracked_changes(self):
+    def _get_tracked_changes(self) -&gt; Element | None:
         body = self.document_body
+        if not body:
+            raise ValueError
         return body.get_tracked_changes()
 
-    def get_changed_region(self, tracked_changes=None):
+    def get_changed_region(
+        self,
+        tracked_changes: Element | None = None,
+    ) -&gt; Element | None:
         if not tracked_changes:
             tracked_changes = self._get_tracked_changes()
         idx = self.get_id()
-        return tracked_changes.get_changed_region(text_id=idx)
+        return tracked_changes.get_changed_region(text_id=idx)  # type: ignore
 
-    def get_change_info(self, tracked_changes=None):
-        cr = self.get_changed_region(tracked_changes=tracked_changes)
-        return cr.get_change_info()
+    def get_change_info(
+        self,
+        tracked_changes: Element | None = None,
+    ) -&gt; Element | None:
+        changed_region = self.get_changed_region(tracked_changes=tracked_changes)
+        if not changed_region:
+            return None
+        return changed_region.get_change_info()  # type: ignore
 
-    def get_change_element(self, tracked_changes=None):
-        cr = self.get_changed_region(tracked_changes=tracked_changes)
-        return cr.get_change_element()
+    def get_change_element(
+        self,
+        tracked_changes: Element | None = None,
+    ) -&gt; Element | None:
+        changed_region = self.get_changed_region(tracked_changes=tracked_changes)
+        if not changed_region:
+            return None
+        return changed_region.get_change_element()  # type: ignore
 
     def get_deleted(
-        self, tracked_changes=None, as_text=False, no_header=False, clean=True
-    ):
+        self,
+        tracked_changes: Element | None = None,
+        as_text: bool = False,
+        no_header: bool = False,
+        clean: bool = True,
+    ) -&gt; Element | None:
         &#34;&#34;&#34;Shortcut to get the deleted informations stored in the
         TextDeletion stored in the tracked changes.
 
         Return: Paragraph (or None).&#34;
         &#34;&#34;&#34;
-        ce = self.get_change_element(tracked_changes=tracked_changes)
-        return ce.get_deleted(as_text=as_text, no_header=no_header, clean=clean)
+        changed = self.get_change_element(tracked_changes=tracked_changes)
+        if not changed:
+            return None
+        return changed.get_deleted(  # type: ignore
+            as_text=as_text,
+            no_header=no_header,
+            clean=clean,
+        )
 
-    def get_inserted(self, *args, **kwargs):
+    def get_inserted(
+        self,
+        as_text: bool = False,
+        no_header: bool = False,
+        clean: bool = True,
+    ) -&gt; str | Element | list[Element] | None:
         &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None
 
-    def get_start(self):
+    def get_start(self) -&gt; TextChangeStart | None:
         &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None
 
-    def get_end(self):
+    def get_end(self) -&gt; TextChangeEnd | None:
         &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None</code></pre>
 </details>
@@ -1094,7 +1232,7 @@ region where text has been deleted.</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.tracked_changes.TextChange.get_change_element"><code class="name flex">
-<span>def <span class="ident">get_change_element</span></span>(<span>self, tracked_changes=None)</span>
+<span>def <span class="ident">get_change_element</span></span>(<span>self, tracked_changes: Element | None = None) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1102,13 +1240,18 @@ region where text has been deleted.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_change_element(self, tracked_changes=None):
-    cr = self.get_changed_region(tracked_changes=tracked_changes)
-    return cr.get_change_element()</code></pre>
+<pre><code class="python">def get_change_element(
+    self,
+    tracked_changes: Element | None = None,
+) -&gt; Element | None:
+    changed_region = self.get_changed_region(tracked_changes=tracked_changes)
+    if not changed_region:
+        return None
+    return changed_region.get_change_element()  # type: ignore</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChange.get_change_info"><code class="name flex">
-<span>def <span class="ident">get_change_info</span></span>(<span>self, tracked_changes=None)</span>
+<span>def <span class="ident">get_change_info</span></span>(<span>self, tracked_changes: Element | None = None) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1116,13 +1259,18 @@ region where text has been deleted.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_change_info(self, tracked_changes=None):
-    cr = self.get_changed_region(tracked_changes=tracked_changes)
-    return cr.get_change_info()</code></pre>
+<pre><code class="python">def get_change_info(
+    self,
+    tracked_changes: Element | None = None,
+) -&gt; Element | None:
+    changed_region = self.get_changed_region(tracked_changes=tracked_changes)
+    if not changed_region:
+        return None
+    return changed_region.get_change_info()  # type: ignore</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChange.get_changed_region"><code class="name flex">
-<span>def <span class="ident">get_changed_region</span></span>(<span>self, tracked_changes=None)</span>
+<span>def <span class="ident">get_changed_region</span></span>(<span>self, tracked_changes: Element | None = None) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1130,15 +1278,18 @@ region where text has been deleted.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_changed_region(self, tracked_changes=None):
+<pre><code class="python">def get_changed_region(
+    self,
+    tracked_changes: Element | None = None,
+) -&gt; Element | None:
     if not tracked_changes:
         tracked_changes = self._get_tracked_changes()
     idx = self.get_id()
-    return tracked_changes.get_changed_region(text_id=idx)</code></pre>
+    return tracked_changes.get_changed_region(text_id=idx)  # type: ignore</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChange.get_deleted"><code class="name flex">
-<span>def <span class="ident">get_deleted</span></span>(<span>self, tracked_changes=None, as_text=False, no_header=False, clean=True)</span>
+<span>def <span class="ident">get_deleted</span></span>(<span>self, tracked_changes: Element | None = None, as_text: bool = False, no_header: bool = False, clean: bool = True) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Shortcut to get the deleted informations stored in the
@@ -1149,19 +1300,29 @@ TextDeletion stored in the tracked changes.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_deleted(
-    self, tracked_changes=None, as_text=False, no_header=False, clean=True
-):
+    self,
+    tracked_changes: Element | None = None,
+    as_text: bool = False,
+    no_header: bool = False,
+    clean: bool = True,
+) -&gt; Element | None:
     &#34;&#34;&#34;Shortcut to get the deleted informations stored in the
     TextDeletion stored in the tracked changes.
 
     Return: Paragraph (or None).&#34;
     &#34;&#34;&#34;
-    ce = self.get_change_element(tracked_changes=tracked_changes)
-    return ce.get_deleted(as_text=as_text, no_header=no_header, clean=clean)</code></pre>
+    changed = self.get_change_element(tracked_changes=tracked_changes)
+    if not changed:
+        return None
+    return changed.get_deleted(  # type: ignore
+        as_text=as_text,
+        no_header=no_header,
+        clean=clean,
+    )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChange.get_end"><code class="name flex">
-<span>def <span class="ident">get_end</span></span>(<span>self)</span>
+<span>def <span class="ident">get_end</span></span>(<span>self) ‑> <a title="odfdo.tracked_changes.TextChangeEnd" href="#odfdo.tracked_changes.TextChangeEnd">TextChangeEnd</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return None.</p></div>
@@ -1169,13 +1330,13 @@ TextDeletion stored in the tracked changes.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_end(self):
+<pre><code class="python">def get_end(self) -&gt; TextChangeEnd | None:
     &#34;&#34;&#34;Return None.&#34;&#34;&#34;
     return None</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChange.get_id"><code class="name flex">
-<span>def <span class="ident">get_id</span></span>(<span>self)</span>
+<span>def <span class="ident">get_id</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1183,12 +1344,12 @@ TextDeletion stored in the tracked changes.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_id(self):
-    return self.get_attribute(&#34;text:change-id&#34;)</code></pre>
+<pre><code class="python">def get_id(self) -&gt; str | None:
+    return self.get_attribute_string(&#34;text:change-id&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChange.get_inserted"><code class="name flex">
-<span>def <span class="ident">get_inserted</span></span>(<span>self, *args, **kwargs)</span>
+<span>def <span class="ident">get_inserted</span></span>(<span>self, as_text: bool = False, no_header: bool = False, clean: bool = True) ‑> str | <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | list[<a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a>] | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return None.</p></div>
@@ -1196,13 +1357,18 @@ TextDeletion stored in the tracked changes.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_inserted(self, *args, **kwargs):
+<pre><code class="python">def get_inserted(
+    self,
+    as_text: bool = False,
+    no_header: bool = False,
+    clean: bool = True,
+) -&gt; str | Element | list[Element] | None:
     &#34;&#34;&#34;Return None.&#34;&#34;&#34;
     return None</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChange.get_start"><code class="name flex">
-<span>def <span class="ident">get_start</span></span>(<span>self)</span>
+<span>def <span class="ident">get_start</span></span>(<span>self) ‑> <a title="odfdo.tracked_changes.TextChangeStart" href="#odfdo.tracked_changes.TextChangeStart">TextChangeStart</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return None.</p></div>
@@ -1210,13 +1376,13 @@ TextDeletion stored in the tracked changes.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_start(self):
+<pre><code class="python">def get_start(self) -&gt; TextChangeStart | None:
     &#34;&#34;&#34;Return None.&#34;&#34;&#34;
     return None</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChange.set_id"><code class="name flex">
-<span>def <span class="ident">set_id</span></span>(<span>self, idx)</span>
+<span>def <span class="ident">set_id</span></span>(<span>self, idx: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1224,8 +1390,8 @@ TextDeletion stored in the tracked changes.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_id(self, idx):
-    return self.set_attribute(&#34;text:change-id&#34;, idx)</code></pre>
+<pre><code class="python">def set_id(self, idx: str) -&gt; None:
+    self.set_attribute(&#34;text:change-id&#34;, idx)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1241,12 +1407,16 @@ TextDeletion stored in the tracked changes.</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -1346,7 +1516,7 @@ TextDeletion stored in the tracked changes.</p>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangeEnd"><code class="flex name class">
 <span>class <span class="ident">TextChangeEnd</span></span>
-<span>(</span><span>**kwargs)</span>
+<span>(</span><span>**kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The TextChangeEnd "text:change-end" element marks the end of a region
@@ -1364,7 +1534,7 @@ changed.</p></div>
 
     _tag = &#34;text:change-end&#34;
 
-    def get_start(self):
+    def get_start(self) -&gt; TextChangeStart | None:
         &#34;&#34;&#34;Return the corresponding annotation starting tag or None.&#34;&#34;&#34;
         idx = self.get_id()
         parent = self.parent
@@ -1373,17 +1543,22 @@ changed.</p></div>
         body = self.document_body
         if not body:
             body = self.root
-        return body.get_text_change_start(idx=idx)
+        return body.get_text_change_start(idx=idx)  # type: ignore
 
-    def get_end(self):
+    def get_end(self) -&gt; TextChangeEnd | None:
         &#34;&#34;&#34;Return self.&#34;&#34;&#34;
         return self
 
-    def get_deleted(self, *args, **kwargs):
+    def get_deleted(self, *args: Any, **kwargs: Any) -&gt; Element | None:
         &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         return None
 
-    def get_inserted(self, as_text=False, no_header=False, clean=True):
+    def get_inserted(
+        self,
+        as_text: bool = False,
+        no_header: bool = False,
+        clean: bool = True,
+    ) -&gt; str | Element | list[Element] | None:
         &#34;&#34;&#34;Return the content between text:change-start and text:change-end.
 
         If no content exists (deletion tag), returns None (or &#39;&#39; if text flag
@@ -1392,7 +1567,6 @@ changed.</p></div>
         If clean is True: suppress unwanted tags (deletions marks, ...)
         If no_header is True: existing text:h are changed in text:p
         By default: returns a list of Element, cleaned and with headers
-        By default: returns a list of Text or Element.
 
         Arguments:
 
@@ -1402,7 +1576,7 @@ changed.</p></div>
 
             no_header -- boolean
 
-        Return: list or Paragraph or text
+        Return: list or Element or text
         &#34;&#34;&#34;
 
         # idx = self.get_id()
@@ -1431,7 +1605,7 @@ changed.</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.tracked_changes.TextChangeEnd.get_deleted"><code class="name flex">
-<span>def <span class="ident">get_deleted</span></span>(<span>self, *args, **kwargs)</span>
+<span>def <span class="ident">get_deleted</span></span>(<span>self, *args: Any, **kwargs: Any) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return None.</p></div>
@@ -1439,13 +1613,13 @@ changed.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_deleted(self, *args, **kwargs):
+<pre><code class="python">def get_deleted(self, *args: Any, **kwargs: Any) -&gt; Element | None:
     &#34;&#34;&#34;Return None.&#34;&#34;&#34;
     return None</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangeEnd.get_end"><code class="name flex">
-<span>def <span class="ident">get_end</span></span>(<span>self)</span>
+<span>def <span class="ident">get_end</span></span>(<span>self) ‑> <a title="odfdo.tracked_changes.TextChangeEnd" href="#odfdo.tracked_changes.TextChangeEnd">TextChangeEnd</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return self.</p></div>
@@ -1453,13 +1627,13 @@ changed.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_end(self):
+<pre><code class="python">def get_end(self) -&gt; TextChangeEnd | None:
     &#34;&#34;&#34;Return self.&#34;&#34;&#34;
     return self</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangeEnd.get_inserted"><code class="name flex">
-<span>def <span class="ident">get_inserted</span></span>(<span>self, as_text=False, no_header=False, clean=True)</span>
+<span>def <span class="ident">get_inserted</span></span>(<span>self, as_text: bool = False, no_header: bool = False, clean: bool = True) ‑> str | <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | list[<a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a>] | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return the content between text:change-start and text:change-end.</p>
@@ -1468,18 +1642,22 @@ is True).
 If as_text is True: returns the text content.
 If clean is True: suppress unwanted tags (deletions marks, &hellip;)
 If no_header is True: existing text:h are changed in text:p
-By default: returns a list of Element, cleaned and with headers
-By default: returns a list of Text or Element.</p>
+By default: returns a list of Element, cleaned and with headers</p>
 <h2 id="arguments">Arguments</h2>
 <p>as_text &ndash; boolean</p>
 <p>clean &ndash; boolean</p>
 <p>no_header &ndash; boolean</p>
-<p>Return: list or Paragraph or text</p></div>
+<p>Return: list or Element or text</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_inserted(self, as_text=False, no_header=False, clean=True):
+<pre><code class="python">def get_inserted(
+    self,
+    as_text: bool = False,
+    no_header: bool = False,
+    clean: bool = True,
+) -&gt; str | Element | list[Element] | None:
     &#34;&#34;&#34;Return the content between text:change-start and text:change-end.
 
     If no content exists (deletion tag), returns None (or &#39;&#39; if text flag
@@ -1488,7 +1666,6 @@ By default: returns a list of Text or Element.</p>
     If clean is True: suppress unwanted tags (deletions marks, ...)
     If no_header is True: existing text:h are changed in text:p
     By default: returns a list of Element, cleaned and with headers
-    By default: returns a list of Text or Element.
 
     Arguments:
 
@@ -1498,7 +1675,7 @@ By default: returns a list of Text or Element.</p>
 
         no_header -- boolean
 
-    Return: list or Paragraph or text
+    Return: list or Element or text
     &#34;&#34;&#34;
 
     # idx = self.get_id()
@@ -1517,7 +1694,7 @@ By default: returns a list of Text or Element.</p>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangeEnd.get_start"><code class="name flex">
-<span>def <span class="ident">get_start</span></span>(<span>self)</span>
+<span>def <span class="ident">get_start</span></span>(<span>self) ‑> <a title="odfdo.tracked_changes.TextChangeStart" href="#odfdo.tracked_changes.TextChangeStart">TextChangeStart</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return the corresponding annotation starting tag or None.</p></div>
@@ -1525,7 +1702,7 @@ By default: returns a list of Text or Element.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_start(self):
+<pre><code class="python">def get_start(self) -&gt; TextChangeStart | None:
     &#34;&#34;&#34;Return the corresponding annotation starting tag or None.&#34;&#34;&#34;
     idx = self.get_id()
     parent = self.parent
@@ -1534,7 +1711,7 @@ By default: returns a list of Text or Element.</p>
     body = self.document_body
     if not body:
         body = self.root
-    return body.get_text_change_start(idx=idx)</code></pre>
+    return body.get_text_change_start(idx=idx)  # type: ignore</code></pre>
 </details>
 </dd>
 </dl>
@@ -1550,12 +1727,16 @@ By default: returns a list of Text or Element.</p>
 <li><code><a title="odfdo.tracked_changes.TextChange.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextChange.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextChange.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextChange.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextChange.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -1655,7 +1836,7 @@ By default: returns a list of Text or Element.</p>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangeStart"><code class="flex name class">
 <span>class <span class="ident">TextChangeStart</span></span>
-<span>(</span><span>**kwargs)</span>
+<span>(</span><span>**kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The TextChangeStart "text:change-start" element marks the start of a
@@ -1673,11 +1854,11 @@ been changed.</p></div>
 
     _tag = &#34;text:change-start&#34;
 
-    def get_start(self):
+    def get_start(self) -&gt; TextChangeStart:
         &#34;&#34;&#34;Return self.&#34;&#34;&#34;
         return self
 
-    def get_end(self):
+    def get_end(self) -&gt; TextChangeEnd:
         &#34;&#34;&#34;Return the corresponding change-end tag or None.&#34;&#34;&#34;
         idx = self.get_id()
         parent = self.parent
@@ -1686,9 +1867,13 @@ been changed.</p></div>
         body = self.document_body
         if not body:
             body = self.root
-        return body.get_text_change_end(idx=idx)
+        return body.get_text_change_end(idx=idx)  # type: ignore
 
-    def delete(self, child=None, keep_tail=True):
+    def delete(
+        self,
+        child: Element | None = None,
+        keep_tail: bool = True,
+    ) -&gt; None:
         &#34;&#34;&#34;Delete the given element from the XML tree. If no element is given,
         &#34;self&#34; is deleted. The XML library may allow to continue to use an
         element now &#34;orphan&#34; as long as you have a reference to it.
@@ -1714,7 +1899,7 @@ been changed.</p></div>
         if end:
             end.delete()
         # act like normal delete
-        return super().delete()</code></pre>
+        super().delete()</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1725,7 +1910,7 @@ been changed.</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.tracked_changes.TextChangeStart.delete"><code class="name flex">
-<span>def <span class="ident">delete</span></span>(<span>self, child=None, keep_tail=True)</span>
+<span>def <span class="ident">delete</span></span>(<span>self, child: Element | None = None, keep_tail: bool = True) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Delete the given element from the XML tree. If no element is given,
@@ -1739,7 +1924,11 @@ element now "orphan" as long as you have a reference to it.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def delete(self, child=None, keep_tail=True):
+<pre><code class="python">def delete(
+    self,
+    child: Element | None = None,
+    keep_tail: bool = True,
+) -&gt; None:
     &#34;&#34;&#34;Delete the given element from the XML tree. If no element is given,
     &#34;self&#34; is deleted. The XML library may allow to continue to use an
     element now &#34;orphan&#34; as long as you have a reference to it.
@@ -1765,11 +1954,11 @@ element now "orphan" as long as you have a reference to it.</p>
     if end:
         end.delete()
     # act like normal delete
-    return super().delete()</code></pre>
+    super().delete()</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangeStart.get_end"><code class="name flex">
-<span>def <span class="ident">get_end</span></span>(<span>self)</span>
+<span>def <span class="ident">get_end</span></span>(<span>self) ‑> <a title="odfdo.tracked_changes.TextChangeEnd" href="#odfdo.tracked_changes.TextChangeEnd">TextChangeEnd</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return the corresponding change-end tag or None.</p></div>
@@ -1777,7 +1966,7 @@ element now "orphan" as long as you have a reference to it.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_end(self):
+<pre><code class="python">def get_end(self) -&gt; TextChangeEnd:
     &#34;&#34;&#34;Return the corresponding change-end tag or None.&#34;&#34;&#34;
     idx = self.get_id()
     parent = self.parent
@@ -1786,11 +1975,11 @@ element now "orphan" as long as you have a reference to it.</p>
     body = self.document_body
     if not body:
         body = self.root
-    return body.get_text_change_end(idx=idx)</code></pre>
+    return body.get_text_change_end(idx=idx)  # type: ignore</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangeStart.get_start"><code class="name flex">
-<span>def <span class="ident">get_start</span></span>(<span>self)</span>
+<span>def <span class="ident">get_start</span></span>(<span>self) ‑> <a title="odfdo.tracked_changes.TextChangeStart" href="#odfdo.tracked_changes.TextChangeStart">TextChangeStart</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return self.</p></div>
@@ -1798,7 +1987,7 @@ element now "orphan" as long as you have a reference to it.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_start(self):
+<pre><code class="python">def get_start(self) -&gt; TextChangeStart:
     &#34;&#34;&#34;Return self.&#34;&#34;&#34;
     return self</code></pre>
 </details>
@@ -1815,12 +2004,16 @@ element now "orphan" as long as you have a reference to it.</p>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.dc_date" href="element.html#odfdo.element.Element.dc_date">dc_date</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextChangeEnd.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextChangeEnd.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextChangeEnd.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextChangeEnd.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -1922,7 +2115,7 @@ element now "orphan" as long as you have a reference to it.</p>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangedRegion"><code class="flex name class">
 <span>class <span class="ident">TextChangedRegion</span></span>
-<span>(</span><span>**kwargs)</span>
+<span>(</span><span>**kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Each TextChangedRegion "text:changed-region" element contains a single
@@ -1965,7 +2158,7 @@ deletion. "</p></div>
 
     _tag = &#34;text:changed-region&#34;
 
-    def get_change_info(self):
+    def get_change_info(self) -&gt; Element | None:
         &#34;&#34;&#34;Shortcut to get the ChangeInfo element of the change
         element child.
 
@@ -1973,12 +2166,30 @@ deletion. "</p></div>
         &#34;&#34;&#34;
         return self.get_element(&#34;descendant::office:change-info&#34;)
 
-    def set_change_info(self, change_info=None, creator=None, date=None, comments=None):
+    def set_change_info(
+        self,
+        change_info: Element | None = None,
+        creator: str | None = None,
+        date: datetime | None = None,
+        comments: Element | list[Element] | None = None,
+    ) -&gt; None:
         &#34;&#34;&#34;Shortcut to set the ChangeInfo element of the sub change element.
         See TextInsertion.set_change_info() for details.
+
+        Arguments:
+
+             change_info -- ChangeInfo element (or None)
+
+             cretor -- str (or None)
+
+             date -- datetime (or None)
+
+             comments -- Paragraph or list of Paragraph elements (or None)
         &#34;&#34;&#34;
         child = self.get_change_element()
-        child.set_change_info(
+        if not child:
+            raise ValueError
+        child.set_change_info(  # type: ignore
             change_info=change_info, creator=creator, date=date, comments=comments
         )
 
@@ -1995,27 +2206,27 @@ deletion. "</p></div>
         )
         return self._filtered_element(request, 0)
 
-    def _get_text_id(self):
-        return self.get_attribute(&#34;text:id&#34;)
+    def _get_text_id(self) -&gt; str | None:
+        return self.get_attribute_string(&#34;text:id&#34;)
 
-    def _set_text_id(self, text_id):
-        return self.set_attribute(&#34;text:id&#34;, text_id)
+    def _set_text_id(self, text_id: str) -&gt; None:
+        self.set_attribute(&#34;text:id&#34;, text_id)
 
-    def _get_xml_id(self):
-        return self.get_attribute(&#34;xml:id&#34;)
+    def _get_xml_id(self) -&gt; str | None:
+        return self.get_attribute_string(&#34;xml:id&#34;)
 
-    def _set_xml_id(self, xml_id):
-        return self.set_attribute(&#34;xml:id&#34;, xml_id)
+    def _set_xml_id(self, xml_id: str) -&gt; None:
+        self.set_attribute(&#34;xml:id&#34;, xml_id)
 
-    def get_id(self):
+    def get_id(self) -&gt; str | None:
         &#34;&#34;&#34;Get the &#34;text:id&#34; attribute.
 
         Return: str
         &#34;&#34;&#34;
         return self._get_text_id()
 
-    def set_id(self, idx):
-        &#34;&#34;&#34;Set both the &#34;text:id&#34; and &#34;xml:id&#34; attributes.&#34;&#34;&#34;
+    def set_id(self, idx: str) -&gt; None:
+        &#34;&#34;&#34;Set both the &#34;text:id&#34; and &#34;xml:id&#34; attributes with same value.&#34;&#34;&#34;
         self._set_text_id(idx)
         self._set_xml_id(idx)</code></pre>
 </details>
@@ -2051,7 +2262,7 @@ TextDeletion, or TextFormatChange as an Element object.</p>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangedRegion.get_change_info"><code class="name flex">
-<span>def <span class="ident">get_change_info</span></span>(<span>self)</span>
+<span>def <span class="ident">get_change_info</span></span>(<span>self) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Shortcut to get the ChangeInfo element of the change
@@ -2061,7 +2272,7 @@ element child.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_change_info(self):
+<pre><code class="python">def get_change_info(self) -&gt; Element | None:
     &#34;&#34;&#34;Shortcut to get the ChangeInfo element of the change
     element child.
 
@@ -2071,7 +2282,7 @@ element child.</p>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangedRegion.get_id"><code class="name flex">
-<span>def <span class="ident">get_id</span></span>(<span>self)</span>
+<span>def <span class="ident">get_id</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the "text:id" attribute.</p>
@@ -2080,7 +2291,7 @@ element child.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_id(self):
+<pre><code class="python">def get_id(self) -&gt; str | None:
     &#34;&#34;&#34;Get the &#34;text:id&#34; attribute.
 
     Return: str
@@ -2089,36 +2300,59 @@ element child.</p>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangedRegion.set_change_info"><code class="name flex">
-<span>def <span class="ident">set_change_info</span></span>(<span>self, change_info=None, creator=None, date=None, comments=None)</span>
+<span>def <span class="ident">set_change_info</span></span>(<span>self, change_info: Element | None = None, creator: str | None = None, date: datetime | None = None, comments: Element | list[Element] | None = None) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Shortcut to set the ChangeInfo element of the sub change element.
-See TextInsertion.set_change_info() for details.</p></div>
+See TextInsertion.set_change_info() for details.</p>
+<h2 id="arguments">Arguments</h2>
+<p>change_info &ndash; ChangeInfo element (or None)</p>
+<p>cretor &ndash; str (or None)</p>
+<p>date &ndash; datetime (or None)</p>
+<p>comments &ndash; Paragraph or list of Paragraph elements (or None)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_change_info(self, change_info=None, creator=None, date=None, comments=None):
+<pre><code class="python">def set_change_info(
+    self,
+    change_info: Element | None = None,
+    creator: str | None = None,
+    date: datetime | None = None,
+    comments: Element | list[Element] | None = None,
+) -&gt; None:
     &#34;&#34;&#34;Shortcut to set the ChangeInfo element of the sub change element.
     See TextInsertion.set_change_info() for details.
+
+    Arguments:
+
+         change_info -- ChangeInfo element (or None)
+
+         cretor -- str (or None)
+
+         date -- datetime (or None)
+
+         comments -- Paragraph or list of Paragraph elements (or None)
     &#34;&#34;&#34;
     child = self.get_change_element()
-    child.set_change_info(
+    if not child:
+        raise ValueError
+    child.set_change_info(  # type: ignore
         change_info=change_info, creator=creator, date=date, comments=comments
     )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextChangedRegion.set_id"><code class="name flex">
-<span>def <span class="ident">set_id</span></span>(<span>self, idx)</span>
+<span>def <span class="ident">set_id</span></span>(<span>self, idx: str) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Set both the "text:id" and "xml:id" attributes.</p></div>
+<div class="desc"><p>Set both the "text:id" and "xml:id" attributes with same value.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_id(self, idx):
-    &#34;&#34;&#34;Set both the &#34;text:id&#34; and &#34;xml:id&#34; attributes.&#34;&#34;&#34;
+<pre><code class="python">def set_id(self, idx: str) -&gt; None:
+    &#34;&#34;&#34;Set both the &#34;text:id&#34; and &#34;xml:id&#34; attributes with same value.&#34;&#34;&#34;
     self._set_text_id(idx)
     self._set_xml_id(idx)</code></pre>
 </details>
@@ -2136,12 +2370,16 @@ See TextInsertion.set_change_info() for details.</p></div>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -2241,7 +2479,7 @@ See TextInsertion.set_change_info() for details.</p></div>
 </dd>
 <dt id="odfdo.tracked_changes.TextDeletion"><code class="flex name class">
 <span>class <span class="ident">TextDeletion</span></span>
-<span>(</span><span>**kwargs)</span>
+<span>(</span><span>**kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The TextDeletion "text:deletion" contains information that identifies
@@ -2301,7 +2539,11 @@ place of the change mark.</p></div>
 
     _tag = &#34;text:deletion&#34;
 
-    def get_deleted(self, as_text=False, no_header=False):
+    def get_deleted(
+        self,
+        as_text: bool = False,
+        no_header: bool = False,
+    ) -&gt; str | list[Element] | None:
         &#34;&#34;&#34;Get the deleted informations stored in the TextDeletion.
         If as_text is True: returns the text content.
         If no_header is True: existing Heading are changed in Paragraph
@@ -2315,7 +2557,7 @@ place of the change mark.</p></div>
         Return: Paragraph and Header list
         &#34;&#34;&#34;
         children = self.children
-        inner = [e for e in children if e.tag != &#34;office:change-info&#34;]
+        inner = [elem for elem in children if elem.tag != &#34;office:change-info&#34;]
         if no_header:  # crude replace t:h by t:p
             new_inner = []
             for element in inner:
@@ -2324,17 +2566,17 @@ place of the change mark.</p></div>
                     text = element.text
                     para = Element.from_tag(&#34;text:p&#34;)
                     para.text = text
-                    for c in children:
-                        para.append(c)
+                    for child in children:
+                        para.append(child)
                     new_inner.append(para)
                 else:
                     new_inner.append(element)
             inner = new_inner
         if as_text:
-            return &#34;\n&#34;.join([e.get_formatted_text(context=None) for e in inner])
+            return &#34;\n&#34;.join([elem.get_formatted_text(context=None) for elem in inner])
         return inner
 
-    def set_deleted(self, paragraph_or_list):
+    def set_deleted(self, paragraph_or_list: Element | list[Element]) -&gt; None:
         &#34;&#34;&#34;Set the deleted informations stored in the TextDeletion. An
         actual content that was deleted is expected, embeded in a Paragraph
         element or Header.
@@ -2343,15 +2585,20 @@ place of the change mark.</p></div>
 
             paragraph_or_list -- Paragraph or Header element (or list)
         &#34;&#34;&#34;
-        for element in self.get_deleted():
-            self.delete(element)
+        for element in self.get_deleted():  # type: ignore
+            self.delete(element)  # type: ignore
         if isinstance(paragraph_or_list, Element):
             paragraph_or_list = [paragraph_or_list]
         for element in paragraph_or_list:
             self.append(element)
 
-    def get_inserted(self, as_text=False, no_header=False, clean=True):
-        &#34;&#34;&#34;Return None (or u&#39;&#39;).&#34;&#34;&#34;
+    def get_inserted(
+        self,
+        as_text: bool = False,
+        no_header: bool = False,
+        clean: bool = True,
+    ) -&gt; str | Element | list[Element] | None:
+        &#34;&#34;&#34;Return None.&#34;&#34;&#34;
         if as_text:
             return &#34;&#34;
         return None</code></pre>
@@ -2364,7 +2611,7 @@ place of the change mark.</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.tracked_changes.TextDeletion.get_deleted"><code class="name flex">
-<span>def <span class="ident">get_deleted</span></span>(<span>self, as_text=False, no_header=False)</span>
+<span>def <span class="ident">get_deleted</span></span>(<span>self, as_text: bool = False, no_header: bool = False) ‑> str | list[<a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a>] | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the deleted informations stored in the TextDeletion.
@@ -2378,7 +2625,11 @@ If no_header is True: existing Heading are changed in Paragraph</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_deleted(self, as_text=False, no_header=False):
+<pre><code class="python">def get_deleted(
+    self,
+    as_text: bool = False,
+    no_header: bool = False,
+) -&gt; str | list[Element] | None:
     &#34;&#34;&#34;Get the deleted informations stored in the TextDeletion.
     If as_text is True: returns the text content.
     If no_header is True: existing Heading are changed in Paragraph
@@ -2392,7 +2643,7 @@ If no_header is True: existing Heading are changed in Paragraph</p>
     Return: Paragraph and Header list
     &#34;&#34;&#34;
     children = self.children
-    inner = [e for e in children if e.tag != &#34;office:change-info&#34;]
+    inner = [elem for elem in children if elem.tag != &#34;office:change-info&#34;]
     if no_header:  # crude replace t:h by t:p
         new_inner = []
         for element in inner:
@@ -2401,35 +2652,40 @@ If no_header is True: existing Heading are changed in Paragraph</p>
                 text = element.text
                 para = Element.from_tag(&#34;text:p&#34;)
                 para.text = text
-                for c in children:
-                    para.append(c)
+                for child in children:
+                    para.append(child)
                 new_inner.append(para)
             else:
                 new_inner.append(element)
         inner = new_inner
     if as_text:
-        return &#34;\n&#34;.join([e.get_formatted_text(context=None) for e in inner])
+        return &#34;\n&#34;.join([elem.get_formatted_text(context=None) for elem in inner])
     return inner</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextDeletion.get_inserted"><code class="name flex">
-<span>def <span class="ident">get_inserted</span></span>(<span>self, as_text=False, no_header=False, clean=True)</span>
+<span>def <span class="ident">get_inserted</span></span>(<span>self, as_text: bool = False, no_header: bool = False, clean: bool = True) ‑> str | <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | list[<a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a>] | None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Return None (or u'').</p></div>
+<div class="desc"><p>Return None.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_inserted(self, as_text=False, no_header=False, clean=True):
-    &#34;&#34;&#34;Return None (or u&#39;&#39;).&#34;&#34;&#34;
+<pre><code class="python">def get_inserted(
+    self,
+    as_text: bool = False,
+    no_header: bool = False,
+    clean: bool = True,
+) -&gt; str | Element | list[Element] | None:
+    &#34;&#34;&#34;Return None.&#34;&#34;&#34;
     if as_text:
         return &#34;&#34;
     return None</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextDeletion.set_deleted"><code class="name flex">
-<span>def <span class="ident">set_deleted</span></span>(<span>self, paragraph_or_list)</span>
+<span>def <span class="ident">set_deleted</span></span>(<span>self, paragraph_or_list: Element | list[Element]) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the deleted informations stored in the TextDeletion. An
@@ -2441,7 +2697,7 @@ element or Header.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_deleted(self, paragraph_or_list):
+<pre><code class="python">def set_deleted(self, paragraph_or_list: Element | list[Element]) -&gt; None:
     &#34;&#34;&#34;Set the deleted informations stored in the TextDeletion. An
     actual content that was deleted is expected, embeded in a Paragraph
     element or Header.
@@ -2450,8 +2706,8 @@ element or Header.</p>
 
         paragraph_or_list -- Paragraph or Header element (or list)
     &#34;&#34;&#34;
-    for element in self.get_deleted():
-        self.delete(element)
+    for element in self.get_deleted():  # type: ignore
+        self.delete(element)  # type: ignore
     if isinstance(paragraph_or_list, Element):
         paragraph_or_list = [paragraph_or_list]
     for element in paragraph_or_list:
@@ -2471,12 +2727,16 @@ element or Header.</p>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextInsertion.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextInsertion.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextInsertion.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextInsertion.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -2578,7 +2838,7 @@ element or Header.</p>
 </dd>
 <dt id="odfdo.tracked_changes.TextFormatChange"><code class="flex name class">
 <span>class <span class="ident">TextFormatChange</span></span>
-<span>(</span><span>**kwargs)</span>
+<span>(</span><span>**kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The TextFormatChange "text:format-change" element represents any change
@@ -2620,12 +2880,16 @@ place.</p></div>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextInsertion.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextInsertion.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextInsertion.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextInsertion.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -2729,7 +2993,7 @@ place.</p></div>
 </dd>
 <dt id="odfdo.tracked_changes.TextInsertion"><code class="flex name class">
 <span>class <span class="ident">TextInsertion</span></span>
-<span>(</span><span>**kwargs)</span>
+<span>(</span><span>**kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The TextInsertion "text:insertion" element contains the information
@@ -2757,48 +3021,68 @@ and "text:change-end" elements.</p></div>
 
     _tag = &#34;text:insertion&#34;
 
-    def get_deleted(self, as_text=False, no_header=False):
+    def get_deleted(
+        self,
+        as_text: bool = False,
+        no_header: bool = False,
+    ) -&gt; str | list[Element] | None:
         &#34;&#34;&#34;Return: None.&#34;&#34;&#34;
         if as_text:
             return &#34;&#34;
         return None
 
-    def get_inserted(self, as_text=False, no_header=False, clean=True):
+    def get_inserted(
+        self,
+        as_text: bool = False,
+        no_header: bool = False,
+        clean: bool = True,
+    ) -&gt; str | Element | list[Element] | None:
         &#34;&#34;&#34;Shortcut to text:change-start.get_inserted(). Return the content
         between text:change-start and text:change-end.
 
-        If no content exists (deletion tag), returns None (or str if text flag
-        is True).
-        if pragraph is True: returns the content embedded in a Paragraph.
-        If text is True: returns the annotated text.
-        By default: returns a list of Text or Element.
+        If as_text is True: returns the text content.
+        If no_header is True: existing Heading are changed in Paragraph
+        If no_header is True: existing text:h are changed in text:p
+        By default: returns a list of Element, cleaned and with headers
 
         Arguments:
 
-            paragraph -- boolean
+            as_text -- boolean
 
-            text -- boolean
+            clean -- boolean
 
-        Return: list or Paragraph or text
+            no_header -- boolean
+
+        Return: list or Element or text
         &#34;&#34;&#34;
-        cr = self.parent  # text:changed-region
-        idx = cr.get_id()
+        current = self.parent  # text:changed-region
+        if not current:
+            raise ValueError
+        idx = current.get_id()  # type: ignore
         body = self.document_body
         if not body:
             body = self.root
         text_change = body.get_text_change_start(idx=idx)
-        return text_change.get_inserted(
+        if not text_change:
+            raise ValueError
+        return text_change.get_inserted(  # type: ignore
             as_text=as_text, no_header=no_header, clean=clean
         )
 
-    def get_change_info(self):
+    def get_change_info(self) -&gt; Element | None:
         &#34;&#34;&#34;Get the ChangeInfo child of the element.
 
         Return: ChangeInfo element.
         &#34;&#34;&#34;
         return self.get_element(&#34;descendant::office:change-info&#34;)
 
-    def set_change_info(self, change_info=None, creator=None, date=None, comments=None):
+    def set_change_info(
+        self,
+        change_info: Element | None = None,
+        creator: str | None = None,
+        date: datetime | None = None,
+        comments: Element | list[Element] | None = None,
+    ) -&gt; None:
         &#34;&#34;&#34;Set the ChangeInfo element for the change element. If change_info
         is not provided, creator, date and comments will be used to build a
         suitable change info element. Default for creator is &#39;Unknown&#39;,
@@ -2814,22 +3098,24 @@ and "text:change-end" elements.</p></div>
 
              date -- datetime (or None)
 
-             comments -- list of Paragraph elements (or None)
+             comments -- Paragraph or list of Paragraph elements (or None)
         &#34;&#34;&#34;
         if change_info is None:
             new_change_info = ChangeInfo(creator, date)
             if comments is not None:
-                if isinstance(comments, Paragraph):
+                if isinstance(comments, Element):
                     # single pararagraph comment
-                    comments = [comments]
+                    comments_list = [comments]
+                else:
+                    comments_list = comments
                 # assume iterable of Paragraph
-                for paragraph in comments:
+                for paragraph in comments_list:
                     if not isinstance(paragraph, Paragraph):
-                        raise TypeError(f&#34;{paragraph} is not a Paragraph.&#34;)
+                        raise TypeError(f&#34;Not a Paragraph: &#39;{paragraph!r}&#39;&#34;)
                     new_change_info.insert(paragraph, xmlposition=LAST_CHILD)
         else:
             if not isinstance(change_info, ChangeInfo):
-                raise ValueError(&#34;%s is not a ChangeInfo&#34; % change_info)
+                raise TypeError(f&#34;Not a ChangeInfo: &#39;{change_info!r}&#39;&#34;)
             new_change_info = change_info
 
         old = self.get_change_info()
@@ -2850,7 +3136,7 @@ and "text:change-end" elements.</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.tracked_changes.TextInsertion.get_change_info"><code class="name flex">
-<span>def <span class="ident">get_change_info</span></span>(<span>self)</span>
+<span>def <span class="ident">get_change_info</span></span>(<span>self) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the ChangeInfo child of the element.</p>
@@ -2859,7 +3145,7 @@ and "text:change-end" elements.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_change_info(self):
+<pre><code class="python">def get_change_info(self) -&gt; Element | None:
     &#34;&#34;&#34;Get the ChangeInfo child of the element.
 
     Return: ChangeInfo element.
@@ -2868,7 +3154,7 @@ and "text:change-end" elements.</p></div>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextInsertion.get_deleted"><code class="name flex">
-<span>def <span class="ident">get_deleted</span></span>(<span>self, as_text=False, no_header=False)</span>
+<span>def <span class="ident">get_deleted</span></span>(<span>self, as_text: bool = False, no_header: bool = False) ‑> str | list[<a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a>] | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return: None.</p></div>
@@ -2876,7 +3162,11 @@ and "text:change-end" elements.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_deleted(self, as_text=False, no_header=False):
+<pre><code class="python">def get_deleted(
+    self,
+    as_text: bool = False,
+    no_header: bool = False,
+) -&gt; str | list[Element] | None:
     &#34;&#34;&#34;Return: None.&#34;&#34;&#34;
     if as_text:
         return &#34;&#34;
@@ -2884,55 +3174,65 @@ and "text:change-end" elements.</p></div>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextInsertion.get_inserted"><code class="name flex">
-<span>def <span class="ident">get_inserted</span></span>(<span>self, as_text=False, no_header=False, clean=True)</span>
+<span>def <span class="ident">get_inserted</span></span>(<span>self, as_text: bool = False, no_header: bool = False, clean: bool = True) ‑> str | <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | list[<a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a>] | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Shortcut to text:change-start.get_inserted(). Return the content
 between text:change-start and text:change-end.</p>
-<p>If no content exists (deletion tag), returns None (or str if text flag
-is True).
-if pragraph is True: returns the content embedded in a Paragraph.
-If text is True: returns the annotated text.
-By default: returns a list of Text or Element.</p>
+<p>If as_text is True: returns the text content.
+If no_header is True: existing Heading are changed in Paragraph
+If no_header is True: existing text:h are changed in text:p
+By default: returns a list of Element, cleaned and with headers</p>
 <h2 id="arguments">Arguments</h2>
-<p>paragraph &ndash; boolean</p>
-<p>text &ndash; boolean</p>
-<p>Return: list or Paragraph or text</p></div>
+<p>as_text &ndash; boolean</p>
+<p>clean &ndash; boolean</p>
+<p>no_header &ndash; boolean</p>
+<p>Return: list or Element or text</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_inserted(self, as_text=False, no_header=False, clean=True):
+<pre><code class="python">def get_inserted(
+    self,
+    as_text: bool = False,
+    no_header: bool = False,
+    clean: bool = True,
+) -&gt; str | Element | list[Element] | None:
     &#34;&#34;&#34;Shortcut to text:change-start.get_inserted(). Return the content
     between text:change-start and text:change-end.
 
-    If no content exists (deletion tag), returns None (or str if text flag
-    is True).
-    if pragraph is True: returns the content embedded in a Paragraph.
-    If text is True: returns the annotated text.
-    By default: returns a list of Text or Element.
+    If as_text is True: returns the text content.
+    If no_header is True: existing Heading are changed in Paragraph
+    If no_header is True: existing text:h are changed in text:p
+    By default: returns a list of Element, cleaned and with headers
 
     Arguments:
 
-        paragraph -- boolean
+        as_text -- boolean
 
-        text -- boolean
+        clean -- boolean
 
-    Return: list or Paragraph or text
+        no_header -- boolean
+
+    Return: list or Element or text
     &#34;&#34;&#34;
-    cr = self.parent  # text:changed-region
-    idx = cr.get_id()
+    current = self.parent  # text:changed-region
+    if not current:
+        raise ValueError
+    idx = current.get_id()  # type: ignore
     body = self.document_body
     if not body:
         body = self.root
     text_change = body.get_text_change_start(idx=idx)
-    return text_change.get_inserted(
+    if not text_change:
+        raise ValueError
+    return text_change.get_inserted(  # type: ignore
         as_text=as_text, no_header=no_header, clean=clean
     )</code></pre>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TextInsertion.set_change_info"><code class="name flex">
-<span>def <span class="ident">set_change_info</span></span>(<span>self, change_info=None, creator=None, date=None, comments=None)</span>
+<span>def <span class="ident">set_change_info</span></span>(<span>self, change_info: Element | None = None, creator: str | None = None, date: datetime | None = None, comments: Element | list[Element] | None = None) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the ChangeInfo element for the change element. If change_info
@@ -2945,12 +3245,18 @@ The new change info element will replace any existant ChangeInfo.</p>
 <p>change_info &ndash; ChangeInfo element (or None)</p>
 <p>cretor &ndash; str (or None)</p>
 <p>date &ndash; datetime (or None)</p>
-<p>comments &ndash; list of Paragraph elements (or None)</p></div>
+<p>comments &ndash; Paragraph or list of Paragraph elements (or None)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_change_info(self, change_info=None, creator=None, date=None, comments=None):
+<pre><code class="python">def set_change_info(
+    self,
+    change_info: Element | None = None,
+    creator: str | None = None,
+    date: datetime | None = None,
+    comments: Element | list[Element] | None = None,
+) -&gt; None:
     &#34;&#34;&#34;Set the ChangeInfo element for the change element. If change_info
     is not provided, creator, date and comments will be used to build a
     suitable change info element. Default for creator is &#39;Unknown&#39;,
@@ -2966,22 +3272,24 @@ The new change info element will replace any existant ChangeInfo.</p>
 
          date -- datetime (or None)
 
-         comments -- list of Paragraph elements (or None)
+         comments -- Paragraph or list of Paragraph elements (or None)
     &#34;&#34;&#34;
     if change_info is None:
         new_change_info = ChangeInfo(creator, date)
         if comments is not None:
-            if isinstance(comments, Paragraph):
+            if isinstance(comments, Element):
                 # single pararagraph comment
-                comments = [comments]
+                comments_list = [comments]
+            else:
+                comments_list = comments
             # assume iterable of Paragraph
-            for paragraph in comments:
+            for paragraph in comments_list:
                 if not isinstance(paragraph, Paragraph):
-                    raise TypeError(f&#34;{paragraph} is not a Paragraph.&#34;)
+                    raise TypeError(f&#34;Not a Paragraph: &#39;{paragraph!r}&#39;&#34;)
                 new_change_info.insert(paragraph, xmlposition=LAST_CHILD)
     else:
         if not isinstance(change_info, ChangeInfo):
-            raise ValueError(&#34;%s is not a ChangeInfo&#34; % change_info)
+            raise TypeError(f&#34;Not a ChangeInfo: &#39;{change_info!r}&#39;&#34;)
         new_change_info = change_info
 
     old = self.get_change_info()
@@ -3004,12 +3312,16 @@ The new change info element will replace any existant ChangeInfo.</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -3109,7 +3421,7 @@ The new change info element will replace any existant ChangeInfo.</p>
 </dd>
 <dt id="odfdo.tracked_changes.TrackedChanges"><code class="flex name class">
 <span>class <span class="ident">TrackedChanges</span></span>
-<span>(</span><span>**kwargs)</span>
+<span>(</span><span>**kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The TrackedChanges "text:tracked-changes" element acts as a container
@@ -3139,7 +3451,13 @@ ignored.</p></div>
 
     _tag = &#34;text:tracked-changes&#34;
 
-    def get_changed_regions(self, creator=None, date=None, content=None, role=None):
+    def get_changed_regions(
+        self,
+        creator: str | None = None,
+        date: datetime | None = None,
+        content: str | None = None,
+        role: str | None = None,
+    ) -&gt; list[Element]:
         changed_regions = self._filtered_elements(
             &#34;text:changed-region&#34;,
             dc_creator=creator,
@@ -3148,22 +3466,22 @@ ignored.</p></div>
         )
         if role is None:
             return changed_regions
-        result = []
-        for cr in changed_regions:
-            ce = cr.get_change_element()
-            if not ce:
+        result: list[Element] = []
+        for regien in changed_regions:
+            changed = regien.get_change_element()  # type: ignore
+            if not changed:
                 continue
-            if ce.tag.endswith(role):
-                result.append(cr)
+            if changed.tag.endswith(role):
+                result.append(regien)
         return result
 
     def get_changed_region(
         self,
-        position=0,
-        text_id=None,
-        creator=None,
-        date=None,
-        content=None,
+        position: int = 0,
+        text_id: str | None = None,
+        creator: str | None = None,
+        date: datetime | None = None,
+        content: str | None = None,
     ) -&gt; Element | None:
         return self._filtered_element(
             &#34;text:changed-region&#34;,
@@ -3181,7 +3499,7 @@ ignored.</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.tracked_changes.TrackedChanges.get_changed_region"><code class="name flex">
-<span>def <span class="ident">get_changed_region</span></span>(<span>self, position=0, text_id=None, creator=None, date=None, content=None) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | None</span>
+<span>def <span class="ident">get_changed_region</span></span>(<span>self, position: int = 0, text_id: str | None = None, creator: str | None = None, date: datetime | None = None, content: str | None = None) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -3191,11 +3509,11 @@ ignored.</p></div>
 </summary>
 <pre><code class="python">def get_changed_region(
     self,
-    position=0,
-    text_id=None,
-    creator=None,
-    date=None,
-    content=None,
+    position: int = 0,
+    text_id: str | None = None,
+    creator: str | None = None,
+    date: datetime | None = None,
+    content: str | None = None,
 ) -&gt; Element | None:
     return self._filtered_element(
         &#34;text:changed-region&#34;,
@@ -3208,7 +3526,7 @@ ignored.</p></div>
 </details>
 </dd>
 <dt id="odfdo.tracked_changes.TrackedChanges.get_changed_regions"><code class="name flex">
-<span>def <span class="ident">get_changed_regions</span></span>(<span>self, creator=None, date=None, content=None, role=None)</span>
+<span>def <span class="ident">get_changed_regions</span></span>(<span>self, creator: str | None = None, date: datetime | None = None, content: str | None = None, role: str | None = None) ‑> list[<a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -3216,7 +3534,13 @@ ignored.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_changed_regions(self, creator=None, date=None, content=None, role=None):
+<pre><code class="python">def get_changed_regions(
+    self,
+    creator: str | None = None,
+    date: datetime | None = None,
+    content: str | None = None,
+    role: str | None = None,
+) -&gt; list[Element]:
     changed_regions = self._filtered_elements(
         &#34;text:changed-region&#34;,
         dc_creator=creator,
@@ -3225,13 +3549,13 @@ ignored.</p></div>
     )
     if role is None:
         return changed_regions
-    result = []
-    for cr in changed_regions:
-        ce = cr.get_change_element()
-        if not ce:
+    result: list[Element] = []
+    for regien in changed_regions:
+        changed = regien.get_change_element()  # type: ignore
+        if not changed:
             continue
-        if ce.tag.endswith(role):
-            result.append(cr)
+        if changed.tag.endswith(role):
+            result.append(regien)
     return result</code></pre>
 </details>
 </dd>
@@ -3248,12 +3572,16 @@ ignored.</p></div>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>

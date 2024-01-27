@@ -26,7 +26,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -47,9 +47,9 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
 #          David Versmisse &lt;david.versmisse@itaapy.com&gt;
+from __future__ import annotations
 
-import sys
-from optparse import OptionParser
+from optparse import OptionParser, Values
 from pathlib import Path
 from shutil import rmtree
 
@@ -57,7 +57,7 @@ from odfdo import Document, __version__
 from odfdo.scriptutils import add_option_output, check_target_directory, printerr
 
 
-def clean_filename(name):
+def clean_filename(name: str) -&gt; str:
     allowed_characters = {&#34;.&#34;, &#34;-&#34;, &#34;@&#34;}
     result = []
     for char in name:
@@ -68,7 +68,7 @@ def clean_filename(name):
     return &#34;_&#34;.join(&#34;&#34;.join(result).split())
 
 
-def dump_pictures(document, target):
+def dump_pictures(document: Document, target: str | Path) -&gt; None:
     for part_name in document.get_parts():
         if not part_name.startswith(&#34;Pictures/&#34;):
             continue
@@ -77,27 +77,32 @@ def dump_pictures(document, target):
             path.mkdir(parents=False, exist_ok=False)
         data = document.get_part(part_name)
         path = Path(target, part_name)
-        path.write_bytes(data)
+        path.write_bytes(data)  # type: ignore
 
 
-def spreadsheet_to_stdout(document):
+def spreadsheet_to_stdout(document: Document) -&gt; None:
     body = document.body
     for table in body.get_tables():
-        table.rstrip(aggressive=True)
-        print(table.to_csv(None))
+        table.rstrip(aggressive=True)  # type: ignore
+        print(table.to_csv(None))  # type: ignore
 
 
-def spreadsheet_to_csv(document, output):
+def spreadsheet_to_csv(document: Document, output: Path) -&gt; None:
     body = document.body
     for table in body.get_tables():
-        name = table.name
+        name = table.name  # type: ignore
         filename = clean_filename(name) + &#34;.csv&#34;
         print(filename)
-        table.rstrip(aggressive=True)
-        table.to_csv(output / filename)
+        table.rstrip(aggressive=True)  # type: ignore
+        table.to_csv(output / filename)  # type: ignore
 
 
-def show_output(container_url, options, doc, doc_type):
+def show_output(
+    container_url: str,
+    options: Values,
+    doc: Document,
+    doc_type: str,
+) -&gt; None:
     output = Path(options.output)
     check_target_directory(str(output))
     if output.exists():
@@ -118,15 +123,15 @@ def show_output(container_url, options, doc, doc_type):
         spreadsheet_to_csv(doc, output)
     else:
         printerr(f&#34;The OpenDocument format &#39;{doc_type}&#39; is not supported yet.&#34;)
-        sys.exit(1)
+        raise SystemExit(1)
 
 
-def show(container_url, options):
+def show(container_url: str, options: Values) -&gt; None:
     try:
         doc = Document(container_url)
     except Exception as e:
         print(repr(e))
-        sys.exit(1)
+        raise SystemExit(1) from None
     doc_type = doc.get_type()
     # Test it! XXX for TEXT only
     # if doc_type == &#39;text&#39;:
@@ -149,10 +154,10 @@ def show(container_url, options):
             spreadsheet_to_stdout(doc)
     else:
         printerr(f&#34;The OpenDocument format &#39;{doc_type}&#39; is not supported yet.&#34;)
-        sys.exit(1)
+        raise SystemExit(1)
 
 
-def main():
+def main() -&gt; None:
     # Options initialisation
     usage = (
         &#34;%prog [--styles] [--meta] [--no-content] [--rst] &lt;file&gt;\n&#34;
@@ -203,7 +208,7 @@ def main():
     # Container
     if len(args) != 1:
         parser.print_help()
-        exit(1)
+        raise SystemExit(1)
     container_url = args[0]
     show(container_url, options)
 
@@ -220,7 +225,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="odfdo.scripts.show.clean_filename"><code class="name flex">
-<span>def <span class="ident">clean_filename</span></span>(<span>name)</span>
+<span>def <span class="ident">clean_filename</span></span>(<span>name: str) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -228,7 +233,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def clean_filename(name):
+<pre><code class="python">def clean_filename(name: str) -&gt; str:
     allowed_characters = {&#34;.&#34;, &#34;-&#34;, &#34;@&#34;}
     result = []
     for char in name:
@@ -240,7 +245,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 </details>
 </dd>
 <dt id="odfdo.scripts.show.dump_pictures"><code class="name flex">
-<span>def <span class="ident">dump_pictures</span></span>(<span>document, target)</span>
+<span>def <span class="ident">dump_pictures</span></span>(<span>document: Document, target: str | Path) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -248,7 +253,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def dump_pictures(document, target):
+<pre><code class="python">def dump_pictures(document: Document, target: str | Path) -&gt; None:
     for part_name in document.get_parts():
         if not part_name.startswith(&#34;Pictures/&#34;):
             continue
@@ -257,11 +262,11 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
             path.mkdir(parents=False, exist_ok=False)
         data = document.get_part(part_name)
         path = Path(target, part_name)
-        path.write_bytes(data)</code></pre>
+        path.write_bytes(data)  # type: ignore</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scripts.show.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>)</span>
+<span>def <span class="ident">main</span></span>(<span>) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -269,7 +274,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def main():
+<pre><code class="python">def main() -&gt; None:
     # Options initialisation
     usage = (
         &#34;%prog [--styles] [--meta] [--no-content] [--rst] &lt;file&gt;\n&#34;
@@ -320,13 +325,13 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
     # Container
     if len(args) != 1:
         parser.print_help()
-        exit(1)
+        raise SystemExit(1)
     container_url = args[0]
     show(container_url, options)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scripts.show.show"><code class="name flex">
-<span>def <span class="ident">show</span></span>(<span>container_url, options)</span>
+<span>def <span class="ident">show</span></span>(<span>container_url: str, options: Values) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -334,12 +339,12 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def show(container_url, options):
+<pre><code class="python">def show(container_url: str, options: Values) -&gt; None:
     try:
         doc = Document(container_url)
     except Exception as e:
         print(repr(e))
-        sys.exit(1)
+        raise SystemExit(1) from None
     doc_type = doc.get_type()
     # Test it! XXX for TEXT only
     # if doc_type == &#39;text&#39;:
@@ -362,11 +367,11 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
             spreadsheet_to_stdout(doc)
     else:
         printerr(f&#34;The OpenDocument format &#39;{doc_type}&#39; is not supported yet.&#34;)
-        sys.exit(1)</code></pre>
+        raise SystemExit(1)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scripts.show.show_output"><code class="name flex">
-<span>def <span class="ident">show_output</span></span>(<span>container_url, options, doc, doc_type)</span>
+<span>def <span class="ident">show_output</span></span>(<span>container_url: str, options: Values, doc: Document, doc_type: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -374,7 +379,12 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def show_output(container_url, options, doc, doc_type):
+<pre><code class="python">def show_output(
+    container_url: str,
+    options: Values,
+    doc: Document,
+    doc_type: str,
+) -&gt; None:
     output = Path(options.output)
     check_target_directory(str(output))
     if output.exists():
@@ -395,11 +405,11 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
         spreadsheet_to_csv(doc, output)
     else:
         printerr(f&#34;The OpenDocument format &#39;{doc_type}&#39; is not supported yet.&#34;)
-        sys.exit(1)</code></pre>
+        raise SystemExit(1)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scripts.show.spreadsheet_to_csv"><code class="name flex">
-<span>def <span class="ident">spreadsheet_to_csv</span></span>(<span>document, output)</span>
+<span>def <span class="ident">spreadsheet_to_csv</span></span>(<span>document: Document, output: Path) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -407,18 +417,18 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def spreadsheet_to_csv(document, output):
+<pre><code class="python">def spreadsheet_to_csv(document: Document, output: Path) -&gt; None:
     body = document.body
     for table in body.get_tables():
-        name = table.name
+        name = table.name  # type: ignore
         filename = clean_filename(name) + &#34;.csv&#34;
         print(filename)
-        table.rstrip(aggressive=True)
-        table.to_csv(output / filename)</code></pre>
+        table.rstrip(aggressive=True)  # type: ignore
+        table.to_csv(output / filename)  # type: ignore</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scripts.show.spreadsheet_to_stdout"><code class="name flex">
-<span>def <span class="ident">spreadsheet_to_stdout</span></span>(<span>document)</span>
+<span>def <span class="ident">spreadsheet_to_stdout</span></span>(<span>document: Document) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -426,11 +436,11 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def spreadsheet_to_stdout(document):
+<pre><code class="python">def spreadsheet_to_stdout(document: Document) -&gt; None:
     body = document.body
     for table in body.get_tables():
-        table.rstrip(aggressive=True)
-        print(table.to_csv(None))</code></pre>
+        table.rstrip(aggressive=True)  # type: ignore
+        print(table.to_csv(None))  # type: ignore</code></pre>
 </details>
 </dd>
 </dl>

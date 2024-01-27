@@ -6,7 +6,7 @@
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.paragraph_base API documentation</title>
 <meta name="description" content="Base class ParagraphBase and Spacer &#34;text:s&#34;, Tab &#34;text:tab&#34;, LineBreak
-&#34;text:line-break&#34;" />
+&#34;text:line-break&#34;." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -24,12 +24,12 @@
 </header>
 <section id="section-intro">
 <p>Base class ParagraphBase and Spacer "text:s", Tab "text:tab", LineBreak
-"text:line-break"</p>
+"text:line-break".</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -53,25 +53,35 @@
 #          Romain Gauthier &lt;romain@itaapy.com&gt;
 #          Jerome Dumonteil &lt;jerome.dumonteil@itaapy.com&gt;
 &#34;&#34;&#34;Base class ParagraphBase and Spacer &#34;text:s&#34;, Tab &#34;text:tab&#34;, LineBreak
-&#34;text:line-break&#34;
+&#34;text:line-break&#34;.
 &#34;&#34;&#34;
-import re
+from __future__ import annotations
 
-from .element import Element, Text, register_element_class, to_str
+import re
+from typing import Any
+
+from .element import Element, PropDef, Text, register_element_class, to_str
 
 _rsplitter = re.compile(&#34;(\n|\t|  +)&#34;)
 _rspace = re.compile(&#34;^  +$&#34;)
 
 
-def _get_formatted_text(element, context, with_text=True):  # noqa: C901
+def _get_formatted_text(  # noqa: C901
+    element: Element,
+    context: dict | None = None,
+    with_text: bool = True,
+) -&gt; str:
+    if context is None:
+        context = {}
     document = context.get(&#34;document&#34;, None)
     rst_mode = context.get(&#34;rst_mode&#34;, False)
 
-    result = []
+    result: list[str] = []
+    objects: list[Element | Text] = []
     if with_text:
         objects = element.xpath(&#34;*|text()&#34;)
     else:
-        objects = element.children
+        objects = [x for x in element.children]  # noqa: C416
     for obj in objects:
         if isinstance(obj, Text):
             result.append(obj)
@@ -90,7 +100,10 @@ def _get_formatted_text(element, context, with_text=True):  # noqa: C901
             if not text.strip():
                 result.append(text)
                 continue
-            style = obj.style
+            if hasattr(obj, &#34;style&#34;):
+                style = obj.style
+            else:
+                style = None
             if not style:
                 result.append(text)
                 continue
@@ -139,16 +152,16 @@ def _get_formatted_text(element, context, with_text=True):  # noqa: C901
             continue
         # Footnote or endnote
         if tag == &#34;text:note&#34;:
-            note_class = obj.note_class
+            note_class = obj.note_class  # type:ignore
             container = {
                 &#34;footnote&#34;: context[&#34;footnotes&#34;],
                 &#34;endnote&#34;: context[&#34;endnotes&#34;],
             }[note_class]
-            citation = obj.citation
+            citation = obj.citation  # type:ignore
             if not citation:
                 # Would only happen with hand-made documents
                 citation = len(container)
-            body = obj.note_body
+            body = obj.note_body  # type:ignore
             container.append((citation, body))
             if rst_mode:
                 marker = {&#34;footnote&#34;: &#34; [#]_ &#34;, &#34;endnote&#34;: &#34; [*]_ &#34;}[note_class]
@@ -160,7 +173,7 @@ def _get_formatted_text(element, context, with_text=True):  # noqa: C901
             continue
         # Annotations
         if tag == &#34;office:annotation&#34;:
-            context[&#34;annotations&#34;].append(obj.note_body)
+            context[&#34;annotations&#34;].append(obj.note_body)  # type:ignore
             if rst_mode:
                 result.append(&#34; [#]_ &#34;)
             else:
@@ -191,15 +204,13 @@ class Spacer(Element):
     &#34;&#34;&#34;
 
     _tag = &#34;text:s&#34;
-    _properties = ((&#34;number&#34;, &#34;text:c&#34;),)
+    _properties: tuple[PropDef, ...] = (PropDef(&#34;number&#34;, &#34;text:c&#34;),)
 
-    def __init__(self, number=1, **kwargs):
+    def __init__(self, number: int = 1, **kwargs: Any):
         &#34;&#34;&#34;
         Arguments:
 
             number -- int
-
-        Return: Space
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
@@ -222,15 +233,13 @@ class Tab(Element):
     &#34;&#34;&#34;
 
     _tag = &#34;text:tab&#34;
-    _properties = ((&#34;position&#34;, &#34;text:tab-ref&#34;),)
+    _properties: tuple[PropDef, ...] = (PropDef(&#34;position&#34;, &#34;text:tab-ref&#34;),)
 
-    def __init__(self, position=None, **kwargs):
+    def __init__(self, position: int | None = None, **kwargs: Any) -&gt; None:
         &#34;&#34;&#34;
         Arguments:
 
             position -- int
-
-        Return: Tab
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init and position is not None and position &gt;= 0:
@@ -241,14 +250,11 @@ Tab._define_attribut_property()
 
 
 class LineBreak(Element):
-    &#34;&#34;&#34;This element represents a line break &#34;text:line-break&#34;
-
-    Return: LineBreak
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;This element represents a line break &#34;text:line-break&#34; &#34;&#34;&#34;
 
     _tag = &#34;text:line-break&#34;
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -&gt; None:
         super().__init__(**kwargs)
 
 
@@ -256,12 +262,16 @@ class ParagraphBase(Element):
     &#34;&#34;&#34;Base class for Paragraph like classes.&#34;&#34;&#34;
 
     _tag = &#34;text:p-odfdo-notodf&#34;
-    _properties = ((&#34;style&#34;, &#34;text:style-name&#34;),)
+    _properties: tuple[PropDef, ...] = (PropDef(&#34;style&#34;, &#34;text:style-name&#34;),)
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -&gt; None:
         super().__init__(**kwargs)
 
-    def get_formatted_text(self, context=None, simple=False):
+    def get_formatted_text(
+        self,
+        context: dict | None = None,
+        simple: bool = False,
+    ) -&gt; str:
         if not context:
             context = {
                 &#34;document&#34;: None,
@@ -279,7 +289,7 @@ class ParagraphBase(Element):
         else:
             return content + &#34;\n\n&#34;
 
-    def append_plain_text(self, text=&#34;&#34;):
+    def append_plain_text(self, text: str = &#34;&#34;) -&gt; None:
         &#34;&#34;&#34;Append plain text to the paragraph, replacing &lt;CR&gt;, &lt;TAB&gt;
         and multiple spaces by ODF corresponding tags.
         &#34;&#34;&#34;
@@ -322,24 +332,20 @@ register_element_class(ParagraphBase)</code></pre>
 <dl>
 <dt id="odfdo.paragraph_base.LineBreak"><code class="flex name class">
 <span>class <span class="ident">LineBreak</span></span>
-<span>(</span><span>**kwargs)</span>
+<span>(</span><span>**kwargs: Any)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>This element represents a line break "text:line-break"</p>
-<p>Return: LineBreak</p></div>
+<div class="desc"><p>This element represents a line break "text:line-break"</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class LineBreak(Element):
-    &#34;&#34;&#34;This element represents a line break &#34;text:line-break&#34;
-
-    Return: LineBreak
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;This element represents a line break &#34;text:line-break&#34; &#34;&#34;&#34;
 
     _tag = &#34;text:line-break&#34;
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -&gt; None:
         super().__init__(**kwargs)</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -358,12 +364,16 @@ register_element_class(ParagraphBase)</code></pre>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -463,7 +473,7 @@ register_element_class(ParagraphBase)</code></pre>
 </dd>
 <dt id="odfdo.paragraph_base.ParagraphBase"><code class="flex name class">
 <span>class <span class="ident">ParagraphBase</span></span>
-<span>(</span><span>**kwargs)</span>
+<span>(</span><span>**kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class for Paragraph like classes.</p></div>
@@ -475,12 +485,16 @@ register_element_class(ParagraphBase)</code></pre>
     &#34;&#34;&#34;Base class for Paragraph like classes.&#34;&#34;&#34;
 
     _tag = &#34;text:p-odfdo-notodf&#34;
-    _properties = ((&#34;style&#34;, &#34;text:style-name&#34;),)
+    _properties: tuple[PropDef, ...] = (PropDef(&#34;style&#34;, &#34;text:style-name&#34;),)
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -&gt; None:
         super().__init__(**kwargs)
 
-    def get_formatted_text(self, context=None, simple=False):
+    def get_formatted_text(
+        self,
+        context: dict | None = None,
+        simple: bool = False,
+    ) -&gt; str:
         if not context:
             context = {
                 &#34;document&#34;: None,
@@ -498,7 +512,7 @@ register_element_class(ParagraphBase)</code></pre>
         else:
             return content + &#34;\n\n&#34;
 
-    def append_plain_text(self, text=&#34;&#34;):
+    def append_plain_text(self, text: str = &#34;&#34;) -&gt; None:
         &#34;&#34;&#34;Append plain text to the paragraph, replacing &lt;CR&gt;, &lt;TAB&gt;
         and multiple spaces by ODF corresponding tags.
         &#34;&#34;&#34;
@@ -532,15 +546,18 @@ register_element_class(ParagraphBase)</code></pre>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.paragraph_base.ParagraphBase.style"><code class="name">var <span class="ident">style</span></code></dt>
+<dt id="odfdo.paragraph_base.ParagraphBase.style"><code class="name">var <span class="ident">style</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:style-name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -554,7 +571,7 @@ register_element_class(ParagraphBase)</code></pre>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.paragraph_base.ParagraphBase.append_plain_text"><code class="name flex">
-<span>def <span class="ident">append_plain_text</span></span>(<span>self, text='')</span>
+<span>def <span class="ident">append_plain_text</span></span>(<span>self, text: str = '') ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Append plain text to the paragraph, replacing <CR>, <TAB>
@@ -563,7 +580,7 @@ and multiple spaces by ODF corresponding tags.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def append_plain_text(self, text=&#34;&#34;):
+<pre><code class="python">def append_plain_text(self, text: str = &#34;&#34;) -&gt; None:
     &#34;&#34;&#34;Append plain text to the paragraph, replacing &lt;CR&gt;, &lt;TAB&gt;
     and multiple spaces by ODF corresponding tags.
     &#34;&#34;&#34;
@@ -600,12 +617,16 @@ and multiple spaces by ODF corresponding tags.</p></div>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -705,7 +726,7 @@ and multiple spaces by ODF corresponding tags.</p></div>
 </dd>
 <dt id="odfdo.paragraph_base.Spacer"><code class="flex name class">
 <span>class <span class="ident">Spacer</span></span>
-<span>(</span><span>number=1, **kwargs)</span>
+<span>(</span><span>number: int = 1, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This element shall be used to represent the second and all following “ “
@@ -714,8 +735,7 @@ Note: It is not an error if the character preceding the element is not a
 white space character, but it is good practice to use this element only for
 the second and all following SPACE characters in a sequence.</p>
 <h2 id="arguments">Arguments</h2>
-<p>number &ndash; int</p>
-<p>Return: Space</p></div>
+<p>number &ndash; int</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -729,15 +749,13 @@ the second and all following SPACE characters in a sequence.</p>
     &#34;&#34;&#34;
 
     _tag = &#34;text:s&#34;
-    _properties = ((&#34;number&#34;, &#34;text:c&#34;),)
+    _properties: tuple[PropDef, ...] = (PropDef(&#34;number&#34;, &#34;text:c&#34;),)
 
-    def __init__(self, number=1, **kwargs):
+    def __init__(self, number: int = 1, **kwargs: Any):
         &#34;&#34;&#34;
         Arguments:
 
             number -- int
-
-        Return: Space
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
@@ -749,15 +767,18 @@ the second and all following SPACE characters in a sequence.</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.paragraph_base.Spacer.number"><code class="name">var <span class="ident">number</span></code></dt>
+<dt id="odfdo.paragraph_base.Spacer.number"><code class="name">var <span class="ident">number</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:c</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -780,12 +801,16 @@ the second and all following SPACE characters in a sequence.</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -885,7 +910,7 @@ the second and all following SPACE characters in a sequence.</p>
 </dd>
 <dt id="odfdo.paragraph_base.Tab"><code class="flex name class">
 <span>class <span class="ident">Tab</span></span>
-<span>(</span><span>position=None, **kwargs)</span>
+<span>(</span><span>position: int | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This element represents the [UNICODE] tab character (HORIZONTAL
@@ -897,8 +922,7 @@ oriented consumers to determine the tab/tab-stop association. Layout
 oriented consumers should determine the tab positions based on the style
 information</p>
 <h2 id="arguments">Arguments</h2>
-<p>position &ndash; int</p>
-<p>Return: Tab</p></div>
+<p>position &ndash; int</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -916,15 +940,13 @@ information</p>
     &#34;&#34;&#34;
 
     _tag = &#34;text:tab&#34;
-    _properties = ((&#34;position&#34;, &#34;text:tab-ref&#34;),)
+    _properties: tuple[PropDef, ...] = (PropDef(&#34;position&#34;, &#34;text:tab-ref&#34;),)
 
-    def __init__(self, position=None, **kwargs):
+    def __init__(self, position: int | None = None, **kwargs: Any) -&gt; None:
         &#34;&#34;&#34;
         Arguments:
 
             position -- int
-
-        Return: Tab
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init and position is not None and position &gt;= 0:
@@ -936,15 +958,18 @@ information</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.paragraph_base.Tab.position"><code class="name">var <span class="ident">position</span></code></dt>
+<dt id="odfdo.paragraph_base.Tab.position"><code class="name">var <span class="ident">position</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:tab-ref</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -967,12 +992,16 @@ information</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.scriptutils API documentation</title>
-<meta name="description" content="Utilities shared by the scripts" />
+<meta name="description" content="Utilities shared by the scripts." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,12 +22,12 @@
 <h1 class="title">Module <code>odfdo.scriptutils</code></h1>
 </header>
 <section id="section-intro">
-<p>Utilities shared by the scripts</p>
+<p>Utilities shared by the scripts.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -47,36 +47,39 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
-&#34;&#34;&#34;Utilities shared by the scripts
+&#34;&#34;&#34;Utilities shared by the scripts.
 &#34;&#34;&#34;
-import sys
+from __future__ import annotations
+
 from io import StringIO
 from mimetypes import guess_type
+from optparse import OptionParser
 from os.path import exists, isfile
 from sys import stderr, stdin, stdout
+from typing import Any
 
 
-def check_target_file(path, kind=&#34;file&#34;):
+def check_target_file(path: str, kind: str = &#34;file&#34;) -&gt; None:
     if exists(path):
-        message = &#39;The %s &#34;%s&#34; exists, overwrite it? [y/N]&#39;
-        stderr.write(message % (kind, path))
+        message = f&#39;The {kind} &#34;{path}&#34; exists, overwrite it? [y/n]&#39;
+        stderr.write(message)
         stderr.flush()
         line = stdin.readline()
         line = line.strip().lower()
         if line != &#34;y&#34;:
             stderr.write(&#34;Operation aborted\n&#34;)
             stderr.flush()
-            sys.exit(0)
+            raise SystemExit(0)
 
 
-def check_target_directory(path):
+def check_target_directory(path: str) -&gt; None:
     return check_target_file(path, kind=&#34;directory&#34;)
 
 
 encoding_map = {&#34;gzip&#34;: &#34;application/x-gzip&#34;, &#34;bzip2&#34;: &#34;application/x-bzip2&#34;}
 
 
-def get_mimetype(filename):
+def get_mimetype(filename: str) -&gt; str | None:
     if not isfile(filename):
         return &#34;application/x-directory&#34;
     mimetype, encoding = guess_type(filename)
@@ -87,41 +90,44 @@ def get_mimetype(filename):
     return &#34;application/octet-stream&#34;
 
 
-def add_option_output(parser, metavar=&#34;FILE&#34;, complement=&#34;&#34;):
+def add_option_output(
+    parser: OptionParser,
+    metavar: str = &#34;FILE&#34;,
+    complement: str = &#34;&#34;,
+) -&gt; None:
     msg = f&#34;dump the output into {metavar} {complement}&#34;
     parser.add_option(&#34;-o&#34;, &#34;--output&#34;, metavar=metavar, help=msg)
 
 
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
+def eprint(*args: Any, **kwargs: Any) -&gt; None:
+    print(*args, file=stderr, **kwargs)
 
 
-def printinfo(*args, **kw):
-    indent = kw.get(&#34;indent&#34;, 0)
+def printinfo(*args: Any, **kwargs: Any) -&gt; None:
+    indent = kwargs.get(&#34;indent&#34;, 0)
     if indent:
         stderr.write(&#34; &#34; * indent)
     output = &#34; &#34;.join(str(arg) for arg in args)
     eprint(output)
 
 
-def printwarn(*args, **kw):
-    printinfo(&#34;Warning:&#34;, *args, **kw)
+def printwarn(*args: Any, **kwargs: Any) -&gt; None:
+    printinfo(&#34;Warning:&#34;, *args, **kwargs)
 
 
-def printerr(*args, **kw):
-    printinfo(&#34;Error:&#34;, *args, **kw)
+def printerr(*args: Any, **kwargs: Any) -&gt; None:
+    printinfo(&#34;Error:&#34;, *args, **kwargs)
 
 
-# FIXME: still broken ?
 class StdoutWriter(StringIO):
     &#34;&#34;&#34;Some proxy to write output to stdout in scripts. Because The zipfile
     module raises &#34;IOError: [Errno 29] Illegal seek&#34; when writing to stdout
     directly.
     &#34;&#34;&#34;
 
-    def write(self, s):
-        stdout.write(s)
-        StringIO.write(self, s)</code></pre>
+    def write(self, info: str) -&gt; int:
+        stdout.write(info)
+        return StringIO.write(self, info)</code></pre>
 </details>
 </section>
 <section>
@@ -132,7 +138,7 @@ class StdoutWriter(StringIO):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="odfdo.scriptutils.add_option_output"><code class="name flex">
-<span>def <span class="ident">add_option_output</span></span>(<span>parser, metavar='FILE', complement='')</span>
+<span>def <span class="ident">add_option_output</span></span>(<span>parser: OptionParser, metavar: str = 'FILE', complement: str = '') ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -140,13 +146,17 @@ class StdoutWriter(StringIO):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def add_option_output(parser, metavar=&#34;FILE&#34;, complement=&#34;&#34;):
+<pre><code class="python">def add_option_output(
+    parser: OptionParser,
+    metavar: str = &#34;FILE&#34;,
+    complement: str = &#34;&#34;,
+) -&gt; None:
     msg = f&#34;dump the output into {metavar} {complement}&#34;
     parser.add_option(&#34;-o&#34;, &#34;--output&#34;, metavar=metavar, help=msg)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scriptutils.check_target_directory"><code class="name flex">
-<span>def <span class="ident">check_target_directory</span></span>(<span>path)</span>
+<span>def <span class="ident">check_target_directory</span></span>(<span>path: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -154,12 +164,12 @@ class StdoutWriter(StringIO):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def check_target_directory(path):
+<pre><code class="python">def check_target_directory(path: str) -&gt; None:
     return check_target_file(path, kind=&#34;directory&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scriptutils.check_target_file"><code class="name flex">
-<span>def <span class="ident">check_target_file</span></span>(<span>path, kind='file')</span>
+<span>def <span class="ident">check_target_file</span></span>(<span>path: str, kind: str = 'file') ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -167,21 +177,21 @@ class StdoutWriter(StringIO):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def check_target_file(path, kind=&#34;file&#34;):
+<pre><code class="python">def check_target_file(path: str, kind: str = &#34;file&#34;) -&gt; None:
     if exists(path):
-        message = &#39;The %s &#34;%s&#34; exists, overwrite it? [y/N]&#39;
-        stderr.write(message % (kind, path))
+        message = f&#39;The {kind} &#34;{path}&#34; exists, overwrite it? [y/n]&#39;
+        stderr.write(message)
         stderr.flush()
         line = stdin.readline()
         line = line.strip().lower()
         if line != &#34;y&#34;:
             stderr.write(&#34;Operation aborted\n&#34;)
             stderr.flush()
-            sys.exit(0)</code></pre>
+            raise SystemExit(0)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scriptutils.eprint"><code class="name flex">
-<span>def <span class="ident">eprint</span></span>(<span>*args, **kwargs)</span>
+<span>def <span class="ident">eprint</span></span>(<span>*args: Any, **kwargs: Any) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -189,12 +199,12 @@ class StdoutWriter(StringIO):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)</code></pre>
+<pre><code class="python">def eprint(*args: Any, **kwargs: Any) -&gt; None:
+    print(*args, file=stderr, **kwargs)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scriptutils.get_mimetype"><code class="name flex">
-<span>def <span class="ident">get_mimetype</span></span>(<span>filename)</span>
+<span>def <span class="ident">get_mimetype</span></span>(<span>filename: str) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -202,7 +212,7 @@ class StdoutWriter(StringIO):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_mimetype(filename):
+<pre><code class="python">def get_mimetype(filename: str) -&gt; str | None:
     if not isfile(filename):
         return &#34;application/x-directory&#34;
     mimetype, encoding = guess_type(filename)
@@ -214,7 +224,7 @@ class StdoutWriter(StringIO):
 </details>
 </dd>
 <dt id="odfdo.scriptutils.printerr"><code class="name flex">
-<span>def <span class="ident">printerr</span></span>(<span>*args, **kw)</span>
+<span>def <span class="ident">printerr</span></span>(<span>*args: Any, **kwargs: Any) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -222,12 +232,12 @@ class StdoutWriter(StringIO):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def printerr(*args, **kw):
-    printinfo(&#34;Error:&#34;, *args, **kw)</code></pre>
+<pre><code class="python">def printerr(*args: Any, **kwargs: Any) -&gt; None:
+    printinfo(&#34;Error:&#34;, *args, **kwargs)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scriptutils.printinfo"><code class="name flex">
-<span>def <span class="ident">printinfo</span></span>(<span>*args, **kw)</span>
+<span>def <span class="ident">printinfo</span></span>(<span>*args: Any, **kwargs: Any) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -235,8 +245,8 @@ class StdoutWriter(StringIO):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def printinfo(*args, **kw):
-    indent = kw.get(&#34;indent&#34;, 0)
+<pre><code class="python">def printinfo(*args: Any, **kwargs: Any) -&gt; None:
+    indent = kwargs.get(&#34;indent&#34;, 0)
     if indent:
         stderr.write(&#34; &#34; * indent)
     output = &#34; &#34;.join(str(arg) for arg in args)
@@ -244,7 +254,7 @@ class StdoutWriter(StringIO):
 </details>
 </dd>
 <dt id="odfdo.scriptutils.printwarn"><code class="name flex">
-<span>def <span class="ident">printwarn</span></span>(<span>*args, **kw)</span>
+<span>def <span class="ident">printwarn</span></span>(<span>*args: Any, **kwargs: Any) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -252,8 +262,8 @@ class StdoutWriter(StringIO):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def printwarn(*args, **kw):
-    printinfo(&#34;Warning:&#34;, *args, **kw)</code></pre>
+<pre><code class="python">def printwarn(*args: Any, **kwargs: Any) -&gt; None:
+    printinfo(&#34;Warning:&#34;, *args, **kwargs)</code></pre>
 </details>
 </dd>
 </dl>
@@ -279,9 +289,9 @@ directly.</p></div>
     directly.
     &#34;&#34;&#34;
 
-    def write(self, s):
-        stdout.write(s)
-        StringIO.write(self, s)</code></pre>
+    def write(self, info: str) -&gt; int:
+        stdout.write(info)
+        return StringIO.write(self, info)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -292,7 +302,7 @@ directly.</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.scriptutils.StdoutWriter.write"><code class="name flex">
-<span>def <span class="ident">write</span></span>(<span>self, s)</span>
+<span>def <span class="ident">write</span></span>(<span>self, info: str) ‑> int</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Write string to file.</p>
@@ -302,9 +312,9 @@ the length of the string.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def write(self, s):
-    stdout.write(s)
-    StringIO.write(self, s)</code></pre>
+<pre><code class="python">def write(self, info: str) -&gt; int:
+    stdout.write(info)
+    return StringIO.write(self, info)</code></pre>
 </details>
 </dd>
 </dl>

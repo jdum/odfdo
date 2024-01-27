@@ -6,7 +6,7 @@
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.toc API documentation</title>
 <meta name="description" content="TOC class for &#34;text:table-of-content&#34; and IndexTitle, TabStopStyle,
-IndexTitleTemplate, TocEntryTemplate related classes" />
+IndexTitleTemplate, TocEntryTemplate related classes." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -24,12 +24,12 @@ IndexTitleTemplate, TocEntryTemplate related classes" />
 </header>
 <section id="section-intro">
 <p>TOC class for "text:table-of-content" and IndexTitle, TabStopStyle,
-IndexTitleTemplate, TocEntryTemplate related classes</p>
+IndexTitleTemplate, TocEntryTemplate related classes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -50,9 +50,14 @@ IndexTitleTemplate, TocEntryTemplate related classes</p>
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
 &#34;&#34;&#34;TOC class for &#34;text:table-of-content&#34; and IndexTitle, TabStopStyle,
-IndexTitleTemplate, TocEntryTemplate related classes
+IndexTitleTemplate, TocEntryTemplate related classes.
 &#34;&#34;&#34;
-from .element import FIRST_CHILD, Element, register_element_class
+from __future__ import annotations
+
+from typing import Any
+
+from .document import Document
+from .element import FIRST_CHILD, Element, PropDef, register_element_class
 from .paragraph import Paragraph
 from .style import Style
 
@@ -65,30 +70,30 @@ class IndexTitle(Element):
     text:protection-key-digest-algorithm, text:style-name, xml:id.
 
     The actual title is stored in a child element
-
-    Return: IndexTitle
     &#34;&#34;&#34;
 
     _tag = &#34;text:index-title&#34;
     _properties = (
-        (&#34;name&#34;, &#34;text:name&#34;),
-        (&#34;style&#34;, &#34;text:style-name&#34;),
-        (&#34;xml_id&#34;, &#34;xml:id&#34;),
-        (&#34;protected&#34;, &#34;text:protected&#34;),
-        (&#34;protection_key&#34;, &#34;text:protection-key&#34;),
-        (&#34;protection_key_digest_algorithm&#34;, &#34;text:protection-key-digest-algorithm&#34;),
+        PropDef(&#34;name&#34;, &#34;text:name&#34;),
+        PropDef(&#34;style&#34;, &#34;text:style-name&#34;),
+        PropDef(&#34;xml_id&#34;, &#34;xml:id&#34;),
+        PropDef(&#34;protected&#34;, &#34;text:protected&#34;),
+        PropDef(&#34;protection_key&#34;, &#34;text:protection-key&#34;),
+        PropDef(
+            &#34;protection_key_digest_algorithm&#34;, &#34;text:protection-key-digest-algorithm&#34;
+        ),
     )
 
     def __init__(
         self,
-        name=None,
-        style=None,
-        title_text=None,
-        title_text_style=None,
-        xml_id=None,
-        **kw,
-    ):
-        super().__init__(**kw)
+        name: str | None = None,
+        style: str | None = None,
+        title_text: str | None = None,
+        title_text_style: str | None = None,
+        xml_id: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
+        super().__init__(**kwargs)
         if self._do_init:
             if name:
                 self.name = name
@@ -99,7 +104,11 @@ class IndexTitle(Element):
             if title_text:
                 self.set_title_text(title_text, title_text_style)
 
-    def set_title_text(self, title_text, title_text_style):
+    def set_title_text(
+        self,
+        title_text: str,
+        title_text_style: str | None = None,
+    ) -&gt; None:
         title = Paragraph(title_text, style=title_text_style)
         self.append(title)
 
@@ -112,39 +121,35 @@ TOC_ENTRY_STYLE_PATTERN = &#34;odfto_toc_level_%s&#34;
 class TabStopStyle(Element):
     &#34;&#34;&#34;ODF &#34;style:tab-stop&#34;
     Base style for a TOC entryBase style for a TOC entry
-
-    Return: TabStopStyle
-
-       9, style:position 19.508.3, style:type 19.515.3.
     &#34;&#34;&#34;
 
     _tag = &#34;style:tab-stop&#34;
     _properties = (
-        (&#34;style_char&#34;, &#34;style:char&#34;),
-        (&#34;leader_color&#34;, &#34;style:leader-color&#34;),
-        (&#34;leader_style&#34;, &#34;style:leader-style&#34;),
-        (&#34;leader_text&#34;, &#34;style:leader-text&#34;),
-        (&#34;leader_text_style&#34;, &#34;style:leader-text-style&#34;),
-        (&#34;leader_type&#34;, &#34;style:leader-type&#34;),
-        (&#34;leader_width&#34;, &#34;style:leader-width&#34;),
-        (&#34;style_position&#34;, &#34;style:position&#34;),
-        (&#34;style_type&#34;, &#34;style:type&#34;),
+        PropDef(&#34;style_char&#34;, &#34;style:char&#34;),
+        PropDef(&#34;leader_color&#34;, &#34;style:leader-color&#34;),
+        PropDef(&#34;leader_style&#34;, &#34;style:leader-style&#34;),
+        PropDef(&#34;leader_text&#34;, &#34;style:leader-text&#34;),
+        PropDef(&#34;leader_text_style&#34;, &#34;style:leader-text-style&#34;),
+        PropDef(&#34;leader_type&#34;, &#34;style:leader-type&#34;),
+        PropDef(&#34;leader_width&#34;, &#34;style:leader-width&#34;),
+        PropDef(&#34;style_position&#34;, &#34;style:position&#34;),
+        PropDef(&#34;style_type&#34;, &#34;style:type&#34;),
     )
 
     def __init__(  # noqa: C901
         self,
-        style_char=None,
-        leader_color=None,
-        leader_style=None,
-        leader_text=None,
-        leader_text_style=None,
-        leader_type=None,
-        leader_width=None,
-        style_position=None,
-        style_type=None,
-        **kw,
+        style_char: str | None = None,
+        leader_color: str | None = None,
+        leader_style: str | None = None,
+        leader_text: str | None = None,
+        leader_text_style: str | None = None,
+        leader_type: str | None = None,
+        leader_width: str | None = None,
+        style_position: str | None = None,
+        style_type: str | None = None,
+        **kwargs: Any,
     ):
-        super().__init__(**kw)
+        super().__init__(**kwargs)
         if self._do_init:
             if style_char:
                 self.style_char = style_char
@@ -169,7 +174,7 @@ class TabStopStyle(Element):
 TabStopStyle._define_attribut_property()
 
 
-def default_toc_level_style(level):
+def default_toc_level_style(level: int) -&gt; Style:
     &#34;&#34;&#34;Generate an automatic default style for the given TOC level.&#34;&#34;&#34;
     tab_stop = TabStopStyle(style_type=&#34;right&#34;, leader_style=&#34;dotted&#34;, leader_text=&#34;.&#34;)
     position = 17.5 - (0.5 * level)
@@ -224,39 +229,39 @@ class TOC(Element):
         title_style -- str
 
         entry_style -- str
-
-    Return: TOC
     &#34;&#34;&#34;
 
     _tag = &#34;text:table-of-content&#34;
     _properties = (
-        (&#34;name&#34;, &#34;text:name&#34;),
-        (&#34;style&#34;, &#34;text:style-name&#34;),
-        (&#34;xml_id&#34;, &#34;xml:id&#34;),
-        (&#34;protected&#34;, &#34;text:protected&#34;),
-        (&#34;protection_key&#34;, &#34;text:protection-key&#34;),
-        (&#34;protection_key_digest_algorithm&#34;, &#34;text:protection-key-digest-algorithm&#34;),
+        PropDef(&#34;name&#34;, &#34;text:name&#34;),
+        PropDef(&#34;style&#34;, &#34;text:style-name&#34;),
+        PropDef(&#34;xml_id&#34;, &#34;xml:id&#34;),
+        PropDef(&#34;protected&#34;, &#34;text:protected&#34;),
+        PropDef(&#34;protection_key&#34;, &#34;text:protection-key&#34;),
+        PropDef(
+            &#34;protection_key_digest_algorithm&#34;, &#34;text:protection-key-digest-algorithm&#34;
+        ),
     )
 
     def __init__(
         self,
-        title=&#34;Table of Contents&#34;,
-        name=None,
-        protected=True,
-        outline_level=None,
-        style=None,
-        title_style=&#34;Contents_20_Heading&#34;,
-        entry_style=&#34;Contents_20_%d&#34;,
-        **kw,
-    ):
-        super().__init__(**kw)
+        title: str = &#34;Table of Contents&#34;,
+        name: str | None = None,
+        protected: bool = True,
+        outline_level: int = 0,
+        style: str | None = None,
+        title_style: str = &#34;Contents_20_Heading&#34;,
+        entry_style: str = &#34;Contents_20_%d&#34;,
+        **kwargs: Any,
+    ) -&gt; None:
+        super().__init__(**kwargs)
         if self._do_init:
             if style:
                 self.style = style
             if protected:
                 self.protected = protected
             if name is None:
-                name = &#34;%s1&#34; % title
+                name = f&#34;{title}1&#34;
                 self.name = name
             # Create the source template
             toc_source = self.create_toc_source(
@@ -269,9 +274,14 @@ class TOC(Element):
                 self.set_toc_title(title, text_style=title_style)
 
     @staticmethod
-    def create_toc_source(title, outline_level, title_style, entry_style):
+    def create_toc_source(
+        title: str,
+        outline_level: int,
+        title_style: str,
+        entry_style: str,
+    ) -&gt; Element:
         toc_source = Element.from_tag(&#34;text:table-of-content-source&#34;)
-        toc_source.set_attribute(&#34;text:outline-level&#34;, outline_level)
+        toc_source.set_attribute(&#34;text:outline-level&#34;, str(outline_level))
         if title:
             title_template = IndexTitleTemplate()
             if title_style:
@@ -286,12 +296,13 @@ class TOC(Element):
             toc_source.append(template)
         return toc_source
 
-    def get_formatted_text(self, context):
+    def get_formatted_text(self, context: dict | None = None) -&gt; str:
         index_body = self.get_element(&#34;text:index-body&#34;)
 
         if index_body is None:
             return &#34;&#34;
-
+        if context is None:
+            context = {}
         if context[&#34;rst_mode&#34;]:
             return &#34;\n.. contents::\n\n&#34;
 
@@ -307,26 +318,26 @@ class TOC(Element):
         return &#34;&#34;.join(result)
 
     @property
-    def outline_level(self):
+    def outline_level(self) -&gt; int | None:
         source = self.get_element(&#34;text:table-of-content-source&#34;)
         if source is None:
             return None
         return source.get_attribute_integer(&#34;text:outline-level&#34;)
 
     @outline_level.setter
-    def outline_level(self, level):
+    def outline_level(self, level: int) -&gt; None:
         source = self.get_element(&#34;text:table-of-content-source&#34;)
         if source is None:
             source = Element.from_tag(&#34;text:table-of-content-source&#34;)
             self.insert(source, FIRST_CHILD)
-        source.set_attribute(&#34;text:outline-level&#34;, level)
+        source.set_attribute(&#34;text:outline-level&#34;, str(level))
 
     @property
-    def body(self):
+    def body(self) -&gt; Element | None:
         return self.get_element(&#34;text:index-body&#34;)
 
     @body.setter
-    def body(self, body=None):
+    def body(self, body: Element | None = None) -&gt; Element | None:
         old_body = self.body
         if old_body is not None:
             self.delete(old_body)
@@ -335,7 +346,7 @@ class TOC(Element):
         self.append(body)
         return body
 
-    def get_title(self):
+    def get_title(self) -&gt; str | None:
         index_body = self.body
         if index_body is None:
             return None
@@ -344,30 +355,39 @@ class TOC(Element):
             return None
         return index_title.text_content
 
-    def set_toc_title(self, title, style=None, text_style=None):
+    def set_toc_title(
+        self,
+        title: str,
+        style: str | None = None,
+        text_style: str | None = None,
+    ) -&gt; None:
         index_body = self.body
         if index_body is None:
             self.body = None
             index_body = self.body
-        index_title = index_body.get_element(IndexTitle._tag)
+        index_title = index_body.get_element(IndexTitle._tag)  # type: ignore
         if index_title is None:
-            name = &#34;%s_Head&#34; % self.name
+            name = f&#34;{self.name}_Head&#34;
             index_title = IndexTitle(
                 name=name, style=style, title_text=title, text_style=text_style
             )
-            index_body.append(index_title)
+            index_body.append(index_title)  # type: ignore
         else:
             if style:
-                index_title.style = style
+                index_title.style = style  # type: ignore
             paragraph = index_title.get_paragraph()
             if paragraph is None:
                 paragraph = Paragraph()
                 index_title.append(paragraph)
             if text_style:
-                paragraph.style = text_style
+                paragraph.style = text_style  # type: ignore
             paragraph.text = title
 
-    def fill(self, document=None, use_default_styles=True):  # noqa: C901
+    def fill(  # noqa: C901
+        self,
+        document: Document | None = None,
+        use_default_styles: bool = True,
+    ) -&gt; None:
         &#34;&#34;&#34;Fill the TOC with the titles found in the document. A TOC is not
         contextual so it will catch all titles before and after its insertion.
         If the TOC is not attached to a document, attach it beforehand or
@@ -383,41 +403,42 @@ class TOC(Element):
         &#34;&#34;&#34;
         # Find the body
         if document is not None:
-            body = document.body
+            body: Element | None = document.body
         else:
             body = self.document_body
         if body is None:
-            raise ValueError(&#34;the TOC must be related to a document somehow&#34;)
+            raise ValueError(&#34;The TOC must be related to a document somehow&#34;)
 
         # Save the title
         index_body = self.body
-        title = index_body.get_element(&#34;text:index-title&#34;)
+        title = index_body.get_element(&#34;text:index-title&#34;)  # type: ignore
 
         # Clean the old index-body
         self.body = None
         index_body = self.body
 
         # Restore the title
-        index_body.insert(title, position=0)
+        index_body.insert(title, position=0)  # type: ignore
 
         # Insert default TOC style
         if use_default_styles:
             automatic_styles = body.get_element(&#34;//office:automatic-styles&#34;)
-            for level in range(1, 11):
-                if (
-                    automatic_styles.get_style(
-                        &#34;paragraph&#34;, TOC_ENTRY_STYLE_PATTERN % level
-                    )
-                    is None
-                ):
-                    level_style = default_toc_level_style(level)
-                    automatic_styles.append(level_style)
+            if isinstance(automatic_styles, Element):
+                for level in range(1, 11):
+                    if (
+                        automatic_styles.get_style(
+                            &#34;paragraph&#34;, TOC_ENTRY_STYLE_PATTERN % level
+                        )
+                        is None
+                    ):
+                        level_style = default_toc_level_style(level)
+                        automatic_styles.append(level_style)
 
         # Auto-fill the index
         outline_level = self.outline_level or 10
-        level_indexes = {}
+        level_indexes: dict[int, int] = {}
         for header in body.get_headers():
-            level = header.get_attribute_integer(&#34;text:outline-level&#34;)
+            level = header.get_attribute_integer(&#34;text:outline-level&#34;) or 0
             if level is None or level &gt; outline_level:
                 continue
             number = []
@@ -433,13 +454,13 @@ class TOC(Element):
             for idx in range(level + 1, 11):
                 if idx in level_indexes:
                     del level_indexes[idx]
-            number = &#34;.&#34;.join(number) + &#34;.&#34;
+            number_str = &#34;.&#34;.join(number) + &#34;.&#34;
             # Make the title with &#34;1.2.3. Title&#34; format
-            title = f&#34;{number} {header.text}&#34;
+            title = f&#34;{number_str} {header.text}&#34;
             paragraph = Paragraph(title)
             if use_default_styles:
                 paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
-            index_body.append(paragraph)
+            index_body.append(paragraph)  # type: ignore
 
 
 TOC._define_attribut_property()
@@ -451,15 +472,13 @@ class IndexTitleTemplate(Element):
     Arguments:
 
         style -- str
-
-    Return: IndexTitleTemplate
     &#34;&#34;&#34;
 
     _tag = &#34;text:index-title-template&#34;
-    _properties = ((&#34;style&#34;, &#34;text:style-name&#34;),)
+    _properties = (PropDef(&#34;style&#34;, &#34;text:style-name&#34;),)
 
-    def __init__(self, style=None, **kw):
-        super().__init__(**kw)
+    def __init__(self, style: str | None = None, **kwargs: Any) -&gt; None:
+        super().__init__(**kwargs)
         if self._do_init and style:
             self.style = style
 
@@ -473,15 +492,18 @@ class TocEntryTemplate(Element):
     Arguments:
 
         style -- str
-
-    Return: TocEntryTemplate
     &#34;&#34;&#34;
 
     _tag = &#34;text:table-of-content-entry-template&#34;
-    _properties = ((&#34;style&#34;, &#34;text:style-name&#34;),)
+    _properties = (PropDef(&#34;style&#34;, &#34;text:style-name&#34;),)
 
-    def __init__(self, style=None, outline_level=None, **kw):
-        super().__init__(**kw)
+    def __init__(
+        self,
+        style: str | None = None,
+        outline_level: int | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
+        super().__init__(**kwargs)
         if self._do_init:
             if style:
                 self.style = style
@@ -489,14 +511,14 @@ class TocEntryTemplate(Element):
                 self.outline_level = outline_level
 
     @property
-    def outline_level(self):
+    def outline_level(self) -&gt; int | None:
         return self.get_attribute_integer(&#34;text:outline-level&#34;)
 
     @outline_level.setter
-    def outline_level(self, level):
-        self.set_attribute(&#34;text:outline-level&#34;, level)
+    def outline_level(self, level: int) -&gt; None:
+        self.set_attribute(&#34;text:outline-level&#34;, str(level))
 
-    def complete_defaults(self):
+    def complete_defaults(self) -&gt; None:
         self.append(Element.from_tag(&#34;text:index-entry-chapter&#34;))
         self.append(Element.from_tag(&#34;text:index-entry-text&#34;))
         self.append(Element.from_tag(&#34;text:index-entry-text&#34;))
@@ -524,7 +546,7 @@ register_element_class(TOC)</code></pre>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="odfdo.toc.default_toc_level_style"><code class="name flex">
-<span>def <span class="ident">default_toc_level_style</span></span>(<span>level)</span>
+<span>def <span class="ident">default_toc_level_style</span></span>(<span>level: int) ‑> <a title="odfdo.style.Style" href="style.html#odfdo.style.Style">Style</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate an automatic default style for the given TOC level.</p></div>
@@ -532,7 +554,7 @@ register_element_class(TOC)</code></pre>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def default_toc_level_style(level):
+<pre><code class="python">def default_toc_level_style(level: int) -&gt; Style:
     &#34;&#34;&#34;Generate an automatic default style for the given TOC level.&#34;&#34;&#34;
     tab_stop = TabStopStyle(style_type=&#34;right&#34;, leader_style=&#34;dotted&#34;, leader_text=&#34;.&#34;)
     position = 17.5 - (0.5 * level)
@@ -557,15 +579,14 @@ register_element_class(TOC)</code></pre>
 <dl>
 <dt id="odfdo.toc.IndexTitle"><code class="flex name class">
 <span>class <span class="ident">IndexTitle</span></span>
-<span>(</span><span>name=None, style=None, title_text=None, title_text_style=None, xml_id=None, **kw)</span>
+<span>(</span><span>name: str | None = None, style: str | None = None, title_text: str | None = None, title_text_style: str | None = None, xml_id: str | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The "text:index-title" element contains the title of an index.</p>
 <p>The element has the following attributes:
 text:name, text:protected, text:protection-key,
 text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
-<p>The actual title is stored in a child element</p>
-<p>Return: IndexTitle</p></div>
+<p>The actual title is stored in a child element</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -578,30 +599,30 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
     text:protection-key-digest-algorithm, text:style-name, xml:id.
 
     The actual title is stored in a child element
-
-    Return: IndexTitle
     &#34;&#34;&#34;
 
     _tag = &#34;text:index-title&#34;
     _properties = (
-        (&#34;name&#34;, &#34;text:name&#34;),
-        (&#34;style&#34;, &#34;text:style-name&#34;),
-        (&#34;xml_id&#34;, &#34;xml:id&#34;),
-        (&#34;protected&#34;, &#34;text:protected&#34;),
-        (&#34;protection_key&#34;, &#34;text:protection-key&#34;),
-        (&#34;protection_key_digest_algorithm&#34;, &#34;text:protection-key-digest-algorithm&#34;),
+        PropDef(&#34;name&#34;, &#34;text:name&#34;),
+        PropDef(&#34;style&#34;, &#34;text:style-name&#34;),
+        PropDef(&#34;xml_id&#34;, &#34;xml:id&#34;),
+        PropDef(&#34;protected&#34;, &#34;text:protected&#34;),
+        PropDef(&#34;protection_key&#34;, &#34;text:protection-key&#34;),
+        PropDef(
+            &#34;protection_key_digest_algorithm&#34;, &#34;text:protection-key-digest-algorithm&#34;
+        ),
     )
 
     def __init__(
         self,
-        name=None,
-        style=None,
-        title_text=None,
-        title_text_style=None,
-        xml_id=None,
-        **kw,
-    ):
-        super().__init__(**kw)
+        name: str | None = None,
+        style: str | None = None,
+        title_text: str | None = None,
+        title_text_style: str | None = None,
+        xml_id: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
+        super().__init__(**kwargs)
         if self._do_init:
             if name:
                 self.name = name
@@ -612,7 +633,11 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
             if title_text:
                 self.set_title_text(title_text, title_text_style)
 
-    def set_title_text(self, title_text, title_text_style):
+    def set_title_text(
+        self,
+        title_text: str,
+        title_text_style: str | None = None,
+    ) -&gt; None:
         title = Paragraph(title_text, style=title_text_style)
         self.append(title)</code></pre>
 </details>
@@ -622,15 +647,18 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.toc.IndexTitle.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dt id="odfdo.toc.IndexTitle.name"><code class="name">var <span class="ident">name</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -640,15 +668,18 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.IndexTitle.protected"><code class="name">var <span class="ident">protected</span></code></dt>
+<dt id="odfdo.toc.IndexTitle.protected"><code class="name">var <span class="ident">protected</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:protected</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -658,15 +689,18 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.IndexTitle.protection_key"><code class="name">var <span class="ident">protection_key</span></code></dt>
+<dt id="odfdo.toc.IndexTitle.protection_key"><code class="name">var <span class="ident">protection_key</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:protection-key</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -676,15 +710,18 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.IndexTitle.protection_key_digest_algorithm"><code class="name">var <span class="ident">protection_key_digest_algorithm</span></code></dt>
+<dt id="odfdo.toc.IndexTitle.protection_key_digest_algorithm"><code class="name">var <span class="ident">protection_key_digest_algorithm</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:protection-key-digest-algorithm</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -694,15 +731,18 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.IndexTitle.style"><code class="name">var <span class="ident">style</span></code></dt>
+<dt id="odfdo.toc.IndexTitle.style"><code class="name">var <span class="ident">style</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:style-name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -712,15 +752,18 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.IndexTitle.xml_id"><code class="name">var <span class="ident">xml_id</span></code></dt>
+<dt id="odfdo.toc.IndexTitle.xml_id"><code class="name">var <span class="ident">xml_id</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute xml:id</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -734,7 +777,7 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.toc.IndexTitle.set_title_text"><code class="name flex">
-<span>def <span class="ident">set_title_text</span></span>(<span>self, title_text, title_text_style)</span>
+<span>def <span class="ident">set_title_text</span></span>(<span>self, title_text: str, title_text_style: str | None = None) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -742,7 +785,11 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_title_text(self, title_text, title_text_style):
+<pre><code class="python">def set_title_text(
+    self,
+    title_text: str,
+    title_text_style: str | None = None,
+) -&gt; None:
     title = Paragraph(title_text, style=title_text_style)
     self.append(title)</code></pre>
 </details>
@@ -760,12 +807,16 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -865,13 +916,12 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 </dd>
 <dt id="odfdo.toc.IndexTitleTemplate"><code class="flex name class">
 <span>class <span class="ident">IndexTitleTemplate</span></span>
-<span>(</span><span>style=None, **kw)</span>
+<span>(</span><span>style: str | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>ODF "text:index-title-template"</p>
 <h2 id="arguments">Arguments</h2>
-<p>style &ndash; str</p>
-<p>Return: IndexTitleTemplate</p></div>
+<p>style &ndash; str</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -882,15 +932,13 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
     Arguments:
 
         style -- str
-
-    Return: IndexTitleTemplate
     &#34;&#34;&#34;
 
     _tag = &#34;text:index-title-template&#34;
-    _properties = ((&#34;style&#34;, &#34;text:style-name&#34;),)
+    _properties = (PropDef(&#34;style&#34;, &#34;text:style-name&#34;),)
 
-    def __init__(self, style=None, **kw):
-        super().__init__(**kw)
+    def __init__(self, style: str | None = None, **kwargs: Any) -&gt; None:
+        super().__init__(**kwargs)
         if self._do_init and style:
             self.style = style</code></pre>
 </details>
@@ -900,15 +948,18 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.toc.IndexTitleTemplate.style"><code class="name">var <span class="ident">style</span></code></dt>
+<dt id="odfdo.toc.IndexTitleTemplate.style"><code class="name">var <span class="ident">style</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:style-name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -931,12 +982,16 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -1036,7 +1091,7 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 </dd>
 <dt id="odfdo.toc.TOC"><code class="flex name class">
 <span>class <span class="ident">TOC</span></span>
-<span>(</span><span>title='Table of Contents', name=None, protected=True, outline_level=None, style=None, title_style='Contents_20_Heading', entry_style='Contents_20_%d', **kw)</span>
+<span>(</span><span>title: str = 'Table of Contents', name: str | None = None, protected: bool = True, outline_level: int = 0, style: str | None = None, title_style: str = 'Contents_20_Heading', entry_style: str = 'Contents_20_%d', **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Table of content.
@@ -1062,8 +1117,7 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
 <p>outline_level &ndash; int</p>
 <p>style &ndash; str</p>
 <p>title_style &ndash; str</p>
-<p>entry_style &ndash; str</p>
-<p>Return: TOC</p></div>
+<p>entry_style &ndash; str</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1105,39 +1159,39 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
         title_style -- str
 
         entry_style -- str
-
-    Return: TOC
     &#34;&#34;&#34;
 
     _tag = &#34;text:table-of-content&#34;
     _properties = (
-        (&#34;name&#34;, &#34;text:name&#34;),
-        (&#34;style&#34;, &#34;text:style-name&#34;),
-        (&#34;xml_id&#34;, &#34;xml:id&#34;),
-        (&#34;protected&#34;, &#34;text:protected&#34;),
-        (&#34;protection_key&#34;, &#34;text:protection-key&#34;),
-        (&#34;protection_key_digest_algorithm&#34;, &#34;text:protection-key-digest-algorithm&#34;),
+        PropDef(&#34;name&#34;, &#34;text:name&#34;),
+        PropDef(&#34;style&#34;, &#34;text:style-name&#34;),
+        PropDef(&#34;xml_id&#34;, &#34;xml:id&#34;),
+        PropDef(&#34;protected&#34;, &#34;text:protected&#34;),
+        PropDef(&#34;protection_key&#34;, &#34;text:protection-key&#34;),
+        PropDef(
+            &#34;protection_key_digest_algorithm&#34;, &#34;text:protection-key-digest-algorithm&#34;
+        ),
     )
 
     def __init__(
         self,
-        title=&#34;Table of Contents&#34;,
-        name=None,
-        protected=True,
-        outline_level=None,
-        style=None,
-        title_style=&#34;Contents_20_Heading&#34;,
-        entry_style=&#34;Contents_20_%d&#34;,
-        **kw,
-    ):
-        super().__init__(**kw)
+        title: str = &#34;Table of Contents&#34;,
+        name: str | None = None,
+        protected: bool = True,
+        outline_level: int = 0,
+        style: str | None = None,
+        title_style: str = &#34;Contents_20_Heading&#34;,
+        entry_style: str = &#34;Contents_20_%d&#34;,
+        **kwargs: Any,
+    ) -&gt; None:
+        super().__init__(**kwargs)
         if self._do_init:
             if style:
                 self.style = style
             if protected:
                 self.protected = protected
             if name is None:
-                name = &#34;%s1&#34; % title
+                name = f&#34;{title}1&#34;
                 self.name = name
             # Create the source template
             toc_source = self.create_toc_source(
@@ -1150,9 +1204,14 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
                 self.set_toc_title(title, text_style=title_style)
 
     @staticmethod
-    def create_toc_source(title, outline_level, title_style, entry_style):
+    def create_toc_source(
+        title: str,
+        outline_level: int,
+        title_style: str,
+        entry_style: str,
+    ) -&gt; Element:
         toc_source = Element.from_tag(&#34;text:table-of-content-source&#34;)
-        toc_source.set_attribute(&#34;text:outline-level&#34;, outline_level)
+        toc_source.set_attribute(&#34;text:outline-level&#34;, str(outline_level))
         if title:
             title_template = IndexTitleTemplate()
             if title_style:
@@ -1167,12 +1226,13 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
             toc_source.append(template)
         return toc_source
 
-    def get_formatted_text(self, context):
+    def get_formatted_text(self, context: dict | None = None) -&gt; str:
         index_body = self.get_element(&#34;text:index-body&#34;)
 
         if index_body is None:
             return &#34;&#34;
-
+        if context is None:
+            context = {}
         if context[&#34;rst_mode&#34;]:
             return &#34;\n.. contents::\n\n&#34;
 
@@ -1188,26 +1248,26 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
         return &#34;&#34;.join(result)
 
     @property
-    def outline_level(self):
+    def outline_level(self) -&gt; int | None:
         source = self.get_element(&#34;text:table-of-content-source&#34;)
         if source is None:
             return None
         return source.get_attribute_integer(&#34;text:outline-level&#34;)
 
     @outline_level.setter
-    def outline_level(self, level):
+    def outline_level(self, level: int) -&gt; None:
         source = self.get_element(&#34;text:table-of-content-source&#34;)
         if source is None:
             source = Element.from_tag(&#34;text:table-of-content-source&#34;)
             self.insert(source, FIRST_CHILD)
-        source.set_attribute(&#34;text:outline-level&#34;, level)
+        source.set_attribute(&#34;text:outline-level&#34;, str(level))
 
     @property
-    def body(self):
+    def body(self) -&gt; Element | None:
         return self.get_element(&#34;text:index-body&#34;)
 
     @body.setter
-    def body(self, body=None):
+    def body(self, body: Element | None = None) -&gt; Element | None:
         old_body = self.body
         if old_body is not None:
             self.delete(old_body)
@@ -1216,7 +1276,7 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
         self.append(body)
         return body
 
-    def get_title(self):
+    def get_title(self) -&gt; str | None:
         index_body = self.body
         if index_body is None:
             return None
@@ -1225,30 +1285,39 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
             return None
         return index_title.text_content
 
-    def set_toc_title(self, title, style=None, text_style=None):
+    def set_toc_title(
+        self,
+        title: str,
+        style: str | None = None,
+        text_style: str | None = None,
+    ) -&gt; None:
         index_body = self.body
         if index_body is None:
             self.body = None
             index_body = self.body
-        index_title = index_body.get_element(IndexTitle._tag)
+        index_title = index_body.get_element(IndexTitle._tag)  # type: ignore
         if index_title is None:
-            name = &#34;%s_Head&#34; % self.name
+            name = f&#34;{self.name}_Head&#34;
             index_title = IndexTitle(
                 name=name, style=style, title_text=title, text_style=text_style
             )
-            index_body.append(index_title)
+            index_body.append(index_title)  # type: ignore
         else:
             if style:
-                index_title.style = style
+                index_title.style = style  # type: ignore
             paragraph = index_title.get_paragraph()
             if paragraph is None:
                 paragraph = Paragraph()
                 index_title.append(paragraph)
             if text_style:
-                paragraph.style = text_style
+                paragraph.style = text_style  # type: ignore
             paragraph.text = title
 
-    def fill(self, document=None, use_default_styles=True):  # noqa: C901
+    def fill(  # noqa: C901
+        self,
+        document: Document | None = None,
+        use_default_styles: bool = True,
+    ) -&gt; None:
         &#34;&#34;&#34;Fill the TOC with the titles found in the document. A TOC is not
         contextual so it will catch all titles before and after its insertion.
         If the TOC is not attached to a document, attach it beforehand or
@@ -1264,41 +1333,42 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
         &#34;&#34;&#34;
         # Find the body
         if document is not None:
-            body = document.body
+            body: Element | None = document.body
         else:
             body = self.document_body
         if body is None:
-            raise ValueError(&#34;the TOC must be related to a document somehow&#34;)
+            raise ValueError(&#34;The TOC must be related to a document somehow&#34;)
 
         # Save the title
         index_body = self.body
-        title = index_body.get_element(&#34;text:index-title&#34;)
+        title = index_body.get_element(&#34;text:index-title&#34;)  # type: ignore
 
         # Clean the old index-body
         self.body = None
         index_body = self.body
 
         # Restore the title
-        index_body.insert(title, position=0)
+        index_body.insert(title, position=0)  # type: ignore
 
         # Insert default TOC style
         if use_default_styles:
             automatic_styles = body.get_element(&#34;//office:automatic-styles&#34;)
-            for level in range(1, 11):
-                if (
-                    automatic_styles.get_style(
-                        &#34;paragraph&#34;, TOC_ENTRY_STYLE_PATTERN % level
-                    )
-                    is None
-                ):
-                    level_style = default_toc_level_style(level)
-                    automatic_styles.append(level_style)
+            if isinstance(automatic_styles, Element):
+                for level in range(1, 11):
+                    if (
+                        automatic_styles.get_style(
+                            &#34;paragraph&#34;, TOC_ENTRY_STYLE_PATTERN % level
+                        )
+                        is None
+                    ):
+                        level_style = default_toc_level_style(level)
+                        automatic_styles.append(level_style)
 
         # Auto-fill the index
         outline_level = self.outline_level or 10
-        level_indexes = {}
+        level_indexes: dict[int, int] = {}
         for header in body.get_headers():
-            level = header.get_attribute_integer(&#34;text:outline-level&#34;)
+            level = header.get_attribute_integer(&#34;text:outline-level&#34;) or 0
             if level is None or level &gt; outline_level:
                 continue
             number = []
@@ -1314,13 +1384,13 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
             for idx in range(level + 1, 11):
                 if idx in level_indexes:
                     del level_indexes[idx]
-            number = &#34;.&#34;.join(number) + &#34;.&#34;
+            number_str = &#34;.&#34;.join(number) + &#34;.&#34;
             # Make the title with &#34;1.2.3. Title&#34; format
-            title = f&#34;{number} {header.text}&#34;
+            title = f&#34;{number_str} {header.text}&#34;
             paragraph = Paragraph(title)
             if use_default_styles:
                 paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
-            index_body.append(paragraph)</code></pre>
+            index_body.append(paragraph)  # type: ignore</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1329,7 +1399,7 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
 <h3>Static methods</h3>
 <dl>
 <dt id="odfdo.toc.TOC.create_toc_source"><code class="name flex">
-<span>def <span class="ident">create_toc_source</span></span>(<span>title, outline_level, title_style, entry_style)</span>
+<span>def <span class="ident">create_toc_source</span></span>(<span>title: str, outline_level: int, title_style: str, entry_style: str) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1338,9 +1408,14 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
-def create_toc_source(title, outline_level, title_style, entry_style):
+def create_toc_source(
+    title: str,
+    outline_level: int,
+    title_style: str,
+    entry_style: str,
+) -&gt; Element:
     toc_source = Element.from_tag(&#34;text:table-of-content-source&#34;)
-    toc_source.set_attribute(&#34;text:outline-level&#34;, outline_level)
+    toc_source.set_attribute(&#34;text:outline-level&#34;, str(outline_level))
     if title:
         title_template = IndexTitleTemplate()
         if title_style:
@@ -1359,7 +1434,7 @@ def create_toc_source(title, outline_level, title_style, entry_style):
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.toc.TOC.body"><code class="name">var <span class="ident">body</span></code></dt>
+<dt id="odfdo.toc.TOC.body"><code class="name">var <span class="ident">body</span> : <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a> | None</code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -1367,19 +1442,22 @@ def create_toc_source(title, outline_level, title_style, entry_style):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def body(self):
+def body(self) -&gt; Element | None:
     return self.get_element(&#34;text:index-body&#34;)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TOC.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dt id="odfdo.toc.TOC.name"><code class="name">var <span class="ident">name</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1389,7 +1467,7 @@ def body(self):
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TOC.outline_level"><code class="name">var <span class="ident">outline_level</span></code></dt>
+<dt id="odfdo.toc.TOC.outline_level"><code class="name">var <span class="ident">outline_level</span> : int | None</code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -1397,22 +1475,25 @@ def body(self):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def outline_level(self):
+def outline_level(self) -&gt; int | None:
     source = self.get_element(&#34;text:table-of-content-source&#34;)
     if source is None:
         return None
     return source.get_attribute_integer(&#34;text:outline-level&#34;)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TOC.protected"><code class="name">var <span class="ident">protected</span></code></dt>
+<dt id="odfdo.toc.TOC.protected"><code class="name">var <span class="ident">protected</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:protected</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1422,15 +1503,18 @@ def outline_level(self):
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TOC.protection_key"><code class="name">var <span class="ident">protection_key</span></code></dt>
+<dt id="odfdo.toc.TOC.protection_key"><code class="name">var <span class="ident">protection_key</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:protection-key</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1440,15 +1524,18 @@ def outline_level(self):
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TOC.protection_key_digest_algorithm"><code class="name">var <span class="ident">protection_key_digest_algorithm</span></code></dt>
+<dt id="odfdo.toc.TOC.protection_key_digest_algorithm"><code class="name">var <span class="ident">protection_key_digest_algorithm</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:protection-key-digest-algorithm</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1458,15 +1545,18 @@ def outline_level(self):
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TOC.style"><code class="name">var <span class="ident">style</span></code></dt>
+<dt id="odfdo.toc.TOC.style"><code class="name">var <span class="ident">style</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:style-name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1476,15 +1566,18 @@ def outline_level(self):
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TOC.xml_id"><code class="name">var <span class="ident">xml_id</span></code></dt>
+<dt id="odfdo.toc.TOC.xml_id"><code class="name">var <span class="ident">xml_id</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute xml:id</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1498,7 +1591,7 @@ def outline_level(self):
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.toc.TOC.fill"><code class="name flex">
-<span>def <span class="ident">fill</span></span>(<span>self, document=None, use_default_styles=True)</span>
+<span>def <span class="ident">fill</span></span>(<span>self, document: Document | None = None, use_default_styles: bool = True) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Fill the TOC with the titles found in the document. A TOC is not
@@ -1513,7 +1606,11 @@ provide one as argument.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def fill(self, document=None, use_default_styles=True):  # noqa: C901
+<pre><code class="python">def fill(  # noqa: C901
+    self,
+    document: Document | None = None,
+    use_default_styles: bool = True,
+) -&gt; None:
     &#34;&#34;&#34;Fill the TOC with the titles found in the document. A TOC is not
     contextual so it will catch all titles before and after its insertion.
     If the TOC is not attached to a document, attach it beforehand or
@@ -1529,41 +1626,42 @@ provide one as argument.</p>
     &#34;&#34;&#34;
     # Find the body
     if document is not None:
-        body = document.body
+        body: Element | None = document.body
     else:
         body = self.document_body
     if body is None:
-        raise ValueError(&#34;the TOC must be related to a document somehow&#34;)
+        raise ValueError(&#34;The TOC must be related to a document somehow&#34;)
 
     # Save the title
     index_body = self.body
-    title = index_body.get_element(&#34;text:index-title&#34;)
+    title = index_body.get_element(&#34;text:index-title&#34;)  # type: ignore
 
     # Clean the old index-body
     self.body = None
     index_body = self.body
 
     # Restore the title
-    index_body.insert(title, position=0)
+    index_body.insert(title, position=0)  # type: ignore
 
     # Insert default TOC style
     if use_default_styles:
         automatic_styles = body.get_element(&#34;//office:automatic-styles&#34;)
-        for level in range(1, 11):
-            if (
-                automatic_styles.get_style(
-                    &#34;paragraph&#34;, TOC_ENTRY_STYLE_PATTERN % level
-                )
-                is None
-            ):
-                level_style = default_toc_level_style(level)
-                automatic_styles.append(level_style)
+        if isinstance(automatic_styles, Element):
+            for level in range(1, 11):
+                if (
+                    automatic_styles.get_style(
+                        &#34;paragraph&#34;, TOC_ENTRY_STYLE_PATTERN % level
+                    )
+                    is None
+                ):
+                    level_style = default_toc_level_style(level)
+                    automatic_styles.append(level_style)
 
     # Auto-fill the index
     outline_level = self.outline_level or 10
-    level_indexes = {}
+    level_indexes: dict[int, int] = {}
     for header in body.get_headers():
-        level = header.get_attribute_integer(&#34;text:outline-level&#34;)
+        level = header.get_attribute_integer(&#34;text:outline-level&#34;) or 0
         if level is None or level &gt; outline_level:
             continue
         number = []
@@ -1579,17 +1677,17 @@ provide one as argument.</p>
         for idx in range(level + 1, 11):
             if idx in level_indexes:
                 del level_indexes[idx]
-        number = &#34;.&#34;.join(number) + &#34;.&#34;
+        number_str = &#34;.&#34;.join(number) + &#34;.&#34;
         # Make the title with &#34;1.2.3. Title&#34; format
-        title = f&#34;{number} {header.text}&#34;
+        title = f&#34;{number_str} {header.text}&#34;
         paragraph = Paragraph(title)
         if use_default_styles:
             paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
-        index_body.append(paragraph)</code></pre>
+        index_body.append(paragraph)  # type: ignore</code></pre>
 </details>
 </dd>
 <dt id="odfdo.toc.TOC.get_title"><code class="name flex">
-<span>def <span class="ident">get_title</span></span>(<span>self)</span>
+<span>def <span class="ident">get_title</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1597,7 +1695,7 @@ provide one as argument.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_title(self):
+<pre><code class="python">def get_title(self) -&gt; str | None:
     index_body = self.body
     if index_body is None:
         return None
@@ -1608,7 +1706,7 @@ provide one as argument.</p>
 </details>
 </dd>
 <dt id="odfdo.toc.TOC.set_toc_title"><code class="name flex">
-<span>def <span class="ident">set_toc_title</span></span>(<span>self, title, style=None, text_style=None)</span>
+<span>def <span class="ident">set_toc_title</span></span>(<span>self, title: str, style: str | None = None, text_style: str | None = None) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1616,27 +1714,32 @@ provide one as argument.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_toc_title(self, title, style=None, text_style=None):
+<pre><code class="python">def set_toc_title(
+    self,
+    title: str,
+    style: str | None = None,
+    text_style: str | None = None,
+) -&gt; None:
     index_body = self.body
     if index_body is None:
         self.body = None
         index_body = self.body
-    index_title = index_body.get_element(IndexTitle._tag)
+    index_title = index_body.get_element(IndexTitle._tag)  # type: ignore
     if index_title is None:
-        name = &#34;%s_Head&#34; % self.name
+        name = f&#34;{self.name}_Head&#34;
         index_title = IndexTitle(
             name=name, style=style, title_text=title, text_style=text_style
         )
-        index_body.append(index_title)
+        index_body.append(index_title)  # type: ignore
     else:
         if style:
-            index_title.style = style
+            index_title.style = style  # type: ignore
         paragraph = index_title.get_paragraph()
         if paragraph is None:
             paragraph = Paragraph()
             index_title.append(paragraph)
         if text_style:
-            paragraph.style = text_style
+            paragraph.style = text_style  # type: ignore
         paragraph.text = title</code></pre>
 </details>
 </dd>
@@ -1653,12 +1756,16 @@ provide one as argument.</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -1758,13 +1865,11 @@ provide one as argument.</p>
 </dd>
 <dt id="odfdo.toc.TabStopStyle"><code class="flex name class">
 <span>class <span class="ident">TabStopStyle</span></span>
-<span>(</span><span>style_char=None, leader_color=None, leader_style=None, leader_text=None, leader_text_style=None, leader_type=None, leader_width=None, style_position=None, style_type=None, **kw)</span>
+<span>(</span><span>style_char: str | None = None, leader_color: str | None = None, leader_style: str | None = None, leader_text: str | None = None, leader_text_style: str | None = None, leader_type: str | None = None, leader_width: str | None = None, style_position: str | None = None, style_type: str | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>ODF "style:tab-stop"
-Base style for a TOC entryBase style for a TOC entry</p>
-<p>Return: TabStopStyle</p>
-<p>9, style:position 19.508.3, style:type 19.515.3.</p></div>
+Base style for a TOC entryBase style for a TOC entry</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1772,39 +1877,35 @@ Base style for a TOC entryBase style for a TOC entry</p>
 <pre><code class="python">class TabStopStyle(Element):
     &#34;&#34;&#34;ODF &#34;style:tab-stop&#34;
     Base style for a TOC entryBase style for a TOC entry
-
-    Return: TabStopStyle
-
-       9, style:position 19.508.3, style:type 19.515.3.
     &#34;&#34;&#34;
 
     _tag = &#34;style:tab-stop&#34;
     _properties = (
-        (&#34;style_char&#34;, &#34;style:char&#34;),
-        (&#34;leader_color&#34;, &#34;style:leader-color&#34;),
-        (&#34;leader_style&#34;, &#34;style:leader-style&#34;),
-        (&#34;leader_text&#34;, &#34;style:leader-text&#34;),
-        (&#34;leader_text_style&#34;, &#34;style:leader-text-style&#34;),
-        (&#34;leader_type&#34;, &#34;style:leader-type&#34;),
-        (&#34;leader_width&#34;, &#34;style:leader-width&#34;),
-        (&#34;style_position&#34;, &#34;style:position&#34;),
-        (&#34;style_type&#34;, &#34;style:type&#34;),
+        PropDef(&#34;style_char&#34;, &#34;style:char&#34;),
+        PropDef(&#34;leader_color&#34;, &#34;style:leader-color&#34;),
+        PropDef(&#34;leader_style&#34;, &#34;style:leader-style&#34;),
+        PropDef(&#34;leader_text&#34;, &#34;style:leader-text&#34;),
+        PropDef(&#34;leader_text_style&#34;, &#34;style:leader-text-style&#34;),
+        PropDef(&#34;leader_type&#34;, &#34;style:leader-type&#34;),
+        PropDef(&#34;leader_width&#34;, &#34;style:leader-width&#34;),
+        PropDef(&#34;style_position&#34;, &#34;style:position&#34;),
+        PropDef(&#34;style_type&#34;, &#34;style:type&#34;),
     )
 
     def __init__(  # noqa: C901
         self,
-        style_char=None,
-        leader_color=None,
-        leader_style=None,
-        leader_text=None,
-        leader_text_style=None,
-        leader_type=None,
-        leader_width=None,
-        style_position=None,
-        style_type=None,
-        **kw,
+        style_char: str | None = None,
+        leader_color: str | None = None,
+        leader_style: str | None = None,
+        leader_text: str | None = None,
+        leader_text_style: str | None = None,
+        leader_type: str | None = None,
+        leader_width: str | None = None,
+        style_position: str | None = None,
+        style_type: str | None = None,
+        **kwargs: Any,
     ):
-        super().__init__(**kw)
+        super().__init__(**kwargs)
         if self._do_init:
             if style_char:
                 self.style_char = style_char
@@ -1831,15 +1932,18 @@ Base style for a TOC entryBase style for a TOC entry</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.toc.TabStopStyle.leader_color"><code class="name">var <span class="ident">leader_color</span></code></dt>
+<dt id="odfdo.toc.TabStopStyle.leader_color"><code class="name">var <span class="ident">leader_color</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute style:leader-color</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1849,15 +1953,18 @@ Base style for a TOC entryBase style for a TOC entry</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TabStopStyle.leader_style"><code class="name">var <span class="ident">leader_style</span></code></dt>
+<dt id="odfdo.toc.TabStopStyle.leader_style"><code class="name">var <span class="ident">leader_style</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute style:leader-style</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1867,15 +1974,18 @@ Base style for a TOC entryBase style for a TOC entry</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TabStopStyle.leader_text"><code class="name">var <span class="ident">leader_text</span></code></dt>
+<dt id="odfdo.toc.TabStopStyle.leader_text"><code class="name">var <span class="ident">leader_text</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute style:leader-text</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1885,15 +1995,18 @@ Base style for a TOC entryBase style for a TOC entry</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TabStopStyle.leader_text_style"><code class="name">var <span class="ident">leader_text_style</span></code></dt>
+<dt id="odfdo.toc.TabStopStyle.leader_text_style"><code class="name">var <span class="ident">leader_text_style</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute style:leader-text-style</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1903,15 +2016,18 @@ Base style for a TOC entryBase style for a TOC entry</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TabStopStyle.leader_type"><code class="name">var <span class="ident">leader_type</span></code></dt>
+<dt id="odfdo.toc.TabStopStyle.leader_type"><code class="name">var <span class="ident">leader_type</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute style:leader-type</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1921,15 +2037,18 @@ Base style for a TOC entryBase style for a TOC entry</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TabStopStyle.leader_width"><code class="name">var <span class="ident">leader_width</span></code></dt>
+<dt id="odfdo.toc.TabStopStyle.leader_width"><code class="name">var <span class="ident">leader_width</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute style:leader-width</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1939,15 +2058,18 @@ Base style for a TOC entryBase style for a TOC entry</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TabStopStyle.style_char"><code class="name">var <span class="ident">style_char</span></code></dt>
+<dt id="odfdo.toc.TabStopStyle.style_char"><code class="name">var <span class="ident">style_char</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute style:char</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1957,15 +2079,18 @@ Base style for a TOC entryBase style for a TOC entry</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TabStopStyle.style_position"><code class="name">var <span class="ident">style_position</span></code></dt>
+<dt id="odfdo.toc.TabStopStyle.style_position"><code class="name">var <span class="ident">style_position</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute style:position</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1975,15 +2100,18 @@ Base style for a TOC entryBase style for a TOC entry</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TabStopStyle.style_type"><code class="name">var <span class="ident">style_type</span></code></dt>
+<dt id="odfdo.toc.TabStopStyle.style_type"><code class="name">var <span class="ident">style_type</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute style:type</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -2006,12 +2134,16 @@ Base style for a TOC entryBase style for a TOC entry</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -2111,13 +2243,12 @@ Base style for a TOC entryBase style for a TOC entry</p>
 </dd>
 <dt id="odfdo.toc.TocEntryTemplate"><code class="flex name class">
 <span>class <span class="ident">TocEntryTemplate</span></span>
-<span>(</span><span>style=None, outline_level=None, **kw)</span>
+<span>(</span><span>style: str | None = None, outline_level: int | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>ODF "text:table-of-content-entry-template"</p>
 <h2 id="arguments">Arguments</h2>
-<p>style &ndash; str</p>
-<p>Return: TocEntryTemplate</p></div>
+<p>style &ndash; str</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2128,15 +2259,18 @@ Base style for a TOC entryBase style for a TOC entry</p>
     Arguments:
 
         style -- str
-
-    Return: TocEntryTemplate
     &#34;&#34;&#34;
 
     _tag = &#34;text:table-of-content-entry-template&#34;
-    _properties = ((&#34;style&#34;, &#34;text:style-name&#34;),)
+    _properties = (PropDef(&#34;style&#34;, &#34;text:style-name&#34;),)
 
-    def __init__(self, style=None, outline_level=None, **kw):
-        super().__init__(**kw)
+    def __init__(
+        self,
+        style: str | None = None,
+        outline_level: int | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
+        super().__init__(**kwargs)
         if self._do_init:
             if style:
                 self.style = style
@@ -2144,14 +2278,14 @@ Base style for a TOC entryBase style for a TOC entry</p>
                 self.outline_level = outline_level
 
     @property
-    def outline_level(self):
+    def outline_level(self) -&gt; int | None:
         return self.get_attribute_integer(&#34;text:outline-level&#34;)
 
     @outline_level.setter
-    def outline_level(self, level):
-        self.set_attribute(&#34;text:outline-level&#34;, level)
+    def outline_level(self, level: int) -&gt; None:
+        self.set_attribute(&#34;text:outline-level&#34;, str(level))
 
-    def complete_defaults(self):
+    def complete_defaults(self) -&gt; None:
         self.append(Element.from_tag(&#34;text:index-entry-chapter&#34;))
         self.append(Element.from_tag(&#34;text:index-entry-text&#34;))
         self.append(Element.from_tag(&#34;text:index-entry-text&#34;))
@@ -2167,7 +2301,7 @@ Base style for a TOC entryBase style for a TOC entry</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.toc.TocEntryTemplate.outline_level"><code class="name">var <span class="ident">outline_level</span></code></dt>
+<dt id="odfdo.toc.TocEntryTemplate.outline_level"><code class="name">var <span class="ident">outline_level</span> : int | None</code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -2175,19 +2309,22 @@ Base style for a TOC entryBase style for a TOC entry</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def outline_level(self):
+def outline_level(self) -&gt; int | None:
     return self.get_attribute_integer(&#34;text:outline-level&#34;)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.toc.TocEntryTemplate.style"><code class="name">var <span class="ident">style</span></code></dt>
+<dt id="odfdo.toc.TocEntryTemplate.style"><code class="name">var <span class="ident">style</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:style-name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -2201,7 +2338,7 @@ def outline_level(self):
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.toc.TocEntryTemplate.complete_defaults"><code class="name flex">
-<span>def <span class="ident">complete_defaults</span></span>(<span>self)</span>
+<span>def <span class="ident">complete_defaults</span></span>(<span>self) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2209,7 +2346,7 @@ def outline_level(self):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def complete_defaults(self):
+<pre><code class="python">def complete_defaults(self) -&gt; None:
     self.append(Element.from_tag(&#34;text:index-entry-chapter&#34;))
     self.append(Element.from_tag(&#34;text:index-entry-text&#34;))
     self.append(Element.from_tag(&#34;text:index-entry-text&#34;))
@@ -2233,12 +2370,16 @@ def outline_level(self):
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>

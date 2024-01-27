@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.header API documentation</title>
-<meta name="description" content="Header class for &#34;text:h&#34;" />
+<meta name="description" content="Header class for &#34;text:h&#34;." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,12 +22,12 @@
 <h1 class="title">Module <code>odfdo.header</code></h1>
 </header>
 <section id="section-intro">
-<p>Header class for "text:h"</p>
+<p>Header class for "text:h".</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -47,11 +47,14 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
-&#34;&#34;&#34;Header class for &#34;text:h&#34;
+&#34;&#34;&#34;Header class for &#34;text:h&#34;.
 &#34;&#34;&#34;
-from re import sub
+from __future__ import annotations
 
-from .element import register_element_class
+from re import sub
+from typing import Any
+
+from .element import PropDef, register_element_class
 from .paragraph import Paragraph
 
 
@@ -60,22 +63,22 @@ class Header(Paragraph):
 
     _tag = &#34;text:h&#34;
     _properties = (
-        (&#34;level&#34;, &#34;text:outline-level&#34;),
-        (&#34;restart_numbering&#34;, &#34;text:restart-numbering&#34;),
-        (&#34;start_value&#34;, &#34;text:start-value&#34;),
-        (&#34;suppress_numbering&#34;, &#34;text:suppress-numbering&#34;),
+        PropDef(&#34;level&#34;, &#34;text:outline-level&#34;),
+        PropDef(&#34;restart_numbering&#34;, &#34;text:restart-numbering&#34;),
+        PropDef(&#34;start_value&#34;, &#34;text:start-value&#34;),
+        PropDef(&#34;suppress_numbering&#34;, &#34;text:suppress-numbering&#34;),
     )
 
     def __init__(
         self,
-        level=1,
-        text=None,
-        restart_numbering=False,
-        start_value=None,
-        suppress_numbering=False,
-        style=None,
-        **kwargs,
-    ):
+        level: int = 1,
+        text: str | None = None,
+        restart_numbering: bool = False,
+        start_value: int | None = None,
+        suppress_numbering: bool = False,
+        style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         &#34;&#34;&#34;Create a header element of the given style and level, containing the
         optional given text.
 
@@ -92,8 +95,6 @@ class Header(Paragraph):
             start_value -- int
 
             style -- str
-
-        Return: Header
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
@@ -102,14 +103,18 @@ class Header(Paragraph):
                 self.text = text
             if restart_numbering:
                 self.restart_numbering = True
-            if start_value:
+            if start_value is not None:
                 self.start_value = start_value
             if suppress_numbering:
                 self.suppress_numbering = True
             if style:
                 self.style = style
 
-    def get_formatted_text(self, context=None, simple=False):
+    def get_formatted_text(
+        self,
+        context: dict | None = None,
+        simple: bool = False,
+    ) -&gt; str:
         if not context:
             context = {
                 &#34;document&#34;: None,
@@ -159,7 +164,7 @@ register_element_class(Header)</code></pre>
 <dl>
 <dt id="odfdo.header.Header"><code class="flex name class">
 <span>class <span class="ident">Header</span></span>
-<span>(</span><span>level=1, text=None, restart_numbering=False, start_value=None, suppress_numbering=False, style=None, **kwargs)</span>
+<span>(</span><span>level: int = 1, text: str | None = None, restart_numbering: bool = False, start_value: int | None = None, suppress_numbering: bool = False, style: str | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Specialised paragraph for headings "text:h".</p>
@@ -171,8 +176,7 @@ optional given text.</p>
 <p>text &ndash; str</p>
 <p>restart_numbering &ndash; bool</p>
 <p>start_value &ndash; int</p>
-<p>style &ndash; str</p>
-<p>Return: Header</p></div>
+<p>style &ndash; str</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -182,22 +186,22 @@ optional given text.</p>
 
     _tag = &#34;text:h&#34;
     _properties = (
-        (&#34;level&#34;, &#34;text:outline-level&#34;),
-        (&#34;restart_numbering&#34;, &#34;text:restart-numbering&#34;),
-        (&#34;start_value&#34;, &#34;text:start-value&#34;),
-        (&#34;suppress_numbering&#34;, &#34;text:suppress-numbering&#34;),
+        PropDef(&#34;level&#34;, &#34;text:outline-level&#34;),
+        PropDef(&#34;restart_numbering&#34;, &#34;text:restart-numbering&#34;),
+        PropDef(&#34;start_value&#34;, &#34;text:start-value&#34;),
+        PropDef(&#34;suppress_numbering&#34;, &#34;text:suppress-numbering&#34;),
     )
 
     def __init__(
         self,
-        level=1,
-        text=None,
-        restart_numbering=False,
-        start_value=None,
-        suppress_numbering=False,
-        style=None,
-        **kwargs,
-    ):
+        level: int = 1,
+        text: str | None = None,
+        restart_numbering: bool = False,
+        start_value: int | None = None,
+        suppress_numbering: bool = False,
+        style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         &#34;&#34;&#34;Create a header element of the given style and level, containing the
         optional given text.
 
@@ -214,8 +218,6 @@ optional given text.</p>
             start_value -- int
 
             style -- str
-
-        Return: Header
         &#34;&#34;&#34;
         super().__init__(**kwargs)
         if self._do_init:
@@ -224,14 +226,18 @@ optional given text.</p>
                 self.text = text
             if restart_numbering:
                 self.restart_numbering = True
-            if start_value:
+            if start_value is not None:
                 self.start_value = start_value
             if suppress_numbering:
                 self.suppress_numbering = True
             if style:
                 self.style = style
 
-    def get_formatted_text(self, context=None, simple=False):
+    def get_formatted_text(
+        self,
+        context: dict | None = None,
+        simple: bool = False,
+    ) -&gt; str:
         if not context:
             context = {
                 &#34;document&#34;: None,
@@ -272,15 +278,18 @@ optional given text.</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.header.Header.level"><code class="name">var <span class="ident">level</span></code></dt>
+<dt id="odfdo.header.Header.level"><code class="name">var <span class="ident">level</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:outline-level</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -290,15 +299,18 @@ optional given text.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.header.Header.restart_numbering"><code class="name">var <span class="ident">restart_numbering</span></code></dt>
+<dt id="odfdo.header.Header.restart_numbering"><code class="name">var <span class="ident">restart_numbering</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:restart-numbering</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -308,15 +320,18 @@ optional given text.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.header.Header.start_value"><code class="name">var <span class="ident">start_value</span></code></dt>
+<dt id="odfdo.header.Header.start_value"><code class="name">var <span class="ident">start_value</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:start-value</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -326,15 +341,18 @@ optional given text.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.header.Header.suppress_numbering"><code class="name">var <span class="ident">suppress_numbering</span></code></dt>
+<dt id="odfdo.header.Header.suppress_numbering"><code class="name">var <span class="ident">suppress_numbering</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute text:suppress-numbering</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -358,12 +376,16 @@ optional given text.</p>
 <li><code><a title="odfdo.paragraph.Paragraph.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>

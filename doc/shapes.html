@@ -6,7 +6,7 @@
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.shapes API documentation</title>
 <meta name="description" content="Drawing classes ShapeBase, LineShape, RectangleShape, EllipseShape,
-ConnectorShape and DrawGroup" />
+ConnectorShape and DrawGroup." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -24,12 +24,12 @@ ConnectorShape and DrawGroup" />
 </header>
 <section id="section-intro">
 <p>Drawing classes ShapeBase, LineShape, RectangleShape, EllipseShape,
-ConnectorShape and DrawGroup</p>
+ConnectorShape and DrawGroup.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -51,9 +51,13 @@ ConnectorShape and DrawGroup</p>
 # Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
 #          Romain Gauthier &lt;romain@itaapy.com&gt;
 &#34;&#34;&#34;Drawing classes ShapeBase, LineShape, RectangleShape, EllipseShape,
-ConnectorShape and DrawGroup
+ConnectorShape and DrawGroup.
 &#34;&#34;&#34;
-from .element import Element, register_element_class
+from __future__ import annotations
+
+from typing import Any
+
+from .element import Element, PropDef, register_element_class
 from .frame import AnchorMix, PosMix, SizeMix, ZMix
 
 
@@ -61,29 +65,29 @@ class ShapeBase(Element, SizeMix, PosMix):
     &#34;&#34;&#34;Base class for shapes&#34;&#34;&#34;
 
     _tag = &#34;draw:shape-odfdo-notodf&#34;
-    _properties = (
-        (&#34;draw_id&#34;, &#34;draw:id&#34;),
-        (&#34;layer&#34;, &#34;draw:layer&#34;),
-        (&#34;width&#34;, &#34;svg:width&#34;),
-        (&#34;height&#34;, &#34;svg:height&#34;),
-        (&#34;pos_x&#34;, &#34;svg:x&#34;),
-        (&#34;pos_y&#34;, &#34;svg:y&#34;),
-        (&#34;presentation_class&#34;, &#34;presentation:class&#34;),
-        (&#34;style&#34;, &#34;draw:style-name&#34;),
-        (&#34;text_style&#34;, &#34;draw:text-style-name&#34;),
+    _properties: tuple[PropDef, ...] = (
+        PropDef(&#34;draw_id&#34;, &#34;draw:id&#34;),
+        PropDef(&#34;layer&#34;, &#34;draw:layer&#34;),
+        PropDef(&#34;width&#34;, &#34;svg:width&#34;),
+        PropDef(&#34;height&#34;, &#34;svg:height&#34;),
+        PropDef(&#34;pos_x&#34;, &#34;svg:x&#34;),
+        PropDef(&#34;pos_y&#34;, &#34;svg:y&#34;),
+        PropDef(&#34;presentation_class&#34;, &#34;presentation:class&#34;),
+        PropDef(&#34;style&#34;, &#34;draw:style-name&#34;),
+        PropDef(&#34;text_style&#34;, &#34;draw:text-style-name&#34;),
     )
 
     def __init__(
         self,
-        style=None,
-        text_style=None,
-        draw_id=None,
-        layer=None,
-        position=None,
-        size=None,
-        presentation_class=None,
-        **kwargs,
-    ):
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        position: tuple | None = None,
+        size: tuple | None = None,
+        presentation_class: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         super().__init__(**kwargs)
         if self._do_init:
             if style:
@@ -101,8 +105,8 @@ class ShapeBase(Element, SizeMix, PosMix):
             if presentation_class:
                 self.presentation_class = presentation_class
 
-    def get_formatted_text(self, context):
-        result = []
+    def get_formatted_text(self, context: dict | None = None) -&gt; str:
+        result: list[str] = []
         for child in self.children:
             result.append(child.get_formatted_text(context))
         result.append(&#34;\n&#34;)
@@ -128,29 +132,27 @@ class LineShape(ShapeBase):
         p1 -- (str, str)
 
         p2 -- (str, str)
-
-    Return: LineShape
     &#34;&#34;&#34;
 
     _tag = &#34;draw:line&#34;
-    _properties = (
-        (&#34;x1&#34;, &#34;svg:x1&#34;),
-        (&#34;y1&#34;, &#34;svg:y1&#34;),
-        (&#34;x2&#34;, &#34;svg:x2&#34;),
-        (&#34;y2&#34;, &#34;svg:y2&#34;),
+    _properties: tuple[PropDef, ...] = (
+        PropDef(&#34;x1&#34;, &#34;svg:x1&#34;),
+        PropDef(&#34;y1&#34;, &#34;svg:y1&#34;),
+        PropDef(&#34;x2&#34;, &#34;svg:x2&#34;),
+        PropDef(&#34;y2&#34;, &#34;svg:y2&#34;),
     )
 
     def __init__(
         self,
-        style=None,
-        text_style=None,
-        draw_id=None,
-        layer=None,
-        p1=None,
-        p2=None,
-        **kw,
-    ):
-        kw.update(
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        p1: tuple | None = None,
+        p2: tuple | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
+        kwargs.update(
             {
                 &#34;style&#34;: style,
                 &#34;text_style&#34;: text_style,
@@ -158,7 +160,7 @@ class LineShape(ShapeBase):
                 &#34;layer&#34;: layer,
             }
         )
-        super().__init__(**kw)
+        super().__init__(**kwargs)
         if self._do_init:
             if p1:
                 self.x1 = p1[0]
@@ -184,27 +186,26 @@ class RectangleShape(ShapeBase):
 
         layer -- str
 
-        size -- (str, str)
-
         position -- (str, str)
 
-    Return: RectangleShape
+        size -- (str, str)
+
     &#34;&#34;&#34;
 
     _tag = &#34;draw:rect&#34;
-    _properties = ()
+    _properties: tuple[PropDef, ...] = ()
 
     def __init__(
         self,
-        style=None,
-        text_style=None,
-        draw_id=None,
-        layer=None,
-        size=None,
-        position=None,
-        **kw,
-    ):
-        kw.update(
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        position: tuple | None = None,
+        size: tuple | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
+        kwargs.update(
             {
                 &#34;style&#34;: style,
                 &#34;text_style&#34;: text_style,
@@ -214,7 +215,7 @@ class RectangleShape(ShapeBase):
                 &#34;position&#34;: position,
             }
         )
-        super().__init__(**kw)
+        super().__init__(**kwargs)
 
 
 RectangleShape._define_attribut_property()
@@ -233,27 +234,26 @@ class EllipseShape(ShapeBase):
 
         layer -- str
 
-        size -- (str, str)
-
         position -- (str, str)
 
-    Return: EllipseShape
+        size -- (str, str)
+
     &#34;&#34;&#34;
 
     _tag = &#34;draw:ellipse&#34;
-    _properties = ()
+    _properties: tuple[PropDef, ...] = ()
 
     def __init__(
         self,
-        style=None,
-        text_style=None,
-        draw_id=None,
-        layer=None,
-        size=None,
-        position=None,
-        **kw,
-    ):
-        kw.update(
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        position: tuple | None = None,
+        size: tuple | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
+        kwargs.update(
             {
                 &#34;style&#34;: style,
                 &#34;text_style&#34;: text_style,
@@ -263,7 +263,7 @@ class EllipseShape(ShapeBase):
                 &#34;position&#34;: position,
             }
         )
-        super().__init__(**kw)
+        super().__init__(**kwargs)
 
 
 EllipseShape._define_attribut_property()
@@ -289,35 +289,33 @@ class ConnectorShape(ShapeBase):
         p1 -- (str, str)
 
         p2 -- (str, str)
-
-    Return: ConnectorShape
     &#34;&#34;&#34;
 
     _tag = &#34;draw:connector&#34;
-    _properties = (
-        (&#34;start_shape&#34;, &#34;draw:start-shape&#34;),
-        (&#34;end_shape&#34;, &#34;draw:end-shape&#34;),
-        (&#34;start_glue_point&#34;, &#34;draw:start-glue-point&#34;),
-        (&#34;end_glue_point&#34;, &#34;draw:end-glue-point&#34;),
-        (&#34;x1&#34;, &#34;svg:x1&#34;),
-        (&#34;y1&#34;, &#34;svg:y1&#34;),
-        (&#34;x2&#34;, &#34;svg:x2&#34;),
-        (&#34;y2&#34;, &#34;svg:y2&#34;),
+    _properties: tuple[PropDef, ...] = (
+        PropDef(&#34;start_shape&#34;, &#34;draw:start-shape&#34;),
+        PropDef(&#34;end_shape&#34;, &#34;draw:end-shape&#34;),
+        PropDef(&#34;start_glue_point&#34;, &#34;draw:start-glue-point&#34;),
+        PropDef(&#34;end_glue_point&#34;, &#34;draw:end-glue-point&#34;),
+        PropDef(&#34;x1&#34;, &#34;svg:x1&#34;),
+        PropDef(&#34;y1&#34;, &#34;svg:y1&#34;),
+        PropDef(&#34;x2&#34;, &#34;svg:x2&#34;),
+        PropDef(&#34;y2&#34;, &#34;svg:y2&#34;),
     )
 
     def __init__(
         self,
-        style=None,
-        text_style=None,
-        draw_id=None,
-        layer=None,
-        connected_shapes=None,
-        glue_points=None,
-        p1=None,
-        p2=None,
-        **kw,
-    ):
-        kw.update(
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        connected_shapes: tuple | None = None,
+        glue_points: tuple | None = None,
+        p1: tuple | None = None,
+        p2: tuple | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
+        kwargs.update(
             {
                 &#34;style&#34;: style,
                 &#34;text_style&#34;: text_style,
@@ -325,7 +323,7 @@ class ConnectorShape(ShapeBase):
                 &#34;layer&#34;: layer,
             }
         )
-        super().__init__(**kw)
+        super().__init__(**kwargs)
         if self._do_init:
             if connected_shapes:
                 self.start_shape = connected_shapes[0].draw_id
@@ -373,38 +371,38 @@ class DrawGroup(Element, AnchorMix, ZMix, PosMix):
     &#34;&#34;&#34;
 
     _tag = &#34;draw:g&#34;
-    _properties = (
-        (&#34;draw_id&#34;, &#34;draw:id&#34;),
-        (&#34;caption_id&#34;, &#34;draw:caption-id&#34;),
-        (&#34;draw_class_names&#34;, &#34;draw:class-names&#34;),
-        (&#34;name&#34;, &#34;draw:name&#34;),
-        (&#34;style&#34;, &#34;draw:style-name&#34;),
+    _properties: tuple[PropDef, ...] = (
+        PropDef(&#34;draw_id&#34;, &#34;draw:id&#34;),
+        PropDef(&#34;caption_id&#34;, &#34;draw:caption-id&#34;),
+        PropDef(&#34;draw_class_names&#34;, &#34;draw:class-names&#34;),
+        PropDef(&#34;name&#34;, &#34;draw:name&#34;),
+        PropDef(&#34;style&#34;, &#34;draw:style-name&#34;),
         # (&#39;z_index&#39;, &#39;draw:z-index&#39;),
-        (&#34;presentation_class_names&#34;, &#34;presentation:class-names&#34;),
-        (&#34;presentation_style&#34;, &#34;presentation:style-name&#34;),
-        (&#34;table_end_cell&#34;, &#34;table:end-cell-address&#34;),
-        (&#34;table_end_x&#34;, &#34;table:end-x&#34;),
-        (&#34;table_end_y&#34;, &#34;table:end-y&#34;),
-        (&#34;table_background&#34;, &#34;table:table-background&#34;),
+        PropDef(&#34;presentation_class_names&#34;, &#34;presentation:class-names&#34;),
+        PropDef(&#34;presentation_style&#34;, &#34;presentation:style-name&#34;),
+        PropDef(&#34;table_end_cell&#34;, &#34;table:end-cell-address&#34;),
+        PropDef(&#34;table_end_x&#34;, &#34;table:end-x&#34;),
+        PropDef(&#34;table_end_y&#34;, &#34;table:end-y&#34;),
+        PropDef(&#34;table_background&#34;, &#34;table:table-background&#34;),
         # (&#39;anchor_page&#39;, &#39;text:anchor-page-number&#39;),
         # (&#39;anchor_type&#39;, &#39;text:anchor-type&#39;),
-        (&#34;xml_id&#34;, &#34;xml:id&#34;),
-        (&#34;pos_x&#34;, &#34;svg:x&#34;),
-        (&#34;pos_y&#34;, &#34;svg:y&#34;),
+        PropDef(&#34;xml_id&#34;, &#34;xml:id&#34;),
+        PropDef(&#34;pos_x&#34;, &#34;svg:x&#34;),
+        PropDef(&#34;pos_y&#34;, &#34;svg:y&#34;),
     )
 
     def __init__(
         self,
-        name=None,
-        draw_id=None,
-        style=None,
-        position=None,
-        z_index=0,
-        anchor_type=None,
-        anchor_page=None,
-        presentation_style=None,
-        **kwargs,
-    ):
+        name: str | None = None,
+        draw_id: str | None = None,
+        style: str | None = None,
+        position: tuple | None = None,
+        z_index: int = 0,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        presentation_style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         super().__init__(**kwargs)
         if self._do_init:
             if z_index is not None:
@@ -428,7 +426,7 @@ class DrawGroup(Element, AnchorMix, ZMix, PosMix):
 DrawGroup._define_attribut_property()
 
 registered_shapes = [
-    s._tag for s in (LineShape, RectangleShape, EllipseShape, ConnectorShape)
+    s._tag for s in (LineShape, RectangleShape, EllipseShape, ConnectorShape)  # type: ignore
 ]
 register_element_class(LineShape)
 register_element_class(RectangleShape)
@@ -448,7 +446,7 @@ register_element_class(DrawGroup)</code></pre>
 <dl>
 <dt id="odfdo.shapes.ConnectorShape"><code class="flex name class">
 <span>class <span class="ident">ConnectorShape</span></span>
-<span>(</span><span>style=None, text_style=None, draw_id=None, layer=None, connected_shapes=None, glue_points=None, p1=None, p2=None, **kw)</span>
+<span>(</span><span>style: str | None = None, text_style: str | None = None, draw_id: str | None = None, layer: str | None = None, connected_shapes: tuple | None = None, glue_points: tuple | None = None, p1: tuple | None = None, p2: tuple | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Create a Connector shape.</p>
@@ -460,8 +458,7 @@ register_element_class(DrawGroup)</code></pre>
 <p>connected_shapes &ndash; (shape, shape)</p>
 <p>glue_points &ndash; (point, point)</p>
 <p>p1 &ndash; (str, str)</p>
-<p>p2 &ndash; (str, str)</p>
-<p>Return: ConnectorShape</p></div>
+<p>p2 &ndash; (str, str)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -486,35 +483,33 @@ register_element_class(DrawGroup)</code></pre>
         p1 -- (str, str)
 
         p2 -- (str, str)
-
-    Return: ConnectorShape
     &#34;&#34;&#34;
 
     _tag = &#34;draw:connector&#34;
-    _properties = (
-        (&#34;start_shape&#34;, &#34;draw:start-shape&#34;),
-        (&#34;end_shape&#34;, &#34;draw:end-shape&#34;),
-        (&#34;start_glue_point&#34;, &#34;draw:start-glue-point&#34;),
-        (&#34;end_glue_point&#34;, &#34;draw:end-glue-point&#34;),
-        (&#34;x1&#34;, &#34;svg:x1&#34;),
-        (&#34;y1&#34;, &#34;svg:y1&#34;),
-        (&#34;x2&#34;, &#34;svg:x2&#34;),
-        (&#34;y2&#34;, &#34;svg:y2&#34;),
+    _properties: tuple[PropDef, ...] = (
+        PropDef(&#34;start_shape&#34;, &#34;draw:start-shape&#34;),
+        PropDef(&#34;end_shape&#34;, &#34;draw:end-shape&#34;),
+        PropDef(&#34;start_glue_point&#34;, &#34;draw:start-glue-point&#34;),
+        PropDef(&#34;end_glue_point&#34;, &#34;draw:end-glue-point&#34;),
+        PropDef(&#34;x1&#34;, &#34;svg:x1&#34;),
+        PropDef(&#34;y1&#34;, &#34;svg:y1&#34;),
+        PropDef(&#34;x2&#34;, &#34;svg:x2&#34;),
+        PropDef(&#34;y2&#34;, &#34;svg:y2&#34;),
     )
 
     def __init__(
         self,
-        style=None,
-        text_style=None,
-        draw_id=None,
-        layer=None,
-        connected_shapes=None,
-        glue_points=None,
-        p1=None,
-        p2=None,
-        **kw,
-    ):
-        kw.update(
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        connected_shapes: tuple | None = None,
+        glue_points: tuple | None = None,
+        p1: tuple | None = None,
+        p2: tuple | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
+        kwargs.update(
             {
                 &#34;style&#34;: style,
                 &#34;text_style&#34;: text_style,
@@ -522,7 +517,7 @@ register_element_class(DrawGroup)</code></pre>
                 &#34;layer&#34;: layer,
             }
         )
-        super().__init__(**kw)
+        super().__init__(**kwargs)
         if self._do_init:
             if connected_shapes:
                 self.start_shape = connected_shapes[0].draw_id
@@ -546,15 +541,18 @@ register_element_class(DrawGroup)</code></pre>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.shapes.ConnectorShape.end_glue_point"><code class="name">var <span class="ident">end_glue_point</span></code></dt>
+<dt id="odfdo.shapes.ConnectorShape.end_glue_point"><code class="name">var <span class="ident">end_glue_point</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:end-glue-point</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -564,15 +562,18 @@ register_element_class(DrawGroup)</code></pre>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.ConnectorShape.end_shape"><code class="name">var <span class="ident">end_shape</span></code></dt>
+<dt id="odfdo.shapes.ConnectorShape.end_shape"><code class="name">var <span class="ident">end_shape</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:end-shape</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -582,15 +583,18 @@ register_element_class(DrawGroup)</code></pre>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.ConnectorShape.start_glue_point"><code class="name">var <span class="ident">start_glue_point</span></code></dt>
+<dt id="odfdo.shapes.ConnectorShape.start_glue_point"><code class="name">var <span class="ident">start_glue_point</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:start-glue-point</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -600,15 +604,18 @@ register_element_class(DrawGroup)</code></pre>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.ConnectorShape.start_shape"><code class="name">var <span class="ident">start_shape</span></code></dt>
+<dt id="odfdo.shapes.ConnectorShape.start_shape"><code class="name">var <span class="ident">start_shape</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:start-shape</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -618,15 +625,18 @@ register_element_class(DrawGroup)</code></pre>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.ConnectorShape.x1"><code class="name">var <span class="ident">x1</span></code></dt>
+<dt id="odfdo.shapes.ConnectorShape.x1"><code class="name">var <span class="ident">x1</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:x1</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -636,15 +646,18 @@ register_element_class(DrawGroup)</code></pre>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.ConnectorShape.x2"><code class="name">var <span class="ident">x2</span></code></dt>
+<dt id="odfdo.shapes.ConnectorShape.x2"><code class="name">var <span class="ident">x2</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:x2</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -654,15 +667,18 @@ register_element_class(DrawGroup)</code></pre>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.ConnectorShape.y1"><code class="name">var <span class="ident">y1</span></code></dt>
+<dt id="odfdo.shapes.ConnectorShape.y1"><code class="name">var <span class="ident">y1</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:y1</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -672,15 +688,18 @@ register_element_class(DrawGroup)</code></pre>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.ConnectorShape.y2"><code class="name">var <span class="ident">y2</span></code></dt>
+<dt id="odfdo.shapes.ConnectorShape.y2"><code class="name">var <span class="ident">y2</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:y2</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -704,12 +723,16 @@ register_element_class(DrawGroup)</code></pre>
 <li><code><a title="odfdo.shapes.ShapeBase.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.draw_id" href="#odfdo.shapes.ShapeBase.draw_id">draw_id</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -819,7 +842,7 @@ register_element_class(DrawGroup)</code></pre>
 </dd>
 <dt id="odfdo.shapes.DrawGroup"><code class="flex name class">
 <span>class <span class="ident">DrawGroup</span></span>
-<span>(</span><span>name=None, draw_id=None, style=None, position=None, z_index=0, anchor_type=None, anchor_page=None, presentation_style=None, **kwargs)</span>
+<span>(</span><span>name: str | None = None, draw_id: str | None = None, style: str | None = None, position: tuple | None = None, z_index: int = 0, anchor_type: str | None = None, anchor_page: int | None = None, presentation_style: str | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The DrawGroup "draw:g" element represents a group of drawing shapes.</p>
@@ -876,38 +899,38 @@ and xml:id.</p>
     &#34;&#34;&#34;
 
     _tag = &#34;draw:g&#34;
-    _properties = (
-        (&#34;draw_id&#34;, &#34;draw:id&#34;),
-        (&#34;caption_id&#34;, &#34;draw:caption-id&#34;),
-        (&#34;draw_class_names&#34;, &#34;draw:class-names&#34;),
-        (&#34;name&#34;, &#34;draw:name&#34;),
-        (&#34;style&#34;, &#34;draw:style-name&#34;),
+    _properties: tuple[PropDef, ...] = (
+        PropDef(&#34;draw_id&#34;, &#34;draw:id&#34;),
+        PropDef(&#34;caption_id&#34;, &#34;draw:caption-id&#34;),
+        PropDef(&#34;draw_class_names&#34;, &#34;draw:class-names&#34;),
+        PropDef(&#34;name&#34;, &#34;draw:name&#34;),
+        PropDef(&#34;style&#34;, &#34;draw:style-name&#34;),
         # (&#39;z_index&#39;, &#39;draw:z-index&#39;),
-        (&#34;presentation_class_names&#34;, &#34;presentation:class-names&#34;),
-        (&#34;presentation_style&#34;, &#34;presentation:style-name&#34;),
-        (&#34;table_end_cell&#34;, &#34;table:end-cell-address&#34;),
-        (&#34;table_end_x&#34;, &#34;table:end-x&#34;),
-        (&#34;table_end_y&#34;, &#34;table:end-y&#34;),
-        (&#34;table_background&#34;, &#34;table:table-background&#34;),
+        PropDef(&#34;presentation_class_names&#34;, &#34;presentation:class-names&#34;),
+        PropDef(&#34;presentation_style&#34;, &#34;presentation:style-name&#34;),
+        PropDef(&#34;table_end_cell&#34;, &#34;table:end-cell-address&#34;),
+        PropDef(&#34;table_end_x&#34;, &#34;table:end-x&#34;),
+        PropDef(&#34;table_end_y&#34;, &#34;table:end-y&#34;),
+        PropDef(&#34;table_background&#34;, &#34;table:table-background&#34;),
         # (&#39;anchor_page&#39;, &#39;text:anchor-page-number&#39;),
         # (&#39;anchor_type&#39;, &#39;text:anchor-type&#39;),
-        (&#34;xml_id&#34;, &#34;xml:id&#34;),
-        (&#34;pos_x&#34;, &#34;svg:x&#34;),
-        (&#34;pos_y&#34;, &#34;svg:y&#34;),
+        PropDef(&#34;xml_id&#34;, &#34;xml:id&#34;),
+        PropDef(&#34;pos_x&#34;, &#34;svg:x&#34;),
+        PropDef(&#34;pos_y&#34;, &#34;svg:y&#34;),
     )
 
     def __init__(
         self,
-        name=None,
-        draw_id=None,
-        style=None,
-        position=None,
-        z_index=0,
-        anchor_type=None,
-        anchor_page=None,
-        presentation_style=None,
-        **kwargs,
-    ):
+        name: str | None = None,
+        draw_id: str | None = None,
+        style: str | None = None,
+        position: tuple | None = None,
+        z_index: int = 0,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        presentation_style: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         super().__init__(**kwargs)
         if self._do_init:
             if z_index is not None:
@@ -936,15 +959,18 @@ and xml:id.</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.shapes.DrawGroup.caption_id"><code class="name">var <span class="ident">caption_id</span></code></dt>
+<dt id="odfdo.shapes.DrawGroup.caption_id"><code class="name">var <span class="ident">caption_id</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:caption-id</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -954,15 +980,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.DrawGroup.draw_class_names"><code class="name">var <span class="ident">draw_class_names</span></code></dt>
+<dt id="odfdo.shapes.DrawGroup.draw_class_names"><code class="name">var <span class="ident">draw_class_names</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:class-names</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -972,15 +1001,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.DrawGroup.draw_id"><code class="name">var <span class="ident">draw_id</span></code></dt>
+<dt id="odfdo.shapes.DrawGroup.draw_id"><code class="name">var <span class="ident">draw_id</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:id</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -990,15 +1022,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.DrawGroup.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dt id="odfdo.shapes.DrawGroup.name"><code class="name">var <span class="ident">name</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1008,15 +1043,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.DrawGroup.pos_x"><code class="name">var <span class="ident">pos_x</span></code></dt>
+<dt id="odfdo.shapes.DrawGroup.pos_x"><code class="name">var <span class="ident">pos_x</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:x</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1026,15 +1064,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.DrawGroup.pos_y"><code class="name">var <span class="ident">pos_y</span></code></dt>
+<dt id="odfdo.shapes.DrawGroup.pos_y"><code class="name">var <span class="ident">pos_y</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:y</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1044,15 +1085,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.DrawGroup.presentation_class_names"><code class="name">var <span class="ident">presentation_class_names</span></code></dt>
+<dt id="odfdo.shapes.DrawGroup.presentation_class_names"><code class="name">var <span class="ident">presentation_class_names</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute presentation:class-names</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1062,15 +1106,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.DrawGroup.presentation_style"><code class="name">var <span class="ident">presentation_style</span></code></dt>
+<dt id="odfdo.shapes.DrawGroup.presentation_style"><code class="name">var <span class="ident">presentation_style</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute presentation:style-name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1080,15 +1127,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.DrawGroup.style"><code class="name">var <span class="ident">style</span></code></dt>
+<dt id="odfdo.shapes.DrawGroup.style"><code class="name">var <span class="ident">style</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:style-name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1098,15 +1148,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.DrawGroup.table_background"><code class="name">var <span class="ident">table_background</span></code></dt>
+<dt id="odfdo.shapes.DrawGroup.table_background"><code class="name">var <span class="ident">table_background</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute table:table-background</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1116,15 +1169,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.DrawGroup.table_end_cell"><code class="name">var <span class="ident">table_end_cell</span></code></dt>
+<dt id="odfdo.shapes.DrawGroup.table_end_cell"><code class="name">var <span class="ident">table_end_cell</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute table:end-cell-address</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1134,15 +1190,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.DrawGroup.table_end_x"><code class="name">var <span class="ident">table_end_x</span></code></dt>
+<dt id="odfdo.shapes.DrawGroup.table_end_x"><code class="name">var <span class="ident">table_end_x</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute table:end-x</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1152,15 +1211,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.DrawGroup.table_end_y"><code class="name">var <span class="ident">table_end_y</span></code></dt>
+<dt id="odfdo.shapes.DrawGroup.table_end_y"><code class="name">var <span class="ident">table_end_y</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute table:end-y</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1170,15 +1232,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.DrawGroup.xml_id"><code class="name">var <span class="ident">xml_id</span></code></dt>
+<dt id="odfdo.shapes.DrawGroup.xml_id"><code class="name">var <span class="ident">xml_id</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute xml:id</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1201,12 +1266,16 @@ and xml:id.</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -1322,7 +1391,7 @@ and xml:id.</p>
 </dd>
 <dt id="odfdo.shapes.EllipseShape"><code class="flex name class">
 <span>class <span class="ident">EllipseShape</span></span>
-<span>(</span><span>style=None, text_style=None, draw_id=None, layer=None, size=None, position=None, **kw)</span>
+<span>(</span><span>style: str | None = None, text_style: str | None = None, draw_id: str | None = None, layer: str | None = None, position: tuple | None = None, size: tuple | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Create a ellipse shape.</p>
@@ -1331,9 +1400,8 @@ and xml:id.</p>
 <p>text_style &ndash; str</p>
 <p>draw_id &ndash; str</p>
 <p>layer &ndash; str</p>
-<p>size &ndash; (str, str)</p>
 <p>position &ndash; (str, str)</p>
-<p>Return: EllipseShape</p></div>
+<p>size &ndash; (str, str)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1351,27 +1419,26 @@ and xml:id.</p>
 
         layer -- str
 
-        size -- (str, str)
-
         position -- (str, str)
 
-    Return: EllipseShape
+        size -- (str, str)
+
     &#34;&#34;&#34;
 
     _tag = &#34;draw:ellipse&#34;
-    _properties = ()
+    _properties: tuple[PropDef, ...] = ()
 
     def __init__(
         self,
-        style=None,
-        text_style=None,
-        draw_id=None,
-        layer=None,
-        size=None,
-        position=None,
-        **kw,
-    ):
-        kw.update(
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        position: tuple | None = None,
+        size: tuple | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
+        kwargs.update(
             {
                 &#34;style&#34;: style,
                 &#34;text_style&#34;: text_style,
@@ -1381,7 +1448,7 @@ and xml:id.</p>
                 &#34;position&#34;: position,
             }
         )
-        super().__init__(**kw)</code></pre>
+        super().__init__(**kwargs)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1403,12 +1470,16 @@ and xml:id.</p>
 <li><code><a title="odfdo.shapes.ShapeBase.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.draw_id" href="#odfdo.shapes.ShapeBase.draw_id">draw_id</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -1518,7 +1589,7 @@ and xml:id.</p>
 </dd>
 <dt id="odfdo.shapes.LineShape"><code class="flex name class">
 <span>class <span class="ident">LineShape</span></span>
-<span>(</span><span>style=None, text_style=None, draw_id=None, layer=None, p1=None, p2=None, **kw)</span>
+<span>(</span><span>style: str | None = None, text_style: str | None = None, draw_id: str | None = None, layer: str | None = None, p1: tuple | None = None, p2: tuple | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Create a line shape.</p>
@@ -1528,8 +1599,7 @@ and xml:id.</p>
 <p>draw_id &ndash; str</p>
 <p>layer &ndash; str</p>
 <p>p1 &ndash; (str, str)</p>
-<p>p2 &ndash; (str, str)</p>
-<p>Return: LineShape</p></div>
+<p>p2 &ndash; (str, str)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1550,29 +1620,27 @@ and xml:id.</p>
         p1 -- (str, str)
 
         p2 -- (str, str)
-
-    Return: LineShape
     &#34;&#34;&#34;
 
     _tag = &#34;draw:line&#34;
-    _properties = (
-        (&#34;x1&#34;, &#34;svg:x1&#34;),
-        (&#34;y1&#34;, &#34;svg:y1&#34;),
-        (&#34;x2&#34;, &#34;svg:x2&#34;),
-        (&#34;y2&#34;, &#34;svg:y2&#34;),
+    _properties: tuple[PropDef, ...] = (
+        PropDef(&#34;x1&#34;, &#34;svg:x1&#34;),
+        PropDef(&#34;y1&#34;, &#34;svg:y1&#34;),
+        PropDef(&#34;x2&#34;, &#34;svg:x2&#34;),
+        PropDef(&#34;y2&#34;, &#34;svg:y2&#34;),
     )
 
     def __init__(
         self,
-        style=None,
-        text_style=None,
-        draw_id=None,
-        layer=None,
-        p1=None,
-        p2=None,
-        **kw,
-    ):
-        kw.update(
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        p1: tuple | None = None,
+        p2: tuple | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
+        kwargs.update(
             {
                 &#34;style&#34;: style,
                 &#34;text_style&#34;: text_style,
@@ -1580,7 +1648,7 @@ and xml:id.</p>
                 &#34;layer&#34;: layer,
             }
         )
-        super().__init__(**kw)
+        super().__init__(**kwargs)
         if self._do_init:
             if p1:
                 self.x1 = p1[0]
@@ -1598,15 +1666,18 @@ and xml:id.</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.shapes.LineShape.x1"><code class="name">var <span class="ident">x1</span></code></dt>
+<dt id="odfdo.shapes.LineShape.x1"><code class="name">var <span class="ident">x1</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:x1</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1616,15 +1687,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.LineShape.x2"><code class="name">var <span class="ident">x2</span></code></dt>
+<dt id="odfdo.shapes.LineShape.x2"><code class="name">var <span class="ident">x2</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:x2</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1634,15 +1708,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.LineShape.y1"><code class="name">var <span class="ident">y1</span></code></dt>
+<dt id="odfdo.shapes.LineShape.y1"><code class="name">var <span class="ident">y1</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:y1</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1652,15 +1729,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.LineShape.y2"><code class="name">var <span class="ident">y2</span></code></dt>
+<dt id="odfdo.shapes.LineShape.y2"><code class="name">var <span class="ident">y2</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:y2</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -1684,12 +1764,16 @@ and xml:id.</p>
 <li><code><a title="odfdo.shapes.ShapeBase.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.draw_id" href="#odfdo.shapes.ShapeBase.draw_id">draw_id</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -1799,7 +1883,7 @@ and xml:id.</p>
 </dd>
 <dt id="odfdo.shapes.RectangleShape"><code class="flex name class">
 <span>class <span class="ident">RectangleShape</span></span>
-<span>(</span><span>style=None, text_style=None, draw_id=None, layer=None, size=None, position=None, **kw)</span>
+<span>(</span><span>style: str | None = None, text_style: str | None = None, draw_id: str | None = None, layer: str | None = None, position: tuple | None = None, size: tuple | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Create a rectangle shape.</p>
@@ -1808,9 +1892,8 @@ and xml:id.</p>
 <p>text_style &ndash; str</p>
 <p>draw_id &ndash; str</p>
 <p>layer &ndash; str</p>
-<p>size &ndash; (str, str)</p>
 <p>position &ndash; (str, str)</p>
-<p>Return: RectangleShape</p></div>
+<p>size &ndash; (str, str)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1828,27 +1911,26 @@ and xml:id.</p>
 
         layer -- str
 
-        size -- (str, str)
-
         position -- (str, str)
 
-    Return: RectangleShape
+        size -- (str, str)
+
     &#34;&#34;&#34;
 
     _tag = &#34;draw:rect&#34;
-    _properties = ()
+    _properties: tuple[PropDef, ...] = ()
 
     def __init__(
         self,
-        style=None,
-        text_style=None,
-        draw_id=None,
-        layer=None,
-        size=None,
-        position=None,
-        **kw,
-    ):
-        kw.update(
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        position: tuple | None = None,
+        size: tuple | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
+        kwargs.update(
             {
                 &#34;style&#34;: style,
                 &#34;text_style&#34;: text_style,
@@ -1858,7 +1940,7 @@ and xml:id.</p>
                 &#34;position&#34;: position,
             }
         )
-        super().__init__(**kw)</code></pre>
+        super().__init__(**kwargs)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1880,12 +1962,16 @@ and xml:id.</p>
 <li><code><a title="odfdo.shapes.ShapeBase.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.draw_id" href="#odfdo.shapes.ShapeBase.draw_id">draw_id</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>
@@ -1995,7 +2081,7 @@ and xml:id.</p>
 </dd>
 <dt id="odfdo.shapes.ShapeBase"><code class="flex name class">
 <span>class <span class="ident">ShapeBase</span></span>
-<span>(</span><span>style=None, text_style=None, draw_id=None, layer=None, position=None, size=None, presentation_class=None, **kwargs)</span>
+<span>(</span><span>style: str | None = None, text_style: str | None = None, draw_id: str | None = None, layer: str | None = None, position: tuple | None = None, size: tuple | None = None, presentation_class: str | None = None, **kwargs: Any)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class for shapes</p></div>
@@ -2007,29 +2093,29 @@ and xml:id.</p>
     &#34;&#34;&#34;Base class for shapes&#34;&#34;&#34;
 
     _tag = &#34;draw:shape-odfdo-notodf&#34;
-    _properties = (
-        (&#34;draw_id&#34;, &#34;draw:id&#34;),
-        (&#34;layer&#34;, &#34;draw:layer&#34;),
-        (&#34;width&#34;, &#34;svg:width&#34;),
-        (&#34;height&#34;, &#34;svg:height&#34;),
-        (&#34;pos_x&#34;, &#34;svg:x&#34;),
-        (&#34;pos_y&#34;, &#34;svg:y&#34;),
-        (&#34;presentation_class&#34;, &#34;presentation:class&#34;),
-        (&#34;style&#34;, &#34;draw:style-name&#34;),
-        (&#34;text_style&#34;, &#34;draw:text-style-name&#34;),
+    _properties: tuple[PropDef, ...] = (
+        PropDef(&#34;draw_id&#34;, &#34;draw:id&#34;),
+        PropDef(&#34;layer&#34;, &#34;draw:layer&#34;),
+        PropDef(&#34;width&#34;, &#34;svg:width&#34;),
+        PropDef(&#34;height&#34;, &#34;svg:height&#34;),
+        PropDef(&#34;pos_x&#34;, &#34;svg:x&#34;),
+        PropDef(&#34;pos_y&#34;, &#34;svg:y&#34;),
+        PropDef(&#34;presentation_class&#34;, &#34;presentation:class&#34;),
+        PropDef(&#34;style&#34;, &#34;draw:style-name&#34;),
+        PropDef(&#34;text_style&#34;, &#34;draw:text-style-name&#34;),
     )
 
     def __init__(
         self,
-        style=None,
-        text_style=None,
-        draw_id=None,
-        layer=None,
-        position=None,
-        size=None,
-        presentation_class=None,
-        **kwargs,
-    ):
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        position: tuple | None = None,
+        size: tuple | None = None,
+        presentation_class: str | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
         super().__init__(**kwargs)
         if self._do_init:
             if style:
@@ -2047,8 +2133,8 @@ and xml:id.</p>
             if presentation_class:
                 self.presentation_class = presentation_class
 
-    def get_formatted_text(self, context):
-        result = []
+    def get_formatted_text(self, context: dict | None = None) -&gt; str:
+        result: list[str] = []
         for child in self.children:
             result.append(child.get_formatted_text(context))
         result.append(&#34;\n&#34;)
@@ -2069,15 +2155,18 @@ and xml:id.</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.shapes.ShapeBase.draw_id"><code class="name">var <span class="ident">draw_id</span></code></dt>
+<dt id="odfdo.shapes.ShapeBase.draw_id"><code class="name">var <span class="ident">draw_id</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:id</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -2087,15 +2176,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.ShapeBase.height"><code class="name">var <span class="ident">height</span></code></dt>
+<dt id="odfdo.shapes.ShapeBase.height"><code class="name">var <span class="ident">height</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:height</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -2105,15 +2197,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.ShapeBase.layer"><code class="name">var <span class="ident">layer</span></code></dt>
+<dt id="odfdo.shapes.ShapeBase.layer"><code class="name">var <span class="ident">layer</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:layer</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -2123,15 +2218,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.ShapeBase.pos_x"><code class="name">var <span class="ident">pos_x</span></code></dt>
+<dt id="odfdo.shapes.ShapeBase.pos_x"><code class="name">var <span class="ident">pos_x</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:x</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -2141,15 +2239,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.ShapeBase.pos_y"><code class="name">var <span class="ident">pos_y</span></code></dt>
+<dt id="odfdo.shapes.ShapeBase.pos_y"><code class="name">var <span class="ident">pos_y</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:y</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -2159,15 +2260,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.ShapeBase.presentation_class"><code class="name">var <span class="ident">presentation_class</span></code></dt>
+<dt id="odfdo.shapes.ShapeBase.presentation_class"><code class="name">var <span class="ident">presentation_class</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute presentation:class</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -2177,15 +2281,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.ShapeBase.style"><code class="name">var <span class="ident">style</span></code></dt>
+<dt id="odfdo.shapes.ShapeBase.style"><code class="name">var <span class="ident">style</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:style-name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -2195,15 +2302,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.ShapeBase.text_style"><code class="name">var <span class="ident">text_style</span></code></dt>
+<dt id="odfdo.shapes.ShapeBase.text_style"><code class="name">var <span class="ident">text_style</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute draw:text-style-name</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -2213,15 +2323,18 @@ and xml:id.</p>
     return str(value)</code></pre>
 </details>
 </dd>
-<dt id="odfdo.shapes.ShapeBase.width"><code class="name">var <span class="ident">width</span></code></dt>
+<dt id="odfdo.shapes.ShapeBase.width"><code class="name">var <span class="ident">width</span> : str | bool | None</code></dt>
 <dd>
 <div class="desc"><p>Get/set the attribute svg:width</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def getter(self):
-    if family and self.family != family:
+<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
+    try:
+        if family and self.family != family:  # type: ignore
+            return None
+    except AttributeError:
         return None
     value = self.__element.get(name)
     if value is None:
@@ -2244,12 +2357,16 @@ and xml:id.</p>
 <li><code><a title="odfdo.element.Element.delete" href="element.html#odfdo.element.Element.delete">delete</a></code></li>
 <li><code><a title="odfdo.element.Element.delete_named_range" href="element.html#odfdo.element.Element.delete_named_range">delete_named_range</a></code></li>
 <li><code><a title="odfdo.element.Element.document_body" href="element.html#odfdo.element.Element.document_body">document_body</a></code></li>
+<li><code><a title="odfdo.element.Element.elements_repeated_sequence" href="element.html#odfdo.element.Element.elements_repeated_sequence">elements_repeated_sequence</a></code></li>
 <li><code><a title="odfdo.element.Element.extend" href="element.html#odfdo.element.Element.extend">extend</a></code></li>
 <li><code><a title="odfdo.element.Element.from_tag" href="element.html#odfdo.element.Element.from_tag">from_tag</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation" href="element.html#odfdo.element.Element.get_annotation">get_annotation</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_end" href="element.html#odfdo.element.Element.get_annotation_end">get_annotation_end</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotation_ends" href="element.html#odfdo.element.Element.get_annotation_ends">get_annotation_ends</a></code></li>
 <li><code><a title="odfdo.element.Element.get_annotations" href="element.html#odfdo.element.Element.get_annotations">get_annotations</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute" href="element.html#odfdo.element.Element.get_attribute">get_attribute</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_integer" href="element.html#odfdo.element.Element.get_attribute_integer">get_attribute_integer</a></code></li>
+<li><code><a title="odfdo.element.Element.get_attribute_string" href="element.html#odfdo.element.Element.get_attribute_string">get_attribute_string</a></code></li>
 <li><code><a title="odfdo.element.Element.get_between" href="element.html#odfdo.element.Element.get_between">get_between</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark" href="element.html#odfdo.element.Element.get_bookmark">get_bookmark</a></code></li>
 <li><code><a title="odfdo.element.Element.get_bookmark_end" href="element.html#odfdo.element.Element.get_bookmark_end">get_bookmark_end</a></code></li>

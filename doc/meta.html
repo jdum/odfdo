@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>odfdo.meta API documentation</title>
-<meta name="description" content="Meta class for meta.xml part" />
+<meta name="description" content="Meta class for meta.xml part." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,12 +22,12 @@
 <h1 class="title">Module <code>odfdo.meta</code></h1>
 </header>
 <section id="section-intro">
-<p>Meta class for meta.xml part</p>
+<p>Meta class for meta.xml part.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -49,12 +49,15 @@
 # Authors: David Versmisse &lt;david.versmisse@itaapy.com&gt;
 #          Hervé Cauwelier &lt;herve@itaapy.com&gt;
 #          Jerome Dumonteil &lt;jerome.dumonteil@itaapy.com&gt;
-&#34;&#34;&#34;Meta class for meta.xml part
+&#34;&#34;&#34;Meta class for meta.xml part.
 &#34;&#34;&#34;
+from __future__ import annotations
+
 from datetime import date as dtdate
 from datetime import datetime, timedelta
 from decimal import Decimal
 from string import ascii_letters, digits
+from typing import Any
 
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element
@@ -66,10 +69,10 @@ from .xmlpart import XmlPart
 class Meta(XmlPart):
     _generator_modified = False
 
-    def get_meta_body(self):
+    def get_meta_body(self) -&gt; Element:
         return self.get_element(&#34;//office:meta&#34;)
 
-    def get_title(self):
+    def get_title(self) -&gt; str | None:
         &#34;&#34;&#34;Get the title of the document.
 
         This is not the first heading but the title metadata.
@@ -81,7 +84,7 @@ class Meta(XmlPart):
             return None
         return element.text
 
-    def set_title(self, title):
+    def set_title(self, title: str) -&gt; None:
         &#34;&#34;&#34;Set the title of the document.
 
         This is not the first heading but the title metadata.
@@ -96,7 +99,7 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = title
 
-    def get_description(self):
+    def get_description(self) -&gt; str | None:
         &#34;&#34;&#34;Get the description of the document. Also known as comments.
 
         Return: str (or None if inexistant)
@@ -109,7 +112,7 @@ class Meta(XmlPart):
     # As named in OOo
     get_comments = get_description
 
-    def set_description(self, description):
+    def set_description(self, description: str) -&gt; None:
         &#34;&#34;&#34;Set the description of the document. Also known as comments.
 
         Arguments:
@@ -124,7 +127,7 @@ class Meta(XmlPart):
 
     set_comments = set_description
 
-    def get_subject(self):
+    def get_subject(self) -&gt; str | None:
         &#34;&#34;&#34;Get the subject of the document.
 
         Return: str (or None if inexistant)
@@ -134,7 +137,7 @@ class Meta(XmlPart):
             return None
         return element.text
 
-    def set_subject(self, subject):
+    def set_subject(self, subject: str) -&gt; None:
         &#34;&#34;&#34;Set the subject of the document.
 
         Arguments:
@@ -147,14 +150,14 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = subject
 
-    def get_language(self):
+    def get_language(self) -&gt; str | None:
         &#34;&#34;&#34;Get the language code of the document.
 
         Return: str (or None if inexistant)
 
         Example::
 
-            &gt;&gt;&gt; document.get_language()
+            &gt;&gt;&gt; document.meta.get_language()
             fr-FR
         &#34;&#34;&#34;
         element = self.get_element(&#34;//dc:language&#34;)
@@ -162,7 +165,7 @@ class Meta(XmlPart):
             return None
         return element.text
 
-    def set_language(self, language):
+    def set_language(self, language: str) -&gt; None:
         &#34;&#34;&#34;Set the language code of the document.
 
         Arguments:
@@ -171,11 +174,13 @@ class Meta(XmlPart):
 
         Example::
 
-            &gt;&gt;&gt; document.set_language(&#39;fr-FR&#39;)
+            &gt;&gt;&gt; document.meta.set_language(&#39;fr-FR&#39;)
         &#34;&#34;&#34;
-        language = to_str(language)
+        language = str(language)
         if not self._is_RFC3066(language):
-            raise TypeError(&#39;language must be &#34;xx-YY&#34; lang-COUNTRY code (RFC3066)&#39;)
+            raise TypeError(
+                &#39;Language must be &#34;xx&#34; lang or &#34;xx-YY&#34; lang-COUNTRY code (RFC3066)&#39;
+            )
         element = self.get_element(&#34;//dc:language&#34;)
         if element is None:
             element = Element.from_tag(&#34;dc:language&#34;)
@@ -183,14 +188,14 @@ class Meta(XmlPart):
         element.text = language
 
     @staticmethod
-    def _is_RFC3066(lang):
-        def test_part1(p1):
-            if not 2 &lt;= len(p1) &lt;= 3:
+    def _is_RFC3066(lang: str) -&gt; bool:
+        def test_part1(part1: str) -&gt; bool:
+            if not 2 &lt;= len(part1) &lt;= 3:
                 return False
-            return all(x in ascii_letters for x in p1)
+            return all(x in ascii_letters for x in part1)
 
-        def test_part2(p1):
-            return all(x in ascii_letters or x in digits for x in p1)
+        def test_part2(part2: str) -&gt; bool:
+            return all(x in ascii_letters or x in digits for x in part2)
 
         if not lang or not isinstance(lang, str):
             return False
@@ -203,7 +208,7 @@ class Meta(XmlPart):
             return False
         return all(test_part2(p) for p in parts[1:])
 
-    def get_modification_date(self):
+    def get_modification_date(self) -&gt; datetime | None:
         &#34;&#34;&#34;Get the last modified date of the document.
 
         Return: datetime (or None if inexistant)
@@ -214,7 +219,7 @@ class Meta(XmlPart):
         modification_date = element.text
         return DateTime.decode(modification_date)
 
-    def set_modification_date(self, date):
+    def set_modification_date(self, date: datetime) -&gt; None:
         &#34;&#34;&#34;Set the last modified date of the document.
 
         Arguments:
@@ -227,7 +232,7 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = DateTime.encode(date)
 
-    def get_creation_date(self):
+    def get_creation_date(self) -&gt; datetime | None:
         &#34;&#34;&#34;Get the creation date of the document.
 
         Return: datetime (or None if inexistant)
@@ -238,7 +243,7 @@ class Meta(XmlPart):
         creation_date = element.text
         return DateTime.decode(creation_date)
 
-    def set_creation_date(self, date):
+    def set_creation_date(self, date: datetime) -&gt; None:
         &#34;&#34;&#34;Set the creation date of the document.
 
         Arguments:
@@ -251,14 +256,14 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = DateTime.encode(date)
 
-    def get_initial_creator(self):
+    def get_initial_creator(self) -&gt; str | None:
         &#34;&#34;&#34;Get the first creator of the document.
 
         Return: str (or None if inexistant)
 
         Example::
 
-            &gt;&gt;&gt; document.get_initial_creator()
+            &gt;&gt;&gt; document.meta.get_initial_creator()
             Unknown
         &#34;&#34;&#34;
         element = self.get_element(&#34;//meta:initial-creator&#34;)
@@ -266,7 +271,7 @@ class Meta(XmlPart):
             return None
         return element.text
 
-    def set_initial_creator(self, creator):
+    def set_initial_creator(self, creator: str) -&gt; None:
         &#34;&#34;&#34;Set the first creator of the document.
 
         Arguments:
@@ -275,7 +280,7 @@ class Meta(XmlPart):
 
         Example::
 
-            &gt;&gt;&gt; document.set_initial_creator(u&#34;Plato&#34;)
+            &gt;&gt;&gt; document.meta.set_initial_creator(u&#34;Plato&#34;)
         &#34;&#34;&#34;
         element = self.get_element(&#34;//meta:initial-creator&#34;)
         if element is None:
@@ -283,14 +288,14 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = creator
 
-    def get_creator(self):
+    def get_creator(self) -&gt; str | None:
         &#34;&#34;&#34;Get the creator of the document.
 
         Return: str (or None if inexistant)
 
         Example::
 
-            &gt;&gt;&gt; document.get_creator()
+            &gt;&gt;&gt; document.meta.get_creator()
             Unknown
         &#34;&#34;&#34;
         element = self.get_element(&#34;//dc:creator&#34;)
@@ -298,7 +303,7 @@ class Meta(XmlPart):
             return None
         return element.text
 
-    def set_creator(self, creator):
+    def set_creator(self, creator: str) -&gt; None:
         &#34;&#34;&#34;Set the creator of the document.
 
         Arguments:
@@ -307,7 +312,7 @@ class Meta(XmlPart):
 
         Example::
 
-            &gt;&gt;&gt; document.set_creator(u&#34;Plato&#34;)
+            &gt;&gt;&gt; document.meta.set_creator(u&#34;Plato&#34;)
         &#34;&#34;&#34;
         element = self.get_element(&#34;//dc:creator&#34;)
         if element is None:
@@ -315,7 +320,7 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = creator
 
-    def get_keywords(self):
+    def get_keywords(self) -&gt; str | None:
         &#34;&#34;&#34;Get the keywords of the document. Return the field as-is, without
         any assumption on the keyword separator.
 
@@ -326,7 +331,7 @@ class Meta(XmlPart):
             return None
         return element.text
 
-    def set_keywords(self, keywords):
+    def set_keywords(self, keywords: str) -&gt; None:
         &#34;&#34;&#34;Set the keywords of the document. Although the name is plural, a
         str string is required, so join your list first.
 
@@ -340,7 +345,7 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = keywords
 
-    def get_editing_duration(self):
+    def get_editing_duration(self) -&gt; timedelta | None:
         &#34;&#34;&#34;Get the time the document was edited, as reported by the
         generator.
 
@@ -352,7 +357,7 @@ class Meta(XmlPart):
         duration = element.text
         return Duration.decode(duration)
 
-    def set_editing_duration(self, duration):
+    def set_editing_duration(self, duration: timedelta) -&gt; None:
         &#34;&#34;&#34;Set the time the document was edited.
 
         Arguments:
@@ -367,7 +372,7 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = Duration.encode(duration)
 
-    def get_editing_cycles(self):
+    def get_editing_cycles(self) -&gt; int | None:
         &#34;&#34;&#34;Get the number of times the document was edited, as reported by
         the generator.
 
@@ -379,7 +384,7 @@ class Meta(XmlPart):
         cycles = element.text
         return int(cycles)
 
-    def set_editing_cycles(self, cycles):
+    def set_editing_cycles(self, cycles: int) -&gt; None:
         &#34;&#34;&#34;Set the number of times the document was edited.
 
         Arguments:
@@ -396,14 +401,14 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = str(cycles)
 
-    def get_generator(self):
+    def get_generator(self) -&gt; str | None:
         &#34;&#34;&#34;Get the signature of the software that generated this document.
 
         Return: str (or None if inexistant)
 
         Example::
 
-            &gt;&gt;&gt; document.get_generator()
+            &gt;&gt;&gt; document.meta.get_generator()
             KOffice/2.0.0
         &#34;&#34;&#34;
         element = self.get_element(&#34;//meta:generator&#34;)
@@ -411,7 +416,7 @@ class Meta(XmlPart):
             return None
         return element.text
 
-    def set_generator(self, generator):
+    def set_generator(self, generator: str) -&gt; None:
         &#34;&#34;&#34;Set the signature of the software that generated this document.
 
         Arguments:
@@ -420,7 +425,7 @@ class Meta(XmlPart):
 
         Example::
 
-            &gt;&gt;&gt; document.set_generator(u&#34;lpOD Project&#34;)
+            &gt;&gt;&gt; document.meta.set_generator(u&#34;lpOD Project&#34;)
         &#34;&#34;&#34;
         element = self.get_element(&#34;//meta:generator&#34;)
         if element is None:
@@ -429,18 +434,18 @@ class Meta(XmlPart):
         element.text = generator
         self._generator_modified = True
 
-    def set_generator_default(self):
+    def set_generator_default(self) -&gt; None:
         &#34;&#34;&#34;Set the signature of the software that generated this document
         to ourself.
 
         Example::
 
-            &gt;&gt;&gt; document.set_generator_default()
+            &gt;&gt;&gt; document.meta.set_generator_default()
         &#34;&#34;&#34;
         if not self._generator_modified:
-            self.set_generator(&#34;odfdo %s&#34; % __version__)
+            self.set_generator(f&#34;odfdo {__version__}&#34;)
 
-    def get_statistic(self):
+    def get_statistic(self) -&gt; dict[str, int] | None:
         &#34;&#34;&#34;Get the statistic from the software that generated this document.
 
         Return: dict (or None if inexistant)
@@ -464,7 +469,7 @@ class Meta(XmlPart):
             statistic[to_str(key)] = int(value)
         return statistic
 
-    def set_statistic(self, statistic):
+    def set_statistic(self, statistic: dict[str, int]) -&gt; None:
         &#34;&#34;&#34;Set the statistic for the documents: number of words, paragraphs,
         etc.
 
@@ -481,32 +486,36 @@ class Meta(XmlPart):
                              &#39;meta:paragraph-count&#39;: 5,
                              &#39;meta:word-count&#39;: 6,
                              &#39;meta:character-count&#39;: 7}
-            &gt;&gt;&gt; document.set_statistic(statistic)
+            &gt;&gt;&gt; document.meta.set_statistic(statistic)
         &#34;&#34;&#34;
         if not isinstance(statistic, dict):
-            raise TypeError(&#34;statistic must be a dict&#34;)
+            raise TypeError(&#34;Statistic must be a dict&#34;)
         element = self.get_element(&#34;//meta:document-statistic&#34;)
         for key, value in statistic.items():
             try:
                 ivalue = int(value)
             except ValueError as e:
-                raise TypeError(&#34;statistic value must be a int&#34;) from e
+                raise TypeError(&#34;Statistic value must be a int&#34;) from e
             element.set_attribute(to_str(key), str(ivalue))
 
-    def get_user_defined_metadata(self):
+    def get_user_defined_metadata(self) -&gt; dict[str, Any]:
         &#34;&#34;&#34;Return a dict of str/value mapping.
 
         Value types can be: Decimal, date, time, boolean or str.
         &#34;&#34;&#34;
-        result = {}
+        result: dict[str, Any] = {}
         for item in self.get_elements(&#34;//meta:user-defined&#34;):
+            if not isinstance(item, Element):
+                continue
             # Read the values
-            name = item.get_attribute(&#34;meta:name&#34;)
+            name = item.get_attribute_string(&#34;meta:name&#34;)
+            if name is None:
+                continue
             value = self._get_meta_value(item)
             result[name] = value
         return result
 
-    def get_user_defined_metadata_of_name(self, keyname):
+    def get_user_defined_metadata_of_name(self, keyname: str) -&gt; dict[str, Any] | None:
         &#34;&#34;&#34;Return the content of the user defined metadata of that name.
         Return None if no name matchs or a dic of fields.
 
@@ -517,6 +526,8 @@ class Meta(XmlPart):
         result = {}
         found = False
         for item in self.get_elements(&#34;//meta:user-defined&#34;):
+            if not isinstance(item, Element):
+                continue
             # Read the values
             name = item.get_attribute(&#34;meta:name&#34;)
             if name == keyname:
@@ -525,13 +536,13 @@ class Meta(XmlPart):
         if not found:
             return None
         result[&#34;name&#34;] = name
-        value, value_type, text = self._get_meta_value(item, full=True)
+        value, value_type, text = self._get_meta_value(item, full=True)  # type: ignore
         result[&#34;value&#34;] = value
         result[&#34;value_type&#34;] = value_type
         result[&#34;text&#34;] = text
         return result
 
-    def set_user_defined_metadata(self, name, value):
+    def set_user_defined_metadata(self, name: str, value: Any) -&gt; None:
         if isinstance(value, bool):
             value_type = &#34;boolean&#34;
             value = &#34;true&#34; if value else &#34;false&#34;
@@ -553,6 +564,8 @@ class Meta(XmlPart):
             raise TypeError(&#39;unexpected type &#34;%s&#34; for value&#39; % type(value))
         # Already the same element ?
         for metadata in self.get_elements(&#34;//meta:user-defined&#34;):
+            if not isinstance(metadata, Element):
+                continue
             if metadata.get_attribute(&#34;meta:name&#34;) == name:
                 break
         else:
@@ -562,32 +575,38 @@ class Meta(XmlPart):
         metadata.set_attribute(&#34;meta:value-type&#34;, value_type)
         metadata.text = value
 
+    def _get_meta_value(
+        self, element: Element, full: bool = False
+    ) -&gt; Any | tuple[Any, str, str]:
+        &#34;&#34;&#34;get_value() deicated to the meta data part, for one meta element.&#34;&#34;&#34;
+        if full:
+            return self._get_meta_value_full(element)
+        else:
+            return self._get_meta_value_full(element)[0]
+
     @staticmethod
-    def _get_meta_value(element, full=False):
+    def _get_meta_value_full(element: Element) -&gt; tuple[Any, str, str]:
         &#34;&#34;&#34;get_value deicated to the meta data part, for one meta element.&#34;&#34;&#34;
         # name = element.get_attribute(&#39;meta:name&#39;)
-        value_type = element.get_attribute(&#34;meta:value-type&#34;)
+        value_type = element.get_attribute_string(&#34;meta:value-type&#34;)
         if value_type is None:
             value_type = &#34;string&#34;
         text = element.text
         # Interpretation
         if value_type == &#34;boolean&#34;:
-            value = Boolean.decode(text)
-        elif value_type in (&#34;float&#34;, &#34;percentage&#34;, &#34;currency&#34;):
-            value = Decimal(text)
-        elif value_type == &#34;date&#34;:
+            return (Boolean.decode(text), value_type, text)
+        if value_type in (&#34;float&#34;, &#34;percentage&#34;, &#34;currency&#34;):
+            return (Decimal(text), value_type, text)
+        if value_type == &#34;date&#34;:
             if &#34;T&#34; in text:
-                value = DateTime.decode(text)
+                return (DateTime.decode(text), value_type, text)
             else:
-                value = Date.decode(text)
-        elif value_type == &#34;string&#34;:
-            value = text
-        elif value_type == &#34;time&#34;:
-            value = Duration.decode(text)
-        if full:
-            return (value, value_type, text)
-        else:
-            return value</code></pre>
+                return (Date.decode(text), value_type, text)
+        if value_type == &#34;string&#34;:
+            return (text, value_type, text)
+        if value_type == &#34;time&#34;:
+            return (Duration.decode(text), value_type, text)
+        raise TypeError(f&#34;Unknown value type: &#39;{value_type!r}&#39;&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -601,7 +620,7 @@ class Meta(XmlPart):
 <dl>
 <dt id="odfdo.meta.Meta"><code class="flex name class">
 <span>class <span class="ident">Meta</span></span>
-<span>(</span><span>part_name, container)</span>
+<span>(</span><span>part_name: str, container: Container)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Representation of an XML part.</p>
@@ -613,10 +632,10 @@ class Meta(XmlPart):
 <pre><code class="python">class Meta(XmlPart):
     _generator_modified = False
 
-    def get_meta_body(self):
+    def get_meta_body(self) -&gt; Element:
         return self.get_element(&#34;//office:meta&#34;)
 
-    def get_title(self):
+    def get_title(self) -&gt; str | None:
         &#34;&#34;&#34;Get the title of the document.
 
         This is not the first heading but the title metadata.
@@ -628,7 +647,7 @@ class Meta(XmlPart):
             return None
         return element.text
 
-    def set_title(self, title):
+    def set_title(self, title: str) -&gt; None:
         &#34;&#34;&#34;Set the title of the document.
 
         This is not the first heading but the title metadata.
@@ -643,7 +662,7 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = title
 
-    def get_description(self):
+    def get_description(self) -&gt; str | None:
         &#34;&#34;&#34;Get the description of the document. Also known as comments.
 
         Return: str (or None if inexistant)
@@ -656,7 +675,7 @@ class Meta(XmlPart):
     # As named in OOo
     get_comments = get_description
 
-    def set_description(self, description):
+    def set_description(self, description: str) -&gt; None:
         &#34;&#34;&#34;Set the description of the document. Also known as comments.
 
         Arguments:
@@ -671,7 +690,7 @@ class Meta(XmlPart):
 
     set_comments = set_description
 
-    def get_subject(self):
+    def get_subject(self) -&gt; str | None:
         &#34;&#34;&#34;Get the subject of the document.
 
         Return: str (or None if inexistant)
@@ -681,7 +700,7 @@ class Meta(XmlPart):
             return None
         return element.text
 
-    def set_subject(self, subject):
+    def set_subject(self, subject: str) -&gt; None:
         &#34;&#34;&#34;Set the subject of the document.
 
         Arguments:
@@ -694,14 +713,14 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = subject
 
-    def get_language(self):
+    def get_language(self) -&gt; str | None:
         &#34;&#34;&#34;Get the language code of the document.
 
         Return: str (or None if inexistant)
 
         Example::
 
-            &gt;&gt;&gt; document.get_language()
+            &gt;&gt;&gt; document.meta.get_language()
             fr-FR
         &#34;&#34;&#34;
         element = self.get_element(&#34;//dc:language&#34;)
@@ -709,7 +728,7 @@ class Meta(XmlPart):
             return None
         return element.text
 
-    def set_language(self, language):
+    def set_language(self, language: str) -&gt; None:
         &#34;&#34;&#34;Set the language code of the document.
 
         Arguments:
@@ -718,11 +737,13 @@ class Meta(XmlPart):
 
         Example::
 
-            &gt;&gt;&gt; document.set_language(&#39;fr-FR&#39;)
+            &gt;&gt;&gt; document.meta.set_language(&#39;fr-FR&#39;)
         &#34;&#34;&#34;
-        language = to_str(language)
+        language = str(language)
         if not self._is_RFC3066(language):
-            raise TypeError(&#39;language must be &#34;xx-YY&#34; lang-COUNTRY code (RFC3066)&#39;)
+            raise TypeError(
+                &#39;Language must be &#34;xx&#34; lang or &#34;xx-YY&#34; lang-COUNTRY code (RFC3066)&#39;
+            )
         element = self.get_element(&#34;//dc:language&#34;)
         if element is None:
             element = Element.from_tag(&#34;dc:language&#34;)
@@ -730,14 +751,14 @@ class Meta(XmlPart):
         element.text = language
 
     @staticmethod
-    def _is_RFC3066(lang):
-        def test_part1(p1):
-            if not 2 &lt;= len(p1) &lt;= 3:
+    def _is_RFC3066(lang: str) -&gt; bool:
+        def test_part1(part1: str) -&gt; bool:
+            if not 2 &lt;= len(part1) &lt;= 3:
                 return False
-            return all(x in ascii_letters for x in p1)
+            return all(x in ascii_letters for x in part1)
 
-        def test_part2(p1):
-            return all(x in ascii_letters or x in digits for x in p1)
+        def test_part2(part2: str) -&gt; bool:
+            return all(x in ascii_letters or x in digits for x in part2)
 
         if not lang or not isinstance(lang, str):
             return False
@@ -750,7 +771,7 @@ class Meta(XmlPart):
             return False
         return all(test_part2(p) for p in parts[1:])
 
-    def get_modification_date(self):
+    def get_modification_date(self) -&gt; datetime | None:
         &#34;&#34;&#34;Get the last modified date of the document.
 
         Return: datetime (or None if inexistant)
@@ -761,7 +782,7 @@ class Meta(XmlPart):
         modification_date = element.text
         return DateTime.decode(modification_date)
 
-    def set_modification_date(self, date):
+    def set_modification_date(self, date: datetime) -&gt; None:
         &#34;&#34;&#34;Set the last modified date of the document.
 
         Arguments:
@@ -774,7 +795,7 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = DateTime.encode(date)
 
-    def get_creation_date(self):
+    def get_creation_date(self) -&gt; datetime | None:
         &#34;&#34;&#34;Get the creation date of the document.
 
         Return: datetime (or None if inexistant)
@@ -785,7 +806,7 @@ class Meta(XmlPart):
         creation_date = element.text
         return DateTime.decode(creation_date)
 
-    def set_creation_date(self, date):
+    def set_creation_date(self, date: datetime) -&gt; None:
         &#34;&#34;&#34;Set the creation date of the document.
 
         Arguments:
@@ -798,14 +819,14 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = DateTime.encode(date)
 
-    def get_initial_creator(self):
+    def get_initial_creator(self) -&gt; str | None:
         &#34;&#34;&#34;Get the first creator of the document.
 
         Return: str (or None if inexistant)
 
         Example::
 
-            &gt;&gt;&gt; document.get_initial_creator()
+            &gt;&gt;&gt; document.meta.get_initial_creator()
             Unknown
         &#34;&#34;&#34;
         element = self.get_element(&#34;//meta:initial-creator&#34;)
@@ -813,7 +834,7 @@ class Meta(XmlPart):
             return None
         return element.text
 
-    def set_initial_creator(self, creator):
+    def set_initial_creator(self, creator: str) -&gt; None:
         &#34;&#34;&#34;Set the first creator of the document.
 
         Arguments:
@@ -822,7 +843,7 @@ class Meta(XmlPart):
 
         Example::
 
-            &gt;&gt;&gt; document.set_initial_creator(u&#34;Plato&#34;)
+            &gt;&gt;&gt; document.meta.set_initial_creator(u&#34;Plato&#34;)
         &#34;&#34;&#34;
         element = self.get_element(&#34;//meta:initial-creator&#34;)
         if element is None:
@@ -830,14 +851,14 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = creator
 
-    def get_creator(self):
+    def get_creator(self) -&gt; str | None:
         &#34;&#34;&#34;Get the creator of the document.
 
         Return: str (or None if inexistant)
 
         Example::
 
-            &gt;&gt;&gt; document.get_creator()
+            &gt;&gt;&gt; document.meta.get_creator()
             Unknown
         &#34;&#34;&#34;
         element = self.get_element(&#34;//dc:creator&#34;)
@@ -845,7 +866,7 @@ class Meta(XmlPart):
             return None
         return element.text
 
-    def set_creator(self, creator):
+    def set_creator(self, creator: str) -&gt; None:
         &#34;&#34;&#34;Set the creator of the document.
 
         Arguments:
@@ -854,7 +875,7 @@ class Meta(XmlPart):
 
         Example::
 
-            &gt;&gt;&gt; document.set_creator(u&#34;Plato&#34;)
+            &gt;&gt;&gt; document.meta.set_creator(u&#34;Plato&#34;)
         &#34;&#34;&#34;
         element = self.get_element(&#34;//dc:creator&#34;)
         if element is None:
@@ -862,7 +883,7 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = creator
 
-    def get_keywords(self):
+    def get_keywords(self) -&gt; str | None:
         &#34;&#34;&#34;Get the keywords of the document. Return the field as-is, without
         any assumption on the keyword separator.
 
@@ -873,7 +894,7 @@ class Meta(XmlPart):
             return None
         return element.text
 
-    def set_keywords(self, keywords):
+    def set_keywords(self, keywords: str) -&gt; None:
         &#34;&#34;&#34;Set the keywords of the document. Although the name is plural, a
         str string is required, so join your list first.
 
@@ -887,7 +908,7 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = keywords
 
-    def get_editing_duration(self):
+    def get_editing_duration(self) -&gt; timedelta | None:
         &#34;&#34;&#34;Get the time the document was edited, as reported by the
         generator.
 
@@ -899,7 +920,7 @@ class Meta(XmlPart):
         duration = element.text
         return Duration.decode(duration)
 
-    def set_editing_duration(self, duration):
+    def set_editing_duration(self, duration: timedelta) -&gt; None:
         &#34;&#34;&#34;Set the time the document was edited.
 
         Arguments:
@@ -914,7 +935,7 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = Duration.encode(duration)
 
-    def get_editing_cycles(self):
+    def get_editing_cycles(self) -&gt; int | None:
         &#34;&#34;&#34;Get the number of times the document was edited, as reported by
         the generator.
 
@@ -926,7 +947,7 @@ class Meta(XmlPart):
         cycles = element.text
         return int(cycles)
 
-    def set_editing_cycles(self, cycles):
+    def set_editing_cycles(self, cycles: int) -&gt; None:
         &#34;&#34;&#34;Set the number of times the document was edited.
 
         Arguments:
@@ -943,14 +964,14 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = str(cycles)
 
-    def get_generator(self):
+    def get_generator(self) -&gt; str | None:
         &#34;&#34;&#34;Get the signature of the software that generated this document.
 
         Return: str (or None if inexistant)
 
         Example::
 
-            &gt;&gt;&gt; document.get_generator()
+            &gt;&gt;&gt; document.meta.get_generator()
             KOffice/2.0.0
         &#34;&#34;&#34;
         element = self.get_element(&#34;//meta:generator&#34;)
@@ -958,7 +979,7 @@ class Meta(XmlPart):
             return None
         return element.text
 
-    def set_generator(self, generator):
+    def set_generator(self, generator: str) -&gt; None:
         &#34;&#34;&#34;Set the signature of the software that generated this document.
 
         Arguments:
@@ -967,7 +988,7 @@ class Meta(XmlPart):
 
         Example::
 
-            &gt;&gt;&gt; document.set_generator(u&#34;lpOD Project&#34;)
+            &gt;&gt;&gt; document.meta.set_generator(u&#34;lpOD Project&#34;)
         &#34;&#34;&#34;
         element = self.get_element(&#34;//meta:generator&#34;)
         if element is None:
@@ -976,18 +997,18 @@ class Meta(XmlPart):
         element.text = generator
         self._generator_modified = True
 
-    def set_generator_default(self):
+    def set_generator_default(self) -&gt; None:
         &#34;&#34;&#34;Set the signature of the software that generated this document
         to ourself.
 
         Example::
 
-            &gt;&gt;&gt; document.set_generator_default()
+            &gt;&gt;&gt; document.meta.set_generator_default()
         &#34;&#34;&#34;
         if not self._generator_modified:
-            self.set_generator(&#34;odfdo %s&#34; % __version__)
+            self.set_generator(f&#34;odfdo {__version__}&#34;)
 
-    def get_statistic(self):
+    def get_statistic(self) -&gt; dict[str, int] | None:
         &#34;&#34;&#34;Get the statistic from the software that generated this document.
 
         Return: dict (or None if inexistant)
@@ -1011,7 +1032,7 @@ class Meta(XmlPart):
             statistic[to_str(key)] = int(value)
         return statistic
 
-    def set_statistic(self, statistic):
+    def set_statistic(self, statistic: dict[str, int]) -&gt; None:
         &#34;&#34;&#34;Set the statistic for the documents: number of words, paragraphs,
         etc.
 
@@ -1028,32 +1049,36 @@ class Meta(XmlPart):
                              &#39;meta:paragraph-count&#39;: 5,
                              &#39;meta:word-count&#39;: 6,
                              &#39;meta:character-count&#39;: 7}
-            &gt;&gt;&gt; document.set_statistic(statistic)
+            &gt;&gt;&gt; document.meta.set_statistic(statistic)
         &#34;&#34;&#34;
         if not isinstance(statistic, dict):
-            raise TypeError(&#34;statistic must be a dict&#34;)
+            raise TypeError(&#34;Statistic must be a dict&#34;)
         element = self.get_element(&#34;//meta:document-statistic&#34;)
         for key, value in statistic.items():
             try:
                 ivalue = int(value)
             except ValueError as e:
-                raise TypeError(&#34;statistic value must be a int&#34;) from e
+                raise TypeError(&#34;Statistic value must be a int&#34;) from e
             element.set_attribute(to_str(key), str(ivalue))
 
-    def get_user_defined_metadata(self):
+    def get_user_defined_metadata(self) -&gt; dict[str, Any]:
         &#34;&#34;&#34;Return a dict of str/value mapping.
 
         Value types can be: Decimal, date, time, boolean or str.
         &#34;&#34;&#34;
-        result = {}
+        result: dict[str, Any] = {}
         for item in self.get_elements(&#34;//meta:user-defined&#34;):
+            if not isinstance(item, Element):
+                continue
             # Read the values
-            name = item.get_attribute(&#34;meta:name&#34;)
+            name = item.get_attribute_string(&#34;meta:name&#34;)
+            if name is None:
+                continue
             value = self._get_meta_value(item)
             result[name] = value
         return result
 
-    def get_user_defined_metadata_of_name(self, keyname):
+    def get_user_defined_metadata_of_name(self, keyname: str) -&gt; dict[str, Any] | None:
         &#34;&#34;&#34;Return the content of the user defined metadata of that name.
         Return None if no name matchs or a dic of fields.
 
@@ -1064,6 +1089,8 @@ class Meta(XmlPart):
         result = {}
         found = False
         for item in self.get_elements(&#34;//meta:user-defined&#34;):
+            if not isinstance(item, Element):
+                continue
             # Read the values
             name = item.get_attribute(&#34;meta:name&#34;)
             if name == keyname:
@@ -1072,13 +1099,13 @@ class Meta(XmlPart):
         if not found:
             return None
         result[&#34;name&#34;] = name
-        value, value_type, text = self._get_meta_value(item, full=True)
+        value, value_type, text = self._get_meta_value(item, full=True)  # type: ignore
         result[&#34;value&#34;] = value
         result[&#34;value_type&#34;] = value_type
         result[&#34;text&#34;] = text
         return result
 
-    def set_user_defined_metadata(self, name, value):
+    def set_user_defined_metadata(self, name: str, value: Any) -&gt; None:
         if isinstance(value, bool):
             value_type = &#34;boolean&#34;
             value = &#34;true&#34; if value else &#34;false&#34;
@@ -1100,6 +1127,8 @@ class Meta(XmlPart):
             raise TypeError(&#39;unexpected type &#34;%s&#34; for value&#39; % type(value))
         # Already the same element ?
         for metadata in self.get_elements(&#34;//meta:user-defined&#34;):
+            if not isinstance(metadata, Element):
+                continue
             if metadata.get_attribute(&#34;meta:name&#34;) == name:
                 break
         else:
@@ -1109,32 +1138,38 @@ class Meta(XmlPart):
         metadata.set_attribute(&#34;meta:value-type&#34;, value_type)
         metadata.text = value
 
+    def _get_meta_value(
+        self, element: Element, full: bool = False
+    ) -&gt; Any | tuple[Any, str, str]:
+        &#34;&#34;&#34;get_value() deicated to the meta data part, for one meta element.&#34;&#34;&#34;
+        if full:
+            return self._get_meta_value_full(element)
+        else:
+            return self._get_meta_value_full(element)[0]
+
     @staticmethod
-    def _get_meta_value(element, full=False):
+    def _get_meta_value_full(element: Element) -&gt; tuple[Any, str, str]:
         &#34;&#34;&#34;get_value deicated to the meta data part, for one meta element.&#34;&#34;&#34;
         # name = element.get_attribute(&#39;meta:name&#39;)
-        value_type = element.get_attribute(&#34;meta:value-type&#34;)
+        value_type = element.get_attribute_string(&#34;meta:value-type&#34;)
         if value_type is None:
             value_type = &#34;string&#34;
         text = element.text
         # Interpretation
         if value_type == &#34;boolean&#34;:
-            value = Boolean.decode(text)
-        elif value_type in (&#34;float&#34;, &#34;percentage&#34;, &#34;currency&#34;):
-            value = Decimal(text)
-        elif value_type == &#34;date&#34;:
+            return (Boolean.decode(text), value_type, text)
+        if value_type in (&#34;float&#34;, &#34;percentage&#34;, &#34;currency&#34;):
+            return (Decimal(text), value_type, text)
+        if value_type == &#34;date&#34;:
             if &#34;T&#34; in text:
-                value = DateTime.decode(text)
+                return (DateTime.decode(text), value_type, text)
             else:
-                value = Date.decode(text)
-        elif value_type == &#34;string&#34;:
-            value = text
-        elif value_type == &#34;time&#34;:
-            value = Duration.decode(text)
-        if full:
-            return (value, value_type, text)
-        else:
-            return value</code></pre>
+                return (Date.decode(text), value_type, text)
+        if value_type == &#34;string&#34;:
+            return (text, value_type, text)
+        if value_type == &#34;time&#34;:
+            return (Duration.decode(text), value_type, text)
+        raise TypeError(f&#34;Unknown value type: &#39;{value_type!r}&#39;&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1143,7 +1178,7 @@ class Meta(XmlPart):
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.meta.Meta.get_comments"><code class="name flex">
-<span>def <span class="ident">get_comments</span></span>(<span>self)</span>
+<span>def <span class="ident">get_comments</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the description of the document. Also known as comments.</p>
@@ -1152,7 +1187,7 @@ class Meta(XmlPart):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_description(self):
+<pre><code class="python">def get_description(self) -&gt; str | None:
     &#34;&#34;&#34;Get the description of the document. Also known as comments.
 
     Return: str (or None if inexistant)
@@ -1164,7 +1199,7 @@ class Meta(XmlPart):
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_creation_date"><code class="name flex">
-<span>def <span class="ident">get_creation_date</span></span>(<span>self)</span>
+<span>def <span class="ident">get_creation_date</span></span>(<span>self) ‑> datetime.datetime | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the creation date of the document.</p>
@@ -1173,7 +1208,7 @@ class Meta(XmlPart):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_creation_date(self):
+<pre><code class="python">def get_creation_date(self) -&gt; datetime | None:
     &#34;&#34;&#34;Get the creation date of the document.
 
     Return: datetime (or None if inexistant)
@@ -1186,27 +1221,27 @@ class Meta(XmlPart):
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_creator"><code class="name flex">
-<span>def <span class="ident">get_creator</span></span>(<span>self)</span>
+<span>def <span class="ident">get_creator</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the creator of the document.</p>
 <p>Return: str (or None if inexistant)</p>
 <p>Example::</p>
-<pre><code>&gt;&gt;&gt; document.get_creator()
+<pre><code>&gt;&gt;&gt; document.meta.get_creator()
 Unknown
 </code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_creator(self):
+<pre><code class="python">def get_creator(self) -&gt; str | None:
     &#34;&#34;&#34;Get the creator of the document.
 
     Return: str (or None if inexistant)
 
     Example::
 
-        &gt;&gt;&gt; document.get_creator()
+        &gt;&gt;&gt; document.meta.get_creator()
         Unknown
     &#34;&#34;&#34;
     element = self.get_element(&#34;//dc:creator&#34;)
@@ -1216,7 +1251,7 @@ Unknown
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_description"><code class="name flex">
-<span>def <span class="ident">get_description</span></span>(<span>self)</span>
+<span>def <span class="ident">get_description</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the description of the document. Also known as comments.</p>
@@ -1225,7 +1260,7 @@ Unknown
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_description(self):
+<pre><code class="python">def get_description(self) -&gt; str | None:
     &#34;&#34;&#34;Get the description of the document. Also known as comments.
 
     Return: str (or None if inexistant)
@@ -1237,7 +1272,7 @@ Unknown
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_editing_cycles"><code class="name flex">
-<span>def <span class="ident">get_editing_cycles</span></span>(<span>self)</span>
+<span>def <span class="ident">get_editing_cycles</span></span>(<span>self) ‑> int | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the number of times the document was edited, as reported by
@@ -1247,7 +1282,7 @@ the generator.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_editing_cycles(self):
+<pre><code class="python">def get_editing_cycles(self) -&gt; int | None:
     &#34;&#34;&#34;Get the number of times the document was edited, as reported by
     the generator.
 
@@ -1261,7 +1296,7 @@ the generator.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_editing_duration"><code class="name flex">
-<span>def <span class="ident">get_editing_duration</span></span>(<span>self)</span>
+<span>def <span class="ident">get_editing_duration</span></span>(<span>self) ‑> datetime.timedelta | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the time the document was edited, as reported by the
@@ -1271,7 +1306,7 @@ generator.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_editing_duration(self):
+<pre><code class="python">def get_editing_duration(self) -&gt; timedelta | None:
     &#34;&#34;&#34;Get the time the document was edited, as reported by the
     generator.
 
@@ -1285,27 +1320,27 @@ generator.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_generator"><code class="name flex">
-<span>def <span class="ident">get_generator</span></span>(<span>self)</span>
+<span>def <span class="ident">get_generator</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the signature of the software that generated this document.</p>
 <p>Return: str (or None if inexistant)</p>
 <p>Example::</p>
-<pre><code>&gt;&gt;&gt; document.get_generator()
+<pre><code>&gt;&gt;&gt; document.meta.get_generator()
 KOffice/2.0.0
 </code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_generator(self):
+<pre><code class="python">def get_generator(self) -&gt; str | None:
     &#34;&#34;&#34;Get the signature of the software that generated this document.
 
     Return: str (or None if inexistant)
 
     Example::
 
-        &gt;&gt;&gt; document.get_generator()
+        &gt;&gt;&gt; document.meta.get_generator()
         KOffice/2.0.0
     &#34;&#34;&#34;
     element = self.get_element(&#34;//meta:generator&#34;)
@@ -1315,27 +1350,27 @@ KOffice/2.0.0
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_initial_creator"><code class="name flex">
-<span>def <span class="ident">get_initial_creator</span></span>(<span>self)</span>
+<span>def <span class="ident">get_initial_creator</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the first creator of the document.</p>
 <p>Return: str (or None if inexistant)</p>
 <p>Example::</p>
-<pre><code>&gt;&gt;&gt; document.get_initial_creator()
+<pre><code>&gt;&gt;&gt; document.meta.get_initial_creator()
 Unknown
 </code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_initial_creator(self):
+<pre><code class="python">def get_initial_creator(self) -&gt; str | None:
     &#34;&#34;&#34;Get the first creator of the document.
 
     Return: str (or None if inexistant)
 
     Example::
 
-        &gt;&gt;&gt; document.get_initial_creator()
+        &gt;&gt;&gt; document.meta.get_initial_creator()
         Unknown
     &#34;&#34;&#34;
     element = self.get_element(&#34;//meta:initial-creator&#34;)
@@ -1345,7 +1380,7 @@ Unknown
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_keywords"><code class="name flex">
-<span>def <span class="ident">get_keywords</span></span>(<span>self)</span>
+<span>def <span class="ident">get_keywords</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the keywords of the document. Return the field as-is, without
@@ -1355,7 +1390,7 @@ any assumption on the keyword separator.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_keywords(self):
+<pre><code class="python">def get_keywords(self) -&gt; str | None:
     &#34;&#34;&#34;Get the keywords of the document. Return the field as-is, without
     any assumption on the keyword separator.
 
@@ -1368,27 +1403,27 @@ any assumption on the keyword separator.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_language"><code class="name flex">
-<span>def <span class="ident">get_language</span></span>(<span>self)</span>
+<span>def <span class="ident">get_language</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the language code of the document.</p>
 <p>Return: str (or None if inexistant)</p>
 <p>Example::</p>
-<pre><code>&gt;&gt;&gt; document.get_language()
+<pre><code>&gt;&gt;&gt; document.meta.get_language()
 fr-FR
 </code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_language(self):
+<pre><code class="python">def get_language(self) -&gt; str | None:
     &#34;&#34;&#34;Get the language code of the document.
 
     Return: str (or None if inexistant)
 
     Example::
 
-        &gt;&gt;&gt; document.get_language()
+        &gt;&gt;&gt; document.meta.get_language()
         fr-FR
     &#34;&#34;&#34;
     element = self.get_element(&#34;//dc:language&#34;)
@@ -1398,7 +1433,7 @@ fr-FR
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_meta_body"><code class="name flex">
-<span>def <span class="ident">get_meta_body</span></span>(<span>self)</span>
+<span>def <span class="ident">get_meta_body</span></span>(<span>self) ‑> <a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1406,12 +1441,12 @@ fr-FR
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_meta_body(self):
+<pre><code class="python">def get_meta_body(self) -&gt; Element:
     return self.get_element(&#34;//office:meta&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_modification_date"><code class="name flex">
-<span>def <span class="ident">get_modification_date</span></span>(<span>self)</span>
+<span>def <span class="ident">get_modification_date</span></span>(<span>self) ‑> datetime.datetime | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the last modified date of the document.</p>
@@ -1420,7 +1455,7 @@ fr-FR
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_modification_date(self):
+<pre><code class="python">def get_modification_date(self) -&gt; datetime | None:
     &#34;&#34;&#34;Get the last modified date of the document.
 
     Return: datetime (or None if inexistant)
@@ -1433,7 +1468,7 @@ fr-FR
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_statistic"><code class="name flex">
-<span>def <span class="ident">get_statistic</span></span>(<span>self)</span>
+<span>def <span class="ident">get_statistic</span></span>(<span>self) ‑> dict[str, int] | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the statistic from the software that generated this document.</p>
@@ -1452,7 +1487,7 @@ fr-FR
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_statistic(self):
+<pre><code class="python">def get_statistic(self) -&gt; dict[str, int] | None:
     &#34;&#34;&#34;Get the statistic from the software that generated this document.
 
     Return: dict (or None if inexistant)
@@ -1478,7 +1513,7 @@ fr-FR
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_subject"><code class="name flex">
-<span>def <span class="ident">get_subject</span></span>(<span>self)</span>
+<span>def <span class="ident">get_subject</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the subject of the document.</p>
@@ -1487,7 +1522,7 @@ fr-FR
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_subject(self):
+<pre><code class="python">def get_subject(self) -&gt; str | None:
     &#34;&#34;&#34;Get the subject of the document.
 
     Return: str (or None if inexistant)
@@ -1499,7 +1534,7 @@ fr-FR
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_title"><code class="name flex">
-<span>def <span class="ident">get_title</span></span>(<span>self)</span>
+<span>def <span class="ident">get_title</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the title of the document.</p>
@@ -1509,7 +1544,7 @@ fr-FR
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_title(self):
+<pre><code class="python">def get_title(self) -&gt; str | None:
     &#34;&#34;&#34;Get the title of the document.
 
     This is not the first heading but the title metadata.
@@ -1523,7 +1558,7 @@ fr-FR
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_user_defined_metadata"><code class="name flex">
-<span>def <span class="ident">get_user_defined_metadata</span></span>(<span>self)</span>
+<span>def <span class="ident">get_user_defined_metadata</span></span>(<span>self) ‑> dict[str, typing.Any]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return a dict of str/value mapping.</p>
@@ -1532,22 +1567,26 @@ fr-FR
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_user_defined_metadata(self):
+<pre><code class="python">def get_user_defined_metadata(self) -&gt; dict[str, Any]:
     &#34;&#34;&#34;Return a dict of str/value mapping.
 
     Value types can be: Decimal, date, time, boolean or str.
     &#34;&#34;&#34;
-    result = {}
+    result: dict[str, Any] = {}
     for item in self.get_elements(&#34;//meta:user-defined&#34;):
+        if not isinstance(item, Element):
+            continue
         # Read the values
-        name = item.get_attribute(&#34;meta:name&#34;)
+        name = item.get_attribute_string(&#34;meta:name&#34;)
+        if name is None:
+            continue
         value = self._get_meta_value(item)
         result[name] = value
     return result</code></pre>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.get_user_defined_metadata_of_name"><code class="name flex">
-<span>def <span class="ident">get_user_defined_metadata_of_name</span></span>(<span>self, keyname)</span>
+<span>def <span class="ident">get_user_defined_metadata_of_name</span></span>(<span>self, keyname: str) ‑> dict[str, typing.Any] | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return the content of the user defined metadata of that name.
@@ -1558,7 +1597,7 @@ Return None if no name matchs or a dic of fields.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_user_defined_metadata_of_name(self, keyname):
+<pre><code class="python">def get_user_defined_metadata_of_name(self, keyname: str) -&gt; dict[str, Any] | None:
     &#34;&#34;&#34;Return the content of the user defined metadata of that name.
     Return None if no name matchs or a dic of fields.
 
@@ -1569,6 +1608,8 @@ Return None if no name matchs or a dic of fields.</p>
     result = {}
     found = False
     for item in self.get_elements(&#34;//meta:user-defined&#34;):
+        if not isinstance(item, Element):
+            continue
         # Read the values
         name = item.get_attribute(&#34;meta:name&#34;)
         if name == keyname:
@@ -1577,7 +1618,7 @@ Return None if no name matchs or a dic of fields.</p>
     if not found:
         return None
     result[&#34;name&#34;] = name
-    value, value_type, text = self._get_meta_value(item, full=True)
+    value, value_type, text = self._get_meta_value(item, full=True)  # type: ignore
     result[&#34;value&#34;] = value
     result[&#34;value_type&#34;] = value_type
     result[&#34;text&#34;] = text
@@ -1585,7 +1626,7 @@ Return None if no name matchs or a dic of fields.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_comments"><code class="name flex">
-<span>def <span class="ident">set_comments</span></span>(<span>self, description)</span>
+<span>def <span class="ident">set_comments</span></span>(<span>self, description: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the description of the document. Also known as comments.</p>
@@ -1595,7 +1636,7 @@ Return None if no name matchs or a dic of fields.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_description(self, description):
+<pre><code class="python">def set_description(self, description: str) -&gt; None:
     &#34;&#34;&#34;Set the description of the document. Also known as comments.
 
     Arguments:
@@ -1610,7 +1651,7 @@ Return None if no name matchs or a dic of fields.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_creation_date"><code class="name flex">
-<span>def <span class="ident">set_creation_date</span></span>(<span>self, date)</span>
+<span>def <span class="ident">set_creation_date</span></span>(<span>self, date: datetime) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the creation date of the document.</p>
@@ -1620,7 +1661,7 @@ Return None if no name matchs or a dic of fields.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_creation_date(self, date):
+<pre><code class="python">def set_creation_date(self, date: datetime) -&gt; None:
     &#34;&#34;&#34;Set the creation date of the document.
 
     Arguments:
@@ -1635,20 +1676,20 @@ Return None if no name matchs or a dic of fields.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_creator"><code class="name flex">
-<span>def <span class="ident">set_creator</span></span>(<span>self, creator)</span>
+<span>def <span class="ident">set_creator</span></span>(<span>self, creator: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the creator of the document.</p>
 <h2 id="arguments">Arguments</h2>
 <p>creator &ndash; str</p>
 <p>Example::</p>
-<pre><code>&gt;&gt;&gt; document.set_creator(u"Plato")
+<pre><code>&gt;&gt;&gt; document.meta.set_creator(u"Plato")
 </code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_creator(self, creator):
+<pre><code class="python">def set_creator(self, creator: str) -&gt; None:
     &#34;&#34;&#34;Set the creator of the document.
 
     Arguments:
@@ -1657,7 +1698,7 @@ Return None if no name matchs or a dic of fields.</p>
 
     Example::
 
-        &gt;&gt;&gt; document.set_creator(u&#34;Plato&#34;)
+        &gt;&gt;&gt; document.meta.set_creator(u&#34;Plato&#34;)
     &#34;&#34;&#34;
     element = self.get_element(&#34;//dc:creator&#34;)
     if element is None:
@@ -1667,7 +1708,7 @@ Return None if no name matchs or a dic of fields.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_description"><code class="name flex">
-<span>def <span class="ident">set_description</span></span>(<span>self, description)</span>
+<span>def <span class="ident">set_description</span></span>(<span>self, description: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the description of the document. Also known as comments.</p>
@@ -1677,7 +1718,7 @@ Return None if no name matchs or a dic of fields.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_description(self, description):
+<pre><code class="python">def set_description(self, description: str) -&gt; None:
     &#34;&#34;&#34;Set the description of the document. Also known as comments.
 
     Arguments:
@@ -1692,7 +1733,7 @@ Return None if no name matchs or a dic of fields.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_editing_cycles"><code class="name flex">
-<span>def <span class="ident">set_editing_cycles</span></span>(<span>self, cycles)</span>
+<span>def <span class="ident">set_editing_cycles</span></span>(<span>self, cycles: int) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the number of times the document was edited.</p>
@@ -1702,7 +1743,7 @@ Return None if no name matchs or a dic of fields.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_editing_cycles(self, cycles):
+<pre><code class="python">def set_editing_cycles(self, cycles: int) -&gt; None:
     &#34;&#34;&#34;Set the number of times the document was edited.
 
     Arguments:
@@ -1721,7 +1762,7 @@ Return None if no name matchs or a dic of fields.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_editing_duration"><code class="name flex">
-<span>def <span class="ident">set_editing_duration</span></span>(<span>self, duration)</span>
+<span>def <span class="ident">set_editing_duration</span></span>(<span>self, duration: timedelta) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the time the document was edited.</p>
@@ -1731,7 +1772,7 @@ Return None if no name matchs or a dic of fields.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_editing_duration(self, duration):
+<pre><code class="python">def set_editing_duration(self, duration: timedelta) -&gt; None:
     &#34;&#34;&#34;Set the time the document was edited.
 
     Arguments:
@@ -1748,20 +1789,20 @@ Return None if no name matchs or a dic of fields.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_generator"><code class="name flex">
-<span>def <span class="ident">set_generator</span></span>(<span>self, generator)</span>
+<span>def <span class="ident">set_generator</span></span>(<span>self, generator: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the signature of the software that generated this document.</p>
 <h2 id="arguments">Arguments</h2>
 <p>generator &ndash; str</p>
 <p>Example::</p>
-<pre><code>&gt;&gt;&gt; document.set_generator(u"lpOD Project")
+<pre><code>&gt;&gt;&gt; document.meta.set_generator(u"lpOD Project")
 </code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_generator(self, generator):
+<pre><code class="python">def set_generator(self, generator: str) -&gt; None:
     &#34;&#34;&#34;Set the signature of the software that generated this document.
 
     Arguments:
@@ -1770,7 +1811,7 @@ Return None if no name matchs or a dic of fields.</p>
 
     Example::
 
-        &gt;&gt;&gt; document.set_generator(u&#34;lpOD Project&#34;)
+        &gt;&gt;&gt; document.meta.set_generator(u&#34;lpOD Project&#34;)
     &#34;&#34;&#34;
     element = self.get_element(&#34;//meta:generator&#34;)
     if element is None:
@@ -1781,45 +1822,45 @@ Return None if no name matchs or a dic of fields.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_generator_default"><code class="name flex">
-<span>def <span class="ident">set_generator_default</span></span>(<span>self)</span>
+<span>def <span class="ident">set_generator_default</span></span>(<span>self) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the signature of the software that generated this document
 to ourself.</p>
 <p>Example::</p>
-<pre><code>&gt;&gt;&gt; document.set_generator_default()
+<pre><code>&gt;&gt;&gt; document.meta.set_generator_default()
 </code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_generator_default(self):
+<pre><code class="python">def set_generator_default(self) -&gt; None:
     &#34;&#34;&#34;Set the signature of the software that generated this document
     to ourself.
 
     Example::
 
-        &gt;&gt;&gt; document.set_generator_default()
+        &gt;&gt;&gt; document.meta.set_generator_default()
     &#34;&#34;&#34;
     if not self._generator_modified:
-        self.set_generator(&#34;odfdo %s&#34; % __version__)</code></pre>
+        self.set_generator(f&#34;odfdo {__version__}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_initial_creator"><code class="name flex">
-<span>def <span class="ident">set_initial_creator</span></span>(<span>self, creator)</span>
+<span>def <span class="ident">set_initial_creator</span></span>(<span>self, creator: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the first creator of the document.</p>
 <h2 id="arguments">Arguments</h2>
 <p>creator &ndash; str</p>
 <p>Example::</p>
-<pre><code>&gt;&gt;&gt; document.set_initial_creator(u"Plato")
+<pre><code>&gt;&gt;&gt; document.meta.set_initial_creator(u"Plato")
 </code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_initial_creator(self, creator):
+<pre><code class="python">def set_initial_creator(self, creator: str) -&gt; None:
     &#34;&#34;&#34;Set the first creator of the document.
 
     Arguments:
@@ -1828,7 +1869,7 @@ to ourself.</p>
 
     Example::
 
-        &gt;&gt;&gt; document.set_initial_creator(u&#34;Plato&#34;)
+        &gt;&gt;&gt; document.meta.set_initial_creator(u&#34;Plato&#34;)
     &#34;&#34;&#34;
     element = self.get_element(&#34;//meta:initial-creator&#34;)
     if element is None:
@@ -1838,7 +1879,7 @@ to ourself.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_keywords"><code class="name flex">
-<span>def <span class="ident">set_keywords</span></span>(<span>self, keywords)</span>
+<span>def <span class="ident">set_keywords</span></span>(<span>self, keywords: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the keywords of the document. Although the name is plural, a
@@ -1849,7 +1890,7 @@ str string is required, so join your list first.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_keywords(self, keywords):
+<pre><code class="python">def set_keywords(self, keywords: str) -&gt; None:
     &#34;&#34;&#34;Set the keywords of the document. Although the name is plural, a
     str string is required, so join your list first.
 
@@ -1865,20 +1906,20 @@ str string is required, so join your list first.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_language"><code class="name flex">
-<span>def <span class="ident">set_language</span></span>(<span>self, language)</span>
+<span>def <span class="ident">set_language</span></span>(<span>self, language: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the language code of the document.</p>
 <h2 id="arguments">Arguments</h2>
 <p>language &ndash; str</p>
 <p>Example::</p>
-<pre><code>&gt;&gt;&gt; document.set_language('fr-FR')
+<pre><code>&gt;&gt;&gt; document.meta.set_language('fr-FR')
 </code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_language(self, language):
+<pre><code class="python">def set_language(self, language: str) -&gt; None:
     &#34;&#34;&#34;Set the language code of the document.
 
     Arguments:
@@ -1887,11 +1928,13 @@ str string is required, so join your list first.</p>
 
     Example::
 
-        &gt;&gt;&gt; document.set_language(&#39;fr-FR&#39;)
+        &gt;&gt;&gt; document.meta.set_language(&#39;fr-FR&#39;)
     &#34;&#34;&#34;
-    language = to_str(language)
+    language = str(language)
     if not self._is_RFC3066(language):
-        raise TypeError(&#39;language must be &#34;xx-YY&#34; lang-COUNTRY code (RFC3066)&#39;)
+        raise TypeError(
+            &#39;Language must be &#34;xx&#34; lang or &#34;xx-YY&#34; lang-COUNTRY code (RFC3066)&#39;
+        )
     element = self.get_element(&#34;//dc:language&#34;)
     if element is None:
         element = Element.from_tag(&#34;dc:language&#34;)
@@ -1900,7 +1943,7 @@ str string is required, so join your list first.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_modification_date"><code class="name flex">
-<span>def <span class="ident">set_modification_date</span></span>(<span>self, date)</span>
+<span>def <span class="ident">set_modification_date</span></span>(<span>self, date: datetime) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the last modified date of the document.</p>
@@ -1910,7 +1953,7 @@ str string is required, so join your list first.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_modification_date(self, date):
+<pre><code class="python">def set_modification_date(self, date: datetime) -&gt; None:
     &#34;&#34;&#34;Set the last modified date of the document.
 
     Arguments:
@@ -1925,7 +1968,7 @@ str string is required, so join your list first.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_statistic"><code class="name flex">
-<span>def <span class="ident">set_statistic</span></span>(<span>self, statistic)</span>
+<span>def <span class="ident">set_statistic</span></span>(<span>self, statistic: dict[str, int]) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the statistic for the documents: number of words, paragraphs,
@@ -1940,13 +1983,13 @@ etc.</p>
                  'meta:paragraph-count': 5,
                  'meta:word-count': 6,
                  'meta:character-count': 7}
-&gt;&gt;&gt; document.set_statistic(statistic)
+&gt;&gt;&gt; document.meta.set_statistic(statistic)
 </code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_statistic(self, statistic):
+<pre><code class="python">def set_statistic(self, statistic: dict[str, int]) -&gt; None:
     &#34;&#34;&#34;Set the statistic for the documents: number of words, paragraphs,
     etc.
 
@@ -1963,21 +2006,21 @@ etc.</p>
                          &#39;meta:paragraph-count&#39;: 5,
                          &#39;meta:word-count&#39;: 6,
                          &#39;meta:character-count&#39;: 7}
-        &gt;&gt;&gt; document.set_statistic(statistic)
+        &gt;&gt;&gt; document.meta.set_statistic(statistic)
     &#34;&#34;&#34;
     if not isinstance(statistic, dict):
-        raise TypeError(&#34;statistic must be a dict&#34;)
+        raise TypeError(&#34;Statistic must be a dict&#34;)
     element = self.get_element(&#34;//meta:document-statistic&#34;)
     for key, value in statistic.items():
         try:
             ivalue = int(value)
         except ValueError as e:
-            raise TypeError(&#34;statistic value must be a int&#34;) from e
+            raise TypeError(&#34;Statistic value must be a int&#34;) from e
         element.set_attribute(to_str(key), str(ivalue))</code></pre>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_subject"><code class="name flex">
-<span>def <span class="ident">set_subject</span></span>(<span>self, subject)</span>
+<span>def <span class="ident">set_subject</span></span>(<span>self, subject: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the subject of the document.</p>
@@ -1987,7 +2030,7 @@ etc.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_subject(self, subject):
+<pre><code class="python">def set_subject(self, subject: str) -&gt; None:
     &#34;&#34;&#34;Set the subject of the document.
 
     Arguments:
@@ -2002,7 +2045,7 @@ etc.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_title"><code class="name flex">
-<span>def <span class="ident">set_title</span></span>(<span>self, title)</span>
+<span>def <span class="ident">set_title</span></span>(<span>self, title: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set the title of the document.</p>
@@ -2013,7 +2056,7 @@ etc.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_title(self, title):
+<pre><code class="python">def set_title(self, title: str) -&gt; None:
     &#34;&#34;&#34;Set the title of the document.
 
     This is not the first heading but the title metadata.
@@ -2030,7 +2073,7 @@ etc.</p>
 </details>
 </dd>
 <dt id="odfdo.meta.Meta.set_user_defined_metadata"><code class="name flex">
-<span>def <span class="ident">set_user_defined_metadata</span></span>(<span>self, name, value)</span>
+<span>def <span class="ident">set_user_defined_metadata</span></span>(<span>self, name: str, value: Any) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2038,7 +2081,7 @@ etc.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_user_defined_metadata(self, name, value):
+<pre><code class="python">def set_user_defined_metadata(self, name: str, value: Any) -&gt; None:
     if isinstance(value, bool):
         value_type = &#34;boolean&#34;
         value = &#34;true&#34; if value else &#34;false&#34;
@@ -2060,6 +2103,8 @@ etc.</p>
         raise TypeError(&#39;unexpected type &#34;%s&#34; for value&#39; % type(value))
     # Already the same element ?
     for metadata in self.get_elements(&#34;//meta:user-defined&#34;):
+        if not isinstance(metadata, Element):
+            continue
         if metadata.get_attribute(&#34;meta:name&#34;) == name:
             break
     else:

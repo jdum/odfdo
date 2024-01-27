@@ -26,7 +26,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Copyright 2018-2023 Jérôme Dumonteil
+<pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
 # Copyright (c) 2009-2013 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
@@ -84,7 +84,7 @@ def configure_parser() -&gt; OptionParser:
     return parser
 
 
-def main():
+def main() -&gt; None:
     parser = configure_parser()
     options, args = parser.parse_args()
 
@@ -134,7 +134,7 @@ def search_replace(
     replacement: str,
     input_path: str | None,
     output_path: str | None,
-):
+) -&gt; None:
     document = read_document(input_path)
     body = document.body
     body.replace(pattern, replacement)
@@ -207,7 +207,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 </details>
 </dd>
 <dt id="odfdo.scripts.replace.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>)</span>
+<span>def <span class="ident">main</span></span>(<span>) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -215,7 +215,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def main():
+<pre><code class="python">def main() -&gt; None:
     parser = configure_parser()
     options, args = parser.parse_args()
 
@@ -270,7 +270,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
 </details>
 </dd>
 <dt id="odfdo.scripts.replace.search_replace"><code class="name flex">
-<span>def <span class="ident">search_replace</span></span>(<span>pattern: str, replacement: str, input_path: str | None, output_path: str | None)</span>
+<span>def <span class="ident">search_replace</span></span>(<span>pattern: str, replacement: str, input_path: str | None, output_path: str | None) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -283,7 +283,7 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
     replacement: str,
     input_path: str | None,
     output_path: str | None,
-):
+) -&gt; None:
     document = read_document(input_path)
     body = document.body
     body.replace(pattern, replacement)
