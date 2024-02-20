@@ -265,6 +265,9 @@ class TOC(Element):
             toc_source.append(template)
         return toc_source
 
+    def __str__(self) -> str:
+        return self.get_formatted_text()
+
     def get_formatted_text(self, context: dict | None = None) -> str:
         index_body = self.get_element("text:index-body")
 
@@ -272,19 +275,17 @@ class TOC(Element):
             return ""
         if context is None:
             context = {}
-        if context["rst_mode"]:
+        if context.get("rst_mode"):
             return "\n.. contents::\n\n"
 
         result = []
         for element in index_body.children:
             if element.tag == "text:index-title":
-                for e in element.children:
-                    result.append(e.get_formatted_text(context))
-                result.append("\n")
+                for child_element in element.children:
+                    result.append(child_element.get_formatted_text(context).strip())
             else:
-                result.append(element.get_formatted_text(context))
-        result.append("\n")
-        return "".join(result)
+                result.append(element.get_formatted_text(context).strip())
+        return "\n".join(result)
 
     @property
     def outline_level(self) -> int | None:
