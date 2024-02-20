@@ -3440,16 +3440,18 @@ timedelta</p>
 
     def set_value(
         self,
-        value: str  # type: ignore
-        | bytes
-        | float
-        | int
-        | Decimal
-        | bool
-        | datetime
-        | date
-        | timedelta
-        | None,
+        value: (
+            str  # type: ignore
+            | bytes
+            | float
+            | int
+            | Decimal
+            | bool
+            | datetime
+            | date
+            | timedelta
+            | None
+        ),
         text: str | None = None,
         cell_type: str | None = None,
         currency: str | None = None,
@@ -3821,16 +3823,18 @@ unless provided.</p>
 </summary>
 <pre><code class="python">def set_value(
     self,
-    value: str  # type: ignore
-    | bytes
-    | float
-    | int
-    | Decimal
-    | bool
-    | datetime
-    | date
-    | timedelta
-    | None,
+    value: (
+        str  # type: ignore
+        | bytes
+        | float
+        | int
+        | Decimal
+        | bool
+        | datetime
+        | date
+        | timedelta
+        | None
+    ),
     text: str | None = None,
     cell_type: str | None = None,
     currency: str | None = None,
@@ -31115,6 +31119,9 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
             toc_source.append(template)
         return toc_source
 
+    def __str__(self) -&gt; str:
+        return self.get_formatted_text()
+
     def get_formatted_text(self, context: dict | None = None) -&gt; str:
         index_body = self.get_element(&#34;text:index-body&#34;)
 
@@ -31122,19 +31129,17 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
             return &#34;&#34;
         if context is None:
             context = {}
-        if context[&#34;rst_mode&#34;]:
+        if context.get(&#34;rst_mode&#34;):
             return &#34;\n.. contents::\n\n&#34;
 
         result = []
         for element in index_body.children:
             if element.tag == &#34;text:index-title&#34;:
-                for e in element.children:
-                    result.append(e.get_formatted_text(context))
-                result.append(&#34;\n&#34;)
+                for child_element in element.children:
+                    result.append(child_element.get_formatted_text(context).strip())
             else:
-                result.append(element.get_formatted_text(context))
-        result.append(&#34;\n&#34;)
-        return &#34;&#34;.join(result)
+                result.append(element.get_formatted_text(context).strip())
+        return &#34;\n&#34;.join(result)
 
     @property
     def outline_level(self) -&gt; int | None:
@@ -31165,13 +31170,13 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
         self.append(body)
         return body
 
-    def get_title(self) -&gt; str | None:
+    def get_title(self) -&gt; str:
         index_body = self.body
         if index_body is None:
-            return None
+            return &#34;&#34;
         index_title = index_body.get_element(IndexTitle._tag)
         if index_title is None:
-            return None
+            return &#34;&#34;
         return index_title.text_content
 
     def set_toc_title(
@@ -31237,7 +31242,8 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
         index_body = self.body
 
         # Restore the title
-        index_body.insert(title, position=0)  # type: ignore
+        if title and str(title):
+            index_body.insert(title, position=0)  # type: ignore
 
         # Insert default TOC style
         if use_default_styles:
@@ -31275,8 +31281,8 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
                     del level_indexes[idx]
             number_str = &#34;.&#34;.join(number) + &#34;.&#34;
             # Make the title with &#34;1.2.3. Title&#34; format
-            title = f&#34;{number_str} {header.text}&#34;
-            paragraph = Paragraph(title)
+            header_title = f&#34;{number_str} {str(header)}&#34;
+            paragraph = Paragraph(header_title)
             if use_default_styles:
                 paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
             index_body.append(paragraph)  # type: ignore</code></pre>
@@ -31530,7 +31536,8 @@ provide one as argument.</p>
     index_body = self.body
 
     # Restore the title
-    index_body.insert(title, position=0)  # type: ignore
+    if title and str(title):
+        index_body.insert(title, position=0)  # type: ignore
 
     # Insert default TOC style
     if use_default_styles:
@@ -31568,15 +31575,15 @@ provide one as argument.</p>
                 del level_indexes[idx]
         number_str = &#34;.&#34;.join(number) + &#34;.&#34;
         # Make the title with &#34;1.2.3. Title&#34; format
-        title = f&#34;{number_str} {header.text}&#34;
-        paragraph = Paragraph(title)
+        header_title = f&#34;{number_str} {str(header)}&#34;
+        paragraph = Paragraph(header_title)
         if use_default_styles:
             paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
         index_body.append(paragraph)  # type: ignore</code></pre>
 </details>
 </dd>
 <dt id="odfdo.TOC.get_title"><code class="name flex">
-<span>def <span class="ident">get_title</span></span>(<span>self) ‑> str | None</span>
+<span>def <span class="ident">get_title</span></span>(<span>self) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -31584,13 +31591,13 @@ provide one as argument.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_title(self) -&gt; str | None:
+<pre><code class="python">def get_title(self) -&gt; str:
     index_body = self.body
     if index_body is None:
-        return None
+        return &#34;&#34;
     index_title = index_body.get_element(IndexTitle._tag)
     if index_title is None:
-        return None
+        return &#34;&#34;
     return index_title.text_content</code></pre>
 </details>
 </dd>

@@ -1,23 +1,24 @@
 [tool.poetry]
 name = "odfdo"
-version = "3.5.0"
+version = "3.5.1"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 keywords = ["python", "library", "ODF", "OpenDocument"]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Environment :: Console",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Operating System :: OS Independent",
-    "Topic :: Software Development :: Libraries :: Python Modules"]
+        "Development Status :: 5 - Production/Stable",
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: Apache Software License",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Operating System :: OS Independent",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+]
 homepage = "https://github.com/jdum/odfdo"
 repository = "https://github.com/jdum/odfdo"
 authors = ["Jérôme Dumonteil <jerome.dumonteil@gmail.com>"]
@@ -61,60 +62,61 @@ target-version = "py312"
 line-length = 88
 fix = false
 select = [
-    # flake8-2020
-    "YTT",
-    # flake8-bandit
-    "S",
-    # flake8-bugbear
-    "B",
-    # flake8-builtins
-    "A",
-    # flake8-comprehensions
-    "C4",
-    # flake8-debugger
-    "T10",
-    # flake8-simplify
-    "SIM",
-    # isort
-    "I",
-    # mccabe
-    "C90",
-    # pycodestyle
-    "E", "W",
-    # pyflakes
-    "F",
-    # pygrep-hooks
-    "PGH",
-    # pyupgrade
-    "UP",
-    # ruff
-    "RUF",
-    # tryceratops
-    "TRY",
+        # flake8-2020
+        "YTT",
+        # flake8-bandit
+        "S",
+        # flake8-bugbear
+        "B",
+        # flake8-builtins
+        "A",
+        # flake8-comprehensions
+        "C4",
+        # flake8-debugger
+        "T10",
+        # flake8-simplify
+        "SIM",
+        # isort
+        "I",
+        # mccabe
+        "C90",
+        # pycodestyle
+        "E",
+        "W",
+        # pyflakes
+        "F",
+        # pygrep-hooks
+        "PGH",
+        # pyupgrade
+        "UP",
+        # ruff
+        "RUF",
+        # tryceratops
+        "TRY",
 ]
 ignore = [
-    # LineTooLong
-    "E501",
-    # DoNotAssignLambda
-    "E731",
-    # Use specific rule codes when ignoring type issues
-    "PGH003",
-    # check for execution of untrusted input
-    "S603",
-    # Class attribute `open` is shadowing a Python builtin
-    "A003",
-    # Use `X | Y` in `isinstance` call instead of `(X, Y)`
-    "UP038",
-    # Avoid specifying long messages outside the exception class
-    "TRY003",
-    # Use ternary operator
-    "SIM108",
-    # Standard pseudo-random generators are not suitable for cryptographic purposes
-    "S311",
-    # Using `lxml` to parse untrusted data is known to be vulnerable to XML attacks
-    "S320",
-    # Use `X | Y` for type annotations
-    "UP007",
+        # LineTooLong
+        "E501",
+        # DoNotAssignLambda
+        "E731",
+        # Use specific rule codes when ignoring type issues
+        "PGH003",
+        # check for execution of untrusted input
+        "S603",
+        # Class attribute `open` is shadowing a Python builtin
+        "A003",
+        # Use `X | Y` in `isinstance` call instead of `(X, Y)`
+        "UP038",
+        # Avoid specifying long messages outside the exception class
+        "TRY003",
+        # Use ternary operator
+        "SIM108",
+        # Standard pseudo-random generators are not suitable for cryptographic purposes
+        "S311",
+        # Using `lxml` to parse untrusted data is known to be vulnerable to XML attacks
+        "S320",
+        # Use `X | Y` for type annotations
+        "UP007",
 ]
 
 [tool.ruff.per-file-ignores]

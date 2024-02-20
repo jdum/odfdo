@@ -670,16 +670,18 @@ class Cell(ElementTyped):
 
     def set_value(
         self,
-        value: str  # type: ignore
-        | bytes
-        | float
-        | int
-        | Decimal
-        | bool
-        | datetime
-        | date
-        | timedelta
-        | None,
+        value: (
+            str  # type: ignore
+            | bytes
+            | float
+            | int
+            | Decimal
+            | bool
+            | datetime
+            | date
+            | timedelta
+            | None
+        ),
         text: str | None = None,
         cell_type: str | None = None,
         currency: str | None = None,

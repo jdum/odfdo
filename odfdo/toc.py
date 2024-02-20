@@ -316,13 +316,13 @@ class TOC(Element):
         self.append(body)
         return body
 
-    def get_title(self) -> str | None:
+    def get_title(self) -> str:
         index_body = self.body
         if index_body is None:
-            return None
+            return ""
         index_title = index_body.get_element(IndexTitle._tag)
         if index_title is None:
-            return None
+            return ""
         return index_title.text_content
 
     def set_toc_title(
@@ -388,7 +388,8 @@ class TOC(Element):
         index_body = self.body
 
         # Restore the title
-        index_body.insert(title, position=0)  # type: ignore
+        if title and str(title):
+            index_body.insert(title, position=0)  # type: ignore
 
         # Insert default TOC style
         if use_default_styles:
@@ -426,8 +427,8 @@ class TOC(Element):
                     del level_indexes[idx]
             number_str = ".".join(number) + "."
             # Make the title with "1.2.3. Title" format
-            title = f"{number_str} {header.text}"
-            paragraph = Paragraph(title)
+            header_title = f"{number_str} {str(header)}"
+            paragraph = Paragraph(header_title)
             if use_default_styles:
                 paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
             index_body.append(paragraph)  # type: ignore
