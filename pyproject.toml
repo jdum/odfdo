@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odfdo"
-version = "3.5.1"
+version = "3.6.0"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 keywords = ["python", "library", "ODF", "OpenDocument"]
@@ -38,10 +38,12 @@ pytest = ">=7.0"
 tox = ">=4"
 Pillow = ">=10.0.0"
 lxml-stubs = "*"
+ruff = ">=0.2.2"
 
 [tool.poetry.scripts]
 odfdo-diff = "odfdo.scripts.diff:main"
 odfdo-folder = 'odfdo.scripts.folder:main'
+odfdo-highlight = 'odfdo.scripts.highlight:main'
 odfdo-show = 'odfdo.scripts.show:main'
 odfdo-styles = 'odfdo.scripts.styles:main'
 odfdo-replace = 'odfdo.scripts.replace:main'
@@ -61,7 +63,7 @@ profile = "black"
 target-version = "py312"
 line-length = 88
 fix = false
-select = [
+lint.select = [
         # flake8-2020
         "YTT",
         # flake8-bandit
@@ -94,7 +96,7 @@ select = [
         # tryceratops
         "TRY",
 ]
-ignore = [
+lint.ignore = [
         # LineTooLong
         "E501",
         # DoNotAssignLambda
@@ -119,7 +121,7 @@ ignore = [
         "UP007",
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "recipes/accessing_a_single_element.py" = ["RUF001"]
 "tests/test_*" = ["S101"]
 

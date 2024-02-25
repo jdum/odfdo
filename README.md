@@ -75,6 +75,7 @@ When installing odfdo, 5 scripts are installed:
  - `odfdo-show`: dump text from an ODF file to the standard output, and optionally styles and meta informations.
  - `odfdo-styles`: command line interface tool to manipulate styles of ODF files.
  - `odfdo-replace`: find a pattern (regex) in an ODF file and replace by some string.
+ - `odfdo-highlight`: highlight the text matching a pattern (regex) in an ODF file.
 
 About styles: the best way to apply style is by merging styles from a template
 document into your generated document (See `odfdo-styles` script).
@@ -107,7 +108,7 @@ Changes from former lpod library
 `lpod-python` was written in 2009-2010 as a Python 2.x library,
 see: https://github.com/lpod/lpod-python
 
-`odfdo` is an adaptation of this formaer project. `odfdo` main changes from `lpod`:
+`odfdo` is an adaptation of this former project. `odfdo` main changes from `lpod`:
 
  - `odfdo` requires Python version 3.9 to 3.12. For Python 3.6 to 3.8 see previous releases.
  - API change: more pythonic.
