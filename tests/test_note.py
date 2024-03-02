@@ -108,7 +108,7 @@ def test_get_note_by_id(document):
         "  <text:note-body>\n"
         '    <text:p text:style-name="Footnote">'
         "C'est-à-dire l'élément "
-        "« text:p ».</text:p>\n"
+        "« text:p ».</text:p>\n"  # noqa: RUF001
         "  </text:note-body>\n"
         "</text:note>\n"
     )
@@ -125,7 +125,7 @@ def test_get_note_by_class_footnote(document):
         "  <text:note-body>\n"
         '    <text:p text:style-name="Footnote">'
         "C'est-à-dire l'élément "
-        "« text:p ».</text:p>\n"
+        "« text:p ».</text:p>\n"  # noqa: RUF001
         "  </text:note-body>\n"
         "</text:note>\n"
     )
@@ -213,7 +213,7 @@ def test_get_formatted_text(document):
     expected = (
         "- Un paragraphe[1] d'apparence(i) banale[*].\n"
         "----\n"
-        "[1] C'est-à-dire l'élément « text:p ».\n"
+        "[1] C'est-à-dire l'élément « text:p ».\n"  # noqa: RUF001
         "\n"
         "----\n"
         "[*] Sauf qu'il est commenté !\n"

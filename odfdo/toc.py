@@ -427,7 +427,7 @@ class TOC(Element):
                     del level_indexes[idx]
             number_str = ".".join(number) + "."
             # Make the title with "1.2.3. Title" format
-            header_title = f"{number_str} {str(header)}"
+            header_title = f"{number_str} {header}"
             paragraph = Paragraph(header_title)
             if use_default_styles:
                 paragraph.style = TOC_ENTRY_STYLE_PATTERN % level

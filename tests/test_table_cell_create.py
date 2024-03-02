@@ -396,7 +396,7 @@ def test_value_property_bytes():
     cell = Cell()
     cell.clear()
     assert cell.string == ""
-    cell.value = "éû".encode("utf8")
+    cell.value = "éû".encode()
     assert cell.value == "éû"
 
 

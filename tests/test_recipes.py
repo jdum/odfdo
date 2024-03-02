@@ -15,7 +15,7 @@ def test_recipe(recipe):
     print(recipe)
     try:
         sp.run(
-            ["python", recipe],
+            ["python", recipe],  # noqa: S607
             stdout=sp.PIPE,
             stderr=sp.STDOUT,
             timeout=60,

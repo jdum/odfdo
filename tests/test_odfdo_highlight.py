@@ -104,7 +104,7 @@ def test_replace4():
 
 
 def test_help():
-    params = f"--help"
+    params = "--help"
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -112,7 +112,7 @@ def test_help():
 
 
 def test_version():
-    params = f"--version"
+    params = "--version"
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
