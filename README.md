@@ -68,7 +68,7 @@ There is no detailed documentation or tutorial, but:
  - the `recipes` folder contains more than 50 working sample scripts,
  - the `doc` folder contains an auto generated documentation.
 
-When installing odfdo, 5 scripts are installed:
+When installing odfdo, a few scripts are installed:
 
  - `odfdo-diff`: show a *diff* between two .odt document.
  - `odfdo-folder`: convert standard ODF file to folder and files, and reverse.
@@ -76,6 +76,7 @@ When installing odfdo, 5 scripts are installed:
  - `odfdo-styles`: command line interface tool to manipulate styles of ODF files.
  - `odfdo-replace`: find a pattern (regex) in an ODF file and replace by some string.
  - `odfdo-highlight`: highlight the text matching a pattern (regex) in an ODF file.
+ - `odfdo-headers`: print the headers of an ODF file.
 
 About styles: the best way to apply style is by merging styles from a template
 document into your generated document (See `odfdo-styles` script).

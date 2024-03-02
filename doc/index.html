@@ -31281,7 +31281,7 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
                     del level_indexes[idx]
             number_str = &#34;.&#34;.join(number) + &#34;.&#34;
             # Make the title with &#34;1.2.3. Title&#34; format
-            header_title = f&#34;{number_str} {str(header)}&#34;
+            header_title = f&#34;{number_str} {header}&#34;
             paragraph = Paragraph(header_title)
             if use_default_styles:
                 paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
@@ -31575,7 +31575,7 @@ provide one as argument.</p>
                 del level_indexes[idx]
         number_str = &#34;.&#34;.join(number) + &#34;.&#34;
         # Make the title with &#34;1.2.3. Title&#34; format
-        header_title = f&#34;{number_str} {str(header)}&#34;
+        header_title = f&#34;{number_str} {header}&#34;
         paragraph = Paragraph(header_title)
         if use_default_styles:
             paragraph.style = TOC_ENTRY_STYLE_PATTERN % level

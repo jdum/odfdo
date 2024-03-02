@@ -44,7 +44,7 @@ def make_annotations(document):
         paragraph.insert_annotation(
             after=some_word,  # The word after what the annotation is inserted.
             body="It's so easy!",  # The annotation itself, at the end of the page.
-            creator="Bob"  # The author of the annotation.
+            creator="Bob",  # The author of the annotation.
             # date= xxx              A datetime value, by default datetime.now().
         )
 
