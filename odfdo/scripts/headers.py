@@ -89,20 +89,20 @@ def header_numbering(
     level = header.get_attribute_integer("text:outline-level") or 0
     if level is None or level > depth:
         return None
-    number = []
-    # < level
+    numbers: list[int] = []
+    # before hedaer level
     for idx in range(1, level):
-        index = level_indexes.setdefault(idx, 1)
-        number.append(str(index))
-    # == level
-    index = level_indexes.setdefault(level, 0) + 1
+        numbers.append(level_indexes.setdefault(idx, 1))
+    # header level
+    index = level_indexes.get(level, 0) + 1
     level_indexes[level] = index
-    number.append(str(index))
-    # 3. l > level
-    for idx in range(level + 1, depth + 1):
-        if idx in level_indexes:
-            del level_indexes[idx]
-    return ".".join(number) + "."
+    numbers.append(index)
+    # after header level
+    idx = level + 1
+    while idx in level_indexes:
+        del level_indexes[idx]
+        idx += 1
+    return ".".join(str(x) for x in numbers) + "."
 
 
 def headers_document(document: Document, depth: int) -> None:

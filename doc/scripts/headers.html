@@ -117,20 +117,20 @@ def header_numbering(
     level = header.get_attribute_integer(&#34;text:outline-level&#34;) or 0
     if level is None or level &gt; depth:
         return None
-    number = []
-    # &lt; level
+    numbers: list[int] = []
+    # before hedaer level
     for idx in range(1, level):
-        index = level_indexes.setdefault(idx, 1)
-        number.append(str(index))
-    # == level
-    index = level_indexes.setdefault(level, 0) + 1
+        numbers.append(level_indexes.setdefault(idx, 1))
+    # header level
+    index = level_indexes.get(level, 0) + 1
     level_indexes[level] = index
-    number.append(str(index))
-    # 3. l &gt; level
-    for idx in range(level + 1, depth + 1):
-        if idx in level_indexes:
-            del level_indexes[idx]
-    return &#34;.&#34;.join(number) + &#34;.&#34;
+    numbers.append(index)
+    # after header level
+    idx = level + 1
+    while idx in level_indexes:
+        del level_indexes[idx]
+        idx += 1
+    return &#34;.&#34;.join(str(x) for x in numbers) + &#34;.&#34;
 
 
 def headers_document(document: Document, depth: int) -&gt; None:
@@ -257,20 +257,20 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
     level = header.get_attribute_integer(&#34;text:outline-level&#34;) or 0
     if level is None or level &gt; depth:
         return None
-    number = []
-    # &lt; level
+    numbers: list[int] = []
+    # before hedaer level
     for idx in range(1, level):
-        index = level_indexes.setdefault(idx, 1)
-        number.append(str(index))
-    # == level
-    index = level_indexes.setdefault(level, 0) + 1
+        numbers.append(level_indexes.setdefault(idx, 1))
+    # header level
+    index = level_indexes.get(level, 0) + 1
     level_indexes[level] = index
-    number.append(str(index))
-    # 3. l &gt; level
-    for idx in range(level + 1, depth + 1):
-        if idx in level_indexes:
-            del level_indexes[idx]
-    return &#34;.&#34;.join(number) + &#34;.&#34;</code></pre>
+    numbers.append(index)
+    # after header level
+    idx = level + 1
+    while idx in level_indexes:
+        del level_indexes[idx]
+        idx += 1
+    return &#34;.&#34;.join(str(x) for x in numbers) + &#34;.&#34;</code></pre>
 </details>
 </dd>
 <dt id="odfdo.scripts.headers.headers"><code class="name flex">
