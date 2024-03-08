@@ -31,6 +31,11 @@ from .paragraph import Paragraph
 from .style import Style
 
 
+def _toc_entry_style_name(level: int) -> str:
+    """Return the style name of an entry of the TOC."""
+    return f"odfto_toc_level_{level}"
+
+
 class IndexTitle(Element):
     """The "text:index-title" element contains the title of an index.
 
@@ -83,8 +88,6 @@ class IndexTitle(Element):
 
 
 IndexTitle._define_attribut_property()
-
-TOC_ENTRY_STYLE_PATTERN = "odfto_toc_level_%s"
 
 
 class TabStopStyle(Element):
@@ -154,7 +157,7 @@ def default_toc_level_style(level: int) -> Style:
     properties.append(tab_stops)
     toc_style_level = Style(
         family="paragraph",
-        name=TOC_ENTRY_STYLE_PATTERN % level,
+        name=_toc_entry_style_name(level),
         parent=f"Contents_20_{level}",
     )
     toc_style_level.append(properties)
@@ -230,8 +233,7 @@ class TOC(Element):
             if protected:
                 self.protected = protected
             if name is None:
-                name = f"{title}1"
-                self.name = name
+                self.name = f"{title}1"
             # Create the source template
             toc_source = self.create_toc_source(
                 title, outline_level, title_style, entry_style
@@ -353,6 +355,24 @@ class TOC(Element):
                 paragraph.style = text_style  # type: ignore
             paragraph.text = title
 
+    @staticmethod
+    def _header_numbering(level_indexes: dict[int, int], level: int) -> str:
+        """Return the header hierarchical number (like "1.2.3.")."""
+        numbers: list[int] = []
+        # before header level
+        for idx in range(1, level):
+            numbers.append(level_indexes.setdefault(idx, 1))
+        # header level
+        index = level_indexes.get(level, 0) + 1
+        level_indexes[level] = index
+        numbers.append(index)
+        # after header level
+        idx = level + 1
+        while idx in level_indexes:
+            del level_indexes[idx]
+            idx += 1
+        return ".".join(str(x) for x in numbers) + "."
+
     def fill(  # noqa: C901
         self,
         document: Document | None = None,
@@ -398,7 +418,7 @@ class TOC(Element):
                 for level in range(1, 11):
                     if (
                         automatic_styles.get_style(
-                            "paragraph", TOC_ENTRY_STYLE_PATTERN % level
+                            "paragraph", _toc_entry_style_name(level)
                         )
                         is None
                     ):
@@ -412,25 +432,11 @@ class TOC(Element):
             level = header.get_attribute_integer("text:outline-level") or 0
             if level is None or level > outline_level:
                 continue
-            number = []
-            # 1. l < level
-            for idx in range(1, level):
-                index = level_indexes.setdefault(idx, 1)
-                number.append(str(index))
-            # 2. l == level
-            index = level_indexes.setdefault(level, 0) + 1
-            level_indexes[level] = index
-            number.append(str(index))
-            # 3. l > level
-            for idx in range(level + 1, 11):
-                if idx in level_indexes:
-                    del level_indexes[idx]
-            number_str = ".".join(number) + "."
+            number_str = self._header_numbering(level_indexes, level)
             # Make the title with "1.2.3. Title" format
-            header_title = f"{number_str} {header}"
-            paragraph = Paragraph(header_title)
+            paragraph = Paragraph(f"{number_str} {header}")
             if use_default_styles:
-                paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
+                paragraph.style = _toc_entry_style_name(level)
             index_body.append(paragraph)  # type: ignore
 
 
