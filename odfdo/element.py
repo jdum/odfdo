@@ -27,12 +27,11 @@ from __future__ import annotations
 import contextlib
 import re
 import sys
-
-# from icecream import ic
 from collections.abc import Callable, Iterable
 from copy import deepcopy
 from datetime import datetime, timedelta
 from decimal import Decimal
+from functools import cache
 from re import search
 from typing import Any, NamedTuple
 
@@ -103,10 +102,6 @@ LAST_CHILD = 1
 NEXT_SIBLING = 2
 PREV_SIBLING = 3
 STOPMARKER = 5
-
-ns_stripper = re.compile(r' xmlns:\w*="[\w:\-\/\.#]*"')
-
-__xpath_query_cache: dict[str, XPath] = {}
 
 # An empty XML document with all namespaces declared
 NAMESPACES_XML = b"""<?xml version="1.0" encoding="UTF-8"?>
@@ -205,22 +200,15 @@ def _get_lxml_tag_or_name(qname: str) -> str:
     return f"{{{uri}}}{name}"
 
 
-def _xpath_compile(path: str) -> XPath:
+@cache
+def xpath_compile(path: str) -> XPath:
     return XPath(path, namespaces=ODF_NAMESPACES, regexp=False)
 
 
-def _find_query_in_cache(query: str) -> XPath:
-    xpath = __xpath_query_cache.get(query)
-    if xpath is None:
-        xpath = _xpath_compile(query)
-        __xpath_query_cache[query] = xpath
-    return xpath
-
-
-_xpath_text = _find_query_in_cache("//text()")  #  descendant and self
-_xpath_text_descendant = _find_query_in_cache("descendant::text()")
-_xpath_text_main = _find_query_in_cache("//*[not (parent::office:annotation)]/text()")
-_xpath_text_main_descendant = _find_query_in_cache(
+_xpath_text = xpath_compile("//text()")  #  descendant and self
+_xpath_text_descendant = xpath_compile("descendant::text()")
+_xpath_text_main = xpath_compile("//*[not (parent::office:annotation)]/text()")
+_xpath_text_main_descendant = xpath_compile(
     "descendant::text()[not (parent::office:annotation)]"
 )
 
@@ -799,7 +787,7 @@ class Element:
         cache: tuple | None = None
         element = self.__element
         if isinstance(xpath_query, str):
-            new_xpath_query = _find_query_in_cache(xpath_query)
+            new_xpath_query = xpath_compile(xpath_query)
             result = new_xpath_query(element)
         else:
             result = xpath_query(element)
@@ -1192,7 +1180,7 @@ class Element:
                         tail = current.tail
                         if tail:
                             # got a tail => the parent should be either t:p or t:h
-                            target.text = tail
+                            target.text = tail  # type: ignore
                         current, target = current._get_successor(target)  # type: ignore
                         state = 1
                         continue
@@ -1202,7 +1190,7 @@ class Element:
                         new_target.delete(child)
                     new_target.text = ""
                     new_target.tail = ""
-                    target.append(new_target)
+                    target.append(new_target)  # type: ignore
                     target = new_target
                     current = current.children[0]
                     continue
@@ -1225,12 +1213,12 @@ class Element:
                         new_target.delete(child)
                     new_target.text = ""
                     new_target.tail = ""
-                    target.append(new_target)
+                    target.append(new_target)  # type: ignore
                     target = new_target
                     current = current.children[0]
                     continue
                 # collect
-                target.append(current.clone)
+                target.append(current.clone)  # type: ignore
                 current, target = current._get_successor(target)  # type: ignore
                 continue
         # Now resu should be the "parent" of inserted parts
@@ -1579,11 +1567,11 @@ class Element:
         Element or Text instances translated from the nodes found.
         """
         element = self.__element
-        xpath_instance = _find_query_in_cache(xpath_query)
+        xpath_instance = xpath_compile(xpath_query)
         elements = xpath_instance(element)
         result: list[Element | Text] = []
         if hasattr(elements, "__iter__"):
-            for obj in elements:
+            for obj in elements:  # type: ignore
                 if isinstance(obj, (_ElementStringResult, _ElementUnicodeResult)):
                     result.append(Text(obj))
                 elif isinstance(obj, _Element):
@@ -1621,27 +1609,22 @@ class Element:
         # slow data = tostring(self.__element, encoding='unicode')
         # return self.from_tag(data)
 
-    def serialize(self, pretty: bool = False, with_ns: bool = False) -> str:
-        # This copy bypasses serialization side-effects in lxml
-        native = deepcopy(self.__element)
-        data = tostring(
-            native, with_tail=False, pretty_print=pretty, encoding="unicode"
-        )
-        if not with_ns:
-            # Remove namespaces
-            data = ns_stripper.sub("", data)
-        return data
+    @staticmethod
+    def _strip_namespaces(data: str) -> str:
+        """Remove xmlns:* fields from serialized XML."""
+        return re.sub(r' xmlns:\w*="[\w:\-\/\.#]*"', "", data)
 
-    def serialize2(self, pretty: bool = False, with_ns: bool = False) -> str:
+    def serialize(self, pretty: bool = False, with_ns: bool = False) -> str:
+        """Return text serialization of XML element."""
         # This copy bypasses serialization side-effects in lxml
         native = deepcopy(self.__element)
         data = tostring(
             native, with_tail=False, pretty_print=pretty, encoding="unicode"
         )
-        if not with_ns:
-            # Remove namespaces
-            data = ns_stripper.sub("", data)
-        return data + str(len(data))
+        if with_ns:
+            return data
+        # Remove namespaces
+        return self._strip_namespaces(data)
 
     # Element helpers usable from any context
 
@@ -2383,7 +2366,7 @@ class Element:
 
         Return: list of unique str
         """
-        name_xpath_query = _find_query_in_cache("//@office:name")
+        name_xpath_query = xpath_compile("//@office:name")
         response = name_xpath_query(self.__element)
         if not isinstance(response, list):
             return []

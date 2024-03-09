@@ -45,20 +45,20 @@ from lxml.etree import XPath
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import (
     Element,
-    _xpath_compile,
     register_element_class,
     register_element_class_list,
+    xpath_compile,
 )
 from .element_typed import ElementTyped
 from .frame import Frame
 from .utils import bytes_to_str, isiterable
 
-_xpath_row = _xpath_compile("table:table-row")
-_xpath_row_idx = _xpath_compile("(table:table-row)[$idx]")
-_xpath_column = _xpath_compile("table:table-column")
-_xpath_column_idx = _xpath_compile("(table:table-column)[$idx]")
-_xpath_cell = _xpath_compile("(table:table-cell|table:covered-table-cell)")
-_xpath_cell_idx = _xpath_compile("(table:table-cell|table:covered-table-cell)[$idx]")
+_xpath_row = xpath_compile("table:table-row")
+_xpath_row_idx = xpath_compile("(table:table-row)[$idx]")
+_xpath_column = xpath_compile("table:table-column")
+_xpath_column_idx = xpath_compile("(table:table-column)[$idx]")
+_xpath_cell = xpath_compile("(table:table-cell|table:covered-table-cell)")
+_xpath_cell_idx = xpath_compile("(table:table-cell|table:covered-table-cell)[$idx]")
 
 
 def _table_name_check(name: Any) -> str:
