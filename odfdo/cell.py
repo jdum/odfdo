@@ -36,6 +36,9 @@ from .element import Element, register_element_class_list
 from .element_typed import ElementTyped
 from .utils import bytes_to_str
 
+# fix mismatch between float and Cell.float
+Float = float
+
 
 class Cell(ElementTyped):
     """ "table:table-cell" table cell element."""
@@ -107,7 +110,7 @@ class Cell(ElementTyped):
     @property
     def value(
         self,
-    ) -> str | bool | int | float | Decimal | date | datetime | timedelta | None:
+    ) -> str | bool | int | Float | Decimal | date | datetime | timedelta | None:
         """Set / get the value of the cell. The type is read from the
         'office:value-type' attribute of the cell. When setting the value,
         the type of the value will determine the new value_type of the cell.
@@ -141,7 +144,7 @@ class Cell(ElementTyped):
         return None
 
     @value.setter
-    def value(self, value: str | bytes | bool | int | float | Decimal | None) -> None:
+    def value(self, value: str | bytes | bool | int | Float | Decimal | None) -> None:
         self.clear()
         if value is None:
             return
@@ -158,7 +161,7 @@ class Cell(ElementTyped):
             self.set_attribute("office:boolean-value", value_bool)
             self.text = value_bool
             return
-        if isinstance(value, (int, float, Decimal)):
+        if isinstance(value, (int, Float, Decimal)):
             self.set_attribute("office:value-type", "float")
             value_str = str(value)
             self.set_attribute("office:value", value_str)
@@ -167,19 +170,19 @@ class Cell(ElementTyped):
         raise TypeError(f"Unknown value type, try with set_value() : {value!r}")
 
     @property
-    def float(self) -> float:
+    def float(self) -> Float:
         """Set / get the value of the cell as a float (or 0.0)."""
         for tag in ("office:value", "office:string-value", "office:boolean-value"):
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
                 with contextlib.suppress(ValueError, TypeError):
-                    return float(read_attr)
+                    return Float(read_attr)
         return 0.0
 
     @float.setter
-    def float(self, value: str | float | int | Decimal) -> None:
+    def float(self, value: str | Float | int | Decimal) -> None:
         try:
-            value_float = float(value)
+            value_float = Float(value)
         except (ValueError, TypeError):
             value_float = 0.0
         value_str = str(value_float)
@@ -199,7 +202,7 @@ class Cell(ElementTyped):
     @string.setter
     def string(
         self,
-        value: str | bytes | int | float | Decimal | bool | None,  # type: ignore
+        value: str | bytes | int | Float | Decimal | bool | None,  # type: ignore
     ) -> None:
         self.clear()
         if value is None:
@@ -215,7 +218,7 @@ class Cell(ElementTyped):
         value: (
             str  # type: ignore
             | bytes
-            | float
+            | Float
             | int
             | Decimal
             | bool
