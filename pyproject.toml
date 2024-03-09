@@ -30,7 +30,7 @@ python = ">=3.9,<4"
 lxml = "^5"
 
 [tool.poetry.group.docs.dependencies]
-pdoc3 = ">=0.10"
+pdoc = ">=14.4.0"
 
 [tool.poetry.group.dev.dependencies]
 poetry = "~1.8"

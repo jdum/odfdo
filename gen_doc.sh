@@ -1,11 +1,7 @@
 #!/bin/bash
-#
-# if pdoc is missing: pip install pdoc3
-#
+pip install -U pdoc
 
-[ -d doc.old ] && rm -r doc.old
-[ -d doc ] && mv doc doc.old
-pdoc -f --html odfdo
-mv html/odfdo doc
-mv html doc.old
+[ -d doc ] && rm -fr doc
+mkdir doc
 cp odfdo.png doc
+pdoc -o doc --search --logo "https://raw.githubusercontent.com/jdum/odfdo/master/odfdo.png" --logo-link "https://github.com/jdum/odfdo" ./odfdo

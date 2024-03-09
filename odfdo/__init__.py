@@ -20,7 +20,9 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-"""Python library for OpenDocument Format (ODF)"""
+"""
+.. include:: ../README.md
+"""
 
 __all__ = [
     "AnimPar",
