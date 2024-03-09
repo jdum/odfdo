@@ -27,7 +27,7 @@ from decimal import Decimal as dec
 
 import pytest
 
-from odfdo.table import Cell
+from odfdo.cell import Cell
 
 
 def test_bool():

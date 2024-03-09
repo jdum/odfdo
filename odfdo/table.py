@@ -30,35 +30,36 @@ import contextlib
 import csv
 import os
 import string
-from bisect import bisect_left, insort
-from collections.abc import Iterable, Iterator
-from datetime import date, datetime, timedelta
-from decimal import Decimal
+from collections.abc import Iterator
 from io import StringIO
 from itertools import zip_longest
 from pathlib import Path
 from textwrap import wrap
 from typing import Any
-
-from lxml.etree import XPath
-
+from functools import cache
+from .cell import Cell
 from .datatype import Boolean, Date, DateTime, Duration
-from .element import (
-    Element,
-    register_element_class,
-    register_element_class_list,
-    xpath_compile,
-)
-from .element_typed import ElementTyped
+from .element import Element, register_element_class, xpath_compile
 from .frame import Frame
-from .utils import bytes_to_str, isiterable
+from .row import Row
+from .utils import (
+    convert_coordinates,
+    delete_item_in_vault,
+    digit_to_alpha,
+    find_odf_idx,
+    increment,
+    insert_item_in_vault,
+    insert_map_once,
+    isiterable,
+    make_cache_map,
+    set_item_in_vault,
+    translate_from_any,
+)
 
 _xpath_row = xpath_compile("table:table-row")
 _xpath_row_idx = xpath_compile("(table:table-row)[$idx]")
 _xpath_column = xpath_compile("table:table-column")
 _xpath_column_idx = xpath_compile("(table:table-column)[$idx]")
-_xpath_cell = xpath_compile("(table:table-cell|table:covered-table-cell)")
-_xpath_cell_idx = xpath_compile("(table:table-cell|table:covered-table-cell)[$idx]")
 
 
 def _table_name_check(name: Any) -> str:
@@ -73,125 +74,15 @@ def _table_name_check(name: Any) -> str:
     return name
 
 
-_forbidden_in_named_range = {
-    x
-    for x in string.printable
-    if x not in string.ascii_letters and x not in string.digits and x != "_"
-}
-
-
-def _alpha_to_digit(alpha: str) -> int:
-    """Translates A to 0, B to 1, etc. So "AB" is value 27."""
-    if isinstance(alpha, int):
-        return alpha
-    if not alpha.isalpha():
-        raise ValueError(f'column name "{alpha}" is malformed')
-    column = 0
-    for c in alpha.lower():
-        v = ord(c) - ord("a") + 1
-        column = column * 26 + v
-    return column - 1
-
-
-def _digit_to_alpha(digit: int | str) -> str:
-    if isinstance(digit, str) and digit.isalpha():
-        return digit
-    if not isinstance(digit, int):
-        raise TypeError(f'column number "{digit}" is invalid')
-    digit += 1
-    column = ""
-    while digit:
-        column = chr(65 + ((digit - 1) % 26)) + column
-        digit = (digit - 1) // 26
-    return column
-
-
-def _coordinates_to_alpha_area(coord: str | tuple | list) -> tuple[str, str, str]:
-    # assuming : either (x,y) or (x,y,z,t), with positive values
-    if isinstance(coord, str):
-        # either A1 or A1:B2, returns A1:A1 if needed
-        parts = coord.strip().split(":")
-        if len(parts) == 1:
-            start = end = parts[0]
-        else:
-            start = parts[0]
-            end = parts[1]
-    elif isiterable(coord):
-        if len(coord) == 2:
-            x, y = coord
-            z, t = coord
-        else:
-            # should be 4 int
-            x, y, z, t = coord
-        start = _digit_to_alpha(x) + str(y + 1)
-        end = _digit_to_alpha(z) + str(t + 1)
-    else:
-        raise ValueError
-    crange = start + ":" + end
-    return (start, end, crange)
-
-
-def _increment(value: int, step: int) -> int:
-    while value < 0:
-        if step == 0:
-            return 0
-        value += step
-    return value
-
-
-def _convert_coordinates(
-    obj: tuple | list | str,
-) -> tuple[int | None, ...]:
-    """Translates "D3" to (3, 2) or return (1, 2) untouched.
-    Translates "A1:B3" to (0,0,1,2)
-    """
-    # By (1, 2) ?
-    if isiterable(obj):
-        return tuple(obj)  # type:ignore
-    # Or by 'B3' notation ?
-    if not isinstance(obj, str):
-        raise TypeError(f'Bad coordinates type: "{type(obj)}"')
-    coordinates = []
-    for coord in [x.strip() for x in obj.split(":", 1)]:
-        # First "A"
-        alpha = ""
-        for c in coord:
-            if c.isalpha():
-                alpha += c
-            else:
-                break
-        try:
-            column = _alpha_to_digit(alpha)
-        except ValueError:
-            # raise ValueError, 'coordinates "%s" malformed' % obj
-            # maybe '1:4' table row coordinates
-            column = None
-        coordinates.append(column)
-        # Then "1"
-        try:
-            line = int(coord[len(alpha) :]) - 1
-        except ValueError:
-            # raise ValueError, 'coordinates "%s" malformed' % obj
-            # maybe 'A:C' row coordinates
-            line = None
-        if line and line <= 0:
-            raise ValueError(f'Coordinates "{obj}" malformed')
-        coordinates.append(line)
-    return tuple(coordinates)
-
-
-def _translate_from_any(x: str | int, length: int, idx: int) -> int:
-    if isinstance(x, str):
-        value_int = _convert_coordinates(x)[idx]
-        if value_int is None:
-            raise TypeError(f"Wrong value: {x!r}")
-    elif isinstance(x, int):
-        value_int = x
-    else:
-        raise TypeError(f"Wrong value: {x!r}")
-    if value_int < 0:
-        return _increment(value_int, length)
-    return value_int
+@cache
+def forbidden_in_named_range():
+    return {
+        char
+        for char in string.printable
+        if char not in string.ascii_letters
+        and char not in string.digits
+        and char != "_"
+    }
 
 
 def _get_python_value(data: Any, encoding: str) -> Any:
@@ -235,1309 +126,6 @@ def _get_python_value(data: Any, encoding: str) -> Any:
     # TODO Try some other types ?
     # So a text
     return data
-
-
-def _set_item_in_vault(  # noqa: C901
-    position: int,
-    item: Element,
-    vault: Element,
-    vault_scheme: XPath,
-    vault_map_name: str,
-    clone: bool = True,
-) -> Element:
-    """Set the item (cell, row) in its vault (row, table), updating the
-    cache map.
-    """
-    try:
-        vault_map = getattr(vault, vault_map_name)
-    except Exception as e:
-        raise ValueError from e
-    odf_idx = _find_odf_idx(vault_map, position)
-    if odf_idx is None:
-        raise ValueError
-    repeated = item.repeated or 1  # type: ignore
-    current_cache = vault_map[odf_idx]
-    cache = vault._indexes[vault_map_name]
-    if odf_idx in cache:
-        current_item = cache[odf_idx]
-    else:
-        current_item = vault._get_element_idx2(vault_scheme, odf_idx)
-    vault._indexes[vault_map_name] = {}
-    target_idx = vault.index(current_item)
-    if odf_idx > 0:
-        before_cache = vault_map[odf_idx - 1]
-    else:
-        before_cache = -1
-    current_pos = before_cache + 1
-    current_repeated = current_cache - before_cache
-    repeated_before = position - current_pos
-    repeated_after = current_repeated - repeated_before - repeated
-    if repeated_before >= 1:
-        # Update repetition
-        current_item._set_repeated(repeated_before)
-        target_idx += 1
-    else:
-        # Replacing the first occurence
-        vault.delete(current_item)
-    # Insert new element
-    if clone:
-        new_item = item.clone
-    else:
-        new_item = item
-    vault.insert(new_item, position=target_idx)
-    # Insert the remaining repetitions
-    if repeated_after >= 1:
-        after_item = current_item.clone
-        after_item._set_repeated(repeated_after)
-        vault.insert(after_item, position=target_idx + 1)
-    # setting a repeated item !
-    if repeated_after < 0:
-        # deleting some overlapped items
-        deleting = repeated_after
-        while deleting < 0:
-            delete_item = vault._get_element_idx2(vault_scheme, target_idx + 1)
-            if delete_item is None:
-                break
-            is_repeated = delete_item.repeated or 1  # type: ignore
-            is_repeated += deleting
-            if is_repeated > 1:
-                delete_item._set_repeated(is_repeated)  # type: ignore
-            else:
-                vault.delete(delete_item)
-            deleting = is_repeated
-    # update cache
-    # remove existing
-    idx = odf_idx
-    emap = _erase_map_once(vault_map, idx)
-    # add before if any:
-    if repeated_before >= 1:
-        emap = _insert_map_once(emap, idx, repeated_before)
-        idx += 1
-    # add our slot
-    emap = _insert_map_once(emap, idx, repeated)
-    # add after if any::
-    if repeated_after >= 1:
-        idx += 1
-        emap = _insert_map_once(emap, idx, repeated_after)
-    if repeated_after < 0:
-        idx += 1
-        while repeated_after < 0:
-            if idx < len(emap):
-                emap = _erase_map_once(emap, idx)
-            repeated_after += 1
-    setattr(vault, vault_map_name, emap)
-    return new_item
-
-
-def _insert_item_in_vault(
-    position: int,
-    item: Element,
-    vault: Element,
-    vault_scheme: XPath,
-    vault_map_name: str,
-) -> Element:
-    try:
-        vault_map = getattr(vault, vault_map_name)
-    except Exception as e:
-        raise ValueError from e
-    odf_idx = _find_odf_idx(vault_map, position)
-    if odf_idx is None:
-        raise ValueError
-    repeated = item.repeated or 1  # type: ignore
-    current_cache = vault_map[odf_idx]
-    cache = vault._indexes[vault_map_name]
-    if odf_idx in cache:
-        current_item = cache[odf_idx]
-    else:
-        current_item = vault._get_element_idx2(vault_scheme, odf_idx)
-    vault._indexes[vault_map_name] = {}
-    target_idx = vault.index(current_item)
-    if odf_idx > 0:
-        before_cache = vault_map[odf_idx - 1]
-    else:
-        before_cache = -1
-    current_pos = before_cache + 1
-    current_repeated = current_cache - before_cache
-    repeated_before = position - current_pos
-    repeated_after = current_repeated - repeated_before
-    new_item = item.clone
-    if repeated_before >= 1:
-        current_item._set_repeated(repeated_before)
-        vault.insert(new_item, position=target_idx + 1)
-        after_item = current_item.clone
-        after_item._set_repeated(repeated_after)
-        vault.insert(after_item, position=target_idx + 2)
-    else:
-        # only insert new cell
-        vault.insert(new_item, position=target_idx)
-    # update cache
-    if repeated_before >= 1:
-        emap = _erase_map_once(vault_map, odf_idx)
-        emap = _insert_map_once(emap, odf_idx, repeated_before)
-        emap = _insert_map_once(emap, odf_idx + 1, repeated)
-        setattr(
-            vault, vault_map_name, _insert_map_once(emap, odf_idx + 2, repeated_after)
-        )
-    else:
-        setattr(vault, vault_map_name, _insert_map_once(vault_map, odf_idx, repeated))
-    return new_item
-
-
-def _delete_item_in_vault(
-    position: int,
-    vault: Element,
-    vault_scheme: XPath,
-    vault_map_name: str,
-) -> None:
-    try:
-        vault_map = getattr(vault, vault_map_name)
-    except Exception as e:
-        raise ValueError from e
-    odf_idx = _find_odf_idx(vault_map, position)
-    if odf_idx is None:
-        raise ValueError
-    current_cache = vault_map[odf_idx]
-    cache = vault._indexes[vault_map_name]
-    if odf_idx in cache:
-        current_item = cache[odf_idx]
-    else:
-        current_item = vault._get_element_idx2(vault_scheme, odf_idx)
-    vault._indexes[vault_map_name] = {}
-    if odf_idx > 0:
-        before_cache = vault_map[odf_idx - 1]
-    else:
-        before_cache = -1
-    # current_pos = before_cache + 1
-    current_repeated = current_cache - before_cache
-    new_repeated = current_repeated - 1
-    if new_repeated >= 1:
-        current_item._set_repeated(new_repeated)
-        setattr(
-            vault,
-            vault_map_name,
-            vault_map[:odf_idx] + [(x - 1) for x in vault_map[odf_idx:]],
-        )
-    else:
-        # actual erase
-        vault.delete(current_item)
-        setattr(
-            vault,
-            vault_map_name,
-            vault_map[:odf_idx] + [(x - 1) for x in vault_map[odf_idx + 1 :]],
-        )
-
-
-def _insert_map_once(orig_map: list, odf_idx: int, repeated: int) -> list[int]:
-    """Add an item (cell or row) to the map
-
-        map  --  cache map
-
-        odf_idx  --  index in ODF XML
-
-        repeated  --  repeated value of item, 1 or more
-
-    odf_idx is NOT position (col or row), neither raw XML position, but ODF index
-    """
-    repeated = repeated or 1
-    if odf_idx > len(orig_map):
-        raise IndexError
-    if odf_idx > 0:
-        before = orig_map[odf_idx - 1]
-    else:
-        before = -1
-    juska = before + repeated  # aka max position value for item
-    if odf_idx == len(orig_map):
-        insort(orig_map, juska)
-        return orig_map
-    new_map = orig_map[:odf_idx]
-    new_map.append(juska)
-    new_map.extend([(x + repeated) for x in orig_map[odf_idx:]])
-    return new_map
-
-
-def _erase_map_once(orig_map: list, odf_idx: int) -> list[int]:
-    """Remove an item (cell or row) from the map
-
-    map  --  cache map
-
-    odf_idx  --  index in ODF XML
-    """
-    if odf_idx >= len(orig_map):
-        raise IndexError
-    if odf_idx > 0:
-        before = orig_map[odf_idx - 1]
-    else:
-        before = -1
-    current = orig_map[odf_idx]
-    repeated = current - before
-    orig_map = orig_map[:odf_idx] + [(x - repeated) for x in orig_map[odf_idx + 1 :]]
-    return orig_map
-
-
-def _make_cache_map(idx_repeated_seq: list[tuple[int, int]]) -> list[int]:
-    """Build the initial cache map of the table."""
-    cache_amp: list[int] = []
-    for odf_idx, repeated in idx_repeated_seq:
-        cache_amp = _insert_map_once(cache_amp, odf_idx, repeated)
-    return cache_amp
-
-
-def _find_odf_idx(cache_map: list, position: int) -> int | None:
-    """Find odf_idx in the map from the position (col or row)."""
-    odf_idx = bisect_left(cache_map, position)
-    if odf_idx < len(cache_map):
-        return odf_idx
-    return None
-
-
-class HeaderRows(Element):
-    _tag = "table:table-header-rows"
-    _caching = True
-
-
-class Cell(ElementTyped):
-    """ "table:table-cell" table cell element."""
-
-    _tag = "table:table-cell"
-    _caching = True
-
-    def __init__(
-        self,
-        value: Any = None,
-        text: str | None = None,
-        cell_type: str | None = None,
-        currency: str | None = None,
-        formula: str | None = None,
-        repeated: int | None = None,
-        style: str | None = None,
-        **kwargs: Any,
-    ) -> None:
-        """Create a cell element containing the given value. The textual
-        representation is automatically formatted but can be provided. Cell
-        type can be deduced as well, unless the number is a percentage or
-        currency. If cell type is "currency", the currency must be given.
-        The cell can be repeated on the given number of columns.
-
-        Arguments:
-
-            value -- bool, int, float, Decimal, date, datetime, str,
-                     timedelta
-
-            text -- str
-
-            cell_type -- 'boolean', 'currency', 'date', 'float', 'percentage',
-                         'string' or 'time'
-
-            currency -- three-letter str
-
-            repeated -- int
-
-            style -- str
-        """
-        super().__init__(**kwargs)
-        self.x = None
-        self.y = None
-        if self._do_init:
-            self.set_value(
-                value,
-                text=text,
-                cell_type=cell_type,
-                currency=currency,
-                formula=formula,
-            )
-            if repeated and repeated > 1:
-                self.repeated = repeated
-            if style is not None:
-                self.style = style
-
-    @property
-    def clone(self) -> Cell:
-        clone = Element.clone.fget(self)  # type: ignore
-        clone.y = self.y
-        clone.x = self.x
-        if hasattr(self, "_tmap"):
-            if hasattr(self, "_rmap"):
-                clone._rmap = self._rmap[:]
-            clone._tmap = self._tmap[:]
-            clone._cmap = self._cmap[:]
-        return clone
-
-    @property
-    def value(
-        self,
-    ) -> str | bool | int | float | Decimal | date | datetime | timedelta | None:
-        """Set / get the value of the cell. The type is read from the
-        'office:value-type' attribute of the cell. When setting the value,
-        the type of the value will determine the new value_type of the cell.
-
-        Warning: use this method for boolean, float or string only.
-        """
-        value_type = self.get_attribute_string("office:value-type")
-        if value_type == "boolean":
-            return self.get_attribute("office:boolean-value")
-        if value_type in {"float", "percentage", "currency"}:
-            value_decimal = Decimal(str(self.get_attribute_string("office:value")))
-            # Return 3 instead of 3.0 if possible
-            if int(value_decimal) == value_decimal:
-                return int(value_decimal)
-            return value_decimal
-        if value_type == "date":
-            value_str = str(self.get_attribute_string("office:date-value"))
-            if "T" in value_str:
-                return DateTime.decode(value_str)
-            return Date.decode(value_str)
-        if value_type == "time":
-            return Duration.decode(str(self.get_attribute_string("office:time-value")))
-        if value_type == "string":
-            value = self.get_attribute_string("office:string-value")
-            if value is not None:
-                return value
-            value_list = []
-            for para in self.get_elements("text:p"):
-                value_list.append(para.text_recursive)
-            return "\n".join(value_list)
-        return None
-
-    @value.setter
-    def value(self, value: str | bytes | bool | int | float | Decimal | None) -> None:
-        self.clear()
-        if value is None:
-            return
-        if isinstance(value, (str, bytes)):
-            if isinstance(value, bytes):
-                value = bytes_to_str(value)
-            self.set_attribute("office:value-type", "string")
-            self.set_attribute("office:string-value", value)
-            self.text = value
-            return
-        if value is True or value is False:
-            self.set_attribute("office:value-type", "boolean")
-            value_bool = Boolean.encode(value)
-            self.set_attribute("office:boolean-value", value_bool)
-            self.text = value_bool
-            return
-        if isinstance(value, (int, float, Decimal)):
-            self.set_attribute("office:value-type", "float")
-            value_str = str(value)
-            self.set_attribute("office:value", value_str)
-            self.text = value_str
-            return
-        raise TypeError(f"Unknown value type, try with set_value() : {value!r}")
-
-    @property
-    def float(self) -> float:
-        """Set / get the value of the cell as a float (or 0.0)."""
-        for tag in ("office:value", "office:string-value", "office:boolean-value"):
-            read_attr = self.get_attribute(tag)
-            if isinstance(read_attr, str):
-                with contextlib.suppress(ValueError, TypeError):
-                    return float(read_attr)
-        return 0.0
-
-    @float.setter
-    def float(self, value: str | float | int | Decimal) -> None:
-        try:
-            value_float = float(value)
-        except (ValueError, TypeError):
-            value_float = 0.0
-        value_str = str(value_float)
-        self.clear()
-        self.set_attribute("office:value", value_str)
-        self.set_attribute("office:value-type", "float")
-        self.text = value_str
-
-    @property
-    def string(self) -> str:
-        """Set / get the value of the cell as a string (or '')."""
-        value = self.get_attribute_string("office:string-value")
-        if isinstance(value, str):
-            return value
-        return ""
-
-    @string.setter
-    def string(
-        self,
-        value: str | bytes | int | float | Decimal | bool | None,  # type: ignore
-    ) -> None:
-        self.clear()
-        if value is None:
-            value_str = ""
-        else:
-            value_str = str(value)
-        self.set_attribute("office:value-type", "string")
-        self.set_attribute("office:string-value", value_str)
-        self.text = value_str
-
-    def set_value(
-        self,
-        value: (
-            str  # type: ignore
-            | bytes
-            | float
-            | int
-            | Decimal
-            | bool
-            | datetime
-            | date
-            | timedelta
-            | None
-        ),
-        text: str | None = None,
-        cell_type: str | None = None,
-        currency: str | None = None,
-        formula: str | None = None,
-    ) -> None:
-        """Set the cell state from the Python value type.
-
-        Text is how the cell is displayed. Cell type is guessed,
-        unless provided.
-
-        For monetary values, provide the name of the currency.
-
-        Arguments:
-
-            value -- Python type
-
-            text -- str
-
-            cell_type -- 'boolean', 'float', 'date', 'string', 'time',
-                        'currency' or 'percentage'
-
-            currency -- str
-        """
-        self.clear()
-        text = self.set_value_and_type(
-            value=value,
-            text=text,
-            value_type=cell_type,
-            currency=currency,
-        )
-        if text is not None:
-            self.text_content = text
-        if formula is not None:
-            self.formula = formula
-
-    @property
-    def type(self) -> str | None:
-        """Get / set the type of the cell: boolean, float, date, string
-        or time.
-
-        Return: str | None
-        """
-        return self.get_attribute_string("office:value-type")
-
-    @type.setter
-    def type(self, cell_type: str) -> None:
-        self.set_attribute("office:value-type", cell_type)
-
-    @property
-    def currency(self) -> str | None:
-        """Get / set the currency used for monetary values.
-
-        Return: str | None
-        """
-        return self.get_attribute_string("office:currency")
-
-    @currency.setter
-    def currency(self, currency: str) -> None:
-        self.set_attribute("office:currency", currency)
-
-    def _set_repeated(self, repeated: int | None) -> None:
-        """Internal only. Set the numnber of times the cell is repeated, or
-        None to delete. Without changing cache.
-        """
-        if repeated is None or repeated < 2:
-            with contextlib.suppress(KeyError):
-                self.del_attribute("table:number-columns-repeated")
-            return
-        self.set_attribute("table:number-columns-repeated", str(repeated))
-
-    @property
-    def repeated(self) -> int | None:
-        """Get / set the number of times the cell is repeated.
-
-        Always None when using the table API.
-
-        Return: int or None
-        """
-        repeated = self.get_attribute("table:number-columns-repeated")
-        if repeated is None:
-            return None
-        return int(repeated)
-
-    @repeated.setter
-    def repeated(self, repeated: int | None) -> None:
-        self._set_repeated(repeated)
-        # update cache
-        child: Element = self
-        while True:
-            # look for Row, parent may be group of rows
-            upper = child.parent
-            if not upper:
-                # lonely cell
-                return
-            # parent may be group of rows, not table
-            if isinstance(upper, Row):
-                break
-            child = upper
-        # fixme : need to optimize this
-        if isinstance(upper, Row):
-            upper._compute_row_cache()
-
-    @property
-    def style(self) -> str | None:
-        """Get / set the style of the cell itself.
-
-        Return: str | None
-        """
-        return self.get_attribute_string("table:style-name")
-
-    @style.setter
-    def style(self, style: str | Element) -> None:
-        self.set_style_attribute("table:style-name", style)
-
-    @property
-    def formula(self) -> str | None:
-        """Get / set the formula of the cell, or None if undefined.
-
-        The formula is not interpreted in any way.
-
-        Return: str | None
-        """
-        return self.get_attribute_string("table:formula")
-
-    @formula.setter
-    def formula(self, formula: str | None) -> None:
-        self.set_attribute("table:formula", formula)
-
-    def is_empty(self, aggressive: bool = False) -> bool:
-        if self.value is not None or self.children:
-            return False
-        if not aggressive and self.style is not None:
-            return False
-        return True
-
-    def _is_spanned(self) -> bool:
-        if self.tag == "table:covered-table-cell":
-            return True
-        if self.get_attribute("table:number-columns-spanned") is not None:
-            return True
-        if self.get_attribute("table:number-rows-spanned") is not None:
-            return True
-        return False
-
-
-# class CellCovered(Cell):
-#     _tag = 'table:covered-table-cell'
-#     _caching=True
-
-
-class Row(Element):
-    """ODF table row "table:table-row" """
-
-    _tag = "table:table-row"
-    _caching = True
-    _append = Element.append
-
-    def __init__(
-        self,
-        width: int | None = None,
-        repeated: int | None = None,
-        style: str | None = None,
-        **kwargs: Any,
-    ) -> None:
-        """create a Row, optionally filled with "width" number of cells.
-
-        Rows contain cells, their number determine the number of columns.
-
-        You don't generally have to create rows by hand, use the Table API.
-
-        Arguments:
-
-            width -- int
-
-            repeated -- int
-
-            style -- str
-        """
-        super().__init__(**kwargs)
-        self.y = None
-        if not hasattr(self, "_indexes"):
-            self._indexes = {}
-            self._indexes["_rmap"] = {}
-        if not hasattr(self, "_rmap"):
-            self._compute_row_cache()
-            if not hasattr(self, "_tmap"):
-                self._tmap = []
-                self._cmap = []
-        if self._do_init:
-            if width is not None:
-                for _i in range(width):
-                    self.append(Cell())  # type:ignore
-            if repeated:
-                self.repeated = repeated
-            if style is not None:
-                self.style = style
-            self._compute_row_cache()
-
-    def _get_cells(self) -> list[Element]:
-        return self.get_elements(_xpath_cell)
-
-    def _translate_row_coordinates(
-        self,
-        coord: tuple | list | str,
-    ) -> tuple[int | None, int | None]:
-        xyzt = _convert_coordinates(coord)
-        if len(xyzt) == 2:
-            x, z = xyzt
-        else:
-            x, _, z, __ = xyzt
-        if x and x < 0:
-            x = _increment(x, self.width)
-        if z and z < 0:
-            z = _increment(z, self.width)
-        return (x, z)
-
-    def _compute_row_cache(self) -> None:
-        idx_repeated_seq = self.elements_repeated_sequence(
-            _xpath_cell, "table:number-columns-repeated"
-        )
-        self._rmap = _make_cache_map(idx_repeated_seq)
-
-    # Public API
-
-    @property
-    def clone(self) -> Row:
-        clone = Element.clone.fget(self)  # type: ignore
-        clone.y = self.y
-        if hasattr(self, "_tmap"):
-            if hasattr(self, "_rmap"):
-                clone._rmap = self._rmap[:]
-            clone._tmap = self._tmap[:]
-            clone._cmap = self._cmap[:]
-        return clone
-
-    def _set_repeated(self, repeated: int | None) -> None:
-        """Internal only. Set the numnber of times the row is repeated, or
-        None to delete it. Without changing cache.
-
-        Arguments:
-
-            repeated -- int
-        """
-        if repeated is None or repeated < 2:
-            with contextlib.suppress(KeyError):
-                self.del_attribute("table:number-rows-repeated")
-            return
-        self.set_attribute("table:number-rows-repeated", str(repeated))
-
-    @property
-    def repeated(self) -> int | None:
-        """Get / set the number of times the row is repeated.
-
-        Always None when using the table API.
-
-        Return: int or None
-        """
-        repeated = self.get_attribute("table:number-rows-repeated")
-        if repeated is None:
-            return None
-        return int(repeated)
-
-    @repeated.setter
-    def repeated(self, repeated: int | None) -> None:
-        self._set_repeated(repeated)
-        # update cache
-        current: Element = self
-        while True:
-            # look for Table, parent may be group of rows
-            upper = current.parent
-            if not upper:
-                # lonely row
-                return
-            # parent may be group of rows, not table
-            if isinstance(upper, Table):
-                break
-            current = upper
-        # fixme : need to optimize this
-        if isinstance(upper, Table):
-            upper._compute_table_cache()
-            if hasattr(self, "_tmap"):
-                del self._tmap[:]
-                self._tmap.extend(upper._tmap)
-            else:
-                self._tmap = upper._tmap
-
-    @property
-    def style(self) -> str | None:
-        """Get /set the style of the row itself.
-
-        Return: str
-        """
-        return self.get_attribute("table:style-name")  # type: ignore
-
-    @style.setter
-    def style(self, style: str | Element) -> None:
-        self.set_style_attribute("table:style-name", style)
-
-    @property
-    def width(self) -> int:
-        """Get the number of expected cells in the row, i.e. addition
-        repetitions.
-
-        Return: int
-        """
-        try:
-            value = self._rmap[-1] + 1
-        except Exception:
-            value = 0
-        return value
-
-    def _translate_x_from_any(self, x: str | int) -> int:
-        return _translate_from_any(x, self.width, 0)
-
-    def traverse(  # noqa: C901
-        self,
-        start: int | None = None,
-        end: int | None = None,
-    ) -> Iterator[Cell]:
-        """Yield as many cell elements as expected cells in the row, i.e.
-        expand repetitions by returning the same cell as many times as
-        necessary.
-
-            Arguments:
-
-                start -- int
-
-                end -- int
-
-        Copies are returned, use set_cell() to push them back.
-        """
-        idx = -1
-        before = -1
-        x = 0
-        cell: Cell
-        if start is None and end is None:
-            for juska in self._rmap:
-                idx += 1
-                if idx in self._indexes["_rmap"]:
-                    cell = self._indexes["_rmap"][idx]
-                else:
-                    cell = self._get_element_idx2(_xpath_cell_idx, idx)  # type: ignore
-                    if not isinstance(cell, Cell):
-                        raise TypeError(f"Not a cell: {cell!r}")
-                    self._indexes["_rmap"][idx] = cell
-                repeated = juska - before
-                before = juska
-                for _i in range(repeated or 1):
-                    # Return a copy without the now obsolete repetition
-                    if cell is None:
-                        cell = Cell()
-                    else:
-                        cell = cell.clone
-                        if repeated > 1:
-                            cell.repeated = None
-                    cell.y = self.y
-                    cell.x = x
-                    x += 1
-                    yield cell
-        else:
-            if start is None:
-                start = 0
-            start = max(0, start)
-            if end is None:
-                try:
-                    end = self._rmap[-1]
-                except Exception:
-                    end = -1
-            start_map = _find_odf_idx(self._rmap, start)
-            if start_map is None:
-                return
-            if start_map > 0:
-                before = self._rmap[start_map - 1]
-            idx = start_map - 1
-            before = start - 1
-            x = start
-            for juska in self._rmap[start_map:]:
-                idx += 1
-                if idx in self._indexes["_rmap"]:
-                    cell = self._indexes["_rmap"][idx]
-                else:
-                    cell = self._get_element_idx2(_xpath_cell_idx, idx)  # type: ignore
-                    if not isinstance(cell, Cell):
-                        raise TypeError(f"Not a cell: {cell!r}")
-                    self._indexes["_rmap"][idx] = cell
-                repeated = juska - before
-                before = juska
-                for _i in range(repeated or 1):
-                    if x <= end:
-                        if cell is None:
-                            cell = Cell()
-                        else:
-                            cell = cell.clone
-                            if repeated > 1 or (x == start and start > 0):
-                                cell.repeated = None
-                        cell.y = self.y
-                        cell.x = x
-                        x += 1
-                        yield cell
-
-    def get_cells(
-        self,
-        coord: str | tuple | None = None,
-        style: str | None = None,
-        content: str | None = None,
-        cell_type: str | None = None,
-    ) -> list[Cell]:
-        """Get the list of cells matching the criteria.
-
-        Filter by cell_type, with cell_type 'all' will retrieve cells of any
-        type, aka non empty cells.
-
-        Filter by coordinates will retrieve the amount of cells defined by
-        'coord', minus the other filters.
-
-        Arguments:
-
-            coord -- str or tuple of int : coordinates
-
-            cell_type -- 'boolean', 'float', 'date', 'string', 'time',
-                         'currency', 'percentage' or 'all'
-
-            content -- str regex
-
-            style -- str
-
-        Return: list of Cell
-        """
-        # fixme : not clones ?
-        if coord:
-            x, z = self._translate_row_coordinates(coord)
-        else:
-            x = None
-            z = None
-        if cell_type:
-            cell_type = cell_type.lower().strip()
-        cells: list[Cell] = []
-        for cell in self.traverse(start=x, end=z):
-            # Filter the cells by cell_type
-            if cell_type:
-                ctype = cell.type
-                if not ctype or not (ctype == cell_type or cell_type == "all"):
-                    continue
-            # Filter the cells with the regex
-            if content and not cell.match(content):
-                continue
-            # Filter the cells with the style
-            if style and style != cell.style:
-                continue
-            cells.append(cell)
-        return cells
-
-    def _get_cell2(self, x: int, clone: bool = True) -> Cell | None:
-        if x >= self.width:
-            return Cell()
-        if clone:
-            return self._get_cell2_base(x).clone  # type: ignore
-        else:
-            return self._get_cell2_base(x)
-
-    def _get_cell2_base(self, x: int) -> Cell | None:
-        idx = _find_odf_idx(self._rmap, x)
-        cell: Cell
-        if idx is not None:
-            if idx in self._indexes["_rmap"]:
-                cell = self._indexes["_rmap"][idx]
-            else:
-                cell = self._get_element_idx2(_xpath_cell_idx, idx)  # type: ignore
-                self._indexes["_rmap"][idx] = cell
-            return cell
-        return None
-
-    def get_cell(self, x: int, clone: bool = True) -> Cell | None:
-        """Get the cell at position "x" starting from 0. Alphabetical
-        positions like "D" are accepted.
-
-        A  copy is returned, use set_cell() to push it back.
-
-        Arguments:
-
-            x -- int or str
-
-        Return: Cell | None
-        """
-        x = self._translate_x_from_any(x)
-        cell = self._get_cell2(x, clone=clone)
-        if not cell:
-            return None
-        cell.y = self.y
-        cell.x = x
-        return cell
-
-    def get_value(
-        self,
-        x: int | str,
-        get_type: bool = False,
-    ) -> Any | tuple[Any, str]:
-        """Shortcut to get the value of the cell at position "x".
-        If get_type is True, returns the tuples (value, ODF type).
-
-        If the cell is empty, returns None or (None, None)
-
-        See get_cell() and Cell.get_value().
-        """
-        if get_type:
-            x = self._translate_x_from_any(x)
-            cell = self._get_cell2_base(x)
-            if cell is None:
-                return (None, None)
-            return cell.get_value(get_type=get_type)
-        x = self._translate_x_from_any(x)
-        cell = self._get_cell2_base(x)
-        if cell is None:
-            return None
-        return cell.get_value()
-
-    def set_cell(
-        self,
-        x: int | str,
-        cell: Cell | None = None,
-        clone: bool = True,
-    ) -> Cell:
-        """Push the cell back in the row at position "x" starting from 0.
-        Alphabetical positions like "D" are accepted.
-
-        Arguments:
-
-            x -- int or str
-
-        returns the cell with x and y updated
-        """
-        cell_back: Cell
-        if cell is None:
-            cell = Cell()
-            repeated = 1
-            clone = False
-        else:
-            repeated = cell.repeated or 1
-        x = self._translate_x_from_any(x)
-        # Outside the defined row
-        diff = x - self.width
-        if diff == 0:
-            cell_back = self.append_cell(cell, _repeated=repeated, clone=clone)
-        elif diff > 0:
-            self.append_cell(Cell(repeated=diff), _repeated=diff, clone=False)
-            cell_back = self.append_cell(cell, _repeated=repeated, clone=clone)
-        else:
-            # Inside the defined row
-            _set_item_in_vault(x, cell, self, _xpath_cell_idx, "_rmap", clone=clone)
-            cell.x = x
-            cell.y = self.y
-            cell_back = cell
-        return cell_back
-
-    def set_value(
-        self,
-        x: int | str,
-        value: Any,
-        style: str | None = None,
-        cell_type: str | None = None,
-        currency: str | None = None,
-    ) -> None:
-        """Shortcut to set the value of the cell at position "x".
-
-        Arguments:
-
-            x -- int or str
-
-            value -- Python type
-
-            cell_type -- 'boolean', 'currency', 'date', 'float', 'percentage',
-                     'string' or 'time'
-
-            currency -- three-letter str
-
-            style -- str
-
-        See get_cell() and Cell.get_value().
-        """
-        self.set_cell(
-            x,
-            Cell(value, style=style, cell_type=cell_type, currency=currency),
-            clone=False,
-        )
-
-    def insert_cell(
-        self,
-        x: int | str,
-        cell: Cell | None = None,
-        clone: bool = True,
-    ) -> Cell:
-        """Insert the given cell at position "x" starting from 0. If no cell
-        is given, an empty one is created.
-
-        Alphabetical positions like "D" are accepted.
-
-        Do not use when working on a table, use Table.insert_cell().
-
-        Arguments:
-
-            x -- int or str
-
-            cell -- Cell
-
-        returns the cell with x and y updated
-        """
-        cell_back: Cell
-        if cell is None:
-            cell = Cell()
-        x = self._translate_x_from_any(x)
-        # Outside the defined row
-        diff = x - self.width
-        if diff < 0:
-            _insert_item_in_vault(x, cell, self, _xpath_cell_idx, "_rmap")
-            cell.x = x
-            cell.y = self.y
-            cell_back = cell
-        elif diff == 0:
-            cell_back = self.append_cell(cell, clone=clone)
-        else:
-            self.append_cell(Cell(repeated=diff), _repeated=diff, clone=False)
-            cell_back = self.append_cell(cell, clone=clone)
-        return cell_back
-
-    def extend_cells(self, cells: Iterable[Cell] | None = None) -> None:
-        if cells is None:
-            cells = []
-        self.extend(cells)
-        self._compute_row_cache()
-
-    def append_cell(
-        self,
-        cell: Cell | None = None,
-        clone: bool = True,
-        _repeated: int | None = None,
-    ) -> Cell:
-        """Append the given cell at the end of the row. Repeated cells are
-        accepted. If no cell is given, an empty one is created.
-
-        Do not use when working on a table, use Table.append_cell().
-
-        Arguments:
-
-            cell -- Cell
-
-            _repeated -- (optional), repeated value of the row
-
-        returns the cell with x and y updated
-        """
-        if cell is None:
-            cell = Cell()
-            clone = False
-        if clone:
-            cell = cell.clone
-        self._append(cell)
-        if _repeated is None:
-            _repeated = cell.repeated or 1
-        self._rmap = _insert_map_once(self._rmap, len(self._rmap), _repeated)
-        cell.x = self.width - 1
-        cell.y = self.y
-        return cell
-
-    # fix for unit test and typos
-    append = append_cell  # type: ignore
-
-    def delete_cell(self, x: int | str) -> None:
-        """Delete the cell at the given position "x" starting from 0.
-        Alphabetical positions like "D" are accepted.
-
-        Cells on the right will be shifted to the left. In a table, other
-        rows remain unaffected.
-
-        Arguments:
-
-            x -- int or str
-        """
-        x = self._translate_x_from_any(x)
-        if x >= self.width:
-            return
-        _delete_item_in_vault(x, self, _xpath_cell_idx, "_rmap")
-
-    def get_values(
-        self,
-        coord: str | tuple | None = None,
-        cell_type: str | None = None,
-        complete: bool = False,
-        get_type: bool = False,
-    ) -> list[Any | tuple[Any, Any]]:
-        """Shortcut to get the cell values in this row.
-
-        Filter by cell_type, with cell_type 'all' will retrieve cells of any
-        type, aka non empty cells.
-        If cell_type is used and complete is True, missing values are
-        replaced by None.
-        If cell_type is None, complete is always True : with no cell type
-        queried, get_values() returns None for each empty cell, the length
-        of the list is equal to the length of the row (depending on
-        coordinates use).
-
-        If get_type is True, returns a tuple (value, ODF type of value), or
-        (None, None) for empty cells if complete is True.
-
-        Filter by coordinates will retrieve the amount of cells defined by
-        coordinates with None for empty cells, except when using cell_type.
-
-
-        Arguments:
-
-            coord -- str or tuple of int : coordinates in row
-
-            cell_type -- 'boolean', 'float', 'date', 'string', 'time',
-                         'currency', 'percentage' or 'all'
-
-            complete -- boolean
-
-            get_type -- boolean
-
-        Return: list of Python types, or list of tuples.
-        """
-        if coord:
-            x, z = self._translate_row_coordinates(coord)
-        else:
-            x = None
-            z = None
-        if cell_type:
-            cell_type = cell_type.lower().strip()
-            values: list[Any | tuple[Any, Any]] = []
-            for cell in self.traverse(start=x, end=z):
-                # Filter the cells by cell_type
-                ctype = cell.type
-                if not ctype or not (ctype == cell_type or cell_type == "all"):
-                    if complete:
-                        if get_type:
-                            values.append((None, None))
-                        else:
-                            values.append(None)
-                    continue
-                values.append(cell.get_value(get_type=get_type))
-            return values
-        else:
-            return [
-                cell.get_value(get_type=get_type)
-                for cell in self.traverse(start=x, end=z)
-            ]
-
-    def set_cells(
-        self,
-        cells: list[Cell] | tuple[Cell] | None = None,
-        start: int | str = 0,
-        clone: bool = True,
-    ) -> None:
-        """Set the cells in the row, from the 'start' column.
-        This method does not clear the row, use row.clear() before to start
-        with an empty row.
-
-        Arguments:
-
-            cells -- list of cells
-
-            start -- int or str
-        """
-        if cells is None:
-            cells = []
-        if start is None:
-            start = 0
-        else:
-            start = self._translate_x_from_any(start)
-        if start == 0 and clone is False and (len(cells) >= self.width):
-            self.clear()
-            self.extend_cells(cells)
-        else:
-            x = start
-            for cell in cells:
-                self.set_cell(x, cell, clone=clone)
-                if cell:
-                    x += cell.repeated or 1
-                else:
-                    x += 1
-
-    def set_values(
-        self,
-        values: list[Any],
-        start: int | str = 0,
-        style: str | None = None,
-        cell_type: str | None = None,
-        currency: str | None = None,
-    ) -> None:
-        """Shortcut to set the value of cells in the row, from the 'start'
-        column vith values.
-        This method does not clear the row, use row.clear() before to start
-        with an empty row.
-
-        Arguments:
-
-            values -- list of Python types
-
-            start -- int or str
-
-            cell_type -- 'boolean', 'float', 'date', 'string', 'time',
-                         'currency' or 'percentage'
-
-            currency -- three-letter str
-
-            style -- cell style
-        """
-        # fixme : if values n, n+ are same, use repeat
-        if start is None:
-            start = 0
-        else:
-            start = self._translate_x_from_any(start)
-        if start == 0 and (len(values) >= self.width):
-            self.clear()
-            cells = [
-                Cell(value, style=style, cell_type=cell_type, currency=currency)
-                for value in values
-            ]
-            self.extend_cells(cells)
-        else:
-            x = start
-            for value in values:
-                self.set_cell(
-                    x,
-                    Cell(value, style=style, cell_type=cell_type, currency=currency),
-                    clone=False,
-                )
-                x += 1
-
-    def rstrip(self, aggressive: bool = False) -> None:
-        """Remove *in-place* empty cells at the right of the row. An empty
-        cell has no value but can have style. If "aggressive" is True, style
-        is ignored.
-
-        Arguments:
-
-            aggressive -- bool
-        """
-        for cell in reversed(self._get_cells()):
-            if not cell.is_empty(aggressive=aggressive):  # type: ignore
-                break
-            self.delete(cell)
-        self._compute_row_cache()
-        self._indexes["_rmap"] = {}
-
-    def is_empty(self, aggressive: bool = False) -> bool:
-        """Return whether every cell in the row has no value or the value
-        evaluates to False (empty string), and no style.
-
-        If aggressive is True, empty cells with style are considered empty.
-
-        Arguments:
-
-            aggressive -- bool
-
-        Return: bool
-        """
-        return all(cell.is_empty(aggressive=aggressive) for cell in self._get_cells())  # type: ignore
 
 
 class RowGroup(Element):
@@ -1810,7 +398,7 @@ class Table(Element):
 
     def _translate_y_from_any(self, y: str | int) -> int:
         # "3" (couting from 1) -> 2 (couting from 0)
-        return _translate_from_any(y, self.height, 1)
+        return translate_from_any(y, self.height, 1)
 
     def _translate_table_coordinates_list(
         self,
@@ -1823,27 +411,27 @@ class Table(Element):
             # It is a row
             y = coord[0]
             if y and y < 0:
-                y = _increment(y, height)
+                y = increment(y, height)
             return (None, y, None, y)
         if len(coord) == 2:
             # It is a row range, not a cell, because context is table
             y = coord[0]
             if y and y < 0:
-                y = _increment(y, height)
+                y = increment(y, height)
             t = coord[1]
             if t and t < 0:
-                t = _increment(t, height)
+                t = increment(t, height)
             return (None, y, None, t)
         # should be 4 int
         x, y, z, t = coord
         if x and x < 0:
-            x = _increment(x, width)
+            x = increment(x, width)
         if y and y < 0:
-            y = _increment(y, height)
+            y = increment(y, height)
         if z and z < 0:
-            z = _increment(z, width)
+            z = increment(z, width)
         if t and t < 0:
-            t = _increment(t, height)
+            t = increment(t, height)
         return (x, y, z, t)
 
     def _translate_table_coordinates_str(
@@ -1852,24 +440,24 @@ class Table(Element):
     ) -> tuple[int | None, ...]:
         height = self.height
         width = self.width
-        coord = _convert_coordinates(coord_str)
+        coord = convert_coordinates(coord_str)
         if len(coord) == 2:
             x, y = coord
             if x and x < 0:
-                x = _increment(x, width)
+                x = increment(x, width)
             if y and y < 0:
-                y = _increment(y, height)
+                y = increment(y, height)
             # extent to an area :
             return (x, y, x, y)
         x, y, z, t = coord
         if x and x < 0:
-            x = _increment(x, width)
+            x = increment(x, width)
         if y and y < 0:
-            y = _increment(y, height)
+            y = increment(y, height)
         if z and z < 0:
-            z = _increment(z, width)
+            z = increment(z, width)
         if t and t < 0:
-            t = _increment(t, height)
+            t = increment(t, height)
         return (x, y, z, t)
 
     def _translate_table_coordinates(
@@ -1886,24 +474,24 @@ class Table(Element):
     ) -> tuple[int | None, ...]:
         width = self.width
         height = self.height
-        coord = _convert_coordinates(coord_str)
+        coord = convert_coordinates(coord_str)
         if len(coord) == 2:
             x, y = coord
             if x and x < 0:
-                x = _increment(x, width)
+                x = increment(x, width)
             if y and y < 0:
-                y = _increment(y, height)
+                y = increment(y, height)
             # extent to an area :
             return (x, y, x, y)
         x, y, z, t = coord
         if x and x < 0:
-            x = _increment(x, width)
+            x = increment(x, width)
         if y and y < 0:
-            y = _increment(y, height)
+            y = increment(y, height)
         if z and z < 0:
-            z = _increment(z, width)
+            z = increment(z, width)
         if t and t < 0:
-            t = _increment(t, height)
+            t = increment(t, height)
         return (x, y, z, t)
 
     def _translate_column_coordinates_list(
@@ -1917,27 +505,27 @@ class Table(Element):
             # It is a column
             x = coord[0]
             if x and x < 0:
-                x = _increment(x, width)
+                x = increment(x, width)
             return (x, None, x, None)
         if len(coord) == 2:
             # It is a column range, not a cell, because context is table
             x = coord[0]
             if x and x < 0:
-                x = _increment(x, width)
+                x = increment(x, width)
             z = coord[1]
             if z and z < 0:
-                z = _increment(z, width)
+                z = increment(z, width)
             return (x, None, z, None)
         # should be 4 int
         x, y, z, t = coord
         if x and x < 0:
-            x = _increment(x, width)
+            x = increment(x, width)
         if y and y < 0:
-            y = _increment(y, height)
+            y = increment(y, height)
         if z and z < 0:
-            z = _increment(z, width)
+            z = increment(z, width)
         if t and t < 0:
-            t = _increment(t, height)
+            t = increment(t, height)
         return (x, y, z, t)
 
     def _translate_column_coordinates(
@@ -1953,7 +541,7 @@ class Table(Element):
         coord: tuple | list | str,
     ) -> tuple[int | None, int | None]:
         # we want an x,y result
-        coord = _convert_coordinates(coord)
+        coord = convert_coordinates(coord)
         if len(coord) == 2:
             x, y = coord
         # If we got an area, take the first cell
@@ -1962,20 +550,20 @@ class Table(Element):
         else:
             raise ValueError(str(coord))
         if x and x < 0:
-            x = _increment(x, self.width)
+            x = increment(x, self.width)
         if y and y < 0:
-            y = _increment(y, self.height)
+            y = increment(y, self.height)
         return (x, y)
 
     def _compute_table_cache(self) -> None:
         idx_repeated_seq = self.elements_repeated_sequence(
             _xpath_row, "table:number-rows-repeated"
         )
-        self._tmap = _make_cache_map(idx_repeated_seq)
+        self._tmap = make_cache_map(idx_repeated_seq)
         idx_repeated_seq = self.elements_repeated_sequence(
             _xpath_column, "table:number-columns-repeated"
         )
-        self._cmap = _make_cache_map(idx_repeated_seq)
+        self._cmap = make_cache_map(idx_repeated_seq)
 
     def _update_width(self, row: Row) -> None:
         """Synchronize the number of columns if the row is bigger.
@@ -2132,7 +720,7 @@ class Table(Element):
         return result_str
 
     def _translate_x_from_any(self, x: str | int) -> int:
-        return _translate_from_any(x, self.width, 0)
+        return translate_from_any(x, self.width, 0)
 
     #
     # Public API
@@ -2640,7 +1228,7 @@ class Table(Element):
                     end = self._tmap[-1]
                 except Exception:
                     end = -1
-            start_map = _find_odf_idx(self._tmap, start)
+            start_map = find_odf_idx(self._tmap, start)
             if start_map is None:
                 return
             if start_map > 0:
@@ -2715,7 +1303,7 @@ class Table(Element):
         return row
 
     def _get_row2_base(self, y: int) -> Row | None:
-        idx = _find_odf_idx(self._tmap, y)
+        idx = find_odf_idx(self._tmap, y)
         if idx is not None:
             if idx in self._indexes["_tmap"]:
                 row = self._indexes["_tmap"][idx]
@@ -2779,7 +1367,7 @@ class Table(Element):
             row_back = self.append_row(row, _repeated=repeated, clone=clone)
         else:
             # Inside the defined table
-            row_back = _set_item_in_vault(  # type: ignore
+            row_back = set_item_in_vault(  # type: ignore
                 y, row, self, _xpath_row_idx, "_tmap", clone=clone
             )
         # print self.serialize(True)
@@ -2811,7 +1399,7 @@ class Table(Element):
         y = self._translate_y_from_any(y)
         diff = y - self.height
         if diff < 0:
-            row_back = _insert_item_in_vault(y, row, self, _xpath_row_idx, "_tmap")
+            row_back = insert_item_in_vault(y, row, self, _xpath_row_idx, "_tmap")
         elif diff == 0:
             row_back = self.append_row(row, clone=clone)
         else:
@@ -2874,7 +1462,7 @@ class Table(Element):
         self._append(row)
         if _repeated is None:
             _repeated = row.repeated or 1
-        self._tmap = _insert_map_once(self._tmap, len(self._tmap), _repeated)
+        self._tmap = insert_map_once(self._tmap, len(self._tmap), _repeated)
         row.y = self.height - 1
         # Initialize columns
         if not self._get_columns():
@@ -2899,7 +1487,7 @@ class Table(Element):
         if y >= self.height:
             return
         # Inside the defined table
-        _delete_item_in_vault(y, self, _xpath_row_idx, "_tmap")
+        delete_item_in_vault(y, self, _xpath_row_idx, "_tmap")
 
     def get_row_values(
         self,
@@ -3352,7 +1940,7 @@ class Table(Element):
             image_frame.set_attribute("table:end-x", width)
             image_frame.set_attribute("table:end-y", height)
             # FIXME what happens when the address changes?
-            address = f"{self.name}.{_digit_to_alpha(x)}{y + 1}"
+            address = f"{self.name}.{digit_to_alpha(x)}{y + 1}"
             image_frame.set_attribute("table:end-cell-address", address)
             # The frame is directly in the cell
             cell.append(image_frame)
@@ -3521,7 +2109,7 @@ class Table(Element):
                     end = self._cmap[-1]
                 except Exception:
                     end = -1
-            start_map = _find_odf_idx(self._cmap, start)
+            start_map = find_odf_idx(self._cmap, start)
             if start_map is None:
                 return
             if start_map > 0:
@@ -3581,7 +2169,7 @@ class Table(Element):
         if x >= self.width:
             return Column()
         # Inside the defined table
-        odf_idx = _find_odf_idx(self._cmap, x)
+        odf_idx = find_odf_idx(self._cmap, x)
         if odf_idx is not None:
             column = self._get_element_idx2(_xpath_column_idx, odf_idx)
             if column is None:
@@ -3648,7 +2236,7 @@ class Table(Element):
             column_back = self.append_column(column, _repeated=repeated)
         else:
             # Inside the defined table
-            column_back = _set_item_in_vault(  # type: ignore
+            column_back = set_item_in_vault(  # type: ignore
                 x, column, self, _xpath_column_idx, "_cmap"
             )
         return column_back
@@ -3677,7 +2265,7 @@ class Table(Element):
         x = self._translate_x_from_any(x)
         diff = x - self.width
         if diff < 0:
-            column_back = _insert_item_in_vault(
+            column_back = insert_item_in_vault(
                 x, column, self, _xpath_column_idx, "_cmap"
             )
         elif diff == 0:
@@ -3730,7 +2318,7 @@ class Table(Element):
         # Repetitions are accepted
         if _repeated is None:
             _repeated = column.repeated or 1
-        self._cmap = _insert_map_once(self._cmap, len(self._cmap), _repeated)
+        self._cmap = insert_map_once(self._cmap, len(self._cmap), _repeated)
         # No need to update row widths
         return column
 
@@ -3750,7 +2338,7 @@ class Table(Element):
         if x >= self.width:
             return
         # Inside the defined table
-        _delete_item_in_vault(x, self, _xpath_column_idx, "_cmap")
+        delete_item_in_vault(x, self, _xpath_column_idx, "_cmap")
         # Update width
         width = self.width
         for row in self._get_rows():
@@ -4086,7 +2674,7 @@ class Table(Element):
             merge -- boolean
         """
         # get area
-        digits = _convert_coordinates(area)
+        digits = convert_coordinates(area)
         if len(digits) == 4:
             x, y, z, t = digits
         else:
@@ -4179,7 +2767,7 @@ class Table(Element):
             area -- str or tuple of int, cell or area coordinate
         """
         # get area
-        digits = _convert_coordinates(area)
+        digits = convert_coordinates(area)
         if len(digits) == 4:
             x, y, _z, _t = digits
         else:
@@ -4362,7 +2950,7 @@ class NamedRange(Element):
         if not name:
             raise ValueError("Name required.")
         for x in name:
-            if x in _forbidden_in_named_range:
+            if x in forbidden_in_named_range():
                 raise ValueError(f"Character forbidden '{x}' ")
         step = ""
         for x in name:
@@ -4396,7 +2984,7 @@ class NamedRange(Element):
         self._update_attributes()
 
     def _set_range(self, coord: tuple | list | str) -> None:
-        digits = _convert_coordinates(coord)
+        digits = convert_coordinates(coord)
         if len(digits) == 4:
             x, y, z, t = digits
         else:
@@ -4428,7 +3016,7 @@ class NamedRange(Element):
             name = f"'{self.table_name}'"
         else:
             name = self.table_name
-        return f"${name}.${_digit_to_alpha(self.start[0])}${self.start[1] + 1}"  # type: ignore
+        return f"${name}.${digit_to_alpha(self.start[0])}${self.start[1] + 1}"  # type: ignore
 
     def _make_cell_range_address(self) -> str:
         # assuming we got table_name and range
@@ -4439,8 +3027,8 @@ class NamedRange(Element):
         if self.start == self.end:
             return self._make_base_cell_address()
         return (
-            f"${name}.${_digit_to_alpha(self.start[0])}${self.start[1] + 1}:"  # type: ignore
-            f".${_digit_to_alpha(self.end[0])}${self.end[1] + 1}"  # type: ignore
+            f"${name}.${digit_to_alpha(self.start[0])}${self.start[1] + 1}:"  # type: ignore
+            f".${digit_to_alpha(self.end[0])}${self.end[1] + 1}"  # type: ignore
         )
 
     def get_values(
@@ -4594,10 +3182,7 @@ def import_from_csv(
     return table
 
 
-register_element_class_list(Cell, (Cell._tag, "table:covered-table-cell"))
 # register_element_class(CellCovered)
-register_element_class(HeaderRows)
-register_element_class(Row)
 register_element_class(Column)
 register_element_class(RowGroup)
 register_element_class(Table)

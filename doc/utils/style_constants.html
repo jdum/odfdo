@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>odfdo.scriptutils API documentation</title>
-<meta name="description" content="Utilities shared by the scripts." />
+<title>odfdo.utils.style_constants API documentation</title>
+<meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,16 +19,15 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>odfdo.scriptutils</code></h1>
+<h1 class="title">Module <code>odfdo.utils.style_constants</code></h1>
 </header>
 <section id="section-intro">
-<p>Utilities shared by the scripts.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
-# Copyright (c) 2010 Ars Aperta, Itaapy, Pierlis, Talend.
+# Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
 # you may not use this file except in compliance with the License.
@@ -46,47 +45,64 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-# Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
-&#34;&#34;&#34;Utilities shared by the scripts.
-&#34;&#34;&#34;
+# Authors: David Versmisse &lt;david.versmisse@itaapy.com&gt;
+#          Hervé Cauwelier &lt;herve@itaapy.com&gt;
+#          Romain Gauthier &lt;romain@itaapy.com&gt;
 from __future__ import annotations
 
-from os.path import exists
-from sys import stderr, stdin
-from typing import Any
+# style:family as defined by ODF 1.2, e.g. xxx possibily for:
+# &#39;style:style style:family=&#34;xxx&#34;&#39;
+FAMILY_ODF_STD = {
+    &#34;chart&#34;,
+    &#34;drawing-page&#34;,
+    &#34;graphic&#34;,
+    &#34;paragraph&#34;,
+    &#34;presentation&#34;,
+    &#34;ruby&#34;,
+    &#34;section&#34;,
+    &#34;table&#34;,
+    &#34;table-cell&#34;,
+    &#34;table-column&#34;,
+    &#34;table-row&#34;,
+    &#34;text&#34;,
+}
 
+_BASE_FAMILY_MAP = {k: &#34;style:style&#34; for k in FAMILY_ODF_STD}
 
-def check_target_file(path: str, kind: str = &#34;file&#34;) -&gt; None:
-    if exists(path):
-        message = f&#39;The {kind} &#34;{path}&#34; exists, overwrite it? [y/n]&#39;
-        stderr.write(message)
-        stderr.flush()
-        line = stdin.readline()
-        line = line.strip().lower()
-        if line != &#34;y&#34;:
-            stderr.write(&#34;Operation aborted\n&#34;)
-            stderr.flush()
-            raise SystemExit(0)
+_FALSE_FAMILY_MAP = {
+    &#34;background-image&#34;: &#34;style:background-image&#34;,
+    &#34;date&#34;: &#34;number:date-style&#34;,
+    &#34;font-face&#34;: &#34;style:font-face&#34;,
+    &#34;list&#34;: &#34;text:list-style&#34;,
+    &#34;master-page&#34;: &#34;style:master-page&#34;,
+    &#34;marker&#34;: &#34;draw:marker&#34;,
+    &#34;number&#34;: &#34;number:number-style&#34;,
+    &#34;outline&#34;: &#34;text:outline-style&#34;,
+    &#34;page-layout&#34;: &#34;style:page-layout&#34;,
+    &#34;percentage&#34;: &#34;number:percentage-style&#34;,
+    &#34;presentation-page-layout&#34;: &#34;style:presentation-page-layout&#34;,
+    &#34;time&#34;: &#34;number:time-style&#34;,
+    &#34;boolean&#34;: &#34;number:boolean-style&#34;,
+    &#34;currency&#34;: &#34;number:currency-style&#34;,
+    &#34;tab-stop&#34;: &#34;style:tab-stop&#34;,
+}
 
+OTHER_STYLES = {
+    &#34;style:default-style&#34;,
+    &#34;style:footer-style&#34;,
+    &#34;style:header-style&#34;,
+    &#34;text:list-level-style-bullet&#34;,
+    &#34;text:list-level-style-image&#34;,
+    &#34;text:list-level-style-number&#34;,
+}
 
-def check_target_directory(path: str) -&gt; None:
-    return check_target_file(path, kind=&#34;directory&#34;)
+SUBCLASS_STYLES = {&#34;background-image&#34;}
 
+FAMILY_MAPPING = {**_BASE_FAMILY_MAP, **_FALSE_FAMILY_MAP}
 
-def printinfo(*args: Any, **kwargs: Any) -&gt; None:
-    indent = kwargs.get(&#34;indent&#34;, 0)
-    if indent:
-        stderr.write(&#34; &#34; * indent)
-    output = &#34; &#34;.join(str(arg) for arg in args)
-    print(output, file=stderr, **kwargs)
-
-
-def printwarn(*args: Any, **kwargs: Any) -&gt; None:
-    printinfo(&#34;Warning:&#34;, *args, **kwargs)
-
-
-def printerr(*args: Any, **kwargs: Any) -&gt; None:
-    printinfo(&#34;Error:&#34;, *args, **kwargs)</code></pre>
+FALSE_FAMILY_MAP_REVERSE = {v: k for k, v in _FALSE_FAMILY_MAP.items()}
+SUBCLASSED_STYLES = {&#34;style:background-image&#34;}
+STYLES_TO_REGISTER = (set(FAMILY_MAPPING.values()) | OTHER_STYLES) - SUBCLASSED_STYLES</code></pre>
 </details>
 </section>
 <section>
@@ -94,87 +110,6 @@ def printerr(*args: Any, **kwargs: Any) -&gt; None:
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
-<dl>
-<dt id="odfdo.scriptutils.check_target_directory"><code class="name flex">
-<span>def <span class="ident">check_target_directory</span></span>(<span>path: str) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def check_target_directory(path: str) -&gt; None:
-    return check_target_file(path, kind=&#34;directory&#34;)</code></pre>
-</details>
-</dd>
-<dt id="odfdo.scriptutils.check_target_file"><code class="name flex">
-<span>def <span class="ident">check_target_file</span></span>(<span>path: str, kind: str = 'file') ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def check_target_file(path: str, kind: str = &#34;file&#34;) -&gt; None:
-    if exists(path):
-        message = f&#39;The {kind} &#34;{path}&#34; exists, overwrite it? [y/n]&#39;
-        stderr.write(message)
-        stderr.flush()
-        line = stdin.readline()
-        line = line.strip().lower()
-        if line != &#34;y&#34;:
-            stderr.write(&#34;Operation aborted\n&#34;)
-            stderr.flush()
-            raise SystemExit(0)</code></pre>
-</details>
-</dd>
-<dt id="odfdo.scriptutils.printerr"><code class="name flex">
-<span>def <span class="ident">printerr</span></span>(<span>*args: Any, **kwargs: Any) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def printerr(*args: Any, **kwargs: Any) -&gt; None:
-    printinfo(&#34;Error:&#34;, *args, **kwargs)</code></pre>
-</details>
-</dd>
-<dt id="odfdo.scriptutils.printinfo"><code class="name flex">
-<span>def <span class="ident">printinfo</span></span>(<span>*args: Any, **kwargs: Any) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def printinfo(*args: Any, **kwargs: Any) -&gt; None:
-    indent = kwargs.get(&#34;indent&#34;, 0)
-    if indent:
-        stderr.write(&#34; &#34; * indent)
-    output = &#34; &#34;.join(str(arg) for arg in args)
-    print(output, file=stderr, **kwargs)</code></pre>
-</details>
-</dd>
-<dt id="odfdo.scriptutils.printwarn"><code class="name flex">
-<span>def <span class="ident">printwarn</span></span>(<span>*args: Any, **kwargs: Any) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def printwarn(*args: Any, **kwargs: Any) -&gt; None:
-    printinfo(&#34;Warning:&#34;, *args, **kwargs)</code></pre>
-</details>
-</dd>
-</dl>
 </section>
 <section>
 </section>
@@ -187,16 +122,7 @@ def printerr(*args: Any, **kwargs: Any) -&gt; None:
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="odfdo" href="index.html">odfdo</a></code></li>
-</ul>
-</li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="odfdo.scriptutils.check_target_directory" href="#odfdo.scriptutils.check_target_directory">check_target_directory</a></code></li>
-<li><code><a title="odfdo.scriptutils.check_target_file" href="#odfdo.scriptutils.check_target_file">check_target_file</a></code></li>
-<li><code><a title="odfdo.scriptutils.printerr" href="#odfdo.scriptutils.printerr">printerr</a></code></li>
-<li><code><a title="odfdo.scriptutils.printinfo" href="#odfdo.scriptutils.printinfo">printinfo</a></code></li>
-<li><code><a title="odfdo.scriptutils.printwarn" href="#odfdo.scriptutils.printwarn">printwarn</a></code></li>
+<li><code><a title="odfdo.utils" href="index.html">odfdo.utils</a></code></li>
 </ul>
 </li>
 </ul>

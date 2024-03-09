@@ -27,7 +27,7 @@ from optparse import OptionParser, Values
 from pathlib import Path
 
 from odfdo import Document, __version__
-from odfdo.scriptutils import add_option_output, check_target_file, printerr, printinfo
+from odfdo.scriptutils import check_target_file, printerr, printinfo
 
 
 def show_styles(
@@ -195,8 +195,12 @@ def main() -> None:
     parser.add_option(
         "-m", "--merge-styles-from", dest="merge", metavar="FILE", help=msg
     )
-    # --output
-    add_option_output(parser)
+    parser.add_option(
+        "-o",
+        "--output",
+        metavar="FILE",
+        help="dump the output into FILE",
+    )
     # Parse options
     options, args = parser.parse_args()
     if len(args) != 1:

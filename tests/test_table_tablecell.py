@@ -27,8 +27,9 @@ from pathlib import Path
 
 import pytest
 
+from odfdo.cell import Cell
 from odfdo.document import Document
-from odfdo.table import Cell, Table
+from odfdo.table import Table
 
 SAMPLES = Path(__file__).parent / "samples"
 

@@ -54,7 +54,7 @@ from pathlib import Path
 from shutil import rmtree
 
 from odfdo import Document, __version__
-from odfdo.scriptutils import add_option_output, check_target_directory, printerr
+from odfdo.scriptutils import check_target_directory, printerr
 
 
 def clean_filename(name: str) -&gt; str:
@@ -199,10 +199,14 @@ def main() -&gt; None:
         &#34;--rst&#34;,
         action=&#34;store_true&#34;,
         default=False,
-        help=&#34;Dump the content file with a reST syntax&#34;,
+        help=&#34;dump the content file with a reST syntax&#34;,
     )
-    # --output
-    add_option_output(parser, metavar=&#34;DIR&#34;)
+    parser.add_option(
+        &#34;-o&#34;,
+        &#34;--output&#34;,
+        metavar=&#34;DIR&#34;,
+        help=&#34;dump the output into DIR&#34;,
+    )
     # Parse !
     options, args = parser.parse_args()
     # Container
@@ -316,10 +320,14 @@ if __name__ == &#34;__main__&#34;:  # pragma: no cover
         &#34;--rst&#34;,
         action=&#34;store_true&#34;,
         default=False,
-        help=&#34;Dump the content file with a reST syntax&#34;,
+        help=&#34;dump the content file with a reST syntax&#34;,
     )
-    # --output
-    add_option_output(parser, metavar=&#34;DIR&#34;)
+    parser.add_option(
+        &#34;-o&#34;,
+        &#34;--output&#34;,
+        metavar=&#34;DIR&#34;,
+        help=&#34;dump the output into DIR&#34;,
+    )
     # Parse !
     options, args = parser.parse_args()
     # Container

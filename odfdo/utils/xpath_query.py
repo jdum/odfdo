@@ -20,35 +20,9 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-"""Utilities for Element(), notably get_value().
-"""
 from __future__ import annotations
 
-from typing import Any
-
-######################################################################
-# Private API
-######################################################################
-
-
-def to_bytes(value: Any) -> Any:
-    if isinstance(value, str):
-        return value.encode("utf-8")
-    return value
-
-
-def to_str(value: Any) -> Any:
-    if isinstance(value, bytes):
-        return value.decode("utf-8")
-    return value
-
-
-def str_to_bytes(text: str) -> bytes:
-    return text.encode("utf-8", "replace")
-
-
-def bytes_to_str(text: bytes) -> str:
-    return text.decode("utf-8", "ignore")
+from .style_constants import FAMILY_ODF_STD
 
 
 def make_xpath_query(  # noqa: C901
@@ -128,9 +102,9 @@ def make_xpath_query(  # noqa: C901
     for qname in sorted(attributes):
         value = attributes[qname]
         if value is True:
-            query.append(f"[@{to_str(qname)}]")
+            query.append(f"[@{qname}]")
         else:
-            query.append(f'[@{to_str(qname)}="{value}"]')
+            query.append(f'[@{qname}="{value}"]')
     query_str = "".join(query)
     if position is not None:
         # A position argument that mimics the behaviour of a python's list
@@ -143,99 +117,3 @@ def make_xpath_query(  # noqa: C901
         query_str = f"({query_str})[{position_str}]"
     # print(query)
     return query_str
-
-
-# style:family as defined by ODF 1.2, e.g. xxx possibily for:
-# 'style:style style:family="xxx"'
-FAMILY_ODF_STD = {
-    "chart",
-    "drawing-page",
-    "graphic",
-    "paragraph",
-    "presentation",
-    "ruby",
-    "section",
-    "table",
-    "table-cell",
-    "table-column",
-    "table-row",
-    "text",
-}
-
-_BASE_FAMILY_MAP = {k: "style:style" for k in FAMILY_ODF_STD}
-
-_FALSE_FAMILY_MAP = {
-    "background-image": "style:background-image",
-    "date": "number:date-style",
-    "font-face": "style:font-face",
-    "list": "text:list-style",
-    "master-page": "style:master-page",
-    "marker": "draw:marker",
-    "number": "number:number-style",
-    "outline": "text:outline-style",
-    "page-layout": "style:page-layout",
-    "percentage": "number:percentage-style",
-    "presentation-page-layout": "style:presentation-page-layout",
-    "time": "number:time-style",
-    "boolean": "number:boolean-style",
-    "currency": "number:currency-style",
-    "tab-stop": "style:tab-stop",
-}
-
-OTHER_STYLES = {
-    "style:default-style",
-    "style:footer-style",
-    "style:header-style",
-    "text:list-level-style-bullet",
-    "text:list-level-style-image",
-    "text:list-level-style-number",
-}
-
-SUBCLASS_STYLES = {"background-image"}
-
-FAMILY_MAPPING = {**_BASE_FAMILY_MAP, **_FALSE_FAMILY_MAP}
-
-FALSE_FAMILY_MAP_REVERSE = {v: k for k, v in _FALSE_FAMILY_MAP.items()}
-SUBCLASSED_STYLES = {"style:background-image"}
-STYLES_TO_REGISTER = (set(FAMILY_MAPPING.values()) | OTHER_STYLES) - SUBCLASSED_STYLES
-
-
-def _family_style_tagname(family: str) -> str:
-    try:
-        return FAMILY_MAPPING[family]
-    except KeyError as e:
-        raise ValueError(f"unknown family: {family}") from e
-
-
-######################################################################
-# Public API
-######################################################################
-
-
-def oooc_to_ooow(formula: str) -> str:
-    """Convert (proprietary) formula from calc format to writer format.
-
-    Arguments:
-
-        formula -- str
-
-    Return: str
-    """
-    prefix, formula = formula.split(":=", 1)
-    # assert "oooc" in prefix
-    # Convert cell addresses
-    formula = formula.replace("[.", "<").replace(":.", ":").replace("]", ">")
-    # Convert functions
-    formula = formula.replace("SUM(", "sum ").replace(")", "")
-    return f"ooow:{formula}"
-
-
-def isiterable(instance: Any) -> bool:
-    """Return True if instance is iterable, but considering str and bytes as not iterable."""
-    if isinstance(instance, (str, bytes)):
-        return False
-    try:
-        iter(instance)
-    except TypeError:
-        return False
-    return True

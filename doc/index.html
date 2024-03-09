@@ -162,6 +162,7 @@ __all__ = [
 
 
 from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
+from .cell import Cell
 from .container import Container
 from .content import Content
 from .document import Document
@@ -170,6 +171,7 @@ from .element import FIRST_CHILD, LAST_CHILD, NEXT_SIBLING, PREV_SIBLING, Elemen
 from .element_typed import ElementTyped
 from .frame import Frame, default_frame_position_style
 from .header import Header
+from .header_rows import HeaderRows
 from .image import DrawFillImage, DrawImage
 from .link import Link
 from .list import List, ListItem
@@ -196,7 +198,7 @@ from .style import (
     rgb2hex,
 )
 from .styles import Styles
-from .table import Cell, Column, HeaderRows, NamedRange, Row, RowGroup, Table
+from .table import Column, NamedRange, Row, RowGroup, Table
 from .toc import (
     TOC,
     IndexTitle,
@@ -251,6 +253,11 @@ from .xmlpart import XmlPart</code></pre>
 <dd>
 <div class="desc"><p>Bookmark class for "text:bookmark".</p></div>
 </dd>
+<dt><code class="name"><a title="odfdo.cell" href="cell.html">odfdo.cell</a></code></dt>
+<dd>
+<div class="desc"><p>Table class for "table:table" and HeaderRows, Cell, Row, Column,
+NamedRange related classes.</p></div>
+</dd>
 <dt><code class="name"><a title="odfdo.const" href="const.html">odfdo.const</a></code></dt>
 <dd>
 <div class="desc"><p>Constants, XML tags and ODF headers.</p></div>
@@ -291,6 +298,10 @@ from .xmlpart import XmlPart</code></pre>
 <dd>
 <div class="desc"><p>Header class for "text:h".</p></div>
 </dd>
+<dt><code class="name"><a title="odfdo.header_rows" href="header_rows.html">odfdo.header_rows</a></code></dt>
+<dd>
+<div class="desc"><p>Table class for HeaderRows.</p></div>
+</dd>
 <dt><code class="name"><a title="odfdo.image" href="image.html">odfdo.image</a></code></dt>
 <dd>
 <div class="desc"><p>DrawImage class for "draw:image".</p></div>
@@ -327,6 +338,11 @@ from .xmlpart import XmlPart</code></pre>
 <dt><code class="name"><a title="odfdo.reference" href="reference.html">odfdo.reference</a></code></dt>
 <dd>
 <div class="desc"><p>Reference related classes for "text:reference-&hellip;" tags.</p></div>
+</dd>
+<dt><code class="name"><a title="odfdo.row" href="row.html">odfdo.row</a></code></dt>
+<dd>
+<div class="desc"><p>Table class for "table:table" and HeaderRows, Cell, Row, Column,
+NamedRange related classes.</p></div>
 </dd>
 <dt><code class="name"><a title="odfdo.scripts" href="scripts/index.html">odfdo.scripts</a></code></dt>
 <dd>
@@ -377,9 +393,9 @@ IndexTitleTemplate, TocEntryTemplate related classes.</p></div>
 <div class="desc"><p>TrackedChanges class for "text:tracked-changes" and related classes
 (ChangeInfo, TextInsertion, TextChange&hellip;).</p></div>
 </dd>
-<dt><code class="name"><a title="odfdo.utils" href="utils.html">odfdo.utils</a></code></dt>
+<dt><code class="name"><a title="odfdo.utils" href="utils/index.html">odfdo.utils</a></code></dt>
 <dd>
-<div class="desc"><p>Utilities for Element(), notably get_value().</p></div>
+<div class="desc"></div>
 </dd>
 <dt><code class="name"><a title="odfdo.variable" href="variable.html">odfdo.variable</a></code></dt>
 <dd>
@@ -740,7 +756,7 @@ with this style as the parent.</p></div>
     properties.append(tab_stops)
     toc_style_level = Style(
         family=&#34;paragraph&#34;,
-        name=TOC_ENTRY_STYLE_PATTERN % level,
+        name=_toc_entry_style_name(level),
         parent=f&#34;Contents_20_{level}&#34;,
     )
     toc_style_level.append(properties)
@@ -919,6 +935,8 @@ and interactive-sequence</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -1072,6 +1090,7 @@ and interactive-sequence</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -1127,6 +1146,8 @@ and interactive-sequence</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -1259,6 +1280,7 @@ and interactive-sequence</p></div>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -1345,6 +1367,8 @@ to get a list of all types/subtypes</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -1582,6 +1606,7 @@ to get a list of all types/subtypes</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -1763,6 +1788,8 @@ autogenerated.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -2074,6 +2101,7 @@ By default: returns a list of odf_element, cleaned and without headers.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -2169,6 +2197,8 @@ provided to have proper reference for the annotation-end.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -2334,6 +2364,7 @@ def start(self) -&gt; Element | None:
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -2474,6 +2505,8 @@ break_after -- 'page', 'column' or 'auto'
 <li><a title="odfdo.style.Style" href="style.html#odfdo.style.Style">Style</a></li>
 <li><a title="odfdo.image.DrawImage" href="image.html#odfdo.image.DrawImage">DrawImage</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -2683,6 +2716,7 @@ break_after -- 'page', 'column' or 'auto'
 <li><code><a title="odfdo.style.Style.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.style.Style.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.style.Style.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.style.Style.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.style.Style.set_background" href="style.html#odfdo.style.Style.set_background">set_background</a></code></li>
 <li><code><a title="odfdo.style.Style.set_level_style" href="style.html#odfdo.style.Style.set_level_style">set_level_style</a></code></li>
 <li><code><a title="odfdo.style.Style.set_page_footer" href="style.html#odfdo.style.Style.set_page_footer">set_page_footer</a></code></li>
@@ -2745,6 +2779,8 @@ break_after -- 'page', 'column' or 'auto'
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -2877,6 +2913,7 @@ break_after -- 'page', 'column' or 'auto'
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -2921,6 +2958,8 @@ break_after -- 'page', 'column' or 'auto'
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -3053,6 +3092,7 @@ break_after -- 'page', 'column' or 'auto'
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -3097,6 +3137,8 @@ break_after -- 'page', 'column' or 'auto'
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -3229,6 +3271,7 @@ break_after -- 'page', 'column' or 'auto'
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -3547,11 +3590,11 @@ timedelta</p>
                 # lonely cell
                 return
             # parent may be group of rows, not table
-            if isinstance(upper, Row):
+            if isinstance(upper, Element) and upper._tag == &#34;table:table-row&#34;:
                 break
             child = upper
         # fixme : need to optimize this
-        if isinstance(upper, Row):
+        if isinstance(upper, Element) and upper._tag == &#34;table:table-row&#34;:
             upper._compute_row_cache()
 
     @property
@@ -3600,10 +3643,12 @@ timedelta</p>
 <ul class="hlist">
 <li><a title="odfdo.element_typed.ElementTyped" href="element_typed.html#odfdo.element_typed.ElementTyped">ElementTyped</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.Cell.clone"><code class="name">var <span class="ident">clone</span> : <a title="odfdo.table.Cell" href="table.html#odfdo.table.Cell">Cell</a></code></dt>
+<dt id="odfdo.Cell.clone"><code class="name">var <span class="ident">clone</span> : <a title="odfdo.cell.Cell" href="cell.html#odfdo.cell.Cell">Cell</a></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -3980,6 +4025,7 @@ unless provided.</p>
 <li><code><a title="odfdo.element_typed.ElementTyped.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element_typed.ElementTyped.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -4111,6 +4157,8 @@ on the change.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Methods</h3>
 <dl>
@@ -4342,6 +4390,7 @@ the new text replace old comments, else it is added at the end.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -4495,6 +4544,8 @@ several columns, give the number of repeated columns.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -4694,6 +4745,7 @@ def style(self) -&gt; str | None:
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -4798,6 +4850,8 @@ def style(self) -&gt; str | None:
 <ul class="hlist">
 <li><a title="odfdo.shapes.ShapeBase" href="shapes.html#odfdo.shapes.ShapeBase">ShapeBase</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 <li><a title="odfdo.frame.SizeMix" href="frame.html#odfdo.frame.SizeMix">SizeMix</a></li>
 <li><a title="odfdo.frame.PosMix" href="frame.html#odfdo.frame.PosMix">PosMix</a></li>
 </ul>
@@ -5086,6 +5140,7 @@ def style(self) -&gt; str | None:
 <li><code><a title="odfdo.shapes.ShapeBase.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.size" href="frame.html#odfdo.frame.SizeMix.size">size</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
@@ -7921,6 +7976,8 @@ The "draw:fill-image" element is usable within the following element:
 <ul class="hlist">
 <li><a title="odfdo.image.DrawImage" href="image.html#odfdo.image.DrawImage">DrawImage</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -8118,6 +8175,7 @@ The "draw:fill-image" element is usable within the following element:
 <li><code><a title="odfdo.image.DrawImage.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.image.DrawImage.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.image.DrawImage.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.image.DrawImage.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.image.DrawImage.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.image.DrawImage.show" href="image.html#odfdo.image.DrawImage.show">show</a></code></li>
 <li><code><a title="odfdo.image.DrawImage.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
@@ -8246,6 +8304,8 @@ and xml:id.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 <li><a title="odfdo.frame.AnchorMix" href="frame.html#odfdo.frame.AnchorMix">AnchorMix</a></li>
 <li><a title="odfdo.frame.ZMix" href="frame.html#odfdo.frame.ZMix">ZMix</a></li>
 <li><a title="odfdo.frame.PosMix" href="frame.html#odfdo.frame.PosMix">PosMix</a></li>
@@ -8654,6 +8714,7 @@ and xml:id.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -8757,6 +8818,8 @@ see Frame().</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -8978,6 +9041,7 @@ see Frame().</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -9100,6 +9164,8 @@ see Frame().</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -9367,6 +9433,7 @@ see Frame().</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -9390,7 +9457,7 @@ see Frame().</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Element:
+<pre><code class="python">class Element(CachedElement):
     &#34;&#34;&#34;Super class of all ODF classes.
 
     Representation of an XML element. Abstraction of the XML library behind.
@@ -9885,7 +9952,7 @@ see Frame().</p>
         cache: tuple | None = None
         element = self.__element
         if isinstance(xpath_query, str):
-            new_xpath_query = _find_query_in_cache(xpath_query)
+            new_xpath_query = xpath_compile(xpath_query)
             result = new_xpath_query(element)
         else:
             result = xpath_query(element)
@@ -10278,7 +10345,7 @@ see Frame().</p>
                         tail = current.tail
                         if tail:
                             # got a tail =&gt; the parent should be either t:p or t:h
-                            target.text = tail
+                            target.text = tail  # type: ignore
                         current, target = current._get_successor(target)  # type: ignore
                         state = 1
                         continue
@@ -10288,7 +10355,7 @@ see Frame().</p>
                         new_target.delete(child)
                     new_target.text = &#34;&#34;
                     new_target.tail = &#34;&#34;
-                    target.append(new_target)
+                    target.append(new_target)  # type: ignore
                     target = new_target
                     current = current.children[0]
                     continue
@@ -10311,12 +10378,12 @@ see Frame().</p>
                         new_target.delete(child)
                     new_target.text = &#34;&#34;
                     new_target.tail = &#34;&#34;
-                    target.append(new_target)
+                    target.append(new_target)  # type: ignore
                     target = new_target
                     current = current.children[0]
                     continue
                 # collect
-                target.append(current.clone)
+                target.append(current.clone)  # type: ignore
                 current, target = current._get_successor(target)  # type: ignore
                 continue
         # Now resu should be the &#34;parent&#34; of inserted parts
@@ -10665,11 +10732,11 @@ see Frame().</p>
         Element or Text instances translated from the nodes found.
         &#34;&#34;&#34;
         element = self.__element
-        xpath_instance = _find_query_in_cache(xpath_query)
+        xpath_instance = xpath_compile(xpath_query)
         elements = xpath_instance(element)
         result: list[Element | Text] = []
         if hasattr(elements, &#34;__iter__&#34;):
-            for obj in elements:
+            for obj in elements:  # type: ignore
                 if isinstance(obj, (_ElementStringResult, _ElementUnicodeResult)):
                     result.append(Text(obj))
                 elif isinstance(obj, _Element):
@@ -10707,27 +10774,22 @@ see Frame().</p>
         # slow data = tostring(self.__element, encoding=&#39;unicode&#39;)
         # return self.from_tag(data)
 
-    def serialize(self, pretty: bool = False, with_ns: bool = False) -&gt; str:
-        # This copy bypasses serialization side-effects in lxml
-        native = deepcopy(self.__element)
-        data = tostring(
-            native, with_tail=False, pretty_print=pretty, encoding=&#34;unicode&#34;
-        )
-        if not with_ns:
-            # Remove namespaces
-            data = ns_stripper.sub(&#34;&#34;, data)
-        return data
+    @staticmethod
+    def _strip_namespaces(data: str) -&gt; str:
+        &#34;&#34;&#34;Remove xmlns:* fields from serialized XML.&#34;&#34;&#34;
+        return re.sub(r&#39; xmlns:\w*=&#34;[\w:\-\/\.#]*&#34;&#39;, &#34;&#34;, data)
 
-    def serialize2(self, pretty: bool = False, with_ns: bool = False) -&gt; str:
+    def serialize(self, pretty: bool = False, with_ns: bool = False) -&gt; str:
+        &#34;&#34;&#34;Return text serialization of XML element.&#34;&#34;&#34;
         # This copy bypasses serialization side-effects in lxml
         native = deepcopy(self.__element)
         data = tostring(
             native, with_tail=False, pretty_print=pretty, encoding=&#34;unicode&#34;
         )
-        if not with_ns:
-            # Remove namespaces
-            data = ns_stripper.sub(&#34;&#34;, data)
-        return data + str(len(data))
+        if with_ns:
+            return data
+        # Remove namespaces
+        return self._strip_namespaces(data)
 
     # Element helpers usable from any context
 
@@ -11469,7 +11531,7 @@ see Frame().</p>
 
         Return: list of unique str
         &#34;&#34;&#34;
-        name_xpath_query = _find_query_in_cache(&#34;//@office:name&#34;)
+        name_xpath_query = xpath_compile(&#34;//@office:name&#34;)
         response = name_xpath_query(self.__element)
         if not isinstance(response, list):
             return []
@@ -12529,6 +12591,11 @@ see Frame().</p>
             elements = filtered
         return elements</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
+</ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
 <li><a title="odfdo.bookmark.Bookmark" href="bookmark.html#odfdo.bookmark.Bookmark">Bookmark</a></li>
@@ -12537,6 +12604,7 @@ see Frame().</p>
 <li><a title="odfdo.draw_page.DrawPage" href="draw_page.html#odfdo.draw_page.DrawPage">DrawPage</a></li>
 <li><a title="odfdo.element_typed.ElementTyped" href="element_typed.html#odfdo.element_typed.ElementTyped">ElementTyped</a></li>
 <li><a title="odfdo.frame.Frame" href="frame.html#odfdo.frame.Frame">Frame</a></li>
+<li><a title="odfdo.header_rows.HeaderRows" href="header_rows.html#odfdo.header_rows.HeaderRows">HeaderRows</a></li>
 <li><a title="odfdo.image.DrawImage" href="image.html#odfdo.image.DrawImage">DrawImage</a></li>
 <li><a title="odfdo.list.List" href="list.html#odfdo.list.List">List</a></li>
 <li><a title="odfdo.list.ListItem" href="list.html#odfdo.list.ListItem">ListItem</a></li>
@@ -12551,6 +12619,7 @@ see Frame().</p>
 <li><a title="odfdo.reference.ReferenceMark" href="reference.html#odfdo.reference.ReferenceMark">ReferenceMark</a></li>
 <li><a title="odfdo.reference.ReferenceMarkEnd" href="reference.html#odfdo.reference.ReferenceMarkEnd">ReferenceMarkEnd</a></li>
 <li><a title="odfdo.reference.ReferenceMarkStart" href="reference.html#odfdo.reference.ReferenceMarkStart">ReferenceMarkStart</a></li>
+<li><a title="odfdo.row.Row" href="row.html#odfdo.row.Row">Row</a></li>
 <li><a title="odfdo.section.Section" href="section.html#odfdo.section.Section">Section</a></li>
 <li><a title="odfdo.shapes.DrawGroup" href="shapes.html#odfdo.shapes.DrawGroup">DrawGroup</a></li>
 <li><a title="odfdo.shapes.ShapeBase" href="shapes.html#odfdo.shapes.ShapeBase">ShapeBase</a></li>
@@ -12559,9 +12628,7 @@ see Frame().</p>
 <li><a title="odfdo.smil.AnimTransFilter" href="smil.html#odfdo.smil.AnimTransFilter">AnimTransFilter</a></li>
 <li><a title="odfdo.style.Style" href="style.html#odfdo.style.Style">Style</a></li>
 <li><a title="odfdo.table.Column" href="table.html#odfdo.table.Column">Column</a></li>
-<li><a title="odfdo.table.HeaderRows" href="table.html#odfdo.table.HeaderRows">HeaderRows</a></li>
 <li><a title="odfdo.table.NamedRange" href="table.html#odfdo.table.NamedRange">NamedRange</a></li>
-<li><a title="odfdo.table.Row" href="table.html#odfdo.table.Row">Row</a></li>
 <li><a title="odfdo.table.RowGroup" href="table.html#odfdo.table.RowGroup">RowGroup</a></li>
 <li><a title="odfdo.table.Table" href="table.html#odfdo.table.Table">Table</a></li>
 <li><a title="odfdo.toc.IndexTitle" href="toc.html#odfdo.toc.IndexTitle">IndexTitle</a></li>
@@ -14152,7 +14219,7 @@ changes list.</p></div>
     cache: tuple | None = None
     element = self.__element
     if isinstance(xpath_query, str):
-        new_xpath_query = _find_query_in_cache(xpath_query)
+        new_xpath_query = xpath_compile(xpath_query)
         result = new_xpath_query(element)
     else:
         result = xpath_query(element)
@@ -14756,7 +14823,7 @@ changes list.</p></div>
 
     Return: list of unique str
     &#34;&#34;&#34;
-    name_xpath_query = _find_query_in_cache(&#34;//@office:name&#34;)
+    name_xpath_query = xpath_compile(&#34;//@office:name&#34;)
     response = name_xpath_query(self.__element)
     if not isinstance(response, list):
         return []
@@ -16355,42 +16422,22 @@ the element, or None if not found.</p>
 <span>def <span class="ident">serialize</span></span>(<span>self, pretty: bool = False, with_ns: bool = False) ‑> str</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Return text serialization of XML element.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def serialize(self, pretty: bool = False, with_ns: bool = False) -&gt; str:
+    &#34;&#34;&#34;Return text serialization of XML element.&#34;&#34;&#34;
     # This copy bypasses serialization side-effects in lxml
     native = deepcopy(self.__element)
     data = tostring(
         native, with_tail=False, pretty_print=pretty, encoding=&#34;unicode&#34;
     )
-    if not with_ns:
-        # Remove namespaces
-        data = ns_stripper.sub(&#34;&#34;, data)
-    return data</code></pre>
-</details>
-</dd>
-<dt id="odfdo.Element.serialize2"><code class="name flex">
-<span>def <span class="ident">serialize2</span></span>(<span>self, pretty: bool = False, with_ns: bool = False) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def serialize2(self, pretty: bool = False, with_ns: bool = False) -&gt; str:
-    # This copy bypasses serialization side-effects in lxml
-    native = deepcopy(self.__element)
-    data = tostring(
-        native, with_tail=False, pretty_print=pretty, encoding=&#34;unicode&#34;
-    )
-    if not with_ns:
-        # Remove namespaces
-        data = ns_stripper.sub(&#34;&#34;, data)
-    return data + str(len(data))</code></pre>
+    if with_ns:
+        return data
+    # Remove namespaces
+    return self._strip_namespaces(data)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.Element.set_attribute"><code class="name flex">
@@ -16550,11 +16597,11 @@ Element or Text instances translated from the nodes found.</p></div>
     Element or Text instances translated from the nodes found.
     &#34;&#34;&#34;
     element = self.__element
-    xpath_instance = _find_query_in_cache(xpath_query)
+    xpath_instance = xpath_compile(xpath_query)
     elements = xpath_instance(element)
     result: list[Element | Text] = []
     if hasattr(elements, &#34;__iter__&#34;):
-        for obj in elements:
+        for obj in elements:  # type: ignore
             if isinstance(obj, (_ElementStringResult, _ElementUnicodeResult)):
                 result.append(Text(obj))
             elif isinstance(obj, _Element):
@@ -16754,10 +16801,12 @@ Element or Text instances translated from the nodes found.</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="odfdo.table.Cell" href="table.html#odfdo.table.Cell">Cell</a></li>
+<li><a title="odfdo.cell.Cell" href="cell.html#odfdo.cell.Cell">Cell</a></li>
 <li><a title="odfdo.variable.UserDefined" href="variable.html#odfdo.variable.UserDefined">UserDefined</a></li>
 <li><a title="odfdo.variable.UserFieldDecl" href="variable.html#odfdo.variable.UserFieldDecl">UserFieldDecl</a></li>
 <li><a title="odfdo.variable.UserFieldGet" href="variable.html#odfdo.variable.UserFieldGet">UserFieldGet</a></li>
@@ -17007,6 +17056,7 @@ Element or Text instances translated from the nodes found.</p></div>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -17084,6 +17134,8 @@ Element or Text instances translated from the nodes found.</p></div>
 <ul class="hlist">
 <li><a title="odfdo.shapes.ShapeBase" href="shapes.html#odfdo.shapes.ShapeBase">ShapeBase</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 <li><a title="odfdo.frame.SizeMix" href="frame.html#odfdo.frame.SizeMix">SizeMix</a></li>
 <li><a title="odfdo.frame.PosMix" href="frame.html#odfdo.frame.PosMix">PosMix</a></li>
 </ul>
@@ -17201,6 +17253,7 @@ Element or Text instances translated from the nodes found.</p></div>
 <li><code><a title="odfdo.shapes.ShapeBase.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.size" href="frame.html#odfdo.frame.SizeMix.size">size</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
@@ -17577,6 +17630,8 @@ Frame.text_frame()</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 <li><a title="odfdo.frame.AnchorMix" href="frame.html#odfdo.frame.AnchorMix">AnchorMix</a></li>
 <li><a title="odfdo.frame.PosMix" href="frame.html#odfdo.frame.PosMix">PosMix</a></li>
 <li><a title="odfdo.frame.ZMix" href="frame.html#odfdo.frame.ZMix">ZMix</a></li>
@@ -18119,6 +18174,7 @@ def text_frame(
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -18265,6 +18321,8 @@ optional given text.</p>
 <li><a title="odfdo.paragraph.Paragraph" href="paragraph.html#odfdo.paragraph.Paragraph">Paragraph</a></li>
 <li><a title="odfdo.paragraph_base.ParagraphBase" href="paragraph_base.html#odfdo.paragraph_base.ParagraphBase">ParagraphBase</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -18468,6 +18526,7 @@ optional given text.</p>
 <li><code><a title="odfdo.paragraph.Paragraph.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.set_bookmark" href="paragraph.html#odfdo.paragraph.Paragraph.set_bookmark">set_bookmark</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.set_link" href="paragraph.html#odfdo.paragraph.Paragraph.set_link">set_link</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.set_reference_mark" href="paragraph.html#odfdo.paragraph.Paragraph.set_reference_mark">set_reference_mark</a></code></li>
@@ -18504,6 +18563,8 @@ optional given text.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -18612,6 +18673,7 @@ optional given text.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -18691,6 +18753,8 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -18949,6 +19013,7 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -18992,6 +19057,8 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -19124,6 +19191,7 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -19157,6 +19225,8 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -19265,6 +19335,7 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -19351,6 +19422,8 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <ul class="hlist">
 <li><a title="odfdo.shapes.ShapeBase" href="shapes.html#odfdo.shapes.ShapeBase">ShapeBase</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 <li><a title="odfdo.frame.SizeMix" href="frame.html#odfdo.frame.SizeMix">SizeMix</a></li>
 <li><a title="odfdo.frame.PosMix" href="frame.html#odfdo.frame.PosMix">PosMix</a></li>
 </ul>
@@ -19555,6 +19628,7 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <li><code><a title="odfdo.shapes.ShapeBase.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.size" href="frame.html#odfdo.frame.SizeMix.size">size</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
@@ -19664,6 +19738,8 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <ul class="hlist">
 <li><a title="odfdo.paragraph_base.ParagraphBase" href="paragraph_base.html#odfdo.paragraph_base.ParagraphBase">ParagraphBase</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -19902,6 +19978,7 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.paragraph_base.ParagraphBase.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -20085,6 +20162,8 @@ afterwards.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -20362,6 +20441,7 @@ return the list item that really contains that content.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -20417,6 +20497,8 @@ string or Element as content.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -20525,6 +20607,7 @@ string or Element as content.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -22449,7 +22532,7 @@ a correct table name (no "'" or "/" in it).</p>
         if not name:
             raise ValueError(&#34;Name required.&#34;)
         for x in name:
-            if x in _forbidden_in_named_range:
+            if x in forbidden_in_named_range():
                 raise ValueError(f&#34;Character forbidden &#39;{x}&#39; &#34;)
         step = &#34;&#34;
         for x in name:
@@ -22483,7 +22566,7 @@ a correct table name (no "'" or "/" in it).</p>
         self._update_attributes()
 
     def _set_range(self, coord: tuple | list | str) -&gt; None:
-        digits = _convert_coordinates(coord)
+        digits = convert_coordinates(coord)
         if len(digits) == 4:
             x, y, z, t = digits
         else:
@@ -22515,7 +22598,7 @@ a correct table name (no "'" or "/" in it).</p>
             name = f&#34;&#39;{self.table_name}&#39;&#34;
         else:
             name = self.table_name
-        return f&#34;${name}.${_digit_to_alpha(self.start[0])}${self.start[1] + 1}&#34;  # type: ignore
+        return f&#34;${name}.${digit_to_alpha(self.start[0])}${self.start[1] + 1}&#34;  # type: ignore
 
     def _make_cell_range_address(self) -&gt; str:
         # assuming we got table_name and range
@@ -22526,8 +22609,8 @@ a correct table name (no "'" or "/" in it).</p>
         if self.start == self.end:
             return self._make_base_cell_address()
         return (
-            f&#34;${name}.${_digit_to_alpha(self.start[0])}${self.start[1] + 1}:&#34;  # type: ignore
-            f&#34;.${_digit_to_alpha(self.end[0])}${self.end[1] + 1}&#34;  # type: ignore
+            f&#34;${name}.${digit_to_alpha(self.start[0])}${self.start[1] + 1}:&#34;  # type: ignore
+            f&#34;.${digit_to_alpha(self.end[0])}${self.end[1] + 1}&#34;  # type: ignore
         )
 
     def get_values(
@@ -22611,6 +22694,8 @@ a correct table name (no "'" or "/" in it).</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -22949,6 +23034,7 @@ See table.set_values() for the arguments description.</p></div>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -23066,6 +23152,8 @@ optionally referencing it using the given note_id.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -23272,6 +23360,7 @@ def note_body(self) -&gt; str:
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -23956,6 +24045,8 @@ given text.</p>
 <ul class="hlist">
 <li><a title="odfdo.paragraph_base.ParagraphBase" href="paragraph_base.html#odfdo.paragraph_base.ParagraphBase">ParagraphBase</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -24961,6 +25052,7 @@ def set_span(
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.paragraph_base.ParagraphBase.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.paragraph_base.ParagraphBase.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -25039,6 +25131,8 @@ def set_span(
 <ul class="hlist">
 <li><a title="odfdo.shapes.ShapeBase" href="shapes.html#odfdo.shapes.ShapeBase">ShapeBase</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 <li><a title="odfdo.frame.SizeMix" href="frame.html#odfdo.frame.SizeMix">SizeMix</a></li>
 <li><a title="odfdo.frame.PosMix" href="frame.html#odfdo.frame.PosMix">PosMix</a></li>
 </ul>
@@ -25156,6 +25250,7 @@ def set_span(
 <li><code><a title="odfdo.shapes.ShapeBase.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.shapes.ShapeBase.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.size" href="frame.html#odfdo.frame.SizeMix.size">size</a></code></li>
 <li><code><a title="odfdo.shapes.ShapeBase.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
@@ -25371,6 +25466,8 @@ values are 'chapter', 'direction', 'page', 'text',
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Class variables</h3>
 <dl>
@@ -25559,6 +25656,7 @@ field, may need to be refreshed through a visual ODF parser.</p></div>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -25613,6 +25711,8 @@ Consider using the wrapper: odfdo.paragraph.set_reference_mark()</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -25745,6 +25845,7 @@ Consider using the wrapper: odfdo.paragraph.set_reference_mark()</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -25810,6 +25911,8 @@ odfdo.paragraph.set_reference_mark_end()</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -25966,6 +26069,7 @@ odfdo.paragraph.set_reference_mark_end()</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -26100,6 +26204,8 @@ Consider using the wrapper: odfdo.paragraph.set_reference_mark()</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -26367,6 +26473,7 @@ return a raw list of odf elements.</p></div>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -26451,22 +26558,22 @@ return a raw list of odf elements.</p></div>
         self,
         coord: tuple | list | str,
     ) -&gt; tuple[int | None, int | None]:
-        xyzt = _convert_coordinates(coord)
+        xyzt = convert_coordinates(coord)
         if len(xyzt) == 2:
             x, z = xyzt
         else:
             x, _, z, __ = xyzt
         if x and x &lt; 0:
-            x = _increment(x, self.width)
+            x = increment(x, self.width)
         if z and z &lt; 0:
-            z = _increment(z, self.width)
+            z = increment(z, self.width)
         return (x, z)
 
     def _compute_row_cache(self) -&gt; None:
         idx_repeated_seq = self.elements_repeated_sequence(
             _xpath_cell, &#34;table:number-columns-repeated&#34;
         )
-        self._rmap = _make_cache_map(idx_repeated_seq)
+        self._rmap = make_cache_map(idx_repeated_seq)
 
     # Public API
 
@@ -26520,11 +26627,11 @@ return a raw list of odf elements.</p></div>
                 # lonely row
                 return
             # parent may be group of rows, not table
-            if isinstance(upper, Table):
+            if isinstance(upper, Element) and upper._tag == &#34;table:table&#34;:
                 break
             current = upper
         # fixme : need to optimize this
-        if isinstance(upper, Table):
+        if isinstance(upper, Element) and upper._tag == &#34;table:table&#34;:
             upper._compute_table_cache()
             if hasattr(self, &#34;_tmap&#34;):
                 del self._tmap[:]
@@ -26558,7 +26665,7 @@ return a raw list of odf elements.</p></div>
         return value
 
     def _translate_x_from_any(self, x: str | int) -&gt; int:
-        return _translate_from_any(x, self.width, 0)
+        return translate_from_any(x, self.width, 0)
 
     def traverse(  # noqa: C901
         self,
@@ -26614,7 +26721,7 @@ return a raw list of odf elements.</p></div>
                     end = self._rmap[-1]
                 except Exception:
                     end = -1
-            start_map = _find_odf_idx(self._rmap, start)
+            start_map = find_odf_idx(self._rmap, start)
             if start_map is None:
                 return
             if start_map &gt; 0:
@@ -26707,7 +26814,7 @@ return a raw list of odf elements.</p></div>
             return self._get_cell2_base(x)
 
     def _get_cell2_base(self, x: int) -&gt; Cell | None:
-        idx = _find_odf_idx(self._rmap, x)
+        idx = find_odf_idx(self._rmap, x)
         cell: Cell
         if idx is not None:
             if idx in self._indexes[&#34;_rmap&#34;]:
@@ -26794,7 +26901,7 @@ return a raw list of odf elements.</p></div>
             cell_back = self.append_cell(cell, _repeated=repeated, clone=clone)
         else:
             # Inside the defined row
-            _set_item_in_vault(x, cell, self, _xpath_cell_idx, &#34;_rmap&#34;, clone=clone)
+            set_item_in_vault(x, cell, self, _xpath_cell_idx, &#34;_rmap&#34;, clone=clone)
             cell.x = x
             cell.y = self.y
             cell_back = cell
@@ -26859,7 +26966,7 @@ return a raw list of odf elements.</p></div>
         # Outside the defined row
         diff = x - self.width
         if diff &lt; 0:
-            _insert_item_in_vault(x, cell, self, _xpath_cell_idx, &#34;_rmap&#34;)
+            insert_item_in_vault(x, cell, self, _xpath_cell_idx, &#34;_rmap&#34;)
             cell.x = x
             cell.y = self.y
             cell_back = cell
@@ -26903,7 +27010,7 @@ return a raw list of odf elements.</p></div>
         self._append(cell)
         if _repeated is None:
             _repeated = cell.repeated or 1
-        self._rmap = _insert_map_once(self._rmap, len(self._rmap), _repeated)
+        self._rmap = insert_map_once(self._rmap, len(self._rmap), _repeated)
         cell.x = self.width - 1
         cell.y = self.y
         return cell
@@ -26925,7 +27032,7 @@ return a raw list of odf elements.</p></div>
         x = self._translate_x_from_any(x)
         if x &gt;= self.width:
             return
-        _delete_item_in_vault(x, self, _xpath_cell_idx, &#34;_rmap&#34;)
+        delete_item_in_vault(x, self, _xpath_cell_idx, &#34;_rmap&#34;)
 
     def get_values(
         self,
@@ -27106,10 +27213,12 @@ return a raw list of odf elements.</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="odfdo.Row.clone"><code class="name">var <span class="ident">clone</span> : <a title="odfdo.table.Row" href="table.html#odfdo.table.Row">Row</a></code></dt>
+<dt id="odfdo.Row.clone"><code class="name">var <span class="ident">clone</span> : <a title="odfdo.row.Row" href="row.html#odfdo.row.Row">Row</a></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -27195,7 +27304,7 @@ def width(self) -&gt; int:
 <h3>Methods</h3>
 <dl>
 <dt id="odfdo.Row.append"><code class="name flex">
-<span>def <span class="ident">append</span></span>(<span>self, cell: <a title="odfdo.Cell" href="#odfdo.Cell">Cell</a> | None = None, clone: bool = True) ‑> <a title="odfdo.table.Cell" href="table.html#odfdo.table.Cell">Cell</a></span>
+<span>def <span class="ident">append</span></span>(<span>self, cell: <a title="odfdo.Cell" href="#odfdo.Cell">Cell</a> | None = None, clone: bool = True) ‑> <a title="odfdo.cell.Cell" href="cell.html#odfdo.cell.Cell">Cell</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Append the given cell at the end of the row. Repeated cells are
@@ -27236,14 +27345,14 @@ accepted. If no cell is given, an empty one is created.</p>
     self._append(cell)
     if _repeated is None:
         _repeated = cell.repeated or 1
-    self._rmap = _insert_map_once(self._rmap, len(self._rmap), _repeated)
+    self._rmap = insert_map_once(self._rmap, len(self._rmap), _repeated)
     cell.x = self.width - 1
     cell.y = self.y
     return cell</code></pre>
 </details>
 </dd>
 <dt id="odfdo.Row.append_cell"><code class="name flex">
-<span>def <span class="ident">append_cell</span></span>(<span>self, cell: <a title="odfdo.Cell" href="#odfdo.Cell">Cell</a> | None = None, clone: bool = True) ‑> <a title="odfdo.table.Cell" href="table.html#odfdo.table.Cell">Cell</a></span>
+<span>def <span class="ident">append_cell</span></span>(<span>self, cell: <a title="odfdo.Cell" href="#odfdo.Cell">Cell</a> | None = None, clone: bool = True) ‑> <a title="odfdo.cell.Cell" href="cell.html#odfdo.cell.Cell">Cell</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Append the given cell at the end of the row. Repeated cells are
@@ -27284,7 +27393,7 @@ accepted. If no cell is given, an empty one is created.</p>
     self._append(cell)
     if _repeated is None:
         _repeated = cell.repeated or 1
-    self._rmap = _insert_map_once(self._rmap, len(self._rmap), _repeated)
+    self._rmap = insert_map_once(self._rmap, len(self._rmap), _repeated)
     cell.x = self.width - 1
     cell.y = self.y
     return cell</code></pre>
@@ -27318,7 +27427,7 @@ rows remain unaffected.</p>
     x = self._translate_x_from_any(x)
     if x &gt;= self.width:
         return
-    _delete_item_in_vault(x, self, _xpath_cell_idx, &#34;_rmap&#34;)</code></pre>
+    delete_item_in_vault(x, self, _xpath_cell_idx, &#34;_rmap&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.Row.extend_cells"><code class="name flex">
@@ -27338,7 +27447,7 @@ rows remain unaffected.</p>
 </details>
 </dd>
 <dt id="odfdo.Row.get_cell"><code class="name flex">
-<span>def <span class="ident">get_cell</span></span>(<span>self, x: int, clone: bool = True) ‑> <a title="odfdo.table.Cell" href="table.html#odfdo.table.Cell">Cell</a> | None</span>
+<span>def <span class="ident">get_cell</span></span>(<span>self, x: int, clone: bool = True) ‑> <a title="odfdo.cell.Cell" href="cell.html#odfdo.cell.Cell">Cell</a> | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the cell at position "x" starting from 0. Alphabetical
@@ -27374,7 +27483,7 @@ copy is returned, use set_cell() to push it back.</p>
 </details>
 </dd>
 <dt id="odfdo.Row.get_cells"><code class="name flex">
-<span>def <span class="ident">get_cells</span></span>(<span>self, coord: str | tuple | None = None, style: str | None = None, content: str | None = None, cell_type: str | None = None) ‑> <a title="odfdo.list" href="list.html">odfdo.list</a>[<a title="odfdo.table.Cell" href="table.html#odfdo.table.Cell">Cell</a>]</span>
+<span>def <span class="ident">get_cells</span></span>(<span>self, coord: str | tuple | None = None, style: str | None = None, content: str | None = None, cell_type: str | None = None) ‑> <a title="odfdo.list" href="list.html">odfdo.list</a>[<a title="odfdo.cell.Cell" href="cell.html#odfdo.cell.Cell">Cell</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the list of cells matching the criteria.</p>
@@ -27577,7 +27686,7 @@ coordinates with None for empty cells, except when using cell_type.</p>
 </details>
 </dd>
 <dt id="odfdo.Row.insert_cell"><code class="name flex">
-<span>def <span class="ident">insert_cell</span></span>(<span>self, x: int | str, cell: <a title="odfdo.Cell" href="#odfdo.Cell">Cell</a> | None = None, clone: bool = True) ‑> <a title="odfdo.table.Cell" href="table.html#odfdo.table.Cell">Cell</a></span>
+<span>def <span class="ident">insert_cell</span></span>(<span>self, x: int | str, cell: <a title="odfdo.Cell" href="#odfdo.Cell">Cell</a> | None = None, clone: bool = True) ‑> <a title="odfdo.cell.Cell" href="cell.html#odfdo.cell.Cell">Cell</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Insert the given cell at position "x" starting from 0. If no cell
@@ -27620,7 +27729,7 @@ is given, an empty one is created.</p>
     # Outside the defined row
     diff = x - self.width
     if diff &lt; 0:
-        _insert_item_in_vault(x, cell, self, _xpath_cell_idx, &#34;_rmap&#34;)
+        insert_item_in_vault(x, cell, self, _xpath_cell_idx, &#34;_rmap&#34;)
         cell.x = x
         cell.y = self.y
         cell_back = cell
@@ -27692,7 +27801,7 @@ is ignored.</p>
 </details>
 </dd>
 <dt id="odfdo.Row.set_cell"><code class="name flex">
-<span>def <span class="ident">set_cell</span></span>(<span>self, x: int | str, cell: <a title="odfdo.Cell" href="#odfdo.Cell">Cell</a> | None = None, clone: bool = True) ‑> <a title="odfdo.table.Cell" href="table.html#odfdo.table.Cell">Cell</a></span>
+<span>def <span class="ident">set_cell</span></span>(<span>self, x: int | str, cell: <a title="odfdo.Cell" href="#odfdo.Cell">Cell</a> | None = None, clone: bool = True) ‑> <a title="odfdo.cell.Cell" href="cell.html#odfdo.cell.Cell">Cell</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Push the cell back in the row at position "x" starting from 0.
@@ -27736,7 +27845,7 @@ Alphabetical positions like "D" are accepted.</p>
         cell_back = self.append_cell(cell, _repeated=repeated, clone=clone)
     else:
         # Inside the defined row
-        _set_item_in_vault(x, cell, self, _xpath_cell_idx, &#34;_rmap&#34;, clone=clone)
+        set_item_in_vault(x, cell, self, _xpath_cell_idx, &#34;_rmap&#34;, clone=clone)
         cell.x = x
         cell.y = self.y
         cell_back = cell
@@ -27910,7 +28019,7 @@ with an empty row.</p>
 </details>
 </dd>
 <dt id="odfdo.Row.traverse"><code class="name flex">
-<span>def <span class="ident">traverse</span></span>(<span>self, start: int | None = None, end: int | None = None) ‑> collections.abc.Iterator[<a title="odfdo.table.Cell" href="table.html#odfdo.table.Cell">Cell</a>]</span>
+<span>def <span class="ident">traverse</span></span>(<span>self, start: int | None = None, end: int | None = None) ‑> collections.abc.Iterator[<a title="odfdo.cell.Cell" href="cell.html#odfdo.cell.Cell">Cell</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Yield as many cell elements as expected cells in the row, i.e.
@@ -27981,7 +28090,7 @@ necessary.</p>
                 end = self._rmap[-1]
             except Exception:
                 end = -1
-        start_map = _find_odf_idx(self._rmap, start)
+        start_map = find_odf_idx(self._rmap, start)
         if start_map is None:
             return
         if start_map &gt; 0:
@@ -28120,6 +28229,7 @@ necessary.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -28181,6 +28291,8 @@ rows, of "width" cells each.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -28289,6 +28401,7 @@ rows, of "width" cells each.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -28351,6 +28464,8 @@ rows, of "width" cells each.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -28504,6 +28619,7 @@ rows, of "width" cells each.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -28556,6 +28672,8 @@ the second and all following SPACE characters in a sequence.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -28688,6 +28806,7 @@ the second and all following SPACE characters in a sequence.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -28750,6 +28869,8 @@ given text.</p>
 <li><a title="odfdo.paragraph.Paragraph" href="paragraph.html#odfdo.paragraph.Paragraph">Paragraph</a></li>
 <li><a title="odfdo.paragraph_base.ParagraphBase" href="paragraph_base.html#odfdo.paragraph_base.ParagraphBase">ParagraphBase</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -28890,6 +29011,7 @@ given text.</p>
 <li><code><a title="odfdo.paragraph.Paragraph.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.paragraph.Paragraph.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.set_bookmark" href="paragraph.html#odfdo.paragraph.Paragraph.set_bookmark">set_bookmark</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.set_link" href="paragraph.html#odfdo.paragraph.Paragraph.set_link">set_link</a></code></li>
 <li><code><a title="odfdo.paragraph.Paragraph.set_reference_mark" href="paragraph.html#odfdo.paragraph.Paragraph.set_reference_mark">set_reference_mark</a></code></li>
@@ -29695,6 +29817,8 @@ break_after -- 'page', 'column' or 'auto'
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -30725,6 +30849,7 @@ same area. These will be copied.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -31084,8 +31209,7 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
             if protected:
                 self.protected = protected
             if name is None:
-                name = f&#34;{title}1&#34;
-                self.name = name
+                self.name = f&#34;{title}1&#34;
             # Create the source template
             toc_source = self.create_toc_source(
                 title, outline_level, title_style, entry_style
@@ -31207,6 +31331,24 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
                 paragraph.style = text_style  # type: ignore
             paragraph.text = title
 
+    @staticmethod
+    def _header_numbering(level_indexes: dict[int, int], level: int) -&gt; str:
+        &#34;&#34;&#34;Return the header hierarchical number (like &#34;1.2.3.&#34;).&#34;&#34;&#34;
+        numbers: list[int] = []
+        # before header level
+        for idx in range(1, level):
+            numbers.append(level_indexes.setdefault(idx, 1))
+        # header level
+        index = level_indexes.get(level, 0) + 1
+        level_indexes[level] = index
+        numbers.append(index)
+        # after header level
+        idx = level + 1
+        while idx in level_indexes:
+            del level_indexes[idx]
+            idx += 1
+        return &#34;.&#34;.join(str(x) for x in numbers) + &#34;.&#34;
+
     def fill(  # noqa: C901
         self,
         document: Document | None = None,
@@ -31252,7 +31394,7 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
                 for level in range(1, 11):
                     if (
                         automatic_styles.get_style(
-                            &#34;paragraph&#34;, TOC_ENTRY_STYLE_PATTERN % level
+                            &#34;paragraph&#34;, _toc_entry_style_name(level)
                         )
                         is None
                     ):
@@ -31266,30 +31408,18 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
             level = header.get_attribute_integer(&#34;text:outline-level&#34;) or 0
             if level is None or level &gt; outline_level:
                 continue
-            number = []
-            # 1. l &lt; level
-            for idx in range(1, level):
-                index = level_indexes.setdefault(idx, 1)
-                number.append(str(index))
-            # 2. l == level
-            index = level_indexes.setdefault(level, 0) + 1
-            level_indexes[level] = index
-            number.append(str(index))
-            # 3. l &gt; level
-            for idx in range(level + 1, 11):
-                if idx in level_indexes:
-                    del level_indexes[idx]
-            number_str = &#34;.&#34;.join(number) + &#34;.&#34;
+            number_str = self._header_numbering(level_indexes, level)
             # Make the title with &#34;1.2.3. Title&#34; format
-            header_title = f&#34;{number_str} {header}&#34;
-            paragraph = Paragraph(header_title)
+            paragraph = Paragraph(f&#34;{number_str} {header}&#34;)
             if use_default_styles:
-                paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
+                paragraph.style = _toc_entry_style_name(level)
             index_body.append(paragraph)  # type: ignore</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Static methods</h3>
 <dl>
@@ -31546,7 +31676,7 @@ provide one as argument.</p>
             for level in range(1, 11):
                 if (
                     automatic_styles.get_style(
-                        &#34;paragraph&#34;, TOC_ENTRY_STYLE_PATTERN % level
+                        &#34;paragraph&#34;, _toc_entry_style_name(level)
                     )
                     is None
                 ):
@@ -31560,25 +31690,11 @@ provide one as argument.</p>
         level = header.get_attribute_integer(&#34;text:outline-level&#34;) or 0
         if level is None or level &gt; outline_level:
             continue
-        number = []
-        # 1. l &lt; level
-        for idx in range(1, level):
-            index = level_indexes.setdefault(idx, 1)
-            number.append(str(index))
-        # 2. l == level
-        index = level_indexes.setdefault(level, 0) + 1
-        level_indexes[level] = index
-        number.append(str(index))
-        # 3. l &gt; level
-        for idx in range(level + 1, 11):
-            if idx in level_indexes:
-                del level_indexes[idx]
-        number_str = &#34;.&#34;.join(number) + &#34;.&#34;
+        number_str = self._header_numbering(level_indexes, level)
         # Make the title with &#34;1.2.3. Title&#34; format
-        header_title = f&#34;{number_str} {header}&#34;
-        paragraph = Paragraph(header_title)
+        paragraph = Paragraph(f&#34;{number_str} {header}&#34;)
         if use_default_styles:
-            paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
+            paragraph.style = _toc_entry_style_name(level)
         index_body.append(paragraph)  # type: ignore</code></pre>
 </details>
 </dd>
@@ -31747,6 +31863,7 @@ provide one as argument.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -31806,6 +31923,8 @@ information</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -31938,6 +32057,7 @@ information</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -32016,6 +32136,8 @@ Base style for a TOC entryBase style for a TOC entry</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -32316,6 +32438,7 @@ Base style for a TOC entryBase style for a TOC entry</p></div>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -32483,7 +32606,7 @@ ensuiring model integrity.</p>
 
     def _translate_y_from_any(self, y: str | int) -&gt; int:
         # &#34;3&#34; (couting from 1) -&gt; 2 (couting from 0)
-        return _translate_from_any(y, self.height, 1)
+        return translate_from_any(y, self.height, 1)
 
     def _translate_table_coordinates_list(
         self,
@@ -32496,27 +32619,27 @@ ensuiring model integrity.</p>
             # It is a row
             y = coord[0]
             if y and y &lt; 0:
-                y = _increment(y, height)
+                y = increment(y, height)
             return (None, y, None, y)
         if len(coord) == 2:
             # It is a row range, not a cell, because context is table
             y = coord[0]
             if y and y &lt; 0:
-                y = _increment(y, height)
+                y = increment(y, height)
             t = coord[1]
             if t and t &lt; 0:
-                t = _increment(t, height)
+                t = increment(t, height)
             return (None, y, None, t)
         # should be 4 int
         x, y, z, t = coord
         if x and x &lt; 0:
-            x = _increment(x, width)
+            x = increment(x, width)
         if y and y &lt; 0:
-            y = _increment(y, height)
+            y = increment(y, height)
         if z and z &lt; 0:
-            z = _increment(z, width)
+            z = increment(z, width)
         if t and t &lt; 0:
-            t = _increment(t, height)
+            t = increment(t, height)
         return (x, y, z, t)
 
     def _translate_table_coordinates_str(
@@ -32525,24 +32648,24 @@ ensuiring model integrity.</p>
     ) -&gt; tuple[int | None, ...]:
         height = self.height
         width = self.width
-        coord = _convert_coordinates(coord_str)
+        coord = convert_coordinates(coord_str)
         if len(coord) == 2:
             x, y = coord
             if x and x &lt; 0:
-                x = _increment(x, width)
+                x = increment(x, width)
             if y and y &lt; 0:
-                y = _increment(y, height)
+                y = increment(y, height)
             # extent to an area :
             return (x, y, x, y)
         x, y, z, t = coord
         if x and x &lt; 0:
-            x = _increment(x, width)
+            x = increment(x, width)
         if y and y &lt; 0:
-            y = _increment(y, height)
+            y = increment(y, height)
         if z and z &lt; 0:
-            z = _increment(z, width)
+            z = increment(z, width)
         if t and t &lt; 0:
-            t = _increment(t, height)
+            t = increment(t, height)
         return (x, y, z, t)
 
     def _translate_table_coordinates(
@@ -32559,24 +32682,24 @@ ensuiring model integrity.</p>
     ) -&gt; tuple[int | None, ...]:
         width = self.width
         height = self.height
-        coord = _convert_coordinates(coord_str)
+        coord = convert_coordinates(coord_str)
         if len(coord) == 2:
             x, y = coord
             if x and x &lt; 0:
-                x = _increment(x, width)
+                x = increment(x, width)
             if y and y &lt; 0:
-                y = _increment(y, height)
+                y = increment(y, height)
             # extent to an area :
             return (x, y, x, y)
         x, y, z, t = coord
         if x and x &lt; 0:
-            x = _increment(x, width)
+            x = increment(x, width)
         if y and y &lt; 0:
-            y = _increment(y, height)
+            y = increment(y, height)
         if z and z &lt; 0:
-            z = _increment(z, width)
+            z = increment(z, width)
         if t and t &lt; 0:
-            t = _increment(t, height)
+            t = increment(t, height)
         return (x, y, z, t)
 
     def _translate_column_coordinates_list(
@@ -32590,27 +32713,27 @@ ensuiring model integrity.</p>
             # It is a column
             x = coord[0]
             if x and x &lt; 0:
-                x = _increment(x, width)
+                x = increment(x, width)
             return (x, None, x, None)
         if len(coord) == 2:
             # It is a column range, not a cell, because context is table
             x = coord[0]
             if x and x &lt; 0:
-                x = _increment(x, width)
+                x = increment(x, width)
             z = coord[1]
             if z and z &lt; 0:
-                z = _increment(z, width)
+                z = increment(z, width)
             return (x, None, z, None)
         # should be 4 int
         x, y, z, t = coord
         if x and x &lt; 0:
-            x = _increment(x, width)
+            x = increment(x, width)
         if y and y &lt; 0:
-            y = _increment(y, height)
+            y = increment(y, height)
         if z and z &lt; 0:
-            z = _increment(z, width)
+            z = increment(z, width)
         if t and t &lt; 0:
-            t = _increment(t, height)
+            t = increment(t, height)
         return (x, y, z, t)
 
     def _translate_column_coordinates(
@@ -32626,7 +32749,7 @@ ensuiring model integrity.</p>
         coord: tuple | list | str,
     ) -&gt; tuple[int | None, int | None]:
         # we want an x,y result
-        coord = _convert_coordinates(coord)
+        coord = convert_coordinates(coord)
         if len(coord) == 2:
             x, y = coord
         # If we got an area, take the first cell
@@ -32635,20 +32758,20 @@ ensuiring model integrity.</p>
         else:
             raise ValueError(str(coord))
         if x and x &lt; 0:
-            x = _increment(x, self.width)
+            x = increment(x, self.width)
         if y and y &lt; 0:
-            y = _increment(y, self.height)
+            y = increment(y, self.height)
         return (x, y)
 
     def _compute_table_cache(self) -&gt; None:
         idx_repeated_seq = self.elements_repeated_sequence(
             _xpath_row, &#34;table:number-rows-repeated&#34;
         )
-        self._tmap = _make_cache_map(idx_repeated_seq)
+        self._tmap = make_cache_map(idx_repeated_seq)
         idx_repeated_seq = self.elements_repeated_sequence(
             _xpath_column, &#34;table:number-columns-repeated&#34;
         )
-        self._cmap = _make_cache_map(idx_repeated_seq)
+        self._cmap = make_cache_map(idx_repeated_seq)
 
     def _update_width(self, row: Row) -&gt; None:
         &#34;&#34;&#34;Synchronize the number of columns if the row is bigger.
@@ -32805,7 +32928,7 @@ ensuiring model integrity.</p>
         return result_str
 
     def _translate_x_from_any(self, x: str | int) -&gt; int:
-        return _translate_from_any(x, self.width, 0)
+        return translate_from_any(x, self.width, 0)
 
     #
     # Public API
@@ -33313,7 +33436,7 @@ ensuiring model integrity.</p>
                     end = self._tmap[-1]
                 except Exception:
                     end = -1
-            start_map = _find_odf_idx(self._tmap, start)
+            start_map = find_odf_idx(self._tmap, start)
             if start_map is None:
                 return
             if start_map &gt; 0:
@@ -33388,7 +33511,7 @@ ensuiring model integrity.</p>
         return row
 
     def _get_row2_base(self, y: int) -&gt; Row | None:
-        idx = _find_odf_idx(self._tmap, y)
+        idx = find_odf_idx(self._tmap, y)
         if idx is not None:
             if idx in self._indexes[&#34;_tmap&#34;]:
                 row = self._indexes[&#34;_tmap&#34;][idx]
@@ -33452,7 +33575,7 @@ ensuiring model integrity.</p>
             row_back = self.append_row(row, _repeated=repeated, clone=clone)
         else:
             # Inside the defined table
-            row_back = _set_item_in_vault(  # type: ignore
+            row_back = set_item_in_vault(  # type: ignore
                 y, row, self, _xpath_row_idx, &#34;_tmap&#34;, clone=clone
             )
         # print self.serialize(True)
@@ -33484,7 +33607,7 @@ ensuiring model integrity.</p>
         y = self._translate_y_from_any(y)
         diff = y - self.height
         if diff &lt; 0:
-            row_back = _insert_item_in_vault(y, row, self, _xpath_row_idx, &#34;_tmap&#34;)
+            row_back = insert_item_in_vault(y, row, self, _xpath_row_idx, &#34;_tmap&#34;)
         elif diff == 0:
             row_back = self.append_row(row, clone=clone)
         else:
@@ -33547,7 +33670,7 @@ ensuiring model integrity.</p>
         self._append(row)
         if _repeated is None:
             _repeated = row.repeated or 1
-        self._tmap = _insert_map_once(self._tmap, len(self._tmap), _repeated)
+        self._tmap = insert_map_once(self._tmap, len(self._tmap), _repeated)
         row.y = self.height - 1
         # Initialize columns
         if not self._get_columns():
@@ -33572,7 +33695,7 @@ ensuiring model integrity.</p>
         if y &gt;= self.height:
             return
         # Inside the defined table
-        _delete_item_in_vault(y, self, _xpath_row_idx, &#34;_tmap&#34;)
+        delete_item_in_vault(y, self, _xpath_row_idx, &#34;_tmap&#34;)
 
     def get_row_values(
         self,
@@ -34025,7 +34148,7 @@ ensuiring model integrity.</p>
             image_frame.set_attribute(&#34;table:end-x&#34;, width)
             image_frame.set_attribute(&#34;table:end-y&#34;, height)
             # FIXME what happens when the address changes?
-            address = f&#34;{self.name}.{_digit_to_alpha(x)}{y + 1}&#34;
+            address = f&#34;{self.name}.{digit_to_alpha(x)}{y + 1}&#34;
             image_frame.set_attribute(&#34;table:end-cell-address&#34;, address)
             # The frame is directly in the cell
             cell.append(image_frame)
@@ -34194,7 +34317,7 @@ ensuiring model integrity.</p>
                     end = self._cmap[-1]
                 except Exception:
                     end = -1
-            start_map = _find_odf_idx(self._cmap, start)
+            start_map = find_odf_idx(self._cmap, start)
             if start_map is None:
                 return
             if start_map &gt; 0:
@@ -34254,7 +34377,7 @@ ensuiring model integrity.</p>
         if x &gt;= self.width:
             return Column()
         # Inside the defined table
-        odf_idx = _find_odf_idx(self._cmap, x)
+        odf_idx = find_odf_idx(self._cmap, x)
         if odf_idx is not None:
             column = self._get_element_idx2(_xpath_column_idx, odf_idx)
             if column is None:
@@ -34321,7 +34444,7 @@ ensuiring model integrity.</p>
             column_back = self.append_column(column, _repeated=repeated)
         else:
             # Inside the defined table
-            column_back = _set_item_in_vault(  # type: ignore
+            column_back = set_item_in_vault(  # type: ignore
                 x, column, self, _xpath_column_idx, &#34;_cmap&#34;
             )
         return column_back
@@ -34350,7 +34473,7 @@ ensuiring model integrity.</p>
         x = self._translate_x_from_any(x)
         diff = x - self.width
         if diff &lt; 0:
-            column_back = _insert_item_in_vault(
+            column_back = insert_item_in_vault(
                 x, column, self, _xpath_column_idx, &#34;_cmap&#34;
             )
         elif diff == 0:
@@ -34403,7 +34526,7 @@ ensuiring model integrity.</p>
         # Repetitions are accepted
         if _repeated is None:
             _repeated = column.repeated or 1
-        self._cmap = _insert_map_once(self._cmap, len(self._cmap), _repeated)
+        self._cmap = insert_map_once(self._cmap, len(self._cmap), _repeated)
         # No need to update row widths
         return column
 
@@ -34423,7 +34546,7 @@ ensuiring model integrity.</p>
         if x &gt;= self.width:
             return
         # Inside the defined table
-        _delete_item_in_vault(x, self, _xpath_column_idx, &#34;_cmap&#34;)
+        delete_item_in_vault(x, self, _xpath_column_idx, &#34;_cmap&#34;)
         # Update width
         width = self.width
         for row in self._get_rows():
@@ -34759,7 +34882,7 @@ ensuiring model integrity.</p>
             merge -- boolean
         &#34;&#34;&#34;
         # get area
-        digits = _convert_coordinates(area)
+        digits = convert_coordinates(area)
         if len(digits) == 4:
             x, y, z, t = digits
         else:
@@ -34852,7 +34975,7 @@ ensuiring model integrity.</p>
             area -- str or tuple of int, cell or area coordinate
         &#34;&#34;&#34;
         # get area
-        digits = _convert_coordinates(area)
+        digits = convert_coordinates(area)
         if len(digits) == 4:
             x, y, _z, _t = digits
         else:
@@ -34926,6 +35049,8 @@ ensuiring model integrity.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -35125,7 +35250,7 @@ def width(self) -&gt; int:
 </details>
 </dd>
 <dt id="odfdo.Table.append_cell"><code class="name flex">
-<span>def <span class="ident">append_cell</span></span>(<span>self, y: int | str, cell: <a title="odfdo.Cell" href="#odfdo.Cell">Cell</a> | None = None, clone: bool = True) ‑> <a title="odfdo.table.Cell" href="table.html#odfdo.table.Cell">Cell</a></span>
+<span>def <span class="ident">append_cell</span></span>(<span>self, y: int | str, cell: <a title="odfdo.Cell" href="#odfdo.Cell">Cell</a> | None = None, clone: bool = True) ‑> <a title="odfdo.cell.Cell" href="cell.html#odfdo.cell.Cell">Cell</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Append the given cell at the "y" coordinate. Repeated cells are
@@ -35225,13 +35350,13 @@ like "C" is accepted.</p>
     # Repetitions are accepted
     if _repeated is None:
         _repeated = column.repeated or 1
-    self._cmap = _insert_map_once(self._cmap, len(self._cmap), _repeated)
+    self._cmap = insert_map_once(self._cmap, len(self._cmap), _repeated)
     # No need to update row widths
     return column</code></pre>
 </details>
 </dd>
 <dt id="odfdo.Table.append_row"><code class="name flex">
-<span>def <span class="ident">append_row</span></span>(<span>self, row: <a title="odfdo.Row" href="#odfdo.Row">Row</a> | None = None, clone: bool = True) ‑> <a title="odfdo.table.Row" href="table.html#odfdo.table.Row">Row</a></span>
+<span>def <span class="ident">append_row</span></span>(<span>self, row: <a title="odfdo.Row" href="#odfdo.Row">Row</a> | None = None, clone: bool = True) ‑> <a title="odfdo.row.Row" href="row.html#odfdo.row.Row">Row</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Append the row at the end of the table. If no row is given, an
@@ -35279,7 +35404,7 @@ inserted in an empty table. So better insert a filled row.</p>
     self._append(row)
     if _repeated is None:
         _repeated = row.repeated or 1
-    self._tmap = _insert_map_once(self._tmap, len(self._tmap), _repeated)
+    self._tmap = insert_map_once(self._tmap, len(self._tmap), _repeated)
     row.y = self.height - 1
     # Initialize columns
     if not self._get_columns():
@@ -35321,7 +35446,7 @@ is used.</p>
         area -- str or tuple of int, cell or area coordinate
     &#34;&#34;&#34;
     # get area
-    digits = _convert_coordinates(area)
+    digits = convert_coordinates(area)
     if len(digits) == 4:
         x, y, _z, _t = digits
     else:
@@ -35428,7 +35553,7 @@ like "C" is accepted.</p>
     if x &gt;= self.width:
         return
     # Inside the defined table
-    _delete_item_in_vault(x, self, _xpath_column_idx, &#34;_cmap&#34;)
+    delete_item_in_vault(x, self, _xpath_column_idx, &#34;_cmap&#34;)
     # Update width
     width = self.width
     for row in self._get_rows():
@@ -35493,7 +35618,7 @@ this method on a cloned table.</p>
     if y &gt;= self.height:
         return
     # Inside the defined table
-    _delete_item_in_vault(y, self, _xpath_row_idx, &#34;_tmap&#34;)</code></pre>
+    delete_item_in_vault(y, self, _xpath_row_idx, &#34;_tmap&#34;)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.Table.extend_rows"><code class="name flex">
@@ -35529,7 +35654,7 @@ this method on a cloned table.</p>
 </details>
 </dd>
 <dt id="odfdo.Table.get_cell"><code class="name flex">
-<span>def <span class="ident">get_cell</span></span>(<span>self, coord: tuple | <a title="odfdo.list" href="list.html">odfdo.list</a> | str, clone: bool = True, keep_repeated: bool = True) ‑> <a title="odfdo.table.Cell" href="table.html#odfdo.table.Cell">Cell</a></span>
+<span>def <span class="ident">get_cell</span></span>(<span>self, coord: tuple | <a title="odfdo.list" href="list.html">odfdo.list</a> | str, clone: bool = True, keep_repeated: bool = True) ‑> <a title="odfdo.cell.Cell" href="cell.html#odfdo.cell.Cell">Cell</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the cell at the given coordinates.</p>
@@ -35718,7 +35843,7 @@ like "C" is accepted.</p>
 </details>
 </dd>
 <dt id="odfdo.Table.get_column_cells"><code class="name flex">
-<span>def <span class="ident">get_column_cells</span></span>(<span>self, x: int | str, style: str | None = None, content: str | None = None, cell_type: str | None = None, complete: bool = False) ‑> <a title="odfdo.list" href="list.html">odfdo.list</a>[<a title="odfdo.table.Cell" href="table.html#odfdo.table.Cell">Cell</a> | None]</span>
+<span>def <span class="ident">get_column_cells</span></span>(<span>self, x: int | str, style: str | None = None, content: str | None = None, cell_type: str | None = None, complete: bool = False) ‑> <a title="odfdo.list" href="list.html">odfdo.list</a>[<a title="odfdo.cell.Cell" href="cell.html#odfdo.cell.Cell">Cell</a> | None]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the list of cells at the given position.</p>
@@ -36013,7 +36138,7 @@ this method on a cloned table.</p>
 </details>
 </dd>
 <dt id="odfdo.Table.get_row"><code class="name flex">
-<span>def <span class="ident">get_row</span></span>(<span>self, y: int | str, clone: bool = True, create: bool = True) ‑> <a title="odfdo.table.Row" href="table.html#odfdo.table.Row">Row</a></span>
+<span>def <span class="ident">get_row</span></span>(<span>self, y: int | str, clone: bool = True, create: bool = True) ‑> <a title="odfdo.row.Row" href="row.html#odfdo.row.Row">Row</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the row at the given "y" position.</p>
@@ -36114,7 +36239,7 @@ If cell_type and complete is True, replace missing values by None.</p>
 </details>
 </dd>
 <dt id="odfdo.Table.get_rows"><code class="name flex">
-<span>def <span class="ident">get_rows</span></span>(<span>self, coord: tuple | <a title="odfdo.list" href="list.html">odfdo.list</a> | str | None = None, style: str | None = None, content: str | None = None) ‑> <a title="odfdo.list" href="list.html">odfdo.list</a>[<a title="odfdo.table.Row" href="table.html#odfdo.table.Row">Row</a>]</span>
+<span>def <span class="ident">get_rows</span></span>(<span>self, coord: tuple | <a title="odfdo.list" href="list.html">odfdo.list</a> | str | None = None, style: str | None = None, content: str | None = None) ‑> <a title="odfdo.list" href="list.html">odfdo.list</a>[<a title="odfdo.row.Row" href="row.html#odfdo.row.Row">Row</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the list of rows matching the criteria.</p>
@@ -36325,7 +36450,7 @@ By default, flat is False.</p>
 </details>
 </dd>
 <dt id="odfdo.Table.insert_cell"><code class="name flex">
-<span>def <span class="ident">insert_cell</span></span>(<span>self, coord: tuple | <a title="odfdo.list" href="list.html">odfdo.list</a> | str, cell: <a title="odfdo.Cell" href="#odfdo.Cell">Cell</a> | None = None, clone: bool = True) ‑> <a title="odfdo.table.Cell" href="table.html#odfdo.table.Cell">Cell</a></span>
+<span>def <span class="ident">insert_cell</span></span>(<span>self, coord: tuple | <a title="odfdo.list" href="list.html">odfdo.list</a> | str, cell: <a title="odfdo.Cell" href="#odfdo.Cell">Cell</a> | None = None, clone: bool = True) ‑> <a title="odfdo.cell.Cell" href="cell.html#odfdo.cell.Cell">Cell</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Insert the given cell at the given coordinates. If no cell is
@@ -36423,7 +36548,7 @@ like "C" is accepted.</p>
     x = self._translate_x_from_any(x)
     diff = x - self.width
     if diff &lt; 0:
-        column_back = _insert_item_in_vault(
+        column_back = insert_item_in_vault(
             x, column, self, _xpath_column_idx, &#34;_cmap&#34;
         )
     elif diff == 0:
@@ -36444,7 +36569,7 @@ like "C" is accepted.</p>
 </details>
 </dd>
 <dt id="odfdo.Table.insert_row"><code class="name flex">
-<span>def <span class="ident">insert_row</span></span>(<span>self, y: str | int, row: <a title="odfdo.Row" href="#odfdo.Row">Row</a> | None = None, clone: bool = True) ‑> <a title="odfdo.table.Row" href="table.html#odfdo.table.Row">Row</a></span>
+<span>def <span class="ident">insert_row</span></span>(<span>self, y: str | int, row: <a title="odfdo.Row" href="#odfdo.Row">Row</a> | None = None, clone: bool = True) ‑> <a title="odfdo.row.Row" href="row.html#odfdo.row.Row">Row</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Insert the row before the given "y" position. If no row is given,
@@ -36483,7 +36608,7 @@ an empty one is created.</p>
     y = self._translate_y_from_any(y)
     diff = y - self.height
     if diff &lt; 0:
-        row_back = _insert_item_in_vault(y, row, self, _xpath_row_idx, &#34;_tmap&#34;)
+        row_back = insert_item_in_vault(y, row, self, _xpath_row_idx, &#34;_tmap&#34;)
     elif diff == 0:
         row_back = self.append_row(row, clone=clone)
     else:
@@ -36723,7 +36848,7 @@ to False, and no style.</p>
 </details>
 </dd>
 <dt id="odfdo.Table.set_cell"><code class="name flex">
-<span>def <span class="ident">set_cell</span></span>(<span>self, coord: tuple | <a title="odfdo.list" href="list.html">odfdo.list</a> | str, cell: <a title="odfdo.Cell" href="#odfdo.Cell">Cell</a> | None = None, clone: bool = True) ‑> <a title="odfdo.table.Cell" href="table.html#odfdo.table.Cell">Cell</a></span>
+<span>def <span class="ident">set_cell</span></span>(<span>self, coord: tuple | <a title="odfdo.list" href="list.html">odfdo.list</a> | str, cell: <a title="odfdo.Cell" href="#odfdo.Cell">Cell</a> | None = None, clone: bool = True) ‑> <a title="odfdo.cell.Cell" href="cell.html#odfdo.cell.Cell">Cell</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Replace a cell of the table at the given coordinates.</p>
@@ -36864,7 +36989,7 @@ provided or the table element must be already attached to a document.</p>
         image_frame.set_attribute(&#34;table:end-x&#34;, width)
         image_frame.set_attribute(&#34;table:end-y&#34;, height)
         # FIXME what happens when the address changes?
-        address = f&#34;{self.name}.{_digit_to_alpha(x)}{y + 1}&#34;
+        address = f&#34;{self.name}.{digit_to_alpha(x)}{y + 1}&#34;
         image_frame.set_attribute(&#34;table:end-cell-address&#34;, address)
         # The frame is directly in the cell
         cell.append(image_frame)
@@ -36997,7 +37122,7 @@ like "C" is accepted.</p>
         column_back = self.append_column(column, _repeated=repeated)
     else:
         # Inside the defined table
-        column_back = _set_item_in_vault(  # type: ignore
+        column_back = set_item_in_vault(  # type: ignore
             x, column, self, _xpath_column_idx, &#34;_cmap&#34;
         )
     return column_back</code></pre>
@@ -37146,7 +37271,7 @@ this method on a cloned table.</p>
 </details>
 </dd>
 <dt id="odfdo.Table.set_row"><code class="name flex">
-<span>def <span class="ident">set_row</span></span>(<span>self, y: int | str, row: <a title="odfdo.Row" href="#odfdo.Row">Row</a> | None = None, clone: bool = True) ‑> <a title="odfdo.table.Row" href="table.html#odfdo.table.Row">Row</a></span>
+<span>def <span class="ident">set_row</span></span>(<span>self, y: int | str, row: <a title="odfdo.Row" href="#odfdo.Row">Row</a> | None = None, clone: bool = True) ‑> <a title="odfdo.row.Row" href="row.html#odfdo.row.Row">Row</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Replace the row at the given position with the new one. Repetions of
@@ -37194,7 +37319,7 @@ the old row will be adjusted.</p>
         row_back = self.append_row(row, _repeated=repeated, clone=clone)
     else:
         # Inside the defined table
-        row_back = _set_item_in_vault(  # type: ignore
+        row_back = set_item_in_vault(  # type: ignore
             y, row, self, _xpath_row_idx, &#34;_tmap&#34;, clone=clone
         )
     # print self.serialize(True)
@@ -37204,7 +37329,7 @@ the old row will be adjusted.</p>
 </details>
 </dd>
 <dt id="odfdo.Table.set_row_cells"><code class="name flex">
-<span>def <span class="ident">set_row_cells</span></span>(<span>self, y: int | str, cells: <a title="odfdo.list" href="list.html">odfdo.list</a> | None = None) ‑> <a title="odfdo.table.Row" href="table.html#odfdo.table.Row">Row</a></span>
+<span>def <span class="ident">set_row_cells</span></span>(<span>self, y: int | str, cells: <a title="odfdo.list" href="list.html">odfdo.list</a> | None = None) ‑> <a title="odfdo.row.Row" href="row.html#odfdo.row.Row">Row</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Shortcut to set <em>all</em> the cells of the row at the given
@@ -37243,7 +37368,7 @@ the old row will be adjusted.</p>
 </details>
 </dd>
 <dt id="odfdo.Table.set_row_values"><code class="name flex">
-<span>def <span class="ident">set_row_values</span></span>(<span>self, y: int | str, values: <a title="odfdo.list" href="list.html">odfdo.list</a>, cell_type: str | None = None, currency: str | None = None, style: str | None = None) ‑> <a title="odfdo.table.Row" href="table.html#odfdo.table.Row">Row</a></span>
+<span>def <span class="ident">set_row_values</span></span>(<span>self, y: int | str, values: <a title="odfdo.list" href="list.html">odfdo.list</a>, cell_type: str | None = None, currency: str | None = None, style: str | None = None) ‑> <a title="odfdo.row.Row" href="row.html#odfdo.row.Row">Row</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Shortcut to set the values of <em>all</em> cells of the row at the given
@@ -37346,7 +37471,7 @@ be provided as an alpha numeric value like "A1:B2' or a tuple like
         merge -- boolean
     &#34;&#34;&#34;
     # get area
-    digits = _convert_coordinates(area)
+    digits = convert_coordinates(area)
     if len(digits) == 4:
         x, y, z, t = digits
     else:
@@ -37701,7 +37826,7 @@ written during the process.</p>
 </details>
 </dd>
 <dt id="odfdo.Table.traverse"><code class="name flex">
-<span>def <span class="ident">traverse</span></span>(<span>self, start: int | None = None, end: int | None = None) ‑> collections.abc.Iterator[<a title="odfdo.table.Row" href="table.html#odfdo.table.Row">Row</a>]</span>
+<span>def <span class="ident">traverse</span></span>(<span>self, start: int | None = None, end: int | None = None) ‑> collections.abc.Iterator[<a title="odfdo.row.Row" href="row.html#odfdo.row.Row">Row</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Yield as many row elements as expected rows in the table, i.e.
@@ -37765,7 +37890,7 @@ necessary.</p>
                 end = self._tmap[-1]
             except Exception:
                 end = -1
-        start_map = _find_odf_idx(self._tmap, start)
+        start_map = find_odf_idx(self._tmap, start)
         if start_map is None:
             return
         if start_map &gt; 0:
@@ -37857,7 +37982,7 @@ necessary.</p>
                 end = self._cmap[-1]
             except Exception:
                 end = -1
-        start_map = _find_odf_idx(self._cmap, start)
+        start_map = find_odf_idx(self._cmap, start)
         if start_map is None:
             return
         if start_map &gt; 0:
@@ -37987,6 +38112,7 @@ necessary.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -38192,6 +38318,8 @@ region where text has been deleted.</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -38470,6 +38598,7 @@ TextDeletion stored in the tracked changes.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -38565,6 +38694,8 @@ changed.</p></div>
 <ul class="hlist">
 <li><a title="odfdo.tracked_changes.TextChange" href="tracked_changes.html#odfdo.tracked_changes.TextChange">TextChange</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -38790,6 +38921,7 @@ By default: returns a list of Element, cleaned and with headers</p>
 <li><code><a title="odfdo.tracked_changes.TextChange.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextChange.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChange.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -38874,6 +39006,8 @@ been changed.</p></div>
 <li><a title="odfdo.tracked_changes.TextChangeEnd" href="tracked_changes.html#odfdo.tracked_changes.TextChangeEnd">TextChangeEnd</a></li>
 <li><a title="odfdo.tracked_changes.TextChange" href="tracked_changes.html#odfdo.tracked_changes.TextChange">TextChange</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Methods</h3>
 <dl>
@@ -39069,6 +39203,7 @@ element now "orphan" as long as you have a reference to it.</p>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextChangeEnd.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextChangeEnd.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -39201,6 +39336,8 @@ deletion. "</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Methods</h3>
 <dl>
@@ -39433,6 +39570,7 @@ See TextInsertion.set_change_info() for details.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -39575,6 +39713,8 @@ place of the change mark.</p></div>
 <ul class="hlist">
 <li><a title="odfdo.tracked_changes.TextInsertion" href="tracked_changes.html#odfdo.tracked_changes.TextInsertion">TextInsertion</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Methods</h3>
 <dl>
@@ -39791,6 +39931,7 @@ element or Header.</p>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextInsertion.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.set_change_info" href="tracked_changes.html#odfdo.tracked_changes.TextInsertion.set_change_info">set_change_info</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
@@ -39835,6 +39976,8 @@ place.</p></div>
 <ul class="hlist">
 <li><a title="odfdo.tracked_changes.TextInsertion" href="tracked_changes.html#odfdo.tracked_changes.TextInsertion">TextInsertion</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -39946,6 +40089,7 @@ place.</p></div>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.tracked_changes.TextInsertion.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.set_change_info" href="tracked_changes.html#odfdo.tracked_changes.TextInsertion.set_change_info">set_change_info</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.tracked_changes.TextInsertion.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
@@ -40095,6 +40239,8 @@ and "text:change-end" elements.</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -40375,6 +40521,7 @@ The new change info element will replace any existant ChangeInfo.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -40444,6 +40591,8 @@ The new change info element will replace any existant ChangeInfo.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -40611,6 +40760,7 @@ def outline_level(self) -&gt; int | None:
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -40699,6 +40849,8 @@ ignored.</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Methods</h3>
 <dl>
@@ -40871,6 +41023,7 @@ ignored.</p></div>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -40960,6 +41113,8 @@ field of same name.</p>
 <ul class="hlist">
 <li><a title="odfdo.element_typed.ElementTyped" href="element_typed.html#odfdo.element_typed.ElementTyped">ElementTyped</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -41114,6 +41269,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element_typed.ElementTyped.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element_typed.ElementTyped.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -41164,6 +41320,8 @@ field of same name.</p>
 <ul class="hlist">
 <li><a title="odfdo.element_typed.ElementTyped" href="element_typed.html#odfdo.element_typed.ElementTyped">ElementTyped</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -41316,6 +41474,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element_typed.ElementTyped.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element_typed.ElementTyped.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -41345,6 +41504,8 @@ field of same name.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -41453,6 +41614,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -41508,6 +41670,8 @@ field of same name.</p>
 <ul class="hlist">
 <li><a title="odfdo.element_typed.ElementTyped" href="element_typed.html#odfdo.element_typed.ElementTyped">ElementTyped</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -41666,6 +41830,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element_typed.ElementTyped.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element_typed.ElementTyped.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -41697,6 +41862,8 @@ field of same name.</p>
 <li><a title="odfdo.variable.UserFieldGet" href="variable.html#odfdo.variable.UserFieldGet">UserFieldGet</a></li>
 <li><a title="odfdo.element_typed.ElementTyped" href="element_typed.html#odfdo.element_typed.ElementTyped">ElementTyped</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -41807,6 +41974,7 @@ field of same name.</p>
 <li><code><a title="odfdo.variable.UserFieldGet.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.variable.UserFieldGet.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.variable.UserFieldGet.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.variable.UserFieldGet.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.variable.UserFieldGet.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.variable.UserFieldGet.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.variable.UserFieldGet.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -41867,6 +42035,8 @@ field of same name.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Class variables</h3>
 <dl>
@@ -42027,6 +42197,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -42073,6 +42244,8 @@ field of same name.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -42226,6 +42399,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -42272,6 +42446,8 @@ field of same name.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -42425,6 +42601,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -42483,6 +42660,8 @@ field of same name.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -42678,6 +42857,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -42724,6 +42904,8 @@ field of same name.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -42877,6 +43059,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -42906,6 +43089,8 @@ field of same name.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -43014,6 +43199,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -43044,6 +43230,8 @@ field of same name.</p>
 <ul class="hlist">
 <li><a title="odfdo.variable.VarInitialCreator" href="variable.html#odfdo.variable.VarInitialCreator">VarInitialCreator</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -43153,6 +43341,7 @@ field of same name.</p>
 <li><code><a title="odfdo.variable.VarInitialCreator.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.variable.VarInitialCreator.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -43208,6 +43397,8 @@ field of same name.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Class variables</h3>
 <dl>
@@ -43368,6 +43559,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -43422,6 +43614,8 @@ field of same name.</p>
 <ul class="hlist">
 <li><a title="odfdo.element_typed.ElementTyped" href="element_typed.html#odfdo.element_typed.ElementTyped">ElementTyped</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -43576,6 +43770,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element_typed.ElementTyped.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element_typed.ElementTyped.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -43611,6 +43806,8 @@ field of same name.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -43750,6 +43947,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -43780,6 +43978,8 @@ field of same name.</p>
 <ul class="hlist">
 <li><a title="odfdo.variable.VarInitialCreator" href="variable.html#odfdo.variable.VarInitialCreator">VarInitialCreator</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -43889,6 +44089,7 @@ field of same name.</p>
 <li><code><a title="odfdo.variable.VarInitialCreator.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.variable.VarInitialCreator.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -43918,6 +44119,8 @@ field of same name.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -44026,6 +44229,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -44079,6 +44283,8 @@ field of same name.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -44232,6 +44438,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -44302,6 +44509,8 @@ field of same name.</p>
 <ul class="hlist">
 <li><a title="odfdo.element_typed.ElementTyped" href="element_typed.html#odfdo.element_typed.ElementTyped">ElementTyped</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -44501,6 +44710,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element_typed.ElementTyped.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element_typed.ElementTyped.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element_typed.ElementTyped.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -44531,6 +44741,8 @@ field of same name.</p>
 <ul class="hlist">
 <li><a title="odfdo.variable.VarInitialCreator" href="variable.html#odfdo.variable.VarInitialCreator">VarInitialCreator</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -44640,6 +44852,7 @@ field of same name.</p>
 <li><code><a title="odfdo.variable.VarInitialCreator.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.variable.VarInitialCreator.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -44697,6 +44910,8 @@ field of same name.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -44892,6 +45107,7 @@ field of same name.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -44922,6 +45138,8 @@ field of same name.</p>
 <ul class="hlist">
 <li><a title="odfdo.variable.VarInitialCreator" href="variable.html#odfdo.variable.VarInitialCreator">VarInitialCreator</a></li>
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -45031,6 +45249,7 @@ field of same name.</p>
 <li><code><a title="odfdo.variable.VarInitialCreator.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.variable.VarInitialCreator.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.variable.VarInitialCreator.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -45276,6 +45495,7 @@ Text instances translated from the nodes found.</p></div>
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
 <li><code><a title="odfdo.bookmark" href="bookmark.html">odfdo.bookmark</a></code></li>
+<li><code><a title="odfdo.cell" href="cell.html">odfdo.cell</a></code></li>
 <li><code><a title="odfdo.const" href="const.html">odfdo.const</a></code></li>
 <li><code><a title="odfdo.container" href="container.html">odfdo.container</a></code></li>
 <li><code><a title="odfdo.content" href="content.html">odfdo.content</a></code></li>
@@ -45286,6 +45506,7 @@ Text instances translated from the nodes found.</p></div>
 <li><code><a title="odfdo.element_typed" href="element_typed.html">odfdo.element_typed</a></code></li>
 <li><code><a title="odfdo.frame" href="frame.html">odfdo.frame</a></code></li>
 <li><code><a title="odfdo.header" href="header.html">odfdo.header</a></code></li>
+<li><code><a title="odfdo.header_rows" href="header_rows.html">odfdo.header_rows</a></code></li>
 <li><code><a title="odfdo.image" href="image.html">odfdo.image</a></code></li>
 <li><code><a title="odfdo.link" href="link.html">odfdo.link</a></code></li>
 <li><code><a title="odfdo.list" href="list.html">odfdo.list</a></code></li>
@@ -45295,6 +45516,7 @@ Text instances translated from the nodes found.</p></div>
 <li><code><a title="odfdo.paragraph" href="paragraph.html">odfdo.paragraph</a></code></li>
 <li><code><a title="odfdo.paragraph_base" href="paragraph_base.html">odfdo.paragraph_base</a></code></li>
 <li><code><a title="odfdo.reference" href="reference.html">odfdo.reference</a></code></li>
+<li><code><a title="odfdo.row" href="row.html">odfdo.row</a></code></li>
 <li><code><a title="odfdo.scripts" href="scripts/index.html">odfdo.scripts</a></code></li>
 <li><code><a title="odfdo.scriptutils" href="scriptutils.html">odfdo.scriptutils</a></code></li>
 <li><code><a title="odfdo.section" href="section.html">odfdo.section</a></code></li>
@@ -45306,7 +45528,7 @@ Text instances translated from the nodes found.</p></div>
 <li><code><a title="odfdo.templates" href="templates/index.html">odfdo.templates</a></code></li>
 <li><code><a title="odfdo.toc" href="toc.html">odfdo.toc</a></code></li>
 <li><code><a title="odfdo.tracked_changes" href="tracked_changes.html">odfdo.tracked_changes</a></code></li>
-<li><code><a title="odfdo.utils" href="utils.html">odfdo.utils</a></code></li>
+<li><code><a title="odfdo.utils" href="utils/index.html">odfdo.utils</a></code></li>
 <li><code><a title="odfdo.variable" href="variable.html">odfdo.variable</a></code></li>
 <li><code><a title="odfdo.version" href="version.html">odfdo.version</a></code></li>
 <li><code><a title="odfdo.xmlpart" href="xmlpart.html">odfdo.xmlpart</a></code></li>
@@ -45673,7 +45895,6 @@ Text instances translated from the nodes found.</p></div>
 <li><code><a title="odfdo.Element.root" href="#odfdo.Element.root">root</a></code></li>
 <li><code><a title="odfdo.Element.search" href="#odfdo.Element.search">search</a></code></li>
 <li><code><a title="odfdo.Element.serialize" href="#odfdo.Element.serialize">serialize</a></code></li>
-<li><code><a title="odfdo.Element.serialize2" href="#odfdo.Element.serialize2">serialize2</a></code></li>
 <li><code><a title="odfdo.Element.set_attribute" href="#odfdo.Element.set_attribute">set_attribute</a></code></li>
 <li><code><a title="odfdo.Element.set_style_attribute" href="#odfdo.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.Element.strip_elements" href="#odfdo.Element.strip_elements">strip_elements</a></code></li>

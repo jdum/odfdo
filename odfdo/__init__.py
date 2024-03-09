@@ -133,6 +133,7 @@ __all__ = [
 
 
 from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
+from .cell import Cell
 from .container import Container
 from .content import Content
 from .document import Document
@@ -141,6 +142,7 @@ from .element import FIRST_CHILD, LAST_CHILD, NEXT_SIBLING, PREV_SIBLING, Elemen
 from .element_typed import ElementTyped
 from .frame import Frame, default_frame_position_style
 from .header import Header
+from .header_rows import HeaderRows
 from .image import DrawFillImage, DrawImage
 from .link import Link
 from .list import List, ListItem
@@ -167,7 +169,7 @@ from .style import (
     rgb2hex,
 )
 from .styles import Styles
-from .table import Cell, Column, HeaderRows, NamedRange, Row, RowGroup, Table
+from .table import Column, NamedRange, Row, RowGroup, Table
 from .toc import (
     TOC,
     IndexTitle,

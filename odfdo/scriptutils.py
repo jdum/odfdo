@@ -22,11 +22,8 @@
 """
 from __future__ import annotations
 
-from io import StringIO
-from mimetypes import guess_type
-from optparse import OptionParser
-from os.path import exists, isfile
-from sys import stderr, stdin, stdout
+from os.path import exists
+from sys import stderr, stdin
 from typing import Any
 
 
@@ -47,39 +44,12 @@ def check_target_directory(path: str) -> None:
     return check_target_file(path, kind="directory")
 
 
-encoding_map = {"gzip": "application/x-gzip", "bzip2": "application/x-bzip2"}
-
-
-def get_mimetype(filename: str) -> str | None:
-    if not isfile(filename):
-        return "application/x-directory"
-    mimetype, encoding = guess_type(filename)
-    if encoding is not None:
-        return encoding_map.get(encoding, encoding)
-    if mimetype is not None:
-        return mimetype
-    return "application/octet-stream"
-
-
-def add_option_output(
-    parser: OptionParser,
-    metavar: str = "FILE",
-    complement: str = "",
-) -> None:
-    msg = f"dump the output into {metavar} {complement}"
-    parser.add_option("-o", "--output", metavar=metavar, help=msg)
-
-
-def eprint(*args: Any, **kwargs: Any) -> None:
-    print(*args, file=stderr, **kwargs)
-
-
 def printinfo(*args: Any, **kwargs: Any) -> None:
     indent = kwargs.get("indent", 0)
     if indent:
         stderr.write(" " * indent)
     output = " ".join(str(arg) for arg in args)
-    eprint(output)
+    print(output, file=stderr, **kwargs)
 
 
 def printwarn(*args: Any, **kwargs: Any) -> None:
@@ -88,14 +58,3 @@ def printwarn(*args: Any, **kwargs: Any) -> None:
 
 def printerr(*args: Any, **kwargs: Any) -> None:
     printinfo("Error:", *args, **kwargs)
-
-
-class StdoutWriter(StringIO):
-    """Some proxy to write output to stdout in scripts. Because The zipfile
-    module raises "IOError: [Errno 29] Illegal seek" when writing to stdout
-    directly.
-    """
-
-    def write(self, info: str) -> int:
-        stdout.write(info)
-        return StringIO.write(self, info)

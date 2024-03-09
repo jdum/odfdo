@@ -29,7 +29,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from .element import Element, PropDef, Text, register_element_class, to_str
+from .element import Element, PropDef, Text, register_element_class
+from .utils import to_str
 
 _rsplitter = re.compile("(\n|\t|  +)")
 _rspace = re.compile("^  +$")

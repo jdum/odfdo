@@ -62,6 +62,11 @@ from .paragraph import Paragraph
 from .style import Style
 
 
+def _toc_entry_style_name(level: int) -&gt; str:
+    &#34;&#34;&#34;Return the style name of an entry of the TOC.&#34;&#34;&#34;
+    return f&#34;odfto_toc_level_{level}&#34;
+
+
 class IndexTitle(Element):
     &#34;&#34;&#34;The &#34;text:index-title&#34; element contains the title of an index.
 
@@ -114,8 +119,6 @@ class IndexTitle(Element):
 
 
 IndexTitle._define_attribut_property()
-
-TOC_ENTRY_STYLE_PATTERN = &#34;odfto_toc_level_%s&#34;
 
 
 class TabStopStyle(Element):
@@ -185,7 +188,7 @@ def default_toc_level_style(level: int) -&gt; Style:
     properties.append(tab_stops)
     toc_style_level = Style(
         family=&#34;paragraph&#34;,
-        name=TOC_ENTRY_STYLE_PATTERN % level,
+        name=_toc_entry_style_name(level),
         parent=f&#34;Contents_20_{level}&#34;,
     )
     toc_style_level.append(properties)
@@ -261,8 +264,7 @@ class TOC(Element):
             if protected:
                 self.protected = protected
             if name is None:
-                name = f&#34;{title}1&#34;
-                self.name = name
+                self.name = f&#34;{title}1&#34;
             # Create the source template
             toc_source = self.create_toc_source(
                 title, outline_level, title_style, entry_style
@@ -384,6 +386,24 @@ class TOC(Element):
                 paragraph.style = text_style  # type: ignore
             paragraph.text = title
 
+    @staticmethod
+    def _header_numbering(level_indexes: dict[int, int], level: int) -&gt; str:
+        &#34;&#34;&#34;Return the header hierarchical number (like &#34;1.2.3.&#34;).&#34;&#34;&#34;
+        numbers: list[int] = []
+        # before header level
+        for idx in range(1, level):
+            numbers.append(level_indexes.setdefault(idx, 1))
+        # header level
+        index = level_indexes.get(level, 0) + 1
+        level_indexes[level] = index
+        numbers.append(index)
+        # after header level
+        idx = level + 1
+        while idx in level_indexes:
+            del level_indexes[idx]
+            idx += 1
+        return &#34;.&#34;.join(str(x) for x in numbers) + &#34;.&#34;
+
     def fill(  # noqa: C901
         self,
         document: Document | None = None,
@@ -429,7 +449,7 @@ class TOC(Element):
                 for level in range(1, 11):
                     if (
                         automatic_styles.get_style(
-                            &#34;paragraph&#34;, TOC_ENTRY_STYLE_PATTERN % level
+                            &#34;paragraph&#34;, _toc_entry_style_name(level)
                         )
                         is None
                     ):
@@ -443,25 +463,11 @@ class TOC(Element):
             level = header.get_attribute_integer(&#34;text:outline-level&#34;) or 0
             if level is None or level &gt; outline_level:
                 continue
-            number = []
-            # 1. l &lt; level
-            for idx in range(1, level):
-                index = level_indexes.setdefault(idx, 1)
-                number.append(str(index))
-            # 2. l == level
-            index = level_indexes.setdefault(level, 0) + 1
-            level_indexes[level] = index
-            number.append(str(index))
-            # 3. l &gt; level
-            for idx in range(level + 1, 11):
-                if idx in level_indexes:
-                    del level_indexes[idx]
-            number_str = &#34;.&#34;.join(number) + &#34;.&#34;
+            number_str = self._header_numbering(level_indexes, level)
             # Make the title with &#34;1.2.3. Title&#34; format
-            header_title = f&#34;{number_str} {header}&#34;
-            paragraph = Paragraph(header_title)
+            paragraph = Paragraph(f&#34;{number_str} {header}&#34;)
             if use_default_styles:
-                paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
+                paragraph.style = _toc_entry_style_name(level)
             index_body.append(paragraph)  # type: ignore
 
 
@@ -567,7 +573,7 @@ register_element_class(TOC)</code></pre>
     properties.append(tab_stops)
     toc_style_level = Style(
         family=&#34;paragraph&#34;,
-        name=TOC_ENTRY_STYLE_PATTERN % level,
+        name=_toc_entry_style_name(level),
         parent=f&#34;Contents_20_{level}&#34;,
     )
     toc_style_level.append(properties)
@@ -646,6 +652,8 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -904,6 +912,7 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -947,6 +956,8 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -1079,6 +1090,7 @@ text:protection-key-digest-algorithm, text:style-name, xml:id.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -1193,8 +1205,7 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
             if protected:
                 self.protected = protected
             if name is None:
-                name = f&#34;{title}1&#34;
-                self.name = name
+                self.name = f&#34;{title}1&#34;
             # Create the source template
             toc_source = self.create_toc_source(
                 title, outline_level, title_style, entry_style
@@ -1316,6 +1327,24 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
                 paragraph.style = text_style  # type: ignore
             paragraph.text = title
 
+    @staticmethod
+    def _header_numbering(level_indexes: dict[int, int], level: int) -&gt; str:
+        &#34;&#34;&#34;Return the header hierarchical number (like &#34;1.2.3.&#34;).&#34;&#34;&#34;
+        numbers: list[int] = []
+        # before header level
+        for idx in range(1, level):
+            numbers.append(level_indexes.setdefault(idx, 1))
+        # header level
+        index = level_indexes.get(level, 0) + 1
+        level_indexes[level] = index
+        numbers.append(index)
+        # after header level
+        idx = level + 1
+        while idx in level_indexes:
+            del level_indexes[idx]
+            idx += 1
+        return &#34;.&#34;.join(str(x) for x in numbers) + &#34;.&#34;
+
     def fill(  # noqa: C901
         self,
         document: Document | None = None,
@@ -1361,7 +1390,7 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
                 for level in range(1, 11):
                     if (
                         automatic_styles.get_style(
-                            &#34;paragraph&#34;, TOC_ENTRY_STYLE_PATTERN % level
+                            &#34;paragraph&#34;, _toc_entry_style_name(level)
                         )
                         is None
                     ):
@@ -1375,30 +1404,18 @@ text:protection-key-digest-algorithm, text:style-name and xml:id.</p>
             level = header.get_attribute_integer(&#34;text:outline-level&#34;) or 0
             if level is None or level &gt; outline_level:
                 continue
-            number = []
-            # 1. l &lt; level
-            for idx in range(1, level):
-                index = level_indexes.setdefault(idx, 1)
-                number.append(str(index))
-            # 2. l == level
-            index = level_indexes.setdefault(level, 0) + 1
-            level_indexes[level] = index
-            number.append(str(index))
-            # 3. l &gt; level
-            for idx in range(level + 1, 11):
-                if idx in level_indexes:
-                    del level_indexes[idx]
-            number_str = &#34;.&#34;.join(number) + &#34;.&#34;
+            number_str = self._header_numbering(level_indexes, level)
             # Make the title with &#34;1.2.3. Title&#34; format
-            header_title = f&#34;{number_str} {header}&#34;
-            paragraph = Paragraph(header_title)
+            paragraph = Paragraph(f&#34;{number_str} {header}&#34;)
             if use_default_styles:
-                paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
+                paragraph.style = _toc_entry_style_name(level)
             index_body.append(paragraph)  # type: ignore</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Static methods</h3>
 <dl>
@@ -1655,7 +1672,7 @@ provide one as argument.</p>
             for level in range(1, 11):
                 if (
                     automatic_styles.get_style(
-                        &#34;paragraph&#34;, TOC_ENTRY_STYLE_PATTERN % level
+                        &#34;paragraph&#34;, _toc_entry_style_name(level)
                     )
                     is None
                 ):
@@ -1669,25 +1686,11 @@ provide one as argument.</p>
         level = header.get_attribute_integer(&#34;text:outline-level&#34;) or 0
         if level is None or level &gt; outline_level:
             continue
-        number = []
-        # 1. l &lt; level
-        for idx in range(1, level):
-            index = level_indexes.setdefault(idx, 1)
-            number.append(str(index))
-        # 2. l == level
-        index = level_indexes.setdefault(level, 0) + 1
-        level_indexes[level] = index
-        number.append(str(index))
-        # 3. l &gt; level
-        for idx in range(level + 1, 11):
-            if idx in level_indexes:
-                del level_indexes[idx]
-        number_str = &#34;.&#34;.join(number) + &#34;.&#34;
+        number_str = self._header_numbering(level_indexes, level)
         # Make the title with &#34;1.2.3. Title&#34; format
-        header_title = f&#34;{number_str} {header}&#34;
-        paragraph = Paragraph(header_title)
+        paragraph = Paragraph(f&#34;{number_str} {header}&#34;)
         if use_default_styles:
-            paragraph.style = TOC_ENTRY_STYLE_PATTERN % level
+            paragraph.style = _toc_entry_style_name(level)
         index_body.append(paragraph)  # type: ignore</code></pre>
 </details>
 </dd>
@@ -1856,6 +1859,7 @@ provide one as argument.</p>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -1934,6 +1938,8 @@ Base style for a TOC entryBase style for a TOC entry</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -2234,6 +2240,7 @@ Base style for a TOC entryBase style for a TOC entry</p></div>
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>
@@ -2303,6 +2310,8 @@ Base style for a TOC entryBase style for a TOC entry</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></li>
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -2470,6 +2479,7 @@ def outline_level(self) -&gt; int | None:
 <li><code><a title="odfdo.element.Element.replace" href="element.html#odfdo.element.Element.replace">replace</a></code></li>
 <li><code><a title="odfdo.element.Element.replace_element" href="element.html#odfdo.element.Element.replace_element">replace_element</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="element.html#odfdo.element.Element.search">search</a></code></li>
+<li><code><a title="odfdo.element.Element.serialize" href="element.html#odfdo.element.Element.serialize">serialize</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="element.html#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="element.html#odfdo.element.Element.strip_elements">strip_elements</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_tags" href="element.html#odfdo.element.Element.strip_tags">strip_tags</a></code></li>

@@ -47,8 +47,9 @@ from lxml.etree import (
 
 from .datatype import Boolean, DateTime
 from .utils import (
+    FAMILY_MAPPING,
     FAMILY_ODF_STD,
-    _family_style_tagname,
+    CachedElement,
     make_xpath_query,
     str_to_bytes,
     to_str,
@@ -200,6 +201,13 @@ def _get_lxml_tag_or_name(qname: str) -> str:
     return f"{{{uri}}}{name}"
 
 
+def _family_style_tagname(family: str) -> str:
+    try:
+        return FAMILY_MAPPING[family]
+    except KeyError as e:
+        raise ValueError(f"unknown family: {family}") from e
+
+
 @cache
 def xpath_compile(path: str) -> XPath:
     return XPath(path, namespaces=ODF_NAMESPACES, regexp=False)
@@ -292,7 +300,7 @@ class Text(str):
         return self.__is_tail
 
 
-class Element:
+class Element(CachedElement):
     """Super class of all ODF classes.
 
     Representation of an XML element. Abstraction of the XML library behind.

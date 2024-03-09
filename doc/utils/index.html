@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>odfdo.utils API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>odfdo.utils</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from .cache_map import (
+    delete_item_in_vault,
+    find_odf_idx,
+    insert_item_in_vault,
+    insert_map_once,
+    make_cache_map,
+    set_item_in_vault,
+)
+from .cached_element import CachedElement
+from .coordinates import (
+    alpha_to_digit,
+    convert_coordinates,
+    digit_to_alpha,
+    increment,
+    translate_from_any,
+)
+from .formula import oooc_to_ooow
+from .isiterable import isiterable
+from .str_convert import bytes_to_str, str_to_bytes, to_bytes, to_str
+from .style_constants import (
+    FALSE_FAMILY_MAP_REVERSE,
+    FAMILY_MAPPING,
+    FAMILY_ODF_STD,
+    STYLES_TO_REGISTER,
+    SUBCLASSED_STYLES,
+)
+from .xpath_query import make_xpath_query
+
+__all__ = [
+    &#34;CachedElement&#34;,
+    &#34;FALSE_FAMILY_MAP_REVERSE&#34;,
+    &#34;FAMILY_MAPPING&#34;,
+    &#34;FAMILY_ODF_STD&#34;,
+    &#34;STYLES_TO_REGISTER&#34;,
+    &#34;SUBCLASSED_STYLES&#34;,
+    &#34;alpha_to_digit&#34;,
+    &#34;bytes_to_str&#34;,
+    &#34;convert_coordinates&#34;,
+    &#34;delete_item_in_vault&#34;,
+    &#34;digit_to_alpha&#34;,
+    &#34;find_odf_idx&#34;,
+    &#34;increment&#34;,
+    &#34;insert_item_in_vault&#34;,
+    &#34;insert_map_once&#34;,
+    &#34;isiterable&#34;,
+    &#34;make_cache_map&#34;,
+    &#34;make_xpath_query&#34;,
+    &#34;oooc_to_ooow&#34;,
+    &#34;set_item_in_vault&#34;,
+    &#34;str_to_bytes&#34;,
+    &#34;to_bytes&#34;,
+    &#34;to_str&#34;,
+    &#34;translate_from_any&#34;,
+]</code></pre>
+</details>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="odfdo.utils.cache_map" href="cache_map.html">odfdo.utils.cache_map</a></code></dt>
+<dd>
+<div class="desc"><p>Table class for "table:table" and HeaderRows, Cell, Row, Column,
+NamedRange related classes.</p></div>
+</dd>
+<dt><code class="name"><a title="odfdo.utils.cached_element" href="cached_element.html">odfdo.utils.cached_element</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="odfdo.utils.coordinates" href="coordinates.html">odfdo.utils.coordinates</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="odfdo.utils.formula" href="formula.html">odfdo.utils.formula</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="odfdo.utils.str_convert" href="str_convert.html">odfdo.utils.str_convert</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="odfdo.utils.style_constants" href="style_constants.html">odfdo.utils.style_constants</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="odfdo.utils.xpath_query" href="xpath_query.html">odfdo.utils.xpath_query</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="odfdo.utils.alpha_to_digit"><code class="name flex">
+<span>def <span class="ident">alpha_to_digit</span></span>(<span>alpha: str) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Translates A to 0, B to 1, etc. So "AB" is value 27.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def alpha_to_digit(alpha: str) -&gt; int:
+    &#34;&#34;&#34;Translates A to 0, B to 1, etc. So &#34;AB&#34; is value 27.&#34;&#34;&#34;
+    if isinstance(alpha, int):
+        return alpha
+    if not alpha.isalpha():
+        raise ValueError(f&#39;column name &#34;{alpha}&#34; is malformed&#39;)
+    column = 0
+    for c in alpha.lower():
+        v = ord(c) - ord(&#34;a&#34;) + 1
+        column = column * 26 + v
+    return column - 1</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.bytes_to_str"><code class="name flex">
+<span>def <span class="ident">bytes_to_str</span></span>(<span>text: bytes) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bytes_to_str(text: bytes) -&gt; str:
+    return text.decode(&#34;utf-8&#34;, &#34;ignore&#34;)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.convert_coordinates"><code class="name flex">
+<span>def <span class="ident">convert_coordinates</span></span>(<span>obj: tuple | list | str) ‑> tuple[int | None, ...]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Translates "D3" to (3, 2) or return (1, 2) untouched.
+Translates "A1:B3" to (0,0,1,2)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def convert_coordinates(
+    obj: tuple | list | str,
+) -&gt; tuple[int | None, ...]:
+    &#34;&#34;&#34;Translates &#34;D3&#34; to (3, 2) or return (1, 2) untouched.
+    Translates &#34;A1:B3&#34; to (0,0,1,2)
+    &#34;&#34;&#34;
+    # By (1, 2) ?
+    if isiterable(obj):
+        return tuple(obj)  # type:ignore
+    # Or by &#39;B3&#39; notation ?
+    if not isinstance(obj, str):
+        raise TypeError(f&#39;Bad coordinates type: &#34;{type(obj)}&#34;&#39;)
+    coordinates = []
+    for coord in [x.strip() for x in obj.split(&#34;:&#34;, 1)]:
+        # First &#34;A&#34;
+        alpha = &#34;&#34;
+        for c in coord:
+            if c.isalpha():
+                alpha += c
+            else:
+                break
+        try:
+            column = alpha_to_digit(alpha)
+        except ValueError:
+            # raise ValueError, &#39;coordinates &#34;%s&#34; malformed&#39; % obj
+            # maybe &#39;1:4&#39; table row coordinates
+            column = None
+        coordinates.append(column)
+        # Then &#34;1&#34;
+        try:
+            line = int(coord[len(alpha) :]) - 1
+        except ValueError:
+            # raise ValueError, &#39;coordinates &#34;%s&#34; malformed&#39; % obj
+            # maybe &#39;A:C&#39; row coordinates
+            line = None
+        if line and line &lt;= 0:
+            raise ValueError(f&#39;Coordinates &#34;{obj}&#34; malformed&#39;)
+        coordinates.append(line)
+    return tuple(coordinates)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.delete_item_in_vault"><code class="name flex">
+<span>def <span class="ident">delete_item_in_vault</span></span>(<span>position: int, vault: <a title="odfdo.utils.CachedElement" href="#odfdo.utils.CachedElement">CachedElement</a>, vault_scheme: XPath, vault_map_name: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def delete_item_in_vault(
+    position: int,
+    vault: CachedElement,
+    vault_scheme: XPath,
+    vault_map_name: str,
+) -&gt; None:
+    try:
+        vault_map = getattr(vault, vault_map_name)
+    except Exception as e:
+        raise ValueError from e
+    odf_idx = find_odf_idx(vault_map, position)
+    if odf_idx is None:
+        raise ValueError
+    current_cache = vault_map[odf_idx]
+    cache = vault._indexes[vault_map_name]
+    if odf_idx in cache:
+        current_item = cache[odf_idx]
+    else:
+        current_item = vault._get_element_idx2(vault_scheme, odf_idx)
+    vault._indexes[vault_map_name] = {}
+    if odf_idx &gt; 0:
+        before_cache = vault_map[odf_idx - 1]
+    else:
+        before_cache = -1
+    # current_pos = before_cache + 1
+    current_repeated = current_cache - before_cache
+    new_repeated = current_repeated - 1
+    if new_repeated &gt;= 1:
+        current_item._set_repeated(new_repeated)
+        setattr(
+            vault,
+            vault_map_name,
+            vault_map[:odf_idx] + [(x - 1) for x in vault_map[odf_idx:]],
+        )
+    else:
+        # actual erase
+        vault.delete(current_item)
+        setattr(
+            vault,
+            vault_map_name,
+            vault_map[:odf_idx] + [(x - 1) for x in vault_map[odf_idx + 1 :]],
+        )</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.digit_to_alpha"><code class="name flex">
+<span>def <span class="ident">digit_to_alpha</span></span>(<span>digit: int | str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def digit_to_alpha(digit: int | str) -&gt; str:
+    if isinstance(digit, str) and digit.isalpha():
+        return digit
+    if not isinstance(digit, int):
+        raise TypeError(f&#39;column number &#34;{digit}&#34; is invalid&#39;)
+    digit += 1
+    column = &#34;&#34;
+    while digit:
+        column = chr(65 + ((digit - 1) % 26)) + column
+        digit = (digit - 1) // 26
+    return column</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.find_odf_idx"><code class="name flex">
+<span>def <span class="ident">find_odf_idx</span></span>(<span>cache_map: list, position: int) ‑> int | None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Find odf_idx in the map from the position (col or row).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_odf_idx(cache_map: list, position: int) -&gt; int | None:
+    &#34;&#34;&#34;Find odf_idx in the map from the position (col or row).&#34;&#34;&#34;
+    odf_idx = bisect_left(cache_map, position)
+    if odf_idx &lt; len(cache_map):
+        return odf_idx
+    return None</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.increment"><code class="name flex">
+<span>def <span class="ident">increment</span></span>(<span>value: int, step: int) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def increment(value: int, step: int) -&gt; int:
+    while value &lt; 0:
+        if step == 0:
+            return 0
+        value += step
+    return value</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.insert_item_in_vault"><code class="name flex">
+<span>def <span class="ident">insert_item_in_vault</span></span>(<span>position: int, item: <a title="odfdo.utils.CachedElement" href="#odfdo.utils.CachedElement">CachedElement</a>, vault: <a title="odfdo.utils.CachedElement" href="#odfdo.utils.CachedElement">CachedElement</a>, vault_scheme: XPath, vault_map_name: str) ‑> <a title="odfdo.utils.cached_element.CachedElement" href="cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def insert_item_in_vault(
+    position: int,
+    item: CachedElement,
+    vault: CachedElement,
+    vault_scheme: XPath,
+    vault_map_name: str,
+) -&gt; CachedElement:
+    try:
+        vault_map = getattr(vault, vault_map_name)
+    except Exception as e:
+        raise ValueError from e
+    odf_idx = find_odf_idx(vault_map, position)
+    if odf_idx is None:
+        raise ValueError
+    repeated = item.repeated or 1  # type: ignore
+    current_cache = vault_map[odf_idx]
+    cache = vault._indexes[vault_map_name]
+    if odf_idx in cache:
+        current_item = cache[odf_idx]
+    else:
+        current_item = vault._get_element_idx2(vault_scheme, odf_idx)
+    vault._indexes[vault_map_name] = {}
+    target_idx = vault.index(current_item)
+    if odf_idx &gt; 0:
+        before_cache = vault_map[odf_idx - 1]
+    else:
+        before_cache = -1
+    current_pos = before_cache + 1
+    current_repeated = current_cache - before_cache
+    repeated_before = position - current_pos
+    repeated_after = current_repeated - repeated_before
+    new_item = item.clone
+    if repeated_before &gt;= 1:
+        current_item._set_repeated(repeated_before)
+        vault.insert(new_item, position=target_idx + 1)
+        after_item = current_item.clone
+        after_item._set_repeated(repeated_after)
+        vault.insert(after_item, position=target_idx + 2)
+    else:
+        # only insert new cell
+        vault.insert(new_item, position=target_idx)
+    # update cache
+    if repeated_before &gt;= 1:
+        emap = _erase_map_once(vault_map, odf_idx)
+        emap = insert_map_once(emap, odf_idx, repeated_before)
+        emap = insert_map_once(emap, odf_idx + 1, repeated)
+        setattr(
+            vault, vault_map_name, insert_map_once(emap, odf_idx + 2, repeated_after)
+        )
+    else:
+        setattr(vault, vault_map_name, insert_map_once(vault_map, odf_idx, repeated))
+    return new_item</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.insert_map_once"><code class="name flex">
+<span>def <span class="ident">insert_map_once</span></span>(<span>orig_map: list, odf_idx: int, repeated: int) ‑> list[int]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add an item (cell or row) to the map</p>
+<pre><code>map  --  cache map
+
+odf_idx  --  index in ODF XML
+
+repeated  --  repeated value of item, 1 or more
+</code></pre>
+<p>odf_idx is NOT position (col or row), neither raw XML position, but ODF index</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def insert_map_once(orig_map: list, odf_idx: int, repeated: int) -&gt; list[int]:
+    &#34;&#34;&#34;Add an item (cell or row) to the map
+
+        map  --  cache map
+
+        odf_idx  --  index in ODF XML
+
+        repeated  --  repeated value of item, 1 or more
+
+    odf_idx is NOT position (col or row), neither raw XML position, but ODF index
+    &#34;&#34;&#34;
+    repeated = repeated or 1
+    if odf_idx &gt; len(orig_map):
+        raise IndexError
+    if odf_idx &gt; 0:
+        before = orig_map[odf_idx - 1]
+    else:
+        before = -1
+    juska = before + repeated  # aka max position value for item
+    if odf_idx == len(orig_map):
+        insort(orig_map, juska)
+        return orig_map
+    new_map = orig_map[:odf_idx]
+    new_map.append(juska)
+    new_map.extend([(x + repeated) for x in orig_map[odf_idx:]])
+    return new_map</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.isiterable"><code class="name flex">
+<span>def <span class="ident">isiterable</span></span>(<span>instance: Any) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return True if instance is iterable, but considering str and bytes as not iterable.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def isiterable(instance: Any) -&gt; bool:
+    &#34;&#34;&#34;Return True if instance is iterable, but considering str and bytes as not iterable.&#34;&#34;&#34;
+    if isinstance(instance, (str, bytes)):
+        return False
+    try:
+        iter(instance)
+    except TypeError:
+        return False
+    return True</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.make_cache_map"><code class="name flex">
+<span>def <span class="ident">make_cache_map</span></span>(<span>idx_repeated_seq: list[tuple[int, int]]) ‑> list[int]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Build the initial cache map of the table.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_cache_map(idx_repeated_seq: list[tuple[int, int]]) -&gt; list[int]:
+    &#34;&#34;&#34;Build the initial cache map of the table.&#34;&#34;&#34;
+    cache_amp: list[int] = []
+    for odf_idx, repeated in idx_repeated_seq:
+        cache_amp = insert_map_once(cache_amp, odf_idx, repeated)
+    return cache_amp</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.make_xpath_query"><code class="name flex">
+<span>def <span class="ident">make_xpath_query</span></span>(<span>query_string: str, family: str | None = None, text_style: str | None = None, draw_id: str | None = None, draw_name: str | None = None, draw_style: str | None = None, draw_text_style: str | None = None, table_name: str | None = None, table_style: str | None = None, style_name: str | None = None, display_name: str | None = None, note_class: str | None = None, text_id: str | None = None, text_name: str | None = None, change_id: str | None = None, office_name: str | None = None, office_title: str | None = None, outline_level: str | int | None = None, level: str | int | None = None, page_layout: str | None = None, master_page: str | None = None, parent_style: str | None = None, presentation_class: str | None = None, position: int | None = None, **kwargs: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_xpath_query(  # noqa: C901
+    query_string: str,
+    family: str | None = None,
+    text_style: str | None = None,
+    draw_id: str | None = None,
+    draw_name: str | None = None,
+    draw_style: str | None = None,
+    draw_text_style: str | None = None,
+    table_name: str | None = None,
+    table_style: str | None = None,
+    style_name: str | None = None,
+    display_name: str | None = None,
+    note_class: str | None = None,
+    text_id: str | None = None,
+    text_name: str | None = None,
+    change_id: str | None = None,
+    office_name: str | None = None,
+    office_title: str | None = None,
+    outline_level: str | int | None = None,
+    level: str | int | None = None,
+    page_layout: str | None = None,
+    master_page: str | None = None,
+    parent_style: str | None = None,
+    presentation_class: str | None = None,
+    position: int | None = None,
+    **kwargs: str,
+) -&gt; str:
+    query = [query_string]
+    attributes = kwargs
+    if text_style:
+        attributes[&#34;text:style-name&#34;] = text_style
+    if family and family in FAMILY_ODF_STD:
+        attributes[&#34;style:family&#34;] = family
+    if draw_id:
+        attributes[&#34;draw:id&#34;] = draw_id
+    if draw_name:
+        attributes[&#34;draw:name&#34;] = draw_name
+    if draw_style:
+        attributes[&#34;draw:style-name&#34;] = draw_style
+    if draw_text_style:
+        attributes[&#34;draw:text-style-name&#34;] = draw_text_style
+    if table_name:
+        attributes[&#34;table:name&#34;] = table_name
+    if table_style:
+        attributes[&#34;table:style-name&#34;] = table_style
+    if style_name:
+        attributes[&#34;style:name&#34;] = style_name
+    if display_name:
+        attributes[&#34;style:display-name&#34;] = display_name
+    if note_class:
+        attributes[&#34;text:note-class&#34;] = note_class
+    if text_id:
+        attributes[&#34;text:id&#34;] = text_id
+    if text_name:
+        attributes[&#34;text:name&#34;] = text_name
+    if change_id:
+        attributes[&#34;text:change-id&#34;] = change_id
+    if office_name:
+        attributes[&#34;office:name&#34;] = office_name
+    if office_title:
+        attributes[&#34;office:title&#34;] = office_title
+    if outline_level:
+        attributes[&#34;text:outline-level&#34;] = str(outline_level)
+    if level:
+        attributes[&#34;text:level&#34;] = str(level)
+    if page_layout:
+        attributes[&#34;style:page-layout-name&#34;] = page_layout
+    if master_page:
+        attributes[&#34;draw:master-page-name&#34;] = master_page
+    if parent_style:
+        attributes[&#34;style:parent-style-name&#34;] = parent_style
+    if presentation_class:
+        attributes[&#34;presentation:class&#34;] = presentation_class
+    # Sort attributes for reproducible test cases
+    for qname in sorted(attributes):
+        value = attributes[qname]
+        if value is True:
+            query.append(f&#34;[@{qname}]&#34;)
+        else:
+            query.append(f&#39;[@{qname}=&#34;{value}&#34;]&#39;)
+    query_str = &#34;&#34;.join(query)
+    if position is not None:
+        # A position argument that mimics the behaviour of a python&#39;s list
+        if position &gt;= 0:
+            position_str = str(position + 1)
+        elif position == -1:
+            position_str = &#34;last()&#34;
+        else:
+            position_str = f&#34;last()-{abs(position) - 1}&#34;
+        query_str = f&#34;({query_str})[{position_str}]&#34;
+    # print(query)
+    return query_str</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.oooc_to_ooow"><code class="name flex">
+<span>def <span class="ident">oooc_to_ooow</span></span>(<span>formula: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert (proprietary) formula from calc format to writer format.</p>
+<h2 id="arguments">Arguments</h2>
+<p>formula &ndash; str</p>
+<p>Return: str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def oooc_to_ooow(formula: str) -&gt; str:
+    &#34;&#34;&#34;Convert (proprietary) formula from calc format to writer format.
+
+    Arguments:
+
+        formula -- str
+
+    Return: str
+    &#34;&#34;&#34;
+    prefix, formula = formula.split(&#34;:=&#34;, 1)
+    # assert &#34;oooc&#34; in prefix
+    # Convert cell addresses
+    formula = formula.replace(&#34;[.&#34;, &#34;&lt;&#34;).replace(&#34;:.&#34;, &#34;:&#34;).replace(&#34;]&#34;, &#34;&gt;&#34;)
+    # Convert functions
+    formula = formula.replace(&#34;SUM(&#34;, &#34;sum &#34;).replace(&#34;)&#34;, &#34;&#34;)
+    return f&#34;ooow:{formula}&#34;</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.set_item_in_vault"><code class="name flex">
+<span>def <span class="ident">set_item_in_vault</span></span>(<span>position: int, item: <a title="odfdo.utils.CachedElement" href="#odfdo.utils.CachedElement">CachedElement</a>, vault: <a title="odfdo.utils.CachedElement" href="#odfdo.utils.CachedElement">CachedElement</a>, vault_scheme: XPath, vault_map_name: str, clone: bool = True) ‑> <a title="odfdo.utils.cached_element.CachedElement" href="cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the item (cell, row) in its vault (row, table), updating the
+cache map.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_item_in_vault(  # noqa: C901
+    position: int,
+    item: CachedElement,
+    vault: CachedElement,
+    vault_scheme: XPath,
+    vault_map_name: str,
+    clone: bool = True,
+) -&gt; CachedElement:
+    &#34;&#34;&#34;Set the item (cell, row) in its vault (row, table), updating the
+    cache map.
+    &#34;&#34;&#34;
+    try:
+        vault_map = getattr(vault, vault_map_name)
+    except Exception as e:
+        raise ValueError from e
+    odf_idx = find_odf_idx(vault_map, position)
+    if odf_idx is None:
+        raise ValueError
+    repeated = item.repeated or 1  # type: ignore
+    current_cache = vault_map[odf_idx]
+    cache = vault._indexes[vault_map_name]
+    if odf_idx in cache:
+        current_item = cache[odf_idx]
+    else:
+        current_item = vault._get_element_idx2(vault_scheme, odf_idx)
+    vault._indexes[vault_map_name] = {}
+    target_idx = vault.index(current_item)
+    if odf_idx &gt; 0:
+        before_cache = vault_map[odf_idx - 1]
+    else:
+        before_cache = -1
+    current_pos = before_cache + 1
+    current_repeated = current_cache - before_cache
+    repeated_before = position - current_pos
+    repeated_after = current_repeated - repeated_before - repeated
+    if repeated_before &gt;= 1:
+        # Update repetition
+        current_item._set_repeated(repeated_before)
+        target_idx += 1
+    else:
+        # Replacing the first occurence
+        vault.delete(current_item)
+    # Insert new element
+    if clone:
+        new_item = item.clone
+    else:
+        new_item = item
+    vault.insert(new_item, position=target_idx)
+    # Insert the remaining repetitions
+    if repeated_after &gt;= 1:
+        after_item = current_item.clone
+        after_item._set_repeated(repeated_after)
+        vault.insert(after_item, position=target_idx + 1)
+    # setting a repeated item !
+    if repeated_after &lt; 0:
+        # deleting some overlapped items
+        deleting = repeated_after
+        while deleting &lt; 0:
+            delete_item = vault._get_element_idx2(vault_scheme, target_idx + 1)
+            if delete_item is None:
+                break
+            is_repeated = delete_item.repeated or 1  # type: ignore
+            is_repeated += deleting
+            if is_repeated &gt; 1:
+                delete_item._set_repeated(is_repeated)  # type: ignore
+            else:
+                vault.delete(delete_item)
+            deleting = is_repeated
+    # update cache
+    # remove existing
+    idx = odf_idx
+    emap = _erase_map_once(vault_map, idx)
+    # add before if any:
+    if repeated_before &gt;= 1:
+        emap = insert_map_once(emap, idx, repeated_before)
+        idx += 1
+    # add our slot
+    emap = insert_map_once(emap, idx, repeated)
+    # add after if any::
+    if repeated_after &gt;= 1:
+        idx += 1
+        emap = insert_map_once(emap, idx, repeated_after)
+    if repeated_after &lt; 0:
+        idx += 1
+        while repeated_after &lt; 0:
+            if idx &lt; len(emap):
+                emap = _erase_map_once(emap, idx)
+            repeated_after += 1
+    setattr(vault, vault_map_name, emap)
+    return new_item</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.str_to_bytes"><code class="name flex">
+<span>def <span class="ident">str_to_bytes</span></span>(<span>text: str) ‑> bytes</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def str_to_bytes(text: str) -&gt; bytes:
+    return text.encode(&#34;utf-8&#34;, &#34;replace&#34;)</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.to_bytes"><code class="name flex">
+<span>def <span class="ident">to_bytes</span></span>(<span>value: Any) ‑> Any</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_bytes(value: Any) -&gt; Any:
+    if isinstance(value, str):
+        return value.encode(&#34;utf-8&#34;)
+    return value</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.to_str"><code class="name flex">
+<span>def <span class="ident">to_str</span></span>(<span>value: Any) ‑> Any</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_str(value: Any) -&gt; Any:
+    if isinstance(value, bytes):
+        return value.decode(&#34;utf-8&#34;)
+    return value</code></pre>
+</details>
+</dd>
+<dt id="odfdo.utils.translate_from_any"><code class="name flex">
+<span>def <span class="ident">translate_from_any</span></span>(<span>x: str | int, length: int, idx: int) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def translate_from_any(x: str | int, length: int, idx: int) -&gt; int:
+    if isinstance(x, str):
+        value_int = convert_coordinates(x)[idx]
+        if value_int is None:
+            raise TypeError(f&#34;Wrong value: {x!r}&#34;)
+    elif isinstance(x, int):
+        value_int = x
+    else:
+        raise TypeError(f&#34;Wrong value: {x!r}&#34;)
+    if value_int &lt; 0:
+        return increment(value_int, length)
+    return value_int</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="odfdo.utils.CachedElement"><code class="flex name class">
+<span>class <span class="ident">CachedElement</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Helper class that provides a standard way to create an ABC using
+inheritance.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CachedElement(ABC):
+    _caching: bool = False</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="odfdo.element.Element" href="../element.html#odfdo.element.Element">Element</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="odfdo" href="../index.html">odfdo</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="odfdo.utils.cache_map" href="cache_map.html">odfdo.utils.cache_map</a></code></li>
+<li><code><a title="odfdo.utils.cached_element" href="cached_element.html">odfdo.utils.cached_element</a></code></li>
+<li><code><a title="odfdo.utils.coordinates" href="coordinates.html">odfdo.utils.coordinates</a></code></li>
+<li><code><a title="odfdo.utils.formula" href="formula.html">odfdo.utils.formula</a></code></li>
+<li><code><a title="odfdo.utils.str_convert" href="str_convert.html">odfdo.utils.str_convert</a></code></li>
+<li><code><a title="odfdo.utils.style_constants" href="style_constants.html">odfdo.utils.style_constants</a></code></li>
+<li><code><a title="odfdo.utils.xpath_query" href="xpath_query.html">odfdo.utils.xpath_query</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="odfdo.utils.alpha_to_digit" href="#odfdo.utils.alpha_to_digit">alpha_to_digit</a></code></li>
+<li><code><a title="odfdo.utils.bytes_to_str" href="#odfdo.utils.bytes_to_str">bytes_to_str</a></code></li>
+<li><code><a title="odfdo.utils.convert_coordinates" href="#odfdo.utils.convert_coordinates">convert_coordinates</a></code></li>
+<li><code><a title="odfdo.utils.delete_item_in_vault" href="#odfdo.utils.delete_item_in_vault">delete_item_in_vault</a></code></li>
+<li><code><a title="odfdo.utils.digit_to_alpha" href="#odfdo.utils.digit_to_alpha">digit_to_alpha</a></code></li>
+<li><code><a title="odfdo.utils.find_odf_idx" href="#odfdo.utils.find_odf_idx">find_odf_idx</a></code></li>
+<li><code><a title="odfdo.utils.increment" href="#odfdo.utils.increment">increment</a></code></li>
+<li><code><a title="odfdo.utils.insert_item_in_vault" href="#odfdo.utils.insert_item_in_vault">insert_item_in_vault</a></code></li>
+<li><code><a title="odfdo.utils.insert_map_once" href="#odfdo.utils.insert_map_once">insert_map_once</a></code></li>
+<li><code><a title="odfdo.utils.isiterable" href="#odfdo.utils.isiterable">isiterable</a></code></li>
+<li><code><a title="odfdo.utils.make_cache_map" href="#odfdo.utils.make_cache_map">make_cache_map</a></code></li>
+<li><code><a title="odfdo.utils.make_xpath_query" href="#odfdo.utils.make_xpath_query">make_xpath_query</a></code></li>
+<li><code><a title="odfdo.utils.oooc_to_ooow" href="#odfdo.utils.oooc_to_ooow">oooc_to_ooow</a></code></li>
+<li><code><a title="odfdo.utils.set_item_in_vault" href="#odfdo.utils.set_item_in_vault">set_item_in_vault</a></code></li>
+<li><code><a title="odfdo.utils.str_to_bytes" href="#odfdo.utils.str_to_bytes">str_to_bytes</a></code></li>
+<li><code><a title="odfdo.utils.to_bytes" href="#odfdo.utils.to_bytes">to_bytes</a></code></li>
+<li><code><a title="odfdo.utils.to_str" href="#odfdo.utils.to_str">to_str</a></code></li>
+<li><code><a title="odfdo.utils.translate_from_any" href="#odfdo.utils.translate_from_any">translate_from_any</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="odfdo.utils.CachedElement" href="#odfdo.utils.CachedElement">CachedElement</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

@@ -56,12 +56,11 @@ from __future__ import annotations
 import contextlib
 import re
 import sys
-
-# from icecream import ic
 from collections.abc import Callable, Iterable
 from copy import deepcopy
 from datetime import datetime, timedelta
 from decimal import Decimal
+from functools import cache
 from re import search
 from typing import Any, NamedTuple
 
@@ -77,8 +76,9 @@ from lxml.etree import (
 
 from .datatype import Boolean, DateTime
 from .utils import (
+    FAMILY_MAPPING,
     FAMILY_ODF_STD,
-    _family_style_tagname,
+    CachedElement,
     make_xpath_query,
     str_to_bytes,
     to_str,
@@ -132,10 +132,6 @@ LAST_CHILD = 1
 NEXT_SIBLING = 2
 PREV_SIBLING = 3
 STOPMARKER = 5
-
-ns_stripper = re.compile(r&#39; xmlns:\w*=&#34;[\w:\-\/\.#]*&#34;&#39;)
-
-__xpath_query_cache: dict[str, XPath] = {}
 
 # An empty XML document with all namespaces declared
 NAMESPACES_XML = b&#34;&#34;&#34;&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;
@@ -234,22 +230,22 @@ def _get_lxml_tag_or_name(qname: str) -&gt; str:
     return f&#34;{{{uri}}}{name}&#34;
 
 
-def _xpath_compile(path: str) -&gt; XPath:
+def _family_style_tagname(family: str) -&gt; str:
+    try:
+        return FAMILY_MAPPING[family]
+    except KeyError as e:
+        raise ValueError(f&#34;unknown family: {family}&#34;) from e
+
+
+@cache
+def xpath_compile(path: str) -&gt; XPath:
     return XPath(path, namespaces=ODF_NAMESPACES, regexp=False)
 
 
-def _find_query_in_cache(query: str) -&gt; XPath:
-    xpath = __xpath_query_cache.get(query)
-    if xpath is None:
-        xpath = _xpath_compile(query)
-        __xpath_query_cache[query] = xpath
-    return xpath
-
-
-_xpath_text = _find_query_in_cache(&#34;//text()&#34;)  #  descendant and self
-_xpath_text_descendant = _find_query_in_cache(&#34;descendant::text()&#34;)
-_xpath_text_main = _find_query_in_cache(&#34;//*[not (parent::office:annotation)]/text()&#34;)
-_xpath_text_main_descendant = _find_query_in_cache(
+_xpath_text = xpath_compile(&#34;//text()&#34;)  #  descendant and self
+_xpath_text_descendant = xpath_compile(&#34;descendant::text()&#34;)
+_xpath_text_main = xpath_compile(&#34;//*[not (parent::office:annotation)]/text()&#34;)
+_xpath_text_main_descendant = xpath_compile(
     &#34;descendant::text()[not (parent::office:annotation)]&#34;
 )
 
@@ -333,7 +329,7 @@ class Text(str):
         return self.__is_tail
 
 
-class Element:
+class Element(CachedElement):
     &#34;&#34;&#34;Super class of all ODF classes.
 
     Representation of an XML element. Abstraction of the XML library behind.
@@ -828,7 +824,7 @@ class Element:
         cache: tuple | None = None
         element = self.__element
         if isinstance(xpath_query, str):
-            new_xpath_query = _find_query_in_cache(xpath_query)
+            new_xpath_query = xpath_compile(xpath_query)
             result = new_xpath_query(element)
         else:
             result = xpath_query(element)
@@ -1221,7 +1217,7 @@ class Element:
                         tail = current.tail
                         if tail:
                             # got a tail =&gt; the parent should be either t:p or t:h
-                            target.text = tail
+                            target.text = tail  # type: ignore
                         current, target = current._get_successor(target)  # type: ignore
                         state = 1
                         continue
@@ -1231,7 +1227,7 @@ class Element:
                         new_target.delete(child)
                     new_target.text = &#34;&#34;
                     new_target.tail = &#34;&#34;
-                    target.append(new_target)
+                    target.append(new_target)  # type: ignore
                     target = new_target
                     current = current.children[0]
                     continue
@@ -1254,12 +1250,12 @@ class Element:
                         new_target.delete(child)
                     new_target.text = &#34;&#34;
                     new_target.tail = &#34;&#34;
-                    target.append(new_target)
+                    target.append(new_target)  # type: ignore
                     target = new_target
                     current = current.children[0]
                     continue
                 # collect
-                target.append(current.clone)
+                target.append(current.clone)  # type: ignore
                 current, target = current._get_successor(target)  # type: ignore
                 continue
         # Now resu should be the &#34;parent&#34; of inserted parts
@@ -1608,11 +1604,11 @@ class Element:
         Element or Text instances translated from the nodes found.
         &#34;&#34;&#34;
         element = self.__element
-        xpath_instance = _find_query_in_cache(xpath_query)
+        xpath_instance = xpath_compile(xpath_query)
         elements = xpath_instance(element)
         result: list[Element | Text] = []
         if hasattr(elements, &#34;__iter__&#34;):
-            for obj in elements:
+            for obj in elements:  # type: ignore
                 if isinstance(obj, (_ElementStringResult, _ElementUnicodeResult)):
                     result.append(Text(obj))
                 elif isinstance(obj, _Element):
@@ -1650,27 +1646,22 @@ class Element:
         # slow data = tostring(self.__element, encoding=&#39;unicode&#39;)
         # return self.from_tag(data)
 
-    def serialize(self, pretty: bool = False, with_ns: bool = False) -&gt; str:
-        # This copy bypasses serialization side-effects in lxml
-        native = deepcopy(self.__element)
-        data = tostring(
-            native, with_tail=False, pretty_print=pretty, encoding=&#34;unicode&#34;
-        )
-        if not with_ns:
-            # Remove namespaces
-            data = ns_stripper.sub(&#34;&#34;, data)
-        return data
+    @staticmethod
+    def _strip_namespaces(data: str) -&gt; str:
+        &#34;&#34;&#34;Remove xmlns:* fields from serialized XML.&#34;&#34;&#34;
+        return re.sub(r&#39; xmlns:\w*=&#34;[\w:\-\/\.#]*&#34;&#39;, &#34;&#34;, data)
 
-    def serialize2(self, pretty: bool = False, with_ns: bool = False) -&gt; str:
+    def serialize(self, pretty: bool = False, with_ns: bool = False) -&gt; str:
+        &#34;&#34;&#34;Return text serialization of XML element.&#34;&#34;&#34;
         # This copy bypasses serialization side-effects in lxml
         native = deepcopy(self.__element)
         data = tostring(
             native, with_tail=False, pretty_print=pretty, encoding=&#34;unicode&#34;
         )
-        if not with_ns:
-            # Remove namespaces
-            data = ns_stripper.sub(&#34;&#34;, data)
-        return data + str(len(data))
+        if with_ns:
+            return data
+        # Remove namespaces
+        return self._strip_namespaces(data)
 
     # Element helpers usable from any context
 
@@ -2412,7 +2403,7 @@ class Element:
 
         Return: list of unique str
         &#34;&#34;&#34;
-        name_xpath_query = _find_query_in_cache(&#34;//@office:name&#34;)
+        name_xpath_query = xpath_compile(&#34;//@office:name&#34;)
         response = name_xpath_query(self.__element)
         if not isinstance(response, list):
             return []
@@ -3553,6 +3544,20 @@ specialized style classes.</p>
         _register_element_class(cls, qname)</code></pre>
 </details>
 </dd>
+<dt id="odfdo.element.xpath_compile"><code class="name flex">
+<span>def <span class="ident">xpath_compile</span></span>(<span>path: str) ‑> lxml.etree.XPath</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@cache
+def xpath_compile(path: str) -&gt; XPath:
+    return XPath(path, namespaces=ODF_NAMESPACES, regexp=False)</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -3569,7 +3574,7 @@ specialized style classes.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Element:
+<pre><code class="python">class Element(CachedElement):
     &#34;&#34;&#34;Super class of all ODF classes.
 
     Representation of an XML element. Abstraction of the XML library behind.
@@ -4064,7 +4069,7 @@ specialized style classes.</p>
         cache: tuple | None = None
         element = self.__element
         if isinstance(xpath_query, str):
-            new_xpath_query = _find_query_in_cache(xpath_query)
+            new_xpath_query = xpath_compile(xpath_query)
             result = new_xpath_query(element)
         else:
             result = xpath_query(element)
@@ -4457,7 +4462,7 @@ specialized style classes.</p>
                         tail = current.tail
                         if tail:
                             # got a tail =&gt; the parent should be either t:p or t:h
-                            target.text = tail
+                            target.text = tail  # type: ignore
                         current, target = current._get_successor(target)  # type: ignore
                         state = 1
                         continue
@@ -4467,7 +4472,7 @@ specialized style classes.</p>
                         new_target.delete(child)
                     new_target.text = &#34;&#34;
                     new_target.tail = &#34;&#34;
-                    target.append(new_target)
+                    target.append(new_target)  # type: ignore
                     target = new_target
                     current = current.children[0]
                     continue
@@ -4490,12 +4495,12 @@ specialized style classes.</p>
                         new_target.delete(child)
                     new_target.text = &#34;&#34;
                     new_target.tail = &#34;&#34;
-                    target.append(new_target)
+                    target.append(new_target)  # type: ignore
                     target = new_target
                     current = current.children[0]
                     continue
                 # collect
-                target.append(current.clone)
+                target.append(current.clone)  # type: ignore
                 current, target = current._get_successor(target)  # type: ignore
                 continue
         # Now resu should be the &#34;parent&#34; of inserted parts
@@ -4844,11 +4849,11 @@ specialized style classes.</p>
         Element or Text instances translated from the nodes found.
         &#34;&#34;&#34;
         element = self.__element
-        xpath_instance = _find_query_in_cache(xpath_query)
+        xpath_instance = xpath_compile(xpath_query)
         elements = xpath_instance(element)
         result: list[Element | Text] = []
         if hasattr(elements, &#34;__iter__&#34;):
-            for obj in elements:
+            for obj in elements:  # type: ignore
                 if isinstance(obj, (_ElementStringResult, _ElementUnicodeResult)):
                     result.append(Text(obj))
                 elif isinstance(obj, _Element):
@@ -4886,27 +4891,22 @@ specialized style classes.</p>
         # slow data = tostring(self.__element, encoding=&#39;unicode&#39;)
         # return self.from_tag(data)
 
-    def serialize(self, pretty: bool = False, with_ns: bool = False) -&gt; str:
-        # This copy bypasses serialization side-effects in lxml
-        native = deepcopy(self.__element)
-        data = tostring(
-            native, with_tail=False, pretty_print=pretty, encoding=&#34;unicode&#34;
-        )
-        if not with_ns:
-            # Remove namespaces
-            data = ns_stripper.sub(&#34;&#34;, data)
-        return data
+    @staticmethod
+    def _strip_namespaces(data: str) -&gt; str:
+        &#34;&#34;&#34;Remove xmlns:* fields from serialized XML.&#34;&#34;&#34;
+        return re.sub(r&#39; xmlns:\w*=&#34;[\w:\-\/\.#]*&#34;&#39;, &#34;&#34;, data)
 
-    def serialize2(self, pretty: bool = False, with_ns: bool = False) -&gt; str:
+    def serialize(self, pretty: bool = False, with_ns: bool = False) -&gt; str:
+        &#34;&#34;&#34;Return text serialization of XML element.&#34;&#34;&#34;
         # This copy bypasses serialization side-effects in lxml
         native = deepcopy(self.__element)
         data = tostring(
             native, with_tail=False, pretty_print=pretty, encoding=&#34;unicode&#34;
         )
-        if not with_ns:
-            # Remove namespaces
-            data = ns_stripper.sub(&#34;&#34;, data)
-        return data + str(len(data))
+        if with_ns:
+            return data
+        # Remove namespaces
+        return self._strip_namespaces(data)
 
     # Element helpers usable from any context
 
@@ -5648,7 +5648,7 @@ specialized style classes.</p>
 
         Return: list of unique str
         &#34;&#34;&#34;
-        name_xpath_query = _find_query_in_cache(&#34;//@office:name&#34;)
+        name_xpath_query = xpath_compile(&#34;//@office:name&#34;)
         response = name_xpath_query(self.__element)
         if not isinstance(response, list):
             return []
@@ -6708,6 +6708,11 @@ specialized style classes.</p>
             elements = filtered
         return elements</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
+<li>abc.ABC</li>
+</ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
 <li><a title="odfdo.bookmark.Bookmark" href="bookmark.html#odfdo.bookmark.Bookmark">Bookmark</a></li>
@@ -6716,6 +6721,7 @@ specialized style classes.</p>
 <li><a title="odfdo.draw_page.DrawPage" href="draw_page.html#odfdo.draw_page.DrawPage">DrawPage</a></li>
 <li><a title="odfdo.element_typed.ElementTyped" href="element_typed.html#odfdo.element_typed.ElementTyped">ElementTyped</a></li>
 <li><a title="odfdo.frame.Frame" href="frame.html#odfdo.frame.Frame">Frame</a></li>
+<li><a title="odfdo.header_rows.HeaderRows" href="header_rows.html#odfdo.header_rows.HeaderRows">HeaderRows</a></li>
 <li><a title="odfdo.image.DrawImage" href="image.html#odfdo.image.DrawImage">DrawImage</a></li>
 <li><a title="odfdo.list.List" href="list.html#odfdo.list.List">List</a></li>
 <li><a title="odfdo.list.ListItem" href="list.html#odfdo.list.ListItem">ListItem</a></li>
@@ -6730,6 +6736,7 @@ specialized style classes.</p>
 <li><a title="odfdo.reference.ReferenceMark" href="reference.html#odfdo.reference.ReferenceMark">ReferenceMark</a></li>
 <li><a title="odfdo.reference.ReferenceMarkEnd" href="reference.html#odfdo.reference.ReferenceMarkEnd">ReferenceMarkEnd</a></li>
 <li><a title="odfdo.reference.ReferenceMarkStart" href="reference.html#odfdo.reference.ReferenceMarkStart">ReferenceMarkStart</a></li>
+<li><a title="odfdo.row.Row" href="row.html#odfdo.row.Row">Row</a></li>
 <li><a title="odfdo.section.Section" href="section.html#odfdo.section.Section">Section</a></li>
 <li><a title="odfdo.shapes.DrawGroup" href="shapes.html#odfdo.shapes.DrawGroup">DrawGroup</a></li>
 <li><a title="odfdo.shapes.ShapeBase" href="shapes.html#odfdo.shapes.ShapeBase">ShapeBase</a></li>
@@ -6738,9 +6745,7 @@ specialized style classes.</p>
 <li><a title="odfdo.smil.AnimTransFilter" href="smil.html#odfdo.smil.AnimTransFilter">AnimTransFilter</a></li>
 <li><a title="odfdo.style.Style" href="style.html#odfdo.style.Style">Style</a></li>
 <li><a title="odfdo.table.Column" href="table.html#odfdo.table.Column">Column</a></li>
-<li><a title="odfdo.table.HeaderRows" href="table.html#odfdo.table.HeaderRows">HeaderRows</a></li>
 <li><a title="odfdo.table.NamedRange" href="table.html#odfdo.table.NamedRange">NamedRange</a></li>
-<li><a title="odfdo.table.Row" href="table.html#odfdo.table.Row">Row</a></li>
 <li><a title="odfdo.table.RowGroup" href="table.html#odfdo.table.RowGroup">RowGroup</a></li>
 <li><a title="odfdo.table.Table" href="table.html#odfdo.table.Table">Table</a></li>
 <li><a title="odfdo.toc.IndexTitle" href="toc.html#odfdo.toc.IndexTitle">IndexTitle</a></li>
@@ -8331,7 +8336,7 @@ changes list.</p></div>
     cache: tuple | None = None
     element = self.__element
     if isinstance(xpath_query, str):
-        new_xpath_query = _find_query_in_cache(xpath_query)
+        new_xpath_query = xpath_compile(xpath_query)
         result = new_xpath_query(element)
     else:
         result = xpath_query(element)
@@ -8935,7 +8940,7 @@ changes list.</p></div>
 
     Return: list of unique str
     &#34;&#34;&#34;
-    name_xpath_query = _find_query_in_cache(&#34;//@office:name&#34;)
+    name_xpath_query = xpath_compile(&#34;//@office:name&#34;)
     response = name_xpath_query(self.__element)
     if not isinstance(response, list):
         return []
@@ -10534,42 +10539,22 @@ the element, or None if not found.</p>
 <span>def <span class="ident">serialize</span></span>(<span>self, pretty: bool = False, with_ns: bool = False) ‑> str</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Return text serialization of XML element.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def serialize(self, pretty: bool = False, with_ns: bool = False) -&gt; str:
+    &#34;&#34;&#34;Return text serialization of XML element.&#34;&#34;&#34;
     # This copy bypasses serialization side-effects in lxml
     native = deepcopy(self.__element)
     data = tostring(
         native, with_tail=False, pretty_print=pretty, encoding=&#34;unicode&#34;
     )
-    if not with_ns:
-        # Remove namespaces
-        data = ns_stripper.sub(&#34;&#34;, data)
-    return data</code></pre>
-</details>
-</dd>
-<dt id="odfdo.element.Element.serialize2"><code class="name flex">
-<span>def <span class="ident">serialize2</span></span>(<span>self, pretty: bool = False, with_ns: bool = False) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def serialize2(self, pretty: bool = False, with_ns: bool = False) -&gt; str:
-    # This copy bypasses serialization side-effects in lxml
-    native = deepcopy(self.__element)
-    data = tostring(
-        native, with_tail=False, pretty_print=pretty, encoding=&#34;unicode&#34;
-    )
-    if not with_ns:
-        # Remove namespaces
-        data = ns_stripper.sub(&#34;&#34;, data)
-    return data + str(len(data))</code></pre>
+    if with_ns:
+        return data
+    # Remove namespaces
+    return self._strip_namespaces(data)</code></pre>
 </details>
 </dd>
 <dt id="odfdo.element.Element.set_attribute"><code class="name flex">
@@ -10729,11 +10714,11 @@ Element or Text instances translated from the nodes found.</p></div>
     Element or Text instances translated from the nodes found.
     &#34;&#34;&#34;
     element = self.__element
-    xpath_instance = _find_query_in_cache(xpath_query)
+    xpath_instance = xpath_compile(xpath_query)
     elements = xpath_instance(element)
     result: list[Element | Text] = []
     if hasattr(elements, &#34;__iter__&#34;):
-        for obj in elements:
+        for obj in elements:  # type: ignore
             if isinstance(obj, (_ElementStringResult, _ElementUnicodeResult)):
                 result.append(Text(obj))
             elif isinstance(obj, _Element):
@@ -10893,6 +10878,7 @@ def parent(self) -&gt; Element | None:
 <ul class="">
 <li><code><a title="odfdo.element.register_element_class" href="#odfdo.element.register_element_class">register_element_class</a></code></li>
 <li><code><a title="odfdo.element.register_element_class_list" href="#odfdo.element.register_element_class_list">register_element_class_list</a></code></li>
+<li><code><a title="odfdo.element.xpath_compile" href="#odfdo.element.xpath_compile">xpath_compile</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
@@ -11018,7 +11004,6 @@ def parent(self) -&gt; Element | None:
 <li><code><a title="odfdo.element.Element.root" href="#odfdo.element.Element.root">root</a></code></li>
 <li><code><a title="odfdo.element.Element.search" href="#odfdo.element.Element.search">search</a></code></li>
 <li><code><a title="odfdo.element.Element.serialize" href="#odfdo.element.Element.serialize">serialize</a></code></li>
-<li><code><a title="odfdo.element.Element.serialize2" href="#odfdo.element.Element.serialize2">serialize2</a></code></li>
 <li><code><a title="odfdo.element.Element.set_attribute" href="#odfdo.element.Element.set_attribute">set_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.set_style_attribute" href="#odfdo.element.Element.set_style_attribute">set_style_attribute</a></code></li>
 <li><code><a title="odfdo.element.Element.strip_elements" href="#odfdo.element.Element.strip_elements">strip_elements</a></code></li>

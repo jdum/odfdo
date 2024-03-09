@@ -26,7 +26,7 @@ from collections.abc import Iterable
 
 import pytest
 
-from odfdo.table import Cell
+from odfdo.cell import Cell
 
 EURO = "€"
 

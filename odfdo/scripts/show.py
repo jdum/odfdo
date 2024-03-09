@@ -26,7 +26,7 @@ from pathlib import Path
 from shutil import rmtree
 
 from odfdo import Document, __version__
-from odfdo.scriptutils import add_option_output, check_target_directory, printerr
+from odfdo.scriptutils import check_target_directory, printerr
 
 
 def clean_filename(name: str) -> str:
@@ -171,10 +171,14 @@ def main() -> None:
         "--rst",
         action="store_true",
         default=False,
-        help="Dump the content file with a reST syntax",
+        help="dump the content file with a reST syntax",
     )
-    # --output
-    add_option_output(parser, metavar="DIR")
+    parser.add_option(
+        "-o",
+        "--output",
+        metavar="DIR",
+        help="dump the output into DIR",
+    )
     # Parse !
     options, args = parser.parse_args()
     # Container

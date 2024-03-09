@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>odfdo.section API documentation</title>
-<meta name="description" content="Section class for &#34;text:section&#34;." />
+<title>odfdo.header_rows API documentation</title>
+<meta name="description" content="Table class for HeaderRows." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,16 +19,16 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>odfdo.section</code></h1>
+<h1 class="title">Module <code>odfdo.header_rows</code></h1>
 </header>
 <section id="section-intro">
-<p>Section class for "text:section".</p>
+<p>Table class for HeaderRows.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python"># Copyright 2018-2024 Jérôme Dumonteil
-# Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
+# Copyright (c) 2009-2012 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
 # you may not use this file except in compliance with the License.
@@ -46,55 +46,23 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-# Authors: Hervé Cauwelier &lt;herve@itaapy.com&gt;
-#          David Versmisse &lt;david.versmisse@itaapy.com&gt;
-&#34;&#34;&#34;Section class for &#34;text:section&#34;.
+# Authors: David Versmisse &lt;david.versmisse@itaapy.com&gt;
+#          Hervé Cauwelier &lt;herve@itaapy.com&gt;
+#          Romain Gauthier &lt;romain@itaapy.com&gt;
+#          Jerome Dumonteil &lt;jerome.dumonteil@itaapy.com&gt;
+&#34;&#34;&#34;Table class for HeaderRows.
 &#34;&#34;&#34;
 from __future__ import annotations
 
-from typing import Any
-
-from .element import Element, PropDef, register_element_class
+from .element import Element, register_element_class
 
 
-class Section(Element):
-    &#34;&#34;&#34;ODF section &#34;text:section&#34;
-
-    Arguments:
-
-        style -- str
-
-        name -- str
-    &#34;&#34;&#34;
-
-    _tag = &#34;text:section&#34;
-    _properties = (
-        PropDef(&#34;style&#34;, &#34;text:style-name&#34;),
-        PropDef(&#34;name&#34;, &#34;text:name&#34;),
-    )
-
-    def __init__(
-        self,
-        style: str | None = None,
-        name: str | None = None,
-        **kwargs: Any,
-    ) -&gt; None:
-        super().__init__(**kwargs)
-        if self._do_init:
-            if style:
-                self.style = style
-            if name:
-                self.name = name
-
-    def get_formatted_text(self, context: dict | None = None) -&gt; str:
-        result = [element.get_formatted_text(context) for element in self.children]
-        result.append(&#34;\n&#34;)
-        return &#34;&#34;.join(result)
+class HeaderRows(Element):
+    _tag = &#34;table:table-header-rows&#34;
+    _caching = True
 
 
-Section._define_attribut_property()
-
-register_element_class(Section)</code></pre>
+register_element_class(HeaderRows)</code></pre>
 </details>
 </section>
 <section>
@@ -106,52 +74,20 @@ register_element_class(Section)</code></pre>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="odfdo.section.Section"><code class="flex name class">
-<span>class <span class="ident">Section</span></span>
-<span>(</span><span>style: str | None = None, name: str | None = None, **kwargs: Any)</span>
+<dt id="odfdo.header_rows.HeaderRows"><code class="flex name class">
+<span>class <span class="ident">HeaderRows</span></span>
+<span>(</span><span>**kwargs: Any)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>ODF section "text:section"</p>
-<h2 id="arguments">Arguments</h2>
-<p>style &ndash; str</p>
-<p>name &ndash; str</p></div>
+<div class="desc"><p>Super class of all ODF classes.</p>
+<p>Representation of an XML element. Abstraction of the XML library behind.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Section(Element):
-    &#34;&#34;&#34;ODF section &#34;text:section&#34;
-
-    Arguments:
-
-        style -- str
-
-        name -- str
-    &#34;&#34;&#34;
-
-    _tag = &#34;text:section&#34;
-    _properties = (
-        PropDef(&#34;style&#34;, &#34;text:style-name&#34;),
-        PropDef(&#34;name&#34;, &#34;text:name&#34;),
-    )
-
-    def __init__(
-        self,
-        style: str | None = None,
-        name: str | None = None,
-        **kwargs: Any,
-    ) -&gt; None:
-        super().__init__(**kwargs)
-        if self._do_init:
-            if style:
-                self.style = style
-            if name:
-                self.name = name
-
-    def get_formatted_text(self, context: dict | None = None) -&gt; str:
-        result = [element.get_formatted_text(context) for element in self.children]
-        result.append(&#34;\n&#34;)
-        return &#34;&#34;.join(result)</code></pre>
+<pre><code class="python">class HeaderRows(Element):
+    _tag = &#34;table:table-header-rows&#34;
+    _caching = True</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -159,51 +95,6 @@ register_element_class(Section)</code></pre>
 <li><a title="odfdo.utils.cached_element.CachedElement" href="utils/cached_element.html#odfdo.utils.cached_element.CachedElement">CachedElement</a></li>
 <li>abc.ABC</li>
 </ul>
-<h3>Instance variables</h3>
-<dl>
-<dt id="odfdo.section.Section.name"><code class="name">var <span class="ident">name</span> : str | bool | None</code></dt>
-<dd>
-<div class="desc"><p>Get/set the attribute text:name</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
-    try:
-        if family and self.family != family:  # type: ignore
-            return None
-    except AttributeError:
-        return None
-    value = self.__element.get(name)
-    if value is None:
-        return None
-    elif value in (&#34;true&#34;, &#34;false&#34;):
-        return Boolean.decode(value)
-    return str(value)</code></pre>
-</details>
-</dd>
-<dt id="odfdo.section.Section.style"><code class="name">var <span class="ident">style</span> : str | bool | None</code></dt>
-<dd>
-<div class="desc"><p>Get/set the attribute text:style-name</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def getter(self: Element) -&gt; str | bool | None:
-    try:
-        if family and self.family != family:  # type: ignore
-            return None
-    except AttributeError:
-        return None
-    value = self.__element.get(name)
-    if value is None:
-        return None
-    elif value in (&#34;true&#34;, &#34;false&#34;):
-        return Boolean.decode(value)
-    return str(value)</code></pre>
-</details>
-</dd>
-</dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
 <li><code><b><a title="odfdo.element.Element" href="element.html#odfdo.element.Element">Element</a></b></code>:
@@ -341,11 +232,7 @@ register_element_class(Section)</code></pre>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="odfdo.section.Section" href="#odfdo.section.Section">Section</a></code></h4>
-<ul class="">
-<li><code><a title="odfdo.section.Section.name" href="#odfdo.section.Section.name">name</a></code></li>
-<li><code><a title="odfdo.section.Section.style" href="#odfdo.section.Section.style">style</a></code></li>
-</ul>
+<h4><code><a title="odfdo.header_rows.HeaderRows" href="#odfdo.header_rows.HeaderRows">HeaderRows</a></code></h4>
 </li>
 </ul>
 </li>
