@@ -80,12 +80,9 @@ def generate_document():
         variant_style.set_properties(area="text", size=f"{size}pt")
         presentation.insert_style(variant_style)
 
-    count = 0
-
-    for blurb in CONTENT:
-        count += 1
+    for count, blurb in enumerate(CONTENT):
         text = blurb
-        name = f"{count} - { text[:10]}"
+        name = f"{count+1} - { text[:10]}"
         page = DrawPage(name)
         # choosing some style:
         size = 48

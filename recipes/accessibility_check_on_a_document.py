@@ -6,6 +6,7 @@ there is:
 or, at least, some caption text.
 See planes.odt file and result of the script.
 """
+import os
 import sys
 from pathlib import Path
 
@@ -36,8 +37,8 @@ def main():
 
     for image in images:
         uri = image.url
-        filename = uri.split("/")[-1]
-        print("Image filename:", filename)
+        filename = uri.rpartition("/")[2]
+        print(f"Image filename: {filename}")
         frame = image.parent
         name = frame.name
         title = frame.svg_title
@@ -53,12 +54,12 @@ def main():
             caption = link.get_attribute("office:name")
             if caption:
                 nb_caption += 1
-                print("Caption: ", caption)
+                print(f"Caption: {caption}")
     print()
     print(f"The document displays {nb_images} pictures:")
-    print(" - pictures with a title:", nb_title)
-    print(" - pictures with a description:", nb_description)
-    print(" - pictures with a caption:", nb_caption)
+    print(f" - pictures with a title: {nb_title}")
+    print(f" - pictures with a description: {nb_description}")
+    print(f" - pictures with a caption: {nb_caption}")
 
     _expected_result = """
     Image filename: 100000000000013B000000D3AAA93FCC.jpg
@@ -74,6 +75,13 @@ def main():
     - pictures with a description: 1
     - pictures with a caption: 0
     """
+
+    # only for test suite:
+    if "ODFDO_TESTING" in os.environ:
+        assert nb_images == 3
+        assert nb_title == 2
+        assert nb_description == 1
+        assert nb_caption == 0
 
 
 if __name__ == "__main__":

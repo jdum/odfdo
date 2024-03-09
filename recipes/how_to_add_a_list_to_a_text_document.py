@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Create an empty text document and add a list.
 """
+import os
 from pathlib import Path
 
 # Lists are a dedicated object List
@@ -20,11 +21,21 @@ def save_new(document: Document, name: str):
 def main():
     document = Document("text")
     body = document.body
+    body.clear()
     some_list = List(["chocolate", "tea", "coffee"])
     # The list factory accepts a Python list of strings and list items.
     body.append(some_list)
 
+    test_unit(document)
+
     save_new(document, TARGET)
+
+
+def test_unit(document: Document) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+    assert (document.get_formatted_text()).strip() == "- chocolate\n- tea\n- coffee"
 
 
 if __name__ == "__main__":

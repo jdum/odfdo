@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Read the text content from an .odt file.
 """
+import os
 import sys
 from pathlib import Path
 
@@ -25,13 +26,6 @@ def main():
     # just verify what type of document it is:
     print("Type of document:", doc.get_type())
 
-    body = doc.body
-    print(body)
-
-    # to further manipulate the document, you can access to whole xml content:
-    content = doc.content
-    print(content)
-
     # A quick way to get the text content:
     text = doc.get_formatted_text()
 
@@ -39,6 +33,11 @@ def main():
 
     # Let's show the beginning :
     print(text[:320])
+
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+    assert len(text) == 54333
 
 
 if __name__ == "__main__":

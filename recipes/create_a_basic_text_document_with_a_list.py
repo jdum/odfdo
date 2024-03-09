@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Create a basic text document with a list.
 """
+import os
 from pathlib import Path
 
 from odfdo import Document, List, ListItem
@@ -18,6 +19,7 @@ def save_new(document: Document, name: str):
 
 def main():
     document = generate_document()
+    test_unit(document)
     save_new(document, TARGET)
 
 
@@ -45,6 +47,13 @@ def generate_document():
     # - Marvin
 
     return document
+
+
+def test_unit(document: Document) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+    assert str(document).strip() == "- Arthur\n- Ford\n- Trillian\n- Marvin"
 
 
 if __name__ == "__main__":

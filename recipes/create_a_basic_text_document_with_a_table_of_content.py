@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Create a basic text document with a table of content.
 """
-
+import os
 from pathlib import Path
 
 from odfdo import TOC, Document, Header, Paragraph
@@ -49,6 +49,13 @@ def make_toc(document):
     # Beware, update the TOC with the actual content. If not done there,
     # the reader will need to "update the table of content" later.
     toc.fill()
+
+    # only for test suite:
+    if "ODFDO_TESTING" in os.environ:
+        assert str(toc).split("\n")[2] == (
+            "1.1. Lorem ipsum dolor sit amet, consectetuer "
+            "adipiscing elit. Sed non risu"
+        )
 
 
 if __name__ == "__main__":

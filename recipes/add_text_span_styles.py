@@ -2,8 +2,9 @@
 """Transform a not styled document into a multi styled document,
 by changing size and color of each parts of words.
 """
+import os
+from itertools import chain
 from pathlib import Path
-from random import randrange
 
 from odfdo import Document, Style
 
@@ -11,6 +12,27 @@ DATA = Path(__file__).parent / "data"
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "styled3"
 TARGET = "dormeur_styled.odt"
 SOURCE = DATA / "dormeur_notstyled.odt"
+RANDOM_SEED = 1234
+
+
+class SimpleRandom:
+    """Q&D reproductible random generator for tests."""
+
+    MODULUS = 2**31 - 1
+    MAXI = 2**31 - 2
+
+    def __init__(self):
+        self.current = 16807
+
+    def _next_number(self):
+        self.current = (16807 * self.current) % self.MODULUS
+
+    def set_seed(self, seed=16807):
+        self.current = seed
+
+    def randint(self, max_value):
+        self._next_number()
+        return int(self.current * max_value / self.MAXI + 1)
 
 
 def save_new(document: Document, name: str):
@@ -24,18 +46,17 @@ def color_hex(r, g, b):
     return f"#{r:02X}{g:02X}{b:02X}"
 
 
-def random_style_name():
-    """Returns a random style name."""
-    return f"rnd_{randrange(64)}"
+def style_name_index(index):
+    return f"rnd_{index}"
 
 
-def generate_random_styles(document):
+def generate_random_styles(document, rnd):
     """Generate 64 random styles."""
-    for index in range(64):
+    for index in range(1, 64):
         style = Style(
             "text",
-            name=f"rnd_{index}",
-            color=color_hex(randrange(256), randrange(256), randrange(256)),
+            name=style_name_index(index),
+            color=color_hex(rnd.randint(256), rnd.randint(256), rnd.randint(256)),
             size=f"{8 + index / 5}",
         )
         document.insert_style(style)
@@ -48,16 +69,22 @@ def main():
 
 
 def add_styles(document):
+    rnd = SimpleRandom()
     body = document.body
 
-    generate_random_styles(document)
+    generate_random_styles(document, rnd)
 
-    words = set(body.text_recursive.split())
+    words = sorted(body.text_recursive.split())
     for word in words:
-        style_name = random_style_name()
-        for paragraph in body.get_paragraphs() + body.get_headers():
+        style_name = style_name_index(rnd.randint(64))
+        for paragraph in chain(body.get_paragraphs(), body.get_headers()):
             # apply style to each text matching with the regex of some word
             paragraph.set_span(style_name, regex=word)
+
+    # only for test suite:
+    if "ODFDO_TESTING" in os.environ:
+        print(len(body.get_spans()))
+        assert len(body.get_spans()) == 266
 
 
 if __name__ == "__main__":

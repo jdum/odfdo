@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Accessing other element from element like list.
 """
+import os
 from pathlib import Path
 
 from odfdo import Document
@@ -26,10 +27,9 @@ def analyse_list(document):
     print()
 
     # Now print the list content
-    count = 0
-    for paragraph in list4.get_paragraphs():
-        count += 1
-        print(count, ":", paragraph)
+    paragraphs = list4.get_paragraphs()
+    for count, paragraph in enumerate(paragraphs):
+        print(count + 1, ":", paragraph)
         print(paragraph.text_recursive)
         print()
 
@@ -66,6 +66,13 @@ def analyse_list(document):
     DC Comics H2G2 site
 
     """  # noqa: RUF001
+
+    # only for test suite:
+    if "ODFDO_TESTING" in os.environ:
+        assert len(body.get_lists()) == 5
+        assert len(list4.get_paragraphs()) == 9
+        assert paragraphs[0].text_recursive.startswith("BBC Cult website")
+        assert paragraphs[8].text_recursive.startswith("DC Comics H2G2")
 
 
 def main():

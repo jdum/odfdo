@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Create a basic text document.
 """
+import os
 from pathlib import Path
 
 from odfdo import Document, Header, Paragraph
@@ -19,7 +20,7 @@ def save_new(document: Document, name: str):
 def create_basic_document():
     document = Document("text")
     body = document.body
-
+    body.clear()
     body.append(Header(1, "De la Guerre des Gaules - Livre V"))
     body.append(Header(2, "Préparatifs d'expédition en Bretagne"))
     body.append(
@@ -47,7 +48,17 @@ def create_basic_document():
 
 def main():
     document = create_basic_document()
+    test_unit(document)
     save_new(document, TARGET)
+
+
+def test_unit(document: Document) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+    text = str(document.body.get_paragraph(position=1))
+    print(text)
+    assert text.startswith("Cette île est de forme triangulaire")
 
 
 if __name__ == "__main__":

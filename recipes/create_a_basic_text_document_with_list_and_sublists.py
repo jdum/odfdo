@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Create a basic text document with list and sublists.
 """
+import os
 from pathlib import Path
 
 from odfdo import Document, List, ListItem
@@ -18,6 +19,7 @@ def save_new(document: Document, name: str):
 
 def main():
     document = generate_document()
+    test_unit(document)
     save_new(document, TARGET)
 
 
@@ -66,7 +68,26 @@ def generate_document():
     #   - older than the universe
     # - and many others
     #
+
     return document
+
+
+def test_unit(document: Document) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+    assert document.get_formatted_text().strip() == (
+        "- Arthur\n"
+        "- some dolphins\n"
+        "- Ford\n"
+        "- Trillian\n"
+        "- Zaphod\n"
+        "- Marvin\n"
+        "  \n"
+        "  - Paranoid Android\n"
+        "  - older than the universe\n"
+        "- and many others"
+    )
 
 
 if __name__ == "__main__":

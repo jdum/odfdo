@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Accessing a single element
 """
+import os
 from pathlib import Path
 
 from odfdo import Document
@@ -50,6 +51,23 @@ def main():
     - Content of the last Title:
     Official sites
     """
+
+    test_unit(document)
+
+
+def test_unit(document: Document) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+    body = document.body
+    assert body.get_note(position=0).text_recursive.startswith("1Gaiman, Neil (2003).")
+    assert body.get_paragraph(content="Fish").text_recursive.endswith(
+        "all before expiring."
+    )
+    assert body.get_header(position=0).text_recursive.startswith(
+        "The Hitchhiker's Guide"
+    )
+    assert body.get_header(position=-1).text_recursive.startswith("Official sites")
 
 
 if __name__ == "__main__":

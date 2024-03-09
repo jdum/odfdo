@@ -2,6 +2,7 @@
 """Create a table of 1000 lines and 100 columns, extract a sub table
 of 100 lines 26 columns, save the result in a spreadsheet document.
 """
+import os
 from pathlib import Path
 
 from odfdo import Document, Row, Table
@@ -71,6 +72,8 @@ def main():
     body.append(table2)
     print("Size of extracted table 2 :", table2.size)
 
+    test_unit(spreadsheet)
+
     save_new(spreadsheet, TARGET)
 
     _expected_result = """
@@ -78,6 +81,17 @@ Size of Big Table : (100, 1000)
 Size of extracted table 1 : (26, 100)
 Size of extracted table 2 : (26, 100)
 """
+
+
+def test_unit(spreadsheet: Document) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+    body = spreadsheet.body
+    table1 = body.get_table(position=0)
+    assert table1.size == (100, 1000)
+    table2 = body.get_table(position=1)
+    assert table2.size == (26, 100)
 
 
 if __name__ == "__main__":

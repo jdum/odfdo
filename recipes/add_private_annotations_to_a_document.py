@@ -4,6 +4,7 @@
 Annotations are notes that don't appear in the document but typically
 on a side bar in a desktop application. So they are not printed.
 """
+import os
 from pathlib import Path
 
 from odfdo import Document, Header, Paragraph
@@ -64,6 +65,10 @@ def main():
     )
 
     save_new(document, TARGET)
+
+    # only for test suite:
+    if "ODFDO_TESTING" in os.environ:
+        assert len(body.get_annotations(creator="Luis")) == 1
 
 
 if __name__ == "__main__":

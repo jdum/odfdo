@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Accessing a list of elements.
 """
+import os
 import sys
 from pathlib import Path
 
@@ -51,7 +52,7 @@ def main():
     )
 
     _expected_result = """
-    95 get methods are available
+    96 get methods are available
     number of headings: 29
     number of images stored: 0
     number of paragraphs: 175
@@ -61,6 +62,24 @@ def main():
     Paragraphs with 'Fish': 4
     Paragraphs with 'answer' and '42': 1
     """
+
+    test_unit(document)
+
+
+def test_unit(document: Document) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+    body = document.body
+    count_methods = " ".join(dir(body)).count("get_")
+    assert count_methods == 96
+    assert len(body.get_headers()) == 29
+    assert len(body.get_images()) == 0
+    assert len(body.get_paragraphs()) == 175
+    assert len(body.get_links()) == 352
+    assert len(body.get_notes()) == 49
+    assert len(body.get_paragraphs(content=r"Fish")) == 4
+    assert len(body.get_paragraphs(content=r"answer.*42")) == 1
 
 
 if __name__ == "__main__":

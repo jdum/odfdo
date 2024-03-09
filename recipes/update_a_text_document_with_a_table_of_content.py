@@ -4,7 +4,7 @@
 
 from pathlib import Path
 
-from odfdo import TOC, Document, Header, Paragraph
+from odfdo import Document, Header, Paragraph
 
 DATA = Path(__file__).parent / "data"
 SOURCE = "doc_with_toc.odt"

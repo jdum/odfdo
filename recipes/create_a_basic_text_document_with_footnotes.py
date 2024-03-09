@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Create a basic text document with footnotes.
 """
+import os
 from pathlib import Path
 
 from odfdo import Document, Header, Paragraph
@@ -21,6 +22,7 @@ def save_new(document: Document, name: str):
 def main():
     document = Document("text")
     make_footnotes(document)
+    test_unit(document)
     save_new(document, TARGET)
 
 
@@ -51,6 +53,13 @@ def make_footnotes(document):
         )
 
         body.append(paragraph)
+
+
+def test_unit(document: Document) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+    assert len(document.body.get_notes()) == 3
 
 
 if __name__ == "__main__":

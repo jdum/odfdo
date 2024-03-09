@@ -31,12 +31,13 @@ import csv
 import os
 import string
 from collections.abc import Iterator
+from functools import cache
 from io import StringIO
 from itertools import zip_longest
 from pathlib import Path
 from textwrap import wrap
 from typing import Any
-from functools import cache
+
 from .cell import Cell
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element, register_element_class, xpath_compile
