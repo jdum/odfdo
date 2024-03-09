@@ -234,7 +234,7 @@ class Annotation(Element):
         """Returns the annotated content from an annotation.
 
         If no content exists (single position annotation or annotation-end not
-        found), returns [] (or u'' if text flag is True).
+        found), returns [] (or "" if text flag is True).
         If as_text is True: returns the text content.
         If clean is True: suppress unwanted tags (deletions marks, ...)
         If no_header is True: existing text:h are changed in text:p

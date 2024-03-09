@@ -36,9 +36,13 @@ from .utils import to_str
 from .version import __version__
 from .xmlpart import XmlPart
 
+GENERATOR = f"odfdo {__version__}"
+
 
 class Meta(XmlPart):
-    _generator_modified = False
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self._generator_modified: bool = False
 
     def get_meta_body(self) -> Element:
         return self.get_element("//office:meta")
@@ -251,7 +255,7 @@ class Meta(XmlPart):
 
         Example::
 
-            >>> document.meta.set_initial_creator(u"Plato")
+            >>> document.meta.set_initial_creator("Plato")
         """
         element = self.get_element("//meta:initial-creator")
         if element is None:
@@ -283,7 +287,7 @@ class Meta(XmlPart):
 
         Example::
 
-            >>> document.meta.set_creator(u"Plato")
+            >>> document.meta.set_creator("Plato")
         """
         element = self.get_element("//dc:creator")
         if element is None:
@@ -396,7 +400,7 @@ class Meta(XmlPart):
 
         Example::
 
-            >>> document.meta.set_generator(u"lpOD Project")
+            >>> document.meta.set_generator("Odfdo experiment")
         """
         element = self.get_element("//meta:generator")
         if element is None:
@@ -414,7 +418,7 @@ class Meta(XmlPart):
             >>> document.meta.set_generator_default()
         """
         if not self._generator_modified:
-            self.set_generator(f"odfdo {__version__}")
+            self.set_generator(GENERATOR)
 
     def get_statistic(self) -> dict[str, int] | None:
         """Get the statistic from the software that generated this document.

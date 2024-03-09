@@ -20,6 +20,7 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 
+import io
 from collections.abc import Iterable
 from datetime import datetime, timedelta
 from decimal import Decimal
@@ -30,6 +31,7 @@ import pytest
 from odfdo.const import ODF_META
 from odfdo.datatype import DateTime, Duration
 from odfdo.document import Document
+from odfdo.meta import GENERATOR
 
 META_DOC = Path(__file__).parent / "samples" / "meta.odt"
 
@@ -218,6 +220,23 @@ def test_set_generator(meta):
     generator = "odfdo Project"
     clone.set_generator(generator)
     assert clone.get_generator() == generator
+
+
+def test_generator_default_unmodified():
+    document = Document(META_DOC)
+    with io.BytesIO() as bytes_content:
+        document.save(bytes_content)
+    # document saved, generator string should be ours
+    assert document.meta.get_generator() == GENERATOR
+
+
+def test_generator_default_modified():
+    document = Document(META_DOC)
+    document.meta.set_generator("custom generator")
+    with io.BytesIO() as bytes_content:
+        document.save(bytes_content)
+    # document saved, generator string should be untouched
+    assert document.meta.get_generator() == "custom generator"
 
 
 def test_get_statistic(meta):
