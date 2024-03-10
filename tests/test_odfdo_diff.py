@@ -24,9 +24,9 @@ def run_params(params):
 def test_no_param():
     params = ""
     out, err, exitcode = run_params(params)
-    print(out, err, exitcode)
-    assert exitcode == 1
-    assert "Show a diff" in out
+    assert exitcode == 2
+    assert "odfdo-diff: error" in err
+    assert "usage" in err
 
 
 def test_no_file():
@@ -41,7 +41,7 @@ def test_bad_format():
     out, err, exitcode = run_params(params)
     assert exitcode == 1
     assert "Show a diff" in out
-    assert "documents of type text" in out
+    assert "Error: odfdo-diff requires input documents of type text" in out
 
 
 def test_diff():

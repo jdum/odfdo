@@ -20,45 +20,55 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 from __future__ import annotations
 
-import sys
+from argparse import ArgumentParser
 from difflib import ndiff, unified_diff
-from optparse import OptionParser
 from os import stat
 from time import ctime
 
 from odfdo import Document, __version__
 
+PROG = "odfdo-diff"
 
-def main() -> None:
-    usage = "%prog <doc1.odt> <doc2.odt>"
-    description = "Show a diff between doc1.odt and doc2.odt"
-    parser = OptionParser(usage, version=__version__, description=description)
 
-    # --ndiff
-    parser.add_option(
+def configure_parser() -> ArgumentParser:
+    description = "Show a diff between two .odt files."
+    parser = ArgumentParser(prog=PROG, description=description)
+    parser.add_argument(
         "-n",
         "--ndiff",
-        action="store_true",
         default=False,
-        help='use a contextual "ndiff" format to show the output',
+        action="store_true",
+        help='use a contextual "ndiff" format to display the output',
     )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"{PROG} v{__version__}",
+    )
+    parser.add_argument(
+        "document1",
+        action="store",
+        help="first input document",
+    )
+    parser.add_argument(
+        "document2",
+        action="store",
+        help="second input document",
+    )
+    return parser
 
-    # Parse !
-    options, args = parser.parse_args()
 
-    if len(args) != 2:
-        parser.print_help()
-        sys.exit(1)
+def main() -> None:
+    parser = configure_parser()
+    args = parser.parse_args()
 
-    path0 = args[0]
-    path1 = args[1]
     try:
-        print_diff(path0, path1, options.ndiff)
+        print_diff(args.document1, args.document2, args.ndiff)
     except Exception as e:
         parser.print_help()
         print()
-        print(repr(e))
-        sys.exit(1)
+        print(f"Error: {e}")
+        raise SystemExit(1) from None
 
 
 def print_diff(path0: str, path1: str, ndiff: bool) -> None:
@@ -66,7 +76,7 @@ def print_diff(path0: str, path1: str, ndiff: bool) -> None:
     doc0 = Document(path0)
     doc1 = Document(path1)
     if doc0.get_type() != "text" or doc1.get_type() != "text":
-        raise ValueError("Requires documents of type text.")
+        raise ValueError(f"{PROG} requires input documents of type text")
     if ndiff:
         print(make_ndiff(doc0, doc1))
     else:
