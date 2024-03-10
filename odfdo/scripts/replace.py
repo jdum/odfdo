@@ -22,55 +22,70 @@ from __future__ import annotations
 import io
 import selectors
 import sys
-from optparse import OptionParser
+from argparse import ArgumentParser
 
 from odfdo import Document, __version__
 
+PROG = "odfdo-replace"
 STDIN_TIMEOUT = 0.5
 
 
-def configure_parser() -> OptionParser:
-    usage = "%prog [-i <file in>] [-o <file out>] pattern replacement"
-    description = "Search and replace text in ODF file using regex pattern"
-    parser = OptionParser(usage, version=__version__, description=description)
+def configure_parser() -> ArgumentParser:
+    description = "Search and replace text in ODF file using regex pattern."
+    parser = ArgumentParser(prog=PROG, description=description)
 
-    parser.add_option(
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"{PROG} v{__version__}",
+    )
+    parser.add_argument(
         "-i",
         "--input",
         action="store",
-        type="string",
         dest="input_file",
-        nargs=1,
-        help="input file. if option not present, read from stdin.",
+        metavar="INPUT",
+        required=False,
+        help="input file. if option not present, read from stdin",
     )
-
-    parser.add_option(
+    parser.add_argument(
         "-o",
         "--output",
         action="store",
-        type="string",
         dest="output_file",
-        nargs=1,
-        help="output file. if option not present, write to stdout.",
+        metavar="OUTPUT",
+        required=False,
+        help="output file. if option not present, write to stdout",
+    )
+    parser.add_argument(
+        "pattern",
+        action="store",
+        help="search pattern (regular expression)",
+    )
+    parser.add_argument(
+        "replacement",
+        action="store",
+        help="replacement text",
     )
     return parser
 
 
 def main() -> None:
     parser = configure_parser()
-    options, args = parser.parse_args()
-
-    if len(args) != 2:
-        parser.print_help()
-        print("Two arguments are required (pattern, replacement).")
-        raise SystemExit(1)
+    args = parser.parse_args()
 
     try:
-        search_replace(args[0], args[1], options.input_file, options.output_file)
-    except Exception:
+        search_replace(
+            args.pattern,
+            args.replacement,
+            args.input_file,
+            args.output_file,
+        )
+    except Exception as e:
         parser.print_help()
         print()
-        raise
+        print(f"Error: {e.__class__.__name__}, {e}")
+        raise SystemExit(1) from None
 
 
 def detect_stdin_timeout() -> None:
