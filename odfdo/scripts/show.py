@@ -21,12 +21,69 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 from __future__ import annotations
 
-from optparse import OptionParser, Values
+from argparse import ArgumentParser, Namespace
 from pathlib import Path
 from shutil import rmtree
 
 from odfdo import Document, __version__
 from odfdo.scriptutils import check_target_directory, printerr
+
+PROG = "odfdo-show"
+
+
+def configure_parser() -> ArgumentParser:
+    description = description = (
+        "Dump text from an OpenDocument file to the standard "
+        "output, optionally styles and meta (and the Pictures/* "
+        'in "-o <DIR>" mode)'
+    )
+    parser = ArgumentParser(prog=PROG, description=description)
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"{PROG} v{__version__}",
+    )
+    parser.add_argument(
+        "-m",
+        "--meta",
+        action="store_true",
+        default=False,
+        help="dump metadata to stdout",
+    )
+    parser.add_argument(
+        "-s",
+        "--styles",
+        action="store_true",
+        default=False,
+        help="dump styles to stdout",
+    )
+    parser.add_argument(
+        "-n",
+        "--no-content",
+        action="store_true",
+        default=False,
+        help="do not dump content to stdout",
+    )
+    parser.add_argument(
+        "-r",
+        "--rst",
+        action="store_true",
+        default=False,
+        help="dump the content file with a reST syntax",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        metavar="DIR",
+        help="dump the output into DIR",
+    )
+    parser.add_argument(
+        "input",
+        action="store",
+        help="input ODF file to show",
+    )
+    return parser
 
 
 def clean_filename(name: str) -> str:
@@ -70,12 +127,11 @@ def spreadsheet_to_csv(document: Document, output: Path) -> None:
 
 
 def show_output(
-    container_url: str,
-    options: Values,
+    args: Namespace,
     doc: Document,
     doc_type: str,
 ) -> None:
-    output = Path(options.output)
+    output = Path(args.output)
     check_target_directory(str(output))
     if output.exists():
         rmtree(output)  # pragma: no cover
@@ -85,9 +141,7 @@ def show_output(
     dump_pictures(doc, output)
 
     if doc_type in {"text", "text-template", "presentation", "presentation-template"}:
-        (output / "content.rst").write_text(
-            doc.get_formatted_text(rst_mode=options.rst)
-        )
+        (output / "content.rst").write_text(doc.get_formatted_text(rst_mode=args.rst))
     elif doc_type in {"spreadsheet", "spreadsheet-template"}:
         print(doc)
         print(doc.path)
@@ -98,31 +152,21 @@ def show_output(
         raise SystemExit(1)
 
 
-def show(container_url: str, options: Values) -> None:
-    try:
-        doc = Document(container_url)
-    except Exception as e:
-        print(repr(e))
-        raise SystemExit(1) from None
+def show(args: Namespace) -> None:
+    doc = Document(args.input)
     doc_type = doc.get_type()
-    # Test it! XXX for TEXT only
-    # if doc_type == 'text':
-    #    result = test_document(document)
-    #    if result is not True:
-    #        print('This file is malformed: %s' % result)
-    #        print('Please use lpod-clean.py to fix it')
-    #        exit(1)
-    if options.output:
-        return show_output(container_url, options, doc, doc_type)
-    if options.meta:
+
+    if args.output:
+        return show_output(args, doc, doc_type)
+    if args.meta:
         print(doc.get_formated_meta())
-    if options.styles:
+    if args.styles:
         print(doc.show_styles())
     if doc_type in {"text", "text-template", "presentation", "presentation-template"}:
-        if not options.no_content:
-            print(doc.get_formatted_text(rst_mode=options.rst))
+        if not args.no_content:
+            print(doc.get_formatted_text(rst_mode=args.rst))
     elif doc_type in {"spreadsheet", "spreadsheet-template"}:
-        if not options.no_content:
+        if not args.no_content:
             spreadsheet_to_stdout(doc)
     else:
         printerr(f"The OpenDocument format '{doc_type}' is not supported yet.")
@@ -130,63 +174,15 @@ def show(container_url: str, options: Values) -> None:
 
 
 def main() -> None:
-    # Options initialisation
-    usage = (
-        "%prog [--styles] [--meta] [--no-content] [--rst] <file>\n"
-        "       %prog -o <DIR> [--rst] <file>"
-    )
-    description = (
-        "Dump text from an OpenDocument file to the standard "
-        "output, optionally styles and meta (and the Pictures/* "
-        'in "-o <DIR>" mode)'
-    )
-    parser = OptionParser(usage, version=__version__, description=description)
-    # --meta
-    parser.add_option(
-        "-m",
-        "--meta",
-        action="store_true",
-        default=False,
-        help="dump metadata to stdout",
-    )
-    # --styles
-    parser.add_option(
-        "-s",
-        "--styles",
-        action="store_true",
-        default=False,
-        help="dump styles to stdout",
-    )
-    # --no-content
-    parser.add_option(
-        "-n",
-        "--no-content",
-        action="store_true",
-        default=False,
-        help="do not dump content to stdout",
-    )
-    # --rst
-    parser.add_option(
-        "-r",
-        "--rst",
-        action="store_true",
-        default=False,
-        help="dump the content file with a reST syntax",
-    )
-    parser.add_option(
-        "-o",
-        "--output",
-        metavar="DIR",
-        help="dump the output into DIR",
-    )
-    # Parse !
-    options, args = parser.parse_args()
-    # Container
-    if len(args) != 1:
+    parser = configure_parser()
+    args = parser.parse_args()
+    try:
+        show(args)
+    except Exception as e:
         parser.print_help()
-        raise SystemExit(1)
-    container_url = args[0]
-    show(container_url, options)
+        print()
+        print(f"Error: {e.__class__.__name__}, {e}")
+        raise SystemExit(1) from None
 
 
 if __name__ == "__main__":  # pragma: no cover

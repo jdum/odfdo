@@ -25,8 +25,9 @@ def test_no_param():
     params = ""
     out, err, exitcode = run_params(params)
     print(out, err, exitcode)
-    assert exitcode == 1
-    assert "Dump text from an OpenDocument" in out
+    assert exitcode == 2
+    assert "odfdo-show: error: the following arguments" in err
+    assert "usage" in err
 
 
 def test_help():
