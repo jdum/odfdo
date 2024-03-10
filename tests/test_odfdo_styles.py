@@ -24,8 +24,9 @@ def test_no_param():
     params = ""
     out, err, exitcode = run_params_bytes(params)
     print(out, err, exitcode)
-    assert exitcode == 1
-    assert b"to manipulate styles" in out
+    assert exitcode == 2
+    assert b"odfdo-styles: error: the following arguments" in err
+    assert b"usage" in err
 
 
 def test_help():

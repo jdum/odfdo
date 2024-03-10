@@ -22,12 +22,75 @@
 from __future__ import annotations
 
 import sys
+from argparse import ArgumentParser, Namespace
 from io import BytesIO
-from optparse import OptionParser, Values
 from pathlib import Path
 
 from odfdo import Document, __version__
 from odfdo.scriptutils import check_target_file, printerr, printinfo
+
+PROG = "odfdo-styles"
+
+
+def configure_parser() -> ArgumentParser:
+    description = (
+        "Command line interface script to manipulate styles of OpenDocument files."
+    )
+    parser = ArgumentParser(prog=PROG, description=description)
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"{PROG} v{__version__}",
+    )
+    parser.add_argument(
+        "-a",
+        "--automatic",
+        action="store_true",
+        default=False,
+        help="show automatic styles only",
+    )
+    parser.add_argument(
+        "-c",
+        "--common",
+        action="store_true",
+        default=False,
+        help="show common styles only",
+    )
+    parser.add_argument(
+        "-p",
+        "--properties",
+        action="store_true",
+        help="show properties of styles",
+    )
+    parser.add_argument(
+        "-d",
+        "--delete",
+        action="store_true",
+        help="return a copy with all styles (except default) deleted from <file>",
+    )
+    parser.add_argument(
+        "-m",
+        "--merge-styles-from",
+        dest="merge",
+        metavar="FILE",
+        help=(
+            "copy styles from FILE to <file>. Any style with the same "
+            "name will be replaced."
+        ),
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        metavar="FILE",
+        help="dump the output into FILE",
+    )
+    parser.add_argument(
+        "input",
+        action="store",
+        help="input ODF file",
+    )
+    return parser
 
 
 def show_styles(
@@ -53,7 +116,7 @@ def show_styles(
 def delete_styles(
     document: Document,
     target: str | Path,
-    pretty: bool = True,
+    pretty: bool = False,
 ) -> None:
     number_deleted = document.delete_styles()
     document.save(target=target, pretty=pretty)
@@ -116,7 +179,7 @@ def merge_styles(
     document: Document,
     from_file: str | Path,
     target: str | Path | None = None,
-    pretty: bool = True,
+    pretty: bool = False,
 ) -> None:
     source = Document(from_file)
     document.delete_styles()
@@ -130,88 +193,45 @@ def merge_styles(
     printinfo("Done (0 error, 0 warning).")
 
 
-def style_tools(container_url: str, options: Values) -> None:
-    doc = Document(container_url)
+def style_tools(args: Namespace) -> None:
+    doc = Document(args.input)
 
-    if options.delete:
-        target = options.output
+    if args.delete:
+        target = args.output
         if target is None:
             printerr("Will not delete in-place: output file needed or '-' for stdout")
-            sys.exit(1)
+            raise SystemExit(1)
         elif target == "-":
             target = BytesIO()
         else:
             check_target_file(target)
         delete_styles(doc, target)
-    elif options.merge:
-        merge_styles(doc, options.merge, target=options.output)
+    elif args.merge:
+        merge_styles(doc, args.merge, target=args.output)
     else:
-        automatic = options.automatic
-        common = options.common
+        automatic = args.automatic
+        common = args.common
         if not automatic ^ common:
             automatic, common = True, True
         show_styles(
             doc,
-            options.output,
+            args.output,
             automatic=automatic,
             common=common,
-            properties=options.properties,
+            properties=args.properties,
         )
 
 
 def main() -> None:
-    # Options initialisation
-    usage = "%prog [options] <file>"
-    description = "A command line interface to manipulate styles of OpenDocument files."
-    parser = OptionParser(usage, version=__version__, description=description)
-    # --automatic
-    parser.add_option(
-        "-a",
-        "--automatic",
-        action="store_true",
-        default=False,
-        help="show automatic styles only",
-    )
-    # --common
-    parser.add_option(
-        "-c",
-        "--common",
-        action="store_true",
-        default=False,
-        help="show common styles only",
-    )
-    # --properties
-    parser.add_option(
-        "-p", "--properties", action="store_true", help="show properties of styles"
-    )
-    # --delete
-    msg = "return a copy with all styles (except default) deleted from <file>"
-    parser.add_option("-d", "--delete", action="store_true", help=msg)
-    # --merge
-    msg = (
-        "copy styles from FILE to <file>. Any style with the same "
-        "name will be replaced."
-    )
-    parser.add_option(
-        "-m", "--merge-styles-from", dest="merge", metavar="FILE", help=msg
-    )
-    parser.add_option(
-        "-o",
-        "--output",
-        metavar="FILE",
-        help="dump the output into FILE",
-    )
-    # Parse options
-    options, args = parser.parse_args()
-    if len(args) != 1:
-        parser.print_help()
-        raise SystemExit(1)
+    parser = configure_parser()
+    args = parser.parse_args()
 
-    container_url = args[0]
     try:
-        style_tools(container_url, options)
+        style_tools(args)
     except Exception as e:
-        print(repr(e))
+        parser.print_help()
+        print()
+        print(f"Error: {e.__class__.__name__}, {e}")
         raise SystemExit(1) from None
 
 
