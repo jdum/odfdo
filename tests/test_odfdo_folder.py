@@ -27,8 +27,9 @@ def test_no_param():
     params = ""
     out, err, exitcode = run_params(params)
     print(out, err, exitcode)
-    assert exitcode == 1
-    assert "Convert standard ODF file to folder" in out
+    assert exitcode == 2
+    assert "odfdo-folder: error: the following arguments are required" in err
+    assert "usage" in err
 
 
 def test_no_file():

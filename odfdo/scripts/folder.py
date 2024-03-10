@@ -20,28 +20,41 @@
 # Authors: Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 from __future__ import annotations
 
-import sys
-from optparse import OptionParser
+from argparse import ArgumentParser
 from pathlib import Path
 
 from odfdo import Document, __version__
 
+PROG = "odfdo-folder"
+
+
+def configure_parser() -> ArgumentParser:
+    description = "Convert standard ODF file to folder, and reverse."
+    parser = ArgumentParser(prog=PROG, description=description)
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"{PROG} v{__version__}",
+    )
+    parser.add_argument(
+        "file_or_folder",
+        action="store",
+        help="file or folder to convert",
+    )
+    return parser
+
 
 def main() -> None:
-    usage = "%prog <input file_or_folder>"
-    description = "Convert standard ODF file to folder, and reverse."
-    parser = OptionParser(usage, version=__version__, description=description)
-
-    # Parse !
-    options, args = parser.parse_args()
+    parser = configure_parser()
+    args = parser.parse_args()
 
     try:
-        convert_folder(args[0])
+        convert_folder(args.file_or_folder)
     except Exception as e:
         parser.print_help()
         print()
-        print(repr(e))
-        sys.exit(1)
+        print(f"Error: {e}")
+        raise SystemExit(1) from None
 
 
 def convert_folder(path_str: str) -> None:
@@ -53,7 +66,8 @@ def convert_folder(path_str: str) -> None:
     else:
         raise ValueError(f"Not a file or folder: {path}")
     document = Document(path)
-    document.save(packaging=out_packaging, pretty=True)
+    pretty = out_packaging == "folder"
+    document.save(packaging=out_packaging, pretty=pretty)
 
 
 if __name__ == "__main__":  # pragma: no cover
