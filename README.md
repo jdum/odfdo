@@ -2,7 +2,7 @@
 Python library for OpenDocument format (ODF)
 
 
-![logo](./odfdo.png)
+![logo](https://raw.githubusercontent.com/jdum/odfdo/master/odfdo.png)
 
 `odfdo` is a Python3 library implementing the ISO/IEC 26300 OpenDocument Format
 standard.
