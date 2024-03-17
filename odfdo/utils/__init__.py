@@ -7,6 +7,7 @@ from .cache_map import (
     set_item_in_vault,
 )
 from .cached_element import CachedElement
+from .color import hex2rgb, hexa_color, rgb2hex
 from .coordinates import (
     alpha_to_digit,
     convert_coordinates,
@@ -39,6 +40,8 @@ __all__ = [
     "delete_item_in_vault",
     "digit_to_alpha",
     "find_odf_idx",
+    "hex2rgb",
+    "hexa_color",
     "increment",
     "insert_item_in_vault",
     "insert_map_once",
@@ -46,6 +49,7 @@ __all__ = [
     "make_cache_map",
     "make_xpath_query",
     "oooc_to_ooow",
+    "rgb2hex",
     "set_item_in_vault",
     "str_to_bytes",
     "to_bytes",

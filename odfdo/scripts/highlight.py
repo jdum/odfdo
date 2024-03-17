@@ -26,7 +26,6 @@ from argparse import ArgumentParser, Namespace
 from itertools import chain
 
 from odfdo import Document, Style, __version__
-from odfdo.style import _make_color_string
 
 PROG = "odfdo-highlight"
 STDIN_TIMEOUT = 0.5
@@ -160,11 +159,11 @@ def make_style(document: Document, args: Namespace) -> str:
         return name
 
     if args.color:
-        color = _make_color_string(args.color)
+        color = args.color
     else:
         color = None
     if args.background:
-        background = _make_color_string(args.background)
+        background = args.background
     else:
         background = None
 

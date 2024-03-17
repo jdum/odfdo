@@ -67,8 +67,8 @@ __all__ = [
     "NamedRange",
     "Note",
     "PREV_SIBLING",
-    "Paragraph",
     "PageBreak",
+    "Paragraph",
     "RectangleShape",
     "Reference",
     "ReferenceMark",
@@ -129,6 +129,7 @@ __all__ = [
     "default_time_style",
     "default_toc_level_style",
     "hex2rgb",
+    "hexa_color",
     "make_table_cell_border_string",
     "rgb2hex",
 ]
@@ -166,9 +167,7 @@ from .style import (
     default_number_style,
     default_percentage_style,
     default_time_style,
-    hex2rgb,
     make_table_cell_border_string,
-    rgb2hex,
 )
 from .styles import Styles
 from .table import Column, NamedRange, Row, RowGroup, Table
@@ -191,6 +190,7 @@ from .tracked_changes import (
     TextInsertion,
     TrackedChanges,
 )
+from .utils import hex2rgb, hexa_color, rgb2hex
 from .variable import (
     UserDefined,
     UserFieldDecl,

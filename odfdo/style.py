@@ -22,6 +22,22 @@
 """
 from __future__ import annotations
 
+__all__ = [
+    "BackgroundImage",
+    "CSS3_COLORMAP",
+    "ODF_PROPERTIES",
+    "Style",
+    "create_table_cell_style",
+    "default_boolean_style",
+    "default_currency_style",
+    "default_date_style",
+    "default_number_style",
+    "default_percentage_style",
+    "default_time_style",
+    "hex2rgb",
+    "make_table_cell_border_string",
+    "rgb2hex",
+]
 from typing import Any
 
 from .const import CSS3_COLORMAP, ODF_PROPERTIES
@@ -39,6 +55,9 @@ from .utils import (
     FAMILY_ODF_STD,
     STYLES_TO_REGISTER,
     SUBCLASSED_STYLES,
+    hex2rgb,
+    hexa_color,
+    rgb2hex,
     to_str,
 )
 
@@ -116,74 +135,6 @@ def _expand_properties_list(properties: list[str]) -> list[str]:
     return list(filter(None, (_map_key(key) for key in properties)))
 
 
-def hex2rgb(color: str) -> tuple[int, int, int]:
-    """Turns a "#RRGGBB" hexadecimal color representation into a (R, G, B)
-    tuple.
-    Arguments:
-
-        color -- str
-
-    Return: tuple
-    """
-    code = color[1:]
-    if not (len(color) == 7 and color[0] == "#" and code.isalnum()):
-        raise ValueError('"%s" is not a valid color' % color)
-    red = int(code[:2], 16)
-    green = int(code[2:4], 16)
-    blue = int(code[4:6], 16)
-    return (red, green, blue)
-
-
-def rgb2hex(color: str | tuple[int, int, int]) -> str:
-    """Turns a color name or a (R, G, B) color tuple into a "#RRGGBB"
-    hexadecimal representation.
-    Arguments:
-
-        color -- str or tuple
-
-    Return: str
-
-    Examples::
-
-        >>> rgb2hex('yellow')
-        '#FFFF00'
-        >>> rgb2hex((238, 130, 238))
-        '#EE82EE'
-    """
-    if isinstance(color, str):
-        try:
-            code = CSS3_COLORMAP[color.lower()]
-        except KeyError as e:
-            raise KeyError(f'Color "{color}" is unknown') from e
-    elif isinstance(color, tuple):
-        if len(color) != 3:
-            raise ValueError("Color must be a 3-tuple")
-        code = color
-    else:
-        raise TypeError("Invalid color")
-    for channel in code:
-        if channel < 0 or channel > 255:
-            raise ValueError("Color code must be between 0 and 255")
-    return f"#{code[0]:02X}{code[1]:02X}{code[2]:02X}"
-
-
-def _make_color_string(color: str | tuple[int, int, int] | None = None) -> str:
-    color_default = "#000000"
-    if not color:
-        return color_default
-    if isinstance(color, tuple):
-        return rgb2hex(color)
-    if not isinstance(color, str):
-        msg = "Color must be None for default or color string, or RGB tuple"
-        raise TypeError(msg)
-    color = color.strip()
-    if not color:
-        return color_default
-    if color.startswith("#"):
-        return color
-    return rgb2hex(color)
-
-
 def _make_thick_string(thick: str | float | int | None) -> str:
     THICK_DEFAULT = "0.06pt"
     if thick is None:
@@ -228,7 +179,7 @@ def make_table_cell_border_string(
     """
     thick_string = _make_thick_string(thick)
     line_string = _make_line_string(line)
-    color_string = _make_color_string(color)
+    color_string = hexa_color(color) or "#000000"
     return " ".join((thick_string, line_string, color_string))
 
 
@@ -309,12 +260,6 @@ def create_table_cell_style(
     if padding is not None:
         # use the padding value for 4 sides.
         padding_bottom = padding_top = padding_left = padding_right = None
-    if color:
-        color_string = _make_color_string(color)
-    if background_color:
-        bgcolor_string = _make_color_string(background_color)
-    else:
-        bgcolor_string = None
     cell_style = Style(
         "table-cell",
         area="table-cell",
@@ -328,11 +273,11 @@ def create_table_cell_style(
         padding_bottom=padding_bottom,
         padding_left=padding_left,
         padding_right=padding_right,
-        background_color=bgcolor_string,
+        background_color=background_color,
         shadow=shadow,
     )
     if color:
-        cell_style.set_properties(area="text", color=color_string)
+        cell_style.set_properties(area="text", color=color)
     return cell_style
 
 
@@ -679,7 +624,7 @@ class Style(Element):
         for key, value in properties.items():
             if value is None:
                 element.del_attribute(key)
-            elif isinstance(value, (str, bool)):
+            elif isinstance(value, (str, bool, tuple)):
                 element.set_attribute(key, value)
             else:
                 pass

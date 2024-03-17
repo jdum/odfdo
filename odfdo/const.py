@@ -556,6 +556,25 @@ ODF_PROPERTIES = {
     "text:space-before",
 }
 
+ODF_COLOR_PROPERTY = {
+    "dr3d:ambient-color",
+    "dr3d:diffuse-color",
+    "dr3d:emissive-color",
+    "dr3d:specular-color",
+    "draw:fill-color",
+    "draw:secondary-fill-color",
+    "draw:shadow-color",
+    "fo:background-color",
+    "fo:color",
+    "smil:fadeColor",
+    "style:layout-grid-color",
+    "style:text-line-through-color",
+    "style:text-overline-color",
+    "style:text-underline-color",
+    "style:use-window-font-color",
+    "svg:stroke-color",
+}
+
 # from CSS3 color map
 CSS3_COLORMAP = {
     "indigo": (75, 0, 130),

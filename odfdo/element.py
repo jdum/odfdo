@@ -45,11 +45,13 @@ from lxml.etree import (
     tostring,
 )
 
+from .const import ODF_COLOR_PROPERTY
 from .datatype import Boolean, DateTime
 from .utils import (
     FAMILY_MAPPING,
     FAMILY_ODF_STD,
     CachedElement,
+    hexa_color,
     make_xpath_query,
     str_to_bytes,
     to_str,
@@ -875,7 +877,14 @@ class Element(CachedElement):
             return None
         return str(value)
 
-    def set_attribute(self, name: str, value: bool | str | None) -> None:
+    def set_attribute(
+        self, name: str, value: bool | str | tuple[int, int, int] | None
+    ) -> None:
+        if name in ODF_COLOR_PROPERTY:
+            if isinstance(value, bool):
+                raise TypeError(f"Wrong color type {value!r}")
+            if value != "transparent":
+                value = hexa_color(value)
         element = self.__element
         lxml_tag = _get_lxml_tag_or_name(name)
         if isinstance(value, bool):
