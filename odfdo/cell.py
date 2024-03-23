@@ -369,7 +369,7 @@ class Cell(ElementTyped):
         """
         if self.value is not None or self.children:
             return False
-        if not aggressive and self.style is not None:
+        if not aggressive and (self.style is not None) or self.is_spanned():
             return False
         return True
 
