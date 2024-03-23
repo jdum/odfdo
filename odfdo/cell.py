@@ -356,6 +356,17 @@ class Cell(ElementTyped):
         self.set_attribute("table:formula", formula)
 
     def is_empty(self, aggressive: bool = False) -> bool:
+        """Return whether the cell has no value or the value evaluates
+        to False (empty string), and no style.
+
+        If aggressive is True, empty cells with style are considered empty.
+
+        Arguments:
+
+            aggressive -- bool
+
+        Return: bool
+        """
         if self.value is not None or self.children:
             return False
         if not aggressive and self.style is not None:
