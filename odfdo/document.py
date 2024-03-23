@@ -36,16 +36,14 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from .cell import Cell  # noqa: F401
 from .const import (
-    FOLDER,
     ODF_CONTENT,
     ODF_MANIFEST,
     ODF_META,
     ODF_SETTINGS,
     ODF_STYLES,
     ODF_TEMPLATES,
-    PACKAGING,
-    XML,
     ZIP,
 )
 from .container import Container
@@ -53,8 +51,10 @@ from .content import Content
 from .element import Element
 from .manifest import Manifest
 from .meta import Meta
+from .row import Row  # noqa: F401
 from .style import Style
 from .styles import Styles
+from .table import Table  # noqa: F401
 from .utils import FAMILY_ODF_STD, bytes_to_str
 from .xmlpart import XmlPart
 
