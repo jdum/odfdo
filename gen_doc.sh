@@ -1,4 +1,9 @@
 #!/bin/bash
+
+[ -f gen_doc.sh ] || {
+    echo "Not in top directory" ; exit 1
+}
+
 pip install -U pdoc
 
 [ -d doc ] && rm -fr doc

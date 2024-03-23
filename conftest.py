@@ -1,6 +1,4 @@
 """Configuration and injectable fixtures for Pytest.
-
-Reuses fixtures defined in abilian-core.
 """
 
 import os
