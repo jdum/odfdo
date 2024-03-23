@@ -134,8 +134,8 @@ class Row(Element):
         return clone
 
     def _set_repeated(self, repeated: int | None) -> None:
-        """Internal only. Set the numnber of times the row is repeated, or
-        None to delete it. Without changing cache.
+        """Method Internal only. Set the numnber of times the row is
+        repeated, or None to delete it. Without changing cache.
 
         Arguments:
 
@@ -740,6 +740,70 @@ class Row(Element):
             self.delete(cell)
         self._compute_row_cache()
         self._indexes["_rmap"] = {}
+
+    def _current_length(self) -> int:
+        """Return the current estimated length of the row.
+
+        Return: int
+        """
+        idx_repeated_seq = self.elements_repeated_sequence(
+            _xpath_cell, "table:number-columns-repeated"
+        )
+        repeated = [item[1] for item in idx_repeated_seq]
+        if repeated:
+            return sum(repeated)
+        return 1
+
+    def minimized_width(self) -> int:
+        """Return the length of the row if the last repeated sequence is
+        reduced to one.
+
+        Return: int
+        """
+        idx_repeated_seq = self.elements_repeated_sequence(
+            _xpath_cell, "table:number-columns-repeated"
+        )
+        repeated = [item[1] for item in idx_repeated_seq]
+        if repeated:
+            cell = self.last_cell()
+            if cell is not None and cell.is_empty(aggressive=True):
+                repeated[-1] = 1
+            min_width = sum(repeated)
+        else:
+            min_width = 1
+        self._compute_row_cache()
+        self._indexes["_rmap"] = {}
+        return min_width
+
+    def last_cell(self) -> Cell | None:
+        """Return the las cell of the row.
+
+        Return Cell | None
+        """
+        try:
+            return self._get_cells()[-1]  # type: ignore
+        except IndexError:
+            return None
+
+    def force_width(self, width: int) -> None:
+        """Change the repeated property of the last cell of the row
+        to comply with the required max width.
+
+        Arguments:
+
+            width -- int
+        """
+        cell = self.last_cell()
+        if cell is None or not cell.is_empty(aggressive=True):
+            return
+        repeated = cell.repeated
+        if repeated is None:
+            return
+        # empty repeated cell
+        delta = self._current_length() - width
+        if delta > 0:
+            cell._set_repeated(repeated - delta)
+            self._compute_row_cache()
 
     def is_empty(self, aggressive: bool = False) -> bool:
         """Return whether every cell in the row has no value or the value

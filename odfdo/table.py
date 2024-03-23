@@ -1099,6 +1099,68 @@ class Table(Element):
         self._indexes["_cmap"] = {}
         self._compute_table_cache()
 
+    def optimize_width(self) -> None:
+        """Remove *in-place* empty rows below and empty cells at the right of
+        the table. Keep repeated styles of empty cells but minimize row width.
+        """
+        self._optimize_width_trim_rows()
+        width = self._optimize_width_length()
+        self._optimize_width_rstrip_rows(width)
+        self._optimize_width_adapt_columns(width)
+
+    def _optimize_width_trim_rows(self) -> None:
+        count = -1  # to keep one empty row
+        for row in reversed(self._get_rows()):
+            if row.is_empty(aggressive=False):
+                count += 1
+            else:
+                break
+        if count > 0:
+            for row in reversed(self._get_rows()):
+                row.parent.delete(row)  # type: ignore
+                count -= 1
+                if count <= 0:
+                    break
+        try:
+            last_row = self._get_rows()[-1]
+            last_row._set_repeated(None)
+        except IndexError:
+            pass
+        # raz cache of rows
+        self._indexes["_tmap"] = {}
+
+    def _optimize_width_length(self) -> int:
+        return max(row.minimized_width() for row in self._get_rows())
+
+    def _optimize_width_rstrip_rows(self, width: int) -> None:
+        for row in self._get_rows():
+            row.force_width(width)
+
+    def _optimize_width_adapt_columns(self, width: int) -> None:
+        # trim columns to match minimal_width
+        columns = self._get_columns()
+        repeated_cols = self.xpath("table:table-column/@table:number-columns-repeated")
+        if not isinstance(repeated_cols, list):
+            raise TypeError
+        unrepeated = len(columns) - len(repeated_cols)
+        column_width = sum(int(r) for r in repeated_cols) + unrepeated  # type: ignore
+        diff = column_width - width
+        if diff > 0:
+            for column in reversed(columns):
+                repeated = column.repeated or 1
+                repeated = repeated - diff
+                if repeated > 0:
+                    column.repeated = repeated
+                    break
+                else:
+                    column.parent.delete(column)
+                    diff = -repeated
+                    if diff == 0:
+                        break
+        # raz cache of columns
+        self._indexes["_cmap"] = {}
+        self._compute_table_cache()
+
     def transpose(self, coord: tuple | list | str | None = None) -> None:  # noqa: C901
         """Swap *in-place* rows and columns of the table.
 
