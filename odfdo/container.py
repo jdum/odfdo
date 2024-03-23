@@ -70,11 +70,11 @@ class Container:
         """Load the content of an ODF file."""
         self.__path_like = path_or_file
         if isinstance(path_or_file, (str, Path)):
-            self.path = Path(path_or_file)
+            self.path = Path(path_or_file).expanduser()
             if not self.path.exists():
                 raise FileNotFoundError(str(self.path))
         if (self.path or isinstance(path_or_file, io.BytesIO)) and is_zipfile(
-            path_or_file
+            self.path  # type: ignore
         ):
             self.__packaging = "zip"
             return self._read_zip()
