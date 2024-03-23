@@ -199,6 +199,9 @@ class Column(Element):
             if style:
                 self.style = style
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} x={self.x}>"
+
     @property
     def clone(self) -> Column:
         clone = Element.clone.fget(self)  # type: ignore

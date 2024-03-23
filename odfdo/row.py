@@ -96,6 +96,9 @@ class Row(Element):
                 self.style = style
             self._compute_row_cache()
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} y={self.y}>"
+
     def _get_cells(self) -> list[Element]:
         return self.get_elements(_xpath_cell)
 

@@ -54,7 +54,7 @@ from .meta import Meta
 from .row import Row  # noqa: F401
 from .style import Style
 from .styles import Styles
-from .table import Table  # noqa: F401
+from .table import Table
 from .utils import FAMILY_ODF_STD, bytes_to_str
 from .xmlpart import XmlPart
 
@@ -1120,7 +1120,7 @@ class Document:
             return None
         return style.get_properties(area=area)  # type: ignore
 
-    def get_cell_style_properties(
+    def get_cell_style_properties(  # noqa: C901
         self, table: str | int, coord: tuple | list | str
     ) -> dict[str, str]:  # type: ignore
         """Return the style properties of a table cell of a .ods document,
@@ -1154,12 +1154,15 @@ class Document:
                 ):
                     return props
             column = sheet.get_column(cell.x)  # type: ignore
-            if style := column.get_default_cell_style():
-                return (
-                    self.get_style_properties("table-cell", style, "table-cell") or {}
-                )
+            style = column.get_default_cell_style()
+            if style:  # noqa: SIM102
+                if props := self.get_style_properties(
+                    "table-cell", style, "table-cell"
+                ):
+                    return props
         except ValueError:
-            return {}
+            pass
+        return {}
 
     def get_cell_background_color(
         self,

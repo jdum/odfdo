@@ -95,6 +95,9 @@ class Cell(ElementTyped):
             if style is not None:
                 self.style = style
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} x={self.x} y={self.y}>"
+
     @property
     def clone(self) -> Cell:
         clone = Element.clone.fget(self)  # type: ignore
