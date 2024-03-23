@@ -2708,7 +2708,7 @@ class Table(Element):
             cells.append(row_cells)
         for row in cells:
             for cell in row:
-                if cell._is_spanned():
+                if cell.is_spanned():
                     good = False
                     break
             if not good:

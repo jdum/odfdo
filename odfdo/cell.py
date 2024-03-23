@@ -362,7 +362,11 @@ class Cell(ElementTyped):
             return False
         return True
 
-    def _is_spanned(self) -> bool:
+    def is_spanned(self) -> bool:
+        """Return whether the cell is spanned over several cells.
+
+        Returns: True | False
+        """
         if self.tag == "table:covered-table-cell":
             return True
         if self.get_attribute("table:number-columns-spanned") is not None:
@@ -370,6 +374,8 @@ class Cell(ElementTyped):
         if self.get_attribute("table:number-rows-spanned") is not None:
             return True
         return False
+
+    _is_spanned = is_spanned  # compatibility
 
 
 register_element_class_list(Cell, (Cell._tag, "table:covered-table-cell"))

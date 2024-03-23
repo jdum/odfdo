@@ -77,14 +77,14 @@ def test_span_sp1(table):
         [1, 2, 3, 4, 5, 6, 7],
     ]
     for coord in ("a1", "a2"):
-        assert table.get_cell(coord)._is_spanned() is True
+        assert table.get_cell(coord).is_spanned() is True
     for coord in ("b1", "b2", "a3"):
-        assert table.get_cell(coord)._is_spanned() is False
+        assert table.get_cell(coord).is_spanned() is False
     assert table.set_span("a1:a2") is False
     assert table.del_span("a1:a2") is True
     assert table.del_span("a1:a2") is False
     for coord in ("a1", "a2"):
-        assert table.get_cell(coord)._is_spanned() is False
+        assert table.get_cell(coord).is_spanned() is False
 
 
 def test_span_sp1_merge(table2):
@@ -98,14 +98,14 @@ def test_span_sp1_merge(table2):
         [1, 2, 3, 4, 5, 6, 7],
     ]
     for coord in ("a1", "a2"):
-        assert table.get_cell(coord)._is_spanned() is True
+        assert table.get_cell(coord).is_spanned() is True
     for coord in ("b1", "b2", "a3"):
-        assert table.get_cell(coord)._is_spanned() is False
+        assert table.get_cell(coord).is_spanned() is False
     assert table.set_span("a1:a2") is False
     assert table.del_span("a1:a2") is True
     assert table.del_span("a1:a2") is False
     for coord in ("a1", "a2"):
-        assert table.get_cell(coord)._is_spanned() is False
+        assert table.get_cell(coord).is_spanned() is False
 
 
 def test_span_sp2(table):
@@ -122,7 +122,7 @@ def test_span_sp2(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [True, True, False, False, False, False, False],
@@ -135,7 +135,7 @@ def test_span_sp2(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -160,7 +160,7 @@ def test_span_sp2_merge(table2):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [True, True, False, False, False, False, False],
@@ -173,7 +173,7 @@ def test_span_sp2_merge(table2):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -197,7 +197,7 @@ def test_span_sp3(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, True, False, False, False, False],
@@ -210,7 +210,7 @@ def test_span_sp3(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -242,7 +242,7 @@ def test_span_sp3_merge(table2):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, True, False, False, False, False],
@@ -255,7 +255,7 @@ def test_span_sp3_merge(table2):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -279,7 +279,7 @@ def test_span_sp4(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, True],
@@ -292,7 +292,7 @@ def test_span_sp4(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -317,7 +317,7 @@ def test_span_sp42(table2):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, True],
@@ -330,7 +330,7 @@ def test_span_sp42(table2):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -354,7 +354,7 @@ def test_span_sp5(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -367,7 +367,7 @@ def test_span_sp5(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -392,7 +392,7 @@ def test_span_sp5_merge(table2):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -405,7 +405,7 @@ def test_span_sp5_merge(table2):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -429,7 +429,7 @@ def test_span_sp6(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -442,7 +442,7 @@ def test_span_sp6(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -466,7 +466,7 @@ def test_span_sp6_2zone(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -487,7 +487,7 @@ def test_span_sp6_2zone(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -500,7 +500,7 @@ def test_span_sp6_2zone(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -513,7 +513,7 @@ def test_span_sp6_2zone(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -537,7 +537,7 @@ def test_span_bigger(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -550,7 +550,7 @@ def test_span_bigger(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -575,7 +575,7 @@ def test_span_bigger_merge(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -589,7 +589,7 @@ def test_span_bigger_merge(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -617,7 +617,7 @@ def test_span_bigger_outside(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -633,7 +633,7 @@ def test_span_bigger_outside(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -663,7 +663,7 @@ def test_span_bigger_outside_merge(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
@@ -679,7 +679,7 @@ def test_span_bigger_outside_merge(table):
     for r in table.get_cells():
         test_row = []
         for cell in r:
-            test_row.append(cell._is_spanned())
+            test_row.append(cell.is_spanned())
         res.append(test_row)
     assert res == [
         [False, False, False, False, False, False, False],
