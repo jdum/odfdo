@@ -77,7 +77,7 @@ When installing odfdo, a few scripts are installed:
  - `odfdo-replace`: find a pattern (regex) in an ODF file and replace by some string.
  - `odfdo-highlight`: highlight the text matching a pattern (regex) in an ODF file.
  - `odfdo-headers`: print the headers of an ODF file.
- - `odfdo-table-shrink`: Shrink tables to optimize width and height (experimental).
+ - `odfdo-table-shrink`: shrink tables to optimize width and height (experimental).
 
 About styles: the best way to apply style is by merging styles from a template
 document into your generated document (See `odfdo-styles` script).
