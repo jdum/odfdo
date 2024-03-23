@@ -73,8 +73,9 @@ class Container:
             self.path = Path(path_or_file).expanduser()
             if not self.path.exists():
                 raise FileNotFoundError(str(self.path))
-        if (self.path or isinstance(path_or_file, io.BytesIO)) and is_zipfile(
-            self.path  # type: ignore
+            self.__path_like = self.path
+        if (self.path or isinstance(self.__path_like, io.BytesIO)) and is_zipfile(
+            self.__path_like  # type: ignore
         ):
             self.__packaging = "zip"
             return self._read_zip()
