@@ -109,6 +109,12 @@ ODF_SETTINGS = "settings.xml"
 ODF_STYLES = "styles.xml"
 ODF_MANIFEST = "META-INF/manifest.xml"
 
+# packaging
+FOLDER = "folder"
+ZIP = "ZIP"
+XML = "XML"
+PACKAGING = {FOLDER, ZIP, FOLDER}
+
 # Presentation classes (for layout)
 ODF_CLASSES = (
     "title",

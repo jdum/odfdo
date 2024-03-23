@@ -37,12 +37,16 @@ from typing import Any
 from uuid import uuid4
 
 from .const import (
+    FOLDER,
     ODF_CONTENT,
     ODF_MANIFEST,
     ODF_META,
     ODF_SETTINGS,
     ODF_STYLES,
     ODF_TEMPLATES,
+    PACKAGING,
+    XML,
+    ZIP,
 )
 from .container import Container
 from .content import Content
@@ -597,20 +601,20 @@ class Document:
     def save(
         self,
         target: str | Path | io.BytesIO | None = None,
-        packaging: str = "zip",
+        packaging: str = ZIP,
         pretty: bool = False,
         backup: bool = False,
     ) -> None:
         """Save the document, at the same place it was opened or at the given
         target path. Target can also be a file-like object. It can be saved
-        as a Zip file (default) or as files in a folder (for debugging
-        purpose). XML parts can be pretty printed.
+        as a Zip file (default), flat XML format or as files in a folder
+        (for debugging purpose). XML parts can be pretty printed.
 
         Arguments:
 
             target -- str or file-like object
 
-            packaging -- 'zip' or 'folder'
+            packaging -- 'zip', 'folder', 'xml'
 
             pretty -- bool
 
