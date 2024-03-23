@@ -6,10 +6,12 @@ import os
 
 def pytest_configure(config):
     os.environ["ODFDO_TESTING"] = "1"
+    os.environ["ODFDO_TESTING_PERFS"] = "1"
 
 
 def pytest_unconfigure(config):
-    try:
-        os.environ.pop("ODFDO_TESTING")
-    except KeyError:
-        print("ODFDO_TESTING not in environment")
+    for key in ("ODFDO_TESTING", "ODFDO_TESTING_PERFS"):
+        try:
+            os.environ.pop(key)
+        except KeyError:
+            print(f"{key} not in environment")

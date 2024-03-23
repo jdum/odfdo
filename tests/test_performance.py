@@ -16,7 +16,7 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-
+import os
 import random
 import time
 from pathlib import Path
@@ -214,5 +214,6 @@ def run_all_perf():
 
 
 def test_all_perf():
-    run_all_perf()
+    if "ODFDO_TESTING_PERFS" in os.environ:
+        run_all_perf()
     assert True
