@@ -571,7 +571,7 @@ class Document:
             manifest.add_full_path("Pictures/")
         full_path = posixpath.join("Pictures", name)
         if path is None:
-            self.container.set_part(full_path, path_or_file.read())
+            self.container.set_part(full_path, path_or_file.read())  # type:ignore
         else:
             self.container.set_part(full_path, path.read_bytes())
         manifest.add_full_path(full_path, media_type)
@@ -718,7 +718,7 @@ class Document:
             if not existing_style.name.startswith(AUTOMATIC_PREFIX):
                 continue
             try:
-                index = int(existing_style.name[len(AUTOMATIC_PREFIX) :])
+                index = int(existing_style.name[len(AUTOMATIC_PREFIX) :])  # type: ignore
             except ValueError:
                 continue
             max_index = max(max_index, index)
@@ -1110,3 +1110,66 @@ class Document:
             '<style:paragraph-properties fo:break-after="page"/></style:style>'
         )
         self.insert_style(style, automatic=False)
+
+    def get_style_properties(
+        self, family: str, name: str, area: str | None = None
+    ) -> dict[str, str] | None:
+        """Return the properties of the required style as a dict."""
+        style = self.get_style(family, name)
+        if style is None:
+            return None
+        return style.get_properties(area=area)  # type: ignore
+
+    def get_cell_style_properties(
+        self, table: str | int, coord: tuple | list | str
+    ) -> dict[str, str]:  # type: ignore
+        """Return the style properties of a table cell of a .ods document,
+        from the cell style or from the row style."""
+
+        def _get_table(table: int | str) -> Table | None:
+            table_pos = 0
+            table_name = None
+            if isinstance(table, int):
+                table_pos = table
+            elif isinstance(table, str):
+                table_name = table_name
+            else:
+                raise TypeError(f"Table parameter must be int or str: {table!r}")
+            return self.body.get_table(
+                position=table_pos, name=table_name  # type: ignore
+            )
+
+        if not (sheet := _get_table(table)):
+            return {}
+        cell = sheet.get_cell(coord, clone=False)
+        if cell.style:
+            return (
+                self.get_style_properties("table-cell", cell.style, "table-cell") or {}
+            )
+        try:
+            row = sheet.get_row(cell.y, clone=False, create=False)  # type: ignore
+            if row.style:  # noqa: SIM102
+                if props := self.get_style_properties(
+                    "table-row", row.style, "table-cell"
+                ):
+                    return props
+            column = sheet.get_column(cell.x)  # type: ignore
+            if style := column.get_default_cell_style():
+                return (
+                    self.get_style_properties("table-cell", style, "table-cell") or {}
+                )
+        except ValueError:
+            return {}
+
+    def get_cell_background_color(
+        self,
+        table: str | int,
+        coord: tuple | list | str,
+        default: str = "#ffffff",
+    ) -> str:
+        """Return the background color of a table cell of a .ods document,
+        from the cell style, or from the row or column.
+
+        If color is not defined, return default value.."""
+        found = self.get_cell_style_properties(table, coord).get("fo:background-color")
+        return found or default
