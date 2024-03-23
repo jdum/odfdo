@@ -48,6 +48,7 @@ odfdo-show = 'odfdo.scripts.show:main'
 odfdo-styles = 'odfdo.scripts.styles:main'
 odfdo-replace = 'odfdo.scripts.replace:main'
 odfdo-headers = 'odfdo.scripts.headers:main'
+odfdo-table-shrink = 'odfdo.scripts.table_shrink:main'
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
