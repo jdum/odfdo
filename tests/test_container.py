@@ -189,7 +189,7 @@ def test_repr():
     result = repr(container)
     assert result.startswith("<Container type=application/vnd.oasis.opendocument.text")
     assert " path=" in result
-    assert result.endswith("amples/example.odt>")
+    assert result.endswith("example.odt>")
 
 
 def test_str():
