@@ -27,7 +27,7 @@ packages = [{ include = "odfdo" }]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4"
-lxml = "5.1.0"
+lxml = ">=4.8.0,<6"
 
 [tool.poetry.group.docs.dependencies]
 pdoc = ">=14.4.0"
