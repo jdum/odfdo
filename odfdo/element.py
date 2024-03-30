@@ -39,8 +39,6 @@ from lxml.etree import Element as lxml_Element
 from lxml.etree import (
     XPath,
     _Element,
-    _ElementStringResult,
-    _ElementUnicodeResult,
     fromstring,
     tostring,
 )
@@ -281,9 +279,9 @@ class Text(str):
     # There's some black magic in inheriting from str
     def __init__(
         self,
-        text_result: _ElementUnicodeResult | _ElementStringResult,
+        text_result: str | bytes,
     ) -> None:
-        self.__parent = text_result.getparent()
+        self.__parent = text_result.getparent()  # type: ignore
         self.__is_text = text_result.is_text
         self.__is_tail = text_result.is_tail
 
@@ -1589,7 +1587,7 @@ class Element(CachedElement):
         result: list[Element | Text] = []
         if hasattr(elements, "__iter__"):
             for obj in elements:  # type: ignore
-                if isinstance(obj, (_ElementStringResult, _ElementUnicodeResult)):
+                if isinstance(obj, (str, bytes)):
                     result.append(Text(obj))
                 elif isinstance(obj, _Element):
                     result.append(Element.from_tag(obj))
