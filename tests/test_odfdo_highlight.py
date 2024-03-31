@@ -2,8 +2,9 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 
 import io
-import shlex
 import subprocess
+import sys
+
 from pathlib import Path
 
 from odfdo import Document
@@ -13,8 +14,8 @@ SAMPLES = Path(__file__).parent / "samples"
 SOURCE = SAMPLES / "base_text.odt"
 
 
-def run_params(params):
-    command = shlex.split(f"python {SCRIPT} {params}")
+def run_params(params: list):
+    command = [sys.executable, SCRIPT] + params
     proc = subprocess.Popen(
         command,
         stdout=subprocess.PIPE,
@@ -25,7 +26,7 @@ def run_params(params):
 
 
 def test_no_param():
-    params = ""
+    params = []
     out, err, exitcode = run_params(params)
     print(out, err, exitcode)
     assert exitcode == 2
@@ -35,7 +36,7 @@ def test_no_param():
 
 
 def test_no_style():
-    params = "pattern"
+    params = ["pattern"]
     out, err, exitcode = run_params(params)
     print(out, err, exitcode)
     assert exitcode == 1
@@ -44,7 +45,7 @@ def test_no_style():
 
 
 def test_no_file():
-    params = "-i none_file1 -o none_file2 -b pattern"
+    params = ["-i", "none_file1", "-o", "none_file2", "-b", "pattern"]
     out, err, exitcode = run_params(params)
     assert exitcode == 1
     assert b"sage:" in out
@@ -52,7 +53,7 @@ def test_no_file():
 
 
 def test_replace1():
-    params = f"-i {SOURCE} -b odfdo"
+    params = ["-i", f"{SOURCE}", "-b", "odfdo"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -65,7 +66,7 @@ def test_replace1():
 
 
 def test_replace2():
-    params = f"-i {SOURCE} -a -b This"
+    params = ["-i", f"{SOURCE}", "-a", "-b", "This"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -78,7 +79,7 @@ def test_replace2():
 
 
 def test_replace3():
-    params = f"-i {SOURCE} -c red paragraph "
+    params = ["-i", f"{SOURCE}", "-c", "red", "paragraph"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -91,7 +92,7 @@ def test_replace3():
 
 
 def test_replace4():
-    params = f"-i {SOURCE} -c red -g yellow paragraph "
+    params = [f"-i", f"{SOURCE}", "-c", "red", "-g", "yellow", "paragraph"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -104,7 +105,7 @@ def test_replace4():
 
 
 def test_help():
-    params = "--help"
+    params = ["--help"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -112,7 +113,7 @@ def test_help():
 
 
 def test_version():
-    params = "--version"
+    params = ["--version"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0

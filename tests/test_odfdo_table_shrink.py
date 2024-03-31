@@ -2,8 +2,9 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 
 import io
-import shlex
 import subprocess
+import sys
+
 from pathlib import Path
 
 from odfdo import Document
@@ -17,8 +18,8 @@ SOURCE4 = SAMPLES / "simple_table.ods"
 SOURCE5 = SAMPLES / "styled_table.ods"
 
 
-def run_params(params):
-    command = shlex.split(f"python {SCRIPT} {params}")
+def run_params(params: list):
+    command = [sys.executable, SCRIPT] + params
     proc = subprocess.Popen(
         command,
         stdout=subprocess.PIPE,
@@ -29,14 +30,14 @@ def run_params(params):
 
 
 def test_no_param():
-    params = ""
+    params = []
     out, err, exitcode = run_params(params)
     assert exitcode == 1
     assert b"usage: odfdo-table-shrink" in out
 
 
 def test_no_file():
-    params = "-i none_file1 -o none_file2"
+    params = ["-i", "none_file1", "-o", "none_file2"]
     out, err, exitcode = run_params(params)
     assert exitcode == 1
     assert b"usage:" in out
@@ -44,7 +45,7 @@ def test_no_file():
 
 
 def test_trim_1():
-    params = f"-i {SOURCE1}"
+    params = ["-i", f"{SOURCE1}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -56,7 +57,7 @@ def test_trim_1():
 
 
 def test_trim_2():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -68,7 +69,7 @@ def test_trim_2():
 
 
 def test_trim_3():
-    params = f"-i {SOURCE3}"
+    params = ["-i", f"{SOURCE3}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -84,7 +85,7 @@ def test_trim_3():
 
 
 def test_trim_4():
-    params = f"-i {SOURCE4}"
+    params = ["-i", f"{SOURCE4}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -100,7 +101,7 @@ def test_trim_4():
 
 
 def test_trim_5():
-    params = f"-i {SOURCE5}"
+    params = ["-i", f"{SOURCE5}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -116,7 +117,7 @@ def test_trim_5():
 
 
 def test_color_1_1():
-    params = f"-i {SOURCE1}"
+    params = ["-i", f"{SOURCE1}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -131,7 +132,7 @@ def test_color_1_1():
 
 
 def test_color_1_2():
-    params = f"-i {SOURCE1}"
+    params = ["-i", f"{SOURCE1}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -146,7 +147,7 @@ def test_color_1_2():
 
 
 def test_color_1_3():
-    params = f"-i {SOURCE1}"
+    params = ["-i", f"{SOURCE1}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -161,7 +162,7 @@ def test_color_1_3():
 
 
 def test_color_2_1():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -177,7 +178,7 @@ def test_color_2_1():
 
 
 def test_color_2_2():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -192,7 +193,7 @@ def test_color_2_2():
 
 
 def test_color_2_5():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -203,7 +204,7 @@ def test_color_2_5():
 
 
 def test_color_2_6():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -219,7 +220,7 @@ def test_color_2_6():
 
 
 def test_color_2_7():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -230,7 +231,7 @@ def test_color_2_7():
 
 
 def test_color_2_8():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -249,7 +250,7 @@ def test_color_2_8():
 
 
 def test_color_2_9():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -260,7 +261,7 @@ def test_color_2_9():
 
 
 def test_color_2_10():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -279,7 +280,7 @@ def test_color_2_10():
 
 
 def test_color_2_11():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -290,7 +291,7 @@ def test_color_2_11():
 
 
 def test_color_2_12():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -309,7 +310,7 @@ def test_color_2_12():
 
 
 def test_color_2_13():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -320,7 +321,7 @@ def test_color_2_13():
 
 
 def test_color_2_14():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -331,7 +332,7 @@ def test_color_2_14():
 
 
 def test_color_2_15():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -350,7 +351,7 @@ def test_color_2_15():
 
 
 def test_color_2_16():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -361,7 +362,7 @@ def test_color_2_16():
 
 
 def test_color_2_17():
-    params = f"-i {SOURCE2}"
+    params = ["-i", f"{SOURCE2}"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0

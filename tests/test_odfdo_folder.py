@@ -1,8 +1,9 @@
 # Copyright 2018-2024 Jérôme Dumonteil
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 
-import shlex
 import subprocess
+import sys
+
 from pathlib import Path
 
 from odfdo import Document
@@ -11,8 +12,8 @@ SCRIPT = Path(__file__).parent.parent / "odfdo" / "scripts" / "folder.py"
 SAMPLES = Path(__file__).parent / "samples"
 
 
-def run_params(params):
-    command = shlex.split(f"python {SCRIPT} {params}")
+def run_params(params: list):
+    command = [sys.executable, SCRIPT] + params
     proc = subprocess.Popen(
         command,
         text=True,
@@ -24,7 +25,7 @@ def run_params(params):
 
 
 def test_no_param():
-    params = ""
+    params = []
     out, err, exitcode = run_params(params)
     print(out, err, exitcode)
     assert exitcode == 2
@@ -33,7 +34,7 @@ def test_no_param():
 
 
 def test_no_file():
-    params = "none_file"
+    params = ["none_file"]
     out, err, exitcode = run_params(params)
     assert exitcode == 1
     assert "Convert standard ODF file to folder" in out
@@ -45,7 +46,7 @@ def test_folder_1(tmp_path):
     tmp_source = tmp_path / "test.odt"
     document_src.save(tmp_source)
     assert tmp_source.exists()
-    params = str(tmp_source)
+    params = [str(tmp_source)]
     out, err, exitcode = run_params(params)
     print(out)
     print(err)
@@ -59,12 +60,12 @@ def test_folder_2(tmp_path):
     document_src = Document(source)
     tmp_source = tmp_path / "test.odt"
     document_src.save(tmp_source)
-    params1 = str(tmp_source)
+    params1 = [str(tmp_source)]
     out, err, exitcode = run_params(params1)
     assert exitcode == 0
     tmp_source.unlink()
     assert not tmp_source.exists()
-    params2 = str(tmp_path / "test.odt.folder")
+    params2 = [str(tmp_path / "test.odt.folder")]
     out, err, exitcode = run_params(params2)
     assert exitcode == 0
     assert tmp_source.exists()

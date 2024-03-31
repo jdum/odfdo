@@ -2,8 +2,9 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 
 import io
-import shlex
 import subprocess
+import sys
+
 from pathlib import Path
 
 from odfdo import Document
@@ -13,8 +14,8 @@ SAMPLES = Path(__file__).parent / "samples"
 SOURCE = SAMPLES / "base_text.odt"
 
 
-def run_params(params):
-    command = shlex.split(f"python {SCRIPT} {params}")
+def run_params(params: list):
+    command = [sys.executable, SCRIPT] + params
     proc = subprocess.Popen(
         command,
         stdout=subprocess.PIPE,
@@ -25,7 +26,7 @@ def run_params(params):
 
 
 def test_no_param():
-    params = ""
+    params = []
     out, err, exitcode = run_params(params)
     assert exitcode == 2
     assert b"usage:" in err
@@ -33,7 +34,7 @@ def test_no_param():
 
 
 def test_no_file():
-    params = "-i none_file1 -o none_file2 pattern replacement"
+    params = ["-i", "none_file1", "-o", "none_file2", "pattern", "replacement"]
     out, err, exitcode = run_params(params)
     assert exitcode == 1
     assert b"usage:" in out
@@ -41,7 +42,7 @@ def test_no_file():
 
 
 def test_replace1():
-    params = f"-i {SOURCE} odfdo FOO"
+    params = ["-i", f"{SOURCE}", "odfdo", "FOO"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -52,7 +53,7 @@ def test_replace1():
 
 
 def test_replace2():
-    params = f"-i {SOURCE} 'not here' FOO"
+    params = ["-i", f"{SOURCE}", "not here", "FOO"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0
@@ -63,7 +64,7 @@ def test_replace2():
 
 
 def test_replace3():
-    params = f"-i {SOURCE} paragraph FOO"
+    params = ["-i", f"{SOURCE}", "paragraph", "FOO"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0

@@ -1,8 +1,8 @@
 # Copyright 2018-2024 Jérôme Dumonteil
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 
-import shlex
 import subprocess
+import sys
 from pathlib import Path
 
 SCRIPT = Path(__file__).parent.parent / "odfdo" / "scripts" / "styles.py"
@@ -10,7 +10,7 @@ SAMPLES = Path(__file__).parent / "samples"
 
 
 def run_params_bytes(params):
-    command = shlex.split(f"python {SCRIPT} {params}")
+    command = [sys.executable, SCRIPT] + params
     proc = subprocess.Popen(
         command,
         stdout=subprocess.PIPE,
@@ -21,7 +21,7 @@ def run_params_bytes(params):
 
 
 def test_no_param():
-    params = ""
+    params = []
     out, err, exitcode = run_params_bytes(params)
     print(out, err, exitcode)
     assert exitcode == 2
@@ -30,7 +30,7 @@ def test_no_param():
 
 
 def test_help():
-    params = "--help"
+    params = ["--help"]
     out, err, exitcode = run_params_bytes(params)
     print(out, err, exitcode)
     assert exitcode == 0
@@ -38,7 +38,7 @@ def test_help():
 
 
 def test_no_file():
-    params = "none_file"
+    params = ["none_file"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 1
     assert b"FileNotFoundError" in out
@@ -46,7 +46,7 @@ def test_no_file():
 
 def test_base():
     source = SAMPLES / "base_text.odt"
-    params = f"{source}"
+    params = [f"{source}"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     print(out)
@@ -56,7 +56,7 @@ def test_base():
 
 def test_base_auto():
     source = SAMPLES / "base_text.odt"
-    params = f"-a {source}"
+    params = ["-a", f"{source}"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"auto   used:y family:drawing-page parent: name:Mdp1" in out
@@ -65,7 +65,7 @@ def test_base_auto():
 
 def test_base_common():
     source = SAMPLES / "base_text.odt"
-    params = f"-c {source}"
+    params = ["-c", f"{source}"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"auto   used" not in out
@@ -74,7 +74,7 @@ def test_base_common():
 
 def test_base_properties():
     source = SAMPLES / "base_text.odt"
-    params = f"-p {source}"
+    params = ["-p", f"{source}"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"- style:layout-grid-lines: 20" in out
@@ -83,7 +83,7 @@ def test_base_properties():
 
 def test_base_auto_properties():
     source = SAMPLES / "base_text.odt"
-    params = f"-ap {source}"
+    params = ["-ap", f"{source}"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"- style:layout-grid-lines: 20" in out
@@ -92,7 +92,7 @@ def test_base_auto_properties():
 
 def test_base_common_properties():
     source = SAMPLES / "base_text.odt"
-    params = f"-cp {source}"
+    params = ["-cp", f"{source}"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"- style:text-underline-color: font-color" in out
@@ -101,7 +101,7 @@ def test_base_common_properties():
 
 def test_delete_fail():
     source = SAMPLES / "base_text.odt"
-    params = f"-d {source}"
+    params = ["-d", f"{source}"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 1
     assert b"Error: Will not delete in-place" in err
@@ -109,7 +109,7 @@ def test_delete_fail():
 
 def test_delete_to_stdout():
     source = SAMPLES / "base_text.odt"
-    params = f"-d -o - {source}"
+    params = ["-d", "-o", "-", f"{source}"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"23 styles removed (0 error, 0 warning)" in err
@@ -119,7 +119,7 @@ def test_delete_to_stdout():
 def test_delete_to_file(tmp_path):
     source = SAMPLES / "base_text.odt"
     dest = tmp_path / "test_deleted.odt"
-    params = f"-d -o {dest} {source}"
+    params = ["-d", "-o", f"{dest}", f"{source}"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"23 styles removed (0 error, 0 warning)" in err
@@ -129,7 +129,7 @@ def test_delete_to_file(tmp_path):
 def test_show_to_file(tmp_path):
     source = SAMPLES / "base_text.odt"
     dest = tmp_path / "styles.txt"
-    params = f"-o {dest} {source}"
+    params = ["-o", f"{dest}", f"{source}"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert not out.strip()
@@ -139,7 +139,7 @@ def test_show_to_file(tmp_path):
 def test_show_to_file2(tmp_path):
     source = SAMPLES / "base_text.odt"
     dest = tmp_path / "styles2.txt"
-    params = f"-o {dest} {source}"
+    params = ["-o", f"{dest}", f"{source}"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     content = dest.read_text()
@@ -149,7 +149,7 @@ def test_show_to_file2(tmp_path):
 
 def test_show_odp():
     source = SAMPLES / "background.odp"
-    params = f"{source}"
+    params = [f"{source}"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"common used:y family:presentation" in out
@@ -158,7 +158,7 @@ def test_show_odp():
 
 def test_show_odp2():
     source = SAMPLES / "example.odp"
-    params = f"{source}"
+    params = [f"{source}"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"common used:y family:presentation" in out
@@ -169,7 +169,7 @@ def test_merge(tmp_path):
     source = SAMPLES / "base_text.odt"
     source_styles = SAMPLES / "lpod_styles.odt"
     dest = tmp_path / "styles_text.odt"
-    params = f"-m {source_styles} -o {dest} {source}"
+    params = ["-m", f"{source_styles}", "-o", f"{dest}", f"{source}"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"Done (0 error, 0 warning)" in err
@@ -181,7 +181,7 @@ def test_merge_prez(tmp_path):
     source = SAMPLES / "example.odp"
     source_styles = SAMPLES / "background.odp"
     dest = tmp_path / "styles_text.odp"
-    params = f"-m {source_styles} -o {dest} {source}"
+    params = ["-m", f"{source_styles}", "-o", f"{dest}", f"{source}"]
     out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"Done (0 error, 0 warning)" in err
