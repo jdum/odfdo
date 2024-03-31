@@ -4,7 +4,6 @@
 import io
 import subprocess
 import sys
-
 from pathlib import Path
 
 from odfdo import Document
@@ -92,7 +91,7 @@ def test_replace3():
 
 
 def test_replace4():
-    params = [f"-i", f"{SOURCE}", "-c", "red", "-g", "yellow", "paragraph"]
+    params = ["-i", f"{SOURCE}", "-c", "red", "-g", "yellow", "paragraph"]
     out, err, exitcode = run_params(params)
     print(err)
     assert exitcode == 0

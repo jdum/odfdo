@@ -1,6 +1,5 @@
 import subprocess as sp
 import sys
-
 from pathlib import Path
 
 import pytest
@@ -17,7 +16,7 @@ def test_recipe(recipe):
     print(recipe)
     try:
         sp.run(
-            [sys.executable, recipe],  # noqa: S607
+            [sys.executable, recipe],
             stdout=sp.PIPE,
             stderr=sp.STDOUT,
             timeout=60,
