@@ -14,6 +14,12 @@ dist/
 *egg-info/
 doc.old/
 recipes_output/
+
+# copy in doc
+doc_src/src/README.md
+doc_src/src/CHANGES.md
+doc_src/src/odfdo.png
+
 # Unit test / coverage reports
 htmlcov/
 .tox/

@@ -4,9 +4,15 @@
     echo "Not in top directory" ; exit 1
 }
 
-pip install -U pdoc
+pip install -U mkdocs mkdocs-material
 
 [ -d doc ] && rm -fr doc
-mkdir doc
-cp odfdo.png doc
-pdoc -o doc --search --logo "https://raw.githubusercontent.com/jdum/odfdo/master/odfdo.png" --logo-link "https://github.com/jdum/odfdo" ./odfdo
+
+cp -f odfdo.png doc_src/src
+cp -f README.md doc_src/src
+cp -f CHANGES.md doc_src/src
+cd doc_src
+rm -fr site
+mkdocs build
+mv site ../doc
+rm -fr site

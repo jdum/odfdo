@@ -1,6 +1,6 @@
 # odfdo
-Python library for OpenDocument format (ODF)
 
+Python library for OpenDocument format (ODF)
 
 ![logo](https://raw.githubusercontent.com/jdum/odfdo/master/odfdo.png)
 
@@ -8,19 +8,17 @@ Python library for OpenDocument format (ODF)
 standard.
 
 Project:
-    https://github.com/jdum/odfdo
+https://github.com/jdum/odfdo
 
 Author:
-    jerome.dumonteil@gmail.com
+jerome.dumonteil@gmail.com
 
 License:
-    Apache License, Version 2.0
+Apache License, Version 2.0
 
 `odfdo` is a derivative work of the former `lpod-python` project.
 
-
-Installation
-============
+# Installation
 
 Installation from Pypi (recommended):
 
@@ -42,10 +40,7 @@ pytest
 
 The tests should run for a few seconds or minutes and issue no error.
 
-
-Usage
-=====
-
+# Usage
 
     from odfdo import Document, Paragraph
 
@@ -53,40 +48,34 @@ Usage
     doc.body.append(Paragraph("Hello world!"))
     doc.save("hello.odt")
 
-
-tl;dr
-=====
+# tl;dr
 
 'Intended Audience :: Developers'
 
-
-Documentation
-=============
+# Documentation
 
 There is no detailed documentation or tutorial, but:
 
- - the `recipes` folder contains more than 50 working sample scripts,
- - the `doc` folder contains an auto generated documentation.
+-   the `recipes` folder contains more than 50 working sample scripts,
+-   the `doc` folder contains an auto generated documentation.
 
 When installing odfdo, a few scripts are installed:
 
- - `odfdo-diff`: show a *diff* between two .odt document.
- - `odfdo-folder`: convert standard ODF file to folder and files, and reverse.
- - `odfdo-show`: dump text from an ODF file to the standard output, and optionally styles and meta informations.
- - `odfdo-styles`: command line interface tool to manipulate styles of ODF files.
- - `odfdo-replace`: find a pattern (regex) in an ODF file and replace by some string.
- - `odfdo-highlight`: highlight the text matching a pattern (regex) in an ODF file.
- - `odfdo-headers`: print the headers of an ODF file.
- - `odfdo-table-shrink`: shrink tables to optimize width and height (experimental).
+-   `odfdo-diff`: show a _diff_ between two .odt document.
+-   `odfdo-folder`: convert standard ODF file to folder and files, and reverse.
+-   `odfdo-show`: dump text from an ODF file to the standard output, and optionally styles and meta informations.
+-   `odfdo-styles`: command line interface tool to manipulate styles of ODF files.
+-   `odfdo-replace`: find a pattern (regex) in an ODF file and replace by some string.
+-   `odfdo-highlight`: highlight the text matching a pattern (regex) in an ODF file.
+-   `odfdo-headers`: print the headers of an ODF file.
+-   `odfdo-table-shrink`: shrink tables to optimize width and height.
 
 About styles: the best way to apply style is by merging styles from a template
 document into your generated document (See `odfdo-styles` script).
 Styles are a complex matter in ODF, so trying to generate styles programmatically
 is not recommended.
 
-
-Limitations
-===========
+# Limitations
 
 `odfdo` is intended to facilitate the generation of ODF documents,
 nevertheless a basic knowledge of the ODF format is necessary.
@@ -96,23 +85,23 @@ ODF document rendering can vary greatly from software to software. Especially th
 software.
 
 The best (only ?) way to apply style is by merging styles from a template
-document into your generated document.
+document into your generated document. However a few recipes show how to make
+programmatically some basic styles: `create_basic_text_styles`, `add_text_span_styles`).
 
-Related project
-===============
+# Related project
 
-I you work on .ods files (spreadsheet), you may be interested by these scripts that
-use this library to parse/generate .ods files:
-https://github.com/jdum/odsgenerator and https://github.com/jdum/odsparsator
+I you work on `.ods` files (spreadsheet), you may be interested by these scripts using
+this library to parse/generate `.ods` files:
+`https://github.com/jdum/odsgenerator` and `https://github.com/jdum/odsparsator`
 
-Changes from former lpod library
-================================
+# Changes from former lpod library
+
 `lpod-python` was written in 2009-2010 as a Python 2.x library,
-see: https://github.com/lpod/lpod-python
+see: `https://github.com/lpod/lpod-python`
 
 `odfdo` is an adaptation of this former project. `odfdo` main changes from `lpod`:
 
- - `odfdo` requires Python version 3.9 to 3.12. For Python 3.6 to 3.8 see previous releases.
- - API change: more pythonic.
- - include recipes.
- - use Apache 2.0 license.
+-   `odfdo` requires Python version 3.9 to 3.12. For Python 3.6 to 3.8 see previous releases.
+-   API change: more pythonic.
+-   include recipes.
+-   use Apache 2.0 license.

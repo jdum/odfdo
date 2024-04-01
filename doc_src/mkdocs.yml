@@ -1,0 +1,32 @@
+site_name: odfdo
+repo_url: https://github.com/jdum/odfdo
+docs_dir: src
+use_directory_urls: false
+markdown_extensions:
+    - smarty
+theme:
+    name: material
+    locale: en
+    features:
+        # - navigation.instant
+        # - navigation.tabs
+        # - navigation.tabs.sticky
+        # - navigation.sections
+        # - navigation.expand
+
+plugins:
+    - search:
+          highlight: true
+          prebuild_index: true
+          indexing: 'full'
+
+    - mkdocstrings:
+          default_handler: python
+          handlers:
+              python:
+                  rendering:
+                      show_source: true
+nav:
+    - Readme: README.md
+    - Changes: CHANGES.md
+    - Reference: reference.md
