@@ -329,6 +329,26 @@ class Meta(XmlPart, DcCreatorMixin):
     def initial_creator(self, creator: str) -> None:
         return self.set_initial_creator(creator)
 
+    @property
+    def printed_by(self) -> str | None:
+        """Get or set the name of the last person who printed a document.
+        <meta:printed-by>
+
+        Return: str (or None if inexistant)
+        """
+        element = self.get_element("//meta:printed-by")
+        if element is None:
+            return None
+        return element.text
+
+    @printed_by.setter
+    def printed_by(self, printed_by: str) -> None:
+        element = self.get_element("//meta:printed-by")
+        if element is None:
+            element = Element.from_tag("meta:printed-by")
+            self.get_meta_body().append(element)
+        element.text = printed_by
+
     def get_keywords(self) -> str | None:
         """Get the keywords of the document. Return the field as-is, without
         any assumption on the keyword separator.

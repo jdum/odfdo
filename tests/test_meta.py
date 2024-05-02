@@ -181,6 +181,13 @@ def test_initial_creator_property(meta):
     assert clone.initial_creator == creator
 
 
+def test_printed_by_property(meta):
+    clone = meta.clone
+    printer = "Jérôme"
+    clone.printed_by = printer
+    assert clone.printed_by == printer
+
+
 def test_get_creator(meta):
     creator = meta.creator
     expected = None
