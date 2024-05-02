@@ -67,8 +67,7 @@ def convert_folder(path_str: str) -> None:
     else:
         raise ValueError(f"Not a file or folder: {path}")
     document = Document(path)
-    pretty = out_packaging == FOLDER
-    document.save(packaging=out_packaging, pretty=pretty)
+    document.save(packaging=out_packaging, pretty=False)
 
 
 if __name__ == "__main__":  # pragma: no cover
