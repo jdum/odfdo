@@ -559,7 +559,7 @@ class Meta(XmlPart):
             value_type = "time"
             value = str(Duration.encode(value))
         else:
-            raise TypeError('unexpected type "%s" for value' % type(value))
+            raise TypeError(f'unexpected type "{type(value)}" for value')
         # Already the same element ?
         for metadata in self.get_elements("//meta:user-defined"):
             if not isinstance(metadata, Element):

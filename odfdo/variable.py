@@ -398,7 +398,7 @@ class VarChapter(Element):
         super().__init__(**kwargs)
         if self._do_init:
             if display not in VarChapter.DISPLAY_VALUE_CHOICE:
-                raise ValueError("unknown display value: %s" % display)
+                raise ValueError(f"Unknown display value: '{display}'")
             self.display = display
             if outline_level is not None:
                 self.outline_level = outline_level
@@ -430,7 +430,7 @@ class VarFileName(Element):
         super().__init__(**kwargs)
         if self._do_init:
             if display not in VarFileName.DISPLAY_VALUE_CHOICE:
-                raise ValueError("unknown display value: %s" % display)
+                raise ValueError(f"Unknown display value: '{display}'")
             self.display = display
             if fixed:
                 self.fixed = True

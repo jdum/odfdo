@@ -440,7 +440,7 @@ class Style(Element):
         if tag_or_elem is None:
             family = to_str(family)
             if family not in FAMILY_MAPPING:
-                raise ValueError("Unknown family value: %s" % family)
+                raise ValueError(f"Unknown family value: '{family}'")
             kwargs["tag"] = FAMILY_MAPPING[family]
         super().__init__(**kwargs)
         if self._do_init and family not in SUBCLASSED_STYLES:

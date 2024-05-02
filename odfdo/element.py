@@ -1256,7 +1256,7 @@ class Element(CachedElement):
                 "text:reference-mark-start",
                 "text:reference-mark-end",
             )
-            request_self = " | ".join(["self::%s" % c for c in clean_tags])
+            request_self = " | ".join([f"self::{tag}" for tag in clean_tags])
             inner = [e for e in inner if not e.xpath(request_self)]
             request = " | ".join([f"descendant::{tag}" for tag in clean_tags])
             for element in inner:
