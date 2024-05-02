@@ -75,6 +75,13 @@ def test_set_description(meta):
     assert clone.get_description() == description
 
 
+def test_description_property(meta):
+    clone = meta.clone
+    description = "评论\nnCommentaires\nComments"
+    clone.description = description
+    assert clone.description == description
+
+
 def test_get_subject(meta):
     subject = meta.get_subject()
     expected = "Sujet de sa majesté"

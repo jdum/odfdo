@@ -94,6 +94,8 @@ class Meta(XmlPart, DcCreatorMixin):
     def get_description(self) -> str | None:
         """Get the description of the document. Also known as comments.
 
+        (Also available as "self.description" property.)
+
         Return: str (or None if inexistant)
         """
         element = self.get_element("//dc:description")
@@ -107,6 +109,8 @@ class Meta(XmlPart, DcCreatorMixin):
     def set_description(self, description: str) -> None:
         """Set the description of the document. Also known as comments.
 
+        (Also available as "self.description" property.)
+
         Arguments:
 
             description -- str
@@ -118,6 +122,18 @@ class Meta(XmlPart, DcCreatorMixin):
         element.text = description
 
     set_comments = set_description
+
+    @property
+    def description(self) -> str | None:
+        """Get or set the description of a document <dc:description>.
+
+        Return: str (or None if inexistant)
+        """
+        return self.get_description()
+
+    @description.setter
+    def description(self, description: str) -> None:
+        return self.set_description(description)
 
     def get_subject(self) -> str | None:
         """Get the subject of the document.
