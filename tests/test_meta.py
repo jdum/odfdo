@@ -55,6 +55,13 @@ def test_set_title(meta):
     assert clone.get_title() == title
 
 
+def test_title_property(meta):
+    clone = meta.clone
+    title = "Nouvel intitulé"
+    clone.title = title
+    assert clone.title == title
+
+
 def test_get_description(meta):
     description = meta.get_description()
     expected = "Comments\nCommentaires\n评论"

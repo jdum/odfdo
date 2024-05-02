@@ -507,7 +507,7 @@ class Document:
                 result.append(f"{name}: {value}")
 
         meta = self.meta
-        print_info("Title", meta.get_title())
+        print_info("Title", meta.title)
         print_info("Subject", meta.get_subject())
         print_info("Language", meta.get_language())
         print_info("Modification date", meta.get_modification_date())
@@ -516,7 +516,7 @@ class Document:
         print_info("Keyword", meta.get_keywords())
         print_info("Editing duration", meta.get_editing_duration())
         print_info("Editing cycles", meta.get_editing_cycles())
-        print_info("Generator", meta.get_generator())
+        print_info("Generator", meta.generator)
 
         # Statistic
         result.append("Statistic:")

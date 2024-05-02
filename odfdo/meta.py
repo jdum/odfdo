@@ -53,6 +53,8 @@ class Meta(XmlPart, DcCreatorMixin):
 
         This is not the first heading but the title metadata.
 
+        (Also available as "self.title" property.)
+
         Return: str (or None if inexistant)
         """
         element = self.get_element("//dc:title")
@@ -65,6 +67,8 @@ class Meta(XmlPart, DcCreatorMixin):
 
         This is not the first heading but the title metadata.
 
+        (Also available as "self.title" property.)
+
         Arguments:
 
             title -- str
@@ -74,6 +78,18 @@ class Meta(XmlPart, DcCreatorMixin):
             element = Element.from_tag("dc:title")
             self.get_meta_body().append(element)
         element.text = title
+
+    @property
+    def title(self) -> str | None:
+        """Get or set the title of the document <dc:title>.
+
+        Return: str (or None if inexistant)
+        """
+        return self.get_title()
+
+    @title.setter
+    def title(self, title: str) -> None:
+        return self.set_title(title)
 
     def get_description(self) -> str | None:
         """Get the description of the document. Also known as comments.
@@ -375,7 +391,7 @@ class Meta(XmlPart, DcCreatorMixin):
     def get_generator(self) -> str | None:
         """Get the signature of the software that generated this document.
 
-        (Also available as "self.generator" getter/setter.)
+        (Also available as "self.generator" property.)
 
         Return: str (or None if inexistant)
 
@@ -389,7 +405,7 @@ class Meta(XmlPart, DcCreatorMixin):
     def set_generator(self, generator: str) -> None:
         """Set the signature of the software that generated this document.
 
-        (Also available as "self.generator" getter/setter.)
+        (Also available as "self.generator" property.)
 
         Arguments:
 

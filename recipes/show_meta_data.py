@@ -39,7 +39,8 @@ def main():
     # as Decimal (as they offer the best precision).
 
     print(f"Meta data of {document.container.path}")
-    print("Title                :", meta.get_title())
+    # print("Title                :", meta.get_title())
+    print("Title                :", meta.title)
     # print("creator              :", meta.get_creator())
     print("creator              :", meta.creator)
     print("creation date        :", meta.get_creation_date())
