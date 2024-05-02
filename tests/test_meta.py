@@ -215,11 +215,27 @@ def test_get_generator(meta):
     assert generator == expected
 
 
+def test_generator_getter(meta):
+    generator = meta.generator
+    expected = (
+        "LibreOffice/6.0.3.2$MacOSX_X86_64 "
+        "LibreOffice_project/8f48d515416608e3a835360314dac7e47fd0b821"
+    )
+    assert generator == expected
+
+
 def test_set_generator(meta):
     clone = meta.clone
     generator = "odfdo Project"
     clone.set_generator(generator)
     assert clone.get_generator() == generator
+
+
+def test_generator_setter(meta):
+    clone = meta.clone
+    generator = "odfdo Project"
+    clone.generator = generator
+    assert clone.generator == generator
 
 
 def test_generator_default_unmodified():

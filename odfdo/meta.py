@@ -376,8 +376,37 @@ class Meta(XmlPart):
             self.get_meta_body().append(element)
         element.text = str(cycles)
 
+    @property
+    def generator(self) -> str | None:
+        """Get or set the signature of the software that generated this
+        document.
+
+        Return: str (or None if inexistant)
+
+        Example::
+
+            >>> document.meta.generator
+            KOffice/2.0.0
+            >>> document.meta.generator = "Odfdo experiment"
+        """
+        element = self.get_element("//meta:generator")
+        if element is None:
+            return None
+        return element.text
+
+    @generator.setter
+    def generator(self, generator: str) -> None:
+        element = self.get_element("//meta:generator")
+        if element is None:
+            element = Element.from_tag("meta:generator")
+            self.get_meta_body().append(element)
+        element.text = generator
+        self._generator_modified = True
+
     def get_generator(self) -> str | None:
         """Get the signature of the software that generated this document.
+
+        (Also available as "self.generator" getter/setter.)
 
         Return: str (or None if inexistant)
 
@@ -386,13 +415,12 @@ class Meta(XmlPart):
             >>> document.meta.get_generator()
             KOffice/2.0.0
         """
-        element = self.get_element("//meta:generator")
-        if element is None:
-            return None
-        return element.text
+        return self.generator
 
     def set_generator(self, generator: str) -> None:
         """Set the signature of the software that generated this document.
+
+        (Also available as "self.generator" getter/setter.)
 
         Arguments:
 
@@ -402,12 +430,7 @@ class Meta(XmlPart):
 
             >>> document.meta.set_generator("Odfdo experiment")
         """
-        element = self.get_element("//meta:generator")
-        if element is None:
-            element = Element.from_tag("meta:generator")
-            self.get_meta_body().append(element)
-        element.text = generator
-        self._generator_modified = True
+        self.generator = generator
 
     def set_generator_default(self) -> None:
         """Set the signature of the software that generated this document
@@ -418,7 +441,7 @@ class Meta(XmlPart):
             >>> document.meta.set_generator_default()
         """
         if not self._generator_modified:
-            self.set_generator(GENERATOR)
+            self.generator = GENERATOR
 
     def get_statistic(self) -> dict[str, int] | None:
         """Get the statistic from the software that generated this document.
