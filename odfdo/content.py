@@ -31,13 +31,6 @@ from .xmlpart import XmlPart
 
 
 class Content(XmlPart):
-    @property
-    def body(self) -> Element:
-        body = self.root.document_body
-        if not isinstance(body, Element):
-            raise ValueError("No body found in document")  # noqa:TRY004
-        return body
-
     # The following two seem useless but they match styles API
 
     def _get_style_contexts(self, family: str | None) -> tuple:

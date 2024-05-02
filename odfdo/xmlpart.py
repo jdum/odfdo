@@ -65,6 +65,13 @@ class XmlPart:
             self.__root = Element.from_tag(tree.getroot())
         return self.__root
 
+    @property
+    def body(self) -> Element:
+        body = self.root.document_body
+        if not isinstance(body, Element):
+            raise ValueError(f"No body found in {self.part_name!r}")  # noqa:TRY004
+        return body
+
     def get_elements(self, xpath_query: str) -> list[Element | Text]:
         root = self.root
         return root.xpath(xpath_query)
