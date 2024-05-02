@@ -161,6 +161,13 @@ def test_set_bad_creation_date(meta):
         clone.set_creation_date(date)
 
 
+def test_creation_date_property(meta):
+    clone = meta.clone
+    now = datetime.now().replace(microsecond=0)
+    clone.creation_date = now
+    assert clone.creation_date == now
+
+
 def test_get_initial_creator(meta):
     creator = meta.get_initial_creator()
     expected = None

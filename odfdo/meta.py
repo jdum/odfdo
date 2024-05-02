@@ -259,6 +259,8 @@ class Meta(XmlPart, DcCreatorMixin):
     def get_creation_date(self) -> datetime | None:
         """Get the creation date of the document.
 
+        (Also available as "self.creation_date" property.)
+
         Return: datetime (or None if inexistant)
         """
         element = self.get_element("//meta:creation-date")
@@ -270,6 +272,8 @@ class Meta(XmlPart, DcCreatorMixin):
     def set_creation_date(self, date: datetime) -> None:
         """Set the creation date of the document.
 
+        (Also available as "self.creation_date" property.)
+
         Arguments:
 
             date -- datetime
@@ -279,6 +283,19 @@ class Meta(XmlPart, DcCreatorMixin):
             element = Element.from_tag("meta:creation-date")
             self.get_meta_body().append(element)
         element.text = DateTime.encode(date)
+
+    @property
+    def creation_date(self) -> datetime | None:
+        """Get or set the date and time when a document was created
+        <meta:creation-date>.
+
+        Return: str (or None if inexistant)
+        """
+        return self.get_creation_date()
+
+    @creation_date.setter
+    def creation_date(self, creation_date: datetime) -> None:
+        return self.set_creation_date(creation_date)
 
     def get_initial_creator(self) -> str | None:
         """Get the first creator of the document.
