@@ -27,7 +27,7 @@ from pathlib import Path
 
 import pytest
 
-from odfdo.const import ODF_CONTENT, ODF_EXTENSIONS
+from odfdo.const import FOLDER, ODF_CONTENT, ODF_EXTENSIONS, ZIP
 from odfdo.container import Container
 from odfdo.utils import to_bytes
 
@@ -88,8 +88,8 @@ def test_del_part():
 
 def test_save_zip(tmp_path):
     """TODO: 2 cases
-    1. from "zip" to "zip"
-    2. from "flat" to "zip"
+    1. from ZIP to ZIP
+    2. from "flat" to ZIP
     """
     container = Container()
     container.open(SAMPLES / "example.odt")
@@ -104,7 +104,7 @@ def test_save_folder(tmp_path):
     container = Container()
     container.open(SAMPLES / "example.odt")
     path1 = tmp_path / "example.odt"
-    container.save(str(path1), packaging="folder")
+    container.save(str(path1), packaging=FOLDER)
     path = tmp_path / "example.odt.folder" / "mimetype"
     assert isfile(path)
     path = tmp_path / "example.odt.folder" / "content.xml"
@@ -121,7 +121,7 @@ def test_save_folder_pathlib(tmp_path):
     container = Container()
     container.open(SAMPLES / "example.odt")
     path1 = tmp_path / "example.odt"
-    container.save(path1, packaging="folder")
+    container.save(path1, packaging=FOLDER)
     path = tmp_path / "example.odt.folder" / "mimetype"
     assert isfile(path)
     path = tmp_path / "example.odt.folder" / "content.xml"
@@ -138,13 +138,13 @@ def test_save_folder_to_zip(tmp_path):
     container = Container()
     container.open(SAMPLES / "example.odt")
     path1 = tmp_path / "example.odt"
-    container.save(path1, packaging="folder")
+    container.save(path1, packaging=FOLDER)
     path = tmp_path / "example.odt.folder" / "mimetype"
     assert isfile(path)
     new_container = Container()
     new_container.open(tmp_path / "example.odt.folder")
     path2 = tmp_path / "example_bis.odt"
-    new_container.save(path2, packaging="zip")
+    new_container.save(path2, packaging=ZIP)
     new_container_zip = Container()
     new_container_zip.open(path2)
     mimetype = new_container_zip.get_part("mimetype")
@@ -155,7 +155,7 @@ def test_load_folder(tmp_path):
     container = Container()
     container.open(SAMPLES / "example.odt")
     path1 = tmp_path / "example_f.odt"
-    container.save(path1, packaging="folder")
+    container.save(path1, packaging=FOLDER)
     new_container = Container()
     new_container.open(tmp_path / "example_f.odt.folder")
     content = new_container.get_part(ODF_CONTENT)

@@ -32,7 +32,10 @@ from copy import deepcopy
 from pathlib import Path, PurePath
 from zipfile import ZIP_DEFLATED, ZIP_STORED, BadZipfile, ZipFile, is_zipfile
 
+from lxml.etree import fromstring, tostring
+
 from .const import (
+    FOLDER,
     ODF_CONTENT,
     ODF_EXTENSIONS,
     ODF_MANIFEST,
@@ -40,6 +43,11 @@ from .const import (
     ODF_MIMETYPES,
     ODF_SETTINGS,
     ODF_STYLES,
+    OFFICE_PREFIX,
+    OFFICE_VERSION,
+    PACKAGING,
+    XML,
+    ZIP,
 )
 from .scriptutils import printwarn
 from .utils import bytes_to_str, str_to_bytes
@@ -58,7 +66,7 @@ class Container:
         self.__parts: dict[str, bytes | None] = {}
         self.__parts_ts: dict[str, int] = {}
         self.__path_like: Path | str | io.BytesIO | None = None
-        self.__packaging: str = "zip"
+        self.__packaging: str = ZIP
         self.path: Path | None = None  # or Path
         if path:
             self.open(path)
@@ -77,14 +85,14 @@ class Container:
         if (self.path or isinstance(self.__path_like, io.BytesIO)) and is_zipfile(
             self.__path_like  # type: ignore
         ):
-            self.__packaging = "zip"
+            self.__packaging = ZIP
             return self._read_zip()
         if self.path:
             is_folder = False
             with contextlib.suppress(OSError):
                 is_folder = self.path.is_dir()
             if is_folder:
-                self.__packaging = "folder"
+                self.__packaging = FOLDER
                 return self._read_folder()
         raise TypeError(f"Document format not managed by odfdo: {type(path_or_file)}.")
 
@@ -254,6 +262,36 @@ class Container:
                 continue
             dump(part_path, data)
 
+    def _xml_content(self) -> bytes:
+        mimetype = self.__parts["mimetype"].decode("utf8")
+        doc_xml = (
+            OFFICE_PREFIX.decode("utf8")
+            + f'office:version="{OFFICE_VERSION}"\n'
+            + f'office:mimetype="{mimetype}">'
+            + "</office:document>"
+        )
+        root = fromstring(doc_xml.encode("utf8"))
+        for path in ODF_META, ODF_SETTINGS, ODF_STYLES, ODF_CONTENT:
+            if path not in self.__parts:
+                printwarn(f"Missing '{path}'")
+                continue
+            part = self.__parts[path]
+            if part is None:
+                continue
+            if isinstance(part, bytes):
+                xpart = fromstring(part)
+            else:
+                xpart = part
+            print(xpart, part.__class__.__name__)
+            for child in xpart:
+                root.append(child)
+        return tostring(root, encoding="UTF-8", xml_declaration=True)
+
+    def _save_xml(self, target: Path | str) -> None:
+        """Save a XML flat ODF format from the available parts."""
+        target = Path(target).with_suffix(".xml")
+        target.write_bytes(self._xml_content())
+
     # Public API
 
     def get_parts(self) -> list[str]:
@@ -261,14 +299,14 @@ class Container:
         if not self.path:
             # maybe a file like zip archive
             return list(self.__parts.keys())
-        if self.__packaging == "zip":
+        if self.__packaging == ZIP:
             parts = []
             with ZipFile(self.path) as zf:
                 for name in zf.namelist():
                     upath = normalize_path(name)
                     parts.append(upath)
             return parts
-        elif self.__packaging == "folder":
+        elif self.__packaging == FOLDER:
             return self._get_folder_parts()
         else:
             raise ValueError("Unable to provide parts of the document")
@@ -280,7 +318,7 @@ class Container:
             part = self.__parts[path]
             if part is None:
                 raise ValueError(f'Part "{path}" is deleted')
-            if self.__packaging == "folder":
+            if self.__packaging == FOLDER:
                 cache_ts = self.__parts_ts.get(path, -1)
                 current_ts = self._get_folder_part_timestamp(path)
                 if current_ts != cache_ts:
@@ -288,9 +326,9 @@ class Container:
                     self.__parts[path] = part
                     self.__parts_ts[path] = timestamp
             return part
-        if self.__packaging == "zip":
+        if self.__packaging == ZIP:
             return self._get_zip_part(path)
-        if self.__packaging == "folder":
+        if self.__packaging == FOLDER:
             part, timestamp = self._get_folder_part(path)
             self.__parts[path] = part
             self.__parts_ts[path] = timestamp
@@ -327,11 +365,17 @@ class Container:
     @property
     def clone(self) -> Container:
         """Make a copy of this container with no path."""
-        if self.path and self.__packaging == "zip":
+        if self.path and self.__packaging == ZIP:
             self._get_all_zip_part()
         clone = deepcopy(self)
         clone.path = None
         return clone
+
+    def _backup_or_unlink(self, backup: bool, target: str | Path) -> None:
+        if backup:
+            self._do_backup(target)
+        else:
+            self._do_unlink(target)
 
     @staticmethod
     def _do_backup(target: str | Path) -> None:
@@ -349,16 +393,27 @@ class Container:
         except OSError as e:
             printwarn(str(e))
 
-    def _save_packaging(self, packaging: str | None) -> str:
+    @staticmethod
+    def _do_unlink(target: str | Path) -> None:
+        path = Path(target)
+        if path.exists():
+            try:
+                shutil.rmtree(path)
+            except OSError as e:
+                printwarn(str(e))
+
+    def _clean_save_packaging(self, packaging: str | None) -> str:
         if not packaging:
-            packaging = self.__packaging if self.__packaging else "zip"
+            packaging = self.__packaging if self.__packaging else ZIP
         packaging = packaging.strip().lower()
-        # if packaging not in ('zip', 'flat', 'folder'):
-        if packaging not in ("zip", "folder"):
+        if packaging not in PACKAGING:
             raise ValueError(f'Packaging of type "{packaging}" is not supported')
         return packaging
 
-    def _save_target(self, target: str | Path | io.BytesIO | None) -> str | io.BytesIO:
+    def _clean_save_target(
+        self,
+        target: str | Path | io.BytesIO | None,
+    ) -> str | io.BytesIO:
         if target is None:
             target = self.path
         if isinstance(target, Path):
@@ -382,16 +437,19 @@ class Container:
             )
         if not str(target).endswith(".folder"):
             target = str(target) + ".folder"
-        if backup:
-            self._do_backup(target)
-        else:
-            path = Path(target)
-            if path.exists():
-                try:
-                    shutil.rmtree(path)
-                except OSError as e:
-                    printwarn(str(e))
+        self._backup_or_unlink(backup, target)
         self._save_folder(target)
+
+    def _save_as_xml(self, target: str | Path | io.BytesIO, backup: bool) -> None:
+        if not isinstance(target, (str, Path)):
+            raise TypeError(
+                f"Saving in XML format requires a folder name, not '{target!r}'"
+            )
+        if not str(target).endswith(".xml"):
+            target = str(target) + ".xml"
+        if isinstance(target, (str, Path)) and backup:
+            self._do_backup(target)
+        self._save_xml(target)
 
     def save(
         self,
@@ -409,23 +467,25 @@ class Container:
 
             target -- str or file-like or Path
 
-            packaging -- 'zip', or for debugging purpose 'folder'
+            packaging -- 'zip', or for debugging purpose 'xml' or 'folder'
 
             backup -- boolean
         """
         parts = self.__parts
-        packaging = self._save_packaging(packaging)
+        packaging = self._clean_save_packaging(packaging)
         # Load parts else they will be considered deleted
         for path in self.get_parts():
             if path not in parts:
                 self.get_part(path)
-        target = self._save_target(target)
-        if packaging == "folder":
+        target = self._clean_save_target(target)
+        if packaging == FOLDER:
             if isinstance(target, io.BytesIO):
                 raise TypeError(
                     "Impossible to save on io.BytesIO with 'folder' packaging"
                 )
             self._save_as_folder(target, backup)
+        elif packaging == XML:
+            self._save_as_xml(target, backup)
         else:
             # default:
             self._save_as_zip(target, backup)

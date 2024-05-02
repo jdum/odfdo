@@ -70,6 +70,8 @@ def test_serialize(exemple_container):
     content_part = XmlPart(ODF_CONTENT, exemple_container)
     # differences with lxml
     serialized = content_part.serialize().replace(b"'", b"&apos;")
+    print(serialized)
+    print(content_bytes)
     assert content_bytes == serialized
 
 

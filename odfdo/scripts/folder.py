@@ -24,6 +24,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 from odfdo import Document, __version__
+from odfdo.const import FOLDER, ZIP
 
 PROG = "odfdo-folder"
 
@@ -60,13 +61,13 @@ def main() -> None:
 def convert_folder(path_str: str) -> None:
     path = Path(path_str)
     if path.is_file():
-        out_packaging = "folder"
+        out_packaging = FOLDER
     elif path.is_dir():
-        out_packaging = "zip"
+        out_packaging = ZIP
     else:
         raise ValueError(f"Not a file or folder: {path}")
     document = Document(path)
-    pretty = out_packaging == "folder"
+    pretty = out_packaging == FOLDER
     document.save(packaging=out_packaging, pretty=pretty)
 
 

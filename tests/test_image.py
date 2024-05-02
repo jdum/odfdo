@@ -26,6 +26,7 @@ from pathlib import Path
 import pytest
 
 from odfdo import Element
+from odfdo.const import FOLDER
 from odfdo.document import Document
 from odfdo.element import NEXT_SIBLING
 from odfdo.frame import Frame
@@ -84,7 +85,7 @@ def test_insert_image(tmp_path):
     assert element.url == path
     element = body.get_image(position=1)
     tmp_file = tmp_path / "frame_image.odp"
-    document.save(tmp_file, packaging="folder")
+    document.save(tmp_file, packaging=FOLDER)
     assert element.url == path
 
 

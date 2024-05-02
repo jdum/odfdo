@@ -101,11 +101,13 @@ class XmlPart:
 
     def serialize(self, pretty: bool = False) -> bytes:
         tree = self._get_tree()
-        # Lxml declaration is too exotic to me
-        data = [b'<?xml version="1.0" encoding="UTF-8"?>']
-        bytes_tree = tostring(tree, pretty_print=pretty, encoding="utf-8")
+        xml_header = b'<?xml version="1.0" encoding="UTF-8"?>\n'
+        bytes_tree = tostring(
+            tree,
+            pretty_print=pretty,
+            encoding="utf8",
+        )
         # Lxml with pretty_print is adding a empty line
         if pretty:
             bytes_tree = bytes_tree.strip()
-        data.append(bytes_tree)
-        return b"\n".join(data)
+        return xml_header + bytes_tree
