@@ -283,6 +283,8 @@ class Meta(XmlPart, DcCreatorMixin):
     def get_initial_creator(self) -> str | None:
         """Get the first creator of the document.
 
+        (Also available as "self.initial_creator" property.)
+
         Return: str (or None if inexistant)
 
         Example::
@@ -298,6 +300,8 @@ class Meta(XmlPart, DcCreatorMixin):
     def set_initial_creator(self, creator: str) -> None:
         """Set the first creator of the document.
 
+        (Also available as "self.initial_creator" property.)
+
         Arguments:
 
             creator -- str
@@ -311,6 +315,19 @@ class Meta(XmlPart, DcCreatorMixin):
             element = Element.from_tag("meta:initial-creator")
             self.get_meta_body().append(element)
         element.text = creator
+
+    @property
+    def initial_creator(self) -> str | None:
+        """Get or set the initial creator of a document
+        <meta:initial-creator>.
+
+        Return: str (or None if inexistant)
+        """
+        return self.get_initial_creator()
+
+    @initial_creator.setter
+    def initial_creator(self, creator: str) -> None:
+        return self.set_initial_creator(creator)
 
     def get_keywords(self) -> str | None:
         """Get the keywords of the document. Return the field as-is, without

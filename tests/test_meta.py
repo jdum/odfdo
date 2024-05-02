@@ -174,6 +174,13 @@ def test_set_initial_creator(meta):
     assert clone.get_initial_creator() == creator
 
 
+def test_initial_creator_property(meta):
+    clone = meta.clone
+    creator = "Hervé"
+    clone.initial_creator = creator
+    assert clone.initial_creator == creator
+
+
 def test_get_creator(meta):
     creator = meta.creator
     expected = None
