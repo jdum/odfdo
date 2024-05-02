@@ -95,6 +95,13 @@ def test_set_subject(meta):
     assert clone.get_subject() == subject
 
 
+def test_subject_property(meta):
+    clone = meta.clone
+    subject = "Θέμα"
+    clone.subject = subject
+    assert clone.subject == subject
+
+
 def test_get_language(meta):
     language = meta.get_language()
     assert language is None

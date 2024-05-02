@@ -508,7 +508,7 @@ class Document:
 
         meta = self.meta
         print_info("Title", meta.title)
-        print_info("Subject", meta.get_subject())
+        print_info("Subject", meta.subject)
         print_info("Description", meta.description)
         print_info("Language", meta.get_language())
         print_info("Modification date", meta.get_modification_date())

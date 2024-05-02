@@ -138,6 +138,8 @@ class Meta(XmlPart, DcCreatorMixin):
     def get_subject(self) -> str | None:
         """Get the subject of the document.
 
+        (Also available as "self.subject" property.)
+
         Return: str (or None if inexistant)
         """
         element = self.get_element("//dc:subject")
@@ -148,6 +150,8 @@ class Meta(XmlPart, DcCreatorMixin):
     def set_subject(self, subject: str) -> None:
         """Set the subject of the document.
 
+        (Also available as "self.subject" property.)
+
         Arguments:
 
             subject -- str
@@ -157,6 +161,18 @@ class Meta(XmlPart, DcCreatorMixin):
             element = Element.from_tag("dc:subject")
             self.get_meta_body().append(element)
         element.text = subject
+
+    @property
+    def subject(self) -> str | None:
+        """Get or set the subject of a document <dc:subject>.
+
+        Return: str (or None if inexistant)
+        """
+        return self.get_subject()
+
+    @subject.setter
+    def subject(self, subject: str) -> None:
+        return self.set_subject(subject)
 
     def get_language(self) -> str | None:
         """Get the language code of the document.
