@@ -20,9 +20,6 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-"""
-.. include:: ../README.md
-"""
 
 __all__ = [
     "AnimPar",

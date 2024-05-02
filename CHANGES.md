@@ -1,5 +1,29 @@
 # Odfdo Release Notes
 
+## [3.7.8] - 2024-05-2
+
+Fix embedded chart analysis in documents, see recipe `change_values_of_a_chart_inside_a_document.py`.
+
+### Added
+
+-   Added `change_values_of_a_chart_inside_a_document.py` recipe
+
+### Changed
+
+-   The "pretty" setting when saving the file always defaults to False. This setting should only be used for debugging purposes
+
+-   `meta.generator` can be used via a @property accessor
+
+-   (Internal change) move body() definition to xmlpart
+
+-   (Internal change) refactoring for future XML feature
+
+### Fixed
+
+-   Fix parsing of Table when parent uses "table:table-rows" kind of wrapper
+
+-   Fix a bug when a Cell contains the valid 'NaN' Decimal number
+
 ## [3.7.7] - 2024-04-1
 
 Improvement of the `lxml` dependency support.
