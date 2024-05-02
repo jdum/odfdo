@@ -30,7 +30,7 @@ from typing import Any
 from lxml.etree import _ElementTree, parse, tostring
 
 from .container import Container
-from .element import Element, Text
+from .element import Element, EText
 
 
 class XmlPart:
@@ -67,12 +67,25 @@ class XmlPart:
 
     @property
     def body(self) -> Element:
+        """Get or set the document body : 'office:body'"""
         body = self.root.document_body
         if not isinstance(body, Element):
-            raise ValueError(f"No body found in {self.part_name!r}")  # noqa:TRY004
+            raise TypeError(f"No body found in {self.part_name!r}")
         return body
 
-    def get_elements(self, xpath_query: str) -> list[Element | Text]:
+    @body.setter
+    def body(self, new_body: Element) -> None:
+        body = self.root.document_body
+        if not isinstance(body, Element):
+            raise TypeError("//office:body not found in document")
+        tail = body.tail
+        body.clear()
+        for item in new_body.children:
+            body.append(item)
+        if tail:
+            body.tail = tail
+
+    def get_elements(self, xpath_query: str) -> list[Element | EText]:
         root = self.root
         return root.xpath(xpath_query)
 
@@ -85,9 +98,9 @@ class XmlPart:
     def delete_element(self, child: Element) -> None:
         child.delete()
 
-    def xpath(self, xpath_query: str) -> list[Element | Text]:
+    def xpath(self, xpath_query: str) -> list[Element | EText]:
         """Apply XPath query to the XML part. Return list of Element or
-        Text instances translated from the nodes found.
+        EText instances translated from the nodes found.
         """
         root = self.root
         return root.xpath(xpath_query)

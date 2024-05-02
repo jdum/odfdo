@@ -23,12 +23,12 @@
 """
 from __future__ import annotations
 
-from .element import Element, Text
+from .element import Element, EText
 from .xmlpart import XmlPart
 
 
 class Manifest(XmlPart):
-    def get_paths(self) -> list[Element | Text]:
+    def get_paths(self) -> list[Element | EText]:
         """Return the list of full paths in the manifest.
 
         Return: list of str

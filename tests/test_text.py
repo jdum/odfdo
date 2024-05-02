@@ -23,7 +23,7 @@ from collections.abc import Iterable
 
 import pytest
 
-from odfdo.element import Element, Text
+from odfdo.element import Element, EText
 
 
 @pytest.fixture
@@ -37,7 +37,7 @@ def test_nodes(results):
 
 
 def test_type(results):
-    assert isinstance(results[0], Text)
+    assert isinstance(results[0], EText)
 
 
 def test_text(results):

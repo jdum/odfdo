@@ -36,12 +36,7 @@ from re import search
 from typing import Any, NamedTuple
 
 from lxml.etree import Element as lxml_Element
-from lxml.etree import (
-    XPath,
-    _Element,
-    fromstring,
-    tostring,
-)
+from lxml.etree import XPath, _Element, fromstring, tostring
 
 from .const import ODF_COLOR_PROPERTY, OFFICE_PREFIX, OFFICE_VERSION
 from .datatype import Boolean, DateTime
@@ -230,7 +225,7 @@ def _register_element_class(cls: type[Element], qname: str) -> None:
         _class_registry[tag] = cls
 
 
-class Text(str):
+class EText(str):
     """Representation of an XML text node. Created to hide the specifics of
     lxml in searching text nodes using XPath.
 
@@ -1538,18 +1533,18 @@ class Element(CachedElement):
                 element.tail = tail
             return (element, True)
 
-    def xpath(self, xpath_query: str) -> list[Element | Text]:
+    def xpath(self, xpath_query: str) -> list[Element | EText]:
         """Apply XPath query to the element and its subtree. Return list of
-        Element or Text instances translated from the nodes found.
+        Element or EText instances translated from the nodes found.
         """
         element = self.__element
         xpath_instance = xpath_compile(xpath_query)
         elements = xpath_instance(element)
-        result: list[Element | Text] = []
+        result: list[Element | EText] = []
         if hasattr(elements, "__iter__"):
             for obj in elements:  # type: ignore
                 if isinstance(obj, (str, bytes)):
-                    result.append(Text(obj))
+                    result.append(EText(obj))
                 elif isinstance(obj, _Element):
                     result.append(Element.from_tag(obj))
                 # else:
@@ -1606,21 +1601,8 @@ class Element(CachedElement):
 
     @property
     def document_body(self) -> Element | None:
-        """Return the document body : 'office:body'"""
+        """Return the first children of document body if any: 'office:body/*[1]'"""
         return self.get_element("//office:body/*[1]")
-
-    @document_body.setter
-    def document_body(self, new_body: Element) -> None:
-        """Change in place the full document body content."""
-        body = self.document_body
-        if body is None:
-            raise ValueError("//office:body not found in document")
-        tail = body.tail
-        body.clear()
-        for item in new_body.children:
-            body.append(item)
-        if tail:
-            body.tail = tail
 
     def get_formatted_text(self, context: dict | None = None) -> str:
         """This function should return a beautiful version of the text."""
@@ -2056,56 +2038,6 @@ class Element(CachedElement):
         return self._filtered_element(
             "descendant::draw:image", position, url=url, content=content
         )
-
-    # Tables
-
-    def get_tables(
-        self,
-        style: str | None = None,
-        content: str | None = None,
-    ) -> list[Element]:
-        """Return all the tables that match the criteria.
-
-        Arguments:
-
-            style -- str
-
-            content -- str regex
-
-        Return: list of Table
-        """
-        return self._filtered_elements(
-            "descendant::table:table", table_style=style, content=content
-        )
-
-    def get_table(
-        self,
-        position: int = 0,
-        name: str | None = None,
-        content: str | None = None,
-    ) -> Element | None:
-        """Return the table that matches the criteria.
-
-        Arguments:
-
-            position -- int
-
-            name -- str
-
-            content -- str regex
-
-        Return: Table or None if not found
-        """
-        if name is None and content is None:
-            result = self._filtered_element("descendant::table:table", position)
-        else:
-            result = self._filtered_element(
-                "descendant::table:table",
-                position,
-                table_name=name,
-                content=content,
-            )
-        return result
 
     # Named Range
 
@@ -3109,7 +3041,7 @@ class Element(CachedElement):
         """Return the tracked-changes part in the text body."""
         return self.get_element("//text:tracked-changes")
 
-    def get_changes_ids(self) -> list[Element | Text]:
+    def get_changes_ids(self) -> list[Element | EText]:
         """Return a list of ids that refers to a change region in the tracked
         changes list.
         """

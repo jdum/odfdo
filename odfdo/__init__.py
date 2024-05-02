@@ -28,21 +28,26 @@ __all__ = [
     "Annotation",
     "AnnotationEnd",
     "BackgroundImage",
+    "Body",
     "Bookmark",
     "BookmarkEnd",
     "BookmarkStart",
     "Cell",
     "ChangeInfo",
+    "Chart",
     "Column",
     "ConnectorShape",
     "Container",
     "Content",
     "Content",
+    "Database",
     "Document",
     "DrawFillImage",
     "DrawGroup",
     "DrawImage",
     "DrawPage",
+    "Drawing",
+    "EText",
     "Element",
     "ElementTyped",
     "EllipseShape",
@@ -50,6 +55,7 @@ __all__ = [
     "Frame",
     "Header",
     "HeaderRows",
+    "Image",
     "IndexTitle",
     "IndexTitleTemplate",
     "LAST_CHILD",
@@ -66,6 +72,7 @@ __all__ = [
     "PREV_SIBLING",
     "PageBreak",
     "Paragraph",
+    "Presentation",
     "RectangleShape",
     "Reference",
     "ReferenceMark",
@@ -76,12 +83,14 @@ __all__ = [
     "Section",
     "Spacer",
     "Span",
+    "Spreadsheet",
     "Style",
     "Styles",
     "TOC",
     "Tab",
     "TabStopStyle",
     "Table",
+    "Text",
     "Text",
     "TextChange",
     "TextChangeEnd",
@@ -132,13 +141,14 @@ __all__ = [
 ]
 
 
+from .body import Body, Chart, Database, Drawing, Image, Presentation, Spreadsheet, Text
 from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
 from .cell import Cell
 from .container import Container
 from .content import Content
 from .document import Document
 from .draw_page import DrawPage
-from .element import FIRST_CHILD, LAST_CHILD, NEXT_SIBLING, PREV_SIBLING, Element, Text
+from .element import FIRST_CHILD, LAST_CHILD, NEXT_SIBLING, PREV_SIBLING, Element, EText
 from .element_typed import ElementTyped
 from .frame import Frame, default_frame_position_style
 from .header import Header

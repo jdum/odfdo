@@ -29,7 +29,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from .element import Element, PropDef, Text, register_element_class
+from .element import Element, EText, PropDef, register_element_class
 from .utils import to_str
 
 _rsplitter = re.compile("(\n|\t|  +)")
@@ -47,13 +47,13 @@ def _get_formatted_text(  # noqa: C901
     rst_mode = context.get("rst_mode", False)
 
     result: list[str] = []
-    objects: list[Element | Text] = []
+    objects: list[Element | EText] = []
     if with_text:
         objects = element.xpath("*|text()")
     else:
         objects = [x for x in element.children]  # noqa: C416
     for obj in objects:
-        if isinstance(obj, Text):
+        if isinstance(obj, EText):
             result.append(obj)
             continue
         tag = obj.tag
