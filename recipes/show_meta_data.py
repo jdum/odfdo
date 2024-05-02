@@ -50,13 +50,12 @@ def main():
     print("subject              :", meta.subject)
     # print("description          :", meta.get_description())
     print("description          :", meta.description)
-    print("comments             :", meta.get_comments())
     print("editing cycles       :", meta.get_editing_cycles())
     print("editing duration     :", meta.get_editing_duration())
     # print("generator            :", meta.get_generator())
     print("generator            :", meta.generator)
     print("language             :", meta.get_language())
-    print("keywords             :", meta.get_keywords())
+    print("keywords             :", meta.keyword)
     print("statistics    ")
     if meta.get_statistic() is not None:
         for key, value in meta.get_statistic().items():

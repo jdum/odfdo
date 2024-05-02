@@ -514,7 +514,7 @@ class Document:
         print_info("Modification date", meta.get_modification_date())
         print_info("Creation date", meta.get_creation_date())
         print_info("Initial creator", meta.get_initial_creator())
-        print_info("Keyword", meta.get_keywords())
+        print_info("Keyword", meta.keyword)
         print_info("Editing duration", meta.get_editing_duration())
         print_info("Editing cycles", meta.get_editing_cycles())
         print_info("Generator", meta.generator)

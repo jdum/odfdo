@@ -200,6 +200,20 @@ def test_set_keywords(meta):
     assert clone.get_keywords() == keywords
 
 
+def test_keyword_property(meta):
+    clone = meta.clone
+    keywords = "Nouveaux mots-clés"
+    clone.keyword = keywords
+    assert clone.keyword == keywords
+
+
+def test_keywords_property(meta):
+    clone = meta.clone
+    keywords = "Nouveaux mots-clés"
+    clone.keywords = keywords
+    assert clone.keywords == keywords
+
+
 def test_get_editing_duration(meta):
     duration = meta.get_editing_duration()
     expected = Duration.decode("PT00H05M30S")

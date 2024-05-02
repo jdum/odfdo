@@ -316,6 +316,8 @@ class Meta(XmlPart, DcCreatorMixin):
         """Get the keywords of the document. Return the field as-is, without
         any assumption on the keyword separator.
 
+        (Also available as "self.keyword" and "self.keywords" property.)
+
         Return: str (or None if inexistant)
         """
         element = self.get_element("//meta:keyword")
@@ -327,6 +329,8 @@ class Meta(XmlPart, DcCreatorMixin):
         """Set the keywords of the document. Although the name is plural, a
         str string is required, so join your list first.
 
+        (Also available as "self.keyword" and "self.keywords" property.)
+
         Arguments:
 
             keywords -- str
@@ -336,6 +340,21 @@ class Meta(XmlPart, DcCreatorMixin):
             element = Element.from_tag("meta:keyword")
             self.get_meta_body().append(element)
         element.text = keywords
+
+    @property
+    def keyword(self) -> str | None:
+        """Get or set some keyword(s) keyword pertaining to a document
+        <dc:keyword>.
+
+        Return: str (or None if inexistant)
+        """
+        return self.get_keywords()
+
+    @keyword.setter
+    def keyword(self, keyword: str) -> None:
+        return self.set_keywords(keyword)
+
+    keywords = keyword
 
     def get_editing_duration(self) -> timedelta | None:
         """Get the time the document was edited, as reported by the
