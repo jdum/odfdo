@@ -151,8 +151,9 @@ class ElementTyped(Element):
                 raise TypeError(f'Wrong type for "office:value": {type(read_number)}')
             value = Decimal(read_number)
             # Return 3 instead of 3.0 if possible
-            if int(value) == value:
-                return (int(value), value_type)
+            with contextlib.suppress(ValueError):
+                if int(value) == value:
+                    return (int(value), value_type)
             return (value, value_type)
         if value_type == "date":
             read_attribute = self.get_attribute("office:date-value")
