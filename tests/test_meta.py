@@ -153,6 +153,19 @@ def test_set_initial_creator(meta):
     assert clone.get_initial_creator() == creator
 
 
+def test_get_creator(meta):
+    creator = meta.creator
+    expected = None
+    assert creator == expected
+
+
+def test_set_creator(meta):
+    clone = meta.clone
+    creator = "Hervé"
+    clone.creator = creator
+    assert clone.creator == creator
+
+
 def test_get_keywords(meta):
     keywords = meta.get_keywords()
     expected = "Mots-clés"

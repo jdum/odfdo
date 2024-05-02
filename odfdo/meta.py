@@ -32,6 +32,7 @@ from typing import Any
 
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element
+from .mixin_dc_creator import DcCreatorMixin
 from .utils import to_str
 from .version import __version__
 from .xmlpart import XmlPart
@@ -39,7 +40,7 @@ from .xmlpart import XmlPart
 GENERATOR = f"odfdo {__version__}"
 
 
-class Meta(XmlPart):
+class Meta(XmlPart, DcCreatorMixin):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._generator_modified: bool = False
@@ -260,38 +261,6 @@ class Meta(XmlPart):
         element = self.get_element("//meta:initial-creator")
         if element is None:
             element = Element.from_tag("meta:initial-creator")
-            self.get_meta_body().append(element)
-        element.text = creator
-
-    def get_creator(self) -> str | None:
-        """Get the creator of the document.
-
-        Return: str (or None if inexistant)
-
-        Example::
-
-            >>> document.meta.get_creator()
-            Unknown
-        """
-        element = self.get_element("//dc:creator")
-        if element is None:
-            return None
-        return element.text
-
-    def set_creator(self, creator: str) -> None:
-        """Set the creator of the document.
-
-        Arguments:
-
-            creator -- str
-
-        Example::
-
-            >>> document.meta.set_creator("Plato")
-        """
-        element = self.get_element("//dc:creator")
-        if element is None:
-            element = Element.from_tag("dc:creator")
             self.get_meta_body().append(element)
         element.text = creator
 

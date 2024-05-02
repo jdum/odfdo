@@ -30,10 +30,11 @@ from typing import Any
 
 from .datatype import DateTime
 from .element import FIRST_CHILD, LAST_CHILD, Element, register_element_class
+from .mixin_dc_creator import DcCreatorMixin
 from .paragraph import Paragraph
 
 
-class ChangeInfo(Element):
+class ChangeInfo(Element, DcCreatorMixin):
     """The "office:change-info" element represents who made a change and when.
     It may also contain a comment (one or more Paragrah "text:p" elements)
     on the change.
@@ -59,23 +60,8 @@ class ChangeInfo(Element):
     ) -> None:
         super().__init__(**kwargs)
         if self._do_init:
-            self.set_dc_creator(creator)
+            self.creator = creator or "Unknown"
             self.set_dc_date(date)
-
-    def set_dc_creator(self, creator: str | None = None) -> None:
-        """Set the creator of the change. Default for creator is 'Unknown'.
-
-        Arguments:
-
-            creator -- str (or None)
-        """
-        element = self.get_element("dc:creator")
-        if element is None:
-            element = Element.from_tag("dc:creator")
-            self.insert(element, xmlposition=FIRST_CHILD)
-        if not creator:
-            creator = "Unknown"
-        element.text = creator
 
     def set_dc_date(self, date: datetime | None = None) -> None:
         """Set the date of the change. If date is None, use current time.

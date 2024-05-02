@@ -40,7 +40,8 @@ def main():
 
     print(f"Meta data of {document.container.path}")
     print("Title                :", meta.get_title())
-    print("creator              :", meta.get_creator())
+    # print("creator              :", meta.get_creator())
+    print("creator              :", meta.creator)
     print("creation date        :", meta.get_creation_date())
     print("modification date    :", meta.get_modification_date())
     print("initial creator      :", meta.get_initial_creator())

@@ -1647,24 +1647,6 @@ class Element(CachedElement):
     # Dublin core
 
     @property
-    def dc_creator(self) -> str | None:
-        """Get dc:creator value.
-
-        Return: str (or None if inexistant)
-        """
-        return self._get_inner_text("dc:creator")
-
-    @dc_creator.setter
-    def dc_creator(self, creator: str) -> None:
-        """Set dc:creator value.
-
-        Arguments:
-
-            creator -- str
-        """
-        self._set_inner_text("dc:creator", creator)
-
-    @property
     def dc_date(self) -> datetime | None:
         """Get the dc:date value.
 
