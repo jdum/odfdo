@@ -40,6 +40,7 @@ from .cell import Cell  # noqa: F401
 from .const import (
     ODF_CONTENT,
     ODF_MANIFEST,
+    ODF_MANIFEST_NAME,
     ODF_META,
     ODF_SETTINGS,
     ODF_STYLES,
@@ -120,13 +121,14 @@ def _get_part_path(path: str) -> str:
 def _get_part_class(
     path: str,
 ) -> type[XmlPart] | None:
+    name = Path(path).name
     return {
         ODF_CONTENT: Content,
         ODF_META: Meta,
         ODF_SETTINGS: XmlPart,
         ODF_STYLES: Styles,
-        ODF_MANIFEST: Manifest,
-    }.get(path)
+        ODF_MANIFEST_NAME: Manifest,
+    }.get(name)
 
 
 def container_from_template(template: str | Path | io.BytesIO) -> Container:

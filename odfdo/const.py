@@ -108,6 +108,7 @@ ODF_META = "meta.xml"
 ODF_SETTINGS = "settings.xml"
 ODF_STYLES = "styles.xml"
 ODF_MANIFEST = "META-INF/manifest.xml"
+ODF_MANIFEST_NAME = "manifest.xml"
 
 OFFICE_VERSION = "1.1"
 

@@ -110,3 +110,9 @@ def test_repr(exemple_container):
 def test_str(exemple_container):
     content_part = XmlPart(ODF_CONTENT, exemple_container)
     assert str(content_part) == repr(content_part)
+
+
+def test_get_body(exemple_container):
+    content_part = XmlPart(ODF_CONTENT, exemple_container)
+    body = content_part.body
+    assert body.tag == "office:text"

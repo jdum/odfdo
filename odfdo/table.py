@@ -57,10 +57,18 @@ from .utils import (
     translate_from_any,
 )
 
-_xpath_row = xpath_compile("table:table-row")
-_xpath_row_idx = xpath_compile("(table:table-row)[$idx]")
-_xpath_column = xpath_compile("table:table-column")
-_xpath_column_idx = xpath_compile("(table:table-column)[$idx]")
+_xpath_row = xpath_compile(
+    "table:table-row|table:table-rows/table:table-row|table:table-header-rows/table:table-row"
+)
+_xpath_row_idx = xpath_compile(
+    "(table:table-row|table:table-rows/table:table-row|table:table-header-rows/table:table-row)[$idx]"
+)
+_xpath_column = xpath_compile(
+    "table:table-column|table:table-columns/table:table-column|table:table-header-columns/table:table-column"
+)
+_xpath_column_idx = xpath_compile(
+    "(table:table-column|table:table-columns/table:table-column|table:table-header-columns/table:table-column)[$idx]"
+)
 
 
 def _table_name_check(name: Any) -> str:
