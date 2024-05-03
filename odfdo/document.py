@@ -516,7 +516,7 @@ class Document:
         print_info("Initial creator", meta.initial_creator)
         print_info("Keyword", meta.keyword)
         print_info("Editing duration", meta.get_editing_duration())
-        print_info("Editing cycles", meta.get_editing_cycles())
+        print_info("Editing cycles", meta.editing_cycles)
         print_info("Generator", meta.generator)
 
         # Statistic

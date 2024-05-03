@@ -539,6 +539,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Get the number of times the document was edited, as reported by
         the generator.
 
+        (Also available as "self.editing_cycles" property.)
+
         Return: int (or None if inexistant)
         """
         element = self.get_element("//meta:editing-cycles")
@@ -549,6 +551,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     def set_editing_cycles(self, cycles: int) -> None:
         """Set the number of times the document was edited.
+
+        (Also available as "self.editing_cycles" property.)
 
         Arguments:
 
@@ -563,6 +567,22 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             element = Element.from_tag("meta:editing-cycles")
             self.get_meta_body().append(element)
         element.text = str(cycles)
+
+    @property
+    def editing_cycles(self) -> int | None:
+        """Get or set the number of times a document has been edited
+        <meta:editing-cycles>.
+
+        When a document is created, this value is set to 1. Each time
+        a document is saved, the editing-cycles number is incremented by 1.
+
+        Return: int (or None if inexistant)
+        """
+        return self.get_editing_cycles()
+
+    @editing_cycles.setter
+    def editing_cycles(self, cycles: int) -> None:
+        return self.set_editing_cycles(cycles)
 
     @property
     def generator(self) -> str | None:

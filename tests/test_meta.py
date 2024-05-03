@@ -295,6 +295,14 @@ def test_set_editing_cycles(meta):
     assert clone.get_editing_cycles() == cycles
 
 
+def test_editing_cycles_property(meta):
+    clone = meta.clone
+    cycles = 1  # I swear it was a first shot!
+    clone.editing_cycles = cycles
+    assert clone.editing_cycles == cycles
+    assert clone.get_editing_cycles() == cycles
+
+
 def test_set_bad_editing_cycles(meta):
     clone = meta.clone
     cycles = "3"
