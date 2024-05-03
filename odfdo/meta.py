@@ -179,7 +179,9 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return self.set_subject(subject)
 
     def get_language(self) -> str | None:
-        """Get the language code of the document.
+        """Get the default language of the document.
+
+        (Also available as "self.language" property.)
 
         Return: str (or None if inexistant)
 
@@ -194,7 +196,9 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return element.text
 
     def set_language(self, language: str) -> None:
-        """Set the language code of the document.
+        """Set the default language of the document.
+
+        (Also available as "self.language" property.)
 
         Arguments:
 
@@ -235,6 +239,18 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         if not test_part1(parts[0]):
             return False
         return all(test_part2(p) for p in parts[1:])
+
+    @property
+    def language(self) -> str | None:
+        """Get or set the default language of the document <dc:language>.
+
+        Return: str (or None if inexistant)
+        """
+        return self.get_language()
+
+    @language.setter
+    def language(self, language: str) -> None:
+        return self.set_language(language)
 
     def get_creation_date(self) -> datetime | None:
         """Get the creation date of the document.

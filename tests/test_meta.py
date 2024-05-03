@@ -124,6 +124,14 @@ def test_set_bad_language(meta):
         clone.set_language(language)
 
 
+def test_language_property(meta):
+    clone = meta.clone
+    language = "en-US"
+    clone.language = language
+    assert clone.language == language
+    assert clone.get_language() == language
+
+
 def test_get_modification_date(meta):
     date = meta.get_modification_date()
     expected = DateTime.decode("2009-07-31T15:59:13")

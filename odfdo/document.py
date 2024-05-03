@@ -171,7 +171,7 @@ class Document:
         templates documents provided with this library, which, as templates,
         are not really empty. It may be useful to clear the newly created
         document: document.body.clear(), or adjust meta informations like
-        description or default language: document.meta.set_language('fr-FR')
+        description or default language: document.meta.language = 'fr-FR'
 
     If the argument is not a known template type, or is a Path,
     Document(file) will load the content of the ODF file.
@@ -510,7 +510,7 @@ class Document:
         print_info("Title", meta.title)
         print_info("Subject", meta.subject)
         print_info("Description", meta.description)
-        print_info("Language", meta.get_language())
+        print_info("Language", meta.language)
         print_info("Modification date", meta.date)
         print_info("Creation date", meta.creation_date)
         print_info("Initial creator", meta.initial_creator)

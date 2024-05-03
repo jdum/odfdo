@@ -57,7 +57,8 @@ def main():
     print("editing duration     :", meta.get_editing_duration())
     # print("generator            :", meta.get_generator())
     print("generator            :", meta.generator)
-    print("language             :", meta.get_language())
+    # print("language             :", meta.get_language())
+    print("language             :", meta.language)
     print("keywords             :", meta.keyword)
     print("statistics    ")
     if meta.get_statistic() is not None:
