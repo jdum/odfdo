@@ -32,6 +32,7 @@ from typing import Any
 
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element
+from .meta_template import MetaTemplate
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
 from .utils import to_str
@@ -304,6 +305,31 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         if date is None:
             date = datetime.now()
         element.text = DateTime.encode(date)
+
+    def get_meta_template(self) -> MetaTemplate | None:
+        """Get the MetaTemplate <meta:template> element or None."""
+        element = self.get_element("//meta:template")
+        if element is None:
+            return None
+        return element
+
+    @property
+    def meta_template(self) -> MetaTemplate | None:
+        """Get the MetaTemplate <meta:template> element or None."""
+        return self.get_meta_template()
+
+    def set_meta_template(
+        self,
+        date: datetime | None = None,
+        href: str | None = "",
+        title: str | None = "",
+    ) -> None:
+        """Set the MetaTemplate <meta:template> element."""
+        template = MetaTemplate(date=date, href=href, title=title)
+        current = self.meta_template
+        if isinstance(current, MetaTemplate):
+            current.delete()
+        self.get_meta_body().append(template)
 
     def get_initial_creator(self) -> str | None:
         """Get the first creator of the document.

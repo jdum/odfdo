@@ -66,6 +66,7 @@ __all__ = [
     "ListItem",
     "Manifest",
     "Meta",
+    "MetaTemplate",
     "NEXT_SIBLING",
     "NamedRange",
     "Note",
@@ -158,6 +159,7 @@ from .link import Link
 from .list import List, ListItem
 from .manifest import Manifest
 from .meta import Meta
+from .meta_template import MetaTemplate
 from .note import Annotation, AnnotationEnd, Note
 from .paragraph import LineBreak, PageBreak, Paragraph, Spacer, Span, Tab
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart

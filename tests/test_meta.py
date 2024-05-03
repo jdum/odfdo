@@ -32,6 +32,7 @@ from odfdo.const import ODF_META
 from odfdo.datatype import DateTime, Duration
 from odfdo.document import Document
 from odfdo.meta import GENERATOR
+from odfdo.meta_template import MetaTemplate
 
 META_DOC = Path(__file__).parent / "samples" / "meta.odt"
 
@@ -403,3 +404,20 @@ def test_get_user_defined_metadata_of_name(meta):
     metadata = meta.get_user_defined_metadata_of_name(ref)
     expected = {"name": ref, "text": "true", "value": True, "value_type": "boolean"}
     assert metadata == expected
+
+
+def test_no_meta_template(meta):
+    clone = meta.clone
+    template = clone.meta_template
+    assert template is None
+
+
+def test_set_meta_template(meta):
+    clone = meta.clone
+    now = datetime.now().replace(microsecond=0)
+    clone.set_meta_template(date=now, href="some url", title="some title")
+    template = clone.meta_template
+    assert isinstance(template, MetaTemplate)
+    assert template.date == DateTime.encode(now)
+    assert template.href == "some url"
+    assert template.title == "some title"
