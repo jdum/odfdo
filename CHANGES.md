@@ -1,5 +1,29 @@
 # Odfdo Release Notes
 
+## [3.7.9] - 2024-05-3
+
+-   Refactor the Body access methods, creating relevant a Body class and related sub-classes. Moved some access method from the Element class to relevant Body sub-classes.
+
+-   Refactor metadata methods to permit access throuh @property (the legacy get\_\* and set\_\* methods are still available).
+
+-   Added a few metadata elements from the ODF standard (hyperlink-behaviour, auto-reload, template, print-dateprinted-by)
+
+### Added
+
+-   Added `MetaAutoReload` class
+-   Added `MetaHyperlinkBehaviour` class
+-   Added `MetaTemplate` class
+-   Added `DcCreatorMixin` class
+-   Added `DcDateMixin` class
+-   Added `Body` class
+-   Added `Chart` class
+-   Added `Database` class
+-   Added `Drawing` class
+-   Added `Image` class
+-   Added `Presentation` class
+-   Added `Spreadsheet` class
+-   Added `Text` class (renaming the previous internal `Text` class to `EText`)
+
 ## [3.7.8] - 2024-05-2
 
 Fix embedded chart analysis in documents, see recipe `change_values_of_a_chart_inside_a_document.py`.
