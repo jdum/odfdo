@@ -55,15 +55,16 @@ def main():
     print("description          :", meta.description)
     # print("editing cycles       :", meta.get_editing_cycles())
     print("editing cycles       :", meta.editing_cycles)
-    print("editing duration     :", meta.get_editing_duration())
+    # print("editing duration     :", meta.get_editing_duration())
+    print("editing duration     :", meta.editing_duration)
     # print("generator            :", meta.get_generator())
     print("generator            :", meta.generator)
     # print("language             :", meta.get_language())
     print("language             :", meta.language)
     print("keywords             :", meta.keyword)
     print("statistics    ")
-    if meta.get_statistic() is not None:
-        for key, value in meta.get_statistic().items():
+    if meta.statistic is not None:
+        for key, value in meta.statistic.items():
             print(f"   {key[5:]:<18}: {value}")
     if meta.get_user_defined_metadata() is not None:
         print("user defined metadata")

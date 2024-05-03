@@ -275,6 +275,14 @@ def test_set_editing_duration(meta):
     assert clone.get_editing_duration() == duration
 
 
+def test_editing_duration_property(meta):
+    clone = meta.clone
+    duration = timedelta(1, 2, 0, 0, 5, 6, 7)
+    clone.editing_duration = duration
+    assert clone.editing_duration == duration
+    assert clone.get_editing_duration() == duration
+
+
 def test_set_bad_editing_duration(meta):
     clone = meta.clone
     duration = "PT00H01M27S"
@@ -387,6 +395,23 @@ def test_set_statistic(meta):
         "meta:non-whitespace-character-count": 24,
     }
     clone.set_statistic(statistic)
+    assert clone.get_statistic() == statistic
+
+
+def test_statistic_property(meta):
+    clone = meta.clone
+    statistic = {
+        "meta:table-count": 1,
+        "meta:image-count": 2,
+        "meta:object-count": 3,
+        "meta:page-count": 4,
+        "meta:paragraph-count": 5,
+        "meta:word-count": 6,
+        "meta:character-count": 7,
+        "meta:non-whitespace-character-count": 24,
+    }
+    clone.statistic = statistic
+    assert clone.statistic == statistic
     assert clone.get_statistic() == statistic
 
 

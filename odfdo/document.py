@@ -515,13 +515,13 @@ class Document:
         print_info("Creation date", meta.creation_date)
         print_info("Initial creator", meta.initial_creator)
         print_info("Keyword", meta.keyword)
-        print_info("Editing duration", meta.get_editing_duration())
+        print_info("Editing duration", meta.editing_duration)
         print_info("Editing cycles", meta.editing_cycles)
         print_info("Generator", meta.generator)
 
         # Statistic
         result.append("Statistic:")
-        statistic = meta.get_statistic()
+        statistic = meta.statistic
         if statistic:
             for name, data in statistic.items():
                 result.append(f"  - {name[5:].replace('-', ' ').capitalize()}: {data}")

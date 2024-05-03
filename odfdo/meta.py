@@ -512,6 +512,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Get the time the document was edited, as reported by the
         generator.
 
+        (Also available as "self.editing_duration" property.)
+
         Return: timedelta (or None if inexistant)
         """
         element = self.get_element("//meta:editing-duration")
@@ -522,6 +524,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     def set_editing_duration(self, duration: timedelta) -> None:
         """Set the time the document was edited.
+
+        (Also available as "self.editing_duration" property.)
 
         Arguments:
 
@@ -534,6 +538,19 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             element = Element.from_tag("meta:editing-duration")
             self.get_meta_body().append(element)
         element.text = Duration.encode(duration)
+
+    @property
+    def editing_duration(self) -> timedelta | None:
+        """Get or set the total time spent editing a document
+        <meta:editing-duration>.
+
+        Return: timedelta (or None if inexistant)
+        """
+        return self.get_editing_duration()
+
+    @editing_duration.setter
+    def editing_duration(self, duration: timedelta) -> None:
+        return self.set_editing_duration(duration)
 
     def get_editing_cycles(self) -> int | None:
         """Get the number of times the document was edited, as reported by
@@ -652,7 +669,9 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             self.generator = GENERATOR
 
     def get_statistic(self) -> dict[str, int] | None:
-        """Get the statistic from the software that generated this document.
+        """Get the statistics about a document.
+
+        (Also available as "self.statistic" property.)
 
         Return: dict (or None if inexistant)
 
@@ -676,8 +695,9 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return statistic
 
     def set_statistic(self, statistic: dict[str, int]) -> None:
-        """Set the statistic for the documents: number of words, paragraphs,
-        etc.
+        """Set the statistics about a document.
+
+        (Also available as "self.statistic" property.)
 
         Arguments:
 
@@ -703,6 +723,30 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             except ValueError as e:
                 raise TypeError("Statistic value must be a int") from e
             element.set_attribute(to_str(key), str(ivalue))
+
+    @property
+    def statistic(self) -> dict[str, int] | None:
+        """Get or set the statistics about a document
+        <meta:document-statistic>.
+
+        Return: dict (or None if inexistant)
+
+        Example::
+
+            >>> document.get_statistic():
+            {'meta:table-count': 1,
+             'meta:image-count': 2,
+             'meta:object-count': 3,
+             'meta:page-count': 4,
+             'meta:paragraph-count': 5,
+             'meta:word-count': 6,
+             'meta:character-count': 7}
+        """
+        return self.get_statistic()
+
+    @statistic.setter
+    def statistic(self, statistic: dict[str, int]) -> None:
+        return self.set_statistic(statistic)
 
     def get_user_defined_metadata(self) -> dict[str, Any]:
         """Return a dict of str/value mapping.
