@@ -33,6 +33,7 @@ from typing import Any
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element
 from .meta_auto_reload import MetaAutoReload
+from .meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from .meta_template import MetaTemplate
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
@@ -351,6 +352,32 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         if isinstance(current, MetaAutoReload):
             current.delete()
         self.get_meta_body().append(autoreload)
+
+    def get_hyperlink_behaviour(self) -> MetaHyperlinkBehaviour | None:
+        """Get the MetaHyperlinkBehaviour <meta:hyperlink-behaviour> element or None."""
+        element = self.get_element("//meta:hyperlink-behaviour")
+        if element is None:
+            return None
+        return element
+
+    @property
+    def hyperlink_behaviour(self) -> MetaAutoReload | None:
+        """Get the MetaHyperlinkBehaviour <meta:hyperlink-behaviour> element or None."""
+        return self.get_hyperlink_behaviour()
+
+    def set_hyperlink_behaviour(
+        self,
+        target_frame_name: str = "_blank",
+        show: str = "replace",
+    ) -> None:
+        """Set the MetaHyperlinkBehaviour <meta:hyperlink-behaviour> element."""
+        behaviour = MetaHyperlinkBehaviour(
+            target_frame_name=target_frame_name, show=show
+        )
+        current = self.hyperlink_behaviour
+        if isinstance(current, MetaHyperlinkBehaviour):
+            current.delete()
+        self.get_meta_body().append(behaviour)
 
     def get_initial_creator(self) -> str | None:
         """Get the first creator of the document.

@@ -67,6 +67,7 @@ __all__ = [
     "Manifest",
     "Meta",
     "MetaAutoReload",
+    "MetaHyperlinkBehaviour",
     "MetaTemplate",
     "NEXT_SIBLING",
     "NamedRange",
@@ -161,6 +162,7 @@ from .list import List, ListItem
 from .manifest import Manifest
 from .meta import Meta
 from .meta_auto_reload import MetaAutoReload
+from .meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from .meta_template import MetaTemplate
 from .note import Annotation, AnnotationEnd, Note
 from .paragraph import LineBreak, PageBreak, Paragraph, Spacer, Span, Tab

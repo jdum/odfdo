@@ -33,6 +33,7 @@ from odfdo.datatype import DateTime, Duration
 from odfdo.document import Document
 from odfdo.meta import GENERATOR
 from odfdo.meta_auto_reload import MetaAutoReload
+from odfdo.meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from odfdo.meta_template import MetaTemplate
 
 META_DOC = Path(__file__).parent / "samples" / "meta.odt"
@@ -440,4 +441,22 @@ def test_set_meta_auto_reload(meta):
     assert reload.href == "some url"
     assert repr(reload) == (
         "<MetaAutoReload tag=meta:auto-reload href=some url delay=0:00:15>"
+    )
+
+
+def test_no_hyperlink_behaviour(meta):
+    clone = meta.clone
+    behaviour = clone.hyperlink_behaviour
+    assert behaviour is None
+
+
+def test_set_hyperlink_behaviour(meta):
+    clone = meta.clone
+    clone.set_hyperlink_behaviour(target_frame_name="some_frame", show="_top")
+    behaviour = clone.hyperlink_behaviour
+    assert isinstance(behaviour, MetaHyperlinkBehaviour)
+    assert behaviour.show == "_top"
+    assert behaviour.target_frame_name == "some_frame"
+    assert repr(behaviour) == (
+        "<MetaHyperlinkBehaviour tag=meta:hyperlink-behaviour target=some_frame show=_top>"
     )
