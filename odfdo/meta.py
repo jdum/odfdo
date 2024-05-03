@@ -270,13 +270,40 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Get or set the date and time when a document was created
         <meta:creation-date>.
 
-        Return: str (or None if inexistant)
+        If provided datetime is None, use current time.
+
+        Return: datetime (or None if inexistant)
         """
         return self.get_creation_date()
 
     @creation_date.setter
-    def creation_date(self, creation_date: datetime) -> None:
-        return self.set_creation_date(creation_date)
+    def creation_date(self, date: datetime | None = None) -> None:
+        return self.set_creation_date(date)
+
+    @property
+    def print_date(self) -> datetime | None:
+        """Get or set the date and time when a document when a document was last printed
+        <meta:print-date>
+
+        If provided datetime is None, use current time.
+
+        Return: datetime (or None if inexistant)
+        """
+        element = self.get_element("//meta:print-date")
+        if element is None:
+            return None
+        date = element.text
+        return DateTime.decode(date)
+
+    @print_date.setter
+    def print_date(self, date: datetime | None = None) -> None:
+        element = self.get_element("//meta:print-date")
+        if element is None:
+            element = Element.from_tag("meta:print-date")
+            self.get_meta_body().append(element)
+        if date is None:
+            date = datetime.now()
+        element.text = DateTime.encode(date)
 
     def get_initial_creator(self) -> str | None:
         """Get the first creator of the document.

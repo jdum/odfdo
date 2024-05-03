@@ -150,6 +150,13 @@ def test_set_bad_modication_date(meta):
         clone.set_modification_date(date)
 
 
+def test_print_date_property(meta):
+    clone = meta.clone
+    now = datetime.now().replace(microsecond=0)
+    clone.print_date = now
+    assert clone.print_date == now
+
+
 def test_get_creation_date(meta):
     date = meta.get_creation_date()
     expected = datetime(2009, 7, 31, 15, 57, 37)

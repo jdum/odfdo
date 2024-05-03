@@ -70,6 +70,8 @@ class DcDateMixin:
     def date(self) -> datetime | None:
         """Get or set the <dc:date> element.
 
+        If provided datetime is None, use current time.
+
         The <dc:date> element specifies the date and time when the
         document was last modified (<office:meta>), when an annotation
         was created (<office:annotation>), when a change was made
