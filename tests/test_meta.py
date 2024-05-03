@@ -442,6 +442,39 @@ def test_set_user_defined_metadata(meta):
     assert metadata == expected
 
 
+def test_user_defined_metadata_property_getter(meta):
+    # A new value
+    meta.set_user_defined_metadata("Prop5", 1)
+    # Change a value
+    meta.set_user_defined_metadata("Référence", False)
+    expected = {
+        "Achevé à la date": datetime(2009, 7, 31),
+        "Numéro du document": Decimal("3"),
+        "Référence": False,
+        "Vérifié par": "Moi-même",
+        "Prop5": Decimal("1"),
+    }
+    metadata = meta.user_defined_metadata
+    assert metadata == expected
+
+
+def test_user_defined_metadata_clear(meta):
+    meta.clear_user_defined_metadata()
+    metadata = meta.user_defined_metadata
+    assert metadata == {}
+
+
+def test_user_defined_metadata_property_setter(meta):
+    new_data = {
+        "Achevé le date": datetime(2012, 7, 31),
+        "Numéro document": Decimal("4"),
+        "Référence": True,
+    }
+    meta.user_defined_metadata = new_data
+    assert meta.user_defined_metadata == new_data
+    assert meta.get_user_defined_metadata() == new_data
+
+
 def test_get_user_defined_metadata_of_name(meta):
     ref = "Référence"
     metadata = meta.get_user_defined_metadata_of_name(ref)

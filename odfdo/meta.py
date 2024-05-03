@@ -749,7 +749,11 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return self.set_statistic(statistic)
 
     def get_user_defined_metadata(self) -> dict[str, Any]:
-        """Return a dict of str/value mapping.
+        """Get all additional user-defined metadata for a document.
+
+        (Also available as "self.user_defined_metadata" property.)
+
+        Return a dict of str/value mapping.
 
         Value types can be: Decimal, date, time, boolean or str.
         """
@@ -764,6 +768,31 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             value = self._get_meta_value(item)
             result[name] = value
         return result
+
+    def clear_user_defined_metadata(self) -> None:
+        """Remove all user-defined metadata."""
+        while True:
+            element = self.get_element("//meta:user-defined")
+            if isinstance(element, Element):
+                element.delete()
+                continue
+            break
+
+    @property
+    def user_defined_metadata(self) -> dict[str, Any]:
+        """Get or set all additional user-defined metadata for a document.
+
+        Return a dict of str/value mapping.
+
+        Value types can be: Decimal, date, time, boolean or str.
+        """
+        return self.get_user_defined_metadata()
+
+    @user_defined_metadata.setter
+    def user_defined_metadata(self, metadata: dict[str, Any]) -> None:
+        self.clear_user_defined_metadata()
+        for key, val in metadata.items():
+            self.set_user_defined_metadata(name=key, value=val)
 
     def get_user_defined_metadata_of_name(self, keyname: str) -> dict[str, Any] | None:
         """Return the content of the user defined metadata of that name.

@@ -66,9 +66,10 @@ def main():
     if meta.statistic is not None:
         for key, value in meta.statistic.items():
             print(f"   {key[5:]:<18}: {value}")
-    if meta.get_user_defined_metadata() is not None:
+    user_defined = meta.user_defined_metadata
+    if user_defined:
         print("user defined metadata")
-        for key, value in meta.get_user_defined_metadata().items():
+        for key, value in user_defined.items():
             print(f"   {key[5:]:<18}: {value}")
 
     # A quick way to have all of those informations:

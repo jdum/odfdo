@@ -528,7 +528,7 @@ class Document:
 
         # User defined metadata
         result.append("User defined metadata:")
-        user_metadata = meta.get_user_defined_metadata()
+        user_metadata = meta.user_defined_metadata
         for name, data2 in user_metadata.items():
             result.append(f"  - {name}: {data2}")
 
