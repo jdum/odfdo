@@ -28,13 +28,13 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from .datatype import DateTime
 from .element import FIRST_CHILD, LAST_CHILD, Element, register_element_class
 from .mixin_dc_creator import DcCreatorMixin
+from .mixin_dc_date import DcDateMixin
 from .paragraph import Paragraph
 
 
-class ChangeInfo(Element, DcCreatorMixin):
+class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
     """The "office:change-info" element represents who made a change and when.
     It may also contain a comment (one or more Paragrah "text:p" elements)
     on the change.
@@ -61,23 +61,7 @@ class ChangeInfo(Element, DcCreatorMixin):
         super().__init__(**kwargs)
         if self._do_init:
             self.creator = creator or "Unknown"
-            self.set_dc_date(date)
-
-    def set_dc_date(self, date: datetime | None = None) -> None:
-        """Set the date of the change. If date is None, use current time.
-
-        Arguments:
-
-            date -- datetime (or None)
-        """
-        if date is None:
-            date = datetime.now()
-        dcdate = DateTime.encode(date)
-        element = self.get_element("dc:date")
-        if element is None:
-            element = Element.from_tag("dc:date")
-            self.insert(element, xmlposition=LAST_CHILD)
-        element.text = dcdate
+            self.date = date
 
     def get_comments(self, joined: bool = True) -> str | list[str]:
         """Get text content of the comments. If joined is True (default), the

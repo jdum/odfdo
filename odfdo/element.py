@@ -1644,29 +1644,6 @@ class Element(CachedElement):
             self.append(element)
         element.text = text
 
-    # Dublin core
-
-    @property
-    def dc_date(self) -> datetime | None:
-        """Get the dc:date value.
-
-        Return: datetime (or None if inexistant)
-        """
-        date = self._get_inner_text("dc:date")
-        if date is None:
-            return None
-        return DateTime.decode(date)
-
-    @dc_date.setter
-    def dc_date(self, date: datetime) -> None:
-        """Set the dc:date value.
-
-        Arguments:
-
-            darz -- datetime
-        """
-        self._set_inner_text("dc:date", DateTime.encode(date))
-
     # SVG
 
     @property
@@ -2172,7 +2149,7 @@ class Element(CachedElement):
         ):
             if creator is not None and creator != annotation.dc_creator:
                 continue
-            date = annotation.dc_date
+            date = annotation.date
             if date is None:
                 continue
             if start_date is not None and date < start_date:

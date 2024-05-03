@@ -125,12 +125,21 @@ def test_get_modification_date(meta):
     date = meta.get_modification_date()
     expected = DateTime.decode("2009-07-31T15:59:13")
     assert date == expected
+    assert meta.date == expected
 
 
 def test_set_modification_date(meta):
     clone = meta.clone
     now = datetime.now().replace(microsecond=0)
     clone.set_modification_date(now)
+    assert clone.get_modification_date() == now
+
+
+def test_modification_date_property(meta):
+    clone = meta.clone
+    now = datetime.now().replace(microsecond=0)
+    clone.date = now
+    assert clone.date == now
     assert clone.get_modification_date() == now
 
 

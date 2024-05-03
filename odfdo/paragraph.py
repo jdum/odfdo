@@ -261,9 +261,9 @@ class Paragraph(ParagraphBase):
             if body:
                 annotation_element.note_body = body
             if creator:
-                annotation_element.dc_creator = creator
+                annotation_element.creator = creator
             if date:
-                annotation_element.dc_date = date
+                annotation_element.date = date
         annotation_element.check_validity()
 
         # special case: content is an odf element (ie: a paragraph)

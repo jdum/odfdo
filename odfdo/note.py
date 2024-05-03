@@ -29,6 +29,7 @@ from typing import Any
 
 from .element import Element, PropDef, register_element_class
 from .mixin_dc_creator import DcCreatorMixin
+from .mixin_dc_date import DcDateMixin
 
 
 def get_unique_office_name(element: Element | None = None) -> str:
@@ -144,7 +145,7 @@ class Note(Element):
 Note._define_attribut_property()
 
 
-class Annotation(Element, DcCreatorMixin):
+class Annotation(Element, DcCreatorMixin, DcDateMixin):
     """Annotation element credited to the given creator with the
     given text, optionally dated (current date by default).
     If name not provided and some parent is provided, the name is
@@ -188,7 +189,7 @@ class Annotation(Element, DcCreatorMixin):
                 self.creator = creator
             if date is None:
                 date = datetime.now()
-            self.dc_date = date
+            self.date = date
             if not name:
                 name = get_unique_office_name(parent)
                 self.name = name
@@ -199,8 +200,17 @@ class Annotation(Element, DcCreatorMixin):
         return self.creator
 
     @dc_creator.setter
-    def cd_creator(self, creator: str) -> None:
+    def dc_creator(self, creator: str) -> None:
         self.creator = creator
+
+    @property
+    def dc_date(self) -> datetime | None:
+        """Alias for self.date property."""
+        return self.date
+
+    @dc_date.setter
+    def dc_date(self, dtdate: datetime) -> None:
+        self.date = dtdate
 
     @property
     def note_body(self) -> str:

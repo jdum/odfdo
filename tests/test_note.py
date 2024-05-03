@@ -255,6 +255,22 @@ def test_get_annotation_list(document):
     assert text == expected
 
 
+def test_get_annotation_list_properties_creator(document):
+    body = document.body
+    annotations = body.get_annotations()
+    annotation = annotations[0]
+    creator = annotation.creator
+    assert creator == "Auteur inconnu"
+
+
+def test_get_annotation_list_properties_date(document):
+    body = document.body
+    annotations = body.get_annotations()
+    annotation = annotations[0]
+    date = annotation.date
+    assert date == datetime(2009, 8, 3, 12, 9, 45)
+
+
 def test_get_annotation_list_author(document):
     body = document.body
     creator = "Auteur inconnu"

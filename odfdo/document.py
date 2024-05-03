@@ -511,7 +511,7 @@ class Document:
         print_info("Subject", meta.subject)
         print_info("Description", meta.description)
         print_info("Language", meta.get_language())
-        print_info("Modification date", meta.get_modification_date())
+        print_info("Modification date", meta.date)
         print_info("Creation date", meta.creation_date)
         print_info("Initial creator", meta.initial_creator)
         print_info("Keyword", meta.keyword)

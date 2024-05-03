@@ -33,6 +33,7 @@ from typing import Any
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element
 from .mixin_dc_creator import DcCreatorMixin
+from .mixin_dc_date import DcDateMixin
 from .utils import to_str
 from .version import __version__
 from .xmlpart import XmlPart
@@ -40,7 +41,7 @@ from .xmlpart import XmlPart
 GENERATOR = f"odfdo {__version__}"
 
 
-class Meta(XmlPart, DcCreatorMixin):
+class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._generator_modified: bool = False
@@ -232,30 +233,6 @@ class Meta(XmlPart, DcCreatorMixin):
             return False
         return all(test_part2(p) for p in parts[1:])
 
-    def get_modification_date(self) -> datetime | None:
-        """Get the last modified date of the document.
-
-        Return: datetime (or None if inexistant)
-        """
-        element = self.get_element("//dc:date")
-        if element is None:
-            return None
-        modification_date = element.text
-        return DateTime.decode(modification_date)
-
-    def set_modification_date(self, date: datetime) -> None:
-        """Set the last modified date of the document.
-
-        Arguments:
-
-            date -- datetime
-        """
-        element = self.get_element("//dc:date")
-        if element is None:
-            element = Element.from_tag("dc:date")
-            self.get_meta_body().append(element)
-        element.text = DateTime.encode(date)
-
     def get_creation_date(self) -> datetime | None:
         """Get the creation date of the document.
 
@@ -269,8 +246,10 @@ class Meta(XmlPart, DcCreatorMixin):
         creation_date = element.text
         return DateTime.decode(creation_date)
 
-    def set_creation_date(self, date: datetime) -> None:
+    def set_creation_date(self, date: datetime | None = None) -> None:
         """Set the creation date of the document.
+
+        If provided datetime is None, use current time.
 
         (Also available as "self.creation_date" property.)
 
@@ -282,6 +261,8 @@ class Meta(XmlPart, DcCreatorMixin):
         if element is None:
             element = Element.from_tag("meta:creation-date")
             self.get_meta_body().append(element)
+        if date is None:
+            date = datetime.now()
         element.text = DateTime.encode(date)
 
     @property

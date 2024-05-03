@@ -28,6 +28,8 @@ class DcCreatorMixin:
     def get_creator(self) -> str | None:
         """Get the creator of the document.
 
+        (Also available as "self.creator" property.)
+
         Return: str (or None if inexistant)
 
         Example::
@@ -42,6 +44,8 @@ class DcCreatorMixin:
 
     def set_creator(self, creator: str) -> None:
         """Set the creator of the document.
+
+        (Also available as "self.creator" property.)
 
         Arguments:
 
