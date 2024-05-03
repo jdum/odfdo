@@ -32,6 +32,7 @@ from odfdo.const import ODF_META
 from odfdo.datatype import DateTime, Duration
 from odfdo.document import Document
 from odfdo.meta import GENERATOR
+from odfdo.meta_auto_reload import MetaAutoReload
 from odfdo.meta_template import MetaTemplate
 
 META_DOC = Path(__file__).parent / "samples" / "meta.odt"
@@ -408,16 +409,35 @@ def test_get_user_defined_metadata_of_name(meta):
 
 def test_no_meta_template(meta):
     clone = meta.clone
-    template = clone.meta_template
+    template = clone.template
     assert template is None
 
 
 def test_set_meta_template(meta):
     clone = meta.clone
     now = datetime.now().replace(microsecond=0)
-    clone.set_meta_template(date=now, href="some url", title="some title")
-    template = clone.meta_template
+    clone.set_template(date=now, href="some url", title="some title")
+    template = clone.template
     assert isinstance(template, MetaTemplate)
     assert template.date == DateTime.encode(now)
     assert template.href == "some url"
     assert template.title == "some title"
+
+
+def test_no_meta_auto_reload(meta):
+    clone = meta.clone
+    reload = clone.auto_reload
+    assert reload is None
+
+
+def test_set_meta_auto_reload(meta):
+    clone = meta.clone
+    delay = timedelta(seconds=15)
+    clone.set_auto_reload(delay=delay, href="some url")
+    reload = clone.auto_reload
+    assert isinstance(reload, MetaAutoReload)
+    assert reload.delay == Duration.encode(delay)
+    assert reload.href == "some url"
+    assert repr(reload) == (
+        "<MetaAutoReload tag=meta:auto-reload href=some url delay=0:00:15>"
+    )

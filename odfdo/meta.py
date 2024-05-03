@@ -32,6 +32,7 @@ from typing import Any
 
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element
+from .meta_auto_reload import MetaAutoReload
 from .meta_template import MetaTemplate
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
@@ -306,7 +307,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             date = datetime.now()
         element.text = DateTime.encode(date)
 
-    def get_meta_template(self) -> MetaTemplate | None:
+    def get_template(self) -> MetaTemplate | None:
         """Get the MetaTemplate <meta:template> element or None."""
         element = self.get_element("//meta:template")
         if element is None:
@@ -314,22 +315,42 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return element
 
     @property
-    def meta_template(self) -> MetaTemplate | None:
+    def template(self) -> MetaTemplate | None:
         """Get the MetaTemplate <meta:template> element or None."""
-        return self.get_meta_template()
+        return self.get_template()
 
-    def set_meta_template(
+    def set_template(
         self,
         date: datetime | None = None,
-        href: str | None = "",
-        title: str | None = "",
+        href: str = "",
+        title: str = "",
     ) -> None:
         """Set the MetaTemplate <meta:template> element."""
         template = MetaTemplate(date=date, href=href, title=title)
-        current = self.meta_template
+        current = self.template
         if isinstance(current, MetaTemplate):
             current.delete()
         self.get_meta_body().append(template)
+
+    def get_auto_reload(self) -> MetaAutoReload | None:
+        """Get the MetaAutoReload <meta:auto-reload> element or None."""
+        element = self.get_element("//meta:auto-reload")
+        if element is None:
+            return None
+        return element
+
+    @property
+    def auto_reload(self) -> MetaAutoReload | None:
+        """Get the MetaAutoReload <meta:auto-reload> element or None."""
+        return self.get_auto_reload()
+
+    def set_auto_reload(self, delay: timedelta, href: str = "") -> None:
+        """Set the MetaAutoReload <meta:auto-reload> element."""
+        autoreload = MetaAutoReload(delay=delay, href=href)
+        current = self.auto_reload
+        if isinstance(current, MetaAutoReload):
+            current.delete()
+        self.get_meta_body().append(autoreload)
 
     def get_initial_creator(self) -> str | None:
         """Get the first creator of the document.
