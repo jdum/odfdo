@@ -52,6 +52,14 @@ class Body(Element):
             "descendant::table:table", table_style=style, content=content
         )
 
+    @property
+    def tables(self) -> list[Element]:
+        """Return all the tables.
+
+        Return: list of Table
+        """
+        return self.get_elements("descendant::table:table")
+
     def get_table(
         self,
         position: int = 0,

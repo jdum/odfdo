@@ -111,7 +111,7 @@ def shrink_tables(
     document = read_document(input_path)
     if document.get_type() not in {"spreadsheet", "spreadsheet-template"}:
         raise TypeError("Document must be a Spreadsheet type.")
-    for table in document.body.get_tables():
+    for table in document.body.tables:
         table.optimize_width()  # type: ignore
     save_document(document, output_path)
 

@@ -55,6 +55,10 @@ def test_get_table_list(body):
     assert len(body.get_tables()) == 3
 
 
+def test_get_table_list_property(body):
+    assert len(body.tables) == 3
+
+
 def test_get_table_list_style(body):
     assert len(body.get_tables(style="ta1")) == 3
 

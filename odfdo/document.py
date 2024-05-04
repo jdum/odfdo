@@ -463,7 +463,7 @@ class Document:
         raise NotImplementedError(f"Type of document '{doc_type}' not supported yet")
 
     def _tables_csv(self) -> str:
-        return "\n\n".join(str(table) for table in self.body.get_tables())
+        return "\n\n".join(str(table) for table in self.body.tables)
 
     def _formatted_text(self, rst_mode: bool) -> str:
         # Initialize an empty context

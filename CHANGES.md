@@ -1,5 +1,15 @@
 # Odfdo Release Notes
 
+## [3.7.10] - 2024-
+
+-   Refactor to add property getter for some common methods
+
+    -   Body.tables -> Body.get_tables()
+
+### Added
+
+-   Added `Body.tables`
+
 ## [3.7.9] - 2024-05-3
 
 -   Refactor the Body access methods, creating relevant a Body class and related sub-classes. Moved some access method from the Element class to relevant Body sub-classes.

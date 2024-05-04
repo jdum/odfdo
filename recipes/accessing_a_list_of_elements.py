@@ -39,7 +39,8 @@ def main():
     print("number of links (URLs):", len(body.get_links()))
     print("number of footnotes:", len(body.get_notes()))
     # Our sample document has no table:
-    print("number of tables:", len(body.get_tables()))
+    # print("number of tables:", len(body.get_tables()))
+    print("number of tables:", len(body.tables))
 
     # Each get_xxx_list method provides parameters for filtering the results.
     # For example headings can be listed by level, annotations by creator, etc.
