@@ -20,6 +20,7 @@
         -   Element.sections -> Element.get_sections()
         -   Table.rows -> Table.get_rows()
         -   Table.cells -> Table.get_cells()
+        -   Table.columns -> Table.get_columns()
         -   Row.cells -> Row.get_cells()
 
 -   Refactor to add property getter/setter for some common methods. Original get\_\*
@@ -44,6 +45,7 @@
 -   Added `Column.default_cell_style`
 -   Added `Table.rows`
 -   Added `Table.cells`
+-   Added `Table.columns`
 -   Added `Row.cells`
 
 ## [3.7.9] - 2024-05-3

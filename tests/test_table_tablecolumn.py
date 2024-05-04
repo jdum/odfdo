@@ -52,6 +52,10 @@ def test_get_column_list(table):
     assert len(list(table.get_columns())) == 7
 
 
+def test_get_column_list_property(table):
+    assert len(table.columns) == 7
+
+
 def test_get_column_list_style(table):
     coordinates = [col.x for col in table.get_columns(style=r"co2")]
     assert coordinates == [2, 3]

@@ -76,7 +76,7 @@ def use_case3(destination_file):
 
         col_style = Style("table-column", width="3.6cm")
         name = document.insert_style(style=col_style, automatic=True)
-        for column in table.get_columns():
+        for column in table.columns:
             column.style = col_style
             table.set_column(column.x, column)
 

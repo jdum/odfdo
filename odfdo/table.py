@@ -2251,8 +2251,9 @@ class Table(Element):
         coord: tuple | list | str | None = None,
         style: str | None = None,
     ) -> list[Column]:
-        """Get the list of columns matching the criteria. Each result is a
-        tuple of (x, column).
+        """Get the list of columns matching the criteria.
+
+        Copies are returned, use set_column() to push them back.
 
         Arguments:
 
@@ -2289,6 +2290,16 @@ class Table(Element):
             return column.clone  # type: ignore
             # return row
         return None
+
+    @property
+    def columns(self) -> list[Column]:
+        """Get the list of all columns matching the criteria.
+
+        Copies are returned, use set_column() to push them back.
+
+        Return: list of columns
+        """
+        return list(self.traverse_columns())
 
     def get_column(self, x: int | str) -> Column:
         """Get the column at the given "x" position.
