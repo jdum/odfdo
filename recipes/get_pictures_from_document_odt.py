@@ -33,7 +33,7 @@ def main():
 
     # We want the images of the document.
     body = doc.body
-    found_pics = body.get_images()
+    found_pics = body.images
     print("Pics :")
     print(pformat(found_pics))
     print()

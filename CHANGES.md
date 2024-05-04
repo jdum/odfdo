@@ -10,6 +10,7 @@
     -   Element.text_changes -> Element.get_text_changes()
     -   Element.tracked_changes -> Element.get_tracked_changes()
     -   Element.user_defined_list -> Element.get_user_defined_list()
+    -   Element.images -> Element.get_images()
 
 ### Added
 
@@ -18,7 +19,7 @@
 -   Added `Element.toc`
 -   Added `Element.text_changes`
 -   Added `Element.tracked_changes`
--   Added `Element.user_defined_list`
+-   Added `Element.images`
 
 ## [3.7.9] - 2024-05-3
 

@@ -71,7 +71,7 @@ def generate_document():
     # For each image, we create a page in the presentation and display the image
     # and some text on this frame
     # First, get all image elements available in document:
-    images_source = doc_source.body.get_images()
+    images_source = doc_source.body.images
     manifest_source = doc_source.manifest
 
     for image in images_source:

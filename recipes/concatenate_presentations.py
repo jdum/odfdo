@@ -58,7 +58,7 @@ def add_presentation(concat_presentation, path):
     for slide in slides:
         slide = slide.clone
         # dont forget images:
-        for image in slide.get_images():
+        for image in slide.images:
             uri = image.url
             media_type = manifest.get_media_type(uri)
             dest_manifest.add_full_path(uri, media_type)

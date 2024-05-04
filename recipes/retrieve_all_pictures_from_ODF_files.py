@@ -51,7 +51,7 @@ def parse_odf_pics(path: Path):
     global counter_outside
 
     counter_odf += 1
-    for image in document.body.get_images():
+    for image in document.body.images:
         image_url = image.url
         if not image_url:
             continue

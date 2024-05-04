@@ -58,6 +58,13 @@ def test_get_image_list(sample_body):
     assert element.url == IMG_PATH
 
 
+def test_get_image_list_property(sample_body):
+    result = sample_body.images
+    assert len(result) == 1
+    element = result[0]
+    assert element.url == IMG_PATH
+
+
 def test_get_image_by_name(sample_body):
     element = sample_body.get_image(name="odfdo")
     assert element.url == IMG_PATH

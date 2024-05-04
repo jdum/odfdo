@@ -28,7 +28,7 @@ def main():
     doc = read_source_document()
     # We want the images of the document.
     body = doc.body
-    images = body.get_images()
+    images = body.images
 
     nb_images = len(images)
     nb_title = 0

@@ -49,7 +49,7 @@ def update_document(
 
     stats["odf_files"] += 1
     document_changed = False
-    for image in document.body.get_images():
+    for image in document.body.images:
         image_url = image.url
         if not image_url:
             continue

@@ -1964,6 +1964,14 @@ class Element(CachedElement):
             "descendant::draw:image", text_style=style, url=url, content=content
         )
 
+    @property
+    def images(self) -> list[Element]:
+        """Return all the images.
+
+        Return: list of Element
+        """
+        return self.get_elements("descendant::draw:image")
+
     def get_image(
         self,
         position: int = 0,
