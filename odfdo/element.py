@@ -2389,6 +2389,14 @@ class Element(CachedElement):
         """
         return self._filtered_elements("descendant::text:user-defined")
 
+    @property
+    def user_defined_list(self) -> list[Element]:
+        """Return all the user defined field declarations.
+
+        Return: list of Element
+        """
+        return self.get_user_defined_list()
+
     def get_user_defined(self, name: str, position: int = 0) -> Element | None:
         """return the user defined declaration for the given name.
 

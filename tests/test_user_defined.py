@@ -174,6 +174,29 @@ def test_get_user_defined_list(document):
     assert len(user_defined_list) == 2
 
 
+def test_get_user_defined_list_property(document):
+    element = UserDefined(
+        "Référence",
+        value=False,  # default value if not existing
+        value_type="boolean",
+        from_document=document,
+    )
+    body = document.body
+    para = body.get_paragraph()
+    para.append(element)
+    element2 = UserDefined(
+        "unknown_in_meta2",
+        value=datetime(2013, 12, 30),
+        value_type="date",
+        text="2013-12-30",
+        style=None,
+        from_document=None,
+    )
+    para.append(element2)
+    user_defined_list = body.user_defined_list
+    assert len(user_defined_list) == 2
+
+
 def test_get_user_defined_value(document):
     element = UserDefined(
         "Référence",
