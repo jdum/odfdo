@@ -41,10 +41,10 @@ def generate_document():
 
     #  A row contains cells
     for row in table.rows:
-        print("row, nb of cells ", row.y, len(row.get_cells()))
+        print("row, nb of cells ", row.y, len(row.cells))
 
     last_row = table.get_row(-1)
-    print("nb of cells of the last row:", len(last_row.get_cells()))
+    print("nb of cells of the last row:", len(last_row.cells))
 
     # cell can have different kind of values
     for row_nb in range(3):
@@ -58,7 +58,7 @@ def generate_document():
     print("table size:", table.size)
     table.rstrip()
     print("table size after strip:", table.size)
-    print("nb of cells of the last row:", len(table.get_row(-1).get_cells()))
+    print("nb of cells of the last row:", len(table.get_row(-1).cells))
     print("Content of the table:")
     print(table.to_csv())
 

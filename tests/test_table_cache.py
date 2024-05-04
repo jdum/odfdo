@@ -151,3 +151,25 @@ def test_basic_spreadsheet_case():
     table.rstrip()
     assert table.size == (10, 5)
     assert len(table.get_row(-1).get_cells()) == 10
+
+
+def test_basic_spreadsheet_case_property():
+    table = Table("Table", width=20, height=3)
+    for _r in range(2):
+        table.append_row()
+    assert len(table.get_rows()) == 5
+    vals = []
+    for row in table.get_rows():
+        vals.append(len(row.cells))
+    assert vals == [20, 20, 20, 0, 0]
+    # last_row = table.get_row(-1)
+    for r in range(3):
+        for c in range(10):
+            table.set_value((c, r), f"cell {c} {r}")
+    for r in range(3, 5):
+        for c in range(10):
+            table.set_value((c, r), c * 100 + r)
+    assert table.size == (20, 5)
+    table.rstrip()
+    assert table.size == (10, 5)
+    assert len(table.get_row(-1).cells) == 10

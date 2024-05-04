@@ -1775,7 +1775,7 @@ class Table(Element):
         """
         lcells: list[list[Cell]] = []
         for row in self.traverse():
-            lcells.append(row.get_cells())
+            lcells.append(row.cells)
         return lcells
 
     def get_cell(

@@ -145,6 +145,43 @@ def test_span_sp2(table):
     ]
 
 
+def test_span_sp2_property(table):
+    zone = "a1:b3"
+    table.set_span(zone)
+    # span change only display
+    assert table.get_values() == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [True, True, False, False, False, False, False],
+        [True, True, False, False, False, False, False],
+        [True, True, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+    ]
+    assert table.del_span(zone) is True
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+    ]
+
+
 def test_span_sp2_merge(table2):
     table = table2
     zone = "a1:b3"
@@ -183,6 +220,44 @@ def test_span_sp2_merge(table2):
     ]
 
 
+def test_span_sp2_merge_property(table2):
+    table = table2
+    zone = "a1:b3"
+    table.set_span(zone, merge=True)
+    # span change only display
+    assert table.get_values() == [
+        ["a b 1 1 1", None, 1, "d", 3, 3, 3],
+        [None, None, "C", "", 3, 3, 3],
+        [None, None, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [True, True, False, False, False, False, False],
+        [True, True, False, False, False, False, False],
+        [True, True, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+    ]
+    assert table.del_span(zone) is True
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+    ]
+
+
 def test_span_sp3(table):
     zone = "c1:c3"
     table.set_span(zone)
@@ -208,6 +283,43 @@ def test_span_sp3(table):
     assert table.del_span(zone) is True
     res = []
     for r in table.get_cells():
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+    ]
+
+
+def test_span_sp3_property(table):
+    zone = "c1:c3"
+    table.set_span(zone)
+    # span change only display
+    assert table.get_values() == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, True, False, False, False, False],
+        [False, False, True, False, False, False, False],
+        [False, False, True, False, False, False, False],
+        [False, False, False, False, False, False, False],
+    ]
+    assert table.del_span(zone) is True
+    res = []
+    for r in table.cells:
         test_row = []
         for cell in r:
             test_row.append(cell.is_spanned())
@@ -265,6 +377,44 @@ def test_span_sp3_merge(table2):
     ]
 
 
+def test_span_sp3_merge_property(table2):
+    table = table2
+    zone = "c1:c3"
+    table.set_span(zone, merge=True)
+    # span change only display
+    assert table.get_values() == [
+        ["a", "b", "1 C 1", "d", 3, 3, 3],
+        [1, "", None, "", 3, 3, 3],
+        [1, 1, None, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, True, False, False, False, False],
+        [False, False, True, False, False, False, False],
+        [False, False, True, False, False, False, False],
+        [False, False, False, False, False, False, False],
+    ]
+    assert table.del_span(zone) is True
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+    ]
+
+
 def test_span_sp4(table):
     zone = "g1:g4"
     table.set_span(zone)
@@ -290,6 +440,43 @@ def test_span_sp4(table):
     assert table.del_span(zone) is True
     res = []
     for r in table.get_cells():
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+    ]
+
+
+def test_span_sp4_property(table):
+    zone = "g1:g4"
+    table.set_span(zone)
+    # span change only display
+    assert table.get_values() == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, True],
+        [False, False, False, False, False, False, True],
+        [False, False, False, False, False, False, True],
+        [False, False, False, False, False, False, True],
+    ]
+    assert table.del_span(zone) is True
+    res = []
+    for r in table.cells:
         test_row = []
         for cell in r:
             test_row.append(cell.is_spanned())
@@ -340,6 +527,44 @@ def test_span_sp42(table2):
     ]
 
 
+def test_span_sp42_property(table2):
+    table = table2
+    zone = "g1:g4"
+    table.set_span(zone, merge=True)
+    # span change only display
+    assert table.get_values() == [
+        ["a", "b", 1, "d", 3, 3, "3 3 3 7"],
+        [1, "", "C", "", 3, 3, None],
+        [1, 1, 1, 2, 3, 3, None],
+        [1, 2, 3, 4, 5, 6, None],
+    ]
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, True],
+        [False, False, False, False, False, False, True],
+        [False, False, False, False, False, False, True],
+        [False, False, False, False, False, False, True],
+    ]
+    assert table.del_span(zone) is True
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+    ]
+
+
 def test_span_sp5(table):
     zone = "a3:c4"
     table.set_span(zone)
@@ -365,6 +590,43 @@ def test_span_sp5(table):
     assert table.del_span(zone) is True
     res = []
     for r in table.get_cells():
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+    ]
+
+
+def test_span_sp5_property(table):
+    zone = "a3:c4"
+    table.set_span(zone)
+    # span change only display
+    assert table.get_values() == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [True, True, True, False, False, False, False],
+        [True, True, True, False, False, False, False],
+    ]
+    assert table.del_span(zone) is True
+    res = []
+    for r in table.cells:
         test_row = []
         for cell in r:
             test_row.append(cell.is_spanned())
@@ -415,6 +677,44 @@ def test_span_sp5_merge(table2):
     ]
 
 
+def test_span_sp5_merge_property(table2):
+    table = table2
+    zone = "a3:c4"
+    table.set_span(zone, merge=True)
+    # span change only display
+    assert table.get_values() == [
+        ["a", "b", 1, "d", 3, 3, 3],
+        [1, "", "C", "", 3, 3, 3],
+        ["1 1 1 1 2 3", None, None, 2, 3, 3, 3],
+        [None, None, None, 4, 5, 6, 7],
+    ]
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [True, True, True, False, False, False, False],
+        [True, True, True, False, False, False, False],
+    ]
+    assert table.del_span(zone) is True
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+    ]
+
+
 def test_span_sp6(table):
     zone = "b3:f3"
     table.set_span(zone)
@@ -440,6 +740,43 @@ def test_span_sp6(table):
     assert table.del_span(zone) is True
     res = []
     for r in table.get_cells():
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+    ]
+
+
+def test_span_sp6_property(table):
+    zone = "b3:f3"
+    table.set_span(zone)
+    # span change only display
+    assert table.get_values() == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, True, True, True, True, True, False],
+        [False, False, False, False, False, False, False],
+    ]
+    assert table.del_span(zone) is True
+    res = []
+    for r in table.cells:
         test_row = []
         for cell in r:
             test_row.append(cell.is_spanned())
@@ -523,6 +860,77 @@ def test_span_sp6_2zone(table):
     ]
 
 
+def test_span_sp6_2zone_property(table):
+    zone = "b3:f3"
+    table.set_span(zone)
+    # span change only display
+    assert table.get_values() == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, True, True, True, True, True, False],
+        [False, False, False, False, False, False, False],
+    ]
+    zone2 = "a2:a4"
+    table.set_span(zone2)
+    # span change only display
+    assert table.get_values() == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [True, False, False, False, False, False, False],
+        [True, True, True, True, True, True, False],
+        [True, False, False, False, False, False, False],
+    ]
+    assert table.del_span(zone) is True
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [True, False, False, False, False, False, False],
+        [True, False, False, False, False, False, False],
+        [True, False, False, False, False, False, False],
+    ]
+    assert table.del_span(zone2) is True
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+    ]
+
+
 def test_span_bigger(table):
     zone = "e2:i4"
     table.set_span(zone)
@@ -548,6 +956,43 @@ def test_span_bigger(table):
     assert table.del_span(zone) is True
     res = []
     for r in table.get_cells():
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False, False, False],
+    ]
+
+
+def test_span_bigger_property(table):
+    zone = "e2:i4"
+    table.set_span(zone)
+    # span change only display
+    assert table.get_values() == [
+        [1, 1, 1, 2, 3, 3, 3, None, None],
+        [1, 1, 1, 2, 3, 3, 3, None, None],
+        [1, 1, 1, 2, 3, 3, 3, None, None],
+        [1, 2, 3, 4, 5, 6, 7, None, None],
+    ]
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, True, True, True, True, True],
+        [False, False, False, False, True, True, True, True, True],
+        [False, False, False, False, True, True, True, True, True],
+    ]
+    assert table.del_span(zone) is True
+    res = []
+    for r in table.cells:
         test_row = []
         for cell in r:
             test_row.append(cell.is_spanned())
@@ -587,6 +1032,46 @@ def test_span_bigger_merge(table):
     assert table.del_span(zone) is True
     res = []
     for r in table.get_cells():
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False],
+    ]
+
+
+def test_span_bigger_merge_property(table):
+    zone = "f4:f5"
+    table.set_span(zone, merge=True)
+    # span change only display
+    assert table.get_values() == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+        [None, None, None, None, None, None, None],
+    ]
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, True, False],
+        [False, False, False, False, False, True],
+    ]
+    assert table.del_span(zone) is True
+    res = []
+    for r in table.cells:
         test_row = []
         for cell in r:
             test_row.append(cell.is_spanned())
@@ -646,6 +1131,52 @@ def test_span_bigger_outside(table):
     ]
 
 
+def test_span_bigger_outside_property(table):
+    zone = "g6:i7"
+    table.set_span(zone)
+    # span change only display
+    assert table.get_values() == [
+        [1, 1, 1, 2, 3, 3, 3, None, None],
+        [1, 1, 1, 2, 3, 3, 3, None, None],
+        [1, 1, 1, 2, 3, 3, 3, None, None],
+        [1, 2, 3, 4, 5, 6, 7, None, None],
+        [None, None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None, None],
+    ]
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [],
+        [False, False, False, False, False, False, True, True, True],
+        [False, False, False, False, False, False, True, True, True],
+    ]
+    assert table.del_span(zone) is True
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [],
+        [False, False, False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False, False, False],
+    ]
+
+
 def test_span_bigger_outside_merge(table):
     zone = "g6:i7"
     table.set_span(zone, merge=True)
@@ -677,6 +1208,52 @@ def test_span_bigger_outside_merge(table):
     assert table.del_span(zone) is True
     res = []
     for r in table.get_cells():
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [],
+        [False, False, False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False, False, False],
+    ]
+
+
+def test_span_bigger_outside_merge_property(table):
+    zone = "g6:i7"
+    table.set_span(zone, merge=True)
+    # span change only display
+    assert table.get_values() == [
+        [1, 1, 1, 2, 3, 3, 3, None, None],
+        [1, 1, 1, 2, 3, 3, 3, None, None],
+        [1, 1, 1, 2, 3, 3, 3, None, None],
+        [1, 2, 3, 4, 5, 6, 7, None, None],
+        [None, None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None, None],
+    ]
+    res = []
+    for r in table.cells:
+        test_row = []
+        for cell in r:
+            test_row.append(cell.is_spanned())
+        res.append(test_row)
+    assert res == [
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [False, False, False, False, False, False, False],
+        [],
+        [False, False, False, False, False, False, True, True, True],
+        [False, False, False, False, False, False, True, True, True],
+    ]
+    assert table.del_span(zone) is True
+    res = []
+    for r in table.cells:
         test_row = []
         for cell in r:
             test_row.append(cell.is_spanned())

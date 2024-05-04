@@ -79,9 +79,14 @@ def test_get_cells(row):
     assert len(list(row.get_cells())) == 7
 
 
+def test_get_cells_property(row):
+    assert len(row.cells) == 7
+
+
 def test_get_cells_on_emty_row():
     row = Row()
     assert len(row.get_cells()) == 0
+    assert len(row.cells) == 0
     assert len(row.get_cells((1, 2))) == 0
     assert len(row.get_cells((-2, -3))) == 0
     assert len(row.get_cells((0, 10))) == 0

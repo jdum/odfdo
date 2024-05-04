@@ -353,6 +353,15 @@ class Row(Element):
             cells.append(cell)
         return cells
 
+    @property
+    def cells(self) -> list[Cell]:
+        """Get the list of all cells.
+
+        Return: list of Cell
+        """
+        # fixme : not clones ?
+        return list(self.traverse())
+
     def _get_cell2(self, x: int, clone: bool = True) -> Cell | None:
         if x >= self.width:
             return Cell()
