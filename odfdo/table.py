@@ -201,7 +201,7 @@ class Column(Element):
         self.x = None
         if self._do_init:
             if default_cell_style:
-                self.set_default_cell_style(default_cell_style)
+                self.default_cell_style = default_cell_style
             if repeated and repeated > 1:
                 self.repeated = repeated
             if style:
@@ -222,9 +222,26 @@ class Column(Element):
         return clone
 
     def get_default_cell_style(self) -> str | None:
+        """Get or set the default cell style for column.
+
+        (See also self.default_cell_style property.)
+        """
         return self.get_attribute_string("table:default-cell-style-name")
 
-    def set_default_cell_style(self, style: Element | str) -> None:
+    def set_default_cell_style(self, style: Element | str | None) -> None:
+        """Get or set the default cell style for column.
+
+        (See also self.default_cell_style property.)
+        """
+        self.set_style_attribute("table:default-cell-style-name", style)
+
+    @property
+    def default_cell_style(self) -> str | None:
+        """Get or set the default cell style for column."""
+        return self.get_attribute_string("table:default-cell-style-name")
+
+    @default_cell_style.setter
+    def default_cell_style(self, style: Element | str | None) -> None:
         self.set_style_attribute("table:default-cell-style-name", style)
 
     def _set_repeated(self, repeated: int | None) -> None:

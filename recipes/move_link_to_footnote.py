@@ -55,7 +55,7 @@ def main():
     print("links in notes:", counter_links_in_notes)
 
     counter_added_note = 0  # added notes counter
-    for paragraph in body.get_paragraphs():
+    for paragraph in body.paragraphs:
         for link in paragraph.get_links():
             url = link.get_attribute("xlink:href")
             text = link.text_recursive

@@ -25,7 +25,7 @@ def search_replace(document):
     body.replace("Lorem", "(Lorem replaced)")
 
     # replace in paragraphs only
-    for paragraph in body.get_paragraphs():
+    for paragraph in body.paragraphs:
         paragraph.replace("ipsum", "(ipsum in paragraph)")
 
     # replace in headers

@@ -59,7 +59,7 @@ def sample_toc() -> Iterable[Document]:
 
 
 def get_toc_lines(toc):
-    return [paragraph.text for paragraph in toc.get_paragraphs()]
+    return [paragraph.text for paragraph in toc.paragraphs]
 
 
 def test_get_tocs(sample_toc):

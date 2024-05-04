@@ -16,6 +16,13 @@
         -   Element.lists -> Element.get_lists()
         -   Element.headers -> Element.get_headers()
         -   Element.spans -> Element.get_spans()
+        -   Element.paragraphs -> Element.get_paragraphs()
+        -   Element.sections -> Element.get_sections()
+
+-   Refactor to add property getter/setter for some common methods. Original get\_\*
+    and set\_\* methods are still available and permit detailed requests with parameters.
+
+        -   Column.default_cell_style -> Column.get/set_default_cell_style()
 
 ### Added
 
@@ -29,6 +36,9 @@
 -   Added `Element.lists`
 -   Added `Element.headers`
 -   Added `Element.spans`
+-   Added `Element.paragraphs`
+-   Added `Element.sections`
+-   Added `Column.default_cell_style`
 
 ## [3.7.9] - 2024-05-3
 

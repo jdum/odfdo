@@ -47,6 +47,15 @@ def test_get_paragraph_list(document):
     assert text == "This is the second paragraph."
 
 
+def test_get_paragraph_list_property(document):
+    body = document.body
+    paragraphs = body.paragraphs
+    assert len(paragraphs) == 7
+    second = paragraphs[1]
+    text = second.text
+    assert text == "This is the second paragraph."
+
+
 def test_get_paragraph_list_style(document):
     body = document.body
     paragraphs = body.get_paragraphs(style="Hanging_20_indent")
@@ -60,6 +69,16 @@ def test_get_paragraph_list_context(document):
     body = document.body
     section2 = body.get_section(position=1)
     paragraphs = section2.get_paragraphs()
+    assert len(paragraphs) == 2
+    paragraph = paragraphs[0]
+    text = paragraph.text
+    assert text == "First paragraph of the second section."
+
+
+def test_get_paragraph_list_context_property(document):
+    body = document.body
+    section2 = body.get_section(position=1)
+    paragraphs = section2.paragraphs
     assert len(paragraphs) == 2
     paragraph = paragraphs[0]
     text = paragraph.text
@@ -102,6 +121,14 @@ def test_insert_paragraph(document):
     paragraph = Paragraph("An inserted test", style="Text_20_body")
     body.append(paragraph)
     last_paragraph = body.get_paragraphs()[-1]
+    assert last_paragraph.text == "An inserted test"
+
+
+def test_insert_paragraph_property(document):
+    body = document.body.clone
+    paragraph = Paragraph("An inserted test", style="Text_20_body")
+    body.append(paragraph)
+    last_paragraph = body.paragraphs[-1]
     assert last_paragraph.text == "An inserted test"
 
 

@@ -1157,7 +1157,7 @@ class Document:
                 ):
                     return props
             column = sheet.get_column(cell.x)  # type: ignore
-            style = column.get_default_cell_style()
+            style = column.default_cell_style
             if style:  # noqa: SIM102
                 if props := self.get_style_properties(
                     "table-cell", style, "table-cell"

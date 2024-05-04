@@ -23,11 +23,11 @@ def analyse_list(document):
     print()
 
     list4 = body.get_list(position=4)
-    print(f"The 4th list contains {len(list4.get_paragraphs())} paragraphs")
+    print(f"The 4th list contains {len(list4.paragraphs)} paragraphs")
     print()
 
     # Now print the list content
-    paragraphs = list4.get_paragraphs()
+    paragraphs = list4.paragraphs
     for count, paragraph in enumerate(paragraphs):
         print(count + 1, ":", paragraph)
         print(paragraph.text_recursive)
@@ -70,7 +70,7 @@ def analyse_list(document):
     # only for test suite:
     if "ODFDO_TESTING" in os.environ:
         assert len(body.lists) == 5
-        assert len(list4.get_paragraphs()) == 9
+        assert len(list4.paragraphs) == 9
         assert paragraphs[0].text_recursive.startswith("BBC Cult website")
         assert paragraphs[8].text_recursive.startswith("DC Comics H2G2")
 

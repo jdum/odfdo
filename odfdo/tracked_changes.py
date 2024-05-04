@@ -40,7 +40,7 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
     on the change.
 
     The comments available in the ChangeInfo are available through:
-      - get_paragraphs and get_paragraph methods for actual Paragraph.
+      - paragraphs property, get_paragraphs and get_paragraph methods for actual Paragraph.
       - get_comments for a plain text version
 
       Arguments:
@@ -74,7 +74,7 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
 
         Return: str or list of str.
         """
-        content = self.get_paragraphs()
+        content = self.paragraphs
         if content is None:
             content = []
         text = [para.get_formatted_text(simple=True) for para in content]  # type: ignore
@@ -93,7 +93,7 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
             replace -- boolean
         """
         if replace:
-            for para in self.get_paragraphs():
+            for para in self.paragraphs:
                 self.delete(para)
         para = Paragraph()
         para.append_plain_text(text)

@@ -38,11 +38,22 @@ def test_get_column_default_cell_style(column):
     assert column.get_default_cell_style() == "ce5"
 
 
+def test_get_column_default_cell_style_property(column):
+    assert column.default_cell_style == "ce5"
+
+
 def test_set_column_default_cell_style(column):
     column.set_default_cell_style("ce2")
     assert column.get_default_cell_style() == "ce2"
     column.set_default_cell_style(None)
     assert column.get_default_cell_style() is None
+
+
+def test_set_column_default_cell_style_property(column):
+    column.default_cell_style = "ce2"
+    assert column.default_cell_style == "ce2"
+    column.default_cell_style = None
+    assert column.default_cell_style is None
 
 
 def test_get_column_repeated(column):

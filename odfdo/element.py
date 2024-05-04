@@ -1683,6 +1683,16 @@ class Element(CachedElement):
             "text:section", text_style=style, content=content
         )
 
+    @property
+    def sections(
+        self,
+    ) -> list[Element]:
+        """Return all the sections.
+
+        Return: list of Element
+        """
+        return self.get_elements("text:section")
+
     def get_section(
         self,
         position: int = 0,
@@ -1722,6 +1732,14 @@ class Element(CachedElement):
         return self._filtered_elements(
             "descendant::text:p", text_style=style, content=content
         )
+
+    @property
+    def paragraphs(self) -> list[Element]:
+        """Return all the paragraphs.
+
+        Return: list of Paragraph
+        """
+        return self.get_elements("descendant::text:p")
 
     def get_paragraph(
         self,
