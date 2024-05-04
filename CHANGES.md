@@ -7,12 +7,14 @@
     -   Body.tables -> Body.get_tables()
     -   Element.tocs -> Element.get_tocs()
     -   Element.toc -> Element.get_toc()
+    -   Element.text_changes -> Element.get_text_changes()
 
 ### Added
 
 -   Added `Body.tables`
 -   Added `Element.tocs`
 -   Added `Element.toc`
+-   Added `Element.text_changes`
 
 ## [3.7.9] - 2024-05-3
 

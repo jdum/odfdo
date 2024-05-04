@@ -3108,6 +3108,15 @@ class Element(CachedElement):
         request = "descendant::text:change-start | descendant::text:change"
         return self._filtered_elements(request)
 
+    @property
+    def text_changes(self) -> list[Element]:
+        """Return all the text changes, either single deletion
+        (text:change) or start of range of changes (text:change-start).
+
+        Return: list of Element
+        """
+        return self.get_text_changes()
+
     def get_text_change(
         self,
         position: int = 0,
