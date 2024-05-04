@@ -2997,8 +2997,19 @@ class Element(CachedElement):
     # Tracked changes and text change
 
     def get_tracked_changes(self) -> Element | None:
-        """Return the tracked-changes part in the text body."""
+        """Return the tracked-changes part in the text body.
+
+        Return: Element or None
+        """
         return self.get_element("//text:tracked-changes")
+
+    @property
+    def tracked_changes(self) -> Element | None:
+        """Return the tracked-changes part in the text body.
+
+        Return: Element or None
+        """
+        return self.get_tracked_changes()
 
     def get_changes_ids(self) -> list[Element | EText]:
         """Return a list of ids that refers to a change region in the tracked

@@ -45,6 +45,13 @@ def test_instance_tracked_changes(sample):
     assert isinstance(sample.changes, TrackedChanges)
 
 
+def test_tracked_changes_property(sample):
+    document2 = Document(SAMPLE)
+    sample2 = Sample(doc=document2, changes=document2.body.tracked_changes)
+    assert isinstance(sample2.changes, TrackedChanges)
+    assert sample.changes.serialize() == sample2.changes.serialize()
+
+
 def test_get_changed_region_list(sample):
     regions = sample.changes.get_changed_regions()
     assert len(regions) == 3

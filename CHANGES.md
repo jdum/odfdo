@@ -8,6 +8,7 @@
     -   Element.tocs -> Element.get_tocs()
     -   Element.toc -> Element.get_toc()
     -   Element.text_changes -> Element.get_text_changes()
+    -   Element.tracked_changes -> Element.get_tracked_changes()
 
 ### Added
 
@@ -15,6 +16,7 @@
 -   Added `Element.tocs`
 -   Added `Element.toc`
 -   Added `Element.text_changes`
+-   Added `Element.tracked_changes`
 
 ## [3.7.9] - 2024-05-3
 
