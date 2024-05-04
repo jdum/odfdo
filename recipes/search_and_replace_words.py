@@ -29,7 +29,7 @@ def search_replace(document):
         paragraph.replace("ipsum", "(ipsum in paragraph)")
 
     # replace in headers
-    for header in body.get_headers():
+    for header in body.headers:
         header.replace("ipsum", "(ipsum in header)")
 
     # pattern is a regular expression

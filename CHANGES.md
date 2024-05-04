@@ -2,17 +2,19 @@
 
 ## [3.7.10] - 2024-
 
--   Refactor to add property getter for some common methods
+-   Refactor to add property getter for some common methods. Original get\_\*
+    method is still available and permits detailed requests with parameters.
 
-    -   Body.tables -> Body.get_tables()
-    -   Element.tocs -> Element.get_tocs()
-    -   Element.toc -> Element.get_toc()
-    -   Element.text_changes -> Element.get_text_changes()
-    -   Element.tracked_changes -> Element.get_tracked_changes()
-    -   Element.user_defined_list -> Element.get_user_defined_list()
-    -   Element.images -> Element.get_images()
-    -   Element.frames -> Element.get_frames()
-    -   Element.lists -> Element.get_lists()
+        -   Body.tables -> Body.get_tables()
+        -   Element.tocs -> Element.get_tocs()
+        -   Element.toc -> Element.get_toc()
+        -   Element.text_changes -> Element.get_text_changes()
+        -   Element.tracked_changes -> Element.get_tracked_changes()
+        -   Element.user_defined_list -> Element.get_user_defined_list()
+        -   Element.images -> Element.get_images()
+        -   Element.frames -> Element.get_frames()
+        -   Element.lists -> Element.get_lists()
+        -   Element.headers -> Element.get_headers()
 
 ### Added
 
@@ -24,6 +26,7 @@
 -   Added `Element.images`
 -   Added `Element.frames`
 -   Added `Element.lists`
+-   Added `Element.headers`
 
 ## [3.7.9] - 2024-05-3
 

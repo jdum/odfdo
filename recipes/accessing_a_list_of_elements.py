@@ -33,7 +33,7 @@ def main():
     print(f"{count_methods} get methods are available")
     # Some examples, that you can check against actual content of the odt file:
     # See how complex is our wikipedia documents:
-    print("number of headings:", len(body.get_headers()))
+    print("number of headings:", len(body.headers))
     print("number of images stored:", len(body.images))
     print("number of paragraphs:", len(body.get_paragraphs()))
     print("number of links (URLs):", len(body.get_links()))
@@ -74,7 +74,7 @@ def test_unit(document: Document) -> None:
     body = document.body
     count_methods = " ".join(dir(body)).count("get_")
     assert count_methods == 96
-    assert len(body.get_headers()) == 29
+    assert len(body.headers) == 29
     assert len(body.images) == 0
     assert len(body.get_paragraphs()) == 175
     assert len(body.get_links()) == 352

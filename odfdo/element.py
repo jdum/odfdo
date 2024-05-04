@@ -1805,6 +1805,14 @@ class Element(CachedElement):
             content=content,
         )
 
+    @property
+    def headers(self) -> list[Element]:
+        """Return all the Headers.
+
+        Return: list of Header
+        """
+        return self.get_elements("descendant::text:h")
+
     def get_header(
         self,
         position: int = 0,

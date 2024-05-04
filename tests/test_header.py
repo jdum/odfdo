@@ -45,6 +45,14 @@ def test_get_header_list(base_body):
     assert text == "Level 2 Title"
 
 
+def test_get_header_list_property(base_body):
+    headings = base_body.headers
+    assert len(headings) == 3
+    second = headings[1]
+    text = second.text
+    assert text == "Level 2 Title"
+
+
 def test_get_header_list_style(base_body):
     headings = base_body.get_headers(style="Heading_20_2")
     assert len(headings) == 1
@@ -78,6 +86,15 @@ def test_get_header_list_context(base_body):
     assert text == "First Title of the Second Section"
 
 
+def test_get_header_list_context_property(base_body):
+    section2 = base_body.get_section(position=1)
+    headings = section2.headers
+    assert len(headings) == 1
+    heading = headings[0]
+    text = heading.text
+    assert text == "First Title of the Second Section"
+
+
 def test_odf_heading(base_body):
     heading = base_body.get_header()
     assert isinstance(heading, Header)
@@ -99,4 +116,11 @@ def test_insert_heading(base_body):
     heading = Header(2, "An inserted heading", style="Heading_20_2")
     base_body.append(heading)
     last_heading = base_body.get_headers()[-1]
+    assert last_heading.text == "An inserted heading"
+
+
+def test_insert_heading_property(base_body):
+    heading = Header(2, "An inserted heading", style="Heading_20_2")
+    base_body.append(heading)
+    last_heading = base_body.headers[-1]
     assert last_heading.text == "An inserted heading"

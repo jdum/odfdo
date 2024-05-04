@@ -108,7 +108,7 @@ def header_numbering(
 def headers_document(document: Document, depth: int) -> None:
     body = document.body
     level_indexes: dict[int, int] = {}
-    for header in body.get_headers():
+    for header in body.headers:
         number_str = header_numbering(header, level_indexes, depth)
         if number_str is None:
             continue

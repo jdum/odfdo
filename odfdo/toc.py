@@ -428,7 +428,7 @@ class TOC(Element):
         # Auto-fill the index
         outline_level = self.outline_level or 10
         level_indexes: dict[int, int] = {}
-        for header in body.get_headers():
+        for header in body.headers:
             level = header.get_attribute_integer("text:outline-level") or 0
             if level is None or level > outline_level:
                 continue
