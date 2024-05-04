@@ -40,7 +40,7 @@ def update_toc(document: Document) -> None:
 
 
 def check_toc_v1(document: Document) -> None:
-    toc = document.body.get_toc()
+    toc = document.body.toc
     content = str(toc).split("\n")
     assert len(content) == 5
     assert content[0].startswith("Table of Contents")
@@ -55,12 +55,12 @@ def add_some_header(document: Document) -> None:
     document.body.append(header)
     document.body.append(Paragraph("Some text after the new header."))
     # update the table of contents
-    toc = document.body.get_toc()
+    toc = document.body.toc
     toc.fill(document)
 
 
 def check_toc_v2(document: Document) -> None:
-    toc = document.body.get_toc()
+    toc = document.body.toc
     content = str(toc).split("\n")
     assert len(content) == 6
     assert content[0].startswith("Table of Contents")
@@ -72,26 +72,26 @@ def check_toc_v2(document: Document) -> None:
 
 
 def change_toc_title(document: Document) -> None:
-    toc = document.body.get_toc()
+    toc = document.body.toc
     toc.set_toc_title("Another title")
     toc.fill(document)
 
 
 def check_toc_v3(document: Document) -> None:
-    toc = document.body.get_toc()
+    toc = document.body.toc
     content = str(toc).split("\n")
     assert len(content) == 6
     assert content[0].startswith("Another title")
 
 
 def change_toc_title_to_empty(document: Document) -> None:
-    toc = document.body.get_toc()
+    toc = document.body.toc
     toc.set_toc_title("")  # that will remove the title
     toc.fill(document)
 
 
 def check_toc_v4(document: Document) -> None:
-    toc = document.body.get_toc()
+    toc = document.body.toc
     content = str(toc).split("\n")
     assert len(content) == 5
     assert content[0].startswith("1. Lorem 1")
@@ -108,12 +108,12 @@ def remove_second_header_1b(document: Document) -> None:
     # deleting will remove the element from the document
     header.delete()
 
-    toc = document.body.get_toc()
+    toc = document.body.toc
     toc.fill(document)
 
 
 def check_toc_v5(document: Document) -> None:
-    toc = document.body.get_toc()
+    toc = document.body.toc
     content = str(toc).split("\n")
     assert len(content) == 4
     assert content[0].startswith("1. Lorem 1")
@@ -123,13 +123,13 @@ def check_toc_v5(document: Document) -> None:
 
 
 def add_toc_title(document: Document) -> None:
-    toc = document.body.get_toc()
+    toc = document.body.toc
     toc.set_toc_title("A new title")
     toc.fill(document)
 
 
 def check_toc_v6(document: Document) -> None:
-    toc = document.body.get_toc()
+    toc = document.body.toc
     content = str(toc).split("\n")
     assert len(content) == 5
     assert content[0].startswith("A new title")

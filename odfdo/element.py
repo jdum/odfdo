@@ -3143,7 +3143,15 @@ class Element(CachedElement):
 
         Return: list of odf_toc
         """
-        return self._filtered_elements("text:table-of-content")
+        return self.get_elements("text:table-of-content")
+
+    @property
+    def tocs(self) -> list[Element]:
+        """Return all the tables of contents.
+
+        Return: list of odf_toc
+        """
+        return self.get_elements("text:table-of-content")
 
     def get_toc(
         self,
@@ -3163,6 +3171,14 @@ class Element(CachedElement):
         return self._filtered_element(
             "text:table-of-content", position, content=content
         )
+
+    @property
+    def toc(self) -> Element | None:
+        """Return the first table of contents.
+
+        Return: odf_toc or None if not found
+        """
+        return self.get_toc()
 
     # Styles
 

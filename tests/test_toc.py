@@ -28,6 +28,7 @@ from odfdo.document import Document
 from odfdo.toc import TOC
 
 SAMPLE = Path(__file__).parent / "samples" / "toc.odt"
+SAMPLE_TOC = Path(__file__).parent / "samples" / "toc_done.odt"
 SAMPLE_EXPECTED = [
     "Table des matières",
     "1. Level 1 title 1",
@@ -51,8 +52,41 @@ def sample() -> Iterable[Document]:
     yield document
 
 
+@pytest.fixture
+def sample_toc() -> Iterable[Document]:
+    document = Document(SAMPLE_TOC)
+    yield document
+
+
 def get_toc_lines(toc):
     return [paragraph.text for paragraph in toc.get_paragraphs()]
+
+
+def test_get_tocs(sample_toc):
+    tocs = sample_toc.body.get_tocs()
+    assert len(tocs) == 1
+    assert isinstance(tocs[0], TOC)
+
+
+def test_get_tocs_empty(sample):
+    tocs = sample.body.get_tocs()
+    assert len(tocs) == 0
+
+
+def test_get_tocs_property(sample_toc):
+    tocs = sample_toc.body.tocs
+    assert len(tocs) == 1
+    assert isinstance(tocs[0], TOC)
+
+
+def test_get_toc(sample_toc):
+    toc = sample_toc.body.get_toc()
+    assert isinstance(toc, TOC)
+
+
+def test_get_toc_property(sample_toc):
+    toc = sample_toc.body.toc
+    assert isinstance(toc, TOC)
 
 
 def test_toc_fill_unattached():

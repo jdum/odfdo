@@ -5,10 +5,14 @@
 -   Refactor to add property getter for some common methods
 
     -   Body.tables -> Body.get_tables()
+    -   Element.tocs -> Element.get_tocs()
+    -   Element.toc -> Element.get_toc()
 
 ### Added
 
 -   Added `Body.tables`
+-   Added `Element.tocs`
+-   Added `Element.toc`
 
 ## [3.7.9] - 2024-05-3
 
