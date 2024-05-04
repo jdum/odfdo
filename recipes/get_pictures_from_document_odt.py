@@ -26,7 +26,7 @@ def read_source_document():
 def main():
     doc = read_source_document()
     # show the list the content of the document parts
-    parts = doc.get_parts()
+    parts = doc.parts
     print("Parts:")
     print(pformat(parts))
     print()

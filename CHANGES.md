@@ -22,6 +22,8 @@
         -   Table.cells -> Table.get_cells()
         -   Table.columns -> Table.get_columns()
         -   Row.cells -> Row.get_cells()
+        -   Document.parts -> Document.get_parts()
+        -   Container.parts -> Container.get_parts()
 
 -   Refactor to add property getter/setter for some common methods. Original get\_\*
     and set\_\* methods are still available and permit detailed requests with parameters.
@@ -47,6 +49,8 @@
 -   Added `Table.cells`
 -   Added `Table.columns`
 -   Added `Row.cells`
+-   Added `Document.parts`
+-   Added `Container.parts`
 
 ## [3.7.9] - 2024-05-3
 

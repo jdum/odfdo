@@ -265,7 +265,14 @@ class Document:
         """
         if not self.container:
             raise ValueError("Empty Container")
-        return self.container.get_parts()
+        return self.container.parts
+
+    @property
+    def parts(self) -> list[str]:
+        """Return available part names with path inside the archive, e.g.
+        ['content.xml', ..., 'Pictures/100000000000032000000258912EB1C3.jpg']
+        """
+        return self.get_parts()
 
     def get_part(self, path: str) -> XmlPart | str | bytes | None:
         """Return the bytes of the given part. The path is relative to the

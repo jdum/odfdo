@@ -59,6 +59,13 @@ def test_parts(chart_container):
     assert "Object 1/content.xml" in parts
 
 
+def test_parts_property(chart_container):
+    parts = chart_container.parts
+    assert "mimetype" in parts
+    assert "content.xml" in parts
+    assert "Object 1/content.xml" in parts
+
+
 def test_content_chart(chart_container):
     obj = XmlPart("Object 1/content.xml", chart_container)
     body = obj.body

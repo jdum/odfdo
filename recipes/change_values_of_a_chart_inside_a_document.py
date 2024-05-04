@@ -40,7 +40,7 @@ def main() -> None:
 
 def change(document: Document) -> None:
     # list the parts if needed
-    print(document.get_parts())
+    print(document.parts)
     # -> ['mimetype', 'ObjectReplacements/Object 1', 'Object 1/meta.xml', 'Object 1/styles.xml', 'Object 1/content.xml', ...
 
     part = document.get_part("Object 1/content.xml")

@@ -98,7 +98,7 @@ def clean_filename(name: str) -> str:
 
 
 def dump_pictures(document: Document, target: str | Path) -> None:
-    for part_name in document.get_parts():
+    for part_name in document.parts:
         if not part_name.startswith("Pictures/"):
             continue
         path = Path(target, "Pictures")

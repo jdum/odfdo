@@ -311,6 +311,11 @@ class Container:
         else:
             raise ValueError("Unable to provide parts of the document")
 
+    @property
+    def parts(self) -> list[str]:
+        """Get the list of members."""
+        return self.get_parts()
+
     def get_part(self, path: str) -> str | bytes | None:
         """Get the bytes of a part of the ODF."""
         path = str(path)
@@ -474,7 +479,7 @@ class Container:
         parts = self.__parts
         packaging = self._clean_save_packaging(packaging)
         # Load parts else they will be considered deleted
-        for path in self.get_parts():
+        for path in self.parts:
             if path not in parts:
                 self.get_part(path)
         target = self._clean_save_target(target)
