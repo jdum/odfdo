@@ -19,7 +19,7 @@ def analyse_list(document):
     # contains. Just like the body was, but since the body contains all content,
     # we didn't see the difference.
     # Let's try the lists:
-    print("Number of available lists in the document:", len(body.get_lists()))
+    print("Number of available lists in the document:", len(body.lists))
     print()
 
     list4 = body.get_list(position=4)
@@ -69,7 +69,7 @@ def analyse_list(document):
 
     # only for test suite:
     if "ODFDO_TESTING" in os.environ:
-        assert len(body.get_lists()) == 5
+        assert len(body.lists) == 5
         assert len(list4.get_paragraphs()) == 9
         assert paragraphs[0].text_recursive.startswith("BBC Cult website")
         assert paragraphs[8].text_recursive.startswith("DC Comics H2G2")

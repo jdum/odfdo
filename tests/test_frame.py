@@ -82,6 +82,11 @@ def test_get_frame_list(frame_body):
     assert len(result) == 4
 
 
+def test_get_frame_list_property(frame_body):
+    result = frame_body.frames
+    assert len(result) == 4
+
+
 def test_get_frame_list_title(frame_body):
     result = frame_body.get_frames(title="Intitulé")
     assert len(result) == 1

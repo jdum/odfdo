@@ -11,6 +11,8 @@
     -   Element.tracked_changes -> Element.get_tracked_changes()
     -   Element.user_defined_list -> Element.get_user_defined_list()
     -   Element.images -> Element.get_images()
+    -   Element.frames -> Element.get_frames()
+    -   Element.lists -> Element.get_lists()
 
 ### Added
 
@@ -20,6 +22,8 @@
 -   Added `Element.text_changes`
 -   Added `Element.tracked_changes`
 -   Added `Element.images`
+-   Added `Element.frames`
+-   Added `Element.lists`
 
 ## [3.7.9] - 2024-05-3
 

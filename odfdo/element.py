@@ -1849,6 +1849,14 @@ class Element(CachedElement):
             "descendant::text:list", text_style=style, content=content
         )
 
+    @property
+    def lists(self) -> list[Element]:
+        """Return all the lists.
+
+        Return: list of List
+        """
+        return self.get_elements("descendant::text:list")
+
     def get_list(
         self,
         position: int = 0,
@@ -1902,6 +1910,14 @@ class Element(CachedElement):
             svg_desc=description,
             content=content,
         )
+
+    @property
+    def frames(self) -> list[Element]:
+        """Return all the frames.
+
+        Return: list of Frame
+        """
+        return self.get_elements("descendant::draw:frame")
 
     def get_frame(
         self,
