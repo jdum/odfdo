@@ -1,6 +1,6 @@
 # Odfdo Release Notes
 
-## [3.7.10] - 2024-
+## [3.7.10] - 2024-05-4
 
 -   Refactor to add property getter for some common methods. Original get\_\*
     method is still available and permits detailed requests with parameters.
