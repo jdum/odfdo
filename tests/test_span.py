@@ -51,6 +51,14 @@ def test_get_span_list(body):
     assert element.serialize() == expected
 
 
+def test_get_span_list_property(body):
+    result = body.spans
+    assert len(result) == 2
+    element = result[0]
+    expected = '<text:span text:style-name="T1">moustache</text:span>'
+    assert element.serialize() == expected
+
+
 def test_get_span_list_style(body):
     result = body.get_spans(style="T2")
     assert len(result) == 1

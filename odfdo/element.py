@@ -1761,6 +1761,14 @@ class Element(CachedElement):
             "descendant::text:span", text_style=style, content=content
         )
 
+    @property
+    def spans(self) -> list[Element]:
+        """Return all the spans.
+
+        Return: list of Span
+        """
+        return self.get_elements("descendant::text:span")
+
     def get_span(
         self,
         position: int = 0,

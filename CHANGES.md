@@ -15,6 +15,7 @@
         -   Element.frames -> Element.get_frames()
         -   Element.lists -> Element.get_lists()
         -   Element.headers -> Element.get_headers()
+        -   Element.spans -> Element.get_spans()
 
 ### Added
 
@@ -27,6 +28,7 @@
 -   Added `Element.frames`
 -   Added `Element.lists`
 -   Added `Element.headers`
+-   Added `Element.spans`
 
 ## [3.7.9] - 2024-05-3
 

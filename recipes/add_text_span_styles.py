@@ -83,8 +83,8 @@ def add_styles(document):
 
     # only for test suite:
     if "ODFDO_TESTING" in os.environ:
-        print(len(body.get_spans()))
-        assert len(body.get_spans()) == 266
+        print(len(body.spans))
+        assert len(body.spans) == 266
 
 
 if __name__ == "__main__":

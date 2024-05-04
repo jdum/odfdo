@@ -37,10 +37,10 @@ def main():
     body = document.body
 
     print("Removing span styles from", source.name)
-    print("'text:span' occurrences:", len(body.get_spans()))
+    print("'text:span' occurrences:", len(body.spans))
 
     remove_text_span(body)
-    print("'text:span' occurrences after removal:", len(body.get_spans()))
+    print("'text:span' occurrences after removal:", len(body.spans))
 
     save_new(document, TARGET)
 
