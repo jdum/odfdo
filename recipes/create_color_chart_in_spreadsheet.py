@@ -66,7 +66,7 @@ def generate_chart():
 
         row_style = Style("table-row", height="1.80cm")
         name_style_row = document.insert_style(style=row_style, automatic=True)
-        for row in table.get_rows():
+        for row in table.rows:
             row.style = name_style_row
             table.set_row(row.y, row)
 

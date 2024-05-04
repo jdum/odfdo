@@ -96,7 +96,7 @@ def generate_document():
     sorted_keys = [(k, v) for (v, k) in sorted_keys]
     table.set_values(sorted_keys)
 
-    print("Rows in the table :", len(table.get_rows()))
+    print("Rows in the table :", len(table.rows))
 
     # frequency of word:
     regex_query = "^the"

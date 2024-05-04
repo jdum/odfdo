@@ -18,6 +18,8 @@
         -   Element.spans -> Element.get_spans()
         -   Element.paragraphs -> Element.get_paragraphs()
         -   Element.sections -> Element.get_sections()
+        -   Table.rows -> Table.get_rows()
+        -   Table.cells -> Table.get_cells()
 
 -   Refactor to add property getter/setter for some common methods. Original get\_\*
     and set\_\* methods are still available and permit detailed requests with parameters.
@@ -39,6 +41,8 @@
 -   Added `Element.paragraphs`
 -   Added `Element.sections`
 -   Added `Column.default_cell_style`
+-   Added `Table.rows`
+-   Added `Table.cells`
 
 ## [3.7.9] - 2024-05-3
 

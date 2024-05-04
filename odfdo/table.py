@@ -1381,6 +1381,15 @@ class Table(Element):
             rows.append(row)
         return rows
 
+    @property
+    def rows(self) -> list[Row]:
+        """Get the list of all rows.
+
+        Return: list of rows
+        """
+        # fixme : not clones ?
+        return list(self.traverse())
+
     def _get_row2(self, y: int, clone: bool = True, create: bool = True) -> Row:
         if y >= self.height:
             if create:
@@ -1729,7 +1738,7 @@ class Table(Element):
 
             flat -- boolean
 
-        Return: list of tuples
+        Return: list of list of Cell
         """
         if coord:
             x, y, z, t = self._translate_table_coordinates(coord)
@@ -1757,6 +1766,17 @@ class Table(Element):
                 )
                 lcells.append(row_cells)
             return lcells
+
+    @property
+    def cells(self) -> list:
+        """Get all cells of the table.
+
+        Return: list of list of Cell
+        """
+        lcells: list[list[Cell]] = []
+        for row in self.traverse():
+            lcells.append(row.get_cells())
+        return lcells
 
     def get_cell(
         self,

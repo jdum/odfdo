@@ -37,10 +37,10 @@ def generate_document():
     # A table contains rows, we can append some more.
     for _ in range(2):
         table.append_row()
-    print("rows in the table (3+2):", len(table.get_rows()))
+    print("rows in the table (3+2):", len(table.rows))
 
     #  A row contains cells
-    for row in table.get_rows():
+    for row in table.rows:
         print("row, nb of cells ", row.y, len(row.get_cells()))
 
     last_row = table.get_row(-1)
