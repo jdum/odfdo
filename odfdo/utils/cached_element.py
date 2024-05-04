@@ -22,5 +22,5 @@ from __future__ import annotations
 from abc import ABC
 
 
-class CachedElement(ABC):
+class CachedElement(ABC):  # noqa: B024
     _caching: bool = False
