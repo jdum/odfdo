@@ -33,8 +33,6 @@ lxml = [
     { version = ">=4.9.4,<6", python = ">=3.11,<3.12" },
     { version = ">=4.9.4,<6", python = ">=3.12" },
 ]
-[tool.poetry.group.docs.dependencies]
-pdoc = ">=14.4.0"
 
 [tool.poetry.group.dev.dependencies]
 poetry = "~1.8"
