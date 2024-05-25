@@ -4,7 +4,7 @@
     echo "Not in top directory" ; exit 1
 }
 
-pip install -U mkdocs mkdocs-material
+pip install -U mkdocs mkdocs-material mkdocstrings[python]
 
 [ -d doc ] && rm -fr doc
 
