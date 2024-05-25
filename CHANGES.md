@@ -1,5 +1,17 @@
 # Odfdo Release Notes
 
+## [3.7.11] - 2024-05-25
+
+-   New script `odfdo-userfield` to show or set the user-field content in an ODF file.
+
+### Added
+
+-   Add script `odfdo-userfield`.
+
+### Changed
+
+-   Updating dependency versions.
+
 ## [3.7.10] - 2024-05-4
 
 -   Refactor to add property getter for some common methods. Original get\_\*

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odfdo"
-version = "3.7.10"
+version = "3.7.11"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 keywords = ["python", "library", "ODF", "OpenDocument"]
@@ -53,6 +53,7 @@ odfdo-styles = 'odfdo.scripts.styles:main'
 odfdo-replace = 'odfdo.scripts.replace:main'
 odfdo-headers = 'odfdo.scripts.headers:main'
 odfdo-table-shrink = 'odfdo.scripts.table_shrink:main'
+odfdo-userfield = 'odfdo.scripts.userfield:main'
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
