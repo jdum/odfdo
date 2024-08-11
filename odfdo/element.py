@@ -312,7 +312,7 @@ class Element(CachedElement):
 
     @classmethod
     def from_tag_for_clone(
-        cls: type,
+        cls: Any,  # ABCMeta, type, ...
         tree_element: _Element,
         cache: tuple | None,
     ) -> Element:
