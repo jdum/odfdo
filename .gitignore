@@ -5,6 +5,7 @@
 .Spotlight-V100
 .Trashes
 .svn
+.venv
 __pycache__
 *~
 *.orig
