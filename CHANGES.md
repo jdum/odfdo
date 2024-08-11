@@ -1,5 +1,19 @@
 # Odfdo Release Notes
 
+## [3.7.12] - 2024-08-11
+
+-   Update depencies and test suite, support of `lxml` version 5.3.0.
+
+### Changed
+
+-   Updating dependency versions.
+
+### Fixed
+
+-   Fix a type hint in element.py
+
+-   Fix missing .venv in gitconfig
+
 ## [3.7.11] - 2024-05-25
 
 -   New script `odfdo-userfield` to show or set the user-field content in an ODF file.
