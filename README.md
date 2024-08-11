@@ -40,6 +40,8 @@ pytest
 
 The tests should run for a few seconds or minutes and issue no error.
 
+The full test suite uses `tox` to check different `Python` and `lxml` versions.
+
 # Usage
 
     from odfdo import Document, Paragraph
