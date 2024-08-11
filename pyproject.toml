@@ -41,6 +41,7 @@ tox = ">=4"
 Pillow = ">=10.0.0"
 lxml-stubs = "*"
 ruff = ">=0.4.2"
+isort = ">=5.13.0"
 
 [tool.poetry.scripts]
 odfdo-diff = "odfdo.scripts.diff:main"
