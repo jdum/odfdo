@@ -60,11 +60,15 @@ class Date:
 
     @staticmethod
     def decode(data: str) -> datetime:
-        return datetime.strptime(data, DATE_FORMAT)
+        return datetime.fromisoformat(data)
 
     @staticmethod
     def encode(value: datetime | date) -> str:
-        return value.strftime(DATE_FORMAT)
+        """Return text formated as "2024-01-31" """
+        if isinstance(value, datetime):
+            return value.date().isoformat()
+        # date instance
+        return value.isoformat()
 
 
 class DateTime:
