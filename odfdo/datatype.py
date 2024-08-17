@@ -22,7 +22,7 @@
 """
 from __future__ import annotations
 
-import contextlib
+import sys
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from functools import total_ordering
@@ -76,19 +76,39 @@ class DateTime:
 
     @staticmethod
     def decode(data: str) -> datetime:
-        if data.endswith("Z"):
-            data = data[:-1] + "+0000"
+        def _decode_39_310(data1: str) -> datetime:
+            if data1.endswith("Z"):
+                data1 = data1[:-1] + "+00:00"
+            try:
+                return datetime.fromisoformat(data1)
+            except ValueError as e:
+                if "microsecond must be" in str(e) or "Invalid isoformat string" in str(
+                    e
+                ):
+                    if len(data1) == 29:
+                        return datetime.fromisoformat(data1[:26])
+                    if len(data1) == 35:
+                        return datetime.fromisoformat(data1[:26] + data1[-6:])
+                raise
 
-        with contextlib.suppress(ValueError):
-            # fix for nanoseconds:
-            return datetime.strptime(data[0:26] + data[29:], DATETIME_FORMAT_MICRO)
-        with contextlib.suppress(ValueError):
-            return datetime.strptime(data, DATETIME_FORMAT_MICRO)
-        return datetime.strptime(data, DATETIME_FORMAT)
+        try:
+            return datetime.fromisoformat(data)
+        except ValueError:
+            # maybe python 3.9
+            if sys.version_info.major == 3:
+                if sys.version_info.minor == 9:
+                    return _decode_39_310(data)
+                if sys.version_info.minor == 10:
+                    return _decode_39_310(data)
+            raise
 
     @staticmethod
     def encode(value: datetime) -> str:
-        return value.strftime(DATETIME_FORMAT)
+        text = value.isoformat()
+        if text.endswith("+00:00"):
+            # convert to canonical representation
+            return text[:-6] + "Z"
+        return text
 
 
 class Duration:

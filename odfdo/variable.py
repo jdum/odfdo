@@ -23,7 +23,9 @@
 """
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import time as dt_time
+from datetime import timedelta
 from typing import Any
 
 from .datatype import Date, DateTime, Duration
@@ -348,7 +350,7 @@ class VarTime(Element):
 
     def __init__(
         self,
-        time: datetime,
+        time: datetime | dt_time,
         fixed: bool = False,
         data_style: str | None = None,
         text: str | None = None,
@@ -357,6 +359,16 @@ class VarTime(Element):
     ) -> None:
         super().__init__(**kwargs)
         if self._do_init:
+            if isinstance(time, dt_time):
+                # need convert to datetime
+                time = datetime(
+                    year=1900,
+                    month=1,
+                    day=1,
+                    hour=time.hour,
+                    minute=time.minute,
+                    second=time.second,
+                )
             self.time = DateTime.encode(time)
             if fixed:
                 self.fixed = True

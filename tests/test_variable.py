@@ -179,6 +179,12 @@ def test_create_time():
     assert time_element.serialize() == expected
 
 
+def test_create_time_datetime():
+    time_element = VarTime(datetime(2024, 2, 25, 19, 30, 15))
+    expected = '<text:time text:time-value="2024-02-25T19:30:15">19:30:15</text:time>'
+    assert time_element.serialize() == expected
+
+
 def test_create_time_fixed():
     time_element = VarTime(time(19, 30), fixed=True)
     expected = (

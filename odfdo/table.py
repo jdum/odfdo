@@ -3269,8 +3269,9 @@ def import_from_csv(
     # XXX Load the entire file in memory
     # Alternative: a file-wrapper returning the sample then the rest
     if isinstance(path_or_file, (str, Path)):
-        Path(path_or_file)
         content_b = Path(path_or_file).read_bytes()
+    elif isinstance(path_or_file, StringIO):
+        content_b = path_or_file.getvalue()
     else:
         # Leave the file we were given open
         content_b = path_or_file.read()  # type: ignore

@@ -49,6 +49,8 @@ def test_base():
     source = SAMPLES / "base_text.odt"
     params = [f"{source}"]
     out, err, exitcode = run_params(params)
+    print(out)
+    print(err)
     assert exitcode == 0
     assert "This is the second paragraph." in out
 
@@ -57,6 +59,8 @@ def test_no_text():
     source = SAMPLES / "base_text.odt"
     params = ["-n", f"{source}"]
     out, err, exitcode = run_params(params)
+    print(out)
+    print(err)
     assert exitcode == 0
     assert not out.strip()
 
@@ -65,6 +69,8 @@ def test_meta():
     source = SAMPLES / "base_text.odt"
     params = ["-nm", f"{source}"]
     out, err, exitcode = run_params(params)
+    print(out)
+    print(err)
     assert exitcode == 0
     assert "This is the second paragraph." not in out
     assert "Keyword: These are the keywords" in out

@@ -18,8 +18,8 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-
-from datetime import datetime, timedelta
+import sys
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 import pytest
@@ -33,11 +33,120 @@ def test_datetime_encode():
     assert DateTime.encode(date) == expected
 
 
+def test_datetime_encode_micro():
+    date = datetime(2009, 6, 26, 11, 9, 36, 123456)
+    expected = "2009-06-26T11:09:36.123456"
+    assert DateTime.encode(date) == expected
+
+
+def test_datetime_encode_UTC():
+    date = datetime(2009, 6, 26, 11, 9, 36, tzinfo=timezone.utc)
+    expected = "2009-06-26T11:09:36Z"
+    assert DateTime.encode(date) == expected
+
+
+def test_datetime_encode_micro_UTC():
+    date = datetime(2009, 6, 26, 11, 9, 36, 123456, tzinfo=timezone.utc)
+    expected = "2009-06-26T11:09:36.123456Z"
+    assert DateTime.encode(date) == expected
+
+
+def test_datetime_encode_gmt2():
+    date = datetime(2009, 6, 26, 11, 9, 36, tzinfo=timezone(timedelta(hours=2)))
+    expected = "2009-06-26T11:09:36+02:00"
+    assert DateTime.encode(date) == expected
+
+
+def test_datetime_encode_gmt_6():
+    date = datetime(2009, 6, 26, 11, 9, 36, tzinfo=timezone(timedelta(hours=-6)))
+    expected = "2009-06-26T11:09:36-06:00"
+    assert DateTime.encode(date) == expected
+
+
 def test_datetime_decode():
     date = "2009-06-29T14:33:21"
     expected = datetime(2009, 6, 29, 14, 33, 21)
     assert DateTime.decode(date) == expected
 
+
+def test_datetime_decode_micro():
+    date = "2009-06-29T14:33:21.123456"
+    expected = datetime(2009, 6, 29, 14, 33, 21, 123456)
+    assert DateTime.decode(date) == expected
+
+
+def test_datetime_decode_nano():
+    date = "2009-06-29T14:33:21.123456789"
+    if sys.version_info.major == 3 and sys.version_info.minor >= 11:
+        expected = datetime(2009, 6, 29, 14, 33, 21, 123456)
+        assert DateTime.decode(date) == expected
+    else:
+        expected = datetime(2009, 6, 29, 14, 33, 21, 123456)
+        assert DateTime.decode(date) == expected
+
+
+def test_datetime_decode_utc():
+    date = "2009-06-29T14:33:21Z"
+    expected = datetime(2009, 6, 29, 14, 33, 21, tzinfo=timezone.utc)
+    assert DateTime.decode(date) == expected
+
+
+def test_datetime_decode_utc_00():
+    date = "2009-06-29T14:33:21+00:00"
+    expected = datetime(2009, 6, 29, 14, 33, 21, tzinfo=timezone.utc)
+    assert DateTime.decode(date) == expected
+
+
+def test_datetime_decode_gmt2():
+    date = "2009-06-29T14:33:21+02:00"
+    expected = datetime(2009, 6, 29, 14, 33, 21, tzinfo=timezone(timedelta(hours=2)))
+    assert DateTime.decode(date) == expected
+
+
+def test_datetime_decode_gmt_6():
+    date = "2009-06-29T14:33:21-06:00"
+    expected = datetime(2009, 6, 29, 14, 33, 21, tzinfo=timezone(timedelta(hours=-6)))
+    assert DateTime.decode(date) == expected
+
+
+def test_datetime_decode_utc_micro():
+    date = "2009-06-29T14:33:21.123456Z"
+    expected = datetime(2009, 6, 29, 14, 33, 21, 123456, tzinfo=timezone.utc)
+    assert DateTime.decode(date) == expected
+
+
+def test_datetime_decode_utc_00_micro():
+    date = "2009-06-29T14:33:21.123456+00:00"
+    expected = datetime(2009, 6, 29, 14, 33, 21, 123456, tzinfo=timezone.utc)
+    assert DateTime.decode(date) == expected
+
+
+def test_datetime_decode_gmt2_micro():
+    date = "2009-06-29T14:33:21.123456+02:00"
+    expected = datetime(
+        2009, 6, 29, 14, 33, 21, 123456, tzinfo=timezone(timedelta(hours=2))
+    )
+    assert DateTime.decode(date) == expected
+
+
+def test_datetime_decode_utc_nano():
+    date = "2009-06-29T14:33:21.123456Z"
+    expected = datetime(2009, 6, 29, 14, 33, 21, 123456, tzinfo=timezone.utc)
+    assert DateTime.decode(date) == expected
+
+
+def test_datetime_decode_utc_00_nano():
+    date = "2009-06-29T14:33:21.123456+00:00"
+    expected = datetime(2009, 6, 29, 14, 33, 21, 123456, tzinfo=timezone.utc)
+    assert DateTime.decode(date) == expected
+
+
+def test_datetime_decode_gmt2_na():
+    date = "2009-06-29T14:33:21.123456+02:00"
+    expected = datetime(
+        2009, 6, 29, 14, 33, 21, 123456, tzinfo=timezone(timedelta(hours=2))
+    )
+    assert DateTime.decode(date) == expected
 
 def test_duration_encode():
     duration = timedelta(0, 53, 0, 0, 6)
