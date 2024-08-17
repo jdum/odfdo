@@ -1,8 +1,22 @@
 # Odfdo Release Notes
 
+## [3.7.13] - 2024-08-17
+
+-   Fix parsing of Date and Datetime for a better compliance with ISO8601.
+
+### Changed
+
+-   Updating dependency versions.
+
+### Fixed
+
+-   Fix datetime encoding/decoding for ISO8601 compliance and different Python versions.
+
+-   Move from strptime() to date.isoformat() for class Date and DateTime.
+
 ## [3.7.12] - 2024-08-11
 
--   Update depencies and test suite, support of `lxml` version 5.3.0.
+-   Update dependencies and test suite, support of `lxml` version 5.3.0.
 
 ### Changed
 

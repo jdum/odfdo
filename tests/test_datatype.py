@@ -130,19 +130,19 @@ def test_datetime_decode_gmt2_micro():
 
 
 def test_datetime_decode_utc_nano():
-    date = "2009-06-29T14:33:21.123456Z"
+    date = "2009-06-29T14:33:21.123456789Z"
     expected = datetime(2009, 6, 29, 14, 33, 21, 123456, tzinfo=timezone.utc)
     assert DateTime.decode(date) == expected
 
 
 def test_datetime_decode_utc_00_nano():
-    date = "2009-06-29T14:33:21.123456+00:00"
+    date = "2009-06-29T14:33:21.123456789+00:00"
     expected = datetime(2009, 6, 29, 14, 33, 21, 123456, tzinfo=timezone.utc)
     assert DateTime.decode(date) == expected
 
 
-def test_datetime_decode_gmt2_na():
-    date = "2009-06-29T14:33:21.123456+02:00"
+def test_datetime_decode_gmt2_nano():
+    date = "2009-06-29T14:33:21.123456789+02:00"
     expected = datetime(
         2009, 6, 29, 14, 33, 21, 123456, tzinfo=timezone(timedelta(hours=2))
     )

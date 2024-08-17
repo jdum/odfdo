@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odfdo"
-version = "3.7.12"
+version = "3.7.13"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 keywords = ["python", "library", "ODF", "OpenDocument"]
@@ -118,41 +118,5 @@ branch = true
 source = ["odfdo"]
 
 [tool.pytest.ini_options]
-minversion = "7.0"
+minversion = "8.0"
 testpaths = ["tests"]
-target-version = "py312"
-line-length = 88
-fix = false
-lint.select = [
-    # flake8-2020
-    "YTT",
-    # flake8-bandit
-    "S",
-    # flake8-bugbear
-    "B",
-    # flake8-builtins
-    "A",
-    # flake8-comprehensions
-    "C4",
-    # flake8-debugger
-    "T10",
-    # flake8-simplify
-    "SIM",
-    # isort
-    "I",
-    # mccabe
-    "C90",
-    # pycodestyle
-    "E",
-    "W",
-    # pyflakes
-    "F",
-    # pygrep-hooks
-    "PGH",
-    # pyupgrade
-    "UP",
-    # ruff
-    "RUF",
-    # tryceratops
-    "TRY",
-]
