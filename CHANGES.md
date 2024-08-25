@@ -1,5 +1,59 @@
 # Odfdo Release Notes
 
+## [3.8.0] - 2024-08-25
+
+Changed the default behavior for appending text to a `Paragraph`: the behavior of the `Paragraph.append_plain_text()` method is now the default. A `"formatted"` argument is added, `True` by default, which applies the recognition of "\n", "\t" or a sequence of several spaces and converts them to ODF tags (`text:line-break`, `text:tab`, `text:s`)). To ignore this text formatting, set `"formatted=False"`.
+
+This change affects you if you create paragraphs from text containing line breaks or tabs and you don't want them to appear. In this case, add the argument `"formatted=False"`
+
+Details:
+
+- `Paragraph("word1     word2")`
+
+    - previous behavior:
+        - product XML:  `'<text:p>word1     word2</text:p>'`
+        - expected display: `word1 word2` (single space, the ODF standard does not recognize space sequences)
+
+    - new behavior:
+        - product XML:  `'<text:p>word1 <text:s text:c="4"/>word2</text:p>'`
+        - expected display: `word1     word2` (5 spaces)
+
+- `Paragraph("word1     word2", formatted=False)`
+
+    - new behavior:
+        - product XML:  `'<text:p>word1 word2</text:p>'`
+        - expected display: `word1 word2`
+
+- `Paragraph("word1\nword2")`
+
+    - previous behavior:
+        - product XML:  `'<text:p>word1\nword2</text:p>'`
+        - expected display: `word1 word2` (single space, the ODF standard does not recognize "\n" in XML content)
+
+    - new behavior:
+        - product XML:  `'<text:p>word1<text:line-break/>word2</text:p>'`
+        - expected display:
+            ```
+            word1
+            word2
+            ```
+
+- `Paragraph("word1\nword2", formatted=False)`
+
+    - new behavior:
+        - product XML:  `'<text:p>word1 word2</text:p>'`
+        - expected display: `word1 word2`
+
+On the same principle the `"formatted"` argument is available for `Pararaph.append(text)`, `Header(text)`, `Span(text)`.
+
+The `Paragraph.append_plain_text(text)` method is retained for compatibility with previous versions and has the same behavior as `Paragraph.append(text, formatted=True)`, the default.
+
+### Changed
+
+-   `Paragraph()`, `Paragraph.append()` and subclasses `Header()` and `Span()` have a new `"formatted"` argument True by default that translates into ODF format "\n", "\t" and multiples spaces.
+
+-   Updating dependency versions.
+
 ## [3.7.13] - 2024-08-17
 
 -   Fix parsing of Date and Datetime for a better compliance with ISO8601.

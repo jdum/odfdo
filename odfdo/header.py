@@ -48,12 +48,16 @@ class Header(Paragraph):
         start_value: int | None = None,
         suppress_numbering: bool = False,
         style: str | None = None,
+        formatted: bool = True,
         **kwargs: Any,
     ) -> None:
         """Create a header element of the given style and level, containing the
         optional given text.
 
         Level count begins at 1.
+
+        If "formatted" is True (the default), the given text is appended with <CR>,
+        <TAB> and multiple spaces replaced by ODF corresponding tags.
 
         Arguments:
 
@@ -66,20 +70,26 @@ class Header(Paragraph):
             start_value -- int
 
             style -- str
+
+            formatted -- bool
         """
         super().__init__(**kwargs)
         if self._do_init:
             self.level = int(level)
             if text:
-                self.text = text
+                if formatted:
+                    self.text = ""
+                    self.append_plain_text(text)  # type:ignore
+                else:
+                    self.text = self._unformatted(text)  # type:ignore
             if restart_numbering:
                 self.restart_numbering = True
             if start_value is not None:
                 self.start_value = start_value
             if suppress_numbering:
                 self.suppress_numbering = True
-            if style:
-                self.style = style
+            # if style:
+            #     self.style = style
 
     def get_formatted_text(
         self,

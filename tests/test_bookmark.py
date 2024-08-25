@@ -57,7 +57,7 @@ def test_create_bookmark_end():
     assert bookmark_end.serialize() == expected
 
 
-def test_get_bookmark(sample_body):
+def test_get_bookmark_main(sample_body):
     para = sample_body.get_paragraph()
     bookmark = Bookmark(ZOE)
     para.append(bookmark)

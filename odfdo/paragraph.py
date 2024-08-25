@@ -47,6 +47,10 @@ __all__ = [
     "Tab",
 ]
 
+_re_splitter = re.compile(r"(\n|\t|  +)")
+_re_space = re.compile(r"^  +$")
+_re_sub_splitter = re.compile(r"[ \t\n]+")
+
 
 def _by_regex_offset(method: Callable) -> Callable:  # noqa: C901
     @wraps(method)
@@ -153,27 +157,101 @@ class Paragraph(ParagraphBase):
 
     def __init__(
         self,
-        text_or_element: str | Element | None = None,
+        text_or_element: str | bytes | Element | None = None,
         style: str | None = None,
+        formatted: bool = True,
         **kwargs: Any,
     ):
         """Create a paragraph element of the given style containing the optional
         given text.
 
+        If "formatted" is True (the default), the given text is appended with <CR>,
+        <TAB> and multiple spaces replaced by ODF corresponding tags.
+
         Arguments:
 
-            text -- str or Element
+            text -- str, bytes or Element
 
             style -- str
+
+            formatted -- bool
         """
         super().__init__(**kwargs)
         if self._do_init:
             if isinstance(text_or_element, Element):
                 self.append(text_or_element)
             else:
-                self.text = text_or_element  # type:ignore
+                if formatted:
+                    self.text = ""
+                    self.append_plain_text(text_or_element)  # type:ignore
+                else:
+                    self.text = self._unformatted(text_or_element)  # type:ignore
             if style is not None:
                 self.style = style
+
+    @staticmethod
+    def _plain_text_splitted(text: str | bytes = "") -> list[str | Element]:
+        """Return plain text with <CR>, <TAB> and multiple spaces replaced
+        by ODF corresponding tags.
+        """
+        if not text:
+            return []
+        blocs = _re_splitter.split(text)
+        elements: list[str | Element] = []
+        for bloc in blocs:
+            if not bloc:
+                continue
+            if bloc == "\n":
+                elements.append(LineBreak())
+                continue
+            if bloc == "\t":
+                elements.append(Tab())
+                continue
+            if _re_space.match(bloc):
+                # follow ODF standard : n spaces => one space + spacer(n-1)
+                elements.append(" ")
+                elements.append(Spacer(len(bloc) - 1))
+                continue
+            # standard piece of text:
+            elements.append(bloc)
+        return elements
+
+    def append_plain_text(self, text: str | bytes | None = "") -> None:
+        """Append plain text to the paragraph, replacing <CR>, <TAB>
+        and multiple spaces by ODF corresponding tags.
+        """
+        if text is None:
+            stext = ""
+        elif isinstance(text, bytes):
+            stext = text.decode("utf-8")
+        else:
+            stext = str(text)
+        previous = self._cut_text_tail()
+        stext = previous + stext
+        for element in self._plain_text_splitted(stext):
+            self._Element__append(element)
+
+    @staticmethod
+    def _unformatted(text: str | bytes | None) -> str:
+        if not text:
+            return ""
+        if isinstance(text, bytes):
+            stext = text.decode("utf-8")
+        else:
+            stext = str(text)
+        return _re_sub_splitter.sub(" ", stext)
+
+    def append(
+        self,
+        str_or_element: str | bytes | Element,
+        formatted: bool = True,
+    ) -> None:
+        if isinstance(str_or_element, Element):
+            self._Element__append(str_or_element)
+        elif formatted:
+            self.append_plain_text(str_or_element)
+        else:
+            self._Element__append(self._unformatted(str_or_element))
 
     def insert_note(
         self,
@@ -796,9 +874,7 @@ class Paragraph(ParagraphBase):
 
 
 class Span(Paragraph):
-    """Create a span element "text:span" of the given style containing the optional
-    given text.
-    """
+    """Specialised paragraph for span "text:span"."""
 
     _tag = "text:span"
     _properties = (
@@ -810,19 +886,31 @@ class Span(Paragraph):
         self,
         text: str | None = None,
         style: str | None = None,
+        formatted: bool = True,
         **kwargs: Any,
     ) -> None:
-        """
+        """Create a span element "text:span" of the given style containing the optional
+        given text.
+
+        If "formatted" is True (the default), the given text is appended with <CR>,
+        <TAB> and multiple spaces replaced by ODF corresponding tags.
+
         Arguments:
 
             text -- str
 
             style -- str
+
+            formatted -- bool
         """
         super().__init__(**kwargs)
         if self._do_init:
             if text:
-                self.text = text
+                if formatted:
+                    self.text = ""
+                    self.append_plain_text(text)  # type:ignore
+                else:
+                    self.text = self._unformatted(text)  # type:ignore
             if style:
                 self.style = style
 

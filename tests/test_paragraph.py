@@ -168,46 +168,62 @@ def test_create_line_break():
     assert lb.serialize() == expected
 
 
-def test_append_plain_text_unicode():
-    txt = "A test,\n   \twith \n\n some é and \t and     5 spaces."
-    para = Paragraph()
-    para.append_plain_text(txt)
-    expected = (
-        '<text:p>A test,<text:line-break/> <text:s text:c="2"/>'
-        "<text:tab/>with <text:line-break/><text:line-break/> "
-        'some é and <text:tab/> and <text:s text:c="4"/>'
-        "5 spaces.</text:p>"
-    )
+def test_create_naive_spaces():
+    para = Paragraph("   ")
+    expected = '<text:p> <text:s text:c="2"/></text:p>'
     assert para.serialize() == expected
 
 
-def test_append_plain_text_utf8():
-    txt = "A test,\n   \twith \n\n some é and \t and     5 spaces."
-    para = Paragraph()
-    para.append_plain_text(txt)
-    expected = (
-        '<text:p>A test,<text:line-break/> <text:s text:c="2"/>'
-        "<text:tab/>with <text:line-break/><text:line-break/> "
-        'some é and <text:tab/> and <text:s text:c="4"/>'
-        "5 spaces.</text:p>"
-    )
+def test_create_naive_spaces_no_format():
+    para = Paragraph("   ", formatted=False)
+    expected = "<text:p> </text:p>"
     assert para.serialize() == expected
+
+
+def test_create_naive_cr():
+    para = Paragraph("\n")
+    expected = "<text:p><text:line-break/></text:p>"
+    assert para.serialize() == expected
+
+
+def test_create_naive_cr_no_format():
+    para = Paragraph("\n", formatted=False)
+    expected = "<text:p> </text:p>"
+    assert para.serialize() == expected
+
+
+def test_plain_text_splitted_length():
+    txt = "A test,\n   \twith \n\n some é and \t and     5 spaces."
+    result = Paragraph._plain_text_splitted(txt)
+    assert len(result) == 14
+
+
+def test_plain_text_splitted_elements():
+    txt = "A test,\n   \twith \n\n some é and \t and     5 spaces."
+    result = Paragraph._plain_text_splitted(txt)
+    assert result[0] == "A test,"
+    assert isinstance(result[1], LineBreak)
+    assert isinstance(result[3], Spacer)
+    assert isinstance(result[4], Tab)
+    assert isinstance(result[6], LineBreak)
+
+
+def test_plain_text_splitted_empty():
+    result = Paragraph._plain_text_splitted("")
+    assert result == []
+
+
+def test_plain_text_splitted_empty2():
+    result = Paragraph._plain_text_splitted()
+    assert result == []
+
+
+def test_plain_text_splitted_none():
+    result = Paragraph._plain_text_splitted(None)
+    assert result == []
 
 
 def test_append_plain_text_guess_utf8():
-    txt = "A test,\n   \twith \n\n some é and \t and     5 spaces."
-    para = Paragraph()
-    para.append_plain_text(txt)
-    expected = (
-        '<text:p>A test,<text:line-break/> <text:s text:c="2"/>'
-        "<text:tab/>with <text:line-break/><text:line-break/> "
-        'some é and <text:tab/> and <text:s text:c="4"/>'
-        "5 spaces.</text:p>"
-    )
-    assert para.serialize() == expected
-
-
-def test_append_plain_text_guess_iso():
     txt = "A test,\n   \twith \n\n some \xe9 and \t and     5 spaces."
     para = Paragraph()
     para.append_plain_text(txt)
@@ -220,6 +236,159 @@ def test_append_plain_text_guess_iso():
     assert para.serialize() == expected
 
 
+def test_append_plain_text_guess_utf8_2():
+    txt = "A test,\n   \twith \n\n some \xe9 and \t and     5 spaces."
+    para = Paragraph()
+    para.append(txt)
+    expected = (
+        '<text:p>A test,<text:line-break/> <text:s text:c="2"/>'
+        "<text:tab/>with <text:line-break/><text:line-break/> "
+        'some é and <text:tab/> and <text:s text:c="4"/>'
+        "5 spaces.</text:p>"
+    )
+    assert para.serialize() == expected
+
+
+def test_append_plain_text_guess_utf8_2_no_format():
+    txt = "A test,\n   \twith \n\n some \xe9 and \t and     5 spaces."
+    para = Paragraph()
+    para.append(txt, formatted=False)
+    expected = "<text:p>A test, with some é and and 5 spaces.</text:p>"
+    assert para.serialize() == expected
+
+
+def test_append_plain_text_guess_utf8_3_no_format():
+    txt = " A test,\n   \twith \n\n some \xe9 and \t and     5 spaces."
+    para = Paragraph()
+    para.append(txt, formatted=False)
+    expected = "<text:p> A test, with some é and and 5 spaces.</text:p>"
+    assert para.serialize() == expected
+
+
+def test_append_plain_text_guess_utf8_4_no_format():
+    txt = " A test,\n   \twith \n\n some \xe9 and \t and     5 spaces."
+    para = Paragraph(" ")
+    para.append(txt, formatted=False)
+    expected = "<text:p> A test, with some é and and 5 spaces.</text:p>"
+    assert para.serialize() == expected
+
+
+def test_append_plain_text_guess_utf8_5():
+    txt = " A test,\n   \twith \n\n some \xe9 and \t and     5 spaces."
+    para = Paragraph(" ")
+    para.append(txt)
+    expected = (
+        '<text:p> <text:s text:c="1"/>'
+        'A test,<text:line-break/> <text:s text:c="2"/>'
+        "<text:tab/>with <text:line-break/><text:line-break/> "
+        'some é and <text:tab/> and <text:s text:c="4"/>'
+        "5 spaces.</text:p>"
+    )
+    assert para.serialize() == expected
+
+
+def test_space_plus_space():
+    para = Paragraph(" ")
+    para.append(" ")
+    expected = '<text:p> <text:s text:c="1"/></text:p>'
+    assert para.serialize() == expected
+
+
+def test_space_plus_space_no_format():
+    para = Paragraph(" ")
+    para.append(" ", formatted=False)
+    expected = "<text:p> </text:p>"
+    assert para.serialize() == expected
+
+
+def test_append_simple():
+    para = Paragraph("first")
+    para.append(" second")
+    assert para.text == "first second"
+
+
+def test_append_simple_end_space():
+    para = Paragraph("first ")
+    para.append(" second")
+    expected = '<text:p>first <text:s text:c="1"/>second</text:p>'
+    assert para.serialize() == expected
+
+
+def test_append_simple_end_2_space():
+    para = Paragraph("first ")
+    para.append("  second")
+    expected = '<text:p>first <text:s text:c="2"/>second</text:p>'
+    assert para.serialize() == expected
+
+
+def test_append_simple_end_space_no_second():
+    para = Paragraph("first ")
+    para.append("second")
+    assert para.text == "first second"
+
+
+def test_append_multiline():
+    para = Paragraph("first")
+    para.append(" second\n third")
+    assert para.text == "first second"
+    assert para.text_recursive == "first second third"
+
+
+def test_append_multiline_no_format():
+    para = Paragraph("first")
+    para.append(" second\n third", formatted=False)
+    assert para.text == "first second third"
+
+
+def test_append_plain_text_bytes_utf8():
+    txt = "A test,\n   \twith \n\n some é and \t and     5 spaces."
+    btxt: bytes = txt.encode("utf-8")
+    para = Paragraph()
+    para.append_plain_text(btxt)
+    expected = (
+        '<text:p>A test,<text:line-break/> <text:s text:c="2"/>'
+        "<text:tab/>with <text:line-break/><text:line-break/> "
+        'some é and <text:tab/> and <text:s text:c="4"/>'
+        "5 spaces.</text:p>"
+    )
+    assert para.serialize() == expected
+
+
+def test_append_plain_text_bytes_utf8_2():
+    txt = "A test,\n   \twith \n\n some é and \t and     5 spaces."
+    btxt: bytes = txt.encode("utf-8")
+    para = Paragraph()
+    para.append(btxt)
+    expected = (
+        '<text:p>A test,<text:line-break/> <text:s text:c="2"/>'
+        "<text:tab/>with <text:line-break/><text:line-break/> "
+        'some é and <text:tab/> and <text:s text:c="4"/>'
+        "5 spaces.</text:p>"
+    )
+    assert para.serialize() == expected
+
+
+def test_create_plain_text_utf8():
+    txt = "A test,\n   \twith \n\n some é and \t and     5 spaces."
+    para = Paragraph(txt)
+    expected = (
+        '<text:p>A test,<text:line-break/> <text:s text:c="2"/>'
+        "<text:tab/>with <text:line-break/><text:line-break/> "
+        'some é and <text:tab/> and <text:s text:c="4"/>'
+        "5 spaces.</text:p>"
+    )
+    assert para.serialize() == expected
+
+
+def test_create_no_plain_text_utf8():
+    txt = "A test,\n   \twith \n\n some é and \t and     5 spaces."
+    para = Paragraph(txt, formatted=False)
+    result = para.serialize()
+    assert "line-break" not in result
+    assert "text:s" not in result
+    assert "text:tab" not in result
+
+
 def test_text():
     text = "Le Père Noël a une moustache rouge."
     paragraph = Paragraph(text)
@@ -228,6 +397,219 @@ def test_text():
         "<text:p>Le Père Noël a une moustache "
         "<text:span "
         'text:style-name="highlight">rouge</text:span>.'
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_s1():
+    text = " Le Père Noël a une moustache rouge."
+    paragraph = Paragraph(text)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        "<text:p> Le Père Noël a une moustache "
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>.'
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_s1_no_format():
+    text = " Le Père Noël a une moustache rouge."
+    paragraph = Paragraph(text, formatted=False)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        "<text:p> Le Père Noël a une moustache "
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>.'
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_s2():
+    text = "  Le Père Noël a une moustache rouge."
+    paragraph = Paragraph(text)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        '<text:p> <text:s text:c="1"/>Le Père Noël a une moustache '
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>.'
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_s2_no_format():
+    text = "  Le Père Noël a une moustache rouge."
+    paragraph = Paragraph(text, formatted=False)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        "<text:p> Le Père Noël a une moustache "
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>.'
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_s3():
+    text = " \n Le Père Noël a une moustache rouge."
+    paragraph = Paragraph(text)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        "<text:p> <text:line-break/> Le Père Noël a une moustache "
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>.'
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_s3_no_format():
+    text = " \n Le Père Noël a une moustache rouge."
+    paragraph = Paragraph(text, formatted=False)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        "<text:p> Le Père Noël a une moustache "
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>.'
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_s4():
+    text = " \n\t Le Père Noël a une moustache rouge."
+    paragraph = Paragraph(text)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        "<text:p> <text:line-break/><text:tab/> "
+        "Le Père Noël a une moustache "
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>.'
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_s4_no_format():
+    text = " \n\t Le Père Noël a une moustache rouge."
+    paragraph = Paragraph(text, formatted=False)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        "<text:p> Le Père Noël a une moustache "
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>.'
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_e1():
+    text = "Le Père Noël a une moustache rouge. "
+    paragraph = Paragraph(text)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        "<text:p>Le Père Noël a une moustache "
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>. '
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_e1_no_format():
+    text = "Le Père Noël a une moustache rouge. "
+    paragraph = Paragraph(text, formatted=False)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        "<text:p>Le Père Noël a une moustache "
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>. '
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_e2():
+    text = "Le Père Noël a une moustache rouge.  "
+    paragraph = Paragraph(text)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        "<text:p>Le Père Noël a une moustache "
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>.'
+        ' <text:s text:c="1"/>'
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_e2_no_format():
+    text = "Le Père Noël a une moustache rouge.  "
+    paragraph = Paragraph(text, formatted=False)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        "<text:p>Le Père Noël a une moustache "
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>. '
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_e3():
+    text = "Le Père Noël a une moustache rouge. \n "
+    paragraph = Paragraph(text)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        "<text:p>Le Père Noël a une moustache "
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>.'
+        " <text:line-break/> "
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_e3_no_format():
+    text = "Le Père Noël a une moustache rouge. \n "
+    paragraph = Paragraph(text, formatted=False)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        "<text:p>Le Père Noël a une moustache "
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>. '
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_se4():
+    text = " \n Le Père Noël a une moustache rouge. \n\t "
+    paragraph = Paragraph(text)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        "<text:p> <text:line-break/> "
+        "Le Père Noël a une moustache "
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>.'
+        " <text:line-break/><text:tab/> "
+        "</text:p>"
+    )
+    assert paragraph.serialize() == expected
+
+
+def test_text_spaces_se4_no_format():
+    text = " \n Le Père Noël a une moustache rouge. \n\t "
+    paragraph = Paragraph(text, formatted=False)
+    paragraph.set_span("highlight", regex="rouge")
+    expected = (
+        "<text:p> Le Père Noël a une moustache "
+        "<text:span "
+        'text:style-name="highlight">rouge</text:span>. '
         "</text:p>"
     )
     assert paragraph.serialize() == expected

@@ -107,6 +107,8 @@ NAMESPACES_XML = (
     + b"%s</office:document>"
 )
 
+_re_anyspace = re.compile(r" +")
+
 
 class PropDef(NamedTuple):
     name: str
@@ -1161,7 +1163,7 @@ class Element(CachedElement):
                         new_target.delete(child)
                     new_target.text = ""
                     new_target.tail = ""
-                    target.append(new_target)  # type: ignore
+                    target.__append(new_target)  # type: ignore
                     target = new_target
                     current = current.children[0]
                     continue
@@ -1184,12 +1186,12 @@ class Element(CachedElement):
                         new_target.delete(child)
                     new_target.text = ""
                     new_target.tail = ""
-                    target.append(new_target)  # type: ignore
+                    target.__append(new_target)  # type: ignore
                     target = new_target
                     current = current.children[0]
                     continue
                 # collect
-                target.append(current.clone)  # type: ignore
+                target.__append(current.clone)  # type: ignore
                 current, target = current._get_successor(target)  # type: ignore
                 continue
         # Now resu should be the "parent" of inserted parts
@@ -1267,8 +1269,8 @@ class Element(CachedElement):
                     text = element.__element.text
                     para = Element.from_tag("text:p")
                     para.text = text or ""
-                    for c in children:
-                        para.append(c)
+                    for child in children:
+                        para.__append(child)
                     new_inner.append(para)
                 else:
                     new_inner.append(element)
@@ -1341,7 +1343,30 @@ class Element(CachedElement):
             elements = [element.__element for element in odf_elements]
             current.extend(elements)
 
-    def append(self, str_or_element: str | Element) -> None:
+    @staticmethod
+    def _add_text(text1: str | None, text2: str | None) -> str:
+        if text1 is None:
+            text1 = ""
+        if text2 is None:
+            text2 = ""
+        return _re_anyspace.sub(" ", text1 + text2)
+
+    def _cut_text_tail(self) -> str:
+        removed = ""
+        current = self.__element
+        children = list(current.iterchildren())
+        if children:
+            # Append to tail of the last child
+            last_child = children[-1]
+            if last_child.tail:
+                removed = last_child.tail
+                last_child.tail = ""
+        else:
+            removed = current.text or ""
+            current.text = ""
+        return removed
+
+    def __append(self, str_or_element: str | Element) -> None:
         """Insert element or text in the last position."""
         current = self.__element
         if isinstance(str_or_element, str):
@@ -1350,20 +1375,16 @@ class Element(CachedElement):
             if children:
                 # Append to tail of the last child
                 last_child = children[-1]
-                text = last_child.tail
-                text = text if text is not None else ""
-                text += str_or_element
-                last_child.tail = text
+                last_child.tail = self._add_text(last_child.tail, str_or_element)
             else:
                 # Append to text of the element
-                text = current.text
-                text = text if text is not None else ""
-                text += str_or_element
-                current.text = text
+                current.text = self._add_text(current.text, str_or_element)
         elif isinstance(str_or_element, Element):
             current.append(str_or_element.__element)
         else:
             raise TypeError(f'Element or string expected, not "{type(str_or_element)}"')
+
+    append = __append
 
     def delete(self, child: Element | None = None, keep_tail: bool = True) -> None:
         """Delete the given element from the XML tree. If no element is given,
@@ -1473,7 +1494,7 @@ class Element(CachedElement):
             new = Element.from_tag(default)
             for content in element:
                 if isinstance(content, Element):
-                    new.append(content)
+                    new.__append(content)
                 else:
                     new.text = content
             element = new
@@ -1526,9 +1547,9 @@ class Element(CachedElement):
             except ValueError:
                 sys.stderr.write(f"strip_tags(): bad attribute in {element_clone}\n")
             if text is not None:
-                element.append(text)
+                element.__append(text)
             for child in children:
-                element.append(child)
+                element.__append(child)
             if tail is not None:
                 element.tail = tail
             return (element, True)
@@ -1641,7 +1662,7 @@ class Element(CachedElement):
         element = self.get_element(tag)
         if element is None:
             element = Element.from_tag(tag)
-            self.append(element)
+            self.__append(element)
         element.text = text
 
     # SVG
@@ -2098,14 +2119,14 @@ class Element(CachedElement):
         named_expressions = self.get_element("table:named-expressions")
         if not named_expressions:
             named_expressions = Element.from_tag("table:named-expressions")
-            self.append(named_expressions)
+            self.__append(named_expressions)
         # exists ?
         current = named_expressions.get_element(
             f'table:named-range[@table:name="{named_range.name}"][1]'  # type:ignore
         )
         if current:
             named_expressions.delete(current)
-        named_expressions.append(named_range)
+        named_expressions.__append(named_range)
 
     def delete_named_range(self, name: str) -> None:
         """Delete the Named Range of specified name from the spreadsheet.

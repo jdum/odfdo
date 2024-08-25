@@ -43,6 +43,21 @@ def test_create_span():
     assert span.serialize() == expected
 
 
+def test_create_span_naive_spaces():
+    span = Span("my text   ", style="my_style")
+    expected = (
+        '<text:span text:style-name="my_style">my text'
+        ' <text:s text:c="2"/></text:span>'
+    )
+    assert span.serialize() == expected
+
+
+def test_create_span_naive_spaces_no_format():
+    span = Span("my text   ", style="my_style", formatted=False)
+    expected = '<text:span text:style-name="my_style">my text </text:span>'
+    assert span.serialize() == expected
+
+
 def test_get_span_list(body):
     result = body.get_spans()
     assert len(result) == 2
@@ -74,6 +89,30 @@ def test_get_span(body):
 
 
 def test_insert_span(body):
-    span = Span("my_style", "my text")
+    span = Span("my text", "my_style")
     paragraph = body.get_paragraph(position=0)
     paragraph.append(span)
+    read_span = paragraph.get_span(position=-1)
+    assert read_span.serialize() == span.serialize()
+
+
+def test_insert_span_line_break(body):
+    span = Span("my text\nmultiline", "my_style")
+    paragraph = body.get_paragraph(position=0)
+    paragraph.append(span)
+    read_span = paragraph.get_span(position=-1)
+    assert read_span.serialize() == span.serialize()
+    print(read_span.serialize())
+    assert "text:line-break" in read_span.serialize()
+    assert read_span.text_recursive == "my textmultiline"
+
+
+def test_insert_span_line_break_no_format(body):
+    span = Span("my text\nmultiline", "my_style", formatted=False)
+    paragraph = body.get_paragraph(position=0)
+    paragraph.append(span)
+    read_span = paragraph.get_span(position=-1)
+    assert read_span.serialize() == span.serialize()
+    print(read_span.serialize())
+    assert "text:line-break" not in read_span.serialize()
+    assert read_span.text_recursive == "my text multiline"

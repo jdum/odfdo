@@ -174,7 +174,6 @@ def main():
     )
 
     text_3 = (
-        "\n"
         "Duis semper. \n\tDuis arcu massa,"
         " \n\t\tscelerisque vitae, \n"
         "\t\t\tconsequat in, \n"
@@ -202,23 +201,39 @@ def main():
 
     body = document.body
 
-    paragraph = Paragraph("", style="description")
-    paragraph.append_plain_text(text_1)
+    # since version 3.8.14, the append_plain_text() mode is the
+    # default for paragraph creation, so the code is more simple:
+
+    # paragraph = Paragraph("", style="description")
+    # paragraph.append_plain_text(text_1)
+    # body.append(paragraph)
+
+    # paragraph = Paragraph(style="line")
+    # body.append(paragraph)
+
+    # paragraph = Paragraph(style="smallserif")
+    # paragraph.append_plain_text(text_2)
+    # body.append(paragraph)
+
+    # paragraph = Paragraph(style="line")
+    # body.append(paragraph)
+
+    # paragraph = Paragraph(style="description")
+    # paragraph.append_plain_text(text_3)
+
+    paragraph = Paragraph(text_1, style="description")
     body.append(paragraph)
 
     paragraph = Paragraph(style="line")
     body.append(paragraph)
 
-    paragraph = Paragraph(style="smallserif")
-    paragraph.append_plain_text(text_2)
+    paragraph = Paragraph(text_2, style="smallserif")
     body.append(paragraph)
 
     paragraph = Paragraph(style="line")
     body.append(paragraph)
 
-    paragraph = Paragraph(style="description")
-    paragraph.append_plain_text(text_3)
-
+    paragraph = Paragraph("A: " + text_3, style="description")
     # span offset become complex after inserting <CR> and <TAB> in a text
     paragraph.set_span("bolder", offset=5, length=6)  # find TEXT position 5 : 6
     paragraph.set_span("bolder", offset=18, length=4)  # find TEXT position 18 : 4
@@ -226,6 +241,21 @@ def main():
     # of the text bloc
     paragraph.set_span("bolder", regex=r"Praes\w+\s\w+")  # regex: Praes. + next word
 
+    body.append(paragraph)
+
+    paragraph = Paragraph(style="line")
+    body.append(paragraph)
+
+    # it is possible to add the content without the original layout (\n, tab, spaces)
+    paragraph = Paragraph("B: " + text_3, style="description", formatted=False)
+    body.append(paragraph)
+
+    paragraph = Paragraph(style="line")
+    body.append(paragraph)
+
+    # text can also be append after paragraph creation
+    paragraph = Paragraph(style="description")
+    paragraph.append("C: " + text_3)
     body.append(paragraph)
 
     save_new(document, TARGET)

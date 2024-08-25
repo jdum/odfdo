@@ -5,19 +5,7 @@
 from pathlib import Path
 
 # for cell style
-from odfdo import (
-    Cell,
-    XmlPart,
-    Document,
-    Header,
-    List,
-    ListItem,
-    Paragraph,
-    Row,
-    Table,
-    create_table_cell_style,
-    make_table_cell_border_string,
-)
+from odfdo import Document
 
 DATA = Path(__file__).parent / "data"
 SOURCE = DATA / "chart.odt"

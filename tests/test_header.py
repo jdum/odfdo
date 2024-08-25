@@ -124,3 +124,13 @@ def test_insert_heading_property(base_body):
     base_body.append(heading)
     last_heading = base_body.headers[-1]
     assert last_heading.text == "An inserted heading"
+
+
+def test_insert_heading_tab(base_body):
+    heading = Header(2, "An inserted \t tab heading", style="Heading_20_2")
+    base_body.append(heading)
+    last_heading = base_body.get_headers()[-1]
+    assert heading.serialize() == last_heading.serialize()
+    assert last_heading.text == "An inserted "
+    assert "text:tab" in last_heading.serialize()
+    assert last_heading.text_recursive == "An inserted  tab heading"

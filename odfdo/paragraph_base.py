@@ -26,14 +26,9 @@
 """
 from __future__ import annotations
 
-import re
 from typing import Any
 
 from .element import Element, EText, PropDef, register_element_class
-from .utils import to_str
-
-_rsplitter = re.compile("(\n|\t|  +)")
-_rspace = re.compile("^  +$")
 
 
 def _get_formatted_text(  # noqa: C901
@@ -258,29 +253,6 @@ class ParagraphBase(Element):
             return content
         else:
             return content + "\n\n"
-
-    def append_plain_text(self, text: str = "") -> None:
-        """Append plain text to the paragraph, replacing <CR>, <TAB>
-        and multiple spaces by ODF corresponding tags.
-        """
-        text = to_str(text)
-        blocs = _rsplitter.split(text)
-        for b in blocs:
-            if not b:
-                continue
-            if b == "\n":
-                self.append(LineBreak())
-                continue
-            if b == "\t":
-                self.append(Tab())
-                continue
-            if _rspace.match(b):
-                # follow ODF standard : n spaces => one space + spacer(n-1)
-                self.append(" ")
-                self.append(Spacer(len(b) - 1))
-                continue
-            # standard piece of text:
-            self.append(b)
 
 
 ParagraphBase._define_attribut_property()
