@@ -49,6 +49,7 @@ from .const import (
 )
 from .container import Container
 from .content import Content
+from .datatype import Boolean
 from .element import Element
 from .manifest import Manifest
 from .meta import Meta
@@ -1130,26 +1131,20 @@ class Document:
             return None
         return style.get_properties(area=area)  # type: ignore
 
+    def _get_table(self, table: int | str) -> Table | None:
+        if not (isinstance(table, int) or isinstance(table, str)):
+            raise TypeError(f"Table parameter must be int or str: {table!r}")
+        if isinstance(table, int):
+            return self.body.get_table(position=table)  # type: ignore
+        return self.body.get_table(name=table)  # type: ignore
+
     def get_cell_style_properties(  # noqa: C901
         self, table: str | int, coord: tuple | list | str
     ) -> dict[str, str]:  # type: ignore
         """Return the style properties of a table cell of a .ods document,
         from the cell style or from the row style."""
 
-        def _get_table(table: int | str) -> Table | None:
-            table_pos = 0
-            table_name = None
-            if isinstance(table, int):
-                table_pos = table
-            elif isinstance(table, str):
-                table_name = table_name
-            else:
-                raise TypeError(f"Table parameter must be int or str: {table!r}")
-            return self.body.get_table(
-                position=table_pos, name=table_name  # type: ignore
-            )
-
-        if not (sheet := _get_table(table)):
+        if not (sheet := self._get_table(table)):
             return {}
         cell = sheet.get_cell(coord, clone=False)
         if cell.style:
@@ -1186,3 +1181,81 @@ class Document:
         If color is not defined, return default value.."""
         found = self.get_cell_style_properties(table, coord).get("fo:background-color")
         return found or default
+
+    def get_table_style(  # noqa: C901
+        self,
+        table: str | int,
+    ) -> Style | None:  # type: ignore
+        """Return the Style instance the table.
+
+        Arguments:
+
+            table -- name or index of the table
+        """
+        if not (sheet := self._get_table(table)):
+            return None
+        return self.get_style("table", sheet.style)
+
+    def get_table_displayed(self, table: str | int) -> bool:
+        """Return the table:display property of the style of the table, ie if
+        the table should be displayed in a graphical interface.
+
+        Note: that method replaces the broken Table.displayd() method from previous
+        odfdo versions.
+
+        Arguments:
+
+            table -- name or index of the table
+        """
+        style = self.get_table_style(table)
+        if not style:
+            # should not happen, but assume that a table without style is
+            # displayed by default
+            return True
+        properties = style.get_properties() or {}
+        property_str = str(properties.get("table:display", "true"))
+        return Boolean.decode(property_str)
+
+    def _unique_style_name(self, base: str) -> str:
+        current = {style.name for style in self.get_styles()}
+        idx = 0
+        while True:
+            name = f"{base}_{idx}"
+            if name in current:
+                idx += 1
+                continue
+            return name
+
+    def set_table_displayed(self, table: str | int, displayed: bool) -> None:
+        """Set the table:display property of the style of the table, ie if
+        the table should be displayed in a graphical interface.
+
+        Note: that method replaces the broken Table.displayd() method from previous
+        odfdo versions.
+
+        Arguments:
+
+            table -- name or index of the table
+
+            displayed -- boolean flag
+        """
+        orig_style = self.get_table_style(table)
+        if not orig_style:
+            name = self._unique_style_name("ta")
+            orig_style = Element.from_tag(
+                (
+                    f'<style:style style:name="{name}" style:family="table" '
+                    'style:master-page-name="Default">'
+                    '<style:table-properties table:display="true" '
+                    'style:writing-mode="lr-tb"/></style:style>'
+                )
+            )
+            self.insert_style(orig_style, automatic=True)  # type:ignore
+        new_style = orig_style.clone
+        new_name = self._unique_style_name("ta")
+        new_style.name = new_name  # type:ignore
+        self.insert_style(new_style, automatic=True)  # type:ignore
+        sheet = self._get_table(table)
+        sheet.style = new_name  # type: ignore
+        properties = {"table:display": Boolean.encode(displayed)}
+        new_style.set_properties(properties)  # type: ignore

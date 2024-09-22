@@ -322,7 +322,6 @@ class Table(Element):
         height: int | None = None,
         protected: bool = False,
         protection_key: str | None = None,
-        display: bool = True,
         printable: bool = True,
         print_ranges: list[str] | None = None,
         style: str | None = None,
@@ -333,8 +332,6 @@ class Table(Element):
 
         If the table is to be protected, a protection key must be provided,
         i.e. a hash value of the password.
-
-        If the table must not be displayed, set "display" to False.
 
         If the table must not be printed, set "printable" to False. The table
         will not be printed when it is not displayed, whatever the value of
@@ -363,8 +360,6 @@ class Table(Element):
 
             protection_key -- str
 
-            display -- bool
-
             printable -- bool
 
             print_ranges -- list
@@ -380,8 +375,6 @@ class Table(Element):
             if protected:
                 self.protected = protected
                 self.set_protection_key = protection_key
-            if not display:
-                self.displayed = display
             if not printable:
                 self.printable = printable
             if print_ranges:
@@ -840,14 +833,6 @@ class Table(Element):
     @protection_key.setter
     def protection_key(self, key: str) -> None:
         self.set_attribute("table:protection-key", key)
-
-    @property
-    def displayed(self) -> bool:
-        return bool(self.get_attribute("table:display"))
-
-    @displayed.setter
-    def displayed(self, display: bool) -> None:
-        self.set_attribute("table:display", display)
 
     @property
     def printable(self) -> bool:

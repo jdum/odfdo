@@ -65,18 +65,6 @@ def test_width_height():
     assert table.serialize() == expected
 
 
-def test_display():
-    table = Table("Displayed")
-    expected = '<table:table table:name="Displayed"/>'
-    assert table.serialize() == expected
-
-
-def test_display_false():
-    table = Table("Hidden", display=False)
-    expected = '<table:table table:name="Hidden" table:display="false"/>'
-    assert table.serialize() == expected
-
-
 def test_print():
     table = Table("Printable")
     expected = '<table:table table:name="Printable"/>'
