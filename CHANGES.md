@@ -1,5 +1,36 @@
 # Odfdo Release Notes
 
+## [3.9.0] - 2024-09-22
+
+Two changes in this version:
+
+-    Fix of the broken `Table.displayed` property.
+-    Fix the way spaces are represented for better compliance with the ODF standard and word processors.
+
+The `Table.displayed` property was broken and is removed. The functionality is replaced by the `Document.get_table_displayed` and `Document.set_table_displayed` methods. This change should not affect anyone since the previous implementation was unusable.
+
+In previous version 3 spaces were translated into 1 space followed by `'<text:s text:c="2"/>'` unconditionally. However, the standard specifies that at the beginning and end of a paragraph spaces must be discarded by word processors, so 3 spaces should be coded `'<text:s text:c="3"/>'` and a single space as `'<text:s/>'`. This change should fix the bug of "disappearing" spaces at the beginning of paragraphs.
+
+### Added
+
+-   Methods Document.get_table_displayed(), Document.set_table_displayed(), Document.get_table_style().
+
+-   The Spacer() class has 2 new properties: Spacer.length and Spacer.text.
+
+### Changed
+
+-   XML generation of spaces at beginning and end of Paragraph content.
+
+-   Update of dependency versions.
+
+### Removed
+
+-   Table.displayed property.
+
+### Fixed
+
+-   Fix the "disappearing" spaces at the beginning of paragraphs bug.
+
 ## [3.8.0] - 2024-08-25
 
 Changed the default behavior for appending text to a `Paragraph`: the behavior of the `Paragraph.append_plain_text()` method is now the default. A `"formatted"` argument is added, `True` by default, which applies the recognition of "\n", "\t" or a sequence of several spaces and converts them to ODF tags (`text:line-break`, `text:tab`, `text:s`)). To ignore this text formatting, set `"formatted=False"`.
