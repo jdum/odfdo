@@ -174,12 +174,12 @@ def use_case1(destination_file):
     body.append(paragraph)
     paragraph._insert_between(variable_set, "Set", "spam.")
 
-    text = "The value of spam is: "
+    text = "The value of spam is:"
     value = body.get_variable_set_value("spam")
     variable_get = VarGet("spam", value)
     paragraph = Paragraph(text, style="Standard")
     body.append(paragraph)
-    paragraph.insert_variable(variable_get, "is: ")
+    paragraph.insert_variable(variable_get, "is:")
 
     # 5- An user field
     # ----------------
@@ -199,7 +199,7 @@ def use_case1(destination_file):
     user_field_get = UserFieldGet("pi5", value)
     paragraph = Paragraph(text, style="Standard")
     body.append(paragraph)
-    paragraph._insert_between(user_field_get, "The", "is: ")
+    paragraph._insert_between(user_field_get, "The", "is:")
 
     # 6- Page number
     # --------------
@@ -214,19 +214,19 @@ def use_case1(destination_file):
 
     paragraph = Paragraph(text1, style="Standard")
     body.append(paragraph)
-    paragraph.insert_variable(VarPageNumber(), "is: ")
+    paragraph.insert_variable(VarPageNumber(), "is:")
 
     paragraph = Paragraph(text2, style="Standard")
     body.append(paragraph)
-    paragraph.insert_variable(VarPageNumber(select_page="previous"), "is: ")
+    paragraph.insert_variable(VarPageNumber(select_page="previous"), "is:")
 
     paragraph = Paragraph(text3, style="Standard")
     body.append(paragraph)
-    paragraph.insert_variable(VarPageNumber(select_page="next"), "is: ")
+    paragraph.insert_variable(VarPageNumber(select_page="next"), "is:")
 
     paragraph = Paragraph(text4, style="Standard")
     body.append(paragraph)
-    paragraph.insert_variable(VarPageCount(), "is: ")
+    paragraph.insert_variable(VarPageCount(), "is:")
 
     # 7- Date
     # -------
@@ -239,11 +239,11 @@ def use_case1(destination_file):
 
     paragraph = Paragraph(text1, style="Standard")
     body.append(paragraph)
-    paragraph.insert_variable(VarDate(date(2009, 7, 20), fixed=True), "date: ")
+    paragraph.insert_variable(VarDate(date(2009, 7, 20), fixed=True), "date:")
 
     paragraph = Paragraph(text2, style="Standard")
     body.append(paragraph)
-    paragraph.insert_variable(VarDate(date(2009, 7, 20)), "Today: ")
+    paragraph.insert_variable(VarDate(date(2009, 7, 20)), "Today:")
 
     # 8- Time
     # --------
@@ -256,11 +256,11 @@ def use_case1(destination_file):
 
     paragraph = Paragraph(text1, style="Standard")
     body.append(paragraph)
-    paragraph.insert_variable(VarTime(time(19, 30), fixed=True), "time: ")
+    paragraph.insert_variable(VarTime(time(19, 30), fixed=True), "time:")
 
     paragraph = Paragraph(text2, style="Standard")
     body.append(paragraph)
-    paragraph.insert_variable(VarTime(time(19, 30)), "Now: ")
+    paragraph.insert_variable(VarTime(time(19, 30)), "Now:")
 
     # 9- Chapter
     # -----------
@@ -272,7 +272,7 @@ def use_case1(destination_file):
 
     paragraph = Paragraph(text, style="Standard")
     body.append(paragraph)
-    paragraph.insert_variable(VarChapter(display="number-and-name"), "is: ")
+    paragraph.insert_variable(VarChapter(display="number-and-name"), "is:")
 
     # 10- Filename
     # ------------
@@ -284,7 +284,7 @@ def use_case1(destination_file):
 
     paragraph = Paragraph(text, style="Standard")
     body.append(paragraph)
-    paragraph._insert_between(VarFileName(), "The", "is: ")
+    paragraph._insert_between(VarFileName(), "The", "is:")
 
     # Save
     # ----

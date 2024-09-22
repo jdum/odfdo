@@ -47,7 +47,7 @@ def test_create_span_naive_spaces():
     span = Span("my text   ", style="my_style")
     expected = (
         '<text:span text:style-name="my_style">my text'
-        ' <text:s text:c="2"/></text:span>'
+        '<text:s text:c="3"/></text:span>'
     )
     assert span.serialize() == expected
 
@@ -102,7 +102,6 @@ def test_insert_span_line_break(body):
     paragraph.append(span)
     read_span = paragraph.get_span(position=-1)
     assert read_span.serialize() == span.serialize()
-    print(read_span.serialize())
     assert "text:line-break" in read_span.serialize()
     assert read_span.text_recursive == "my textmultiline"
 
@@ -113,6 +112,5 @@ def test_insert_span_line_break_no_format(body):
     paragraph.append(span)
     read_span = paragraph.get_span(position=-1)
     assert read_span.serialize() == span.serialize()
-    print(read_span.serialize())
     assert "text:line-break" not in read_span.serialize()
     assert read_span.text_recursive == "my text multiline"

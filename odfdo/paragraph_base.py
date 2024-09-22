@@ -26,9 +26,10 @@
 """
 from __future__ import annotations
 
+import contextlib
 from typing import Any
 
-from .element import Element, EText, PropDef, register_element_class
+from .element import Element, EText, PropDef, _get_lxml_tag, register_element_class
 
 
 def _get_formatted_text(  # noqa: C901
@@ -171,7 +172,7 @@ class Spacer(Element):
     _tag = "text:s"
     _properties: tuple[PropDef, ...] = (PropDef("number", "text:c"),)
 
-    def __init__(self, number: int = 1, **kwargs: Any):
+    def __init__(self, number: int | None = 1, **kwargs: Any):
         """
         Arguments:
 
@@ -179,7 +180,38 @@ class Spacer(Element):
         """
         super().__init__(**kwargs)
         if self._do_init:
-            self.number = str(number)
+            if number and number >= 2:
+                self.number = str(number)
+            else:
+                self.number = None
+
+    @property
+    def text(self) -> str:
+        """Get / set the text content of the element."""
+        return " " * self.length
+
+    @text.setter
+    def text(self, text: str | None) -> None:
+        if text is None:
+            text = ""
+        self.length = len(text)
+
+    @property
+    def length(self) -> int:
+        name = _get_lxml_tag("text:c")
+        value = self._Element__element.get(name)
+        if value is None:
+            return 1  # minimum 1 space
+        return int(value)
+
+    @length.setter
+    def length(self, value: int | None) -> None:
+        name = _get_lxml_tag("text:c")
+        if value is None or value < 2:
+            with contextlib.suppress(KeyError):
+                del self._Element__element.attrib[name]
+            return
+        self._Element__element.set(name, str(value))
 
 
 Spacer._define_attribut_property()

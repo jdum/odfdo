@@ -32,7 +32,14 @@ from functools import wraps  # for keeping trace of docstring with decorators
 from typing import Any
 
 from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
-from .element import FIRST_CHILD, NEXT_SIBLING, Element, PropDef, register_element_class
+from .element import (
+    FIRST_CHILD,
+    NEXT_SIBLING,
+    Element,
+    EText,
+    PropDef,
+    register_element_class,
+)
 from .link import Link
 from .note import Annotation, AnnotationEnd, Note
 from .paragraph_base import LineBreak, ParagraphBase, Spacer, Tab
@@ -47,9 +54,11 @@ __all__ = [
     "Tab",
 ]
 
-_re_splitter = re.compile(r"(\n|\t|  +)")
+_re_splitter = re.compile(r"(\n|\t)")
 _re_space = re.compile(r"^  +$")
 _re_sub_splitter = re.compile(r"[ \t\n]+")
+_re_spaces_split = re.compile(r"( +)")
+_re_only_spaces = re.compile("^ +$")
 
 
 def _by_regex_offset(method: Callable) -> Callable:  # noqa: C901
@@ -181,40 +190,112 @@ class Paragraph(ParagraphBase):
             if isinstance(text_or_element, Element):
                 self.append(text_or_element)
             else:
+                self.text = ""
                 if formatted:
-                    self.text = ""
-                    self.append_plain_text(text_or_element)  # type:ignore
+                    self.append_plain_text(text_or_element)
                 else:
-                    self.text = self._unformatted(text_or_element)  # type:ignore
+                    self.append_plain_text(self._unformatted(text_or_element))
             if style is not None:
                 self.style = style
 
+    def _expand_spaces(self, added_string: str) -> list[Element | str]:
+        result: list[Element | str] = []
+
+        def _merge_text(txt: str):
+            nonlocal result
+            if result and isinstance(result[-1], str):
+                result[-1] += txt
+            else:
+                result.append(txt)
+
+        for obj in self.xpath("*|text()"):
+            if isinstance(obj, EText):
+                _merge_text(str(obj))
+                continue
+            obj.tail = ""
+            if obj.tag != "text:s":
+                result.append(obj)
+                continue
+            _merge_text(obj.text)
+        _merge_text(added_string)
+        return result
+
+    def _merge_spaces(self, content: list[Element | str]) -> list[Element | str]:
+        result: list[Element | str] = []
+        for item in content:
+            if isinstance(item, str):
+                result.extend(self._sub_merge_spaces(item))
+            else:
+                result.append(item)
+        return result
+
     @staticmethod
-    def _plain_text_splitted(text: str | bytes = "") -> list[str | Element]:
-        """Return plain text with <CR>, <TAB> and multiple spaces replaced
-        by ODF corresponding tags.
-        """
+    def _sub_merge_spaces(text: str) -> list[Element | str]:
+        result: list[Element | str] = []
+        content = [x for x in _re_spaces_split.split(text) if x]
+
+        def _merge_text(txt: str):
+            nonlocal result
+            if result and isinstance(result[-1], str):
+                result[-1] += txt
+            else:
+                result.append(txt)
+
+        if content:
+            item0 = content[0]
+            if isinstance(item0, str) and _re_only_spaces.match(item0):
+                spacer = Spacer(len(item0))
+                result.append(spacer)
+            else:
+                result.append(item0)
+        for item in content[1:-1]:
+            if isinstance(item, str):
+                if len(item) > 1 and _re_only_spaces.match(item):
+                    spacer = Spacer(len(item) - 1)
+                    _merge_text(" ")
+                    result.append(spacer)
+                else:
+                    _merge_text(item)
+            else:
+                result.append(item)
+        if len(content) > 1:
+            last_item = content[-1]
+            if isinstance(last_item, str):
+                if _re_only_spaces.match(last_item):
+                    spacer = Spacer(len(last_item))
+                    result.append(spacer)
+                else:
+                    _merge_text(last_item)
+            else:
+                result.append(last_item)
+        return result
+
+    def _replace_tabs_lb(self, content: list[Element | str]) -> list[Element | str]:
+        result: list[Element | str] = []
+        for item in content:
+            if isinstance(item, str):
+                result.extend(self._sub_replace_tabs_lb(item))
+            else:
+                result.append(item)
+        return result
+
+    @staticmethod
+    def _sub_replace_tabs_lb(text: str) -> list[Element | str]:
         if not text:
             return []
         blocs = _re_splitter.split(text)
-        elements: list[str | Element] = []
+        result: list[Element | str] = []
         for bloc in blocs:
             if not bloc:
                 continue
             if bloc == "\n":
-                elements.append(LineBreak())
+                result.append(LineBreak())
                 continue
             if bloc == "\t":
-                elements.append(Tab())
+                result.append(Tab())
                 continue
-            if _re_space.match(bloc):
-                # follow ODF standard : n spaces => one space + spacer(n-1)
-                elements.append(" ")
-                elements.append(Spacer(len(bloc) - 1))
-                continue
-            # standard piece of text:
-            elements.append(bloc)
-        return elements
+            result.append(bloc)
+        return result
 
     def append_plain_text(self, text: str | bytes | None = "") -> None:
         """Append plain text to the paragraph, replacing <CR>, <TAB>
@@ -226,9 +307,13 @@ class Paragraph(ParagraphBase):
             stext = text.decode("utf-8")
         else:
             stext = str(text)
-        previous = self._cut_text_tail()
-        stext = previous + stext
-        for element in self._plain_text_splitted(stext):
+        content = self._expand_spaces(stext)
+        content = self._merge_spaces(content)
+        content = self._replace_tabs_lb(content)
+        for child in self.children:
+            self.delete(child, keep_tail=False)
+        self.text = None
+        for element in content:
             self._Element__append(element)
 
     @staticmethod
@@ -251,7 +336,10 @@ class Paragraph(ParagraphBase):
         elif formatted:
             self.append_plain_text(str_or_element)
         else:
-            self._Element__append(self._unformatted(str_or_element))
+            # self._Element__append(self._unformatted(str_or_element))
+            # The added text is first "unformatted", but result needs
+            # to be compliant
+            self.append_plain_text(self._unformatted(str_or_element))
 
     def insert_note(
         self,

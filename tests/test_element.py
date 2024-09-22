@@ -350,7 +350,8 @@ def test_append_element():
     element.append(Element.from_tag("text:line-break"))
     element.append("f")
     element.append("oo2")
-    assert element.serialize() == "<text:p>foo1<text:line-break/>foo2</text:p>"
+    expected = "<text:p>foo1<text:line-break/>foo2</text:p>"
+    assert element.serialize() == expected
 
 
 def test_search_paragraph(span_styles):
