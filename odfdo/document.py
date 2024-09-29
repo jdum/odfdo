@@ -163,10 +163,14 @@ class Document:
 
     To create a new Document, several possibilities:
 
-        - Document() or Document("text") -> an "empty" document of type text
-        - Document("spreadsheet") -> an "empty" document of type spreadsheet
-        - Document("presentation") -> an "empty" document of type presentation
-        - Document("drawing") -> an "empty" document of type drawing
+        - Document() or Document("text") or Document("odt")
+            -> an "empty" document of type text
+        - Document("spreadsheet") or Document("ods")
+            -> an "empty" document of type spreadsheet
+        - Document("presentation") or Document("odp")
+            -> an "empty" document of type presentation
+        - Document("drawing") or Document("odg")
+            -> an "empty" document of type drawing
 
         Meaning of “empty”: these documents are copies of the default
         templates documents provided with this library, which, as templates,

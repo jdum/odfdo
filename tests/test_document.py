@@ -94,8 +94,28 @@ def test_text_type():
     assert document.mimetype == ODF_EXTENSIONS["odt"]
 
 
+def test_text_type_2():
+    document = Document("texte")
+    assert document.mimetype == ODF_EXTENSIONS["odt"]
+
+
+def test_text_type_3():
+    document = Document("odt")
+    assert document.mimetype == ODF_EXTENSIONS["odt"]
+
+
 def test_spreadsheet_type():
     document = Document.new("spreadsheet")
+    assert document.mimetype == ODF_EXTENSIONS["ods"]
+
+
+def test_spreadsheet_type_2():
+    document = Document.new("tableur")
+    assert document.mimetype == ODF_EXTENSIONS["ods"]
+
+
+def test_spreadsheet_type_3():
+    document = Document.new("ods")
     assert document.mimetype == ODF_EXTENSIONS["ods"]
 
 
@@ -104,8 +124,28 @@ def test_presentation_type():
     assert document.mimetype == ODF_EXTENSIONS["odp"]
 
 
+def test_presentation_type_2():
+    document = Document("odp")
+    assert document.mimetype == ODF_EXTENSIONS["odp"]
+
+
 def test_drawing_type():
     document = Document.new("drawing")
+    assert document.mimetype == ODF_EXTENSIONS["odg"]
+
+
+def test_drawing_type_2():
+    document = Document.new("odg")
+    assert document.mimetype == ODF_EXTENSIONS["odg"]
+
+
+def test_drawing_type_3():
+    document = Document.new("graphics")
+    assert document.mimetype == ODF_EXTENSIONS["odg"]
+
+
+def test_drawing_type_4():
+    document = Document.new("graphic")
     assert document.mimetype == ODF_EXTENSIONS["odg"]
 
 

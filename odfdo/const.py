@@ -26,11 +26,15 @@ from __future__ import annotations
 ODF_TEMPLATES = {
     "text": "text.ott",
     "texte": "text.ott",
+    "odt": "text.ott",
     "spreadsheet": "spreadsheet.ots",
     "tableur": "spreadsheet.ots",
+    "ods": "spreadsheet.ots",
     "presentation": "presentation.otp",
+    "odp": "presentation.otp",
     # Follow the spec
     "drawing": "drawing.otg",
+    "odg": "drawing.otg",
     # Follow the mimetype
     "graphics": "drawing.otg",
     "graphic": "drawing.otg",
