@@ -1,5 +1,17 @@
 # Odfdo Release Notes
 
+## [3.9.1] - 2024-09-29
+
+When creating a Document() allow alias "odt" for "Text", "ods" for "spreadsheet".
+
+Add a recipe showing how to remove parts from a text document.
+
+### Added
+
+-   Aliases "odt", "ods", "odp" and "odg" for Document creation.
+
+-   Add recipe `delete_parts_of_a_text_document.py`
+
 ## [3.9.0] - 2024-09-22
 
 Two changes in this version:
