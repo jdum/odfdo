@@ -1,5 +1,13 @@
 # Odfdo Release Notes
 
+## [3.9.2] - 2024-10-05
+
+Add support for Python 3.13.0.rc3 in test suite.
+
+### Added
+
+-   Add support for Python3.13.0.rc3 in tox.ini, add requirement for lxml version 5.3 or higher for Python 3.13.
+
 ## [3.9.1] - 2024-09-29
 
 When creating a Document() allow alias "odt" for "Text", "ods" for "spreadsheet".
