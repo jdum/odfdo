@@ -1,5 +1,13 @@
 # Odfdo Release Notes
 
+## [3.9.3] - 2024-10-14
+
+Add support for Python 3.13 final in test suite.
+
+### Added
+
+-   Add support for Python3.13 in tox.ini
+
 ## [3.9.2] - 2024-10-05
 
 Add support for Python 3.13.0.rc3 in test suite.

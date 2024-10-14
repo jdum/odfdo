@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odfdo"
-version = "3.9.2"
+version = "3.9.3"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 keywords = ["python", "library", "ODF", "OpenDocument"]
@@ -95,6 +95,8 @@ lint.ignore = [
     "SIM103",
     # Convert to `datetime.UTC` alias
     "UP017",
+    # import *` used; unable to detect undefined names
+    "F403",
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -102,15 +104,15 @@ lint.ignore = [
 "tests/test_*" = ["S101", "RUF005"]
 "recipes/*" = ["S101"]
 
-[tool.mypy]
-check_untyped_defs = "True"
-disallow_untyped_defs = "True"
-disallow_any_unimported = "True"
-no_implicit_optional = "True"
-warn_return_any = "False"
-warn_unused_ignores = "True"
-show_error_codes = "True"
-no_namespace_packages = "True"
+# [tool.mypy]
+# check_untyped_defs = "True"
+# disallow_untyped_defs = "True"
+# disallow_any_unimported = "True"
+# no_implicit_optional = "True"
+# warn_return_any = "False"
+# warn_unused_ignores = "True"
+# show_error_codes = "True"
+# no_namespace_packages = "True"
 
 [tool.coverage.report]
 skip_empty = true

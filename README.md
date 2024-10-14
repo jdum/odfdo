@@ -104,7 +104,7 @@ see: `https://github.com/lpod/lpod-python`
 
 `odfdo` is an adaptation of this former project. `odfdo` main changes from `lpod`:
 
--   `odfdo` requires Python version 3.9 to 3.12. For Python 3.6 to 3.8 see previous releases.
+-   `odfdo` requires Python version 3.9 to 3.13. For previous Python versions see older releases.
 -   API change: more pythonic.
 -   include recipes.
 -   use Apache 2.0 license.
