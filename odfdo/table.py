@@ -1274,61 +1274,22 @@ class Table(Element):
 
         Copies are returned, use set_row() to push them back.
         """
-        idx = -1
-        before = -1
-        y = 0
-        if start is None and end is None:
-            for juska in self._tmap:
-                idx += 1
-                if idx in self._indexes["_tmap"]:
-                    row = self._indexes["_tmap"][idx]
-                else:
-                    row = self._get_element_idx2(_xpath_row_idx, idx)
-                    self._indexes["_tmap"][idx] = row
-                repeated = juska - before
-                before = juska
-                for _i in range(repeated or 1):
-                    # Return a copy without the now obsolete repetition
-                    row = row.clone
-                    row.y = y
-                    y += 1
-                    if repeated > 1:
-                        row.repeated = None
-                    yield row
-        else:
-            if start is None:
-                start = 0
-            start = max(0, start)
-            if end is None:
-                try:
-                    end = self._tmap[-1]
-                except Exception:
-                    end = -1
-            start_map = find_odf_idx(self._tmap, start)
-            if start_map is None:
+        if start is None:
+            start = 0
+        start = max(0, start)
+        if end is None:
+            end = 2**32
+        if end < start:
+            return
+        y = -1
+        for row in self._yield_odf_rows():
+            y += 1
+            if y < start:
+                continue
+            if y > end:
                 return
-            if start_map > 0:
-                before = self._tmap[start_map - 1]
-            idx = start_map - 1
-            before = start - 1
-            y = start
-            for juska in self._tmap[start_map:]:
-                idx += 1
-                if idx in self._indexes["_tmap"]:
-                    row = self._indexes["_tmap"][idx]
-                else:
-                    row = self._get_element_idx2(_xpath_row_idx, idx)
-                    self._indexes["_tmap"][idx] = row
-                repeated = juska - before
-                before = juska
-                for _i in range(repeated or 1):
-                    if y <= end:
-                        row = row.clone
-                        row.y = y
-                        y += 1
-                        if repeated > 1 or (y == start and start > 0):
-                            row.repeated = None
-                        yield row
+            row.y = y
+            yield row
 
     def get_rows(
         self,
@@ -1374,6 +1335,16 @@ class Table(Element):
         """
         # fixme : not clones ?
         return list(self.traverse())
+
+    def _yield_odf_rows(self):
+        for row in self._get_rows():
+            if row.repeated is None:
+                yield row
+            else:
+                for _ in range(row.repeated):
+                    row_copy = row.clone
+                    row_copy.repeated = None
+                    yield row_copy
 
     def _get_row2(self, y: int, clone: bool = True, create: bool = True) -> Row:
         if y >= self.height:
