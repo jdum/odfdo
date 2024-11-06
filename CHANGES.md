@@ -1,5 +1,18 @@
 # Odfdo Release Notes
 
+## [3.9.4] - 2024-11-06
+
+Fix a performance bug on huge .ods tables when number of rows is a large (several thousand).
+See issue #46 for a table of about ~83k. Table.traverse() on such a table is expected to be ~2 sec.
+
+### Changed
+
+-   Rewrite the method Table.traverse()
+
+### Fixed
+
+-   Fix the performance bug on huge .ods tables (issue #46)
+
 ## [3.9.3] - 2024-10-14
 
 Add support for Python 3.13 final in test suite.
