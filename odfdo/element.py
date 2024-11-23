@@ -906,6 +906,66 @@ class Element(CachedElement):
             return None
         return match.start()
 
+    def search_first(self, pattern: str) -> tuple[int, int] | None:
+        """Return the start and end position of the first occurence
+        of the regex pattern in the text content of the element.
+
+        Result is tuples of start and end position, or None.
+        Python regular expression syntax applies.
+
+        Arguments:
+
+            pattern -- str
+
+        Return: tuple[int,int] or None
+        """
+        match = re.search(pattern, self.text_recursive)
+        if match is None:
+            return None
+        return match.start(), match.end()
+
+    def search_all(self, pattern: str) -> list[tuple[int, int]]:
+        """Return all start and end positions of the regex pattern in
+        the text content of the element.
+
+        Result is a list of tuples of start and end position of
+        the matches.
+        Python regular expression syntax applies.
+
+        Arguments:
+
+            pattern -- str
+
+        Return: list[tuple[int,int]]
+        """
+        results: list[tuple[int, int]] = []
+        for match in re.finditer(pattern, self.text_recursive):
+            results.append((match.start(), match.end()))
+        return results
+
+    def text_at(self, start: int, end: int | None = None) -> str:
+        """Return the text (recursive) content of the element between
+        start and end position.
+
+        If the end parameter is not set, return from start to the end
+        of the recursive text.
+
+        Arguments:
+
+            start -- int
+            end -- int or None
+
+        Return: str
+        """
+        if start < 0:
+            start = 0
+        if end is None:
+            return self.text_recursive[start:]
+        else:
+            if end < start:
+                end = start
+            return self.text_recursive[start:end]
+
     def match(self, pattern: str) -> bool:
         """return True if the pattern is found one or more times anywhere in
         the text content of the element.
