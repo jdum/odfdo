@@ -4,6 +4,17 @@ docs_dir: src
 use_directory_urls: false
 markdown_extensions:
     - smarty
+    - admonition
+    - pymdownx.highlight:
+          linenums: false
+          use_pygments: true
+          line_spans: __span
+          pygments_lang_class: true
+    - pymdownx.inlinehilite
+    - pymdownx.snippets
+    - pymdownx.superfences
+    - pymdownx.details
+
 theme:
     name: material
     locale: en
@@ -15,10 +26,7 @@ theme:
         # - navigation.expand
 
 plugins:
-    - search:
-          highlight: true
-          prebuild_index: true
-          indexing: 'full'
+    - search
 
     - mkdocstrings:
           default_handler: python
@@ -26,7 +34,18 @@ plugins:
               python:
                   rendering:
                       show_source: true
+
+    - include-markdown:
+          preserve_includer_indent: true
+          dedent: true
+          trailing_newlines: true
+          comments: true
+          rewrite_relative_urls: false
+          heading_offset: 0
+          recursive: false
+
 nav:
     - Readme: README.md
     - Changes: CHANGES.md
     - Reference: reference.md
+    - Recipes: recipes.md

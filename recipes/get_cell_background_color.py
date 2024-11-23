@@ -7,6 +7,7 @@ from pathlib import Path
 
 from odfdo import Document
 
+_DOC_SEQUENCE = 440
 DATA = Path(__file__).parent / "data"
 SOURCE = "cell_color.ods"
 

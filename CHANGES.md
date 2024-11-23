@@ -1,9 +1,16 @@
 # Odfdo Release Notes
 
+## [3.10.1] - 2024-11-23
+
+The HTML documentation in `/doc` (mostly auto generated) contains now all recipes, sorted by relevance.
+
+### Changed
+
+-   Improvement of documentation.
+
 ## [3.10.0] - 2024-11-23
 
--   Fix a bug of `Paragraph.set_span()` when using an offset argument of zero (the  Span was not created). Added 3  
-    methods related to searching strings in paragraphs: `search_first()`, `search_all()` and `text_at()`. These methods permit to search some string with regex in a paragraph and get their position, `text_at()` returns the text content at a given position.
+-   Fix a bug of `Paragraph.set_span()` when using an offset argument of zero (the  Span was not created). Added 3 methods related to searching strings in paragraphs: `search_first()`, `search_all()` and `text_at()`. These methods permit to search some string with regex in a paragraph and get their position, `text_at()` returns the text content at a given position.
 -   Fix the "pretty" option of `Document.save()`. "pretty" is now the default for odfdo-folder.
 
 Added a new recipe showing several methods to change the style of a paragraph or words in a pragraph with the use of `Paragraph.style = style.name` and `Paragraph.set_span()`.
@@ -29,11 +36,11 @@ See issue #46 for a table of about ~83k. Table.traverse() on such a table is exp
 
 ### Changed
 
--   Rewrite the method Table.traverse()
+-   Rewrite the method Table.traverse().
 
 ### Fixed
 
--   Fix the performance bug on huge .ods tables (issue #46)
+-   Fix the performance bug on huge .ods tables (issue #46).
 
 ## [3.9.3] - 2024-10-14
 
@@ -61,7 +68,7 @@ Add a recipe showing how to remove parts from a text document.
 
 -   Aliases "odt", "ods", "odp" and "odg" for Document creation.
 
--   Add recipe `delete_parts_of_a_text_document.py`
+-   Add recipe `delete_parts_of_a_text_document.py`.
 
 ## [3.9.0] - 2024-09-22
 

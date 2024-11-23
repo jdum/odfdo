@@ -6,6 +6,7 @@ from pathlib import Path
 
 from odfdo import Document, Header, Paragraph
 
+_DOC_SEQUENCE = 38
 DATA = Path(__file__).parent / "data"
 SOURCE = "doc_with_toc.odt"
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "modified_toc"

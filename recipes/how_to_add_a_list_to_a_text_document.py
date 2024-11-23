@@ -7,6 +7,7 @@ from pathlib import Path
 # Lists are a dedicated object List
 from odfdo import Document, List
 
+_DOC_SEQUENCE = 90
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "add_list"
 TARGET = "document.odt"
 

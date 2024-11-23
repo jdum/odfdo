@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 """Basic Accessibility test: check, for every picture in a document, if
 there is:
-- a title (svg_title),
-- a description (svg_description)
+
+  - a title (svg_title),
+  - a description (svg_description)
+
 or, at least, some caption text.
-See planes.odt file and result of the script.
+
+See test file `planes.odt` file and the result of the script.
 """
 import os
 import sys
@@ -12,6 +15,7 @@ from pathlib import Path
 
 from odfdo import Document
 
+_DOC_SEQUENCE = 200
 DATA = Path(__file__).parent / "data"
 SOURCE = "planes.odt"
 

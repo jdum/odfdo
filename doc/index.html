@@ -278,6 +278,26 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="recipes.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Recipes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -328,24 +348,24 @@ Apache License, Version 2.0</p>
 <p><code>odfdo</code> is a derivative work of the former <code>lpod-python</code> project.</p>
 <h1 id="installation">Installation</h1>
 <p>Installation from Pypi (recommended):</p>
-<pre><code class="language-python">pip install odfdo
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><span class="n">pip</span> <span class="n">install</span> <span class="n">odfdo</span>
+</span></code></pre></div>
 <p>Installation from sources (requiring setuptools):</p>
-<pre><code class="language-python">pip install .
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><span class="n">pip</span> <span class="n">install</span> <span class="o">.</span>
+</span></code></pre></div>
 <p>After installation from sources, you can check everything is working (some requirements: <code>pytest</code>, Pillow, &hellip;):</p>
-<pre><code class="language-python">pytest
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><span class="n">pytest</span>
+</span></code></pre></div>
 <p>The tests should run for a few seconds or minutes and issue no error.</p>
 <p>The full test suite uses <code>tox</code> to check different <code>Python</code> and <code>lxml</code> versions.</p>
 <p>A special effort is made to limit the dependencies of this library: the only dependency (outside development) is <code>lxml</code>. The <code>lxml</code> versions depend mainly on the version of Python used, see the <code>pyproject.toml</code> file for details.</p>
 <h1 id="usage">Usage</h1>
-<pre><code>from odfdo import Document, Paragraph
+<div class="language-text highlight"><pre><span></span><code>from odfdo import Document, Paragraph
 
-doc = Document('text')
-doc.body.append(Paragraph("Hello world!"))
-doc.save("hello.odt")
-</code></pre>
+doc = Document(&#39;text&#39;)
+doc.body.append(Paragraph(&quot;Hello world!&quot;))
+doc.save(&quot;hello.odt&quot;)
+</code></pre></div>
 <h1 id="tldr">tl;dr</h1>
 <p>&lsquo;Intended Audience :: Developers&rsquo;</p>
 <h1 id="documentation">Documentation</h1>

@@ -7,6 +7,7 @@ from pathlib import Path
 
 from odfdo import Document, Row, Table
 
+_DOC_SEQUENCE = 800
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "transpose"
 TARGET = "transposed.ods"
 

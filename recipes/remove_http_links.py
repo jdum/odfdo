@@ -6,6 +6,7 @@ from pathlib import Path
 
 from odfdo import Document
 
+_DOC_SEQUENCE = 510
 DATA = Path(__file__).parent / "data"
 SOURCE = "collection2.odt"
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "nolink"

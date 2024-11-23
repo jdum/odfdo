@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-"""Write basic "Hello World" in the middle of the first page of a presentaion.
+"""Write a basic "Hello World" in the middle of the first page of a presentaion.
 """
 from pathlib import Path
 
 from odfdo import Document, DrawPage, Frame
 
+_DOC_SEQUENCE = 7
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "basic_odp"
 TARGET = "hello.odp"
 

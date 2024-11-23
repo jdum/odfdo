@@ -1,11 +1,15 @@
 #!/usr/bin/env python
-"""Accessing other element from element like list.
+"""Accessing elements from element-like list.
+
+Any fetched element is a XML tree context that can be queried, but only on the subtree it
+contains. Here are quick examples of iteration on `Paragraphs` and `Lists` from the document.
 """
 import os
 from pathlib import Path
 
 from odfdo import Document
 
+_DOC_SEQUENCE = 80
 DATA = Path(__file__).parent / "data"
 SOURCE = DATA / "collection2.odt"
 

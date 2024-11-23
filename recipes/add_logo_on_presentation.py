@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """Insert an image (e.g. the logo of an event, organization or a Creative Commons
-attribution) with size x,y at position x2,y2 on a number of slides in a
+attribution) with size `x,y` at position `x2,y2` on a number of slides in a
 presentation slide deck.
 """
 from pathlib import Path
@@ -10,6 +10,7 @@ from PIL import Image
 
 from odfdo import Document, Frame
 
+_DOC_SEQUENCE = 250
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "add_logo"
 TARGET = "presentation.odp"
 DATA = Path(__file__).parent / "data"

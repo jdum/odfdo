@@ -1,8 +1,19 @@
+"""Minimal example of how to add a paragraph.
+"""
+
 from odfdo import Document, Paragraph
 
-document = Document("text")
-body = document.body
+_DOC_SEQUENCE = 12
 
-# create a new paragraph with some content :
-paragraph = Paragraph("Hello World")
-body.append(paragraph)
+
+def main():
+    document = Document("text")
+    body = document.body
+
+    # create a new paragraph with some content :
+    paragraph = Paragraph("Hello World")
+    body.append(paragraph)
+
+
+if __name__ == "__main__":
+    main()

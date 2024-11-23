@@ -1,11 +1,18 @@
 #!/usr/bin/env python
-"""Accessing a single element
+"""Example of methods and properties to analyse a document.
+
+These methods return a single element (or None):
+
+    - `body.get_note(position)`
+    - `body.get_paragraph(position)`
+    - `body.get_header(position)`
 """
 import os
 from pathlib import Path
 
 from odfdo import Document
 
+_DOC_SEQUENCE = 70
 DATA = Path(__file__).parent / "data"
 SOURCE = "collection2.odt"
 

@@ -1,15 +1,19 @@
 #!/usr/bin/env python
 """Create a document with styles.
 
- We want to
+ We want to:
+
   - remove standard styles from the document
+
   - set some styles grabed from a styles.xml ODF file (or generated)
+
   - insert plain "python" text, containing some \t , \n, and spaces
 """
 from pathlib import Path
 
 from odfdo import Document, Element, Paragraph, Style
 
+_DOC_SEQUENCE = 60
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "styled2"
 TARGET = "document.odt"
 

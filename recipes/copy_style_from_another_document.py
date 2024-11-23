@@ -8,6 +8,7 @@ from pathlib import Path
 
 from odfdo import Document
 
+_DOC_SEQUENCE = 320
 DATA = Path(__file__).parent / "data"
 SOURCE = "collection2.odt"
 # copied here from the odfdo package:

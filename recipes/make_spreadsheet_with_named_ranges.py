@@ -5,6 +5,7 @@ from pathlib import Path
 
 from odfdo import Document, Table
 
+_DOC_SEQUENCE = 470
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "named_range"
 TARGET = "spreadsheet.ods"
 

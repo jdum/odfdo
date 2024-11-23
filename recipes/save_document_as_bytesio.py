@@ -6,6 +6,7 @@ from pathlib import Path
 
 from odfdo import Document, Paragraph
 
+_DOC_SEQUENCE = 605
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "bytes"
 TARGET = "document.odt"
 

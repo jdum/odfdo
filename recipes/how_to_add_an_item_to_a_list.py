@@ -1,8 +1,16 @@
-from odfdo import Document, List, ListItem
+"""Minimal example of how to add an item to a list.
+"""
 
-document = Document("text")
-body = document.body
-a_list = List(["chocolat", "café"])
+from odfdo import List, ListItem
 
-item = ListItem("thé")
-a_list.append(item)
+_DOC_SEQUENCE = 28
+
+
+def main():
+    a_list = List(["chocolat", "café"])
+    item = ListItem("thé")
+    a_list.append(item)
+
+
+if __name__ == "__main__":
+    main()

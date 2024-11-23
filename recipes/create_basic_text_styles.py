@@ -6,6 +6,7 @@ from pathlib import Path
 
 from odfdo import Document, Header, Paragraph, Style
 
+_DOC_SEQUENCE = 330
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "basic_styles"
 TARGET = "document.odt"
 

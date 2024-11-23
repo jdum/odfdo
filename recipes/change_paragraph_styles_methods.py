@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-"""Change styles of paragraphs (and in paragraphs)
+"""Many examples of how to change paragraph (and in-paragraph) styles, either
+by changing the paragraph style itself or by using Span to select parts
+of the paragraph. Includes several ways to create or import styles.
 """
 import os
 from collections.abc import Iterator
@@ -8,6 +10,7 @@ from pathlib import Path
 
 from odfdo import Document, Element, Header, Paragraph, Style
 
+_DOC_SEQUENCE = 340
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "change_styles"
 DATA = Path(__file__).parent / "data"
 LOREM = (DATA / "lorem.txt").read_text(encoding="utf8")

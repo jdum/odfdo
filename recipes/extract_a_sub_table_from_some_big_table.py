@@ -7,6 +7,7 @@ from pathlib import Path
 
 from odfdo import Document, Row, Table
 
+_DOC_SEQUENCE = 450
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "extract_table"
 TARGET = "document.ods"
 

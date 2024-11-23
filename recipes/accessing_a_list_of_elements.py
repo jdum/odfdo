@@ -1,5 +1,15 @@
 #!/usr/bin/env python
-"""Accessing a list of elements.
+"""Example of methods and properties to analyse a document.
+
+These methods or properties return a list of elements:
+
+    - `body.headers`
+    - `body.images`
+    - `body.paragraphs`
+    - `body.get_links()`
+    - `body.get_notes()`
+    - `body.tables`
+    - `body.get_paragraphs(content)`
 """
 import os
 import sys
@@ -7,6 +17,7 @@ from pathlib import Path
 
 from odfdo import Document
 
+_DOC_SEQUENCE = 75
 DATA = Path(__file__).parent / "data"
 SOURCE = "collection2.odt"
 

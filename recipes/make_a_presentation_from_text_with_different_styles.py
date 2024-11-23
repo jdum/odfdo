@@ -6,6 +6,7 @@ from pathlib import Path
 
 from odfdo import Document, DrawPage, Frame, Style
 
+_DOC_SEQUENCE = 287
 # lst = open(sys.argv[1]).readlines()
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "styled_prez"
 TARGET = "presentation.odp"

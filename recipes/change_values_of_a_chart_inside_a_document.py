@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Open a document with an embedded chart and change some values.
+"""Open a text document with an embedded chart and change some values.
 """
 
 from pathlib import Path
@@ -7,6 +7,7 @@ from pathlib import Path
 # for cell style
 from odfdo import Document
 
+_DOC_SEQUENCE = 295
 DATA = Path(__file__).parent / "data"
 SOURCE = DATA / "chart.odt"
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "modified_chart"

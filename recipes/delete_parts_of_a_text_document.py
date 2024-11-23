@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 """Idea comming from issue #49:
-   Deleting content from one point to another in a odt document
+   Deleting content from one point to another in a .odt document.
 """
 import os
 from pathlib import Path
 
 from odfdo import Document, Element, Header, Paragraph
 
+_DOC_SEQUENCE = 400
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "delete_content"
 TARGET_INITIAL = "document_initial.odt"
 TARGET_FINAL = "document_final.odt"

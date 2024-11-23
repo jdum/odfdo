@@ -5,6 +5,7 @@ from pathlib import Path
 
 from odfdo import Document
 
+_DOC_SEQUENCE = 700
 DATA = Path(__file__).parent / "data"
 SOURCE = "lorem.odt"
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "replaced_text"

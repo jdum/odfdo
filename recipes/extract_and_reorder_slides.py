@@ -6,6 +6,7 @@ from pathlib import Path
 
 from odfdo import Document
 
+_DOC_SEQUENCE = 290
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "presentation_extracted"
 TARGET = "presentation.odp"
 DATA = Path(__file__).parent / "data"

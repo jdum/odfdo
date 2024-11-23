@@ -5,6 +5,7 @@ from pathlib import Path
 
 from odfdo import TOC, Document, Paragraph, Style
 
+_DOC_SEQUENCE = 37
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "add_toc"
 TARGET = "document.odt"
 DATA = Path(__file__).parent / "data"

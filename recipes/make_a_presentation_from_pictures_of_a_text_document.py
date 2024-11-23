@@ -12,6 +12,7 @@ from PIL import Image
 
 from odfdo import Document, DrawPage, Frame
 
+_DOC_SEQUENCE = 285
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "presentation_images_in_odt"
 TARGET = "presentation.odp"
 DATA = Path(__file__).parent / "data"

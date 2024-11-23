@@ -1,10 +1,12 @@
 #!/usr/bin/env python
-"""Create a spreadsheet with one table.
+"""Create a spreadsheet with one table and a few data, strip the table
+and compute the table size.
 """
 from pathlib import Path
 
 from odfdo import Document, Table
 
+_DOC_SEQUENCE = 460
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "basic_ods"
 TARGET = "spreadsheet.ods"
 

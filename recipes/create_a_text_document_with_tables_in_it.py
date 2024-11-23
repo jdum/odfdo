@@ -19,6 +19,7 @@ from odfdo import (
     make_table_cell_border_string,
 )
 
+_DOC_SEQUENCE = 50
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "commercial"
 TARGET = "commercial.odt"
 TAX_RATE = 0.20

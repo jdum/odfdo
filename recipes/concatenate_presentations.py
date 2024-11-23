@@ -6,6 +6,7 @@ from pathlib import Path
 
 from odfdo import Document
 
+_DOC_SEQUENCE = 280
 DATA = Path(__file__).parent / "data"
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "concatenate"
 TARGET = "presentation.odp"

@@ -7,6 +7,7 @@ from pathlib import Path
 
 from odfdo import Document, Table
 
+_DOC_SEQUENCE = 710
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "freq"
 SOURCE = "collection2.odt"
 DATA = Path(__file__).parent / "data"

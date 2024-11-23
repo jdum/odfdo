@@ -60,8 +60,8 @@ A special effort is made to limit the dependencies of this library: the only dep
 
 There is no detailed documentation or tutorial, but:
 
--   the `recipes` folder contains more than 50 working sample scripts,
--   the `doc` folder contains an auto generated documentation.
+-   the `recipes` folder contains more than 60 working sample scripts,
+-   the `doc` folder contains an auto generated HTML documentation, including recipes.
 
 When installing odfdo, a few scripts are installed:
 

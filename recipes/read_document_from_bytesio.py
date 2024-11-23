@@ -6,6 +6,7 @@ from pathlib import Path
 
 from odfdo import Document
 
+_DOC_SEQUENCE = 600
 DATA = Path(__file__).parent / "data"
 SOURCE = "lorem.odt"
 

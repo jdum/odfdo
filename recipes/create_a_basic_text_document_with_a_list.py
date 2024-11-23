@@ -6,6 +6,7 @@ from pathlib import Path
 
 from odfdo import Document, List, ListItem
 
+_DOC_SEQUENCE = 20
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "basic_list"
 TARGET = "document.odt"
 

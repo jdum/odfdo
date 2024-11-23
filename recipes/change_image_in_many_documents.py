@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """Change an image in many ODF files.
 
-This recipe caters for instance for the scenario where an organization
-switches from one corporate logo to another, and has to replace the logo
-in many thousands of existing documents.
+This recipe is suitable for the scenario where an organization
+is moving from one company logo to another and needs to replace
+the logo in several hundred existing documents.
 """
 from hashlib import sha256
 from pathlib import Path
@@ -14,6 +14,7 @@ counter_image = 0
 counter_odf = 0
 counter_hit = 0
 
+_DOC_SEQUENCE = 270
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "new_logo"
 DATA = Path(__file__).parent / "data"
 OLD_PRESENTATIONS = DATA / "old_presentations"

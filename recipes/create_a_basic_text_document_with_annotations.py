@@ -6,6 +6,7 @@ from pathlib import Path
 
 from odfdo import Document, Header, Paragraph
 
+_DOC_SEQUENCE = 40
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "basic_annotations"
 DATA = Path(__file__).parent / "data"
 LOREM = (DATA / "lorem.txt").read_text(encoding="utf8")

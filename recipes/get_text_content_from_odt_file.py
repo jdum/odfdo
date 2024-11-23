@@ -7,6 +7,7 @@ from pathlib import Path
 
 from odfdo import Document
 
+_DOC_SEQUENCE = 30
 DATA = Path(__file__).parent / "data"
 # ODF export of Wikipedia article Hitchhiker's Guide to the Galaxy (CC-By-SA) :
 SOURCE = "collection2.odt"

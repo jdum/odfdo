@@ -7,6 +7,7 @@ from typing import Union
 
 from odfdo import Document, EllipseShape, Header, LineShape, Paragraph
 
+_DOC_SEQUENCE = 100
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "basic_drawing"
 TARGET = "koch.odt"
 

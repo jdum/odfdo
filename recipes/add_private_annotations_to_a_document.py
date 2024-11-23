@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Add not printable annotations to a document.
 
-Annotations are notes that don't appear in the document but typically
+Annotations are notes that do not appear in the document but typically
 on a side bar in a desktop application. So they are not printed.
 """
 import os
@@ -9,6 +9,7 @@ from pathlib import Path
 
 from odfdo import Document, Header, Paragraph
 
+_DOC_SEQUENCE = 110
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "annotated"
 TARGET = "annotated_document.odt"
 

@@ -1,11 +1,12 @@
 #!/usr/bin/env python
-"""Create a basic text document.
+"""Create a basic text document with headers and praragraphs.
 """
 import os
 from pathlib import Path
 
 from odfdo import Document, Header, Paragraph
 
+_DOC_SEQUENCE = 10
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "basic_text"
 TARGET = "document.odt"
 

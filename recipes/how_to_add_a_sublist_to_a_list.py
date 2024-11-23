@@ -1,16 +1,26 @@
+"""Minimal example of how to add a paragraph.
+"""
+
 from odfdo import Document, List, ListItem
 
-document = Document("text")
-body = document.body
+_DOC_SEQUENCE = 27
 
-my_list = List(["chocolat", "café"])
-body.append(my_list)
 
-item = ListItem("thé")
-my_list.append(item)
+def main():
+    document = Document("text")
+    body = document.body
 
-# A sublist is simply a list as an item of another list
+    my_list = List(["chocolat", "café"])
+    body.append(my_list)
 
-item.append(List(["thé vert", "thé rouge"]))
+    item = ListItem("thé")
+    my_list.append(item)
 
-print(body.serialize(True))
+    # A sublist is simply a list as an item of another list
+    item.append(List(["thé vert", "thé rouge"]))
+
+    print(body.serialize(True))
+
+
+if __name__ == "__main__":
+    main()

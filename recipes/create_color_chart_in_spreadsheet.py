@@ -17,6 +17,7 @@ from odfdo import (
     rgb2hex,
 )
 
+_DOC_SEQUENCE = 420
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "chart"
 TARGET = "color_chart.ods"
 

@@ -96,7 +96,8 @@ class AnimTransFilter(Element):
     Class to make a beautiful transition between two frames.
 
     Arguments:
-      smil_dur -- XXX complete me
+
+      smil_dur -- str, duration
 
       smil_type and smil_subtype -- see http://www.w3.org/TR/SMIL20/
                     smil-transitions.html#TransitionEffects-Appendix

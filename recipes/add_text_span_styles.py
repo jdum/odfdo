@@ -8,6 +8,7 @@ from pathlib import Path
 
 from odfdo import Document, Style
 
+_DOC_SEQUENCE = 300
 DATA = Path(__file__).parent / "data"
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "styled3"
 TARGET = "dormeur_styled.odt"

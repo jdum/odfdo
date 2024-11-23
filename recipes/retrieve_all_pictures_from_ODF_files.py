@@ -9,6 +9,7 @@ from pathlib import Path
 
 from odfdo import Document
 
+_DOC_SEQUENCE = 530
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "collected_pics"
 DATA = Path(__file__).parent / "data"
 
