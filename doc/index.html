@@ -14,7 +14,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.44">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.45">
     
     
       
@@ -338,6 +338,7 @@ Apache License, Version 2.0</p>
 </code></pre>
 <p>The tests should run for a few seconds or minutes and issue no error.</p>
 <p>The full test suite uses <code>tox</code> to check different <code>Python</code> and <code>lxml</code> versions.</p>
+<p>A special effort is made to limit the dependencies of this library: the only dependency (outside development) is <code>lxml</code>. The <code>lxml</code> versions depend mainly on the version of Python used, see the <code>pyproject.toml</code> file for details.</p>
 <h1 id="usage">Usage</h1>
 <pre><code>from odfdo import Document, Paragraph
 

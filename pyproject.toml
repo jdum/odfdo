@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "odfdo"
-version = "3.9.4"
+version = "3.10.0"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 keywords = ["python", "library", "ODF", "OpenDocument"]
@@ -57,12 +57,12 @@ odfdo-table-shrink = 'odfdo.scripts.table_shrink:main'
 odfdo-userfield = 'odfdo.scripts.userfield:main'
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.8.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 88
-target-version = ['py312']
+target-version = ['py313']
 
 [tool.isort]
 profile = "black"

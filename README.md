@@ -42,6 +42,8 @@ The tests should run for a few seconds or minutes and issue no error.
 
 The full test suite uses `tox` to check different `Python` and `lxml` versions.
 
+A special effort is made to limit the dependencies of this library: the only dependency (outside development) is `lxml`. The `lxml` versions depend mainly on the version of Python used, see the `pyproject.toml` file for details.
+
 # Usage
 
     from odfdo import Document, Paragraph

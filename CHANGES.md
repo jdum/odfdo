@@ -1,5 +1,27 @@
 # Odfdo Release Notes
 
+## [3.10.0] - 2024-11-23
+
+-   Fix a bug of `Paragraph.set_span()` when using an offset argument of zero (the  Span was not created). Added 3  
+    methods related to searching strings in paragraphs: `search_first()`, `search_all()` and `text_at()`. These methods permit to search some string with regex in a paragraph and get their position, `text_at()` returns the text content at a given position.
+-   Fix the "pretty" option of `Document.save()`. "pretty" is now the default for odfdo-folder.
+
+Added a new recipe showing several methods to change the style of a paragraph or words in a pragraph with the use of `Paragraph.style = style.name` and `Paragraph.set_span()`.
+
+### Added
+
+-   Added `Element.search_first()`, `Element.search_all()` , `Element.text_at()`.
+-   Added `change_paragraph_styles_or_spans.py` recipe (issue #21).
+
+### Changed
+
+-   `odfdo-folder` script now writes XML files with the "pretty" option by default.
+
+### Fixed
+
+-   Fix `Paragraph.set_span()` when using an offset argument of zero (issue #21).
+-   Fix the "pretty" option of `Document.save()` (issue #28).
+
 ## [3.9.4] - 2024-11-06
 
 Fix a performance bug on huge .ods tables when number of rows is a large (several thousand).
