@@ -68,6 +68,7 @@ target-version = ['py312']
 profile = "black"
 
 [tool.ruff]
+exclude = [".venv"]
 lint.ignore = [
     # LineTooLong
     "E501",
