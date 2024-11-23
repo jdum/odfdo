@@ -81,10 +81,10 @@ def _by_regex_offset(method: Callable) -> Callable:  # noqa: C901
         """
         offset = kwargs.get("offset", None)
         regex = kwargs.get("regex", None)
-        if offset:
+        if offset is not None:
             length = kwargs.get("length", 0)
             counted = 0
-            for text in element.xpath("//text()"):
+            for text in element.xpath("descendant::text()"):
                 if len(text) + counted <= offset:  # type: ignore
                     counted += len(text)  # type: ignore
                     continue
