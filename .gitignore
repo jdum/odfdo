@@ -6,6 +6,7 @@
 .Trashes
 .svn
 .venv
+.ropeproject/
 __pycache__
 *~
 *.orig
