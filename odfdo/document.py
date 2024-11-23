@@ -617,13 +617,16 @@ class Document:
         self,
         target: str | Path | io.BytesIO | None = None,
         packaging: str = ZIP,
-        pretty: bool = False,
+        pretty: bool | None = None,
         backup: bool = False,
     ) -> None:
         """Save the document, at the same place it was opened or at the given
         target path. Target can also be a file-like object. It can be saved
         as a Zip file (default), flat XML format or as files in a folder
-        (for debugging purpose). XML parts can be pretty printed.
+        (for debugging purpose). XML parts can be pretty printed (the default
+        for 'folder' and 'xml' packaging).
+
+        Note: 'xml' packaging is an experimental work in progress.
 
         Arguments:
 
@@ -631,7 +634,7 @@ class Document:
 
             packaging -- 'zip', 'folder', 'xml'
 
-            pretty -- bool
+            pretty -- bool | None
 
             backup -- bool
         """
@@ -641,10 +644,23 @@ class Document:
         self.meta.set_generator_default()
         # Synchronize data with container
         container = self.container
-        for path, part in self.__xmlparts.items():
-            if part is not None:
-                container.set_part(path, part.serialize(pretty))
-        # Save the container
+        if pretty is None:
+            pretty = packaging in {"folder", "xml"}
+        if pretty:
+            for path, part in self.__xmlparts.items():
+                if part is not None:
+                    container.set_part(path, part.pretty_serialize())
+            for path in (ODF_CONTENT, ODF_META, ODF_SETTINGS, ODF_STYLES):
+                if path in self.__xmlparts:
+                    continue
+                cls = _get_part_class(path)
+                # XML part
+                self.__xmlparts[path] = part = cls(path, container)
+                container.set_part(path, part.pretty_serialize())
+        else:
+            for path, part in self.__xmlparts.items():
+                if part is not None:
+                    container.set_part(path, part.serialize())
         container.save(target, packaging=packaging, backup=backup)
 
     @property

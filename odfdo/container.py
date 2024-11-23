@@ -282,7 +282,6 @@ class Container:
                 xpart = fromstring(part)
             else:
                 xpart = part
-            print(xpart, part.__class__.__name__)
             for child in xpart:
                 root.append(child)
         return tostring(root, encoding="UTF-8", xml_declaration=True)

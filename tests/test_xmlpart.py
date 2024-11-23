@@ -75,7 +75,7 @@ def test_serialize(exemple_container):
     assert content_bytes == serialized
 
 
-def test_pretty_serialize():
+def test_pretty_serialize_base():
     # With pretty = True
     element = Element.from_tag("<root><a>spam</a><b/></root>")
     serialized = element.serialize(pretty=True)
@@ -116,3 +116,31 @@ def test_get_body(exemple_container):
     content_part = XmlPart(ODF_CONTENT, exemple_container)
     body = content_part.body
     assert body.tag == "office:text"
+
+
+def test_pretty_serialize_internal_not_pretty():
+    container = Container()
+    container.open(SAMPLES / "issue_28_pretty.odt")
+    content = XmlPart(ODF_CONTENT, container)
+    serialized = content.serialize()
+    expected = b'This is an example with =&gt;</text:span><text:span text:style-name="T4"> v</text:span><text:span text:style-name="T5">8</text:span><text:span text:style-name="T4">.1.</text:span><text:span text:style-name="T5">4</text:span><text:span text:style-name="T4"> &lt;</text:span><text:span text:style-name="T6">= spaces </text:span><text:span text:style-name="T7">after reading and writing with odfdo.'
+    assert expected in serialized
+
+
+def test_pretty_serialize_internal_pretty():
+    container = Container()
+    container.open(SAMPLES / "issue_28_pretty.odt")
+    content = XmlPart(ODF_CONTENT, container)
+    serialized = content.pretty_serialize()
+    print(serialized.decode())
+    expected = b'This is an example with =&gt;</text:span><text:span text:style-name="T4"> v</text:span><text:span text:style-name="T5">8</text:span><text:span text:style-name="T4">.1.</text:span><text:span text:style-name="T5">4</text:span><text:span text:style-name="T4"> &lt;</text:span><text:span text:style-name="T6">= spaces </text:span><text:span text:style-name="T7">after reading and writing with odfdo.'
+    assert expected in serialized
+
+
+def test_pretty_serialize_internal_pretty2():
+    container = Container()
+    container.open(SAMPLES / "issue_28_pretty.odt")
+    content = XmlPart(ODF_CONTENT, container)
+    serialized = content.serialize(pretty=True)
+    expected = b'This is an example with =&gt;</text:span><text:span text:style-name="T4"> v</text:span><text:span text:style-name="T5">8</text:span><text:span text:style-name="T4">.1.</text:span><text:span text:style-name="T5">4</text:span><text:span text:style-name="T4"> &lt;</text:span><text:span text:style-name="T6">= spaces </text:span><text:span text:style-name="T7">after reading and writing with odfdo.'
+    assert expected in serialized
