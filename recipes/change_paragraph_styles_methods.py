@@ -1,0 +1,230 @@
+#!/usr/bin/env python
+"""Change styles of paragraphs (and in paragraphs)
+"""
+import os
+from collections.abc import Iterator
+from itertools import cycle
+from pathlib import Path
+
+from odfdo import Document, Element, Header, Paragraph, Style
+
+OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "change_styles"
+DATA = Path(__file__).parent / "data"
+LOREM = (DATA / "lorem.txt").read_text(encoding="utf8")
+STYLED_SOURCE = "lpod_styles.odt"
+TARGET_BEFORE = "document_before.odt"
+TARGET_AFTER = "document_after.odt"
+
+
+def save_new(document: Document, name: str) -> None:
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    new_path = OUTPUT_DIR / name
+    print("Saving:", new_path)
+    document.save(new_path)
+
+
+def main() -> None:
+    document = Document("odt")
+    make_base_document(document)
+    save_new(document, TARGET_BEFORE)
+    add_some_styles(document)
+    add_style_from_xml(document)
+    import_style_from_other_doc(document)
+    apply_styles(document)
+    test_unit(document)
+    save_new(document, TARGET_AFTER)
+
+
+def iter_lorem() -> Iterator[str]:
+    return cycle(lr.strip() for lr in LOREM.replace("\n", " ").split("."))
+
+
+def make_base_document(document: Document) -> None:
+    """Fill document from parts or lorem ipsum content."""
+    # Create the document
+    body = document.body
+    body.clear()
+    # Add some content with headers
+    lorem = iter_lorem()
+    title1 = Header(1, next(lorem))
+    body.append(title1)
+    for _i in range(3):
+        title = Header(2, next(lorem))
+        body.append(title)
+        for _j in range(5):
+            body.append(Paragraph(next(lorem) + ". " + next(lorem) + "."))
+
+
+def add_some_styles(document) -> None:
+    # Always simpler to copy styles from an actual .odt existing file, but:
+    document.insert_style(
+        Style(
+            family="paragraph",
+            area="text",
+            display_name="bold-blue",
+            color="blue",
+            bold=True,
+        ),
+        automatic=True,
+    )
+    document.insert_style(
+        Style(
+            family="paragraph",
+            area="text",
+            display_name="italic-red",
+            color="red",
+            bold=True,
+            italic=True,
+        ),
+        automatic=True,
+    )
+    document.insert_style(
+        Style(
+            family="text",
+            area="text",
+            display_name="green",
+            background_color="green",
+        ),
+        automatic=True,
+    )
+    document.insert_style(
+        Style(
+            family="text",
+            area="text",
+            display_name="bold-yellow-blue",
+            color="yellow",
+            background_color="blue",
+            bold=True,
+        ),
+        automatic=True,
+    )
+    document.insert_style(
+        Style(
+            family="text",
+            area="text",
+            display_name="bold-white-black",
+            color="white",
+            background_color="black",
+            bold=True,
+        ),
+        automatic=True,
+    )
+    document.insert_style(
+        Style(
+            family="text",
+            area="text",
+            display_name="italic-red-yellow",
+            color="red",
+            background_color="yellow",
+            bold=True,
+            italic=True,
+        ),
+        automatic=True,
+    )
+
+
+def add_style_from_xml(document: Document) -> None:
+    # Styles can be defined by WML definition
+    document.insert_style(
+        Element.from_tag(
+            '<style:style style:name="custom" '
+            'style:display-name="custom" '
+            'style:family="paragraph" '
+            'style:parent-style-name="Text">'
+            '<style:paragraph-properties fo:margin-left="2cm"/>'
+            '<style:text-properties fo:color="#808080" loext:opacity="100%" '
+            'fo:font-size="16pt" fo:font-style="normal" '
+            'style:text-underline-style="solid" '
+            'style:text-underline-width="auto" '
+            'style:text-underline-color="font-color" '
+            'fo:font-weight="bold"/>'
+            "</style:style>"
+        )
+    )
+
+
+def import_style_from_other_doc(document: Document) -> None:
+    styled_doc = Document(DATA / STYLED_SOURCE)
+    highlight = styled_doc.get_style("text", display_name="Yellow Highlight")
+    document.insert_style(highlight, automatic=True)
+
+
+def apply_styles(document: Document) -> None:
+    """Apply some style changes to document."""
+
+    def change_all_headers():
+        style = document.get_style(family="text", display_name="green")
+        # header styles should include some hints about he numeration level
+        # So, here we just prefer to apply style with a span
+        for header in document.body.headers:
+            header.set_span(style.name, offset=0)
+
+    def change_all_paragraphs():
+        style = document.get_style(family="paragraph", display_name="bold-blue")
+        for para in document.body.paragraphs:
+            para.style = style.name
+
+    def change_some_paragraph():
+        style = document.get_style(family="paragraph", display_name="italic-red")
+        document.body.get_paragraph(3).style = style.name
+        document.body.get_paragraph(5).style = style.name
+        document.body.get_paragraph(7).style = style.name
+
+    def apply_span_regex():
+        yellow = document.get_style(family="text", display_name="bold-yellow-blue")
+        white = document.get_style(family="text", display_name="bold-white-black")
+        for para in document.body.paragraphs:
+            para.set_span(yellow.name, regex=r"tortor|ipsum")
+            para.set_span(white.name, regex=r"A\w+")
+
+    def apply_span_offset():
+        red = document.get_style(family="text", display_name="italic-red-yellow")
+        para = document.body.get_paragraph(2)
+        para.set_span(red.name, offset=9, length=22)
+
+    def apply_custom_style():
+        para = document.body.get_paragraph(13)
+        para.style = "custom"
+
+    def apply_imported_style():
+        para = document.body.get_paragraph(14)
+        style = document.get_style(family="text", display_name="Yellow Highlight")
+        # feature: to not highlight spaces, make as many Spans as required:
+        for start, end in para.search_all(r"\w+"):
+            length = end - start
+            para.set_span(style.name, offset=start, length=length)
+
+    change_all_headers()
+    change_all_paragraphs()
+    change_some_paragraph()
+    apply_span_regex()
+    apply_span_offset()
+    apply_custom_style()
+    apply_imported_style()
+
+
+def test_unit(document: Document) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" in os.environ:
+        assert len(list(document.body.paragraphs)) == 15
+        for display_name in (
+            "bold-blue",
+            "italic-red",
+            "custom",
+        ):
+            style = document.get_style(family="paragraph", display_name=display_name)
+            assert document.get_styled_elements(style.name)
+        for display_name in (
+            "green",
+            "bold-yellow-blue",
+            "bold-white-black",
+            "Yellow Highlight",
+        ):
+            style = document.get_style(family="text", display_name=display_name)
+            assert document.get_styled_elements(style.name)
+        style = document.get_style(family="text", display_name="Yellow Highlight")
+        assert len(document.get_styled_elements(style.name)) == 21
+
+
+if __name__ == "__main__":
+    main()
