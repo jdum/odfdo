@@ -23,8 +23,7 @@ def run_params(params: list):
 
 def test_no_param():
     params = []
-    out, err, exitcode = run_params(params)
-    print(out, err, exitcode)
+    _out, err, exitcode = run_params(params)
     assert exitcode == 2
     assert "odfdo-show: error: the following arguments" in err
     assert "usage" in err
@@ -32,15 +31,14 @@ def test_no_param():
 
 def test_help():
     params = ["--help"]
-    out, err, exitcode = run_params(params)
-    print(out, err, exitcode)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert "Dump text from an OpenDocument" in out
 
 
 def test_no_file():
     params = ["none_file"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 1
     assert "FileNotFoundError" in out
 
@@ -48,9 +46,7 @@ def test_no_file():
 def test_base():
     source = SAMPLES / "base_text.odt"
     params = [f"{source}"]
-    out, err, exitcode = run_params(params)
-    print(out)
-    print(err)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert "This is the second paragraph." in out
 
@@ -58,9 +54,7 @@ def test_base():
 def test_no_text():
     source = SAMPLES / "base_text.odt"
     params = ["-n", f"{source}"]
-    out, err, exitcode = run_params(params)
-    print(out)
-    print(err)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert not out.strip()
 
@@ -68,9 +62,7 @@ def test_no_text():
 def test_meta():
     source = SAMPLES / "base_text.odt"
     params = ["-nm", f"{source}"]
-    out, err, exitcode = run_params(params)
-    print(out)
-    print(err)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert "This is the second paragraph." not in out
     assert "Keyword: These are the keywords" in out
@@ -80,7 +72,7 @@ def test_meta():
 def test_style():
     source = SAMPLES / "base_text.odt"
     params = ["-s", f"{source}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert "This is the second paragraph." in out
     assert "used:y family:paragraph" in out
@@ -89,7 +81,7 @@ def test_style():
 def test_style_no_text():
     source = SAMPLES / "base_text.odt"
     params = ["-ns", f"{source}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert "This is the second paragraph." not in out
     assert "used:y family:paragraph" in out
@@ -98,7 +90,7 @@ def test_style_no_text():
 def test_style_rst():
     source = SAMPLES / "base_text.odt"
     params = ["-r", f"{source}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert "Level 2 Title\n=============" in out
 
@@ -106,7 +98,7 @@ def test_style_rst():
 def test_style_ods():
     source = SAMPLES / "styled_table.ods"
     params = [f"{source}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert "1,2,3,4" in out
 
@@ -114,7 +106,7 @@ def test_style_ods():
 def test_not_style_ods():
     source = SAMPLES / "styled_table.ods"
     params = ["-n", f"{source}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert "1,2,3,4" not in out
 
@@ -132,7 +124,7 @@ def test_folder_unsupported(tmp_path):
     source = SAMPLES / "base_shapes.odg"
     dest = tmp_path / "test_show"
     params = ["-o", f"{dest}", f"{source}"]
-    out, err, exitcode = run_params(params)
+    _out, err, exitcode = run_params(params)
     assert exitcode == 1
     assert "format 'graphics' is not supported" in err
 
@@ -141,7 +133,7 @@ def test_folder_text(tmp_path):
     source = SAMPLES / "base_text.odt"
     dest = tmp_path / "test_show"
     params = ["-o", f"{dest}", f"{source}"]
-    out, err, exitcode = run_params(params)
+    _out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert dest.is_dir()
     assert (dest / "meta.txt").is_file()
@@ -154,7 +146,7 @@ def test_folder_image(tmp_path):
     source = SAMPLES / "background.odp"
     dest = tmp_path / "test_show"
     params = ["-o", f"{dest}", f"{source}"]
-    out, err, exitcode = run_params(params)
+    _out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert dest.is_dir()
     assert (dest / "meta.txt").is_file()
@@ -170,7 +162,7 @@ def test_folder_ods(tmp_path):
     source = SAMPLES / "styled_table.ods"
     dest = tmp_path / "test_show_ods"
     params = ["-o", f"{dest}", f"{source}"]
-    out, err, exitcode = run_params(params)
+    _out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert dest.is_dir()
     assert (dest / "meta.txt").is_file()

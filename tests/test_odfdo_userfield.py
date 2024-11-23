@@ -26,7 +26,7 @@ def run_params(params: list):
 
 def test_no_param():
     params = []
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 1
     assert b"usage:" in out
     assert b"Error: ValueError, missing arguments" in out
@@ -34,7 +34,7 @@ def test_no_param():
 
 def test_no_file():
     params = ["-i", "none_file1", "-o", "none_file2", "-anr"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 1
     assert b"usage:" in out
     assert b"FileNotFoundError" in out
@@ -42,21 +42,20 @@ def test_no_file():
 
 def test_field():
     params = ["-i", f"{SOURCE}", "-f", "city"]
-    out, err, exitcode = run_params(params)
-    print(out)
+    out, _err, _exitcode = run_params(params)
     assert b"Paris" in out
 
 
 def test_field2():
     params = ["-i", f"{SOURCE}", "-f", "city", "-f", "phone"]
-    out, err, exitcode = run_params(params)
+    out, _err, _exitcode = run_params(params)
     assert b"Paris" in out
     assert b"77 77 77 77 77" in out
 
 
 def test_field3():
     params = ["-i", f"{SOURCE}", "-f", "city", "-f", "phone", "-f", "counter"]
-    out, err, exitcode = run_params(params)
+    out, _err, _exitcode = run_params(params)
     assert b"Paris" in out
     assert b"77 77 77 77 77" in out
     assert b"42" in out
@@ -64,7 +63,7 @@ def test_field3():
 
 def test_all():
     params = ["-i", f"{SOURCE}", "-a"]
-    out, err, exitcode = run_params(params)
+    out, _err, _exitcode = run_params(params)
     assert b"Paris" in out
     assert b"77 77 77 77 77" in out
     assert b"42" in out
@@ -74,7 +73,7 @@ def test_all():
 
 def test_all_name():
     params = ["-i", f"{SOURCE}", "-an"]
-    out, err, exitcode = run_params(params)
+    out, _err, _exitcode = run_params(params)
     assert b"Paris" in out
     assert b"77 77 77 77 77" in out
     assert b"42" in out
@@ -84,7 +83,7 @@ def test_all_name():
 
 def test_all_name_type():
     params = ["-i", f"{SOURCE}", "-ant"]
-    out, err, exitcode = run_params(params)
+    out, _err, _exitcode = run_params(params)
     assert b"Paris" in out
     assert b"77 77 77 77 77" in out
     assert b"42" in out
@@ -94,7 +93,7 @@ def test_all_name_type():
 
 def test_all_name_type_repr():
     params = ["-i", f"{SOURCE}", "-antr"]
-    out, err, exitcode = run_params(params)
+    out, _err, _exitcode = run_params(params)
     assert b"Paris" in out
     assert b"77 77 77 77 77" in out
     assert b"42" in out
@@ -104,13 +103,13 @@ def test_all_name_type_repr():
 
 def test_set_err():
     params = ["-i", f"{SOURCE}", "-s", "city"]
-    out, err, exitcode = run_params(params)
+    _out, err, _exitcode = run_params(params)
     assert b"expected 2 arguments" in err
 
 
 def test_set():
     params = ["-i", f"{SOURCE}", "-s", "city", "Lyon"]
-    out, err, exitcode = run_params(params)
+    out, _err, _exitcode = run_params(params)
     content = io.BytesIO(out)
     document = Document(content)
     content.close()
@@ -119,7 +118,7 @@ def test_set():
 
 def test_set2():
     params = ["-i", f"{SOURCE}", "-s", "city", "Lyon", "-s", "counter", "99"]
-    out, err, exitcode = run_params(params)
+    out, _err, _exitcode = run_params(params)
     content = io.BytesIO(out)
     document = Document(content)
     content.close()

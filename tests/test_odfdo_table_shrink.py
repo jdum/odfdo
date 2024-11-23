@@ -30,14 +30,14 @@ def run_params(params: list):
 
 def test_no_param():
     params = []
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 1
     assert b"usage: odfdo-table-shrink" in out
 
 
 def test_no_file():
     params = ["-i", "none_file1", "-o", "none_file2"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 1
     assert b"usage:" in out
     assert b"FileNotFoundError" in out

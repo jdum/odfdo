@@ -39,7 +39,7 @@ def test_help():
 
 def test_no_file():
     params = ["none_file"]
-    out, err, exitcode = run_params_bytes(params)
+    out, _err, exitcode = run_params_bytes(params)
     assert exitcode == 1
     assert b"FileNotFoundError" in out
 
@@ -47,7 +47,7 @@ def test_no_file():
 def test_base():
     source = SAMPLES / "base_text.odt"
     params = [f"{source}"]
-    out, err, exitcode = run_params_bytes(params)
+    out, _err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     print(out)
     assert b"common used:y family:graphic" in out
@@ -57,7 +57,7 @@ def test_base():
 def test_base_auto():
     source = SAMPLES / "base_text.odt"
     params = ["-a", f"{source}"]
-    out, err, exitcode = run_params_bytes(params)
+    out, _err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"auto   used:y family:drawing-page parent: name:Mdp1" in out
     assert b"common used" not in out
@@ -66,7 +66,7 @@ def test_base_auto():
 def test_base_common():
     source = SAMPLES / "base_text.odt"
     params = ["-c", f"{source}"]
-    out, err, exitcode = run_params_bytes(params)
+    out, _err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"auto   used" not in out
     assert b"common used" in out
@@ -75,7 +75,7 @@ def test_base_common():
 def test_base_properties():
     source = SAMPLES / "base_text.odt"
     params = ["-p", f"{source}"]
-    out, err, exitcode = run_params_bytes(params)
+    out, _err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"- style:layout-grid-lines: 20" in out
     assert b"- style:text-underline-color: font-color" in out
@@ -84,7 +84,7 @@ def test_base_properties():
 def test_base_auto_properties():
     source = SAMPLES / "base_text.odt"
     params = ["-ap", f"{source}"]
-    out, err, exitcode = run_params_bytes(params)
+    out, _err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"- style:layout-grid-lines: 20" in out
     assert b"- style:text-underline-color: font-color" not in out
@@ -93,7 +93,7 @@ def test_base_auto_properties():
 def test_base_common_properties():
     source = SAMPLES / "base_text.odt"
     params = ["-cp", f"{source}"]
-    out, err, exitcode = run_params_bytes(params)
+    out, _err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"- style:text-underline-color: font-color" in out
     assert b"- style:layout-grid-lines: 20" not in out
@@ -102,7 +102,7 @@ def test_base_common_properties():
 def test_delete_fail():
     source = SAMPLES / "base_text.odt"
     params = ["-d", f"{source}"]
-    out, err, exitcode = run_params_bytes(params)
+    _out, err, exitcode = run_params_bytes(params)
     assert exitcode == 1
     assert b"Error: Will not delete in-place" in err
 
@@ -120,7 +120,7 @@ def test_delete_to_file(tmp_path):
     source = SAMPLES / "base_text.odt"
     dest = tmp_path / "test_deleted.odt"
     params = ["-d", "-o", f"{dest}", f"{source}"]
-    out, err, exitcode = run_params_bytes(params)
+    _out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"23 styles removed (0 error, 0 warning)" in err
     assert dest.is_file()
@@ -130,7 +130,7 @@ def test_show_to_file(tmp_path):
     source = SAMPLES / "base_text.odt"
     dest = tmp_path / "styles.txt"
     params = ["-o", f"{dest}", f"{source}"]
-    out, err, exitcode = run_params_bytes(params)
+    out, _err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert not out.strip()
     assert dest.is_file()
@@ -140,7 +140,7 @@ def test_show_to_file2(tmp_path):
     source = SAMPLES / "base_text.odt"
     dest = tmp_path / "styles2.txt"
     params = ["-o", f"{dest}", f"{source}"]
-    out, err, exitcode = run_params_bytes(params)
+    _out, _err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     content = dest.read_text()
     assert "common used:y family:graphic" in content
@@ -150,7 +150,7 @@ def test_show_to_file2(tmp_path):
 def test_show_odp():
     source = SAMPLES / "background.odp"
     params = [f"{source}"]
-    out, err, exitcode = run_params_bytes(params)
+    out, _err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"common used:y family:presentation" in out
     assert b"auto   used:n family:presentation" in out
@@ -159,7 +159,7 @@ def test_show_odp():
 def test_show_odp2():
     source = SAMPLES / "example.odp"
     params = [f"{source}"]
-    out, err, exitcode = run_params_bytes(params)
+    out, _err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"common used:y family:presentation" in out
     assert b"auto   used:n family:presentation" in out
@@ -182,6 +182,6 @@ def test_merge_prez(tmp_path):
     source_styles = SAMPLES / "background.odp"
     dest = tmp_path / "styles_text.odp"
     params = ["-m", f"{source_styles}", "-o", f"{dest}", f"{source}"]
-    out, err, exitcode = run_params_bytes(params)
+    _out, err, exitcode = run_params_bytes(params)
     assert exitcode == 0
     assert b"Done (0 error, 0 warning)" in err

@@ -42,7 +42,7 @@ def test_no_file():
 
 def test_no_headers():
     params = [f"{SOURCE0}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     print(out)
     expected = ""
     assert exitcode == 0
@@ -51,7 +51,7 @@ def test_no_headers():
 
 def test_base1():
     params = [f"{SOURCE1}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     print(out)
     expected = (
         "1. odfdo Test Case Document\n"
@@ -64,7 +64,7 @@ def test_base1():
 
 def test_base_depth0():
     params = ["--depth", "0", f"{SOURCE1}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     print(out)
     expected = ""
     assert exitcode == 0
@@ -73,7 +73,7 @@ def test_base_depth0():
 
 def test_base_depth1():
     params = ["--depth", "1", f"{SOURCE1}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     print(out)
     expected = "1. odfdo Test Case Document\n2. First Title of the Second Section\n"
     assert exitcode == 0
@@ -82,7 +82,7 @@ def test_base_depth1():
 
 def test_toc_depth0():
     params = ["-d", "0", f"{SOURCE2}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     print(out)
     expected = ""
     assert exitcode == 0
@@ -91,7 +91,7 @@ def test_toc_depth0():
 
 def test_toc_depth1():
     params = ["-d1", f"{SOURCE2}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     print(out)
     expected = "1. Level 1 title 1\n2. Level 1 title 2\n3. Level 1 title 3\n"
     assert exitcode == 0
@@ -100,7 +100,7 @@ def test_toc_depth1():
 
 def test_toc_depth2():
     params = ["--depth", "2", f"{SOURCE2}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     print(out)
     expected = (
         "1. Level 1 title 1\n1.1. Level 2 title 1\n2. Level 1 title 2\n2.1. Level 2 "
@@ -112,7 +112,7 @@ def test_toc_depth2():
 
 def test_toc_depth3():
     params = ["--depth", "3", f"{SOURCE2}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     print(out)
     expected = dedent(
         """\
@@ -136,7 +136,7 @@ def test_toc_depth3():
 
 def test_toc_all():
     params = [f"{SOURCE2}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     print(out)
     expected = dedent(
         """\
@@ -161,7 +161,7 @@ def test_toc_all():
 
 def test_toc_depth4():
     params = ["--depth", "9999", f"{SOURCE2}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     print(out)
     expected = dedent(
         """\
@@ -185,7 +185,7 @@ def test_toc_depth4():
 
 def test_toc_depth9999():
     params = ["--depth", "9999", f"{SOURCE2}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     print(out)
     expected = dedent(
         """\

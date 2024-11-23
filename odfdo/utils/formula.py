@@ -32,7 +32,7 @@ def oooc_to_ooow(formula: str) -> str:
 
     Return: str
     """
-    prefix, formula = formula.split(":=", 1)
+    _prefix, formula = formula.split(":=", 1)
     # assert "oooc" in prefix
     # Convert cell addresses
     formula = formula.replace("[.", "<").replace(":.", ":").replace("]", ">")

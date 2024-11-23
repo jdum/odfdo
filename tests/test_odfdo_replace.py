@@ -26,7 +26,7 @@ def run_params(params: list):
 
 def test_no_param():
     params = []
-    out, err, exitcode = run_params(params)
+    _out, err, exitcode = run_params(params)
     assert exitcode == 2
     assert b"usage:" in err
     assert b"odfdo-replace: error: the following arguments are required" in err
@@ -34,7 +34,7 @@ def test_no_param():
 
 def test_no_file():
     params = ["-i", "none_file1", "-o", "none_file2", "pattern", "replacement"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 1
     assert b"usage:" in out
     assert b"FileNotFoundError" in out

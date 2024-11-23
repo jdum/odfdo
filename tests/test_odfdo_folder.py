@@ -34,7 +34,7 @@ def test_no_param():
 
 def test_no_file():
     params = ["none_file"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 1
     assert "Convert standard ODF file to folder" in out
 
@@ -60,11 +60,11 @@ def test_folder_2(tmp_path):
     tmp_source = tmp_path / "test.odt"
     document_src.save(tmp_source)
     params1 = [str(tmp_source)]
-    out, err, exitcode = run_params(params1)
+    _out, _err, exitcode = run_params(params1)
     assert exitcode == 0
     tmp_source.unlink()
     assert not tmp_source.exists()
     params2 = [str(tmp_path / "test.odt.folder")]
-    out, err, exitcode = run_params(params2)
+    _out, _err, exitcode = run_params(params2)
     assert exitcode == 0
     assert tmp_source.exists()

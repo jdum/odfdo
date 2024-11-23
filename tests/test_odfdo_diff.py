@@ -23,7 +23,7 @@ def run_params(params: list):
 
 def test_no_param():
     params = []
-    out, err, exitcode = run_params(params)
+    _out, err, exitcode = run_params(params)
     assert exitcode == 2
     assert "odfdo-diff: error" in err
     assert "usage" in err
@@ -31,14 +31,14 @@ def test_no_param():
 
 def test_no_file():
     params = ["none_file1", "none_file2"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 1
     assert "Show a diff" in out
 
 
 def test_bad_format():
     params = [f"{SAMPLES/'test_diff1.odt'}", f"{SAMPLES/'background.odp'}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 1
     assert "Show a diff" in out
     assert "Error: odfdo-diff requires input documents of type text" in out
@@ -46,7 +46,7 @@ def test_bad_format():
 
 def test_diff():
     params = [f"{SAMPLES/'test_diff1.odt'}", f"{SAMPLES/'test_diff2.odt'}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert "test_diff1.odt" in out
     assert "test_diff2.odt" in out
@@ -56,7 +56,7 @@ def test_diff():
 
 def test_ndiff():
     params = ["-n", f"{SAMPLES/'test_diff1.odt'}", f"{SAMPLES/'test_diff2.odt'}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert "test_diff1.odt" not in out
     assert "\n- content A\n" in out
@@ -65,6 +65,6 @@ def test_ndiff():
 
 def test_diff_same():
     params = [f"{SAMPLES/'test_diff1.odt'}", f"{SAMPLES/'test_diff1.odt'}"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert not out.strip()

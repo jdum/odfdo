@@ -568,7 +568,7 @@ class Table(Element):
             x, y = coord
         # If we got an area, take the first cell
         elif len(coord) == 4:
-            x, y, z, t = coord
+            x, y, _z, _t = coord
         else:
             raise ValueError(str(coord))
         if x and x < 0:
