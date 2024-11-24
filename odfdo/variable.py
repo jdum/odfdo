@@ -350,7 +350,7 @@ class VarTime(Element):
 
     def __init__(
         self,
-        time: datetime | dt_time,
+        time: datetime | dt_time | None = None,
         fixed: bool = False,
         data_style: str | None = None,
         text: str | None = None,
@@ -359,6 +359,8 @@ class VarTime(Element):
     ) -> None:
         super().__init__(**kwargs)
         if self._do_init:
+            if time is None:
+                time = dt_time()
             if isinstance(time, dt_time):
                 # need convert to datetime
                 time = datetime(

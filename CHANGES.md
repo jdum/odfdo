@@ -1,5 +1,13 @@
 # Odfdo Release Notes
 
+## [3.10.XXX] - 2024-11-23
+
+-   Fix `VarTime` initialization: class can now be initialized without mandatory time argument
+
+### Fixed
+
+-   Fix `VarTime` initialization.
+
 ## [3.10.1] - 2024-11-23
 
 The HTML documentation in `/doc` (mostly auto generated) contains now all recipes, sorted by relevance.
