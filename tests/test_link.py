@@ -212,7 +212,7 @@ def test_repr(sample_body):
 
 def test_str(sample_body):
     link = sample_body.get_link(url=r"odfdo")
-    assert str(link) == "[Link to the odfdo project](https://github.com/jdum/odfdo)"
+    assert str(link) == "[an external link](https://github.com/jdum/odfdo)"
 
 
 def test_str2(sample_body):

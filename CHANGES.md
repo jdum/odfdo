@@ -1,8 +1,13 @@
 # Odfdo Release Notes
 
-## [3.10.XXX] - 2024-11-23
+## [3.11.0] - 2024-11-23
 
--   Fix `VarTime` initialization: class can now be initialized without mandatory time argument
+-   New script `odfdo-to-md` to export text document in markdown format to stdout (experimental, do not export images links neither tables).
+-   Fix `VarTime` initialization: class can now be initialized without mandatory time argument.
+
+### Added
+
+-   Add script `odfdo-to-md`.
 
 ### Fixed
 

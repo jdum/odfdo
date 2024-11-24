@@ -34,10 +34,11 @@ from .element import (
     PropDef,
     register_element_class,
 )
+from .mixin_md import MDList, MDListItem
 from .paragraph import Paragraph
 
 
-class ListItem(Element):
+class ListItem(MDListItem, Element):
     """ODF element "text:list-item", item of a List."""
 
     _tag = "text:list-item"
@@ -64,7 +65,7 @@ class ListItem(Element):
                 raise TypeError("Expected str or Element")
 
 
-class List(Element):
+class List(MDList, Element):
     """ODF List "text:list"."""
 
     _tag = "text:list"

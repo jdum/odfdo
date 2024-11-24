@@ -41,6 +41,7 @@ from .element import (
     register_element_class,
 )
 from .link import Link
+from .mixin_md import MDParagraph, MDSpan
 from .note import Annotation, AnnotationEnd, Note
 from .paragraph_base import LineBreak, ParagraphBase, Spacer, Tab
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
@@ -156,7 +157,7 @@ def _by_regex_offset(method: Callable) -> Callable:  # noqa: C901
     return wrapper
 
 
-class Paragraph(ParagraphBase):
+class Paragraph(MDParagraph, ParagraphBase):
     """Specialised element for paragraphs "text:p". The "text:p" element
     represents a paragraph, which is the basic unit of text in an OpenDocument
     file.
@@ -961,7 +962,7 @@ class Paragraph(ParagraphBase):
         return bookmark
 
 
-class Span(Paragraph):
+class Span(MDSpan, Paragraph):
     """Specialised paragraph for span "text:span"."""
 
     _tag = "text:span"

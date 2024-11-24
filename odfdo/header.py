@@ -26,10 +26,11 @@ from re import sub
 from typing import Any
 
 from .element import PropDef, register_element_class
+from .mixin_md import MDHeader
 from .paragraph import Paragraph
 
 
-class Header(Paragraph):
+class Header(Paragraph, MDHeader):
     """Specialised paragraph for headings "text:h"."""
 
     _tag = "text:h"

@@ -26,10 +26,11 @@ from __future__ import annotations
 from typing import Any
 
 from .element import PropDef, register_element_class
+from .mixin_md import MDLink
 from .paragraph_base import ParagraphBase
 
 
-class Link(ParagraphBase):
+class Link(MDLink, ParagraphBase):
     """Link class, "text:a" ODF element."""
 
     _tag = "text:a"
@@ -96,8 +97,9 @@ class Link(ParagraphBase):
         return f"<{self.__class__.__name__} tag={self.tag} link={self.url}>"
 
     def __str__(self) -> str:
-        if self.name:
-            return f"[{self.name}]({self.url})"
+        text = self.text_recursive.strip()
+        if text:
+            return f"[{text}]({self.url})"
         return f"({self.url})"
 
 

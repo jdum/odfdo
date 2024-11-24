@@ -40,6 +40,7 @@ from lxml.etree import XPath, _Element, fromstring, tostring
 
 from .const import ODF_COLOR_PROPERTY, OFFICE_PREFIX, OFFICE_VERSION
 from .datatype import Boolean, DateTime
+from .mixin_md import MDBase
 from .utils import (
     FAMILY_MAPPING,
     FAMILY_ODF_STD,
@@ -258,7 +259,7 @@ class EText(str):
         return self.__is_tail
 
 
-class Element(CachedElement):
+class Element(CachedElement, MDBase):
     """Super class of all ODF classes.
 
     Representation of an XML element. Abstraction of the XML library behind.

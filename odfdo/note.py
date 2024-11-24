@@ -30,6 +30,7 @@ from typing import Any
 from .element import Element, PropDef, register_element_class
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
+from .mixin_md import MDTail
 
 
 def get_unique_office_name(element: Element | None = None) -> str:
@@ -55,7 +56,7 @@ def get_unique_office_name(element: Element | None = None) -> str:
     return name
 
 
-class Note(Element):
+class Note(MDTail, Element):
     """Either a footnote or a endnote element with the given text,
     optionally referencing it using the given note_id.
 
@@ -145,7 +146,7 @@ class Note(Element):
 Note._define_attribut_property()
 
 
-class Annotation(Element, DcCreatorMixin, DcDateMixin):
+class Annotation(MDTail, Element, DcCreatorMixin, DcDateMixin):
     """Annotation element credited to the given creator with the
     given text, optionally dated (current date by default).
     If name not provided and some parent is provided, the name is
@@ -314,7 +315,7 @@ class Annotation(Element, DcCreatorMixin, DcDateMixin):
 Annotation._define_attribut_property()
 
 
-class AnnotationEnd(Element):
+class AnnotationEnd(MDTail, Element):
     """AnnotationEnd: the "office:annotation-end" element may be used to
     define the end of a text range of document content that spans element
     boundaries. In that case, an "office:annotation" element shall precede

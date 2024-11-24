@@ -30,6 +30,7 @@ import contextlib
 from typing import Any
 
 from .element import Element, EText, PropDef, _get_lxml_tag, register_element_class
+from .mixin_md import MDLineBreak, MDSpacer, MDTab
 
 
 def _get_formatted_text(  # noqa: C901
@@ -161,7 +162,7 @@ def _get_formatted_text(  # noqa: C901
     return "".join(result)
 
 
-class Spacer(Element):
+class Spacer(MDSpacer, Element):
     """This element shall be used to represent the second and all following “ “
     (U+0020, SPACE) characters in a sequence of “ “ (U+0020, SPACE) characters.
     Note: It is not an error if the character preceding the element is not a
@@ -217,7 +218,7 @@ class Spacer(Element):
 Spacer._define_attribut_property()
 
 
-class Tab(Element):
+class Tab(MDTab, Element):
     """This element represents the [UNICODE] tab character (HORIZONTAL
     TABULATION, U+0009).
 
@@ -246,7 +247,7 @@ class Tab(Element):
 Tab._define_attribut_property()
 
 
-class LineBreak(Element):
+class LineBreak(MDLineBreak, Element):
     """This element represents a line break "text:line-break" """
 
     _tag = "text:line-break"
