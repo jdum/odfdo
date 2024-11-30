@@ -24,7 +24,6 @@ homepage = "https://github.com/jdum/odfdo"
 repository = "https://github.com/jdum/odfdo"
 authors = ["Jérôme Dumonteil <jerome.dumonteil@gmail.com>"]
 readme = "README.md"
-changelog = "CHANGES.md"
 packages = [{ include = "odfdo" }]
 
 [tool.poetry.scripts]
