@@ -21,11 +21,16 @@
 """
 from __future__ import annotations
 
+import re
 from copy import deepcopy
 from itertools import chain
 from typing import Any, Callable, NamedTuple
 
 MD_GLOBAL = {}
+
+RE_STAR6 = re.compile(r"(?<!\\)(\*{6})")
+RE_STAR4 = re.compile(r"(?<!\\)(\*{4})")
+RE_UND2 = re.compile(r"(?<!\\)(_{2})")
 
 
 class LIStyle(NamedTuple):
@@ -74,7 +79,7 @@ def _release_list_counter(level: int) -> None:
 
 
 def _strip_left_spaces(text: str) -> str:
-    return text.lstrip(" ")
+    return RE_STAR4.sub("", RE_STAR6.sub("", RE_UND2.sub("", text.lstrip(" "))))
 
 
 def _md_swap_spaces(word: str) -> SplitSpace:
@@ -95,11 +100,16 @@ def _md_escape(text: str | None) -> str:
     if not text:
         return ""
     return (
-        text.replace(" ", " ")  # non break space is no understood as char
+        text.replace(" ", r" ")  # non break space is no understood as char
         .replace("#", r"\#")
         .replace(r"\*", "*")
         .replace("*", r"\*")
+        .replace(r"\_", r"_")
+        .replace("_", r"\_")
+        .replace("-", r"\-")
+        .replace(r"\`", "`")
         .replace("`", r"\`")
+        .replace(r"\~", "~")
         .replace("~", r"\~")
         .replace("|", r"\|")
     )
@@ -110,7 +120,7 @@ def _as_italic(text: str | None) -> str:
     if not text.strip():
         return text
     word = _md_swap_spaces(text)
-    return f"{word.start}*{word.word}*{word.end}"
+    return f"{word.start}_{word.word}_{word.end}"
 
 
 def _as_bold(text: str | None) -> str:

@@ -275,7 +275,7 @@ def test_md_list_text(document_list):
         Some text
 
          -  une liste accentuée
-            -  un sous-élément
+            -  un sous\\-élément
 
          1. une liste numérotée
          2. et de deux !
@@ -354,7 +354,7 @@ def test_user_fields_text(document_uf):
     md = document_uf.to_markdown()
     expected = dedent(
         """\
-    A document with user-field declarations.
+    A document with user\\-field declarations.
 
     Paris
 
@@ -400,7 +400,7 @@ def test_md_case1_text(document_case1):  # FAIL
 
         This is a paragraph with a named style.
 
-        Some list :
+        Some list :
 
          -  item1
          -  item2
@@ -436,7 +436,7 @@ def test_md_case2_text(document_case2):  # FAIL
         """\
         # odfdo Test Case2
 
-        Some style `here` and *there*
+        Some style `here` and _there_
 
         Two spaces at start
 
@@ -450,11 +450,11 @@ def test_md_case2_text(document_case2):  # FAIL
 
         This is a **bold** **paragraph** with a named style.
 
-        Here  **bolded space** at *begin*.
+        Here  **bolded space** at _begin_.
 
-        Some *special* ***case*** *to* check if ~~barred~~
+        Some _special_ ***case*** _to_ check if ~~barred~~
 
-        Some list :
+        Some list :
 
          -  item1
          -  **item2**
@@ -473,7 +473,7 @@ def test_md_case2_text(document_case2):  # FAIL
 
             3. c
 
-         -  *item6*
+         -  _item6_
          -  [x] done
 
             1. u
@@ -483,7 +483,7 @@ def test_md_case2_text(document_case2):  # FAIL
          -  [ ] undone
          -
 
-        last paragraph *with italic*
+        last paragraph _with italic_
 
         \\#\\#\\#\\# To see **\\*\\*stars\\*\\*** or \\*\\*any\\*\\*
 
@@ -546,7 +546,7 @@ def test_md_case3_text(document_case3):  # FAIL
 
         ```
         another one,
-        with *thing* and other things
+        with _thing_ and other things
         in it
          tabs	in same place
               spaces
