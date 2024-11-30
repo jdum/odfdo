@@ -30,7 +30,7 @@ from typing import Any
 from .element import Element, PropDef, register_element_class
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
-from .mixin_md import MDTail
+from .mixin_md import MDNote, MDTail
 
 
 def get_unique_office_name(element: Element | None = None) -> str:
@@ -56,7 +56,7 @@ def get_unique_office_name(element: Element | None = None) -> str:
     return name
 
 
-class Note(MDTail, Element):
+class Note(MDNote, Element):
     """Either a footnote or a endnote element with the given text,
     optionally referencing it using the given note_id.
 
@@ -141,6 +141,11 @@ class Note(MDTail, Element):
             raise ValueError("Note must have a citation")
         if not self.note_body:
             pass
+
+    def __str__(self) -> str:
+        if self.citation:
+            return f"{self.citation}. {self.note_body}"
+        return self.note_body
 
 
 Note._define_attribut_property()
@@ -310,6 +315,9 @@ class Annotation(MDTail, Element, DcCreatorMixin, DcDateMixin):
             raise ValueError("Annotation must have a creator")
         if not self.dc_date:
             self.dc_date = datetime.now()
+
+    def __str__(self) -> str:
+        return f"{self.note_body}\n{self.dc_creator} {self.dc_date}"
 
 
 Annotation._define_attribut_property()

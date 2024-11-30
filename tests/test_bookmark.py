@@ -45,6 +45,11 @@ def test_create_bookmark():
     assert bookmark.serialize() == expected
 
 
+def test_bookmark_str():
+    bookmark = Bookmark(ZOE)
+    assert str(bookmark) == ""
+
+
 def test_create_bookmark_start():
     bookmark_start = BookmarkStart(ZOE)
     expected = f'<text:bookmark-start text:name="{ZOE}"/>'
@@ -227,6 +232,12 @@ def test_set_bookmark_with_content():
         "</text:p>"
     )
     assert paragraph.serialize() == expected
+
+
+def test_set_bookmark_with_content_str():
+    paragraph = Paragraph("aa bb bb aa")
+    paragraph.set_bookmark("bookmark", content="bb", position=1)
+    assert str(paragraph) == "aa bb bb aa\n"
 
 
 def test_set_bookmark_with_limits():

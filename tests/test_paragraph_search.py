@@ -61,9 +61,7 @@ def test_search_none(paragraph):
 
 def test_search_word_1(paragraph):
     result = paragraph.search("word")
-    print(result)
-    print(paragraph.text_recursive)
-    assert result == 15
+    assert result == 19
 
 
 def test_search_search_first_test(paragraph):
@@ -81,7 +79,7 @@ def test_search_first_none(paragraph):
 def test_search_first_word(paragraph):
     result = paragraph.search_first("word")
     print(result)
-    assert result == (15, 19)
+    assert result == (19, 23)
 
 
 def test_text_at_test(paragraph):
@@ -97,17 +95,17 @@ def test_text_at_none(paragraph):
 
 def test_text_at_all_1(paragraph):
     result = paragraph.text_at(-1)
-    assert result == paragraph.text_recursive
+    assert result == paragraph.inner_text
 
 
 def test_text_at_all_2(paragraph):
     result = paragraph.text_at(0)
-    assert result == paragraph.text_recursive
+    assert result == paragraph.inner_text
 
 
 def test_text_at_all_3(paragraph):
     result = paragraph.text_at(1)
-    assert result == paragraph.text_recursive[1:]
+    assert result == paragraph.inner_text[1:]
 
 
 def test_text_at_word(paragraph):
@@ -131,7 +129,7 @@ def test_search_no_number_regex(paragraph):
 def test_search_word_1_regex(paragraph):
     result = paragraph.search(r"w[word]+")
     print(result)
-    assert result == 15
+    assert result == 19
 
 
 def test_search_search_all_test(paragraph):
@@ -143,7 +141,7 @@ def test_search_search_all_test(paragraph):
 def test_search_search_all_word(paragraph):
     result = paragraph.search_all("word")
     print(result)
-    assert result == [(15, 19), (32, 36), (75, 79)]
+    assert result == [(19, 23), (36, 40), (83, 87)]
 
 
 def test_search_search_all_word_text_at(paragraph):
@@ -162,13 +160,13 @@ def test_search_search_all_regex(paragraph):
     result = paragraph.search_all(r"a\w+")
     print(result)
     assert result == [
-        (20, 23),
-        (24, 31),
-        (44, 47),
-        (49, 52),
-        (57, 61),
-        (63, 66),
-        (67, 74),
+        (24, 27),
+        (28, 35),
+        (50, 53),
+        (56, 59),
+        (65, 69),
+        (71, 74),
+        (75, 82),
     ]
 
 

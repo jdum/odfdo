@@ -142,7 +142,7 @@ class Cell(ElementTyped):
                 return value
             value_list = []
             for para in self.get_elements("text:p"):
-                value_list.append(para.text_recursive)
+                value_list.append(para.inner_text)
             return "\n".join(value_list)
         return None
 

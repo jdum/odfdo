@@ -47,6 +47,18 @@ def test_get_paragraph_list(document):
     assert text == "This is the second paragraph."
 
 
+def test_empty_str(document):
+    paragraph = Paragraph()
+    assert (str(paragraph)) == "\n"
+
+
+def test_get_paragraph_list_str(document):
+    body = document.body
+    paragraphs = body.get_paragraphs()
+    second = paragraphs[1]
+    assert (str(second)) == "This is the second paragraph.\n"
+
+
 def test_get_paragraph_list_property(document):
     body = document.body
     paragraphs = body.paragraphs
@@ -144,16 +156,31 @@ def test_read_spacer_empty():
     assert element.length == 1
 
 
+def test_read_spacer_empty_str():
+    element = Element.from_tag("<text:s />")
+    assert str(element) == " "
+
+
 def test_read_spacer_1():
     element = Element.from_tag('<text:s text:c="1" />')
     assert isinstance(element, Spacer)
     assert element.length == 1
 
 
+def test_read_spacer_1_str():
+    element = Element.from_tag('<text:s text:c="1" />')
+    assert str(element) == " "
+
+
 def test_read_spacer_2():
     element = Element.from_tag('<text:s text:c="2" />')
     assert isinstance(element, Spacer)
     assert element.length == 2
+
+
+def test_read_spacer_2_str():
+    element = Element.from_tag('<text:s text:c="2" />')
+    assert str(element) == "  "
 
 
 def test_create_space_1_base():
@@ -219,6 +246,11 @@ def test_create_tabulation():
     assert tab.serialize() == expected
 
 
+def test_create_tabulation_str():
+    tab = Tab()
+    assert str(tab) == "\t"
+
+
 def test_create_tabulation_pos():
     tab = Tab(4)
     expected = '<text:tab text:tab-ref="4"/>'
@@ -229,6 +261,11 @@ def test_create_line_break():
     lb = LineBreak()
     expected = "<text:line-break/>"
     assert lb.serialize() == expected
+
+
+def test_create_line_break_str():
+    lb = LineBreak()
+    assert str(lb) == "\n"
 
 
 def test_create_naive_spaces():
@@ -438,7 +475,7 @@ def test_append_multiline_text():
     para = Paragraph("first")
     para.append(" second\n third")
     assert para.text == "first second"
-    assert para.text_recursive == "first second third"
+    assert para.inner_text == "first second\n third"
 
 
 def test_append_multiline():

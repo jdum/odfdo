@@ -56,7 +56,7 @@ def main():
 
 def frequence_count(document):
     print("Word frequency analysis of", Path(document.container.path).name)
-    text = document.body.text_recursive
+    text = str(document.body)
     for char in "():;!.,[]{}#@/\\=-_+*#@`\"'":
         text = text.replace(char, " ")  # slow algorithm
     words = text.split()

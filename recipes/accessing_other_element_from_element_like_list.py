@@ -34,49 +34,45 @@ def analyse_list(document):
     paragraphs = list4.paragraphs
     for count, paragraph in enumerate(paragraphs):
         print(count + 1, ":", paragraph)
-        print(paragraph.text_recursive)
-        print()
 
     _expected_result = """
     Number of available lists in the document: 5
 
     The 4th list contains 9 paragraphs
 
-    1 : <odfdo.paragraph.Paragraph object at 0x105761820> "text:p"
-    BBC Cult website, official website for the TV show version (includes information, links and downloads)
+    1 : [BBC Cult website](http://www.bbc.co.uk/cult/hitchhikers/),
+    official website for the [TV show version](http://en.wikipedia.org/w/index.php?title=The_Hitchhiker%27s_Guide_to_the_Galaxy_%28TV_series%29)
+    (includes information, links and downloads)
 
-    2 : <odfdo.paragraph.Paragraph object at 0x105761850> "text:p"
-    BBC Radio 4 website for the 2004–2005 series
+    2 : [BBC Radio 4 website for the 2004–2005
+    series](http://www.bbc.co.uk/radio4/hitchhikers/)
 
-    3 : <odfdo.paragraph.Paragraph object at 0x105761880> "text:p"
-    Official Movie Site
+    3 : [Official Movie Site](http://hitchhikers.movies.go.com/)
 
-    4 : <odfdo.paragraph.Paragraph object at 0x1057618b0> "text:p"
-    The Hitchhiker's Guide to the Galaxy (2005 movie) at the Internet Movie Database
+    4 : [The Hitchhiker's Guide to the Galaxy
+    (2005 movie)](http://www.imdb.com/title/tt0371724/)at the
+    [Internet Movie Database](http://en.wikipedia.org/w/index.php?title=Internet_Movie_Database)
 
-    5 : <odfdo.paragraph.Paragraph object at 0x1057618e0> "text:p"
-    The Hitch Hikers Guide to the Galaxy (1981 TV series) at the Internet Movie Database
+    5 : [The Hitch Hikers Guide to the Galaxy
+    (1981 TV series)](http://www.imdb.com/title/tt0081874/)at the
+    [Internet Movie Database](http://en.wikipedia.org/w/index.php?title=Internet_Movie_Database)
 
-    6 : <odfdo.paragraph.Paragraph object at 0x105761910> "text:p"
-    h2g2
+    6 : [h2g2](http://www.bbc.co.uk/h2g2/guide/)
 
-    7 : <odfdo.paragraph.Paragraph object at 0x105761940> "text:p"
-    Encyclopedia of Television
+    7 : [Encyclopedia of Television](http://www.museum.tv/archives/etv/H/htmlH/hitch-hickers/hitch-hickers.htm)
 
-    8 : <odfdo.paragraph.Paragraph object at 0x105761970> "text:p"
-    British Film Institute Screen Online page devoted to the TV series
+    8 : [British Film Institute Screen Online](http://www.screenonline.org.uk/tv/id/560180/index.html)
+    page devoted to the TV series
 
-    9 : <odfdo.paragraph.Paragraph object at 0x1057617f0> "text:p"
-    DC Comics H2G2 site
-
+    9 : [DC Comics H2G2 site](http://www.dccomics.com/graphic_novels/?gn=1816)
     """  # noqa: RUF001
 
     # only for test suite:
     if "ODFDO_TESTING" in os.environ:
         assert len(body.lists) == 5
         assert len(list4.paragraphs) == 9
-        assert paragraphs[0].text_recursive.startswith("BBC Cult website")
-        assert paragraphs[8].text_recursive.startswith("DC Comics H2G2")
+        assert str(paragraphs[0]).startswith("[BBC Cult website](http")
+        assert str(paragraphs[8]).startswith("[DC Comics H2G2 site](http")
 
 
 def main():

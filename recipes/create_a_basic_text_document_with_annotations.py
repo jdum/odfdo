@@ -41,7 +41,7 @@ def make_annotations(document):
         # typically on a side bar in a desktop application. So they are not printed.
 
         # Now we add some annotation on each paragraph
-        some_word = paragraph.text_recursive.split()[3]
+        some_word = str(paragraph).split()[3]
         # choosing the 4th word of the paragraph to insert the note
 
         paragraph.insert_annotation(

@@ -97,7 +97,7 @@ class Link(MDLink, ParagraphBase):
         return f"<{self.__class__.__name__} tag={self.tag} link={self.url}>"
 
     def __str__(self) -> str:
-        text = self.text_recursive.strip()
+        text = self.inner_text.strip()
         if text:
             return f"[{text}]({self.url})"
         return f"({self.url})"

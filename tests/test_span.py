@@ -88,6 +88,11 @@ def test_get_span(body):
     assert span.serialize() == expected
 
 
+def test_get_span_str(body):
+    span = body.get_span(position=1)
+    assert str(span) == "rouge"
+
+
 def test_insert_span(body):
     span = Span("my text", "my_style")
     paragraph = body.get_paragraph(position=0)
@@ -103,7 +108,7 @@ def test_insert_span_line_break(body):
     read_span = paragraph.get_span(position=-1)
     assert read_span.serialize() == span.serialize()
     assert "text:line-break" in read_span.serialize()
-    assert read_span.text_recursive == "my textmultiline"
+    assert read_span.inner_text == "my text\nmultiline"
 
 
 def test_insert_span_line_break_no_format(body):
@@ -113,4 +118,4 @@ def test_insert_span_line_break_no_format(body):
     read_span = paragraph.get_span(position=-1)
     assert read_span.serialize() == span.serialize()
     assert "text:line-break" not in read_span.serialize()
-    assert read_span.text_recursive == "my text multiline"
+    assert read_span.inner_text == "my text multiline"

@@ -30,7 +30,6 @@ import posixpath
 from contextlib import suppress
 from copy import deepcopy
 from importlib import resources as rso
-from itertools import chain
 from mimetypes import guess_type
 from operator import itemgetter
 from pathlib import Path
@@ -54,6 +53,7 @@ from .datatype import Boolean
 from .element import Element
 from .manifest import Manifest
 from .meta import Meta
+from .mixin_md import MDDocument
 from .row import Row  # noqa: F401
 from .style import Style
 from .styles import Styles
@@ -159,7 +159,7 @@ def container_from_template(template: str | Path | io.BytesIO) -> Container:
     return container
 
 
-class Document:
+class Document(MDDocument):
     """Abstraction of the ODF document.
 
     To create a new Document, several possibilities:
@@ -230,7 +230,7 @@ class Document:
         try:
             return str(self.get_formatted_text())
         except NotImplementedError:
-            return self.body.text_recursive
+            return str(self.body)
 
     @classmethod
     def new(cls, template: str | Path | io.BytesIO = "text") -> Document:
@@ -558,18 +558,7 @@ class Document:
             raise NotImplementedError(
                 f"Type of document '{doc_type}' not supported yet"
             )
-        md_list = self._document_to_markdown()
-        raw_text = "\n".join(x for x in md_list)
-        return "\n".join(x.rstrip(" ") for x in raw_text.split("\n"))
-
-    def _document_to_markdown(self) -> list[str]:
-        return [
-            item
-            for item in chain.from_iterable(
-                child._to_markdown() for child in self.body.children
-            )
-            if item
-        ]
+        return self._markdown_export()
 
     def add_file(self, path_or_file: str | Path) -> str:
         """Insert a file from a path or a file-like object in the container.
@@ -751,6 +740,19 @@ class Document:
             name_or_element=name_or_element,
             display_name=display_name,
         )
+
+    def get_parent_style(self, style: Style) -> Style | None:
+        family = style.family
+        parent_style_name = style.parent_style
+        if not parent_style_name:
+            return None
+        return self.get_style(family, parent_style_name)
+
+    def get_list_style(self, style: Style) -> Style | None:
+        list_style_name = style.list_style_name
+        if not list_style_name:
+            return None
+        return self.get_style("list", list_style_name)
 
     @staticmethod
     def _pseudo_style_attribute(style_element: Style | Element, attribute: str) -> Any:

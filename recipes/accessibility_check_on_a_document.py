@@ -66,18 +66,17 @@ def main():
     print(f" - pictures with a caption: {nb_caption}")
 
     _expected_result = """
-    Image filename: 100000000000013B000000D3AAA93FCC.jpg
+    Image filename: 100000000000013B000000D345859F604DCE636A.jpg
     Name: graphics2, title: Spitfire, general view, description: Green spitfire in a hall, view from left front.
-    Image filename: 100000000000013B000000D31365BB6C.jpg
+    Image filename: 100000000000013B000000D3F908DA0A939D2F4B.jpg
     Name: graphics3, title: Spitfire, detail, description: None
-    Image filename: 100000000000013B000000D367502732.jpg
+    Image filename: 100000000000013B000000D375CEBFD6D7CB7CE9.jpg
     Name: graphics1, title: None, description: None
-    Caption: Thunderbolt
 
     The document displays 3 pictures:
-    - pictures with a title: 2
-    - pictures with a description: 1
-    - pictures with a caption: 0
+     - pictures with a title: 2
+     - pictures with a description: 1
+     - pictures with a caption: 0
     """
 
     # only for test suite:

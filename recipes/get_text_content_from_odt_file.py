@@ -38,7 +38,7 @@ def main():
     # only for test suite:
     if "ODFDO_TESTING" not in os.environ:
         return
-    assert len(text) == 54333
+    assert len(text) == 56828
 
 
 if __name__ == "__main__":

@@ -50,6 +50,11 @@ def test_create_reference_mark():
     assert reference_mark.serialize() == expected
 
 
+def test_create_reference_mark_str():
+    reference_mark = ReferenceMark(ZOE)
+    assert str(reference_mark) == ""
+
+
 def test_create_reference_mark_start():
     reference_mark_start = ReferenceMarkStart(ZOE)
     expected = f'<text:reference-mark-start text:name="{ZOE}"/>'

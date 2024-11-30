@@ -35,12 +35,18 @@ SAMPLE_LIST = Path(__file__).parent / "samples" / "list.odt"
 SAMPLE_META = Path(__file__).parent / "samples" / "meta.odt"
 SAMPLE_NOTE = Path(__file__).parent / "samples" / "note.odt"
 SAMPLE_PB = Path(__file__).parent / "samples" / "pagebreak.odt"
-SAMPLE_TOC2 = Path(__file__).parent / "samples" / "toc_done.odt"  # FAIL
+SAMPLE_TOC2 = Path(__file__).parent / "samples" / "toc_done.odt"
 SAMPLE_TOC = Path(__file__).parent / "samples" / "toc.odt"
-SAMPLE_TC = Path(__file__).parent / "samples" / "tracked_changes.odt"  # TODO
+SAMPLE_TC = Path(__file__).parent / "samples" / "tracked_changes.odt"
 SAMPLE_UF = Path(__file__).parent / "samples" / "user_fields.odt"
 SAMPLE_VAR = Path(__file__).parent / "samples" / "variable.odt"
-SAMPLE_BIG = Path(__file__).parent / "samples" / "base_md_text.odt"
+SAMPLE_CA1 = Path(__file__).parent / "samples" / "base_md_text.odt"
+SAMPLE_CA2 = Path(__file__).parent / "samples" / "md_style.odt"
+SAMPLE_CA3 = Path(__file__).parent / "samples" / "md_fixed.odt"
+SAMPLE_DORMEUR = Path(__file__).parent / "samples" / "dormeur_notes.odt"
+SAMPLE_LOREM = Path(__file__).parent / "samples" / "lorem.odt"
+SAMPLE_IMG = Path(__file__).parent / "samples" / "chair.odt"
+SAMPLE_TAB = Path(__file__).parent / "samples" / "table.odt"
 
 
 @pytest.fixture
@@ -122,8 +128,44 @@ def document_var() -> Iterable[Document]:
 
 
 @pytest.fixture
-def document_big() -> Iterable[Document]:
-    document = Document(SAMPLE_BIG)
+def document_case1() -> Iterable[Document]:
+    document = Document(SAMPLE_CA1)
+    yield document
+
+
+@pytest.fixture
+def document_case2() -> Iterable[Document]:
+    document = Document(SAMPLE_CA2)
+    yield document
+
+
+@pytest.fixture
+def document_case3() -> Iterable[Document]:
+    document = Document(SAMPLE_CA3)
+    yield document
+
+
+@pytest.fixture
+def document_dormeur() -> Iterable[Document]:
+    document = Document(SAMPLE_DORMEUR)
+    yield document
+
+
+@pytest.fixture
+def document_lorem() -> Iterable[Document]:
+    document = Document(SAMPLE_LOREM)
+    yield document
+
+
+@pytest.fixture
+def document_img() -> Iterable[Document]:
+    document = Document(SAMPLE_IMG)
+    yield document
+
+
+@pytest.fixture
+def document_tab() -> Iterable[Document]:
+    document = Document(SAMPLE_TAB)
     yield document
 
 
@@ -232,11 +274,11 @@ def test_md_list_text(document_list):
         """\
         Some text
 
-          - une liste accentuée
-            - un sous-élément
+         -  une liste accentuée
+            -  un sous-élément
 
-          - une liste numérotée
-          - et de deux !
+         1. une liste numérotée
+         2. et de deux !
     """
     ).strip()
     # First paragraphAuteur inconnu2009-06-22T17:18:42This is an annotation.With diacritical signs: éè
@@ -251,8 +293,15 @@ def test_md_meta_text(document_meta):
 
 def test_md_note_text(document_note):
     md = document_note.to_markdown()
-    expected = "Un paragraphe d'apparence banale."
-    # First paragraphAuteur inconnu2009-06-22T17:18:42This is an annotation.With diacritical signs: éè
+    expected = dedent(
+        """\
+    Un paragraphe[1] d'apparence[i] banale.
+
+    1. C'est-à-dire l'élément « text:p ».
+    i. Les apparences sont trompeuses !
+    """
+    ).strip()
+    print(repr(md.strip()))
     assert md.strip() == expected
 
 
@@ -301,16 +350,6 @@ def test_md_toc_text(document_toc):
     assert md.strip() == expected
 
 
-# def test_md_toc_done_text(document_toc2):  # FAIL
-#     md = document_toc2.to_markdown()
-#     expected = dedent(
-#         """\
-#         xxx
-#     """
-#     ).strip()
-#     assert md.strip() == expected
-
-
 def test_user_fields_text(document_uf):
     md = document_uf.to_markdown()
     expected = dedent(
@@ -349,8 +388,8 @@ def test_md_variable_text(document_var):  # FAIL
     assert md.strip() == expected
 
 
-def test_md_big_text(document_big):  # FAIL
-    md = document_big.to_markdown()
+def test_md_case1_text(document_case1):  # FAIL
+    md = document_case1.to_markdown()
     expected = dedent(
         """\
         # odfdo Test Case Document
@@ -363,13 +402,13 @@ def test_md_big_text(document_big):  # FAIL
 
         Some list :
 
-          - item1
-          - item2
-          - item3
-            - sub item a
-            - sub item (with link: [odfdo b link](https://github.com/jdum/odfdo)) b
-            - sub item c
-          - item4
+         -  item1
+         -  item2
+         -  item3
+            -  sub item a
+            -  sub item (with link: [odfdo b link](https://github.com/jdum/odfdo)) b
+            -  sub item c
+         -  item4
 
         last paragraph
 
@@ -385,4 +424,314 @@ def test_md_big_text(document_big):  # FAIL
     """
     ).strip()
     print(md.strip())
+    assert md.strip() == expected
+
+
+def test_md_case2_text(document_case2):  # FAIL
+    # Here  **bolded space** at *begin*.
+    # Some style here and *there*
+
+    md = document_case2.to_markdown()
+    expected = dedent(
+        """\
+        # odfdo Test Case2
+
+        Some style `here` and *there*
+
+        Two spaces at start
+
+        ~~somme modified~~
+
+        =7 Starting spaces This is the second paragraph.
+
+        One tab
+
+        Two tabs
+
+        This is a **bold** **paragraph** with a named style.
+
+        Here  **bolded space** at *begin*.
+
+        Some *special* ***case*** *to* check if ~~barred~~
+
+        Some list :
+
+         -  item1
+         -  **item2**
+         -  `item3`
+         -  ***item4***
+         -  item5
+
+            1. a
+            2. b
+
+               -  aaa
+               -  eee
+                  -  ~~zzzz~~
+                  -  zzzz
+               -  iii
+
+            3. c
+
+         -  *item6*
+         -  [x] done
+
+            1. u
+            2. v
+            3. w
+
+         -  [ ] undone
+         -
+
+        last paragraph *with italic*
+
+        \\#\\#\\#\\# To see **\\*\\*stars\\*\\*** or \\*\\*any\\*\\*
+
+        and **\\*more\\*** and \\~\\~maybe\\~\\~
+
+        ## Level 2 Title with [odfdo project again](https://github.com/jdum/odfdo) embeded
+
+        This is the first paragraph of the second title.
+
+         1. One
+         2. **two**
+            1. aa
+            2. **bb**
+
+               -  eee
+               -  fff
+
+            3. **cc**
+         3. three
+            1. x
+            2. y
+               1. p
+               2. q
+               3. r
+            3. z
+         4. four
+
+        after
+        """
+    ).strip()
+    print(repr(md.strip()))
+    assert md.strip() == expected
+
+
+def test_md_case3_text(document_case3):  # FAIL
+    md = document_case3.to_markdown()
+    expected = dedent(
+        """\
+        # odfdo Test Case3
+
+        ```
+        Some text
+        ```
+
+        neutral
+
+        ```
+        several lines
+        of text
+        with a
+        fixed style
+        ```
+
+        standard
+
+         1. a
+         2. `here `
+         3. `some fixed too`
+         4. hop
+
+        ```
+        another one,
+        with *thing* and other things
+        in it
+         tabs	in same place
+              spaces
+        bold  or italic ?
+        ```
+
+        End here
+
+        ```
+
+
+        ```
+        """
+    ).strip()
+    print(repr(md.strip()))
+    assert md.strip() == expected
+
+
+def test_md_dormeur_text(document_dormeur):  # FAIL
+    md = document_dormeur.to_markdown()
+    expected = dedent(
+        """\
+        # ~~Le~~ dormeur[1] du *val*
+
+        C'est un trou de verdure où chante une rivière,
+        Accrochant follement aux herbes des haillons
+        D'argent ; où le soleil, de la *montagne*[2] **fière**,
+        Luit : c'est un petit val qui mousse de rayons.
+
+        Un soldat jeune, bouche ouverte, tête nue,
+        Et la nuque baignant dans le frais cresson bleu,
+        Dort ; il est étendu dans l'herbe, sous la nue,
+        Pâle dans son lit vert où la lumière pleut.
+
+        Les pieds dans les glaïeuls, il dort. Souriant[i] comme
+        Sourirait un enfant malade, il fait un somme :
+        Nature, berce-le chaudement : il a froid.
+
+        Les parfums ne font pas frissonner sa narine ;
+        Il dort dans le soleil, la main sur sa poitrine,
+        Tranquille. Il a deux trous rouges au côté droit.
+
+        Arthur Rimbaud
+
+        1. Note dormeur
+        2. Note next [remote link](https://test.example.com/)
+        i. End note
+        """
+    ).strip()
+    print(repr(md.strip()))
+    assert md.strip() == expected
+
+
+def test_md_lorem_text(document_lorem):  # FAIL
+    md = document_lorem.to_markdown()
+    expected = dedent(
+        """\
+        # Lorem ipsum dolor sit amet
+
+        *Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in,* **pretium** *a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;* **Aliquam nibh. Mauris ac mauris sed pede pellentesque** *fermentum.*
+
+         -  Maecenas adipiscing ante non diam sodales
+         -  Ut velit mauris, egestas sed, gravida nec, ornare ut, mi.
+
+        Aenean utorci vel massa suscipit **pulvinar**.
+
+        **Maecenas adipiscing ante non diam sodales hendrerit. Ut velit mauris, egestas sed, gravida nec, ornare ut, mi. Aenean ut orci vel massa suscipit pulvinar. Nulla sollicitudin. Fusce varius, ligula non tempus aliquam, nunc turpis ullamcorper nibh, in tempus sapien eros vitae ligula. Pellentesque rhoncus nunc et augue. Integer id felis. Curabitur aliquet pellentesque diam. Integer quis metus vitae elit lobortis egestas. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi vel erat non mauris convallis vehicula. Nulla et sapien. Integer tortor tellus, aliquam faucibus, convallis id, congue eu, quam. Mauris ullamcorper felis vitae erat. Proin feugiat, augue non elementum posuere, metus purus iaculis lectus, et tristique ligula justo vitae magna. Aliquam convallis sollicitudin purus. Praesent aliquam, enim at fermentum mollis, ligula massa adipiscing nisl, ac euismod nibh nisl eu lectus. Fusce vulputate sem at sapien. Vivamus leo. Aliquam euismod libero eu enim. Nulla nec felis sed leo placerat imperdiet. Aenean suscipit nulla in justo. Suspendisse cursus rutrum augue. Nulla tincidunt tincidunt mi. Curabitur iaculis, lorem vel rhoncus faucibus, felis magna fermentum augue, et ultricies lacus lorem varius purus.** *Curabitur* **eu amet.**
+        """
+    ).strip()
+    print(repr(md.strip()))
+    assert md.strip() == expected
+
+
+def test_md_tracked_text(document_tc):  # FAIL
+    md = document_tc.to_markdown()
+    expected = dedent(
+        """\
+        Bonjour  los bonitos amigos  ça va ?
+        """
+    ).strip()
+    print(repr(md.strip()))
+    assert md.strip() == expected
+
+
+def test_md_toc2_text(document_toc2):
+    md = document_toc2.to_markdown()
+    expected = dedent(
+        """\
+        **Table of Contents**
+
+        [Level 1 title 1	1](#)
+
+        [Level 2 title 1	1](#)
+
+        [Level 1 title 2	1](#)
+
+        [Level 3 title 1	1](#)
+
+        [Level 2 title 2	1](#)
+
+        [Level 1 title 3	1](#)
+
+        [Level 2 title 1	1](#)
+
+        [Level 3 title 1	1](#)
+
+        [Level 3 title 2	1](#)
+
+        [Level 2 title 2	1](#)
+
+        [Level 3 title 1	1](#)
+
+        [Level 3 title 2	1](#)
+
+        #
+
+        # Level 1 title 1
+
+        ## Level 2 title 1
+
+        # Level 1 title 2
+
+        ### Level 3 title 1
+
+        ## Level 2 title 2
+
+        # Level 1 title 3
+
+        ## Level 2 title 1
+
+        ### Level 3 title 1
+
+        ### Level 3 title 2
+
+        ## Level 2 title 2
+
+        ### Level 3 title 1
+
+        ### Level 3 title 2
+    """
+    ).strip()
+    print(repr(md.strip()))
+    assert md.strip() == expected
+
+
+def test_md_img_text(document_img):  # FAIL
+    md = document_img.to_markdown()
+    expected = dedent(
+        """\
+        **Image test**
+
+        A chair :
+
+        ![alternate name, chair](Pictures/1000000000000094000001004C83F003.jpg)
+        *Figure* 1  *chair*
+        """
+    ).strip()
+    print(repr(md.strip()))
+    assert md.strip() == expected
+
+
+def test_md_table_text(document_tab):  # FAIL
+    md = document_tab.to_markdown()
+    expected = dedent(
+        """\
+        # First table
+
+        | a                 | b                               | c   | d               |
+        |-------------------|---------------------------------|-----|-----------------|
+        | Some bar \\| there | Log or *short* or **very** long |     | \\*\\*no\\*\\* bold |
+        | 1                 | 2                               | 3   | 4               |
+        | `fixed`           | 20                              | 30  | 40              |
+        | 100               | **200**                         | 300 | 400             |
+
+
+        # Second table
+
+        | AAAAAAAAAAAAAAAAAA | BBBB                   | **CCC**   |                        | EE    |
+        |--------------------|------------------------|-----------|------------------------|-------|
+        | 1.234              | a                      | *bb*      | 2024-12-25             | -2    |
+        | **Some title**     | Some line break inside | anchor[1] | A list of 3 paras here | `123` |
+
+
+        1. Note in a cell
+        """
+    ).strip()
+    print(repr(md.strip()))
     assert md.strip() == expected

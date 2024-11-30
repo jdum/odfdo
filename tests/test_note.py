@@ -59,6 +59,14 @@ def test_create_note1():
     assert note.serialize() == expected
 
 
+def test_create_note1_str():
+    # With an odf_element
+    note_body = Paragraph("a footnote", style="Standard")
+    note = Note(note_id="note1", citation="1", body=note_body)
+    expected = "1. a footnote"
+    assert str(note) == expected
+
+
 def test_create_note2():
     # With an unicode object
     note = Note(note_id="note1", citation="1", body="a footnote")
@@ -227,7 +235,9 @@ def test_get_formatted_text(document):
 def test_create_annotation():
     # Create
     annotation = Annotation(
-        "Lost Dialogs", creator="Plato", date=datetime(2009, 6, 22, 17, 18, 42)
+        "Lost Dialogs",
+        creator="Plato",
+        date=datetime(2009, 6, 22, 17, 18, 42),
     )
     expected = (
         '<office:annotation office:name="__Fieldmark__lpod_1">'
@@ -239,6 +249,17 @@ def test_create_annotation():
         "</office:annotation>"
     )
     assert annotation.serialize() == expected
+
+
+def test_create_annotation_str():
+    # Create
+    annotation = Annotation(
+        "Lost Dialogs",
+        creator="Plato",
+        date=datetime(2009, 6, 22, 17, 18, 42),
+    )
+    expected = "Lost Dialogs\nPlato 2009-06-22 17:18:42"
+    assert str(annotation) == expected
 
 
 def test_get_annotation_list(document):

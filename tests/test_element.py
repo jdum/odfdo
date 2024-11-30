@@ -260,6 +260,8 @@ def test_set_text_special(sample):
 def test_get_text_content(sample):
     element = sample.anno
     text = element.text_content
+    print(element.serialize())
+    print(repr(text))
     expected = "This is an annotation.\nWith diacritical signs: éè"
     assert text == expected
 
@@ -472,7 +474,8 @@ def test_replace(span_styles):
     count = clone.replace("moustache", "barbe")
     assert count == 1
     expected = "Le Père Noël a une barbe rouge."
-    assert clone.text_recursive == expected
+    assert str(clone) == expected + "\n"
+    assert clone.inner_text == expected
     # Ensure the orignal was not altered
     assert clone.serialize() != paragraph.serialize()
 

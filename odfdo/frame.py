@@ -30,6 +30,7 @@ from typing import Any
 from .datatype import Unit
 from .element import Element, PropDef, register_element_class
 from .image import DrawImage
+from .mixin_md import MDDrawFrame, MDDrawTextBox
 from .paragraph import Paragraph
 from .style import Style
 
@@ -164,7 +165,7 @@ class SizeMix:
         self.height = size[1]
 
 
-class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
+class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
     """ODF Frame "draw:frame"
 
     Frames are not useful by themselves. You should consider calling
@@ -491,4 +492,15 @@ class Frame(Element, AnchorMix, PosMix, ZMix, SizeMix):
 
 Frame._define_attribut_property()
 
+
+class DrawTextBox(MDDrawTextBox, Element):
+    """ODF Frame "draw:text-box"
+
+    Minimal class to facilitate internal iteration.
+    """
+
+    _tag = "draw:text-box"
+
+
 register_element_class(Frame)
+register_element_class(DrawTextBox)

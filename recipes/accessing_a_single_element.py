@@ -29,32 +29,32 @@ def main():
     # the content, use get_xxx_by_<criteria>, where criteria can be position,
     # content, or for some of them name, id title, description.
     print("- Content of the first footnote:")
-    print(body.get_note(position=0).text_recursive)
+    print(str(body.get_note(position=0)))
+    print()
     print("- Content of the paragraph with the word 'Fish'")
-    print(body.get_paragraph(content="Fish").text_recursive)
+    print(str(body.get_paragraph(content="Fish")))
     print("- Content of the first Title:")
-    print(body.get_header(position=0).text_recursive)
+    print(str(body.get_header(position=0)))
     print("- Content of the last Title:")
-    print(body.get_header(position=-1).text_recursive)
+    print(str(body.get_header(position=-1)))
 
     _expected_result = """
     - Content of the first footnote:
-    1Gaiman, Neil (2003). Don't Panic: Douglas Adams and the "Hitchhiker's
-    Guide to the Galaxy". Titan Books. pp. 144–145. ISBN 1-84023-742-2.
+    1. [Gaiman, Neil](http://en.wikipedia.org/w/index.php?title=Neil_Gaiman)
+    (2003). Don't Panic: Douglas Adams and the "Hitchhiker's Guide to the
+    Galaxy". Titan Books. pp. 144–145. ISBN 1-84023-742-2.
+
     - Content of the paragraph with the word 'Fish'
     In So Long, and Thanks for All the Fish (published in 1984), Arthur
     returns home to Earth, rather surprisingly since it was destroyed when
-    he left. He meets and falls in love with a girl named Fenchurch, and
-    discovers this Earth is a replacement provided by the dolphins in their
-    Save the Humans campaign. Eventually he rejoins Ford, who claims to have
-    saved the Universe in the meantime, to hitch-hike one last time and see
-    God's Final Message to His Creation. Along the way, they are joined by
-    Marvin, the Paranoid Android, who, although 37 times older than the
-    universe itself (what with time travel and all), has just enough power
-    left in his failing body to read the message and feel better about it all
-    before expiring.
+    he left. He meets and falls in love with a girl named
+    [Fenchurch](http://en.wikipedia.org/w/index.php?title=Minor_characters_from_The_Hitchhiker%27s_Guide_to_the_Galaxy%23Fenchurch), and discovers this Earth is a replacement provided by the [dolphin](http://en.wikipedia.org/w/index.php?title=Dolphin)s in their Save the Humans campaign. Eventually he rejoins Ford, who claims to have saved the Universe in the meantime, to hitch-hike one last time and see God's Final Message to His Creation. Along the way, they are joined by Marvin, the Paranoid Android, who, although 37 times older than the universe itself (what with time
+    travel and all), has just enough power left in his failing body to read
+    the message and feel better about it all before expiring.
+
     - Content of the first Title:
     The Hitchhiker's Guide to the Galaxy
+
     - Content of the last Title:
     Official sites
     """
@@ -67,14 +67,13 @@ def test_unit(document: Document) -> None:
     if "ODFDO_TESTING" not in os.environ:
         return
     body = document.body
-    assert body.get_note(position=0).text_recursive.startswith("1Gaiman, Neil (2003).")
-    assert body.get_paragraph(content="Fish").text_recursive.endswith(
-        "all before expiring."
+    print(str(body.get_note(position=0)))
+    assert str(body.get_note(position=0)).startswith(
+        "1. [Gaiman, Neil](http://en.wikipedia.org/w/index.php?title=Neil_Gaiman) (2003)"
     )
-    assert body.get_header(position=0).text_recursive.startswith(
-        "The Hitchhiker's Guide"
-    )
-    assert body.get_header(position=-1).text_recursive.startswith("Official sites")
+    assert str(body.get_paragraph(content="Fish")).endswith("all before expiring.\n")
+    assert str(body.get_header(position=0)).startswith("The Hitchhiker's Guide")
+    assert str(body.get_header(position=-1)).startswith("Official sites")
 
 
 if __name__ == "__main__":

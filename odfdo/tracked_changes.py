@@ -31,6 +31,7 @@ from typing import Any
 from .element import FIRST_CHILD, LAST_CHILD, Element, register_element_class
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
+from .mixin_md import MDZap
 from .paragraph import Paragraph
 
 
@@ -418,7 +419,7 @@ class TextChangedRegion(Element):
         self._set_xml_id(idx)
 
 
-class TrackedChanges(Element):
+class TrackedChanges(MDZap, Element):
     """The TrackedChanges "text:tracked-changes" element acts as a container
     for TextChangedRegion elements that represent changes in a certain
     scope of an OpenDocument document. This scope is the element in which

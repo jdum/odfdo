@@ -42,6 +42,7 @@ from .cell import Cell
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element, register_element_class, xpath_compile
 from .frame import Frame
+from .mixin_md import MDTable
 from .row import Row
 from .utils import (
     convert_coordinates,
@@ -308,7 +309,7 @@ class Column(Element):
         self.set_style_attribute("table:style-name", style)
 
 
-class Table(Element):
+class Table(MDTable, Element):
     """ODF table "table:table" """
 
     _tag = "table:table"
@@ -1585,6 +1586,24 @@ class Table(Element):
                 values.extend([(None, None)] * (self.width - len(values)))
             else:
                 values.extend([None] * (self.width - len(values)))
+        return values
+
+    def get_row_sub_elements(self, y: int | str) -> list[Any]:
+        """Shortcut to get the list of Elements values for the cells of the row
+        at the given "y" position.
+
+        Position start at 0. So cell A4 is on row 3.
+
+        Missing values replaced by None.
+
+        Arguments:
+
+            y -- int, str
+
+        Return: list of lists of Elements
+        """
+        values = self.get_row(y, clone=False).get_sub_elements()
+        values.extend([None] * (self.width - len(values)))
         return values
 
     def set_row_values(

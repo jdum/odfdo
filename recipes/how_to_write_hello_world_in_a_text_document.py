@@ -33,9 +33,9 @@ def test_unit(document: Document) -> None:
     # only for test suite:
     if "ODFDO_TESTING" not in os.environ:
         return
-    text = document.body.text_recursive
+    text = str(document.body)
     print(text)
-    assert text == "Hello World"
+    assert text == "Hello World\n"
 
 
 if __name__ == "__main__":

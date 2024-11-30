@@ -26,12 +26,12 @@ from argparse import ArgumentParser, Namespace
 
 from odfdo import Document, __version__
 
-PROG = "odfdo-to-md"
+PROG = "odfdo-markdown"
 STDIN_TIMEOUT = 0.5
 
 
 def configure_parser() -> ArgumentParser:
-    description = "Export text document in markdown format to stdout (experimental)."
+    description = "Export text document in markdown format to stdout."
     parser = ArgumentParser(prog=PROG, description=description)
     parser.add_argument(
         "--version",

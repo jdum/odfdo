@@ -148,6 +148,7 @@ def test_datetime_decode_gmt2_nano():
     )
     assert DateTime.decode(date) == expected
 
+
 def test_duration_encode():
     duration = timedelta(0, 53, 0, 0, 6)
     expected = "PT00H06M53S"
@@ -196,6 +197,11 @@ def test_str():
     unit = Unit("1.847mm")
     assert unit.value == Decimal("1.847")
     assert unit.unit == "mm"
+
+
+def test_str_str():
+    unit = Unit("1.847mm")
+    assert str(unit) == "1.847mm"
 
 
 def test_int():

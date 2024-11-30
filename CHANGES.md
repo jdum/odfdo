@@ -1,5 +1,25 @@
 # Odfdo Release Notes
 
+## [3.12.0] - 2024-11-30
+
+-   Change in `str(Paragraph)` which now includes a `'\n'` at the end of the string.
+-   The `odfdo-to-md` script is renamed to `odfdo-markdown` and should be functional. Markdown export of .odt files supports all standard formatting features (including tables) except quoted text (no clear semantic equivalent in the ODF standard).
+-   Improved `__str__` methods for many classes: Document.body, Paragraph, Span, Link, Unit, Note, Annotation.
+-   Some added methods: `Document.get_parent_style()`, `Document.get_list_style()`, `Style.get_list_style_properties()`, `Style.get_text_properties()`.
+-   The new `Element.inner_text` property is now the preferred way to access an element's inner text.
+
+### Added
+
+-   Add methods: `Document.get_parent_style()`, `Document.get_list_style()`, `Style.get_list_style_properties()`, `Style.get_text_properties()`.
+-   Add propterty `Element.inner_text`.
+
+### Changed
+
+-   Script `odfdo-to-md` renamed to `odfdo-markdown`.
+-   `str(Paragraph)` now includes a `'\n'` at the end of the string.
+-   Output of the __str__ method modified for many elements.
+
+
 ## [3.11.0] - 2024-11-23
 
 -   New script `odfdo-to-md` to export text document in markdown format to stdout (experimental, do not export images links neither tables).
@@ -8,6 +28,10 @@
 ### Added
 
 -   Add script `odfdo-to-md`.
+
+### Changed
+
+-   `odfdo-folder` script now writes XML files with the "pretty" option by default.
 
 ### Fixed
 

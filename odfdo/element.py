@@ -289,9 +289,6 @@ class Element(CachedElement, MDBase):
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} tag={self.tag}>"
 
-    def __str__(self) -> str:
-        return self.text_recursive
-
     @classmethod
     def from_tag(cls, tag_or_elem: str | _Element) -> Element:
         """Element class and subclass factory.
@@ -877,9 +874,25 @@ class Element(CachedElement, MDBase):
         except TypeError as e:
             raise TypeError(f'Str type expected: "{type(text)}"') from e
 
+    def __str__(self) -> str:
+        return self.inner_text
+
+    @property
+    def _text_tail(self) -> str:
+        return str(self) + (self.tail or "")
+
+    # def _elements_descendants(self) -> Iterator[Element]:
+    #     for elem in self.__element.iterdescendants():
+    #         if isinstance(elem, _Element):
+    #             yield Element.from_tag(elem)
+
+    @property
+    def inner_text(self) -> str:
+        return self.text + "".join(e._text_tail for e in self.children)
+
     @property
     def text_recursive(self) -> str:
-        return "".join(str(x) for x in self.__element.itertext())
+        return self.inner_text + (self.tail or "")
 
     @property
     def tail(self) -> str | None:
@@ -1069,14 +1082,17 @@ class Element(CachedElement, MDBase):
 
     @property
     def text_content(self) -> str:
-        """Get / set the text of the embedded paragraph, including embeded
+        """Get / set the text of the embedded paragraphs, including embeded
         annotations, cells...
 
-        Set create a paragraph if missing
+        Set does create a paragraph if missing.
         """
-        return "\n".join(
-            child.text_recursive for child in self.get_elements("descendant::text:p")
+        content = "".join(
+            str(child) for child in self.get_elements("descendant::text:p")
         )
+        if content.endswith("\n"):
+            return content[:-1]
+        return content
 
     @text_content.setter
     def text_content(self, text: str | None) -> None:

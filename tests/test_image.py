@@ -103,4 +103,4 @@ def test_repr(sample_body):
 
 def test_str(sample_body):
     element = sample_body.get_image(name="odfdo")
-    assert str(element) == ""
+    assert str(element) == "\n"  # a pragraph ends with '\n'

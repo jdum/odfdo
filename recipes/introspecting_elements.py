@@ -37,7 +37,7 @@ def main():
     print("\nContent of the serialization link:")
     print("   ", link0.serialize())
     print("\nWhich is different from the text content of the link:")
-    print("   ", link0.text_recursive)
+    print("   ", str(link0))
 
 
 if __name__ == "__main__":

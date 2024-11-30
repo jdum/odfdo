@@ -186,6 +186,9 @@ class Spacer(MDSpacer, Element):
             else:
                 self.number = None
 
+    def __str__(self) -> str:
+        return self.text
+
     @property
     def text(self) -> str:
         """Get / set the text content of the element."""
@@ -243,6 +246,13 @@ class Tab(MDTab, Element):
         if self._do_init and position is not None and position >= 0:
             self.position = str(position)
 
+    def __str__(self) -> str:
+        return "\t"
+
+    @property
+    def text(self) -> str:
+        return "\t"
+
 
 Tab._define_attribut_property()
 
@@ -255,6 +265,13 @@ class LineBreak(MDLineBreak, Element):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
 
+    def __str__(self) -> str:
+        return "\n"
+
+    @property
+    def text(self) -> str:
+        return "\n"
+
 
 class ParagraphBase(Element):
     """Base class for Paragraph like classes."""
@@ -264,6 +281,9 @@ class ParagraphBase(Element):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+
+    def __str__(self) -> str:
+        return self.inner_text
 
     def get_formatted_text(
         self,

@@ -47,7 +47,6 @@ def main():
         for link in note.get_links():
             counter_links_in_notes += 1
             url = link.get_attribute("xlink:href")
-            text = link.text_recursive
             tail = link.tail
             new_tail = f" (link: {url}) {tail}"
             link.tail = new_tail
@@ -59,7 +58,7 @@ def main():
     for paragraph in body.paragraphs:
         for link in paragraph.get_links():
             url = link.get_attribute("xlink:href")
-            text = link.text_recursive
+            text = link.inner_text
             counter_added_note += 1
             paragraph.insert_note(
                 after=link,  # citation is inserted after current link

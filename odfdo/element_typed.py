@@ -169,9 +169,7 @@ class ElementTyped(Element):
             if value is not None:
                 return (str(value), value_type)
             if try_get_text:
-                list_value = [
-                    para.text_recursive for para in self.get_elements("text:p")
-                ]
+                list_value = [para.inner_text for para in self.get_elements("text:p")]
                 if list_value:
                     return ("\n".join(list_value), value_type)
             return (None, value_type)

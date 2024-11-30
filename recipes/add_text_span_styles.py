@@ -75,7 +75,7 @@ def add_styles(document):
 
     generate_random_styles(document, rnd)
 
-    words = sorted(body.text_recursive.split())
+    words = sorted(set(str(body).split()))
     for word in words:
         style_name = style_name_index(rnd.randint(64))
         for paragraph in chain(body.paragraphs, body.headers):
@@ -85,7 +85,7 @@ def add_styles(document):
     # only for test suite:
     if "ODFDO_TESTING" in os.environ:
         print(len(body.spans))
-        assert len(body.spans) == 266
+        assert len(body.spans) == 157
 
 
 if __name__ == "__main__":

@@ -655,6 +655,19 @@ class Row(Element):
                 for cell in self.traverse(start=x, end=z)
             ]
 
+    def get_sub_elements(
+        self,
+    ) -> list[Any]:
+        """Shortcut to get the Elements inside cells in this row.
+
+        Missing values are replaced by None. Cell type should be always
+        'string' when using this method, the length of the list is equal
+        to the length of the row.
+
+        Return: list of Elements.
+        """
+        return [cell.children for cell in self.traverse()]
+
     def set_cells(
         self,
         cells: list[Cell] | tuple[Cell] | None = None,

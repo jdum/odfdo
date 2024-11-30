@@ -318,6 +318,8 @@ class Style(Element):
         PropDef("leader_text", "style:leader-text"),
         PropDef("style_position", "style:position"),
         PropDef("leader_text", "style:position"),
+        PropDef("list_style_name", "style:list-style-name"),
+        PropDef("style_num_format", "style:num-format"),
     )
 
     def __init__(  # noqa: C901
@@ -556,6 +558,12 @@ class Style(Element):
         if family in FAMILY_ODF_STD and self.tag == "style:style":
             self.set_attribute("style:family", family)
 
+    def __repr__(self) -> str:
+        return f"<Style family={self.family} name={self.name}>"
+
+    def __str__(self) -> str:
+        return repr(self)
+
     def get_properties(self, area: str | None = None) -> dict[str, str | dict] | None:
         """Get the mapping of all properties of this style. By default the
         properties of the same family, e.g. a paragraph style and its
@@ -578,6 +586,49 @@ class Style(Element):
         for child in element.children:
             properties[child.tag] = child.attributes
         return properties
+
+    def get_list_style_properties(self) -> dict[str, str | bool]:
+        props: dict[str, str | bool] = self.get_properties(area="text") or {}
+        props.update(
+            {
+                "color": props.get("fo:color") or "",
+                "background_color": props.get("fo:background-color") or "",
+                "italic": props.get("fo:font-style", "") == "italic",
+                "bold": props.get("fo:font-weight", "") == "bold",
+                "fixed": props.get("style:font-pitch", "") == "fixed",
+                "underline": bool(props.get("style:text-underline-style", "")),
+                "strike": bool(props.get("style:text-line-through-style", "")),
+            }
+        )
+
+    def get_text_properties(self) -> dict[str, str | bool]:
+        """Get text properties of style as a dict, with some enhanced values.
+
+        Enhanced values returned:
+         - "color": str
+         - "background_color": str
+         - "italic": bool
+         - "bold": bool
+         - "fixed": bool
+         - "underline": bool
+         - "strike": bool
+
+        Return: dict[str, str | bool]
+        """
+        props: dict[str, str | bool] = self.get_properties(area="text") or {}
+        props.update(
+            {
+                "color": props.get("fo:color") or "",
+                "background_color": props.get("fo:background-color") or "",
+                "italic": props.get("fo:font-style", "") == "italic",
+                "bold": props.get("fo:font-weight", "") == "bold",
+                "fixed": props.get("style:font-pitch", "") == "fixed",
+                "underline": bool(props.get("style:text-underline-style", "")),
+                "strike": bool(props.get("style:text-line-through-style", "")),
+            }
+        )
+
+        return props
 
     def set_properties(  # noqa: C901
         self,

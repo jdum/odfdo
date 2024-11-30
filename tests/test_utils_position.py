@@ -41,16 +41,16 @@ def body() -> Iterable[Element]:
 def test_first(body):
     last_paragraph = body.get_paragraph(position=0)
     expected = "This is the first paragraph."
-    assert last_paragraph.text_recursive == expected
+    assert last_paragraph.inner_text == expected
 
 
 def test_next_to_last(body):
     last_paragraph = body.get_paragraph(position=-2)
     expected = "This is an annotation."
-    assert last_paragraph.text_recursive == expected
+    assert last_paragraph.inner_text == expected
 
 
 def test_last(body):
     last_paragraph = body.get_paragraph(position=-1)
     expected = "With diacritical signs: éè"
-    assert last_paragraph.text_recursive == expected
+    assert last_paragraph.inner_text == expected

@@ -112,7 +112,7 @@ def headers_document(document: Document, depth: int) -> None:
         number_str = header_numbering(header, level_indexes, depth)
         if number_str is None:
             continue
-        print(f"{number_str} {header}")
+        print(f"{number_str} {header}", end="")
 
 
 def headers(args: Namespace) -> None:

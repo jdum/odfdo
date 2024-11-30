@@ -41,7 +41,7 @@ def make_footnotes(document):
         # Adding Footnote
         # Now we add a footnote on each paragraph
         # Notes are quite complex so they deserve a dedicated API on paragraphs:
-        some_word = paragraph.text_recursive.split()[3]
+        some_word = str(paragraph).split()[3]
         # choosing the 4th word of the paragraph to insert the note
         paragraph.insert_note(
             after=some_word,  # The word after what the “¹” citation is inserted.

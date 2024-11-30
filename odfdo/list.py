@@ -64,6 +64,10 @@ class ListItem(MDListItem, Element):
             elif text_or_element is not None:
                 raise TypeError("Expected str or Element")
 
+    def __str__(self) -> str:
+        self._md_initialize_level()
+        return "\n".join(self._md_collect())
+
 
 class List(MDList, Element):
     """ODF List "text:list"."""

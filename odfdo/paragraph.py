@@ -199,6 +199,10 @@ class Paragraph(MDParagraph, ParagraphBase):
             if style is not None:
                 self.style = style
 
+    def __str__(self) -> str:
+        # '\n' at the end slightly breaks compatibility, but is clearly better
+        return self.inner_text + "\n"
+
     def _expand_spaces(self, added_string: str) -> list[Element | str]:
         result: list[Element | str] = []
 
@@ -1002,6 +1006,9 @@ class Span(MDSpan, Paragraph):
                     self.text = self._unformatted(text)  # type:ignore
             if style:
                 self.style = style
+
+    def __str__(self) -> str:
+        return self.inner_text
 
 
 def PageBreak() -> Paragraph:

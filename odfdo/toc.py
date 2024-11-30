@@ -27,6 +27,7 @@ from typing import Any
 
 from .document import Document
 from .element import FIRST_CHILD, Element, PropDef, register_element_class
+from .mixin_md import MDToc
 from .paragraph import Paragraph
 from .style import Style
 
@@ -164,7 +165,7 @@ def default_toc_level_style(level: int) -> Style:
     return toc_style_level
 
 
-class TOC(Element):
+class TOC(MDToc, Element):
     """Table of content.
     The "text:table-of-content" element represents a table of contents for a
     document. The items that can be listed in a table of contents are:
@@ -287,7 +288,7 @@ class TOC(Element):
                     result.append(child_element.get_formatted_text(context).strip())
             else:
                 result.append(element.get_formatted_text(context).strip())
-        return "\n".join(result)
+        return "\n".join(x for x in result if x)
 
     @property
     def outline_level(self) -> int | None:

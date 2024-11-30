@@ -112,6 +112,16 @@ def test_get_header_level(base_body):
     assert text == "Level 2 Title"
 
 
+def test_header_str_1():
+    header = Header()
+    assert str(header) == "\n"
+
+
+def test_header_str_2():
+    header = Header(1, "abc")
+    assert str(header) == "abc\n"
+
+
 def test_insert_heading(base_body):
     heading = Header(2, "An inserted heading", style="Heading_20_2")
     base_body.append(heading)
@@ -133,4 +143,4 @@ def test_insert_heading_tab(base_body):
     assert heading.serialize() == last_heading.serialize()
     assert last_heading.text == "An inserted "
     assert "text:tab" in last_heading.serialize()
-    assert last_heading.text_recursive == "An inserted  tab heading"
+    assert last_heading.inner_text == "An inserted \t tab heading"

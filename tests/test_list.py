@@ -60,6 +60,21 @@ def test_create_list_with_non_iterable():
     assert a_list.serialize() == expected
 
 
+def test_create_list_with_non_iterable_str_0():
+    a_list = List()
+    assert str(a_list) == ""
+
+
+def test_create_list_with_non_iterable_text():
+    a_list = List("abc")
+    assert str(a_list) == " -  abc\n"
+
+
+def test_create_list_with_non_iterable_str():
+    a_list = List("abc")
+    assert str(a_list) == " -  abc\n"
+
+
 def test_insert_list():
     document = Document(SAMPLE)
     content = document.get_part(ODF_CONTENT)
@@ -97,6 +112,17 @@ def test_insert_item():
     # TODO Use the true list element in the body of the document instead of
     # the element just created.
     assert breakfast.serialize() == expected
+
+
+def test_insert_item_str():
+    breakfast = List()
+    breakfast.insert_item("spam", 1)
+    breakfast.insert_item("eggs", 2)
+    item = ListItem("ham")
+    breakfast.insert_item(item, -1)
+
+    expected = " -  spam\n -  ham\n -  eggs\n"
+    assert str(breakfast) == expected
 
 
 def test_append_item():

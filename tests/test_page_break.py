@@ -57,6 +57,11 @@ def test_break_page_is_paragraph():
     assert isinstance(page_break, Paragraph)
 
 
+def test_break_str():
+    page_break = PageBreak()
+    assert str(page_break) == "\n"
+
+
 def test_break_page_as_style():
     page_break = PageBreak()
     assert page_break.style == "odfdopagebreak"
