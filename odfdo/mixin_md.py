@@ -47,7 +47,8 @@ class SplitSpace(NamedTuple):
 def _set_global(doc: Any) -> None:
     MD_GLOBAL["document"] = doc
     MD_GLOBAL["list_level"] = {}
-    MD_GLOBAL["notes"] = []
+    MD_GLOBAL["footnote"] = []
+    MD_GLOBAL["endnote"] = []
 
 
 def _copy_global() -> dict[str, Any]:
@@ -239,10 +240,12 @@ class MDDocument:
 
         _set_global(self)
         md_list = self._md_collect()
-        joined = join_fixed_lines(md_list)
-        if MD_GLOBAL["notes"]:
-            joined.append("\n")
-            joined.extend(MD_GLOBAL["notes"])
+        joined: list[str] = join_fixed_lines(md_list)
+        if MD_GLOBAL["footnote"]:
+            joined.extend(MD_GLOBAL["footnote"])
+            joined[-1] += "\n"
+        if MD_GLOBAL["endnote"]:
+            joined.extend(MD_GLOBAL["endnote"])
         raw_text = "\n".join(x for x in joined if x.strip())
         _set_global(None)
         return "\n".join(x.rstrip(" ") for x in raw_text.split("\n"))
@@ -278,7 +281,10 @@ class MDToc(MDBase):
 class MDNote(MDBase):
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         citation = f"[{self.citation}]"
-        MD_GLOBAL["notes"].append(str(self))
+        if self.note_class == "footnote":
+            MD_GLOBAL["footnote"].append(str(self))
+        else:
+            MD_GLOBAL["endnote"].append(str(self))
         return citation + post_styler(self.tail)
 
     def _md_collect(self) -> list[str]:

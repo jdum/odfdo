@@ -298,6 +298,7 @@ def test_md_note_text(document_note):
     Un paragraphe[1] d'apparence[i] banale.
 
     1. C'est-à-dire l'élément « text:p ».
+
     i. Les apparences sont trompeuses !
     """
     ).strip()
@@ -593,6 +594,7 @@ def test_md_dormeur_text(document_dormeur):  # FAIL
 
         1. Note dormeur
         2. Note next [remote link](https://test.example.com/)
+
         i. End note
 
         """
