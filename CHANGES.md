@@ -1,5 +1,13 @@
 # Odfdo Release Notes
 
+## [3.12.1] - 2024-11-30
+
+Fix some small rendering issues for Markdown export.
+
+### Fixed
+
+-   Better Markdown export for strike style, non break space, successive tags, line breaks, footnotes
+
 ## [3.12.0] - 2024-11-30
 
 -   Change in `str(Paragraph)` which now includes a `'\n'` at the end of the string.
