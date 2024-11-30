@@ -95,7 +95,8 @@ def _md_escape(text: str | None) -> str:
     if not text:
         return ""
     return (
-        text.replace("#", r"\#")
+        text.replace(" ", " ")  # non break space is no understood as char
+        .replace("#", r"\#")
         .replace(r"\*", "*")
         .replace("*", r"\*")
         .replace("`", r"\`")
