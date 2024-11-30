@@ -312,7 +312,7 @@ class MDTab(MDStyle):
 
 class MDLineBreak(MDStyle):
     def _md_format(self, post_styler: Callable = _as_none) -> str:
-        return "\n" + post_styler(self.tail)
+        return "\\\n" + post_styler(self.tail)
 
     def _md_collect(self) -> list[str]:
         if content := self._md_format():
@@ -521,8 +521,12 @@ class MDTable(MDStyle):
                     acc.append(_as_none(element.tail))
                     result.append(_strip_left_spaces("".join(x for x in acc if x)))
                 sval = " ".join(result)
-                return f"{filler}{sval.strip()}{filler}".replace("\n", " ")
-            return f"{filler}{str(val).strip()}{filler}".replace("\n", " ")
+                return f"{filler}{sval.strip()}{filler}".replace("\\\n", " ").replace(
+                    "\n", " "
+                )
+            return f"{filler}{str(val).strip()}{filler}".replace("\\\n", " ").replace(
+                "\n", " "
+            )
 
         def fill_cell(pos: int, cell_val: Any, filler: str = " ") -> str:
             sval = format_cell(cell_val, filler)

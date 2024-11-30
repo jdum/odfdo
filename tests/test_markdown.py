@@ -546,7 +546,7 @@ def test_md_case3_text(document_case3):  # FAIL
 
         ```
         another one,
-        with _thing_ and other things
+        with *thing* and other things
         in it
          tabs	in same place
               spaces
@@ -569,24 +569,24 @@ def test_md_dormeur_text(document_dormeur):  # FAIL
     md = document_dormeur.to_markdown()
     expected = dedent(
         """\
-        # ~~Le~~ dormeur[1] du *val*
+        # ~~Le~~ dormeur[1] du _val_
 
-        C'est un trou de verdure où chante une rivière,
-        Accrochant follement aux herbes des haillons
-        D'argent ; où le soleil, de la *montagne*[2] **fière**,
-        Luit : c'est un petit val qui mousse de rayons.
-
-        Un soldat jeune, bouche ouverte, tête nue,
-        Et la nuque baignant dans le frais cresson bleu,
-        Dort ; il est étendu dans l'herbe, sous la nue,
-        Pâle dans son lit vert où la lumière pleut.
-
-        Les pieds dans les glaïeuls, il dort. Souriant[i] comme
-        Sourirait un enfant malade, il fait un somme :
-        Nature, berce-le chaudement : il a froid.
-
-        Les parfums ne font pas frissonner sa narine ;
-        Il dort dans le soleil, la main sur sa poitrine,
+        C'est un trou de verdure où chante une rivière,\\
+        Accrochant follement aux herbes des haillons\\
+        D'argent ; où le soleil, de la _montagne_[2] **fière**,\\
+        Luit : c'est un petit val qui mousse de rayons.\\
+        \\
+        Un soldat jeune, bouche ouverte, tête nue,\\
+        Et la nuque baignant dans le frais cresson bleu,\\
+        Dort ; il est étendu dans l'herbe, sous la nue,\\
+        Pâle dans son lit vert où la lumière pleut.\\
+        \\
+        Les pieds dans les glaïeuls, il dort. Souriant[i] comme\\
+        Sourirait un enfant malade, il fait un somme :\\
+        Nature, berce\\-le chaudement : il a froid.\\
+        \\
+        Les parfums ne font pas frissonner sa narine ;\\
+        Il dort dans le soleil, la main sur sa poitrine,\\
         Tranquille. Il a deux trous rouges au côté droit.
 
         Arthur Rimbaud
@@ -594,6 +594,7 @@ def test_md_dormeur_text(document_dormeur):  # FAIL
         1. Note dormeur
         2. Note next [remote link](https://test.example.com/)
         i. End note
+
         """
     ).strip()
     print(repr(md.strip()))
@@ -606,14 +607,14 @@ def test_md_lorem_text(document_lorem):  # FAIL
         """\
         # Lorem ipsum dolor sit amet
 
-        *Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in,* **pretium** *a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;* **Aliquam nibh. Mauris ac mauris sed pede pellentesque** *fermentum.*
+        _Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in,_ **pretium** _a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;_ **Aliquam nibh. Mauris ac mauris sed pede pellentesque** _fermentum._
 
          -  Maecenas adipiscing ante non diam sodales
          -  Ut velit mauris, egestas sed, gravida nec, ornare ut, mi.
 
         Aenean utorci vel massa suscipit **pulvinar**.
 
-        **Maecenas adipiscing ante non diam sodales hendrerit. Ut velit mauris, egestas sed, gravida nec, ornare ut, mi. Aenean ut orci vel massa suscipit pulvinar. Nulla sollicitudin. Fusce varius, ligula non tempus aliquam, nunc turpis ullamcorper nibh, in tempus sapien eros vitae ligula. Pellentesque rhoncus nunc et augue. Integer id felis. Curabitur aliquet pellentesque diam. Integer quis metus vitae elit lobortis egestas. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi vel erat non mauris convallis vehicula. Nulla et sapien. Integer tortor tellus, aliquam faucibus, convallis id, congue eu, quam. Mauris ullamcorper felis vitae erat. Proin feugiat, augue non elementum posuere, metus purus iaculis lectus, et tristique ligula justo vitae magna. Aliquam convallis sollicitudin purus. Praesent aliquam, enim at fermentum mollis, ligula massa adipiscing nisl, ac euismod nibh nisl eu lectus. Fusce vulputate sem at sapien. Vivamus leo. Aliquam euismod libero eu enim. Nulla nec felis sed leo placerat imperdiet. Aenean suscipit nulla in justo. Suspendisse cursus rutrum augue. Nulla tincidunt tincidunt mi. Curabitur iaculis, lorem vel rhoncus faucibus, felis magna fermentum augue, et ultricies lacus lorem varius purus.** *Curabitur* **eu amet.**
+        **Maecenas adipiscing ante non diam sodales hendrerit. Ut velit mauris, egestas sed, gravida nec, ornare ut, mi. Aenean ut orci vel massa suscipit pulvinar. Nulla sollicitudin. Fusce varius, ligula non tempus aliquam, nunc turpis ullamcorper nibh, in tempus sapien eros vitae ligula. Pellentesque rhoncus nunc et augue. Integer id felis. Curabitur aliquet pellentesque diam. Integer quis metus vitae elit lobortis egestas. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi vel erat non mauris convallis vehicula. Nulla et sapien. Integer tortor tellus, aliquam faucibus, convallis id, congue eu, quam. Mauris ullamcorper felis vitae erat. Proin feugiat, augue non elementum posuere, metus purus iaculis lectus, et tristique ligula justo vitae magna. Aliquam convallis sollicitudin purus. Praesent aliquam, enim at fermentum mollis, ligula massa adipiscing nisl, ac euismod nibh nisl eu lectus. Fusce vulputate sem at sapien. Vivamus leo. Aliquam euismod libero eu enim. Nulla nec felis sed leo placerat imperdiet. Aenean suscipit nulla in justo. Suspendisse cursus rutrum augue. Nulla tincidunt tincidunt mi. Curabitur iaculis, lorem vel rhoncus faucibus, felis magna fermentum augue, et ultricies lacus lorem varius purus.** _Curabitur_ **eu amet.**
         """
     ).strip()
     print(repr(md.strip()))
@@ -698,10 +699,10 @@ def test_md_img_text(document_img):  # FAIL
         """\
         **Image test**
 
-        A chair :
+        A chair :
 
         ![alternate name, chair](Pictures/1000000000000094000001004C83F003.jpg)
-        *Figure* 1  *chair*
+        _Figure_ 1  _chair_
         """
     ).strip()
     print(repr(md.strip()))
@@ -716,7 +717,7 @@ def test_md_table_text(document_tab):  # FAIL
 
         | a                 | b                               | c   | d               |
         |-------------------|---------------------------------|-----|-----------------|
-        | Some bar \\| there | Log or *short* or **very** long |     | \\*\\*no\\*\\* bold |
+        | Some bar \\| there | Log or _short_ or **very** long |     | \\*\\*no\\*\\* bold |
         | 1                 | 2                               | 3   | 4               |
         | `fixed`           | 20                              | 30  | 40              |
         | 100               | **200**                         | 300 | 400             |
@@ -726,7 +727,7 @@ def test_md_table_text(document_tab):  # FAIL
 
         | AAAAAAAAAAAAAAAAAA | BBBB                   | **CCC**   |                        | EE    |
         |--------------------|------------------------|-----------|------------------------|-------|
-        | 1.234              | a                      | *bb*      | 2024-12-25             | -2    |
+        | 1.234              | a                      | _bb_      | 2024\\-12\\-25           | \\-2   |
         | **Some title**     | Some line break inside | anchor[1] | A list of 3 paras here | `123` |
 
 
