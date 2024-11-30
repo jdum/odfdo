@@ -587,8 +587,14 @@ class Style(Element):
             properties[child.tag] = child.attributes
         return properties
 
-    def get_list_style_properties(self) -> dict[str, str | bool]:
-        props: dict[str, str | bool] = self.get_properties(area="text") or {}
+    @staticmethod
+    def _update_boolean_styles(props: dict[str, str | bool]) -> None:
+        strike = props.get("style:text-line-through-style", "")
+        if strike == "none":
+            strike = ""
+        underline = props.get("style:text-underline-style", "")
+        if underline == "none":
+            underline = ""
         props.update(
             {
                 "color": props.get("fo:color") or "",
@@ -596,10 +602,26 @@ class Style(Element):
                 "italic": props.get("fo:font-style", "") == "italic",
                 "bold": props.get("fo:font-weight", "") == "bold",
                 "fixed": props.get("style:font-pitch", "") == "fixed",
-                "underline": bool(props.get("style:text-underline-style", "")),
-                "strike": bool(props.get("style:text-line-through-style", "")),
+                "underline": bool(underline),
+                "strike": bool(strike),
             }
         )
+
+    def get_list_style_properties(self) -> dict[str, str | bool]:
+        """Get text properties of style as a dict, with some enhanced values.
+
+        Enhanced values returned:
+         - "color": str
+         - "background_color": str
+         - "italic": bool
+         - "bold": bool
+         - "fixed": bool
+         - "underline": bool
+         - "strike": bool
+
+        Return: dict[str, str | bool]
+        """
+        return self.get_text_properties()
 
     def get_text_properties(self) -> dict[str, str | bool]:
         """Get text properties of style as a dict, with some enhanced values.
@@ -616,18 +638,7 @@ class Style(Element):
         Return: dict[str, str | bool]
         """
         props: dict[str, str | bool] = self.get_properties(area="text") or {}
-        props.update(
-            {
-                "color": props.get("fo:color") or "",
-                "background_color": props.get("fo:background-color") or "",
-                "italic": props.get("fo:font-style", "") == "italic",
-                "bold": props.get("fo:font-weight", "") == "bold",
-                "fixed": props.get("style:font-pitch", "") == "fixed",
-                "underline": bool(props.get("style:text-underline-style", "")),
-                "strike": bool(props.get("style:text-line-through-style", "")),
-            }
-        )
-
+        self._update_boolean_styles(props)
         return props
 
     def set_properties(  # noqa: C901
