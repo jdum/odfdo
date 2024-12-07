@@ -38,3 +38,12 @@ def test_create():
     assert repr(behaviour) == (
         "<MetaHyperlinkBehaviour tag=meta:hyperlink-behaviour target=some_frame show=_top>"
     )
+
+
+def test_as_dict():
+    behaviour = MetaHyperlinkBehaviour(target_frame_name="some_frame", show="_top")
+    expected = {
+        "office:target-frame-name": "some_frame",
+        "xlink:show": "_top",
+    }
+    assert behaviour.as_dict() == expected

@@ -24,6 +24,7 @@
 """
 from __future__ import annotations
 
+import json
 from datetime import date as dtdate
 from datetime import datetime, timedelta
 from decimal import Decimal
@@ -886,3 +887,161 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         if value_type == "time":
             return (Duration.decode(text), value_type, text)
         raise TypeError(f"Unknown value type: '{value_type!r}'")
+
+    def as_dict(self, full: bool = False) -> dict[str, Any]:
+        """Return the metadata of the document as a Python dict.
+
+        if 'full' is True, export also the keys with no value assigned.
+
+        Arguments:
+
+            full -- boolean
+        """
+
+        def _stats() -> dict[str, int]:
+            doc_stats = self.statistic
+            if doc_stats is None:
+                msg = "Document statitics not found"
+                raise LookupError(msg)
+            return {
+                key: doc_stats.get(key, 0)
+                for key in (
+                    "meta:table-count",
+                    "meta:image-count",
+                    "meta:object-count",
+                    "meta:page-count",
+                    "meta:paragraph-count",
+                    "meta:word-count",
+                    "meta:character-count",
+                    "meta:non-whitespace-character-count",
+                )
+            }
+
+        def _user_defined() -> list[dict[str, Any]]:
+            user_defined: list[dict[str, Any]] = []
+            for item in self.get_elements("//meta:user-defined"):
+                if not isinstance(item, Element):
+                    continue
+                # Read the values
+                name = item.get_attribute_string("meta:name")
+                if not name:
+                    continue
+                value, value_type, _text = self._get_meta_value_full(item)
+                user_defined.append(
+                    {"meta:name": name, "meta:value-type": value_type, "value": value}
+                )
+            return user_defined
+
+        def _meta_template() -> dict[str, Any] | None:
+            template = self.template
+            if template is None:
+                return None
+            return template.as_dict()
+
+        def _meta_reload() -> dict[str, Any] | None:
+            reload = self.auto_reload
+            if reload is None:
+                return None
+            return reload.as_dict()
+
+        def _meta_behaviour() -> dict[str, Any] | None:
+            behaviour = self.hyperlink_behaviour
+            if behaviour is None:
+                return None
+            return behaviour.as_dict()
+
+        meta_data: dict[str, Any] = {
+            "meta:creation-date": self.creation_date,
+            "dc:date": self.date,
+            "meta:editing-duration": self.editing_duration,
+            "meta:editing-cycles": self.editing_cycles,
+            "meta:document-statistic": _stats(),
+            "meta:generator": self.generator,
+            "dc:title": self.title,
+            "dc:description": self.description,
+            "dc:creator": self.initial_creator,
+            "meta:keyword": self.keyword,
+            "dc:subject": self.subject,
+            "dc:language": self.language,
+            "meta:initial-creator": self.initial_creator,
+            "meta:print-date": self.print_date,
+            "meta:printed-by": self.printed_by,
+            "meta:template": _meta_template(),
+            "meta:auto-reload": _meta_reload(),
+            "meta:hyperlink-behaviour": _meta_behaviour(),
+            "meta:user-defined": _user_defined(),
+        }
+
+        if not full:
+            meta_data = {key: val for key, val in meta_data.items() if val}
+        return meta_data
+
+    def _as_json_dict(self, full: bool = False) -> dict[str, Any]:
+
+        def _convert(data: dict[str, Any]) -> None:
+            for key, val in data.items():
+                if isinstance(val, datetime):
+                    data[key] = DateTime.encode(val)
+                elif isinstance(val, timedelta):
+                    data[key] = Duration.encode(val)
+                elif isinstance(val, Decimal):
+                    data[key] = json.loads(str(Decimal(val)))
+
+        meta_data: dict[str, Any] = self.as_dict(full=full)
+        user_defined = meta_data.get("meta:user-defined", [])
+        for item in user_defined:
+            _convert(item)
+        meta_data["meta:user-defined"] = user_defined
+        _convert(meta_data)
+        return meta_data
+
+    def as_json(self, full: bool = False) -> str:
+        """Return the metadata of the document as a JSON string.
+
+        if 'full' is True, export also the keys with no value assigned.
+
+        Arguments:
+
+            full -- boolean
+        """
+        return json.dumps(
+            self._as_json_dict(full=full),
+            ensure_ascii=False,
+            sort_keys=False,
+            indent=4,
+        )
+
+    def as_text(self) -> str:
+        """Return meta informations as text, with some formatting for printing."""
+        data = self._as_json_dict(full=False)
+        result: list[str] = []
+
+        def _append_info(name: str, key: str) -> None:
+            value = data.get(key)
+            if value:
+                result.append(f"{name}: {value}")
+
+        _append_info("Title", "dc:title")
+        _append_info("Subject", "dc:subject")
+        _append_info("Description", "dc:description")
+        _append_info("Language", "dc:language")
+        _append_info("Modification date", "dc:date")
+        _append_info("Creation date", "meta:creation-date")
+        _append_info("Initial creator", "dc:creator")
+        _append_info("Keyword", "meta:keyword")
+        _append_info("Editing duration", "meta:editing-duration")
+        _append_info("Editing cycles", "meta:editing-cycles")
+        _append_info("Generator", "meta:generator")
+
+        result.append("Statistic:")
+        statistic = data.get("meta:document-statistic", {})
+        if statistic:
+            for name, value in statistic.items():
+                result.append(f"  - {name[5:].replace('-', ' ').capitalize()}: {value}")
+
+        result.append("User defined metadata:")
+        user_metadata = data.get("meta:user-defined", [])
+        for item in user_metadata:
+            result.append(f"  - {item['meta:name']}: {item['value']}")
+
+        return "\n".join(result)

@@ -54,3 +54,16 @@ def test_create():
     assert repr(reload) == (
         "<MetaAutoReload tag=meta:auto-reload href=some url delay=0:00:15>"
     )
+
+
+def test_as_dict():
+    delay = timedelta(seconds=15)
+    reload = MetaAutoReload(delay=delay, href="some url")
+    expected = {
+        "meta:delay": "PT00H00M15S",
+        "xlink:actuate": "onLoad",
+        "xlink:href": "some url",
+        "xlink:show": "replace",
+        "xlink:type": "simple",
+    }
+    assert reload.as_dict() == expected

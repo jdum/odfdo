@@ -78,6 +78,16 @@ class MetaTemplate(Element):
             return f"[{self.title}]({self.href})"
         return f"({self.href})"
 
+    def as_dict(self) -> dict[str, Any]:
+        """Return the MetaTemplate attributes as a Python dict."""
+        return {
+            "meta:date": self.date,
+            "xlink:actuate": self.actuate,
+            "xlink:href": self.href,
+            "xlink:title": self.title,
+            "xlink:type": self.type,
+        }
+
 
 MetaTemplate._define_attribut_property()
 register_element_class(MetaTemplate)

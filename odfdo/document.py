@@ -513,44 +513,11 @@ class Document(MDDocument):
         return "".join(result)
 
     def get_formated_meta(self) -> str:
-        """Return meta informations as text, with some formatting."""
-        result: list[str] = []
-
-        # Simple values
-        def print_info(name: str, value: Any) -> None:
-            if value:
-                result.append(f"{name}: {value}")
-
-        meta = self.meta
-        print_info("Title", meta.title)
-        print_info("Subject", meta.subject)
-        print_info("Description", meta.description)
-        print_info("Language", meta.language)
-        print_info("Modification date", meta.date)
-        print_info("Creation date", meta.creation_date)
-        print_info("Initial creator", meta.initial_creator)
-        print_info("Keyword", meta.keyword)
-        print_info("Editing duration", meta.editing_duration)
-        print_info("Editing cycles", meta.editing_cycles)
-        print_info("Generator", meta.generator)
-
-        # Statistic
-        result.append("Statistic:")
-        statistic = meta.statistic
-        if statistic:
-            for name, data in statistic.items():
-                result.append(f"  - {name[5:].replace('-', ' ').capitalize()}: {data}")
-
-        # User defined metadata
-        result.append("User defined metadata:")
-        user_metadata = meta.user_defined_metadata
-        for name, data2 in user_metadata.items():
-            result.append(f"  - {name}: {data2}")
-
-        # And the description
-        print_info("Description", meta.get_description())
-
-        return "\n".join(result)
+        """Return meta informations as text, with some formatting.
+        
+        (Redirection to new implementation for compatibility.) """
+        return self.meta.as_text()
+        
 
     def to_markdown(self) -> str:
         doc_type = self.get_type()

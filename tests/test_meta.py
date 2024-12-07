@@ -25,6 +25,7 @@ from collections.abc import Iterable
 from datetime import datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
+from textwrap import dedent
 
 import pytest
 
@@ -534,3 +535,215 @@ def test_set_hyperlink_behaviour(meta):
     assert repr(behaviour) == (
         "<MetaHyperlinkBehaviour tag=meta:hyperlink-behaviour target=some_frame show=_top>"
     )
+
+
+def test_meta_export_dict(meta):
+    exported = meta.as_dict()
+    expected = {
+        "meta:creation-date": datetime(2009, 7, 31, 15, 57, 37),
+        "dc:date": datetime(2009, 7, 31, 15, 59, 13),
+        "meta:editing-duration": timedelta(seconds=330),
+        "meta:editing-cycles": 2,
+        "meta:document-statistic": {
+            "meta:table-count": 0,
+            "meta:image-count": 0,
+            "meta:object-count": 0,
+            "meta:page-count": 1,
+            "meta:paragraph-count": 1,
+            "meta:word-count": 4,
+            "meta:character-count": 27,
+            "meta:non-whitespace-character-count": 24,
+        },
+        "meta:generator": "LibreOffice/6.0.3.2$MacOSX_X86_64 LibreOffice_project/8f48d515416608e3a835360314dac7e47fd0b821",
+        "dc:title": "Intitulé",
+        "dc:description": "Comments\nCommentaires\n评论",
+        "meta:keyword": "Mots-clés",
+        "dc:subject": "Sujet de sa majesté",
+        "meta:user-defined": [
+            {
+                "meta:name": "Achevé à la date",
+                "meta:value-type": "date",
+                "value": datetime(2009, 7, 31, 0, 0),
+            },
+            {
+                "meta:name": "Numéro du document",
+                "meta:value-type": "float",
+                "value": Decimal("3"),
+            },
+            {"meta:name": "Référence", "meta:value-type": "boolean", "value": True},
+            {
+                "meta:name": "Vérifié par",
+                "meta:value-type": "string",
+                "value": "Moi-même",
+            },
+        ],
+    }
+    print(repr(exported))
+    assert exported == expected
+
+
+def test_meta_export_dict_full(meta):
+    exported = meta.as_dict(True)
+    expected = {
+        "meta:creation-date": datetime(2009, 7, 31, 15, 57, 37),
+        "dc:date": datetime(2009, 7, 31, 15, 59, 13),
+        "meta:editing-duration": timedelta(seconds=330),
+        "meta:editing-cycles": 2,
+        "meta:document-statistic": {
+            "meta:table-count": 0,
+            "meta:image-count": 0,
+            "meta:object-count": 0,
+            "meta:page-count": 1,
+            "meta:paragraph-count": 1,
+            "meta:word-count": 4,
+            "meta:character-count": 27,
+            "meta:non-whitespace-character-count": 24,
+        },
+        "meta:generator": "LibreOffice/6.0.3.2$MacOSX_X86_64 LibreOffice_project/8f48d515416608e3a835360314dac7e47fd0b821",
+        "dc:title": "Intitulé",
+        "dc:description": "Comments\nCommentaires\n评论",
+        "dc:creator": None,
+        "meta:keyword": "Mots-clés",
+        "dc:subject": "Sujet de sa majesté",
+        "dc:language": None,
+        "meta:initial-creator": None,
+        "meta:print-date": None,
+        "meta:printed-by": None,
+        "meta:auto-reload": None,
+        "meta:hyperlink-behaviour": None,
+        "meta:template": None,
+        "meta:user-defined": [
+            {
+                "meta:name": "Achevé à la date",
+                "meta:value-type": "date",
+                "value": datetime(2009, 7, 31, 0, 0),
+            },
+            {
+                "meta:name": "Numéro du document",
+                "meta:value-type": "float",
+                "value": Decimal("3"),
+            },
+            {"meta:name": "Référence", "meta:value-type": "boolean", "value": True},
+            {
+                "meta:name": "Vérifié par",
+                "meta:value-type": "string",
+                "value": "Moi-même",
+            },
+        ],
+    }
+    print(repr(exported))
+    assert exported == expected
+
+
+def test_meta_export_json(meta):
+    exported = meta.as_json()
+    expected = dedent(
+        """\
+    {
+        "meta:creation-date": "2009-07-31T15:57:37",
+        "dc:date": "2009-07-31T15:59:13",
+        "meta:editing-duration": "PT00H05M30S",
+        "meta:editing-cycles": 2,
+        "meta:document-statistic": {
+            "meta:table-count": 0,
+            "meta:image-count": 0,
+            "meta:object-count": 0,
+            "meta:page-count": 1,
+            "meta:paragraph-count": 1,
+            "meta:word-count": 4,
+            "meta:character-count": 27,
+            "meta:non-whitespace-character-count": 24
+        },
+        "meta:generator": "LibreOffice/6.0.3.2$MacOSX_X86_64 LibreOffice_project/8f48d515416608e3a835360314dac7e47fd0b821",
+        "dc:title": "Intitulé",
+        "dc:description": "Comments\\nCommentaires\\n评论",
+        "meta:keyword": "Mots-clés",
+        "dc:subject": "Sujet de sa majesté",
+        "meta:user-defined": [
+            {
+                "meta:name": "Achevé à la date",
+                "meta:value-type": "date",
+                "value": "2009-07-31T00:00:00"
+            },
+            {
+                "meta:name": "Numéro du document",
+                "meta:value-type": "float",
+                "value": 3
+            },
+            {
+                "meta:name": "Référence",
+                "meta:value-type": "boolean",
+                "value": true
+            },
+            {
+                "meta:name": "Vérifié par",
+                "meta:value-type": "string",
+                "value": "Moi-même"
+            }
+        ]
+    }"""
+    )
+    print(exported)
+    print(expected)
+    assert exported.strip() == expected.strip()
+
+
+def test_meta_export_json_full(meta):
+    exported = meta.as_json(True)
+    expected = dedent(
+        """\
+    {
+        "meta:creation-date": "2009-07-31T15:57:37",
+        "dc:date": "2009-07-31T15:59:13",
+        "meta:editing-duration": "PT00H05M30S",
+        "meta:editing-cycles": 2,
+        "meta:document-statistic": {
+            "meta:table-count": 0,
+            "meta:image-count": 0,
+            "meta:object-count": 0,
+            "meta:page-count": 1,
+            "meta:paragraph-count": 1,
+            "meta:word-count": 4,
+            "meta:character-count": 27,
+            "meta:non-whitespace-character-count": 24
+        },
+        "meta:generator": "LibreOffice/6.0.3.2$MacOSX_X86_64 LibreOffice_project/8f48d515416608e3a835360314dac7e47fd0b821",
+        "dc:title": "Intitulé",
+        "dc:description": "Comments\\nCommentaires\\n评论",
+        "dc:creator": null,
+        "meta:keyword": "Mots-clés",
+        "dc:subject": "Sujet de sa majesté",
+        "dc:language": null,
+        "meta:initial-creator": null,
+        "meta:print-date": null,
+        "meta:printed-by": null,
+        "meta:template": null,
+        "meta:auto-reload": null,
+        "meta:hyperlink-behaviour": null,
+        "meta:user-defined": [
+            {
+                "meta:name": "Achevé à la date",
+                "meta:value-type": "date",
+                "value": "2009-07-31T00:00:00"
+            },
+            {
+                "meta:name": "Numéro du document",
+                "meta:value-type": "float",
+                "value": 3
+            },
+            {
+                "meta:name": "Référence",
+                "meta:value-type": "boolean",
+                "value": true
+            },
+            {
+                "meta:name": "Vérifié par",
+                "meta:value-type": "string",
+                "value": "Moi-même"
+            }
+        ]
+    }"""
+    )
+
+    print(exported)
+    assert exported == expected

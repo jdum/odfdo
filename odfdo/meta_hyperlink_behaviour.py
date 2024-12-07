@@ -65,6 +65,13 @@ class MetaHyperlinkBehaviour(Element):
     def __str__(self) -> str:
         return f"({self.target_frame_name})"
 
+    def as_dict(self) -> dict[str, Any]:
+        """Return the MetaHyperlinkBehaviour attributes as a Python dict."""
+        return {
+            "office:target-frame-name": self.target_frame_name,
+            "xlink:show": self.show,
+        }
+
 
 MetaHyperlinkBehaviour._define_attribut_property()
 register_element_class(MetaHyperlinkBehaviour)

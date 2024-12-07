@@ -68,10 +68,23 @@ class MetaAutoReload(Element):
             self.href = href
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} tag={self.tag} href={self.href} delay={Duration.decode(self.delay)}>"
+        return (
+            f"<{self.__class__.__name__} tag={self.tag} "
+            f"href={self.href} delay={Duration.decode(self.delay)}>"
+        )
 
     def __str__(self) -> str:
         return f"({self.href})"
+
+    def as_dict(self) -> dict[str, Any]:
+        """Return the MetaAutoReload attributes as a Python dict."""
+        return {
+            "meta:delay": self.delay,
+            "xlink:actuate": self.actuate,
+            "xlink:href": self.href,
+            "xlink:show": self.show,
+            "xlink:type": self.type,
+        }
 
 
 MetaAutoReload._define_attribut_property()
