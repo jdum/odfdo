@@ -29,21 +29,8 @@ from typing import Any
 
 from lxml.etree import _Element, _ElementTree, parse, tostring
 
-from .container import Container
+from .container import Container, pretty_indent
 from .element import Element, EText
-
-TAB = "  "
-TEXT_CONTENT = {
-    "office:script",
-    "text:a",
-    "text:deletion",
-    "text:h",
-    "text:meta",
-    "text:meta-field",
-    "text:p",
-    "text:ruby-base",
-    "text:span",
-}
 
 
 class XmlPart:
@@ -142,46 +129,13 @@ class XmlPart:
 
     def pretty_serialize(self) -> bytes:
         xml_header = b'<?xml version="1.0" encoding="UTF-8"?>\n'
-        bytes_tree = tostring(self.custom_pretty_tree(), encoding="unicode").encode(
-            "utf8"
-        )
+        bytes_tree = tostring(
+            self.custom_pretty_tree(),
+            encoding="unicode",
+        ).encode("utf8")
         return xml_header + bytes_tree
 
     def custom_pretty_tree(self) -> _ElementTree | _Element:
         tree = self._get_tree()
         root = tree.getroot()
-        return self.indent(root)
-
-    @staticmethod
-    def ptag(elem: _Element) -> str:
-        tag = elem.tag
-        if "}" not in tag:
-            return f"{elem.prefix}:{tag}"
-        return f"{elem.prefix}:{tag.split('}', 1)[1]}"
-
-    def indent(
-        self,
-        elem: _ElementTree | _Element,
-        level: int = 0,
-        next_level: int = 0,
-    ) -> _ElementTree | _Element:
-        if self.ptag(elem) in TEXT_CONTENT:
-            elem.tail = "\n" + next_level * TAB
-            return elem
-        if len(elem):
-            follow_level = level + 1
-            if elem.text:
-                elem.text = "\n" + follow_level * TAB + elem.text.lstrip()
-            else:
-                elem.text = "\n" + follow_level * TAB
-            for sub_elem in elem[:-1]:
-                self.indent(sub_elem, follow_level, follow_level)
-            self.indent(elem[-1], follow_level, level)
-            elem.tail = "\n" + next_level * TAB
-        else:
-            if elem.text:
-                elem.text = "\n" + level * TAB + elem.text.lstrip()
-            else:
-                elem.text = "\n" + level * TAB
-            elem.tail = "\n" + next_level * TAB
-        return elem
+        return pretty_indent(root)

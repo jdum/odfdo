@@ -32,7 +32,7 @@ from copy import deepcopy
 from pathlib import Path, PurePath
 from zipfile import ZIP_DEFLATED, ZIP_STORED, BadZipfile, ZipFile, is_zipfile
 
-from lxml.etree import fromstring, tostring
+from lxml.etree import _Element, _ElementTree, fromstring, tostring
 
 from .const import (
     FOLDER,
@@ -51,6 +51,165 @@ from .const import (
 )
 from .scriptutils import printwarn
 from .utils import bytes_to_str, str_to_bytes
+
+TAB = "  "
+TEXT_CONTENT = {
+    "config:config-item",
+    "db:data-source-setting-value",
+    "db:table-filter-pattern",
+    "db:table-type",
+    "dc:creator",
+    "dc:date",
+    "dc:description",
+    "dc:language",
+    "dc:subject",
+    "dc:title",
+    "form:item",
+    "form:option",
+    "math:math",
+    "meta:creation-date",
+    "meta:date-string",
+    "meta:editing-cycles",
+    "meta:editing-duration",
+    "meta:generator",
+    "meta:initial-creator",
+    "meta:keyword",
+    "meta:print-date",
+    "meta:printed-by",
+    "meta:user-defined",
+    "number:currency-symbol",
+    "number:embedded-text",
+    "number:text",
+    "office:binary-data",
+    "office:script",
+    "presentation:date-time-decl",
+    "presentation:footer-decl",
+    "presentation:header-decl",
+    "svg:desc",
+    "svg:title",
+    "table:desc",
+    "table:title",
+    "text:a",
+    "text:author-initials",
+    "text:author-name",
+    "text:bibliography-mark",
+    "text:bookmark-ref",
+    "text:chapter",
+    "text:character-count",
+    "text:conditional-text",
+    "text:creation-date",
+    "text:creation-time",
+    "text:creator",
+    "text:database-display",
+    "text:database-name",
+    "text:database-row-number",
+    "text:date",
+    "text:dde-connection",
+    "text:description",
+    "text:editing-cycles",
+    "text:editing-duration",
+    "text:execute-macro",
+    "text:expression",
+    "text:file-name",
+    "text:h",
+    "text:hidden-paragraph",
+    "text:hidden-text",
+    "text:image-count",
+    "text:index-entry-span",
+    "text:index-title-template",
+    "text:initial-creator",
+    "text:keywords",
+    "text:linenumbering-separator",
+    "text:measure",
+    "text:meta",
+    "text:meta-field",
+    "text:modification-date",
+    "text:modification-time",
+    "text:note-citation",
+    "text:note-continuation-notice-backward",
+    "text:note-continuation-notice-forward",
+    "text:note-ref",
+    "text:number",
+    "text:object-count",
+    "text:p",
+    "text:page-continuation",
+    "text:page-count",
+    "text:page-number",
+    "text:page-variable-get",
+    "text:page-variable-set",
+    "text:paragraph-count",
+    "text:placeholder",
+    "text:print-date",
+    "text:print-time",
+    "text:printed-by",
+    "text:reference-ref",
+    "text:ruby-base",
+    "text:ruby-text",
+    "text:script",
+    "text:sender-city",
+    "text:sender-company",
+    "text:sender-country",
+    "text:sender-email",
+    "text:sender-fax",
+    "text:sender-firstname",
+    "text:sender-initials",
+    "text:sender-lastname",
+    "text:sender-phone-private",
+    "text:sender-phone-work",
+    "text:sender-position",
+    "text:sender-postal-code",
+    "text:sender-state-or-province",
+    "text:sender-street",
+    "text:sender-title",
+    "text:sequence",
+    "text:sequence-ref",
+    "text:sheet-name",
+    "text:span",
+    "text:subject",
+    "text:table-count",
+    "text:table-formula",
+    "text:template-name",
+    "text:text-input",
+    "text:time",
+    "text:title",
+    "text:user-defined",
+    "text:user-field-get",
+    "text:user-field-input",
+    "text:variable-get",
+    "text:variable-input",
+    "text:variable-set",
+    "text:word-count",
+}
+
+
+def pretty_indent(
+    elem: _ElementTree | _Element,
+    level: int = 0,
+    ending_level: int = 0,
+    textual_parent: bool = False,
+) -> _ElementTree | _Element:
+    nb_child = len(elem)
+    follow_level = level + 1
+    if f"{elem.prefix}:{elem.tag.rpartition('}')[2]}" in TEXT_CONTENT:
+        is_textual = True
+        if not textual_parent:
+            elem.tail = "\n" + ending_level * TAB
+    else:
+        is_textual = False
+        if not textual_parent:
+            elem.tail = "\n" + ending_level * TAB
+            if nb_child > 0:
+                elem.text = "\n" + follow_level * TAB
+        else:
+            if nb_child > 0:
+                elem.text = (elem.text or "") + "\n" + follow_level * TAB
+            if not elem.tail:
+                elem.tail = "\n" + ending_level * TAB
+    if nb_child > 0:
+        for sub_elem in elem[:-1]:
+            pretty_indent(sub_elem, follow_level, follow_level, is_textual)
+        pretty_indent(elem[-1], follow_level, level, is_textual)
+    return elem
 
 
 def normalize_path(path: str) -> str:
@@ -262,7 +421,7 @@ class Container:
                 continue
             dump(part_path, data)
 
-    def _xml_content(self) -> bytes:
+    def _xml_content(self, pretty: bool = True) -> bytes:
         mimetype = self.__parts["mimetype"].decode("utf8")
         doc_xml = (
             OFFICE_PREFIX.decode("utf8")
@@ -284,12 +443,20 @@ class Container:
                 xpart = part
             for child in xpart:
                 root.append(child)
-        return tostring(root, encoding="UTF-8", xml_declaration=True)
+        if pretty:
+            xml_header = b'<?xml version="1.0" encoding="UTF-8"?>\n'
+            bytes_tree = tostring(
+                pretty_indent(root),
+                encoding="unicode",
+            ).encode("utf8")
+            return xml_header + bytes_tree
+        else:
+            return tostring(root, encoding="UTF-8", xml_declaration=True)
 
-    def _save_xml(self, target: Path | str) -> None:
+    def _save_xml(self, target: Path | str, pretty: bool = True) -> None:
         """Save a XML flat ODF format from the available parts."""
         target = Path(target).with_suffix(".xml")
-        target.write_bytes(self._xml_content())
+        target.write_bytes(self._xml_content(pretty))
 
     # Public API
 
@@ -444,22 +611,28 @@ class Container:
         self._backup_or_unlink(backup, target)
         self._save_folder(target)
 
-    def _save_as_xml(self, target: str | Path | io.BytesIO, backup: bool) -> None:
+    def _save_as_xml(
+        self,
+        target: str | Path | io.BytesIO,
+        backup: bool,
+        pretty: bool = True,
+    ) -> None:
         if not isinstance(target, (str, Path)):
             raise TypeError(
-                f"Saving in XML format requires a folder name, not '{target!r}'"
+                f"Saving in XML format requires a path name, not '{target!r}'"
             )
         if not str(target).endswith(".xml"):
             target = str(target) + ".xml"
         if isinstance(target, (str, Path)) and backup:
             self._do_backup(target)
-        self._save_xml(target)
+        self._save_xml(target, pretty)
 
     def save(
         self,
         target: str | Path | io.BytesIO | None,
         packaging: str | None = None,
         backup: bool = False,
+        pretty: bool = False,
     ) -> None:
         """Save the container to the given target, a path or a file-like
         object.
@@ -489,7 +662,7 @@ class Container:
                 )
             self._save_as_folder(target, backup)
         elif packaging == XML:
-            self._save_as_xml(target, backup)
+            self._save_as_xml(target, backup, pretty)
         else:
             # default:
             self._save_as_zip(target, backup)

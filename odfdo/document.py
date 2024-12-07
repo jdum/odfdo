@@ -45,6 +45,8 @@ from .const import (
     ODF_SETTINGS,
     ODF_STYLES,
     ODF_TEMPLATES,
+    PACKAGING,
+    XML,
     ZIP,
 )
 from .container import Container
@@ -651,13 +653,17 @@ class Document(MDDocument):
         """
         if not self.container:
             raise ValueError("Empty Container")
+        if packaging not in PACKAGING:
+            raise ValueError(f'Packaging of type "{packaging}" is not supported')
         # Some advertising
         self.meta.set_generator_default()
         # Synchronize data with container
         container = self.container
         if pretty is None:
             pretty = packaging in {"folder", "xml"}
-        if pretty:
+        pretty = bool(pretty)
+        backup = bool(backup)
+        if pretty and packaging != XML:
             for path, part in self.__xmlparts.items():
                 if part is not None:
                     container.set_part(path, part.pretty_serialize())
@@ -672,7 +678,7 @@ class Document(MDDocument):
             for path, part in self.__xmlparts.items():
                 if part is not None:
                     container.set_part(path, part.serialize())
-        container.save(target, packaging=packaging, backup=backup)
+        container.save(target, packaging=packaging, backup=backup, pretty=pretty)
 
     @property
     def content(self) -> Content:
