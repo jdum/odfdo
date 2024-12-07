@@ -1,5 +1,18 @@
 # Odfdo Release Notes
 
+## [3.13.0] - 2024-12-07
+
+-   The `Meta` class which manages the `meta.xml` part has two new methods `as_dict()` and `as_json()` to export its content.
+-   Improved "pretty" export of documents.
+
+### Added
+
+-   Add methods: `Meta.as_dict()`, `Meta.as_json()`, `MetaTemplate.as_dict()`, `MetaAutoReload.as_dict()`, `MetaHyperlinkBehaviour.as_dict()`.
+
+### Changed
+
+-   Small XML file formatting changes when saving with "pretty=True".
+
 ## [3.12.1] - 2024-11-30
 
 Fix some small rendering issues for Markdown export.
