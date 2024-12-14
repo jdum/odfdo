@@ -25,6 +25,8 @@
 """
 from __future__ import annotations
 
+import base64
+import hashlib
 import io
 import posixpath
 from contextlib import suppress
@@ -33,10 +35,8 @@ from importlib import resources as rso
 from mimetypes import guess_type
 from operator import itemgetter
 from pathlib import Path
-from typing import Any
-from uuid import uuid4
+from typing import Any, BinaryIO
 
-from .cell import Cell  # noqa: F401
 from .const import (
     ODF_CONTENT,
     ODF_MANIFEST,
@@ -56,7 +56,6 @@ from .element import Element
 from .manifest import Manifest
 from .meta import Meta
 from .mixin_md import MDDocument
-from .row import Row  # noqa: F401
 from .style import Style
 from .styles import Styles
 from .table import Table
@@ -66,6 +65,44 @@ from .xmlpart import XmlPart
 AUTOMATIC_PREFIX = "odfdo_auto_"
 
 UNDERLINE_LVL = ["=", "-", ":", "`", "'", '"', "~", "^", "_", "*", "+"]
+
+
+class Blob:
+    def __init__(self) -> None:
+        self.content: bytes = b""
+        self.name: str = ""
+        self.mime_type: str = ""
+
+    @classmethod
+    def from_path(cls, path: str | Path) -> Blob:
+        blob = cls()
+        path = Path(path)
+        blob.content = path.read_bytes()
+        extension = path.suffix.lower()
+        footprint = hashlib.shake_256(blob.content).hexdigest(16)
+        blob.name = f"{footprint}{extension}"
+        mime_type, _encoding = guess_type(blob.name)
+        if mime_type:
+            blob.mime_type = mime_type
+        else:
+            blob.mime_type = "application/octet-stream"
+        return blob
+
+    @classmethod
+    def from_io(cls, file_like: BinaryIO) -> Blob:
+        blob = cls()
+        blob.content = file_like.read()
+        blob.name = hashlib.shake_256(blob.content).hexdigest(16)
+        blob.mime_type = "application/octet-stream"
+        return blob
+
+    @classmethod
+    def from_base64(cls, b64string: str | bytes, mime_type: str) -> Blob:
+        blob = cls()
+        blob.content = base64.standard_b64decode(b64string)
+        blob.name = hashlib.shake_256(blob.content).hexdigest(16)
+        blob.mime_type = mime_type
+        return blob
 
 
 def _underline_string(level: int, name: str) -> str:
@@ -514,10 +551,9 @@ class Document(MDDocument):
 
     def get_formated_meta(self) -> str:
         """Return meta informations as text, with some formatting.
-        
-        (Redirection to new implementation for compatibility.) """
+
+        (Redirection to new implementation for compatibility.)"""
         return self.meta.as_text()
-        
 
     def to_markdown(self) -> str:
         doc_type = self.get_type()
@@ -529,10 +565,22 @@ class Document(MDDocument):
             )
         return self._markdown_export()
 
-    def add_file(self, path_or_file: str | Path) -> str:
+    def _add_binary_part(self, blob: Blob) -> str:
+        if not self.container:
+            raise ValueError("Empty Container")
+        manifest = self.manifest
+        if manifest.get_media_type("Pictures/") is None:
+            manifest.add_full_path("Pictures/")
+        path = posixpath.join("Pictures", blob.name)
+        self.container.set_part(path, blob.content)
+        manifest.add_full_path(path, blob.mime_type)
+        return path
+
+    def add_file(self, path_or_file: str | Path | BinaryIO) -> str:
         """Insert a file from a path or a file-like object in the container.
 
-        Return the full path to reference in the content.
+        Return the full path to reference in the content. The internal name
+        of the file in the Picture/ folder is gnerated by a hash function.
 
         Arguments:
 
@@ -542,35 +590,11 @@ class Document(MDDocument):
         """
         if not self.container:
             raise ValueError("Empty Container")
-        name = ""
-        # Folder for added files (FIXME hard-coded and copied)
-        manifest = self.manifest
-        medias = manifest.get_paths()
-        # uuid = str(uuid4())
-
         if isinstance(path_or_file, (str, Path)):
-            path = Path(path_or_file)
-            extension = path.suffix.lower()
-            name = f"{path.stem}{extension}"
-            if posixpath.join("Pictures", name) in medias:
-                name = f"{path.stem}_{uuid4()}{extension}"
+            blob = Blob.from_path(path_or_file)
         else:
-            path = None
-            name = getattr(path_or_file, "name", None)
-            if not name:
-                name = str(uuid4())
-        media_type, _encoding = guess_type(name)
-        if not media_type:
-            media_type = "application/octet-stream"
-        if manifest.get_media_type("Pictures/") is None:
-            manifest.add_full_path("Pictures/")
-        full_path = posixpath.join("Pictures", name)
-        if path is None:
-            self.container.set_part(full_path, path_or_file.read())  # type:ignore
-        else:
-            self.container.set_part(full_path, path.read_bytes())
-        manifest.add_full_path(full_path, media_type)
-        return full_path
+            blob = Blob.from_io(path_or_file)
+        return self._add_binary_part(blob)
 
     @property
     def clone(self) -> Document:
