@@ -89,6 +89,7 @@ ODF_NAMESPACES = {
     "tableooo": "http://openoffice.org/2009/table",
     "text": "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
     "xforms": "http://www.w3.org/2002/xforms",
+    "xhtml": "http://www.w3.org/1999/xhtml",
     "xlink": "http://www.w3.org/1999/xlink",
     "xml": "http://www.w3.org/XML/1998/namespace",
     "xsd": "http://www.w3.org/2001/XMLSchema",
