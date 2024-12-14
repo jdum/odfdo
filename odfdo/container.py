@@ -23,10 +23,12 @@
 """
 from __future__ import annotations
 
+import base64
 import contextlib
 import io
 import os
 import shutil
+import textwrap
 import time
 from copy import deepcopy
 from pathlib import Path, PurePath
@@ -49,6 +51,7 @@ from .const import (
     XML,
     ZIP,
 )
+from .element import NAMESPACES_XML, xpath_compile
 from .scriptutils import printwarn
 from .utils import bytes_to_str, str_to_bytes
 
@@ -80,7 +83,6 @@ TEXT_CONTENT = {
     "number:currency-symbol",
     "number:embedded-text",
     "number:text",
-    "office:binary-data",
     "office:script",
     "presentation:date-time-decl",
     "presentation:footer-decl",
@@ -190,9 +192,24 @@ def pretty_indent(
 ) -> _ElementTree | _Element:
     nb_child = len(elem)
     follow_level = level + 1
-    if f"{elem.prefix}:{elem.tag.rpartition('}')[2]}" in TEXT_CONTENT:
+    tag = f"{elem.prefix}:{elem.tag.rpartition('}')[2]}"
+    if tag in TEXT_CONTENT:
         is_textual = True
         if not textual_parent:
+            elem.tail = "\n" + ending_level * TAB
+    elif tag == "office:binary-data":
+        is_textual = True
+        elem.text = (
+            textwrap.fill(
+                elem.text,
+                initial_indent=(ending_level + 11) * TAB,
+                subsequent_indent=(follow_level * TAB)[:-1],
+                width=79,
+            ).lstrip()
+            + "\n"
+            + (follow_level - 1) * TAB
+        )
+        if not elem.tail:
             elem.tail = "\n" + ending_level * TAB
     else:
         is_textual = False
@@ -421,7 +438,26 @@ class Container:
                 continue
             dump(part_path, data)
 
+    def _encoded_image(self, elem: _Element) -> _Element | None:
+        mime_type = elem.get(
+            "{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}mime-type"
+        )
+        path = elem.get("{http://www.w3.org/1999/xlink}href")
+        if not path:
+            return None
+        content = self.__parts[path]
+        if not content:
+            return None
+        text = base64.standard_b64encode(content).decode()
+        ebytes = (
+            f'<draw:image draw:mime-type="{mime_type}">'
+            f"<office:binary-data>{text}\n</office:binary-data></draw:image>"
+        ).encode()
+        root = fromstring(NAMESPACES_XML % ebytes)
+        return root[0]
+
     def _xml_content(self, pretty: bool = True) -> bytes:
+
         mimetype = self.__parts["mimetype"].decode("utf8")
         doc_xml = (
             OFFICE_PREFIX.decode("utf8")
@@ -441,6 +477,13 @@ class Container:
                 xpart = fromstring(part)
             else:
                 xpart = part
+            if path == ODF_CONTENT:
+                xpath = xpath_compile("descendant::draw:image")
+                images = xpath(xpart)
+                if images:
+                    for elem in images:
+                        encoded = self._encoded_image(elem)
+                        elem.getparent().replace(elem, encoded)
             for child in xpart:
                 root.append(child)
         if pretty:
@@ -453,9 +496,9 @@ class Container:
         else:
             return tostring(root, encoding="UTF-8", xml_declaration=True)
 
-    def _save_xml(self, target: Path | str| io.BytesIO, pretty: bool = True) -> None:
+    def _save_xml(self, target: Path | str | io.BytesIO, pretty: bool = True) -> None:
         """Save a XML flat ODF format from the available parts."""
-        if isinstance(target,(Path | str)):
+        if isinstance(target, (Path | str)):
             target = Path(target).with_suffix(".xml")
             target.write_bytes(self._xml_content(pretty))
         else:
@@ -620,7 +663,7 @@ class Container:
         backup: bool,
         pretty: bool = True,
     ) -> None:
-        if not isinstance(target, (str, Path,io.BytesIO)):
+        if not isinstance(target, (str, Path, io.BytesIO)):
             raise TypeError(
                 f"Saving in XML format requires a path name, not '{target!r}'"
             )
