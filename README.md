@@ -1,5 +1,10 @@
 # odfdo
 
+[![Release](https://img.shields.io/github/v/release/jdum/odfdo)](https://img.shields.io/github/v/release/jdum/odfdo)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/jdum/odfdo/main.yml?branch=devel)](https://img.shields.io/github/actions/workflow/status/jdum/odfdo/main.yml?branch%3Adevel)
+[![License](https://img.shields.io/github/license/jdum/odfdo)](https://img.shields.io/github/license/jdum/odfdo)
+[![PyPI Downloads](https://static.pepy.tech/badge/odfdo/month)](https://pepy.tech/projects/odfdo)
+
 Python library for OpenDocument format (ODF)
 
 ![logo](https://raw.githubusercontent.com/jdum/odfdo/master/odfdo.png)

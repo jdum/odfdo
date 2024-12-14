@@ -1,5 +1,14 @@
 # Odfdo Release Notes
 
+## [3.13.1] - 2024-12-14
+
+-   Allow XML export of base64 encoded images (preparing for flat ODF export).
+-   Update XML propertires to ODF 1.2.
+
+### Changed
+
+-   Refactoring of Document.add_file() and export to XML format.
+
 ## [3.13.0] - 2024-12-07
 
 -   The `Meta` class which manages the `meta.xml` part has two new methods `as_dict()` and `as_json()` to export its content.
