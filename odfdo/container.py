@@ -498,7 +498,7 @@ class Container:
 
     def _save_xml(self, target: Path | str | io.BytesIO, pretty: bool = True) -> None:
         """Save a XML flat ODF format from the available parts."""
-        if isinstance(target, (Path | str)):
+        if isinstance(target, (Path, str)):
             target = Path(target).with_suffix(".xml")
             target.write_bytes(self._xml_content(pretty))
         else:
