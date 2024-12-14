@@ -453,10 +453,13 @@ class Container:
         else:
             return tostring(root, encoding="UTF-8", xml_declaration=True)
 
-    def _save_xml(self, target: Path | str, pretty: bool = True) -> None:
+    def _save_xml(self, target: Path | str| io.BytesIO, pretty: bool = True) -> None:
         """Save a XML flat ODF format from the available parts."""
-        target = Path(target).with_suffix(".xml")
-        target.write_bytes(self._xml_content(pretty))
+        if isinstance(target,(Path | str)):
+            target = Path(target).with_suffix(".xml")
+            target.write_bytes(self._xml_content(pretty))
+        else:
+            target.write(self._xml_content(pretty))
 
     # Public API
 
@@ -617,14 +620,15 @@ class Container:
         backup: bool,
         pretty: bool = True,
     ) -> None:
-        if not isinstance(target, (str, Path)):
+        if not isinstance(target, (str, Path,io.BytesIO)):
             raise TypeError(
                 f"Saving in XML format requires a path name, not '{target!r}'"
             )
-        if not str(target).endswith(".xml"):
-            target = str(target) + ".xml"
-        if isinstance(target, (str, Path)) and backup:
-            self._do_backup(target)
+        if isinstance(target, (str, Path)):
+            if not str(target).endswith(".xml"):
+                target = str(target) + ".xml"
+            if backup:
+                self._do_backup(target)
         self._save_xml(target, pretty)
 
     def save(
