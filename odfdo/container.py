@@ -28,6 +28,7 @@ import contextlib
 import io
 import os
 import shutil
+import sys
 import textwrap
 import time
 from copy import deepcopy
@@ -52,7 +53,6 @@ from .const import (
     ZIP,
 )
 from .element import NAMESPACES_XML, xpath_compile
-from .scriptutils import printwarn
 from .utils import bytes_to_str, str_to_bytes
 
 TAB = "  "
@@ -182,6 +182,10 @@ TEXT_CONTENT = {
     "text:variable-set",
     "text:word-count",
 }
+
+
+def printwarn(message: str) -> None:
+    print(f"Warning: {message}", file=sys.stderr)
 
 
 def pretty_indent(

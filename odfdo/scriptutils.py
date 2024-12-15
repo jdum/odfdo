@@ -52,9 +52,5 @@ def printinfo(*args: Any, **kwargs: Any) -> None:
     print(output, file=stderr, **kwargs)
 
 
-def printwarn(*args: Any, **kwargs: Any) -> None:
-    printinfo("Warning:", *args, **kwargs)
-
-
 def printerr(*args: Any, **kwargs: Any) -> None:
     printinfo("Error:", *args, **kwargs)
