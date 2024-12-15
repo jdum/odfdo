@@ -1,5 +1,19 @@
 # Odfdo Release Notes
 
+## [3.13.2] - 2024-12-15
+
+-   Refactor Table and Row caching, removing useless `_caching` attribute from many classes.
+-   Remove module scriptutils.
+
+### Changed
+
+-   Refactoring of Table and Row caching.
+-   Replace in `container.py` and scripts `show.py` and `styles.py` the previous functions of scriptutils.
+
+### Removed
+
+-   `odfdo.scriptutils.py` removed.
+
 ## [3.13.1] - 2024-12-14
 
 -   Allow XML export of base64 encoded images (preparing for flat ODF export).
