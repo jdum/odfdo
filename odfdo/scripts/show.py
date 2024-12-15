@@ -27,7 +27,6 @@ from pathlib import Path
 from shutil import rmtree
 
 from odfdo import Document, __version__
-from odfdo.scriptutils import check_target_directory
 
 PROG = "odfdo-show"
 
@@ -132,13 +131,24 @@ def print_format_error(doc_type: str) -> None:
     print(msg, file=sys.stderr)
 
 
+def check_target_directory(path: Path) -> None:
+    if path.exists():
+        message = f'The path "{path}" exists, overwrite it? [y/n]'
+        print(message, file=sys.stderr)
+        line = sys.stdin.readline()
+        line = line.strip().lower()
+        if line != "y":
+            print("Operation aborted", file=sys.stderr)
+            raise SystemExit(0)
+
+
 def show_output(
     args: Namespace,
     doc: Document,
     doc_type: str,
 ) -> None:
     output = Path(args.output)
-    check_target_directory(str(output))
+    check_target_directory(output)
     if output.exists():
         rmtree(output)  # pragma: no cover
     output.mkdir(parents=True, exist_ok=True)

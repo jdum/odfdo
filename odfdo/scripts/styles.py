@@ -27,7 +27,6 @@ from io import BytesIO
 from pathlib import Path
 
 from odfdo import Document, __version__
-from odfdo.scriptutils import check_target_file
 
 PROG = "odfdo-styles"
 
@@ -186,6 +185,17 @@ def merge_styles(
     document.merge_styles_from(source)
     document.save(target=target, pretty=pretty)
     print("Done (0 error, 0 warning).", file=sys.stderr)
+
+
+def check_target_file(path: str) -> None:
+    if Path(path).exists():
+        message = f'The path "{path}" exists, overwrite it? [y/n]'
+        print(message, file=sys.stderr)
+        line = sys.stdin.readline()
+        line = line.strip().lower()
+        if line != "y":
+            print("Operation aborted", file=sys.stderr)
+            raise SystemExit(0)
 
 
 def style_tools(args: Namespace) -> None:
