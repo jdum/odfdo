@@ -30,7 +30,6 @@ class Body(Element):
     """
 
     _tag: str = "office:body"
-    _caching: bool = False
     _properties: tuple[PropDef, ...] = ()
 
     def get_tables(
@@ -96,7 +95,6 @@ class Chart(Body):
     """
 
     _tag: str = "office:chart"
-    _caching: bool = False
     _properties: tuple[PropDef, ...] = ()
 
 
@@ -106,7 +104,6 @@ class Database(Body):
     """
 
     _tag: str = "office:database"
-    _caching: bool = False
     _properties: tuple[PropDef, ...] = ()
 
 
@@ -116,7 +113,6 @@ class Drawing(Body):
     """
 
     _tag: str = "office:drawing"
-    _caching: bool = False
     _properties: tuple[PropDef, ...] = ()
 
 
@@ -126,7 +122,6 @@ class Image(Body):
     """
 
     _tag: str = "office:image"
-    _caching: bool = False
     _properties: tuple[PropDef, ...] = ()
 
 
@@ -136,7 +131,6 @@ class Presentation(Body):
     """
 
     _tag: str = "office:presentation"
-    _caching: bool = False
     _properties: tuple[PropDef, ...] = ()
 
 
@@ -146,7 +140,6 @@ class Spreadsheet(Body):
     """
 
     _tag: str = "office:spreadsheet"
-    _caching: bool = False
     _properties: tuple[PropDef, ...] = ()
 
 
@@ -156,7 +149,6 @@ class Text(Body):
     """
 
     _tag: str = "office:text"
-    _caching: bool = False
     _properties: tuple[PropDef, ...] = ()
 
 

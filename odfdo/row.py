@@ -32,27 +32,25 @@ from typing import Any
 
 from .cell import Cell
 from .element import Element, register_element_class, xpath_compile
-from .utils import (
-    convert_coordinates,
+from .element_cached import (
+    CachedElement,
     delete_item_in_vault,
     find_odf_idx,
-    increment,
     insert_item_in_vault,
     insert_map_once,
     make_cache_map,
     set_item_in_vault,
-    translate_from_any,
 )
+from .utils import convert_coordinates, increment, translate_from_any
 
 _xpath_cell = xpath_compile("(table:table-cell|table:covered-table-cell)")
 _xpath_cell_idx = xpath_compile("(table:table-cell|table:covered-table-cell)[$idx]")
 
 
-class Row(Element):
+class Row(CachedElement):
     """ODF table row "table:table-row" """
 
     _tag = "table:table-row"
-    _caching = True
     _append = Element.append
 
     def __init__(
@@ -78,14 +76,11 @@ class Row(Element):
         """
         super().__init__(**kwargs)
         self.y = None
-        if not hasattr(self, "_indexes"):
-            self._indexes = {}
-            self._indexes["_rmap"] = {}
-        if not hasattr(self, "_rmap"):
-            self._compute_row_cache()
-            if not hasattr(self, "_tmap"):
-                self._tmap = []
-                self._cmap = []
+        self._indexes = {}
+        self._indexes["_rmap"] = {}
+        self._compute_row_cache()
+        self._tmap = []
+        self._cmap = []
         if self._do_init:
             if width is not None:
                 for _i in range(width):
@@ -129,11 +124,9 @@ class Row(Element):
     def clone(self) -> Row:
         clone = Element.clone.fget(self)  # type: ignore
         clone.y = self.y
-        if hasattr(self, "_tmap"):
-            if hasattr(self, "_rmap"):
-                clone._rmap = self._rmap[:]
-            clone._tmap = self._tmap[:]
-            clone._cmap = self._cmap[:]
+        clone._rmap = self._rmap[:]
+        clone._tmap = self._tmap[:]
+        clone._cmap = self._cmap[:]
         return clone
 
     def _set_repeated(self, repeated: int | None) -> None:

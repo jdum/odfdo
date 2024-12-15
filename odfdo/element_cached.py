@@ -17,20 +17,66 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-# Authors: David Versmisse <david.versmisse@itaapy.com>
-#          Hervé Cauwelier <herve@itaapy.com>
-#          Romain Gauthier <romain@itaapy.com>
-#          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Table class for "table:table" and HeaderRows, Cell, Row, Column,
-NamedRange related classes.
+"""CachedElement base class of Table and Row, and caching functions.
 """
 from __future__ import annotations
 
 from bisect import bisect_left, insort
 
-from lxml.etree import XPath
+from lxml.etree import XPath, _Element
 
-from .cached_element import CachedElement
+from .element import Element, xpath_compile
+
+
+class CachedElement(Element):
+
+    def _copy_cache(self, cache: tuple | None) -> None:
+        """Copy cache when cloning."""
+        if cache:
+            self._tmap = cache[0]
+            self._cmap = cache[1]
+            if len(cache) == 3:
+                self._rmap = cache[2]
+
+    def get_elements(self, xpath_query: XPath | str) -> list[Element]:
+        cache: tuple | None = None
+        element = self._Element__element
+        if isinstance(xpath_query, str):
+            new_xpath_query = xpath_compile(xpath_query)
+            result = new_xpath_query(element)
+        else:
+            result = xpath_query(element)
+        if not isinstance(result, list):
+            raise TypeError("Bad XPath result")
+
+        if hasattr(self, "_rmap"):
+            cache = (self._tmap, self._cmap, self._rmap)
+        else:
+            cache = (self._tmap, self._cmap)
+        return [
+            Element.from_tag_for_clone(e, cache)
+            for e in result
+            if isinstance(e, _Element)
+        ]
+
+    def clear(self) -> None:
+        """Remove text, children and attributes from the element."""
+        self._Element__element.clear()
+        if hasattr(self, "_tmap"):
+            self._tmap: list[int] = []
+        if hasattr(self, "_cmap"):
+            self._cmap: list[int] = []
+        if hasattr(self, "_rmap"):
+            self._rmap: list[int] = []
+        if hasattr(self, "_indexes"):
+            remember = False
+            if "_rmap" in self._indexes:
+                remember = True
+            self._indexes: dict[str, dict] = {}
+            self._indexes["_cmap"] = {}
+            self._indexes["_tmap"] = {}
+            if remember:
+                self._indexes["_rmap"] = {}
 
 
 def set_item_in_vault(  # noqa: C901

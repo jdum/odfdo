@@ -30,7 +30,6 @@ from .element import Element, register_element_class
 
 class HeaderRows(Element):
     _tag = "table:table-header-rows"
-    _caching = True
 
 
 register_element_class(HeaderRows)

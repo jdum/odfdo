@@ -44,7 +44,6 @@ from .mixin_md import MDBase
 from .utils import (
     FAMILY_MAPPING,
     FAMILY_ODF_STD,
-    CachedElement,
     hexa_color,
     make_xpath_query,
     str_to_bytes,
@@ -260,14 +259,13 @@ class EText(str):
         return self.__is_tail
 
 
-class Element(CachedElement, MDBase):
+class Element(MDBase):
     """Super class of all ODF classes.
 
     Representation of an XML element. Abstraction of the XML library behind.
     """
 
     _tag: str = ""
-    _caching: bool = False
     _properties: tuple[PropDef, ...] = ()
 
     def __init__(self, **kwargs: Any) -> None:
@@ -320,12 +318,12 @@ class Element(CachedElement, MDBase):
         tag = to_str(tree_element.tag)
         klass = _class_registry.get(tag, cls)
         element = klass(tag_or_elem=tree_element)
-        if cache and element._caching:
-            element._tmap = cache[0]
-            element._cmap = cache[1]
-            if len(cache) == 3:
-                element._rmap = cache[2]
+        element._copy_cache(cache)
         return element
+
+    def _copy_cache(self, cache: tuple | None) -> None:
+        """Method eredefined for cahched elements."""
+        pass
 
     @staticmethod
     def make_etree_element(tag: str) -> _Element:
@@ -758,12 +756,6 @@ class Element(CachedElement, MDBase):
             result = xpath_query(element)
         if not isinstance(result, list):
             raise TypeError("Bad XPath result")
-
-        if hasattr(self, "_tmap"):
-            if hasattr(self, "_rmap"):
-                cache = (self._tmap, self._cmap, self._rmap)
-            else:
-                cache = (self._tmap, self._cmap)
         return [
             Element.from_tag_for_clone(e, cache)
             for e in result
@@ -1653,21 +1645,6 @@ class Element(CachedElement, MDBase):
     def clear(self) -> None:
         """Remove text, children and attributes from the element."""
         self.__element.clear()
-        if hasattr(self, "_tmap"):
-            self._tmap: list[int] = []
-        if hasattr(self, "_cmap"):
-            self._cmap: list[int] = []
-        if hasattr(self, "_rmap"):
-            self._rmap: list[int] = []
-        if hasattr(self, "_indexes"):
-            remember = False
-            if "_rmap" in self._indexes:
-                remember = True
-            self._indexes: dict[str, dict] = {}
-            self._indexes["_cmap"] = {}
-            self._indexes["_tmap"] = {}
-            if remember:
-                self._indexes["_rmap"] = {}
 
     @property
     def clone(self) -> Element:

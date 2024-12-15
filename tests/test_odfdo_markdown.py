@@ -24,14 +24,14 @@ def run_params(params: list):
 
 def test_no_param():
     params = []
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 1
     assert "usage:" in out
 
 
 def test_version():
     params = ["--version"]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert "odfdo-markdown v3" in out
 

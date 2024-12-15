@@ -44,7 +44,6 @@ class Cell(ElementTyped):
     """ "table:table-cell" table cell element."""
 
     _tag = "table:table-cell"
-    _caching = True
 
     def __init__(
         self,
@@ -103,11 +102,6 @@ class Cell(ElementTyped):
         clone = Element.clone.fget(self)  # type: ignore
         clone.y = self.y
         clone.x = self.x
-        if hasattr(self, "_tmap"):
-            if hasattr(self, "_rmap"):
-                clone._rmap = self._rmap[:]
-            clone._tmap = self._tmap[:]
-            clone._cmap = self._cmap[:]
         return clone
 
     @property

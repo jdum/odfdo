@@ -41,20 +41,23 @@ from typing import Any
 from .cell import Cell
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element, register_element_class, xpath_compile
+from .element_cached import (
+    CachedElement,
+    delete_item_in_vault,
+    find_odf_idx,
+    insert_item_in_vault,
+    insert_map_once,
+    make_cache_map,
+    set_item_in_vault,
+)
 from .frame import Frame
 from .mixin_md import MDTable
 from .row import Row
 from .utils import (
     convert_coordinates,
-    delete_item_in_vault,
     digit_to_alpha,
-    find_odf_idx,
     increment,
-    insert_item_in_vault,
-    insert_map_once,
     isiterable,
-    make_cache_map,
-    set_item_in_vault,
     translate_from_any,
 )
 
@@ -143,7 +146,6 @@ class RowGroup(Element):
 
     # TODO
     _tag = "table:table-row-group"
-    _caching = True
 
     def __init__(
         self,
@@ -173,7 +175,6 @@ class Column(Element):
     """ODF table column "table:table-column" """
 
     _tag = "table:table-column"
-    _caching = True
 
     def __init__(
         self,
@@ -215,11 +216,6 @@ class Column(Element):
     def clone(self) -> Column:
         clone = Element.clone.fget(self)  # type: ignore
         clone.x = self.x
-        if hasattr(self, "_tmap"):
-            if hasattr(self, "_rmap"):
-                clone._rmap = self._rmap[:]
-            clone._tmap = self._tmap[:]
-            clone._cmap = self._cmap[:]
         return clone
 
     def get_default_cell_style(self) -> str | None:
@@ -309,11 +305,10 @@ class Column(Element):
         self.set_style_attribute("table:style-name", style)
 
 
-class Table(MDTable, Element):
+class Table(MDTable, CachedElement):
     """ODF table "table:table" """
 
     _tag = "table:table"
-    _caching = True
     _append = Element.append
 
     def __init__(
