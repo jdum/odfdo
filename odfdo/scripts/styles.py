@@ -27,7 +27,7 @@ from io import BytesIO
 from pathlib import Path
 
 from odfdo import Document, __version__
-from odfdo.scriptutils import check_target_file, printinfo
+from odfdo.scriptutils import check_target_file
 
 PROG = "odfdo-styles"
 
@@ -120,7 +120,8 @@ def delete_styles(
 ) -> None:
     number_deleted = document.delete_styles()
     document.save(target=target, pretty=pretty)
-    printinfo(f"{number_deleted} styles removed (0 error, 0 warning).")
+    msg = f"{number_deleted} styles removed (0 error, 0 warning)."
+    print(msg, file=sys.stderr)
     if isinstance(target, BytesIO):
         sys.stdout.buffer.write(target.getvalue())
 
@@ -141,7 +142,6 @@ def merge_presentation_styles(document: Document, source: Document) -> None:
     # master_page_name = first_page.master_page
     # print(master_page_name)
     # first_master_page = document.get_style("master-page", master_page_name)
-    # printinfo(f"master page used: {first_master_page.display_name}")
     # body = document.body
 
     # for page in body.get_draw_pages():
@@ -184,13 +184,8 @@ def merge_styles(
     source = Document(from_file)
     document.delete_styles()
     document.merge_styles_from(source)
-    # doc_type = document.get_type()
-    # Enhance Presentation merge
-    # if doc_type in {"presentation", "presentation-template"}:
-    #     printinfo("merging presentation styles...")
-    #     merge_presentation_styles(document, source)
     document.save(target=target, pretty=pretty)
-    printinfo("Done (0 error, 0 warning).")
+    print("Done (0 error, 0 warning).", file=sys.stderr)
 
 
 def style_tools(args: Namespace) -> None:

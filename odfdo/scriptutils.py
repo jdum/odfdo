@@ -24,7 +24,6 @@ from __future__ import annotations
 
 from os.path import exists
 from sys import stderr, stdin
-from typing import Any
 
 
 def check_target_file(path: str, kind: str = "file") -> None:
@@ -42,11 +41,3 @@ def check_target_file(path: str, kind: str = "file") -> None:
 
 def check_target_directory(path: str) -> None:
     return check_target_file(path, kind="directory")
-
-
-def printinfo(*args: Any, **kwargs: Any) -> None:
-    indent = kwargs.get("indent", 0)
-    if indent:
-        stderr.write(" " * indent)
-    output = " ".join(str(arg) for arg in args)
-    print(output, file=stderr, **kwargs)
