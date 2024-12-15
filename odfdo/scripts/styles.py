@@ -27,7 +27,7 @@ from io import BytesIO
 from pathlib import Path
 
 from odfdo import Document, __version__
-from odfdo.scriptutils import check_target_file, printerr, printinfo
+from odfdo.scriptutils import check_target_file, printinfo
 
 PROG = "odfdo-styles"
 
@@ -199,7 +199,11 @@ def style_tools(args: Namespace) -> None:
     if args.delete:
         target = args.output
         if target is None:
-            printerr("Will not delete in-place: output file needed or '-' for stdout")
+            msg = (
+                "Error: Will not delete in-place: "
+                "output file needed or '-' for stdout"
+            )
+            print(msg, file=sys.stderr)
             raise SystemExit(1)
         elif target == "-":
             target = BytesIO()

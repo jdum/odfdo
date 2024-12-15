@@ -21,12 +21,13 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 from __future__ import annotations
 
+import sys
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 from shutil import rmtree
 
 from odfdo import Document, __version__
-from odfdo.scriptutils import check_target_directory, printerr
+from odfdo.scriptutils import check_target_directory
 
 PROG = "odfdo-show"
 
@@ -126,6 +127,11 @@ def spreadsheet_to_csv(document: Document, output: Path) -> None:
         table.to_csv(output / filename)  # type: ignore
 
 
+def print_format_error(doc_type: str) -> None:
+    msg = f"Error: The OpenDocument format '{doc_type}' is not supported yet."
+    print(msg, file=sys.stderr)
+
+
 def show_output(
     args: Namespace,
     doc: Document,
@@ -148,7 +154,7 @@ def show_output(
         print(doc.body)
         spreadsheet_to_csv(doc, output)
     else:
-        printerr(f"The OpenDocument format '{doc_type}' is not supported yet.")
+        print_format_error(doc_type)
         raise SystemExit(1)
 
 
@@ -169,7 +175,7 @@ def show(args: Namespace) -> None:
         if not args.no_content:
             spreadsheet_to_stdout(doc)
     else:
-        printerr(f"The OpenDocument format '{doc_type}' is not supported yet.")
+        print_format_error(doc_type)
         raise SystemExit(1)
 
 

@@ -50,7 +50,3 @@ def printinfo(*args: Any, **kwargs: Any) -> None:
         stderr.write(" " * indent)
     output = " ".join(str(arg) for arg in args)
     print(output, file=stderr, **kwargs)
-
-
-def printerr(*args: Any, **kwargs: Any) -> None:
-    printinfo("Error:", *args, **kwargs)
