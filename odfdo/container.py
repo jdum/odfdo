@@ -42,6 +42,7 @@ from .const import (
     ODF_CONTENT,
     ODF_EXTENSIONS,
     ODF_MANIFEST,
+    ODF_MANIFEST_RDF,
     ODF_META,
     ODF_MIMETYPES,
     ODF_SETTINGS,
@@ -412,6 +413,13 @@ class Container:
                     # Deleted
                     continue
                 filezip.writestr(path, data)
+            # manifest.rdf
+            if (
+                ODF_CONTENT in parts
+                and ODF_STYLES in parts
+                and ODF_MANIFEST_RDF not in parts
+            ):
+                filezip.writestr(ODF_MANIFEST_RDF, self.default_manifest_rdf.encode())
             # Manifest
             with contextlib.suppress(KeyError):
                 part = parts[ODF_MANIFEST]
@@ -441,6 +449,12 @@ class Container:
                 # Deleted
                 continue
             dump(part_path, data)
+        if (
+            ODF_CONTENT in self.__parts
+            and ODF_STYLES in self.__parts
+            and ODF_MANIFEST_RDF not in self.__parts
+        ):
+            dump(ODF_MANIFEST_RDF, self.default_manifest_rdf.encode())
 
     def _encoded_image(self, elem: _Element) -> _Element | None:
         mime_type = elem.get(
@@ -555,6 +569,29 @@ class Container:
             self.__parts_ts[path] = timestamp
             return part
         return None
+
+    @property
+    def default_manifest_rdf(self) -> str:
+        return (
+            '<?xml version="1.0" encoding="utf-8"?>\n'
+            '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">\n'
+            '  <rdf:Description rdf:about="styles.xml">\n'
+            f'    <rdf:type rdf:resource="http://docs.oasis-open.org/ns/office/{OFFICE_VERSION}/meta/odf#StylesFile"/>\n'
+            "  </rdf:Description>\n"
+            '  <rdf:Description rdf:about="">\n'
+            f'    <ns0:hasPart xmlns:ns0="http://docs.oasis-open.org/ns/office/{OFFICE_VERSION}/meta/pkg#" rdf:resource="styles.xml"/>\n'
+            "  </rdf:Description>\n"
+            '  <rdf:Description rdf:about="content.xml">\n'
+            f'    <rdf:type rdf:resource="http://docs.oasis-open.org/ns/office/{OFFICE_VERSION}/meta/odf#ContentFile"/>\n'
+            "  </rdf:Description>\n"
+            '  <rdf:Description rdf:about="">\n'
+            f'    <ns0:hasPart xmlns:ns0="http://docs.oasis-open.org/ns/office/{OFFICE_VERSION}/meta/pkg#" rdf:resource="content.xml"/>\n'
+            "  </rdf:Description>\n"
+            '  <rdf:Description rdf:about="">\n'
+            f'    <rdf:type rdf:resource="http://docs.oasis-open.org/ns/office/{OFFICE_VERSION}/meta/pkg#Document"/>\n'
+            "  </rdf:Description>\n"
+            "</rdf:RDF>\n"
+        )
 
     @property
     def mimetype(self) -> str:
