@@ -152,7 +152,7 @@ class Cell(ElementTyped):
             self.set_attribute("office:string-value", value)
             self.text = value
             return
-        if value is True or value is False:
+        if isinstance(value, bool):
             self.set_attribute("office:value-type", "boolean")
             value_bool = Boolean.encode(value)
             self.set_attribute("office:boolean-value", value_bool)

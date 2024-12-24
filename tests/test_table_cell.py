@@ -36,6 +36,10 @@ def cell() -> Iterable[Cell]:
     yield Cell(1, repeated=3, style="ce5")
 
 
+def test_cell_repr_not_in_table(cell):
+    assert repr(cell) == "<Cell x=None y=None>"
+
+
 def test_get_cell_value(cell):
     assert cell.get_value() == 1
     assert cell.get_value(get_type=True) == (1, "float")
@@ -124,3 +128,9 @@ def test_set_cell_formula(cell):
     assert cell.formula == "any string"
     cell.formula = None
     assert cell.formula is None
+
+
+def test_set_cell_formula_2(cell):
+    cell.set_value(4, formula="4")
+    assert cell.value == 4
+    assert cell.formula == "4"

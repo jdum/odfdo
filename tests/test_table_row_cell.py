@@ -205,6 +205,11 @@ def test_get_cell_int(row):
     assert cell_5.style == "ce5"
 
 
+def test_get_cell_int_repr(row):
+    cell_5 = row.get_cell(5)
+    assert repr(cell_5) == "<Cell x=5 y=1>"
+
+
 def test_get_cell_coord(row):
     cell = row.get_cell(-1)
     assert cell.get_value() == 3

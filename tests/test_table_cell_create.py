@@ -138,6 +138,11 @@ def test_date():
     assert cell.serialize() == expected
 
 
+def test_date_value():
+    cell = Cell(date(2009, 6, 30))
+    assert cell.value == datetime(2009, 6, 30, 0, 0)
+
+
 def test_date_repr():
     cell = Cell(date(2009, 6, 30), text="30/6/2009")
     expected = (
@@ -160,6 +165,11 @@ def test_datetime():
         "</table:table-cell>"
     )
     assert cell.serialize() == expected
+
+
+def test_datetime_value():
+    cell = Cell(datetime(2009, 6, 30, 17, 33, 18))
+    assert cell.value == datetime(2009, 6, 30, 17, 33, 18)
 
 
 def test_datetime_repr():
@@ -232,6 +242,11 @@ def test_timedelta():
         "</table:table-cell>"
     )
     assert cell.serialize() == expected
+
+
+def test_timedelta_value():
+    cell = Cell(timedelta(0, 8))
+    assert cell.value == timedelta(0, 8)
 
 
 def test_timedelta_repr():
@@ -483,6 +498,32 @@ def test_float_value_property():
     assert cell.value == dec(-12.0)
 
 
+def test_decimal_value_property():
+    cell = Cell(dec(1.50), cell_type="currency", currency="EUR")
+    assert cell.float == 1.50
+    assert cell.value == dec(1.50)
+
+
+def test_decimal_value_property_2():
+    cell = Cell(0.0, cell_type="currency", currency="EUR")
+    cell.value = dec(1.56)
+    assert cell.float == 1.56
+    assert cell.value == dec(1.56)
+
+
+def test_int_value_property():
+    cell = Cell(0, cell_type="float")
+    assert cell.float == 0.0
+    assert cell.value == 0
+
+
+def test_int_value_property_2():
+    cell = Cell(0, cell_type="float")
+    cell.value = 4
+    assert cell.float == 4.0
+    assert cell.value == 4
+
+
 def test_float_property2():
     cell = Cell(1.54, cell_type="currency", currency="EUR")
     cell.float = 12
@@ -492,3 +533,9 @@ def test_float_property2():
         "</table:table-cell>"
     )
     assert cell.serialize() == expected
+
+
+def test_bad_value():
+    cell = Cell(1.54, cell_type="currency", currency="EUR")
+    with pytest.raises(TypeError):
+        cell.value = []
