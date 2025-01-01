@@ -1,5 +1,19 @@
 # Odfdo Release Notes
 
+## [3.13.3] - 2025-01-01
+
+-   Refactor cell properties to get easier and more consistent access to cell values. Some new properties added: Cell.decimal, Cell.int, Cell.bool, Cell.duration, Cell.datetime, Cell.date.
+-   Add a `.rdf` manifest file if it is missing (this should only happen in very rare manipulations).
+
+### Changed
+
+-   Refactoring of Cell properties.
+-   Refactoring of Container class to ensure creation of manifest file.
+
+### Added
+
+-   Add properties: `Cell.decimal`, `Cell.int`, `Cell.bool`, `Cell.duration`, `Cell.datetime`, `Cell.date`.
+
 ## [3.13.2] - 2024-12-15
 
 -   Refactor Table and Row caching, removing useless `_caching` attribute from many classes.
