@@ -502,6 +502,8 @@ def test_decimal_value_property():
     cell = Cell(dec(1.50), cell_type="currency", currency="EUR")
     assert cell.float == 1.50
     assert cell.value == dec(1.50)
+    assert cell.float == 1.50
+    assert cell.decimal == dec(1.50)
 
 
 def test_decimal_value_property_2():
@@ -509,12 +511,14 @@ def test_decimal_value_property_2():
     cell.value = dec(1.56)
     assert cell.float == 1.56
     assert cell.value == dec(1.56)
+    assert cell.decimal == dec(1.56)
 
 
 def test_int_value_property():
     cell = Cell(0, cell_type="float")
     assert cell.float == 0.0
     assert cell.value == 0
+    assert cell.int == 0
 
 
 def test_int_value_property_2():
@@ -522,6 +526,7 @@ def test_int_value_property_2():
     cell.value = 4
     assert cell.float == 4.0
     assert cell.value == 4
+    assert cell.int == 4
 
 
 def test_float_property2():
@@ -533,6 +538,75 @@ def test_float_property2():
         "</table:table-cell>"
     )
     assert cell.serialize() == expected
+
+
+def test_bool_property():
+    cell = Cell(0, cell_type="float")
+    cell.bool = True
+    assert cell.value is True
+    assert cell.bool is True
+
+
+def test_bool_property_as_numeric():
+    cell = Cell(0, cell_type="float")
+    cell.bool = True
+    assert cell.int == 1
+    assert cell.float == 1.0
+    assert cell.decimal == dec("1")
+
+
+def test_bool_property_2():
+    cell = Cell(0, cell_type="float")
+    cell.bool = False
+    assert cell.value is False
+    assert cell.bool is False
+
+
+def test_bool_property_as_numeric_2():
+    cell = Cell(0, cell_type="float")
+    cell.bool = False
+    assert cell.int == 0
+    assert cell.float == 0.0
+    assert cell.decimal == dec("0")
+
+
+def test_decimal_property():
+    cell = Cell(0, cell_type="float")
+    cell.decimal = dec("1.43")
+    assert cell.value == dec("1.43")
+    assert cell.int == 1
+    assert cell.float == 1.43
+    assert cell.decimal == dec("1.43")
+
+
+def test_float_property():
+    cell = Cell(0, cell_type="float")
+    cell.float = dec("1.43")
+    assert cell.value == dec("1.43")
+    assert cell.int == 1
+    assert cell.float == 1.43
+    assert cell.decimal == dec("1.43")
+
+
+def test_int_property():
+    cell = Cell(0, cell_type="float")
+    cell.int = 5
+    assert cell.value == 5
+    assert cell.int == 5
+    assert cell.float == 5.0
+    assert cell.decimal == dec("5")
+
+
+def test_int_property_bool_true():
+    cell = Cell(0, cell_type="float")
+    cell.int = 1
+    assert cell.bool is True
+
+
+def test_int_property_bool_false():
+    cell = Cell(0, cell_type="float")
+    cell.int = 0
+    assert cell.bool is False
 
 
 def test_bad_value():

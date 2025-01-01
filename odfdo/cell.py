@@ -28,13 +28,12 @@ from __future__ import annotations
 
 import contextlib
 from datetime import date, datetime, timedelta
-from decimal import Decimal
+from decimal import ConversionSyntax, Decimal
 from typing import Any
 
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element, register_element_class_list
 from .element_typed import ElementTyped
-from .utils import bytes_to_str
 
 # fix mismatch between float and Cell.float
 Float = float
@@ -112,11 +111,16 @@ class Cell(ElementTyped):
         'office:value-type' attribute of the cell. When setting the value,
         the type of the value will determine the new value_type of the cell.
 
-        Warning: use this method for boolean, float or string only.
+        Warning:
+            - for date, datetime and timedelta, a default text value is generated.
+            - for boolean type, the text value is either 'True' or 'False'.
+            - for numeric types, the return value is either Decimal or in, use
+              the float, decimal or int properties to force the type.
+            - Use the method Cell.set_value() to customize the text value.
         """
         value_type = self.get_attribute_string("office:value-type")
         if value_type == "boolean":
-            return self.get_attribute("office:boolean-value")
+            return self.bool
         if value_type in {"float", "percentage", "currency"}:
             value_decimal = Decimal(str(self.get_attribute_string("office:value")))
             # Return 3 instead of 3.0 if possible
@@ -141,48 +145,110 @@ class Cell(ElementTyped):
         return None
 
     @value.setter
-    def value(self, value: str | bytes | bool | int | Float | Decimal | None) -> None:
-        self.clear()
+    def value(
+        self,
+        value: (
+            str
+            | bytes
+            | bool
+            | int
+            | Float
+            | Decimal
+            | timedelta
+            | datetime
+            | date
+            | None
+        ),
+    ) -> None:
         if value is None:
-            return
-        if isinstance(value, (str, bytes)):
-            if isinstance(value, bytes):
-                value = bytes_to_str(value)
-            self.set_attribute("office:value-type", "string")
-            self.set_attribute("office:string-value", value)
-            self.text = value
-            return
-        if isinstance(value, bool):
-            self.set_attribute("office:value-type", "boolean")
-            value_bool = Boolean.encode(value)
-            self.set_attribute("office:boolean-value", value_bool)
-            self.text = value_bool
-            return
-        if isinstance(value, (int, Float, Decimal)):
-            self.set_attribute("office:value-type", "float")
-            value_str = str(value)
-            self.set_attribute("office:value", value_str)
-            self.text = value_str
-            return
-        raise TypeError(f"Unknown value type, try with set_value() : {value!r}")
+            self.clear()
+        elif isinstance(value, (str, bytes)):
+            self.string = value
+        elif isinstance(value, bool):
+            self.bool = value
+        elif isinstance(value, Float):
+            self.float = value
+        elif isinstance(value, Decimal):
+            self.decimal = value
+        elif isinstance(value, int):
+            self.int = value
+        elif isinstance(value, timedelta):
+            self.duration = value
+        elif isinstance(value, datetime):
+            self.datetime = value
+        elif isinstance(value, date):
+            self.date = value
+        else:
+            raise TypeError(f"Unknown value type, try with set_value() : {value!r}")
+
+    @property
+    def _bool_string(self) -> str:
+        value = self.get_attribute_string("office:boolean-value")
+        if not isinstance(value, str):
+            return "0"
+        return "1" if value == "true" else "0"
 
     @property
     def float(self) -> Float:
         """Set / get the value of the cell as a float (or 0.0)."""
-        for tag in ("office:value", "office:string-value", "office:boolean-value"):
+        for tag in ("office:value", "office:string-value"):
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
                 with contextlib.suppress(ValueError, TypeError):
                     return Float(read_attr)
-        return 0.0
+        return Float(self._bool_string)
 
     @float.setter
-    def float(self, value: str | Float | int | Decimal) -> None:
+    def float(self, value: str | Float | int | Decimal | None) -> None:
         try:
             value_float = Float(value)
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, ConversionSyntax):
             value_float = 0.0
         value_str = str(value_float)
+        self.clear()
+        self.set_attribute("office:value", value_str)
+        self.set_attribute("office:value-type", "float")
+        self.text = value_str
+
+    @property
+    def decimal(self) -> Decimal:
+        """Set / get the value of the cell as a Decimal (or 0.0)."""
+        for tag in ("office:value", "office:string-value"):
+            read_attr = self.get_attribute(tag)
+            if isinstance(read_attr, str):
+                with contextlib.suppress(ValueError, TypeError, ConversionSyntax):
+                    return Decimal(read_attr)
+        return Decimal(self._bool_string)
+
+    @decimal.setter
+    def decimal(self, value: str | Float | int | Decimal | None) -> None:
+        try:
+            value_decimal = Decimal(value)
+        except (ValueError, TypeError, ConversionSyntax):
+            value_decimal = Decimal("0.0")
+        value_str = str(value_decimal)
+        self.clear()
+        self.set_attribute("office:value", value_str)
+        self.set_attribute("office:value-type", "float")
+        self.text = value_str
+
+    @property
+    def int(self) -> int:
+        """Set / get the value of the cell as a integer (or 0)."""
+        for tag in ("office:value", "office:string-value"):
+            read_attr = self.get_attribute(tag)
+            if isinstance(read_attr, str):
+                with contextlib.suppress(ValueError, TypeError):
+                    return int(float(read_attr))
+        return int(self._bool_string)
+
+    @int.setter
+    def int(self, value: str | Float | int | Decimal | None) -> None:
+        try:
+            value_int = int(value)  # type:ignore
+        except (ValueError, TypeError, ConversionSyntax):
+            value_int = 0
+        value_str = str(value_int)
         self.clear()
         self.set_attribute("office:value", value_str)
         self.set_attribute("office:value-type", "float")
@@ -199,21 +265,93 @@ class Cell(ElementTyped):
     @string.setter
     def string(
         self,
-        value: str | bytes | int | Float | Decimal | bool | None,  # type: ignore
+        value: str | bytes | int | Float | Decimal | bool | None,
     ) -> None:
         self.clear()
         if value is None:
             value_str = ""
+        elif isinstance(value, bytes):
+            value_str = value.decode()
         else:
             value_str = str(value)
         self.set_attribute("office:value-type", "string")
         self.set_attribute("office:string-value", value_str)
         self.text = value_str
 
+    @property
+    def bool(self) -> bool:
+        """Set / get the value of the cell as a boolean."""
+        value = self.get_attribute_string("office:boolean-value")
+        if isinstance(value, str):
+            return value == "true"
+        return bool(self.int)
+
+    @bool.setter
+    def bool(
+        self,
+        value: str | bytes | int | Float | Decimal | bool | None,
+    ) -> None:
+        self.clear()
+        self.set_attribute("office:value-type", "boolean")
+        if isinstance(value, (bool, str, bytes)):
+            bvalue = Boolean.encode(value)
+        else:
+            bvalue = Boolean.encode(bool(value))
+        self.set_attribute("office:boolean-value", bvalue)
+        self.text = bvalue
+
+    @property
+    def duration(self) -> timedelta:
+        """Set / get the value of the cell as a duration (Python timedelta)."""
+        value = self.get_attribute("office:time-value")
+        if isinstance(value, str):
+            return Duration.decode(value)
+        return timedelta(0)
+
+    @duration.setter
+    def duration(self, value: timedelta) -> None:
+        self.clear()
+        self.set_attribute("office:value-type", "time")
+        dvalue = Duration.encode(value)
+        self.set_attribute("office:time-value", dvalue)
+        self.text = dvalue
+
+    @property
+    def datetime(self) -> datetime:
+        """Set / get the value of the cell as a datetime."""
+        value = self.get_attribute("office:date-value")
+        if isinstance(value, str):
+            return DateTime.decode(value)
+        return datetime.fromtimestamp(0)
+
+    @datetime.setter
+    def datetime(self, value: datetime) -> None:
+        self.clear()
+        self.set_attribute("office:value-type", "date")
+        dvalue = DateTime.encode(value)
+        self.set_attribute("office:date-value", dvalue)
+        self.text = dvalue
+
+    @property
+    def date(self) -> date:
+        """Set / get the value of the cell as a date."""
+        value = self.get_attribute("office:date-value")
+        if isinstance(value, str):
+            return Date.decode(value)
+        return date.fromtimestamp(0)
+
+    @date.setter
+    def date(self, value: date) -> None:
+        self.clear()
+        self.set_attribute("office:value-type", "date")
+        dvalue = Date.encode(value)
+        self.set_attribute("office:date-value", dvalue)
+        self.text = dvalue
+
     def set_value(
         self,
         value: (
-            str  # type: ignore
+            str
             | bytes
             | Float
             | int
