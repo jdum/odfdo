@@ -59,7 +59,7 @@ from .mixin_md import MDDocument
 from .style import Style
 from .styles import Styles
 from .table import Table
-from .utils import FAMILY_ODF_STD, bytes_to_str
+from .utils import FAMILY_MAPPING, bytes_to_str
 from .xmlpart import XmlPart
 
 AUTOMATIC_PREFIX = "odfdo_auto_"
@@ -717,7 +717,7 @@ class Document(MDDocument):
         Arguments:
 
             family -- 'paragraph', 'text',  'graphic', 'table', 'list',
-                      'number', 'page-layout', 'master-page'
+                      'number', 'page-layout', 'master-page', ...
 
             name -- str or Element or None
 
@@ -932,7 +932,7 @@ class Document(MDDocument):
             raise TypeError(f"Unknown Style type: '{style!r}'")
 
         # Get family and name
-        family = self._pseudo_style_attribute(style_element, "family")
+        family = style_element.family
         if not name:
             name = self._pseudo_style_attribute(style_element, "name")
 
@@ -953,7 +953,7 @@ class Document(MDDocument):
         elif family == "page-layout":
             existing, style_container = self._insert_style_get_page_layout(family, name)
         # Common style
-        elif family in FAMILY_ODF_STD or family in {"number"}:
+        elif family in FAMILY_MAPPING:
             existing, style_container = self._insert_style_standard(
                 style_element, name, family, automatic, default
             )
@@ -1092,7 +1092,7 @@ class Document(MDDocument):
         document_manifest = document.manifest
         for style in document.get_styles():
             tagname = style.tag
-            family = self._pseudo_style_attribute(style, "family")
+            family = style.family
             stylename = style.name  # type: ignore
             container = style.parent
             container_name = container.tag  # type: ignore

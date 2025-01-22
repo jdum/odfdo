@@ -80,8 +80,7 @@ class Content(XmlPart):
         Arguments:
 
             family -- 'paragraph', 'text', 'graphic', 'table', 'list',
-                      'number'
-
+                      'number', ...
             name_or_element -- str or Style
 
             display_name -- str

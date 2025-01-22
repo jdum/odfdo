@@ -119,6 +119,7 @@ class DrawFillImage(DrawImage):
             self.display_name = display_name
             self.height = height
             self.width = width
+        self.family = ""
 
 
 DrawFillImage._define_attribut_property()

@@ -1,5 +1,14 @@
 # Odfdo Release Notes
 
+## [3.13.4] - 2025-01-22
+
+-   Fix a bug on `Document.insert_style()` and related methods that prevented
+the loading of styles from the family `number:*`, like `number:currency-style` (issue #53).
+
+### Fixed
+
+-   Fixed `Document.insert_style()` and `CONTEXT_MAPPING` in `styles.py` for a better detection of styles pseudo-families.
+
 ## [3.13.3] - 2025-01-01
 
 -   Refactor cell properties to get easier and more consistent access to cell values. Some new properties added: Cell.decimal, Cell.int, Cell.bool, Cell.duration, Cell.datetime, Cell.date.

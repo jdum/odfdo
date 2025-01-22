@@ -30,24 +30,24 @@ from .xmlpart import XmlPart
 
 CONTEXT_MAPPING = {
     "paragraph": ("//office:styles", "//office:automatic-styles"),
-    "text": ("//office:styles",),
-    "graphic": ("//office:styles",),
+    "text": ("//office:styles", "//office:automatic-styles"),
+    "graphic": ("//office:styles", "//office:automatic-styles"),
     "page-layout": ("//office:automatic-styles",),
     "master-page": ("//office:master-styles",),
     "font-face": ("//office:font-face-decls",),
-    "outline": ("//office:styles",),
-    "date": ("//office:automatic-styles",),
-    "list": ("//office:styles",),
+    "outline": ("//office:styles", "//office:automatic-styles"),
+    "date": ("//office:styles", "//office:automatic-styles"),
+    "list": ("//office:styles", "//office:automatic-styles"),
     "presentation": ("//office:styles", "//office:automatic-styles"),
     "drawing-page": ("//office:automatic-styles",),
     "presentation-page-layout": ("//office:styles",),
     "marker": ("//office:styles",),
     "fill-image": ("//office:styles",),
     # FIXME Do they?
-    "table": ("//office:automatic-styles",),
-    "table-cell": ("//office:automatic-styles",),
-    "table-row": ("//office:automatic-styles",),
-    "table-column": ("//office:automatic-styles",),
+    "table": ("//office:styles", "//office:automatic-styles"),
+    "table-cell": ("//office:styles", "//office:automatic-styles"),
+    "table-row": ("//office:styles", "//office:automatic-styles"),
+    "table-column": ("//office:styles", "//office:automatic-styles"),
     # FIXME: to test:
     "section": ("//office:styles", "//office:automatic-styles"),
     "chart": ("//office:styles", "//office:automatic-styles"),
@@ -68,10 +68,12 @@ class Styles(XmlPart):
                 self.get_element("//office:master-styles"),
                 self.get_element("//office:font-face-decls"),
             ]
-        queries = CONTEXT_MAPPING.get(family)
-        if queries is None:
-            raise ValueError(f"unknown family: {family}")
-        # print('q:', queries)
+        queries = CONTEXT_MAPPING.get(family) or (
+            "//office:styles",
+            "//office:automatic-styles",
+        )
+        # if queries is None:
+        #     raise ValueError(f"unknown family: {family}")
         return [self.get_element(query) for query in queries]
 
     def get_styles(self, family: str = "", automatic: bool = False) -> list[Element]:
