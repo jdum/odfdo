@@ -13,7 +13,7 @@ TARGET_INITIAL = "document_initial.odt"
 TARGET_FINAL = "document_final.odt"
 
 
-class KeepingState:
+class KeepingState:  # noqa: B903
     def __init__(self, initial: str):
         self.step = initial
 
