@@ -1,5 +1,14 @@
 # Odfdo Release Notes
 
+## [3.13.5] - 2025-01-25
+
+Add the option `formatted` to script `odfdo-replace` and method `Element.replace()` to interpret the <space>, <tab> and <CR> of the replacement string.
+
+### Added
+
+-   Add `Element.replace()` optional argument `formatted`
+-   Add `odfdo-replace` optional option `--formatted`
+
 ## [3.13.4] - 2025-01-22
 
 -   Fix a bug on `Document.insert_style()` and related methods that prevented

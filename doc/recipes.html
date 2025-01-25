@@ -852,6 +852,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#test" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#search-and-replace-words" class="md-nav__link">
     <span class="md-ellipsis">
       Search and replace words
@@ -1438,6 +1447,15 @@
   <a href="#save-document-as-bytesio" class="md-nav__link">
     <span class="md-ellipsis">
       Save document as bytesio
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test
     </span>
   </a>
   
@@ -5342,7 +5360,7 @@ Deleting content from one point to another in a .odt document.</p>
 </span><span id="__span-45-13"><span class="n">TARGET_FINAL</span> <span class="o">=</span> <span class="s2">&quot;document_final.odt&quot;</span>
 </span><span id="__span-45-14">
 </span><span id="__span-45-15">
-</span><span id="__span-45-16"><span class="k">class</span> <span class="nc">KeepingState</span><span class="p">:</span>
+</span><span id="__span-45-16"><span class="k">class</span> <span class="nc">KeepingState</span><span class="p">:</span>  <span class="c1"># noqa: B903</span>
 </span><span id="__span-45-17">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 </span><span id="__span-45-18">        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="n">initial</span>
 </span><span id="__span-45-19">
@@ -6602,58 +6620,95 @@ and copy pictures from documents in a directory.</p>
 </span><span id="__span-58-35">    <span class="n">main</span><span class="p">()</span>
 </span></code></pre></div>
 </details>
+<h3 id="test">Test</h3>
+<p>None</p>
+<details class="code">
+<summary>recipes/test.py</summary>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-59-1"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+</span><span id="__span-59-2">
+</span><span id="__span-59-3"><span class="kn">from</span> <span class="nn">odfdo</span> <span class="kn">import</span> <span class="n">Document</span>
+</span><span id="__span-59-4">
+</span><span id="__span-59-5"><span class="n">_DOC_SEQUENCE</span> <span class="o">=</span> <span class="mi">700</span>
+</span><span id="__span-59-6"><span class="n">DATA</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span>
+</span><span id="__span-59-7"><span class="n">SOURCE</span> <span class="o">=</span> <span class="s2">&quot;lorem.odt&quot;</span>
+</span><span id="__span-59-8"><span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;recipes_output&quot;</span> <span class="o">/</span> <span class="s2">&quot;replaced_text&quot;</span>
+</span><span id="__span-59-9"><span class="n">TARGET</span> <span class="o">=</span> <span class="s2">&quot;lorem_replaced.odt&quot;</span>
+</span><span id="__span-59-10">
+</span><span id="__span-59-11">
+</span><span id="__span-59-12"><span class="k">def</span> <span class="nf">save_new</span><span class="p">(</span><span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+</span><span id="__span-59-13">    <span class="n">OUTPUT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-59-14">    <span class="n">new_path</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="n">name</span>
+</span><span id="__span-59-15">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saving:&quot;</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
+</span><span id="__span-59-16">    <span class="n">document</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">new_path</span><span class="p">,</span> <span class="n">pretty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-59-17">
+</span><span id="__span-59-18">
+</span><span id="__span-59-19"><span class="k">def</span> <span class="nf">search_replace</span><span class="p">(</span><span class="n">document</span><span class="p">):</span>
+</span><span id="__span-59-20">    <span class="n">body</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">body</span>
+</span><span id="__span-59-21">    <span class="n">body</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;ipsum&quot;</span><span class="p">,</span> <span class="s2">&quot;some multiline </span><span class="se">\n\n</span><span class="s2">ipsum&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-59-22">
+</span><span id="__span-59-23">
+</span><span id="__span-59-24"><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+</span><span id="__span-59-25">    <span class="n">document</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">DATA</span> <span class="o">/</span> <span class="n">SOURCE</span><span class="p">)</span>
+</span><span id="__span-59-26">    <span class="n">search_replace</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+</span><span id="__span-59-27">    <span class="n">save_new</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">TARGET</span><span class="p">)</span>
+</span><span id="__span-59-28">
+</span><span id="__span-59-29">
+</span><span id="__span-59-30"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span id="__span-59-31">    <span class="n">main</span><span class="p">()</span>
+</span></code></pre></div>
+</details>
 <h3 id="search-and-replace-words">Search and replace words</h3>
 <p>Search and replace words in a text document.</p>
 <details class="code">
 <summary>recipes/search_and_replace_words.py</summary>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-59-1"><span class="ch">#!/usr/bin/env python</span>
-</span><span id="__span-59-2"><span class="sd">&quot;&quot;&quot;Search and replace words in a text document.</span>
-</span><span id="__span-59-3"><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-59-4"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-</span><span id="__span-59-5">
-</span><span id="__span-59-6"><span class="kn">from</span> <span class="nn">odfdo</span> <span class="kn">import</span> <span class="n">Document</span>
-</span><span id="__span-59-7">
-</span><span id="__span-59-8"><span class="n">_DOC_SEQUENCE</span> <span class="o">=</span> <span class="mi">700</span>
-</span><span id="__span-59-9"><span class="n">DATA</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span>
-</span><span id="__span-59-10"><span class="n">SOURCE</span> <span class="o">=</span> <span class="s2">&quot;lorem.odt&quot;</span>
-</span><span id="__span-59-11"><span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;recipes_output&quot;</span> <span class="o">/</span> <span class="s2">&quot;replaced_text&quot;</span>
-</span><span id="__span-59-12"><span class="n">TARGET</span> <span class="o">=</span> <span class="s2">&quot;lorem_replaced.odt&quot;</span>
-</span><span id="__span-59-13">
-</span><span id="__span-59-14">
-</span><span id="__span-59-15"><span class="k">def</span> <span class="nf">save_new</span><span class="p">(</span><span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-</span><span id="__span-59-16">    <span class="n">OUTPUT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-59-17">    <span class="n">new_path</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="n">name</span>
-</span><span id="__span-59-18">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saving:&quot;</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
-</span><span id="__span-59-19">    <span class="n">document</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">new_path</span><span class="p">,</span> <span class="n">pretty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-59-20">
-</span><span id="__span-59-21">
-</span><span id="__span-59-22"><span class="k">def</span> <span class="nf">search_replace</span><span class="p">(</span><span class="n">document</span><span class="p">):</span>
-</span><span id="__span-59-23">    <span class="n">body</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">body</span>
-</span><span id="__span-59-24">
-</span><span id="__span-59-25">    <span class="c1"># replace a string in the full document</span>
-</span><span id="__span-59-26">    <span class="n">body</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Lorem&quot;</span><span class="p">,</span> <span class="s2">&quot;(Lorem replaced)&quot;</span><span class="p">)</span>
-</span><span id="__span-59-27">
-</span><span id="__span-59-28">    <span class="c1"># replace in paragraphs only</span>
-</span><span id="__span-59-29">    <span class="k">for</span> <span class="n">paragraph</span> <span class="ow">in</span> <span class="n">body</span><span class="o">.</span><span class="n">paragraphs</span><span class="p">:</span>
-</span><span id="__span-59-30">        <span class="n">paragraph</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;ipsum&quot;</span><span class="p">,</span> <span class="s2">&quot;(ipsum in paragraph)&quot;</span><span class="p">)</span>
-</span><span id="__span-59-31">
-</span><span id="__span-59-32">    <span class="c1"># replace in headers</span>
-</span><span id="__span-59-33">    <span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">body</span><span class="o">.</span><span class="n">headers</span><span class="p">:</span>
-</span><span id="__span-59-34">        <span class="n">header</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;ipsum&quot;</span><span class="p">,</span> <span class="s2">&quot;(ipsum in header)&quot;</span><span class="p">)</span>
-</span><span id="__span-59-35">
-</span><span id="__span-59-36">    <span class="c1"># pattern is a regular expression</span>
-</span><span id="__span-59-37">    <span class="n">body</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\S+lit &quot;</span><span class="p">,</span> <span class="s2">&quot;(...lit) &quot;</span><span class="p">)</span>
-</span><span id="__span-59-38">    <span class="n">body</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;pul[a-z]+&quot;</span><span class="p">,</span> <span class="s2">&quot;(pulvinar)&quot;</span><span class="p">)</span>
-</span><span id="__span-59-39">
-</span><span id="__span-59-40">
-</span><span id="__span-59-41"><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-</span><span id="__span-59-42">    <span class="n">document</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">DATA</span> <span class="o">/</span> <span class="n">SOURCE</span><span class="p">)</span>
-</span><span id="__span-59-43">    <span class="n">search_replace</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
-</span><span id="__span-59-44">    <span class="n">save_new</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">TARGET</span><span class="p">)</span>
-</span><span id="__span-59-45">
-</span><span id="__span-59-46">
-</span><span id="__span-59-47"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-</span><span id="__span-59-48">    <span class="n">main</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-60-1"><span class="ch">#!/usr/bin/env python</span>
+</span><span id="__span-60-2"><span class="sd">&quot;&quot;&quot;Search and replace words in a text document.</span>
+</span><span id="__span-60-3"><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-60-4"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+</span><span id="__span-60-5">
+</span><span id="__span-60-6"><span class="kn">from</span> <span class="nn">odfdo</span> <span class="kn">import</span> <span class="n">Document</span>
+</span><span id="__span-60-7">
+</span><span id="__span-60-8"><span class="n">_DOC_SEQUENCE</span> <span class="o">=</span> <span class="mi">700</span>
+</span><span id="__span-60-9"><span class="n">DATA</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span>
+</span><span id="__span-60-10"><span class="n">SOURCE</span> <span class="o">=</span> <span class="s2">&quot;lorem.odt&quot;</span>
+</span><span id="__span-60-11"><span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;recipes_output&quot;</span> <span class="o">/</span> <span class="s2">&quot;replaced_text&quot;</span>
+</span><span id="__span-60-12"><span class="n">TARGET</span> <span class="o">=</span> <span class="s2">&quot;lorem_replaced.odt&quot;</span>
+</span><span id="__span-60-13">
+</span><span id="__span-60-14">
+</span><span id="__span-60-15"><span class="k">def</span> <span class="nf">save_new</span><span class="p">(</span><span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+</span><span id="__span-60-16">    <span class="n">OUTPUT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-60-17">    <span class="n">new_path</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="n">name</span>
+</span><span id="__span-60-18">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saving:&quot;</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
+</span><span id="__span-60-19">    <span class="n">document</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">new_path</span><span class="p">,</span> <span class="n">pretty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-60-20">
+</span><span id="__span-60-21">
+</span><span id="__span-60-22"><span class="k">def</span> <span class="nf">search_replace</span><span class="p">(</span><span class="n">document</span><span class="p">):</span>
+</span><span id="__span-60-23">    <span class="n">body</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">body</span>
+</span><span id="__span-60-24">
+</span><span id="__span-60-25">    <span class="c1"># replace a string in the full document</span>
+</span><span id="__span-60-26">    <span class="n">body</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Lorem&quot;</span><span class="p">,</span> <span class="s2">&quot;(Lorem replaced)&quot;</span><span class="p">)</span>
+</span><span id="__span-60-27">
+</span><span id="__span-60-28">    <span class="c1"># replace in paragraphs only</span>
+</span><span id="__span-60-29">    <span class="k">for</span> <span class="n">paragraph</span> <span class="ow">in</span> <span class="n">body</span><span class="o">.</span><span class="n">paragraphs</span><span class="p">:</span>
+</span><span id="__span-60-30">        <span class="n">paragraph</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;ipsum&quot;</span><span class="p">,</span> <span class="s2">&quot;(ipsum in paragraph)&quot;</span><span class="p">)</span>
+</span><span id="__span-60-31">
+</span><span id="__span-60-32">    <span class="c1"># replace in headers</span>
+</span><span id="__span-60-33">    <span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">body</span><span class="o">.</span><span class="n">headers</span><span class="p">:</span>
+</span><span id="__span-60-34">        <span class="n">header</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;ipsum&quot;</span><span class="p">,</span> <span class="s2">&quot;(ipsum in header)&quot;</span><span class="p">)</span>
+</span><span id="__span-60-35">
+</span><span id="__span-60-36">    <span class="c1"># pattern is a regular expression</span>
+</span><span id="__span-60-37">    <span class="n">body</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\S+lit &quot;</span><span class="p">,</span> <span class="s2">&quot;(...lit) &quot;</span><span class="p">)</span>
+</span><span id="__span-60-38">    <span class="n">body</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;pul[a-z]+&quot;</span><span class="p">,</span> <span class="s2">&quot;(pulvinar)&quot;</span><span class="p">)</span>
+</span><span id="__span-60-39">
+</span><span id="__span-60-40">
+</span><span id="__span-60-41"><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+</span><span id="__span-60-42">    <span class="n">document</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">DATA</span> <span class="o">/</span> <span class="n">SOURCE</span><span class="p">)</span>
+</span><span id="__span-60-43">    <span class="n">search_replace</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+</span><span id="__span-60-44">    <span class="n">save_new</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">TARGET</span><span class="p">)</span>
+</span><span id="__span-60-45">
+</span><span id="__span-60-46">
+</span><span id="__span-60-47"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span id="__span-60-48">    <span class="n">main</span><span class="p">()</span>
 </span></code></pre></div>
 </details>
 <h3 id="spreadsheet-with-words-frequency-from-a-text">Spreadsheet with words frequency from a text</h3>
@@ -6661,125 +6716,125 @@ and copy pictures from documents in a directory.</p>
 make requests on the table, by regex or value.</p>
 <details class="code">
 <summary>recipes/spreadsheet_with_words_frequency_from_a_text.py</summary>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-60-1"><span class="ch">#!/usr/bin/env python</span>
-</span><span id="__span-60-2"><span class="sd">&quot;&quot;&quot;Load an ODF text, store the frequency of words in a spreadsheet,</span>
-</span><span id="__span-60-3"><span class="sd">make requests on the table, by regex or value.</span>
-</span><span id="__span-60-4"><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-60-5"><span class="kn">import</span> <span class="nn">sys</span>
-</span><span id="__span-60-6"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-</span><span id="__span-60-7">
-</span><span id="__span-60-8"><span class="kn">from</span> <span class="nn">odfdo</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Table</span>
-</span><span id="__span-60-9">
-</span><span id="__span-60-10"><span class="n">_DOC_SEQUENCE</span> <span class="o">=</span> <span class="mi">710</span>
-</span><span id="__span-60-11"><span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;recipes_output&quot;</span> <span class="o">/</span> <span class="s2">&quot;freq&quot;</span>
-</span><span id="__span-60-12"><span class="n">SOURCE</span> <span class="o">=</span> <span class="s2">&quot;collection2.odt&quot;</span>
-</span><span id="__span-60-13"><span class="n">DATA</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span>
-</span><span id="__span-60-14"><span class="n">TARGET</span> <span class="o">=</span> <span class="s2">&quot;frequency.ods&quot;</span>
-</span><span id="__span-60-15">
-</span><span id="__span-60-16">
-</span><span id="__span-60-17"><span class="k">def</span> <span class="nf">save_new</span><span class="p">(</span><span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-</span><span id="__span-60-18">    <span class="n">OUTPUT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-60-19">    <span class="n">new_path</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="n">name</span>
-</span><span id="__span-60-20">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saving:&quot;</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
-</span><span id="__span-60-21">    <span class="n">document</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">new_path</span><span class="p">,</span> <span class="n">pretty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-60-22">
-</span><span id="__span-60-23">
-</span><span id="__span-60-24"><span class="k">def</span> <span class="nf">read_source_document</span><span class="p">():</span>
-</span><span id="__span-60-25">    <span class="k">try</span><span class="p">:</span>
-</span><span id="__span-60-26">        <span class="n">source</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-</span><span id="__span-60-27">    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-</span><span id="__span-60-28">        <span class="n">source</span> <span class="o">=</span> <span class="n">DATA</span> <span class="o">/</span> <span class="n">SOURCE</span>
-</span><span id="__span-60-29">    <span class="k">return</span> <span class="n">Document</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-</span><span id="__span-60-30">
-</span><span id="__span-60-31">
-</span><span id="__span-60-32"><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-</span><span id="__span-60-33">    <span class="n">document</span> <span class="o">=</span> <span class="n">generate_document</span><span class="p">()</span>
-</span><span id="__span-60-34">    <span class="n">save_new</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">TARGET</span><span class="p">)</span>
-</span><span id="__span-60-35">    <span class="n">_expected_result</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-</span><span id="__span-60-36"><span class="s2">    Word frequency analysis of collection2.odt</span>
-</span><span id="__span-60-37"><span class="s2">    Nb of words: 9128</span>
-</span><span id="__span-60-38"><span class="s2">    Unique words found: 2337</span>
-</span><span id="__span-60-39"><span class="s2">    Rows in the table : 2337</span>
-</span><span id="__span-60-40"><span class="s2">    Words corresponding to the regex: ^the</span>
-</span><span id="__span-60-41"><span class="s2">      word: the                   occurences: 644</span>
-</span><span id="__span-60-42"><span class="s2">      word: they                  occurences: 15</span>
-</span><span id="__span-60-43"><span class="s2">      word: their                 occurences: 11</span>
-</span><span id="__span-60-44"><span class="s2">      word: then                  occurences: 10</span>
-</span><span id="__span-60-45"><span class="s2">      word: there                 occurences: 7</span>
-</span><span id="__span-60-46"><span class="s2">      word: these                 occurences: 4</span>
-</span><span id="__span-60-47"><span class="s2">      word: them                  occurences: 4</span>
-</span><span id="__span-60-48"><span class="s2">      word: themselves            occurences: 2</span>
-</span><span id="__span-60-49"><span class="s2">      word: theme                 occurences: 2</span>
-</span><span id="__span-60-50"><span class="s2">      word: themed                occurences: 1</span>
-</span><span id="__span-60-51"><span class="s2">      word: theatrical            occurences: 1</span>
-</span><span id="__span-60-52"><span class="s2">    List of words of frequency 15: two, they, release, one, its, his, film,</span>
-</span><span id="__span-60-53"><span class="s2">    episodes, but, adaptation, UK, Radio, J, 0</span>
-</span><span id="__span-60-54"><span class="s2">&quot;&quot;&quot;</span>
-</span><span id="__span-60-55">
-</span><span id="__span-60-56">
-</span><span id="__span-60-57"><span class="k">def</span> <span class="nf">frequence_count</span><span class="p">(</span><span class="n">document</span><span class="p">):</span>
-</span><span id="__span-60-58">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Word frequency analysis of&quot;</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-</span><span id="__span-60-59">    <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
-</span><span id="__span-60-60">    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="s2">&quot;():;!.,[]</span><span class="si">{}</span><span class="s2">#@/</span><span class="se">\\</span><span class="s2">=-_+*#@`</span><span class="se">\&quot;</span><span class="s2">&#39;&quot;</span><span class="p">:</span>
-</span><span id="__span-60-61">        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>  <span class="c1"># slow algorithm</span>
-</span><span id="__span-60-62">    <span class="n">words</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-</span><span id="__span-60-63">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nb of words:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">))</span>
-</span><span id="__span-60-64">
-</span><span id="__span-60-65">    <span class="n">frequences</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span id="__span-60-66">
-</span><span id="__span-60-67">    <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
-</span><span id="__span-60-68">        <span class="n">frequences</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">=</span> <span class="n">frequences</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span id="__span-60-69">
-</span><span id="__span-60-70">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unique words found:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">frequences</span><span class="p">))</span>
-</span><span id="__span-60-71">    <span class="k">return</span> <span class="n">frequences</span>
-</span><span id="__span-60-72">
-</span><span id="__span-60-73">
-</span><span id="__span-60-74"><span class="k">def</span> <span class="nf">generate_document</span><span class="p">():</span>
-</span><span id="__span-60-75">    <span class="n">document_source</span> <span class="o">=</span> <span class="n">read_source_document</span><span class="p">()</span>
-</span><span id="__span-60-76">    <span class="n">spreadsheet</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="s2">&quot;spreadsheet&quot;</span><span class="p">)</span>
-</span><span id="__span-60-77">
-</span><span id="__span-60-78">    <span class="n">frequences</span> <span class="o">=</span> <span class="n">frequence_count</span><span class="p">(</span><span class="n">document_source</span><span class="p">)</span>
-</span><span id="__span-60-79">
-</span><span id="__span-60-80">    <span class="c1"># Populate the table in the spreadsheet</span>
-</span><span id="__span-60-81">    <span class="n">body</span> <span class="o">=</span> <span class="n">spreadsheet</span><span class="o">.</span><span class="n">body</span>
-</span><span id="__span-60-82">    <span class="n">body</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span id="__span-60-83">    <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="s2">&quot;Frequency Table&quot;</span><span class="p">)</span>
-</span><span id="__span-60-84">    <span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
-</span><span id="__span-60-85">
-</span><span id="__span-60-86">    <span class="n">sorted_keys</span> <span class="o">=</span> <span class="nb">reversed</span><span class="p">([(</span><span class="n">value</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">frequences</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
-</span><span id="__span-60-87">
-</span><span id="__span-60-88">    <span class="c1"># one solution :</span>
-</span><span id="__span-60-89">
-</span><span id="__span-60-90">    <span class="c1"># for value, key in sorted:</span>
-</span><span id="__span-60-91">    <span class="c1">#    row = Row()</span>
-</span><span id="__span-60-92">    <span class="c1">#    row.set_value(0, key)</span>
-</span><span id="__span-60-93">    <span class="c1">#    row.set_value(1, value) # Cell type is guessed.</span>
-</span><span id="__span-60-94">    <span class="c1">#    table.append_row(row)</span>
-</span><span id="__span-60-95">
-</span><span id="__span-60-96">    <span class="c1"># another solution :</span>
-</span><span id="__span-60-97">    <span class="n">sorted_keys</span> <span class="o">=</span> <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="ow">in</span> <span class="n">sorted_keys</span><span class="p">]</span>
-</span><span id="__span-60-98">    <span class="n">table</span><span class="o">.</span><span class="n">set_values</span><span class="p">(</span><span class="n">sorted_keys</span><span class="p">)</span>
-</span><span id="__span-60-99">
-</span><span id="__span-60-100">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Rows in the table :&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">rows</span><span class="p">))</span>
-</span><span id="__span-60-101">
-</span><span id="__span-60-102">    <span class="c1"># frequency of word:</span>
-</span><span id="__span-60-103">    <span class="n">regex_query</span> <span class="o">=</span> <span class="s2">&quot;^the&quot;</span>
-</span><span id="__span-60-104">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Words corresponding to the regex:&quot;</span><span class="p">,</span> <span class="n">regex_query</span><span class="p">)</span>
-</span><span id="__span-60-105">    <span class="n">result</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">get_rows</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">regex_query</span><span class="p">)</span>
-</span><span id="__span-60-106">    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
-</span><span id="__span-60-107">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  word: </span><span class="si">{</span><span class="n">row</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2">  occurences: </span><span class="si">{</span><span class="n">row</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-60-108">
-</span><span id="__span-60-109">    <span class="c1"># list of words of frequecy = 15</span>
-</span><span id="__span-60-110">    <span class="n">found</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span id="__span-60-111">    <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">freq</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">iter_values</span><span class="p">():</span>
-</span><span id="__span-60-112">        <span class="k">if</span> <span class="n">freq</span> <span class="o">==</span> <span class="mi">15</span><span class="p">:</span>
-</span><span id="__span-60-113">            <span class="n">found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
-</span><span id="__span-60-114">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;List of words of frequency 15:&quot;</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">found</span><span class="p">))</span>
-</span><span id="__span-60-115">    <span class="k">return</span> <span class="n">spreadsheet</span>
-</span><span id="__span-60-116">
-</span><span id="__span-60-117">
-</span><span id="__span-60-118"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-</span><span id="__span-60-119">    <span class="n">main</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-61-1"><span class="ch">#!/usr/bin/env python</span>
+</span><span id="__span-61-2"><span class="sd">&quot;&quot;&quot;Load an ODF text, store the frequency of words in a spreadsheet,</span>
+</span><span id="__span-61-3"><span class="sd">make requests on the table, by regex or value.</span>
+</span><span id="__span-61-4"><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-61-5"><span class="kn">import</span> <span class="nn">sys</span>
+</span><span id="__span-61-6"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+</span><span id="__span-61-7">
+</span><span id="__span-61-8"><span class="kn">from</span> <span class="nn">odfdo</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Table</span>
+</span><span id="__span-61-9">
+</span><span id="__span-61-10"><span class="n">_DOC_SEQUENCE</span> <span class="o">=</span> <span class="mi">710</span>
+</span><span id="__span-61-11"><span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;recipes_output&quot;</span> <span class="o">/</span> <span class="s2">&quot;freq&quot;</span>
+</span><span id="__span-61-12"><span class="n">SOURCE</span> <span class="o">=</span> <span class="s2">&quot;collection2.odt&quot;</span>
+</span><span id="__span-61-13"><span class="n">DATA</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span>
+</span><span id="__span-61-14"><span class="n">TARGET</span> <span class="o">=</span> <span class="s2">&quot;frequency.ods&quot;</span>
+</span><span id="__span-61-15">
+</span><span id="__span-61-16">
+</span><span id="__span-61-17"><span class="k">def</span> <span class="nf">save_new</span><span class="p">(</span><span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+</span><span id="__span-61-18">    <span class="n">OUTPUT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-61-19">    <span class="n">new_path</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="n">name</span>
+</span><span id="__span-61-20">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saving:&quot;</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
+</span><span id="__span-61-21">    <span class="n">document</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">new_path</span><span class="p">,</span> <span class="n">pretty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-61-22">
+</span><span id="__span-61-23">
+</span><span id="__span-61-24"><span class="k">def</span> <span class="nf">read_source_document</span><span class="p">():</span>
+</span><span id="__span-61-25">    <span class="k">try</span><span class="p">:</span>
+</span><span id="__span-61-26">        <span class="n">source</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span id="__span-61-27">    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+</span><span id="__span-61-28">        <span class="n">source</span> <span class="o">=</span> <span class="n">DATA</span> <span class="o">/</span> <span class="n">SOURCE</span>
+</span><span id="__span-61-29">    <span class="k">return</span> <span class="n">Document</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+</span><span id="__span-61-30">
+</span><span id="__span-61-31">
+</span><span id="__span-61-32"><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+</span><span id="__span-61-33">    <span class="n">document</span> <span class="o">=</span> <span class="n">generate_document</span><span class="p">()</span>
+</span><span id="__span-61-34">    <span class="n">save_new</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">TARGET</span><span class="p">)</span>
+</span><span id="__span-61-35">    <span class="n">_expected_result</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+</span><span id="__span-61-36"><span class="s2">    Word frequency analysis of collection2.odt</span>
+</span><span id="__span-61-37"><span class="s2">    Nb of words: 9128</span>
+</span><span id="__span-61-38"><span class="s2">    Unique words found: 2337</span>
+</span><span id="__span-61-39"><span class="s2">    Rows in the table : 2337</span>
+</span><span id="__span-61-40"><span class="s2">    Words corresponding to the regex: ^the</span>
+</span><span id="__span-61-41"><span class="s2">      word: the                   occurences: 644</span>
+</span><span id="__span-61-42"><span class="s2">      word: they                  occurences: 15</span>
+</span><span id="__span-61-43"><span class="s2">      word: their                 occurences: 11</span>
+</span><span id="__span-61-44"><span class="s2">      word: then                  occurences: 10</span>
+</span><span id="__span-61-45"><span class="s2">      word: there                 occurences: 7</span>
+</span><span id="__span-61-46"><span class="s2">      word: these                 occurences: 4</span>
+</span><span id="__span-61-47"><span class="s2">      word: them                  occurences: 4</span>
+</span><span id="__span-61-48"><span class="s2">      word: themselves            occurences: 2</span>
+</span><span id="__span-61-49"><span class="s2">      word: theme                 occurences: 2</span>
+</span><span id="__span-61-50"><span class="s2">      word: themed                occurences: 1</span>
+</span><span id="__span-61-51"><span class="s2">      word: theatrical            occurences: 1</span>
+</span><span id="__span-61-52"><span class="s2">    List of words of frequency 15: two, they, release, one, its, his, film,</span>
+</span><span id="__span-61-53"><span class="s2">    episodes, but, adaptation, UK, Radio, J, 0</span>
+</span><span id="__span-61-54"><span class="s2">&quot;&quot;&quot;</span>
+</span><span id="__span-61-55">
+</span><span id="__span-61-56">
+</span><span id="__span-61-57"><span class="k">def</span> <span class="nf">frequence_count</span><span class="p">(</span><span class="n">document</span><span class="p">):</span>
+</span><span id="__span-61-58">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Word frequency analysis of&quot;</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span id="__span-61-59">    <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+</span><span id="__span-61-60">    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="s2">&quot;():;!.,[]</span><span class="si">{}</span><span class="s2">#@/</span><span class="se">\\</span><span class="s2">=-_+*#@`</span><span class="se">\&quot;</span><span class="s2">&#39;&quot;</span><span class="p">:</span>
+</span><span id="__span-61-61">        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>  <span class="c1"># slow algorithm</span>
+</span><span id="__span-61-62">    <span class="n">words</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+</span><span id="__span-61-63">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nb of words:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">))</span>
+</span><span id="__span-61-64">
+</span><span id="__span-61-65">    <span class="n">frequences</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span id="__span-61-66">
+</span><span id="__span-61-67">    <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+</span><span id="__span-61-68">        <span class="n">frequences</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">=</span> <span class="n">frequences</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span id="__span-61-69">
+</span><span id="__span-61-70">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unique words found:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">frequences</span><span class="p">))</span>
+</span><span id="__span-61-71">    <span class="k">return</span> <span class="n">frequences</span>
+</span><span id="__span-61-72">
+</span><span id="__span-61-73">
+</span><span id="__span-61-74"><span class="k">def</span> <span class="nf">generate_document</span><span class="p">():</span>
+</span><span id="__span-61-75">    <span class="n">document_source</span> <span class="o">=</span> <span class="n">read_source_document</span><span class="p">()</span>
+</span><span id="__span-61-76">    <span class="n">spreadsheet</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="s2">&quot;spreadsheet&quot;</span><span class="p">)</span>
+</span><span id="__span-61-77">
+</span><span id="__span-61-78">    <span class="n">frequences</span> <span class="o">=</span> <span class="n">frequence_count</span><span class="p">(</span><span class="n">document_source</span><span class="p">)</span>
+</span><span id="__span-61-79">
+</span><span id="__span-61-80">    <span class="c1"># Populate the table in the spreadsheet</span>
+</span><span id="__span-61-81">    <span class="n">body</span> <span class="o">=</span> <span class="n">spreadsheet</span><span class="o">.</span><span class="n">body</span>
+</span><span id="__span-61-82">    <span class="n">body</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</span><span id="__span-61-83">    <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="s2">&quot;Frequency Table&quot;</span><span class="p">)</span>
+</span><span id="__span-61-84">    <span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+</span><span id="__span-61-85">
+</span><span id="__span-61-86">    <span class="n">sorted_keys</span> <span class="o">=</span> <span class="nb">reversed</span><span class="p">([(</span><span class="n">value</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">frequences</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+</span><span id="__span-61-87">
+</span><span id="__span-61-88">    <span class="c1"># one solution :</span>
+</span><span id="__span-61-89">
+</span><span id="__span-61-90">    <span class="c1"># for value, key in sorted:</span>
+</span><span id="__span-61-91">    <span class="c1">#    row = Row()</span>
+</span><span id="__span-61-92">    <span class="c1">#    row.set_value(0, key)</span>
+</span><span id="__span-61-93">    <span class="c1">#    row.set_value(1, value) # Cell type is guessed.</span>
+</span><span id="__span-61-94">    <span class="c1">#    table.append_row(row)</span>
+</span><span id="__span-61-95">
+</span><span id="__span-61-96">    <span class="c1"># another solution :</span>
+</span><span id="__span-61-97">    <span class="n">sorted_keys</span> <span class="o">=</span> <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="ow">in</span> <span class="n">sorted_keys</span><span class="p">]</span>
+</span><span id="__span-61-98">    <span class="n">table</span><span class="o">.</span><span class="n">set_values</span><span class="p">(</span><span class="n">sorted_keys</span><span class="p">)</span>
+</span><span id="__span-61-99">
+</span><span id="__span-61-100">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Rows in the table :&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">rows</span><span class="p">))</span>
+</span><span id="__span-61-101">
+</span><span id="__span-61-102">    <span class="c1"># frequency of word:</span>
+</span><span id="__span-61-103">    <span class="n">regex_query</span> <span class="o">=</span> <span class="s2">&quot;^the&quot;</span>
+</span><span id="__span-61-104">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Words corresponding to the regex:&quot;</span><span class="p">,</span> <span class="n">regex_query</span><span class="p">)</span>
+</span><span id="__span-61-105">    <span class="n">result</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">get_rows</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">regex_query</span><span class="p">)</span>
+</span><span id="__span-61-106">    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+</span><span id="__span-61-107">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  word: </span><span class="si">{</span><span class="n">row</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2">  occurences: </span><span class="si">{</span><span class="n">row</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-61-108">
+</span><span id="__span-61-109">    <span class="c1"># list of words of frequecy = 15</span>
+</span><span id="__span-61-110">    <span class="n">found</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="__span-61-111">    <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">freq</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">iter_values</span><span class="p">():</span>
+</span><span id="__span-61-112">        <span class="k">if</span> <span class="n">freq</span> <span class="o">==</span> <span class="mi">15</span><span class="p">:</span>
+</span><span id="__span-61-113">            <span class="n">found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+</span><span id="__span-61-114">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;List of words of frequency 15:&quot;</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">found</span><span class="p">))</span>
+</span><span id="__span-61-115">    <span class="k">return</span> <span class="n">spreadsheet</span>
+</span><span id="__span-61-116">
+</span><span id="__span-61-117">
+</span><span id="__span-61-118"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span id="__span-61-119">    <span class="n">main</span><span class="p">()</span>
 </span></code></pre></div>
 </details>
 <h3 id="transpose-table">Transpose table</h3>
@@ -6788,74 +6843,74 @@ columns), and subsequently create a new table in a separate sheet where the
 columns and rows are now swapped (e.g. 20 rows and 50 columns).</p>
 <details class="code">
 <summary>recipes/transpose_table.py</summary>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-61-1"><span class="ch">#!/usr/bin/env python</span>
-</span><span id="__span-61-2"><span class="sd">&quot;&quot;&quot;Transpose a table. Create a spreadsheet table (example: 50 rows and 20</span>
-</span><span id="__span-61-3"><span class="sd">columns), and subsequently create a new table in a separate sheet where the</span>
-</span><span id="__span-61-4"><span class="sd">columns and rows are now swapped (e.g. 20 rows and 50 columns).</span>
-</span><span id="__span-61-5"><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-61-6"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-</span><span id="__span-61-7">
-</span><span id="__span-61-8"><span class="kn">from</span> <span class="nn">odfdo</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Row</span><span class="p">,</span> <span class="n">Table</span>
-</span><span id="__span-61-9">
-</span><span id="__span-61-10"><span class="n">_DOC_SEQUENCE</span> <span class="o">=</span> <span class="mi">800</span>
-</span><span id="__span-61-11"><span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;recipes_output&quot;</span> <span class="o">/</span> <span class="s2">&quot;transpose&quot;</span>
-</span><span id="__span-61-12"><span class="n">TARGET</span> <span class="o">=</span> <span class="s2">&quot;transposed.ods&quot;</span>
-</span><span id="__span-61-13">
-</span><span id="__span-61-14">
-</span><span id="__span-61-15"><span class="k">def</span> <span class="nf">save_new</span><span class="p">(</span><span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-</span><span id="__span-61-16">    <span class="n">OUTPUT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-61-17">    <span class="n">new_path</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="n">name</span>
-</span><span id="__span-61-18">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saving:&quot;</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
-</span><span id="__span-61-19">    <span class="n">document</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">new_path</span><span class="p">,</span> <span class="n">pretty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-61-20">
-</span><span id="__span-61-21">
-</span><span id="__span-61-22"><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-</span><span id="__span-61-23">    <span class="n">document</span> <span class="o">=</span> <span class="n">generate_document</span><span class="p">()</span>
-</span><span id="__span-61-24">    <span class="n">save_new</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">TARGET</span><span class="p">)</span>
-</span><span id="__span-61-25">
-</span><span id="__span-61-26">
-</span><span id="__span-61-27"><span class="k">def</span> <span class="nf">generate_document</span><span class="p">():</span>
-</span><span id="__span-61-28">    <span class="n">spreadsheet</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="s2">&quot;spreadsheet&quot;</span><span class="p">)</span>
-</span><span id="__span-61-29">
-</span><span id="__span-61-30">    <span class="c1"># Populate the table in the spreadsheet</span>
-</span><span id="__span-61-31">    <span class="n">body</span> <span class="o">=</span> <span class="n">spreadsheet</span><span class="o">.</span><span class="n">body</span>
-</span><span id="__span-61-32">    <span class="n">body</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-</span><span id="__span-61-33">    <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="s2">&quot;Table&quot;</span><span class="p">)</span>
-</span><span id="__span-61-34">    <span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
-</span><span id="__span-61-35">
-</span><span id="__span-61-36">    <span class="n">lines</span> <span class="o">=</span> <span class="mi">50</span>
-</span><span id="__span-61-37">    <span class="n">cols</span> <span class="o">=</span> <span class="mi">20</span>
-</span><span id="__span-61-38">
-</span><span id="__span-61-39">    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
-</span><span id="__span-61-40">        <span class="n">row</span> <span class="o">=</span> <span class="n">Row</span><span class="p">()</span>
-</span><span id="__span-61-41">        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
-</span><span id="__span-61-42">            <span class="n">row</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">chr</span><span class="p">(</span><span class="mi">65</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">column</span><span class="p">)</span><span class="si">}{</span><span class="n">line</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-61-43">        <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-</span><span id="__span-61-44">
-</span><span id="__span-61-45">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of Table :&quot;</span><span class="p">,</span> <span class="n">table</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-</span><span id="__span-61-46">
-</span><span id="__span-61-47">    <span class="n">table2</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="s2">&quot;Symetry&quot;</span><span class="p">)</span>
-</span><span id="__span-61-48">
-</span><span id="__span-61-49">    <span class="c1"># building the symetric table using classical method :</span>
-</span><span id="__span-61-50">    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
-</span><span id="__span-61-51">        <span class="n">values</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">get_column_values</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-</span><span id="__span-61-52">        <span class="n">table2</span><span class="o">.</span><span class="n">set_row_values</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
-</span><span id="__span-61-53">    <span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">table2</span><span class="p">)</span>
-</span><span id="__span-61-54">
-</span><span id="__span-61-55">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of symetric table 2 :&quot;</span><span class="p">,</span> <span class="n">table2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-</span><span id="__span-61-56">
-</span><span id="__span-61-57">    <span class="c1"># a more simple solution with the table.transpose() method :</span>
-</span><span id="__span-61-58">    <span class="n">table3</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">clone</span>
-</span><span id="__span-61-59">    <span class="n">table3</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
-</span><span id="__span-61-60">    <span class="n">table3</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Transpose&quot;</span>
-</span><span id="__span-61-61">    <span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">table3</span><span class="p">)</span>
-</span><span id="__span-61-62">
-</span><span id="__span-61-63">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of symetric table 3 :&quot;</span><span class="p">,</span> <span class="n">table3</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-</span><span id="__span-61-64">    <span class="k">return</span> <span class="n">spreadsheet</span>
-</span><span id="__span-61-65">
-</span><span id="__span-61-66">
-</span><span id="__span-61-67"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-</span><span id="__span-61-68">    <span class="n">main</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-62-1"><span class="ch">#!/usr/bin/env python</span>
+</span><span id="__span-62-2"><span class="sd">&quot;&quot;&quot;Transpose a table. Create a spreadsheet table (example: 50 rows and 20</span>
+</span><span id="__span-62-3"><span class="sd">columns), and subsequently create a new table in a separate sheet where the</span>
+</span><span id="__span-62-4"><span class="sd">columns and rows are now swapped (e.g. 20 rows and 50 columns).</span>
+</span><span id="__span-62-5"><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-62-6"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+</span><span id="__span-62-7">
+</span><span id="__span-62-8"><span class="kn">from</span> <span class="nn">odfdo</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Row</span><span class="p">,</span> <span class="n">Table</span>
+</span><span id="__span-62-9">
+</span><span id="__span-62-10"><span class="n">_DOC_SEQUENCE</span> <span class="o">=</span> <span class="mi">800</span>
+</span><span id="__span-62-11"><span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;recipes_output&quot;</span> <span class="o">/</span> <span class="s2">&quot;transpose&quot;</span>
+</span><span id="__span-62-12"><span class="n">TARGET</span> <span class="o">=</span> <span class="s2">&quot;transposed.ods&quot;</span>
+</span><span id="__span-62-13">
+</span><span id="__span-62-14">
+</span><span id="__span-62-15"><span class="k">def</span> <span class="nf">save_new</span><span class="p">(</span><span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+</span><span id="__span-62-16">    <span class="n">OUTPUT_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-62-17">    <span class="n">new_path</span> <span class="o">=</span> <span class="n">OUTPUT_DIR</span> <span class="o">/</span> <span class="n">name</span>
+</span><span id="__span-62-18">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saving:&quot;</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
+</span><span id="__span-62-19">    <span class="n">document</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">new_path</span><span class="p">,</span> <span class="n">pretty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-62-20">
+</span><span id="__span-62-21">
+</span><span id="__span-62-22"><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+</span><span id="__span-62-23">    <span class="n">document</span> <span class="o">=</span> <span class="n">generate_document</span><span class="p">()</span>
+</span><span id="__span-62-24">    <span class="n">save_new</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">TARGET</span><span class="p">)</span>
+</span><span id="__span-62-25">
+</span><span id="__span-62-26">
+</span><span id="__span-62-27"><span class="k">def</span> <span class="nf">generate_document</span><span class="p">():</span>
+</span><span id="__span-62-28">    <span class="n">spreadsheet</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="s2">&quot;spreadsheet&quot;</span><span class="p">)</span>
+</span><span id="__span-62-29">
+</span><span id="__span-62-30">    <span class="c1"># Populate the table in the spreadsheet</span>
+</span><span id="__span-62-31">    <span class="n">body</span> <span class="o">=</span> <span class="n">spreadsheet</span><span class="o">.</span><span class="n">body</span>
+</span><span id="__span-62-32">    <span class="n">body</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</span><span id="__span-62-33">    <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="s2">&quot;Table&quot;</span><span class="p">)</span>
+</span><span id="__span-62-34">    <span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+</span><span id="__span-62-35">
+</span><span id="__span-62-36">    <span class="n">lines</span> <span class="o">=</span> <span class="mi">50</span>
+</span><span id="__span-62-37">    <span class="n">cols</span> <span class="o">=</span> <span class="mi">20</span>
+</span><span id="__span-62-38">
+</span><span id="__span-62-39">    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+</span><span id="__span-62-40">        <span class="n">row</span> <span class="o">=</span> <span class="n">Row</span><span class="p">()</span>
+</span><span id="__span-62-41">        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
+</span><span id="__span-62-42">            <span class="n">row</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">chr</span><span class="p">(</span><span class="mi">65</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">column</span><span class="p">)</span><span class="si">}{</span><span class="n">line</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-62-43">        <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+</span><span id="__span-62-44">
+</span><span id="__span-62-45">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of Table :&quot;</span><span class="p">,</span> <span class="n">table</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+</span><span id="__span-62-46">
+</span><span id="__span-62-47">    <span class="n">table2</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="s2">&quot;Symetry&quot;</span><span class="p">)</span>
+</span><span id="__span-62-48">
+</span><span id="__span-62-49">    <span class="c1"># building the symetric table using classical method :</span>
+</span><span id="__span-62-50">    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
+</span><span id="__span-62-51">        <span class="n">values</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">get_column_values</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span><span id="__span-62-52">        <span class="n">table2</span><span class="o">.</span><span class="n">set_row_values</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+</span><span id="__span-62-53">    <span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">table2</span><span class="p">)</span>
+</span><span id="__span-62-54">
+</span><span id="__span-62-55">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of symetric table 2 :&quot;</span><span class="p">,</span> <span class="n">table2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+</span><span id="__span-62-56">
+</span><span id="__span-62-57">    <span class="c1"># a more simple solution with the table.transpose() method :</span>
+</span><span id="__span-62-58">    <span class="n">table3</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">clone</span>
+</span><span id="__span-62-59">    <span class="n">table3</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+</span><span id="__span-62-60">    <span class="n">table3</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Transpose&quot;</span>
+</span><span id="__span-62-61">    <span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">table3</span><span class="p">)</span>
+</span><span id="__span-62-62">
+</span><span id="__span-62-63">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of symetric table 3 :&quot;</span><span class="p">,</span> <span class="n">table3</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+</span><span id="__span-62-64">    <span class="k">return</span> <span class="n">spreadsheet</span>
+</span><span id="__span-62-65">
+</span><span id="__span-62-66">
+</span><span id="__span-62-67"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span id="__span-62-68">    <span class="n">main</span><span class="p">()</span>
 </span></code></pre></div>
 </details>
 

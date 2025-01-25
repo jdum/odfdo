@@ -660,6 +660,15 @@ Save a document as BytesIO.
     {% include "../../recipes/save_document_as_bytesio.py" %}
     ```
 
+### Test
+
+None
+
+??? code "recipes/test.py"
+    ```python
+    {% include "../../recipes/test.py" %}
+    ```
+
 ### Search and replace words
 
 Search and replace words in a text document.
