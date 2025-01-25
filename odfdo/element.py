@@ -987,7 +987,12 @@ class Element(MDBase):
         """
         return self.search(pattern) is not None
 
-    def replace(self, pattern: str, new: str | None = None) -> int:
+    def replace(
+        self,
+        pattern: str,
+        new: str | None = None,
+        formatted: bool = False,
+    ) -> int:
         """Replace the pattern with the given text, or delete if text is an
         empty string, and return the number of replacements. By default, only
         return the number of occurences that would be replaced.
@@ -997,11 +1002,18 @@ class Element(MDBase):
 
         Python regular expression syntax applies.
 
+        If formatted is True, and the target is a Paragraph, Span or Header,
+        and the replacement text contains spaces, tabs or newlines, try to
+        convert them into actual ODF elements to obtain a formatted result.
+        On very complex contents, result may differ of expectations.
+
         Arguments:
 
             pattern -- str
 
             new -- str
+
+            formatted -- bool
 
         Return: int
         """
@@ -1016,10 +1028,18 @@ class Element(MDBase):
             else:
                 new_text, number = cpattern.subn(new, str(text))
                 container = text.parent
+                if not container:
+                    continue
                 if text.is_text():  # type: ignore
                     container.text = new_text  # type: ignore
                 else:
                     container.tail = new_text  # type: ignore
+                if formatted and container.tag in {  # type; ignore
+                    "text:h",
+                    "text:p",
+                    "text:span",
+                }:
+                    container.append_plain_text("")  # type; ignore
                 count += number
         return count
 

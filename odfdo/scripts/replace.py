@@ -58,6 +58,13 @@ def configure_parser() -> ArgumentParser:
         help="output file. if option not present, write to stdout",
     )
     parser.add_argument(
+        "-f",
+        "--formatted",
+        action="store_true",
+        default=False,
+        help="keep replacement string format",
+    )
+    parser.add_argument(
         "pattern",
         action="store",
         help="search pattern (regular expression)",
@@ -80,6 +87,7 @@ def main() -> None:
             args.replacement,
             args.input_file,
             args.output_file,
+            args.formatted,
         )
     except Exception as e:
         parser.print_help()
@@ -121,10 +129,11 @@ def search_replace(
     replacement: str,
     input_path: str | None,
     output_path: str | None,
+    formatted: bool = False,
 ) -> None:
     document = read_document(input_path)
     body = document.body
-    body.replace(pattern, replacement)
+    body.replace(pattern, replacement, formatted)
     save_document(document, output_path)
 
 
