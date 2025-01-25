@@ -73,3 +73,46 @@ def test_replace3():
     assert document.body.search("odfdo") is not None
     assert document.body.search("FOO") is not None
     assert document.body.search("paragraph") is None
+
+
+def test_replace_formatted_1():
+    params = ["-f", "-i", f"{SOURCE}", "paragraph", "FOO"]
+    out, err, exitcode = run_params(params)
+    print(err)
+    assert exitcode == 0
+    content = io.BytesIO(out)
+    document = Document(content)
+    content.close()
+    assert document.body.search("odfdo") is not None
+    assert document.body.search("FOO") is not None
+    assert document.body.search("paragraph") is None
+
+
+def test_replace_formatted_2():
+    params = ["-i", f"{SOURCE}", "paragraph", "FOO\nBAR"]
+    out, err, exitcode = run_params(params)
+    print(err)
+    assert exitcode == 0
+    content = io.BytesIO(out)
+    document = Document(content)
+    content.close()
+    assert len(document.body.get_elements("//text:line-break")) == 0
+    assert document.body.search("odfdo") is not None
+    assert document.body.search("FOO") is not None
+    assert document.body.search("BAR") is not None
+    assert document.body.search("paragraph") is None
+
+
+def test_replace_formatted_3():
+    params = ["-f", "-i", f"{SOURCE}", "paragraph", "FOO\n\nBAR"]
+    out, err, exitcode = run_params(params)
+    print(err)
+    assert exitcode == 0
+    content = io.BytesIO(out)
+    document = Document(content)
+    content.close()
+    assert len(document.body.get_elements("//text:line-break")) == 14
+    assert document.body.search("odfdo") is not None
+    assert document.body.search("FOO") is not None
+    assert document.body.search("BAR") is not None
+    assert document.body.search("paragraph") is None
