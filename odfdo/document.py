@@ -41,6 +41,7 @@ from .const import (
     ODF_CONTENT,
     ODF_MANIFEST,
     ODF_MANIFEST_NAME,
+    ODF_MANIFEST_RDF,
     ODF_META,
     ODF_SETTINGS,
     ODF_STYLES,
@@ -617,6 +618,18 @@ class Document(MDDocument):
                 setattr(clone, name, value)
         return clone
 
+    def _check_manifest_rdf(self) -> None:
+        manifest = self.manifest
+        parts = self.container.parts
+        if manifest.get_media_type(ODF_MANIFEST_RDF):
+            if ODF_MANIFEST_RDF not in parts:
+                self.container.set_part(
+                    ODF_MANIFEST_RDF, self.container.default_manifest_rdf.encode("utf8")
+                )
+        else:
+            if ODF_MANIFEST_RDF in parts:
+                self.container.del_part(ODF_MANIFEST_RDF)
+
     def save(
         self,
         target: str | Path | io.BytesIO | None = None,
@@ -654,6 +667,7 @@ class Document(MDDocument):
             pretty = packaging in {"folder", "xml"}
         pretty = bool(pretty)
         backup = bool(backup)
+        self._check_manifest_rdf()
         if pretty and packaging != XML:
             for path, part in self.__xmlparts.items():
                 if part is not None:

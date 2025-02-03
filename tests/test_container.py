@@ -32,7 +32,6 @@ from odfdo.const import (
     ODF_CONTENT,
     ODF_EXTENSIONS,
     ODF_MANIFEST,
-    ODF_MANIFEST_RDF,
     ODF_META,
     ODF_SETTINGS,
     ODF_STYLES,
@@ -227,38 +226,6 @@ def test_manifest_rdf_0(tmp_path):
     assert set(container.parts) == expected
 
 
-def test_manifest_rdf_1(tmp_path):
-    base = Container()
-    base.open(SAMPLES / "example.odt")
-    content = base.get_part(ODF_CONTENT)
-    styles = base.get_part(ODF_STYLES)
-    meta = base.get_part(ODF_META)
-    settings = base.get_part(ODF_SETTINGS)
-    manifest = base.get_part(ODF_MANIFEST)
-    container = Container()
-    container.set_part(ODF_CONTENT, content)
-    container.set_part(ODF_STYLES, styles)
-    container.set_part(ODF_META, meta)
-    container.set_part(ODF_SETTINGS, settings)
-    container.set_part(ODF_MANIFEST, manifest)
-    container.mimetype = ODF_TEXT
-    path = tmp_path / "example.odt"
-    container.save(path, packaging=FOLDER)
-    path_m = tmp_path / "example.odt.folder" / "mimetype"
-    assert isfile(path_m)
-    path_c = tmp_path / "example.odt.folder" / ODF_CONTENT
-    assert isfile(path_c)
-    path_s = tmp_path / "example.odt.folder" / ODF_STYLES
-    assert isfile(path_s)
-    path_m = tmp_path / "example.odt.folder" / ODF_META
-    assert isfile(path_m)
-    path_se = tmp_path / "example.odt.folder" / ODF_SETTINGS
-    assert isfile(path_se)
-    path_m1 = tmp_path / "example.odt.folder" / ODF_MANIFEST
-    assert isfile(path_m1)
-    path_m2 = tmp_path / "example.odt.folder" / ODF_MANIFEST_RDF
-    assert isfile(path_m2)
-
 
 def test_manifest_rdf_2(tmp_path):
     base = Container()
@@ -305,25 +272,3 @@ def test_manifest_rdf_3(tmp_path):
     content2 = new_container.get_part(ODF_CONTENT)
     assert content2 == content
 
-
-def test_manifest_rdf_4(tmp_path):
-    base = Container()
-    base.open(SAMPLES / "example.odt")
-    content = base.get_part(ODF_CONTENT)
-    styles = base.get_part(ODF_STYLES)
-    meta = base.get_part(ODF_META)
-    settings = base.get_part(ODF_SETTINGS)
-    manifest = base.get_part(ODF_MANIFEST)
-    container = Container()
-    container.set_part(ODF_CONTENT, content)
-    container.set_part(ODF_STYLES, styles)
-    container.set_part(ODF_META, meta)
-    container.set_part(ODF_SETTINGS, settings)
-    container.set_part(ODF_MANIFEST, manifest)
-    container.mimetype = ODF_TEXT
-    path = tmp_path / "example.odt"
-    container.save(path, packaging=ZIP)
-    new_container = Container()
-    new_container.open(path)
-    rdf = new_container.get_part(ODF_MANIFEST_RDF)
-    assert rdf.decode() == new_container.default_manifest_rdf

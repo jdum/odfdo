@@ -42,7 +42,6 @@ from .const import (
     ODF_CONTENT,
     ODF_EXTENSIONS,
     ODF_MANIFEST,
-    ODF_MANIFEST_RDF,
     ODF_META,
     ODF_MIMETYPES,
     ODF_SETTINGS,
@@ -413,14 +412,6 @@ class Container:
                     # Deleted
                     continue
                 filezip.writestr(path, data)
-            # manifest.rdf
-            if (
-                ODF_CONTENT in parts
-                and ODF_STYLES in parts
-                and ODF_MANIFEST_RDF not in parts
-            ):
-                filezip.writestr(ODF_MANIFEST_RDF, self.default_manifest_rdf.encode())
-            # Manifest
             with contextlib.suppress(KeyError):
                 part = parts[ODF_MANIFEST]
                 if part is not None:
@@ -449,12 +440,6 @@ class Container:
                 # Deleted
                 continue
             dump(part_path, data)
-        if (
-            ODF_CONTENT in self.__parts
-            and ODF_STYLES in self.__parts
-            and ODF_MANIFEST_RDF not in self.__parts
-        ):
-            dump(ODF_MANIFEST_RDF, self.default_manifest_rdf.encode())
 
     def _encoded_image(self, elem: _Element) -> _Element | None:
         mime_type = elem.get(
