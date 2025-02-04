@@ -1,5 +1,13 @@
 # Odfdo Release Notes
 
+## [3.13.6] - 2025-02-04
+
+Fix corrupted ODF file due to incoherent manifest files, especially in .odg files (issue 54).
+
+### Fixed
+
+-   Fixed `Document.save()` check for `manifest.rdf` listed in `manifest.xml`
+
 ## [3.13.5] - 2025-01-25
 
 Add the option `formatted` to script `odfdo-replace` and method `Element.replace()` to interpret the <space>, <tab> and <CR> of the replacement string.
