@@ -99,6 +99,7 @@ def test_style_ods():
     source = SAMPLES / "styled_table.ods"
     params = [f"{source}"]
     out, _err, exitcode = run_params(params)
+    print(out)
     assert exitcode == 0
     assert "1,2,3,4" in out
 

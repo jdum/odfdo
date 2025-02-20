@@ -33,12 +33,24 @@ def test_default():
     assert table.serialize() == expected
 
 
+def test_bad_name_empty():
+    pytest.raises(TypeError, Table)
+
+
 def test_bad_name_1():
     pytest.raises(ValueError, Table, " ")
 
 
+def test_good_apos():
+    _t = Table("ee'ee")
+
+
 def test_bad_name_2():
-    pytest.raises(ValueError, Table, "ee'ee")
+    pytest.raises(ValueError, Table, "'eeee")
+
+
+def test_bad_name_2_right():
+    pytest.raises(ValueError, Table, "eeee'")
 
 
 def test_bad_name_3():
@@ -47,6 +59,30 @@ def test_bad_name_3():
 
 def test_bad_name_4():
     pytest.raises(ValueError, Table, "ee\nee")
+
+
+def test_bad_name_5():
+    pytest.raises(ValueError, Table, "ee\\ee")
+
+
+def test_bad_name_6():
+    pytest.raises(ValueError, Table, "ee*ee")
+
+
+def test_bad_name_7():
+    pytest.raises(ValueError, Table, "ee?ee")
+
+
+def test_bad_name_8():
+    pytest.raises(ValueError, Table, "ee:ee")
+
+
+def test_bad_name_9():
+    pytest.raises(ValueError, Table, "ee]ee")
+
+
+def test_bad_name_10():
+    pytest.raises(ValueError, Table, "ee[ee")
 
 
 def test_width_height():

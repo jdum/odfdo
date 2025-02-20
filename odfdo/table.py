@@ -29,6 +29,7 @@ from __future__ import annotations
 import contextlib
 import csv
 import os
+import re
 import string
 from collections.abc import Iterator
 from functools import cache
@@ -61,6 +62,7 @@ from .utils import (
     translate_from_any,
 )
 
+_RE_TABLE_NAME = re.compile(r"^\'|[\n\\/\*\?:\][]|\'$")
 _xpath_row = xpath_compile(
     "table:table-row|table:table-rows/table:table-row|table:table-header-rows/table:table-row"
 )
@@ -81,9 +83,8 @@ def _table_name_check(name: Any) -> str:
     name = name.strip()
     if not name:
         raise ValueError("Empty name not allowed.")
-    for character in ("\n", "/", "\\", "'"):
-        if character in name:
-            raise ValueError(f"Character {character} not allowed.")
+    if match := _RE_TABLE_NAME.search(name):
+        raise ValueError(f"Character {match.group()!r} not allowed.")
     return name
 
 
@@ -325,6 +326,9 @@ class Table(MDTable, CachedElement):
     ) -> None:
         """Create a table element, optionally prefilled with "height" rows of
         "width" cells each.
+
+        The "name" parameter is required and cannot contain []*?:/ or \\
+        characters, ' (apostrophe) cannot be the first or last character.
 
         If the table is to be protected, a protection key must be provided,
         i.e. a hash value of the password.
@@ -802,11 +806,15 @@ class Table(MDTable, CachedElement):
 
     @property
     def name(self) -> str | None:
-        """Get / set the name of the table."""
+        """Get / set the name of the table.
+
+        The "name" parameter is required and cannot contain []*?:/ or \\
+        characters, ' (apostrophe) cannot be the first or last character.
+        """
         return self.get_attribute_string("table:name")
 
     @name.setter
-    def name(self, name: str) -> None:
+    def name(self, name: str | None) -> None:
         name = _table_name_check(name)
         # first, update named ranges
         # fixme : delete name ranges when deleting table, too.
