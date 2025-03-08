@@ -1,5 +1,20 @@
 # Odfdo Release Notes
 
+## [3.13.7] - 2025-03-08
+
+Improved filter on allowed characters in a table name (for compatibility with allowed names in LibreOffice). Forbidden characters are now `\n` `\` `/` `*` `?` `:` `[` `]`, and `"'"` as first or last character. Previously forbidden characters were simply `\n` `/` `\` `"'"`.
+
+Added `lxml` version 5.3.1 to the test suite.
+
+### Changed
+
+-   The regex for unauthised characters in table names is now: `r"^\'|[\n\\/\*\?:\][]|\'$"`.
+
+### Added
+
+-   Version 5.3.1 of `lxml` added to `tox.ini`.
+
+
 ## [3.13.6] - 2025-02-04
 
 Fix corrupted ODF file due to incoherent manifest files, especially in .odg files (issue 54).
@@ -10,7 +25,7 @@ Fix corrupted ODF file due to incoherent manifest files, especially in .odg file
 
 ## [3.13.5] - 2025-01-25
 
-Add the option `formatted` to script `odfdo-replace` and method `Element.replace()` to interpret the <space>, <tab> and <CR> of the replacement string.
+Add the option `formatted` to script `odfdo-replace` and method `Element.replace()` to interpret the `<space>`, `<tab>` and `<CR>` of the replacement string.
 
 ### Added
 

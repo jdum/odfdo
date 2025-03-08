@@ -18,22 +18,22 @@ markdown_extensions:
 theme:
     name: material
     locale: en
-    features:
-        # - navigation.instant
-        # - navigation.tabs
-        # - navigation.tabs.sticky
-        # - navigation.sections
-        # - navigation.expand
+    # features:
+    # - navigation.instant
+    # - navigation.tabs
+    # - navigation.tabs.sticky
+    # - navigation.sections
+    # - navigation.expand
 
 plugins:
     - search
 
     - mkdocstrings:
           default_handler: python
-          handlers:
-              python:
-                  rendering:
-                      show_source: true
+          #handlers:
+          #    python:
+          #rendering:
+          #    show_source: true
 
     - include-markdown:
           preserve_includer_indent: true
