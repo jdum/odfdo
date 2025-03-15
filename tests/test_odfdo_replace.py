@@ -8,7 +8,7 @@ from pathlib import Path
 
 from odfdo import Document
 
-SCRIPT = Path(__file__).parent.parent / "odfdo" / "scripts" / "replace.py"
+SCRIPT = Path(__file__).parent.parent / "src" / "odfdo" / "scripts" / "replace.py"
 SAMPLES = Path(__file__).parent / "samples"
 SOURCE = SAMPLES / "base_text.odt"
 

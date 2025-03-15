@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from textwrap import dedent
 
-SCRIPT = Path(__file__).parent.parent / "odfdo" / "scripts" / "headers.py"
+SCRIPT = Path(__file__).parent.parent / "src" / "odfdo" / "scripts" / "headers.py"
 SAMPLES = Path(__file__).parent / "samples"
 SOURCE0 = SAMPLES / "list.odt"
 SOURCE1 = SAMPLES / "base_text.odt"

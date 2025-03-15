@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-SCRIPT = Path(__file__).parent.parent / "odfdo" / "scripts" / "styles.py"
+SCRIPT = Path(__file__).parent.parent / "src" / "odfdo" / "scripts" / "styles.py"
 SAMPLES = Path(__file__).parent / "samples"
 
 

@@ -1,5 +1,14 @@
 # Odfdo Release Notes
 
+## [3.13.8] - 2025-03-15
+
+Technical update: update `poetry` to version 2.1, reformat `pyproject.toml`, move source code in the `src` directory.
+
+### Changed
+
+-   The source code is now in the `src` sub directory.
+-   Build of the library requires `poetry` version 2.0 or more.
+
 ## [3.13.7] - 2025-03-08
 
 Improved filter on allowed characters in a table name (for compatibility with allowed names in LibreOffice). Forbidden characters are now `\n` `\` `/` `*` `?` `:` `[` `]`, and `"'"` as first or last character. Previously forbidden characters were simply `\n` `/` `\` `"'"`.

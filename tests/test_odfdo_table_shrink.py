@@ -8,7 +8,7 @@ from pathlib import Path
 
 from odfdo import Document
 
-SCRIPT = Path(__file__).parent.parent / "odfdo" / "scripts" / "table_shrink.py"
+SCRIPT = Path(__file__).parent.parent / "src" / "odfdo" / "scripts" / "table_shrink.py"
 SAMPLES = Path(__file__).parent / "samples"
 SOURCE1 = SAMPLES / "test_col_cell_blue.ods"
 SOURCE2 = SAMPLES / "test_col_cell.ods"

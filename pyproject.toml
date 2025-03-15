@@ -47,9 +47,6 @@ odfdo-table-shrink = 'odfdo.scripts.table_shrink:main'
 odfdo-userfield = 'odfdo.scripts.userfield:main'
 odfdo-markdown = 'odfdo.scripts.to_markdown:main'
 
-[tool.poetry]
-packages = [{ include = "odfdo" }]
-
 [tool.poetry.group.dev.dependencies]
 poetry = ">=2.0"
 pytest = ">=8.0"

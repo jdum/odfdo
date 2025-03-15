@@ -7,7 +7,7 @@ from pathlib import Path
 
 from odfdo import Document
 
-SCRIPT = Path(__file__).parent.parent / "odfdo" / "scripts" / "folder.py"
+SCRIPT = Path(__file__).parent.parent / "src" / "odfdo" / "scripts" / "folder.py"
 SAMPLES = Path(__file__).parent / "samples"
 
 

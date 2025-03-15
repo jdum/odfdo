@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-SCRIPT = Path(__file__).parent.parent / "odfdo" / "scripts" / "diff.py"
+SCRIPT = Path(__file__).parent.parent / "src" / "odfdo" / "scripts" / "diff.py"
 SAMPLES = Path(__file__).parent / "samples"
 
 
@@ -37,7 +37,7 @@ def test_no_file():
 
 
 def test_bad_format():
-    params = [f"{SAMPLES/'test_diff1.odt'}", f"{SAMPLES/'background.odp'}"]
+    params = [f"{SAMPLES / 'test_diff1.odt'}", f"{SAMPLES / 'background.odp'}"]
     out, _err, exitcode = run_params(params)
     assert exitcode == 1
     assert "Show a diff" in out
@@ -45,7 +45,7 @@ def test_bad_format():
 
 
 def test_diff():
-    params = [f"{SAMPLES/'test_diff1.odt'}", f"{SAMPLES/'test_diff2.odt'}"]
+    params = [f"{SAMPLES / 'test_diff1.odt'}", f"{SAMPLES / 'test_diff2.odt'}"]
     out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert "test_diff1.odt" in out
@@ -55,7 +55,7 @@ def test_diff():
 
 
 def test_ndiff():
-    params = ["-n", f"{SAMPLES/'test_diff1.odt'}", f"{SAMPLES/'test_diff2.odt'}"]
+    params = ["-n", f"{SAMPLES / 'test_diff1.odt'}", f"{SAMPLES / 'test_diff2.odt'}"]
     out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert "test_diff1.odt" not in out
@@ -64,7 +64,7 @@ def test_ndiff():
 
 
 def test_diff_same():
-    params = [f"{SAMPLES/'test_diff1.odt'}", f"{SAMPLES/'test_diff1.odt'}"]
+    params = [f"{SAMPLES / 'test_diff1.odt'}", f"{SAMPLES / 'test_diff1.odt'}"]
     out, _err, exitcode = run_params(params)
     assert exitcode == 0
     assert not out.strip()

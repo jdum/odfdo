@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-SCRIPT = Path(__file__).parent.parent / "odfdo" / "scripts" / "to_markdown.py"
+SCRIPT = Path(__file__).parent.parent / "src" / "odfdo" / "scripts" / "to_markdown.py"
 ODT_FILE = Path(__file__).parent / "samples" / "example.odt"
 ODS_FILE = Path(__file__).parent / "samples" / "simple_table.ods"
 
