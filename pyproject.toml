@@ -1,32 +1,41 @@
-[tool.poetry]
+[project]
 name = "odfdo"
-version = "3.13.7"
+version = "3.13.8"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
+readme = "README.md"
+authors = [{ name = "Jérôme Dumonteil", email = "jerome.dumonteil@gmail.com" }]
 keywords = ["python", "library", "ODF", "OpenDocument"]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Environment :: Console",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Operating System :: OS Independent",
-    "Topic :: Software Development :: Libraries :: Python Modules",
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Operating System :: OS Independent",
+  "Topic :: Software Development :: Libraries :: Python Modules",
 ]
+requires-python = ">=3.9, <4"
+dependencies = [
+  "lxml >=4.8.0, <5; python_version == '3.9'",
+  "lxml >=4.8.0, <5.1.1; python_version == '3.10'",
+  "lxml >=4.9.4, <6; python_version >= '3.11' and python_version < '3.13'",
+  "lxml >=5.3.0, <6; python_version >= '3.13'",
+]
+
+[project.urls]
 homepage = "https://github.com/jdum/odfdo"
 repository = "https://github.com/jdum/odfdo"
-authors = ["Jérôme Dumonteil <jerome.dumonteil@gmail.com>"]
-readme = "README.md"
-packages = [{ include = "odfdo" }]
+changelog = "https://github.com/jdum/odfdo/blob/master/CHANGES.md"
 
-[tool.poetry.scripts]
+[project.scripts]
 odfdo-diff = "odfdo.scripts.diff:main"
 odfdo-folder = 'odfdo.scripts.folder:main'
 odfdo-highlight = 'odfdo.scripts.highlight:main'
@@ -38,27 +47,20 @@ odfdo-table-shrink = 'odfdo.scripts.table_shrink:main'
 odfdo-userfield = 'odfdo.scripts.userfield:main'
 odfdo-markdown = 'odfdo.scripts.to_markdown:main'
 
-[tool.poetry.dependencies]
-python = ">=3.9,<4"
-lxml = [
-    { version = ">=4.8.0,<5", python = ">=3.9,<3.10" },
-    { version = ">=4.8.0,<5.1.1", python = ">=3.10,<3.11" },
-    { version = ">=4.9.4,<6", python = ">=3.11,<3.12" },
-    { version = ">=4.9.4,<6", python = ">=3.12,<3.13" },
-    { version = ">=5.3.0,<6", python = ">=3.13" },
-]
+[tool.poetry]
+packages = [{ include = "odfdo" }]
 
 [tool.poetry.group.dev.dependencies]
-poetry = "~1.8"
+poetry = ">=2.0"
 pytest = ">=8.0"
 tox = ">=4"
-Pillow = ">=10.0.0"
+Pillow = ">=11.0.0"
 lxml-stubs = "*"
-ruff = ">=0.6.0"
-isort = ">=5.13.0"
+ruff = ">=0.11.0"
+isort = ">=6.0.0"
 
 [build-system]
-requires = ["poetry-core>=1.8.0"]
+requires = ["poetry-core>=2.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.isort]
@@ -76,31 +78,21 @@ target-version = "py313"
 select = ["E4", "E7", "E9", "F", "B"]
 
 ignore = [
-    # Use specific rule codes when ignoring type issues
-    "PGH003",
-    # Using `lxml` to parse untrusted data is known to be vulnerable to XML attacks
-    #"S320",
-    # Convert to `datetime.UTC` alias
-    "UP017",
-    # import *` used; unable to detect undefined names
-    "F403",
-    "E402",
+  # Use specific rule codes when ignoring type issues
+  "PGH003",
+  # Using `lxml` to parse untrusted data is known to be vulnerable to XML attacks
+  #"S320",
+  # Convert to `datetime.UTC` alias
+  "UP017",
+  # import *` used; unable to detect undefined names
+  "F403",
+  "E402",
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/test_*" = ["S101", "RUF005", "B007"]
 "recipes/*" = ["S101"]
 "recipes/accessing_a_single_element.py" = ["RUF001"]
-
-# [tool.mypy]
-# check_untyped_defs = "True"
-# disallow_untyped_defs = "True"
-# disallow_any_unimported = "True"
-# no_implicit_optional = "True"
-# warn_return_any = "False"
-# warn_unused_ignores = "True"
-# show_error_codes = "True"
-# no_namespace_packages = "True"
 
 [tool.coverage.report]
 skip_empty = true
