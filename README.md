@@ -31,7 +31,7 @@ Installation from Pypi (recommended):
 pip install odfdo
 ```
 
-Installation from sources (requiring setuptools):
+Installation from sources:
 
 ```python
 pip install .
@@ -39,7 +39,7 @@ pip install .
 
 After installation from sources, you can check everything is working (some requirements: `pytest`, Pillow, ...):
 
-```python
+```
 pytest
 ```
 
@@ -51,11 +51,13 @@ A special effort is made to limit the dependencies of this library: the only dep
 
 # Usage
 
-    from odfdo import Document, Paragraph
+```python
+from odfdo import Document, Paragraph
 
-    doc = Document('text')
-    doc.body.append(Paragraph("Hello world!"))
-    doc.save("hello.odt")
+doc = Document('text')
+doc.body.append(Paragraph("Hello world!"))
+doc.save("hello.odt")
+```
 
 # tl;dr
 
@@ -105,14 +107,9 @@ I you work on `.ods` files (spreadsheet), you may be interested by these scripts
 this library to parse/generate `.ods` files:
 `https://github.com/jdum/odsgenerator` and `https://github.com/jdum/odsparsator`
 
-# Changes from former lpod library
+# Former lpod-python library
 
 `lpod-python` was written in 2009-2010 as a Python 2.x library,
 see: `https://github.com/lpod/lpod-python`
 
-`odfdo` is an adaptation of this former project. `odfdo` main changes from `lpod`:
-
--   `odfdo` requires Python version 3.9 to 3.13. For previous Python versions see older releases.
--   API change: more pythonic.
--   include recipes.
--   use Apache 2.0 license.
+`odfdo` is an adaptation of this former project to Python 3.x with several improvements.

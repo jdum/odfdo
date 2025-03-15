@@ -14,7 +14,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.8">
     
     
       
@@ -359,22 +359,22 @@ Apache License, Version 2.0</p>
 <p>Installation from Pypi (recommended):</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><span class="n">pip</span> <span class="n">install</span> <span class="n">odfdo</span>
 </span></code></pre></div>
-<p>Installation from sources (requiring setuptools):</p>
+<p>Installation from sources:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><span class="n">pip</span> <span class="n">install</span> <span class="o">.</span>
 </span></code></pre></div>
 <p>After installation from sources, you can check everything is working (some requirements: <code>pytest</code>, Pillow, &hellip;):</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><span class="n">pytest</span>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1">pytest
 </span></code></pre></div>
 <p>The tests should run for a few seconds or minutes and issue no error.</p>
 <p>The full test suite uses <code>tox</code> to check different <code>Python</code> and <code>lxml</code> versions.</p>
 <p>A special effort is made to limit the dependencies of this library: the only dependency (outside development) is <code>lxml</code>. The <code>lxml</code> versions depend mainly on the version of Python used, see the <code>pyproject.toml</code> file for details.</p>
 <h1 id="usage">Usage</h1>
-<div class="language-text highlight"><pre><span></span><code>from odfdo import Document, Paragraph
-
-doc = Document(&#39;text&#39;)
-doc.body.append(Paragraph(&quot;Hello world!&quot;))
-doc.save(&quot;hello.odt&quot;)
-</code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><span class="kn">from</span><span class="w"> </span><span class="nn">odfdo</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Paragraph</span>
+</span><span id="__span-3-2">
+</span><span id="__span-3-3"><span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>
+</span><span id="__span-3-4"><span class="n">doc</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Paragraph</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">))</span>
+</span><span id="__span-3-5"><span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;hello.odt&quot;</span><span class="p">)</span>
+</span></code></pre></div>
 <h1 id="tldr">tl;dr</h1>
 <p>&lsquo;Intended Audience :: Developers&rsquo;</p>
 <h1 id="documentation">Documentation</h1>
@@ -413,16 +413,10 @@ programmatically some basic styles: <code>create_basic_text_styles</code>, <code
 <p>I you work on <code>.ods</code> files (spreadsheet), you may be interested by these scripts using
 this library to parse/generate <code>.ods</code> files:
 <code>https://github.com/jdum/odsgenerator</code> and <code>https://github.com/jdum/odsparsator</code></p>
-<h1 id="changes-from-former-lpod-library">Changes from former lpod library</h1>
+<h1 id="former-lpod-python-library">Former lpod-python library</h1>
 <p><code>lpod-python</code> was written in 2009-2010 as a Python 2.x library,
 see: <code>https://github.com/lpod/lpod-python</code></p>
-<p><code>odfdo</code> is an adaptation of this former project. <code>odfdo</code> main changes from <code>lpod</code>:</p>
-<ul>
-<li><code>odfdo</code> requires Python version 3.9 to 3.13. For previous Python versions see older releases.</li>
-<li>API change: more pythonic.</li>
-<li>include recipes.</li>
-<li>use Apache 2.0 license.</li>
-</ul>
+<p><code>odfdo</code> is an adaptation of this former project to Python 3.x with several improvements.</p>
 
 
 
