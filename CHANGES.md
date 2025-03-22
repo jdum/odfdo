@@ -2,10 +2,11 @@
 
 ## [3.13.9] - 2025-03-22
 
-Technical update: reorganize tests.
+Technical update: migrate from `poetry` build environment to `uv`, and reorganize tests.
 
 ### Changed
 
+-   Migrate from `poetry` build environment to `uv`
 -   Organize tests with more fixtures and sub directories.
 
 ## [3.13.8] - 2025-03-15

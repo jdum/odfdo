@@ -21,8 +21,8 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Paragraph class for "text:p", Span class for "text:span".
-"""
+"""Paragraph class for "text:p", Span class for "text:span"."""
+
 from __future__ import annotations
 
 import re
@@ -62,9 +62,9 @@ _re_spaces_split = re.compile(r"( +)")
 _re_only_spaces = re.compile("^ +$")
 
 
-def _by_regex_offset(method: Callable) -> Callable:  # noqa: C901
+def _by_regex_offset(method: Callable) -> Callable:
     @wraps(method)
-    def wrapper(element: Element, *args: Any, **kwargs: Any) -> None:  # noqa: C901
+    def wrapper(element: Element, *args: Any, **kwargs: Any) -> None:
         """Insert the result of method(element, ...) at the place matching the
         regex OR the positional arguments offset and length.
 
@@ -80,8 +80,8 @@ def _by_regex_offset(method: Callable) -> Callable:  # noqa: C901
 
             length -- int
         """
-        offset = kwargs.get("offset", None)
-        regex = kwargs.get("regex", None)
+        offset = kwargs.get("offset")
+        regex = kwargs.get("regex")
         if offset is not None:
             length = kwargs.get("length", 0)
             counted = 0
@@ -377,7 +377,7 @@ class Paragraph(MDParagraph, ParagraphBase):
         else:
             self.insert(note_element, FIRST_CHILD)
 
-    def insert_annotation(  # noqa: C901
+    def insert_annotation(
         self,
         annotation_element: Annotation | None = None,
         before: str | None = None,

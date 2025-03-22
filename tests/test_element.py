@@ -20,6 +20,7 @@
 # Authors: Romain Gauthier <romain@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 
+import re
 from collections import namedtuple
 from collections.abc import Iterable
 from re import compile
@@ -393,7 +394,7 @@ def test_complex_regex_search(span_styles):
 
 def test_compiled_regex_search(span_styles):
     """Search with a compiled pattern."""
-    pattern = compile(r"moustache")
+    pattern = re.compile(r"moustache")
     pos = span_styles.para.search(pattern)
     assert pos == 19
 
@@ -444,7 +445,7 @@ def test_complex_regex(span_styles):
 
 def test_compiled_regex(span_styles):
     """Match with a compiled pattern."""
-    pattern = compile(r"moustache")
+    pattern = re.compile(r"moustache")
     match = span_styles.para.match(pattern)
     assert match
 

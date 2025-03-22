@@ -25,7 +25,7 @@ from __future__ import annotations
 from .style_constants import FAMILY_ODF_STD
 
 
-def make_xpath_query(  # noqa: C901
+def make_xpath_query(
     query_string: str,
     family: str | None = None,
     text_style: str | None = None,

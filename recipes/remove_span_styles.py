@@ -2,6 +2,7 @@
 """Remove span styles (like some words in bold in a paragraph),
 except in titles.
 """
+
 import sys
 from pathlib import Path
 
@@ -46,7 +47,7 @@ def main():
     save_new(document, TARGET)
 
 
-def _tree_remove_tag(element, context):  # noqa: C901
+def _tree_remove_tag(element, context):
     """Send back a copy of the element, without span styles. Element should be
     either paragraph or heading.
 

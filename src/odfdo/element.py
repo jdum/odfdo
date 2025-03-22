@@ -20,8 +20,8 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Element, super class of all ODF classes.
-"""
+"""Element, super class of all ODF classes."""
+
 from __future__ import annotations
 
 import contextlib
@@ -574,7 +574,7 @@ class Element(MDBase):
             parent.tail = text_before
             element.tail = text_after
 
-    def _insert_between(  # noqa: C901
+    def _insert_between(
         self,
         element: Element,
         from_: str,
@@ -1147,7 +1147,7 @@ class Element(MDBase):
             return False
         if element.text is not None:
             return False
-        if list(element.iterchildren()):
+        if list(element.iterchildren()):  # noqa: SIM103
             return False
         return True
 
@@ -1161,7 +1161,7 @@ class Element(MDBase):
             return None, None
         return parent._get_successor(target.parent)  # type:ignore
 
-    def _get_between_base(  # noqa:C901
+    def _get_between_base(
         self,
         tag1: Element,
         tag2: Element,
@@ -1591,7 +1591,7 @@ class Element(MDBase):
         return element
 
     @staticmethod
-    def _strip_tags(  # noqa:C901
+    def _strip_tags(
         element: Element,
         strip: Iterable[str],
         protect: Iterable[str],

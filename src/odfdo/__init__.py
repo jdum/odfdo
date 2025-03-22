@@ -21,7 +21,7 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 
-__all__ = [
+__all__ = [  # noqa: RUF022
     "AnimPar",
     "AnimSeq",
     "AnimTransFilter",

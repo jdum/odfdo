@@ -24,6 +24,7 @@
 """Base class ParagraphBase and Spacer "text:s", Tab "text:tab", LineBreak
 "text:line-break".
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -33,7 +34,7 @@ from .element import Element, EText, PropDef, _get_lxml_tag, register_element_cl
 from .mixin_md import MDLineBreak, MDSpacer, MDTab
 
 
-def _get_formatted_text(  # noqa: C901
+def _get_formatted_text(
     element: Element,
     context: dict | None = None,
     with_text: bool = True,

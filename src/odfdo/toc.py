@@ -21,6 +21,7 @@
 """TOC class for "text:table-of-content" and IndexTitle, TabStopStyle,
 IndexTitleTemplate, TocEntryTemplate related classes.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -109,7 +110,7 @@ class TabStopStyle(Element):
         PropDef("style_type", "style:type"),
     )
 
-    def __init__(  # noqa: C901
+    def __init__(
         self,
         style_char: str | None = None,
         leader_color: str | None = None,
@@ -374,7 +375,7 @@ class TOC(MDToc, Element):
             idx += 1
         return ".".join(str(x) for x in numbers) + "."
 
-    def fill(  # noqa: C901
+    def fill(
         self,
         document: Document | None = None,
         use_default_styles: bool = True,

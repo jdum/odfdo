@@ -24,6 +24,7 @@
 """Table class for "table:table" and HeaderRows, Cell, Row, Column,
 NamedRange related classes.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -615,7 +616,7 @@ class Table(MDTable, CachedElement):
             result.append("\n")
         return "".join(result)
 
-    def _get_formatted_text_rst(self, context: dict) -> str:  # noqa: C901
+    def _get_formatted_text_rst(self, context: dict) -> str:
         context["no_img_level"] += 1
         # Strip the table => We must clone
         table = self.clone
@@ -1178,7 +1179,7 @@ class Table(MDTable, CachedElement):
         self._indexes["_cmap"] = {}
         self._compute_table_cache()
 
-    def transpose(self, coord: tuple | list | str | None = None) -> None:  # noqa: C901
+    def transpose(self, coord: tuple | list | str | None = None) -> None:
         """Swap *in-place* rows and columns of the table.
 
         If 'coord' is not None, apply transpose only to the area defined by the
@@ -1261,7 +1262,7 @@ class Table(MDTable, CachedElement):
     def _get_rows(self) -> list[Row]:
         return self.get_elements(_xpath_row)  # type: ignore
 
-    def traverse(  # noqa: C901
+    def traverse(
         self,
         start: int | None = None,
         end: int | None = None,
@@ -2151,7 +2152,7 @@ class Table(MDTable, CachedElement):
     def _get_columns(self) -> list:
         return self.get_elements(_xpath_column)
 
-    def traverse_columns(  # noqa: C901
+    def traverse_columns(
         self,
         start: int | None = None,
         end: int | None = None,
@@ -2445,7 +2446,7 @@ class Table(MDTable, CachedElement):
             if row.width >= width:
                 row.delete_cell(x)
 
-    def get_column_cells(  # noqa: C901
+    def get_column_cells(
         self,
         x: int | str,
         style: str | None = None,
@@ -2674,7 +2675,9 @@ class Table(MDTable, CachedElement):
                 f"table_name must be string or Iterable, not {type(table_name)}"
             )
         return [
-            nr for nr in all_named_ranges if nr.table_name in filter_  # type:ignore
+            nr
+            for nr in all_named_ranges
+            if nr.table_name in filter_  # type:ignore
         ]
 
     def get_named_range(self, name: str) -> NamedRange:
@@ -2746,7 +2749,7 @@ class Table(MDTable, CachedElement):
     # Cell span
     #
 
-    def set_span(  # noqa: C901
+    def set_span(
         self,
         area: str | tuple | list,
         merge: bool = False,

@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 """Idea comming from issue #49:
-   Deleting content from one point to another in a .odt document.
+Deleting content from one point to another in a .odt document.
 """
+
 import os
 from pathlib import Path
 
@@ -13,7 +14,7 @@ TARGET_INITIAL = "document_initial.odt"
 TARGET_FINAL = "document_final.odt"
 
 
-class KeepingState:  # noqa: B903
+class KeepingState:
     def __init__(self, initial: str):
         self.step = initial
 
@@ -33,8 +34,7 @@ def create_base_document():
     body.append(Header(2, "part A"))
     body.append(
         Paragraph(
-            "Lorem ipsum dolor sit amet, consectetuer adipiscing "
-            "elit. Sed non risus."
+            "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed non risus."
         )
     )
     body.append(

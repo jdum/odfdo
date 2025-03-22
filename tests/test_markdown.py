@@ -278,7 +278,7 @@ def test_md_note_text(document_note):
     1. C'est-à-dire l'élément « text:p ».
 
     i. Les apparences sont trompeuses !
-    """
+    """  # noqa: RUF001
     ).strip()
     print(repr(md.strip()))
     assert md.strip() == expected
@@ -538,7 +538,7 @@ def test_md_case3_text(document_case3):  # FAIL
 
 
         ```
-        """
+        """  # noqa: RUF001
     ).strip()
     print(repr(md.strip()))
     assert md.strip() == expected

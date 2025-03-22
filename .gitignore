@@ -1,31 +1,34 @@
-
-*.pyc
-*.pyo
 .DS_Store
 .Spotlight-V100
 .Trashes
-.svn
-.venv
-.ropeproject/
+
 __pycache__
-*~
-*.orig
+*.py[oc]
 build/
 dist/
+wheels/
+*.egg-info
+
+.venv
+.ropeproject/
+*~
+*.orig
 *.log
-*egg-info/
+
 doc.old/
 recipes_output/
-
 # copy in doc
 doc_src/src/README.md
 doc_src/src/CHANGES.md
 doc_src/src/odfdo.png
+pyrightconfig.json
+local.sh
 
 # Unit test / coverage reports
 htmlcov/
 .tox/
 .nox/
+.ruff_cache/
 .coverage
 .coverage.*
 .cache
@@ -40,6 +43,3 @@ cover/
 .mypy_cache/
 .dmypy.json
 dmypy.json
-
-pyrightconfig.json
-local.sh

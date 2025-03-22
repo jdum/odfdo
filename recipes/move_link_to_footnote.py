@@ -3,6 +3,7 @@
 text) into a footnote. Of course, removing links already inside notes, just
 keeping plain text URL. (Side note: most office suite dislike notes in notes)
 """
+
 import sys
 from pathlib import Path
 
@@ -75,7 +76,7 @@ def main():
     save_new(document, TARGET)
 
 
-def _tree_remove_tag(element, context):  # noqa: C901
+def _tree_remove_tag(element, context):
     """Remove tag in the element, recursive.
     - context: tuple (tag to remove, protection tag, protection flag)
     where protection tag protect from change sub elements one sub

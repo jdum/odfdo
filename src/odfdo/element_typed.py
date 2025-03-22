@@ -17,8 +17,8 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""ElmentTyped subclass of Element.
-"""
+"""ElmentTyped subclass of Element."""
+
 from __future__ import annotations
 
 import contextlib
@@ -32,7 +32,7 @@ from .utils import bytes_to_str
 
 
 class ElementTyped(Element):
-    def set_value_and_type(  # noqa: C901
+    def set_value_and_type(
         self,
         value: Any,
         value_type: str | None = None,
@@ -73,7 +73,7 @@ class ElementTyped(Element):
             value = Boolean.encode(value)
         elif isinstance(value, (int, float, Decimal)):
             if value_type == "percentage":
-                text = "%d %%" % int(value * 100)
+                text = f"{int(value * 100)} %"
             if value_type is None:
                 value_type = "float"
             if text is None:
@@ -125,7 +125,7 @@ class ElementTyped(Element):
 
         return text
 
-    def _get_typed_value(  # noqa: C901
+    def _get_typed_value(
         self,
         value_type: str | None = None,
         try_get_text: bool = True,

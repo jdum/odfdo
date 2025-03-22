@@ -17,14 +17,15 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""Mixin classes for Markdown methods.
-"""
+"""Mixin classes for Markdown methods."""
+
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from copy import deepcopy
 from itertools import chain
-from typing import Any, Callable, NamedTuple
+from typing import Any, NamedTuple
 
 MD_GLOBAL = {}
 
@@ -101,7 +102,8 @@ def _md_escape(text: str | None) -> str:
     if not text:
         return ""
     return (
-        text.replace(" ", r" ")  # non break space is no understood as char
+        # non break space is no understood as char
+        text.replace(" ", r" ")  # noqa: RUF001
         .replace("#", r"\#")
         .replace(r"\*", "*")
         .replace("*", r"\*")
@@ -224,7 +226,6 @@ class MDDocument:
         ]
 
     def _markdown_export(self) -> str:
-
         def join_fixed_lines(items: list[str]) -> list[str]:
             joined = []
             previous = ""
@@ -512,7 +513,7 @@ class MDDrawFrame(MDStyle):
 class MDTable(MDStyle):
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         def bars(values: list[str]) -> str:
-            items = [""] + values + [""]
+            items = [""] + values + [""]  # noqa: RUF005
             return "|".join(items)
 
         def format_cell(val: Any, filler: str = " ") -> str:
@@ -550,7 +551,7 @@ class MDTable(MDStyle):
         self.optimize_width()
         if not self.height:
             return ""
-        sizer = {i: 3 for i in range(self.width)}
+        sizer = {i: 3 for i in range(self.width)}  # noqa: C420
         safe_global = _copy_global()
         for idx in range(self.height):
             for i, val in enumerate(self.get_row_sub_elements(idx)):

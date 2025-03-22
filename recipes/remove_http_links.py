@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-"""Remove the links (the text:a tag), keeping the inner text.
-"""
+"""Remove the links (the text:a tag), keeping the inner text."""
+
 import sys
 from pathlib import Path
 
@@ -45,7 +45,7 @@ def remove_links(element):
     element, _is_modified = _tree_remove_tag(element, context)
 
 
-def _tree_remove_tag(element, context):  # noqa: C901
+def _tree_remove_tag(element, context):
     """Remove tag in the element, recursive.
 
     - context: a tuple (tag to remove, protection tag, protection flag)

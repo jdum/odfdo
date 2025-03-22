@@ -24,6 +24,7 @@
 """Table class for "table:table" and HeaderRows, Cell, Row, Column,
 NamedRange related classes.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -504,7 +505,7 @@ class Cell(ElementTyped):
         """
         if self.value is not None or self.children or self.is_spanned():
             return False
-        if not aggressive and self.style is not None:
+        if not aggressive and self.style is not None:  # noqa: SIM103
             return False
         return True
 
@@ -517,7 +518,7 @@ class Cell(ElementTyped):
             return True
         if self.get_attribute("table:number-columns-spanned") is not None:
             return True
-        if self.get_attribute("table:number-rows-spanned") is not None:
+        if self.get_attribute("table:number-rows-spanned") is not None:  # noqa: SIM103
             return True
         return False
 

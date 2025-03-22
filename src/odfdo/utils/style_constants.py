@@ -39,7 +39,7 @@ FAMILY_ODF_STD = {
     "text",
 }
 
-_BASE_FAMILY_MAP = {k: "style:style" for k in FAMILY_ODF_STD}
+_BASE_FAMILY_MAP = {k: "style:style" for k in FAMILY_ODF_STD}  # noqa:C420
 
 _FALSE_FAMILY_MAP = {
     "background-image": "style:background-image",

@@ -47,18 +47,29 @@ odfdo-table-shrink = 'odfdo.scripts.table_shrink:main'
 odfdo-userfield = 'odfdo.scripts.userfield:main'
 odfdo-markdown = 'odfdo.scripts.to_markdown:main'
 
-[tool.poetry.group.dev.dependencies]
-poetry = ">=2.0"
-pytest = ">=8.0"
-tox = ">=4"
-Pillow = ">=11.0.0"
-lxml-stubs = "*"
-ruff = ">=0.11.0"
-isort = ">=6.0.0"
+[dependency-groups]
+doc = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings",
+    "mkdocstrings-python",
+    "mkdocs-include-markdown-plugin",
+]
+dev = [
+    "pillow >=11.0",
+    "pytest>=8.0",
+    "tox>=4",
+    "ruff>=0.11.0",
+    "isort>=6.0",
+    "coverage>=7.0",
+]
+
+[tool.uv]
+default-groups = ["doc", "dev"]
 
 [build-system]
-requires = ["poetry-core>=2.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.isort]
 profile = "black"
@@ -72,24 +83,81 @@ indent-width = 4
 target-version = "py313"
 
 [tool.ruff.lint]
-select = ["E4", "E7", "E9", "F", "B"]
-
+# select = ["E4", "E7", "E9", "F", "B"]
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bandit
+    "S",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E",
+    "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # tryceratops
+    "TRY",
+]
+# ignore = [
+#   # Use specific rule codes when ignoring type issues
+#   "PGH003",
+#   # Using `lxml` to parse untrusted data is known to be vulnerable to XML attacks
+#   #"S320",
+#   # Convert to `datetime.UTC` alias
+#   "UP017",
+#   # import *` used; unable to detect undefined names
+#   "F403",
+#   "E402",
+# ]
 ignore = [
+    # Using `lxml` to parse untrusted data is known to be vulnerable to XML attacks
+    "S320",
+    # LineTooLong
+    "E501",
+    # DoNotAssignLambda
+    "E731",
     # Use specific rule codes when ignoring type issues
     "PGH003",
-    # Using `lxml` to parse untrusted data is known to be vulnerable to XML attacks
-    #"S320",
-    # Convert to `datetime.UTC` alias
-    "UP017",
-    # import *` used; unable to detect undefined names
-    "F403",
-    "E402",
+    # check for execution of untrusted input
+    "S603",
+    # Class attribute `open` is shadowing a Python builtin
+    "A003",
+    # Use `X | Y` in `isinstance` call instead of `(X, Y)`
+    "UP038",
+    # Use `X | Y` for type annotations
+    "UP007",
+    # Avoid specifying long messages outside the exception class
+    "TRY003",
+    # Use ternary operator
+    "SIM108",
+    # Use of `assert` detected
+    "S101",
+    # is too complex (12 > 10)
+    "C901",
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/test_*" = ["S101", "RUF005", "B007"]
-"tests/*/test_*" = ["S101", "RUF005", "B007"]
-"recipes/*" = ["S101"]
+"tests/test_*" = ["S101", "RUF005", "B007", "UP017", "YTT204"]
+"recipes/*" = ["S101", "SIM102"]
 "recipes/accessing_a_single_element.py" = ["RUF001"]
 
 [tool.coverage.report]

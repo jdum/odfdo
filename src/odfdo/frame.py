@@ -19,8 +19,8 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
-"""Frame class for "draw:frame".
-"""
+"""Frame class for "draw:frame"."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -186,7 +186,7 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
         PropDef("presentation_style", "presentation:style-name"),
     )
 
-    def __init__(  # noqa:  C901
+    def __init__(
         self,
         name: str | None = None,
         draw_id: str | None = None,
@@ -446,7 +446,7 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
         subresult = subresult.replace("\n", "\n  ")
         return subresult.rstrip(" ")
 
-    def get_formatted_text(  # noqa:  C901
+    def get_formatted_text(
         self,
         context: dict | None = None,
     ) -> str:

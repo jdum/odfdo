@@ -4,9 +4,6 @@
     echo "Not in top directory" ; exit 1
 }
 
-pip install -U mkdocs mkdocs-material mkdocstrings mkdocstrings-python
-pip install -U mkdocs-include-markdown-plugin
-
 [ -d doc ] && rm -fr doc
 
 cp -f odfdo.png doc_src/src

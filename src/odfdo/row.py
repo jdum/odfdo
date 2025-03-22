@@ -24,6 +24,7 @@
 """Table class for "table:table" and HeaderRows, Cell, Row, Column,
 NamedRange related classes.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -208,7 +209,7 @@ class Row(CachedElement):
     def _translate_x_from_any(self, x: str | int) -> int:
         return translate_from_any(x, self.width, 0)
 
-    def traverse(  # noqa: C901
+    def traverse(
         self,
         start: int | None = None,
         end: int | None = None,

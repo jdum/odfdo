@@ -105,7 +105,12 @@ def use_case1(destination_file, source_path):
     data.append(["odfdo library version", __version__])
 
     # Python version
-    data.append(["Python version", "%d.%d.%d" % version_info[:3]])
+    data.append(
+        [
+            "Python version",
+            f"{version_info.major}.{version_info.minor}.{version_info.micro}",
+        ]
+    )
 
     # Creation / Insertion
     table = Table("table1", width=2, height=2, style="Standard")

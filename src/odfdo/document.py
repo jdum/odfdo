@@ -21,8 +21,8 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Document class, root of the ODF document.
-"""
+"""Document class, root of the ODF document."""
+
 from __future__ import annotations
 
 import base64
@@ -789,7 +789,7 @@ class Document(MDDocument):
                 continue
             max_index = max(max_index, index)
 
-        style.name = f"{AUTOMATIC_PREFIX}{max_index+1}"
+        style.name = f"{AUTOMATIC_PREFIX}{max_index + 1}"
 
     def _insert_style_get_common_styles(
         self,
@@ -897,7 +897,7 @@ class Document(MDDocument):
         else:
             raise AttributeError("Invalid combination of arguments")
 
-    def insert_style(  # noqa: C901
+    def insert_style(
         self,
         style: Style | str,
         name: str = "",
@@ -1023,7 +1023,7 @@ class Document(MDDocument):
                 family = str(style.family)  # type: ignore
             parent = style.parent
             is_auto = parent and parent.tag == "office:automatic-styles"
-            if is_auto and automatic is False or not is_auto and common is False:
+            if (is_auto and automatic is False) or (not is_auto and common is False):
                 continue
             is_used = bool(self.get_styled_elements(name))
             infos.append(
@@ -1187,13 +1187,13 @@ class Document(MDDocument):
         return style.get_properties(area=area)  # type: ignore
 
     def _get_table(self, table: int | str) -> Table | None:
-        if not (isinstance(table, int) or isinstance(table, str)):
+        if not isinstance(table, (int, str)):
             raise TypeError(f"Table parameter must be int or str: {table!r}")
         if isinstance(table, int):
             return self.body.get_table(position=table)  # type: ignore
         return self.body.get_table(name=table)  # type: ignore
 
-    def get_cell_style_properties(  # noqa: C901
+    def get_cell_style_properties(
         self, table: str | int, coord: tuple | list | str
     ) -> dict[str, str]:  # type: ignore
         """Return the style properties of a table cell of a .ods document,
@@ -1237,7 +1237,7 @@ class Document(MDDocument):
         found = self.get_cell_style_properties(table, coord).get("fo:background-color")
         return found or default
 
-    def get_table_style(  # noqa: C901
+    def get_table_style(
         self,
         table: str | int,
     ) -> Style | None:  # type: ignore
@@ -1298,12 +1298,10 @@ class Document(MDDocument):
         if not orig_style:
             name = self._unique_style_name("ta")
             orig_style = Element.from_tag(
-                (
-                    f'<style:style style:name="{name}" style:family="table" '
-                    'style:master-page-name="Default">'
-                    '<style:table-properties table:display="true" '
-                    'style:writing-mode="lr-tb"/></style:style>'
-                )
+                f'<style:style style:name="{name}" style:family="table" '
+                'style:master-page-name="Default">'
+                '<style:table-properties table:display="true" '
+                'style:writing-mode="lr-tb"/></style:style>'
             )
             self.insert_style(orig_style, automatic=True)  # type:ignore
         new_style = orig_style.clone

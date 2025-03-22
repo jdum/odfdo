@@ -19,13 +19,12 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""User fields and variable fields classes.
-"""
+"""User fields and variable fields classes."""
+
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from datetime import time as dt_time
-from datetime import timedelta
 from typing import Any
 
 from .datatype import Date, DateTime, Duration

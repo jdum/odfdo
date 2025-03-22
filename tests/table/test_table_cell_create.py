@@ -477,7 +477,7 @@ def test_string_property2():
 def test_float_value_property():
     cell = Cell(1.50, cell_type="currency", currency="EUR")
     assert cell.float == 1.50
-    assert cell.value == dec(1.50)
+    assert cell.value == dec("1.50")
     cell.clear()
     assert cell.float == 0.0
     assert cell.value is None
@@ -489,29 +489,29 @@ def test_float_value_property():
     assert cell.value == "hop"
     cell.float = None
     assert cell.float == 0.0
-    assert cell.value == dec(0.0)
+    assert cell.value == dec("0.0")
     cell.float = 12
     assert cell.float == 12
     assert cell.value == dec(12)
     cell.float = -12.0
     assert cell.float == -12.0
-    assert cell.value == dec(-12.0)
+    assert cell.value == dec("-12.0")
 
 
 def test_decimal_value_property():
-    cell = Cell(dec(1.50), cell_type="currency", currency="EUR")
+    cell = Cell(dec("1.50"), cell_type="currency", currency="EUR")
     assert cell.float == 1.50
-    assert cell.value == dec(1.50)
+    assert cell.value == dec("1.50")
     assert cell.float == 1.50
-    assert cell.decimal == dec(1.50)
+    assert cell.decimal == dec("1.50")
 
 
 def test_decimal_value_property_2():
     cell = Cell(0.0, cell_type="currency", currency="EUR")
-    cell.value = dec(1.56)
+    cell.value = dec("1.56")
     assert cell.float == 1.56
-    assert cell.value == dec(1.56)
-    assert cell.decimal == dec(1.56)
+    assert cell.value == dec("1.56")
+    assert cell.decimal == dec("1.56")
 
 
 def test_int_value_property():

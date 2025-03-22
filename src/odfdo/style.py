@@ -18,11 +18,11 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""Style class for various style tags and BackgroundImage class.
-"""
+"""Style class for various style tags and BackgroundImage class."""
+
 from __future__ import annotations
 
-__all__ = [
+__all__ = [  # noqa: RUF022
     "BackgroundImage",
     "CSS3_COLORMAP",
     "ODF_PROPERTIES",
@@ -147,7 +147,7 @@ def _make_thick_string(thick: str | float | int | None) -> str:
     if isinstance(thick, float):
         return f"{thick:.2f}pt"
     if isinstance(thick, int):
-        return f"{thick/100.0:.2f}pt"
+        return f"{thick / 100.0:.2f}pt"
     raise ValueError("Thickness must be None for default or float value (pt)")
 
 
@@ -322,7 +322,7 @@ class Style(Element):
         PropDef("style_num_format", "style:num-format"),
     )
 
-    def __init__(  # noqa: C901
+    def __init__(
         self,
         family: str | None = None,
         name: str | None = None,
@@ -438,7 +438,7 @@ class Style(Element):
             break_after -- 'page', 'column' or 'auto'
         """
         self._family: str | None = None
-        tag_or_elem = kwargs.get("tag_or_elem", None)
+        tag_or_elem = kwargs.get("tag_or_elem")
         if tag_or_elem is None:
             family = to_str(family)
             if family not in FAMILY_MAPPING:
@@ -641,7 +641,7 @@ class Style(Element):
         self._update_boolean_styles(props)
         return props
 
-    def set_properties(  # noqa: C901
+    def set_properties(
         self,
         properties: dict[str, str | dict] | None = None,
         style: Style | None = None,
@@ -718,7 +718,7 @@ class Style(Element):
         for key in _expand_properties_list(properties):
             element.del_attribute(key)
 
-    def set_background(  # noqa: C901
+    def set_background(
         self,
         color: str | None = None,
         url: str | None = None,
@@ -821,7 +821,7 @@ class Style(Element):
         )
         return self._filtered_element(level_styles, 0, level=level)  # type: ignore
 
-    def set_level_style(  # noqa: C901
+    def set_level_style(
         self,
         level: int,
         num_format: str | None = None,

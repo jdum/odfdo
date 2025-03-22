@@ -17,8 +17,8 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""CachedElement base class of Table and Row, and caching functions.
-"""
+"""CachedElement base class of Table and Row, and caching functions."""
+
 from __future__ import annotations
 
 from bisect import bisect_left, insort
@@ -29,7 +29,6 @@ from .element import Element, xpath_compile
 
 
 class CachedElement(Element):
-
     def _copy_cache(self, cache: tuple | None) -> None:
         """Copy cache when cloning."""
         if cache:
@@ -79,7 +78,7 @@ class CachedElement(Element):
                 self._indexes["_rmap"] = {}
 
 
-def set_item_in_vault(  # noqa: C901
+def set_item_in_vault(
     position: int,
     item: CachedElement,
     vault: CachedElement,
