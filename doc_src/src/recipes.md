@@ -612,7 +612,6 @@ keeping plain text URL. (Side note: most office suite dislike notes in notes)
 
 Remove the links (the text:a tag), keeping the inner text.
 
-
 ??? code "recipes/remove_http_links.py"
     ```python
     {% include "../../recipes/remove_http_links.py" %}

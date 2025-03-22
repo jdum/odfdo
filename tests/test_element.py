@@ -23,7 +23,6 @@
 import re
 from collections import namedtuple
 from collections.abc import Iterable
-from re import compile
 
 import pytest
 
