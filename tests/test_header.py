@@ -20,7 +20,6 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 
 from collections.abc import Iterable
-from pathlib import Path
 
 import pytest
 
@@ -28,12 +27,10 @@ from odfdo import Element
 from odfdo.document import Document
 from odfdo.header import Header
 
-BASE_DOCUMENT = Path(__file__).parent / "samples" / "base_text.odt"
-
 
 @pytest.fixture
-def base_body() -> Iterable[Element]:
-    document = Document(BASE_DOCUMENT)
+def base_body(samples) -> Iterable[Element]:
+    document = Document(samples("base_text.odt"))
     yield document.body
 
 

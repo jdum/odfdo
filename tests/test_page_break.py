@@ -19,7 +19,6 @@
 # https://github.com/lpod/lpod-python
 
 from collections.abc import Iterable
-from pathlib import Path
 
 import pytest
 
@@ -27,12 +26,10 @@ from odfdo.document import Document
 from odfdo.paragraph import PageBreak, Paragraph
 from odfdo.style import Style
 
-SAMPLES = Path(__file__).parent / "samples"
-
 
 @pytest.fixture
-def document() -> Iterable[Document]:
-    yield Document(SAMPLES / "pagebreak.odt")
+def document(samples) -> Iterable[Document]:
+    yield Document(samples("pagebreak.odt"))
 
 
 def test_add_style_page_break():

@@ -22,7 +22,6 @@
 
 from csv import reader
 from mimetypes import guess_type
-from pathlib import Path
 
 from PIL import Image
 
@@ -39,10 +38,8 @@ from odfdo import (
     __version__,
 )
 
-SAMPLES = Path(__file__).parent / "samples"
 
-
-def use_case1(destination_file):
+def use_case1(destination_file, smp_dir):
     print("odfdo test use case 1")
     print(f"version: {__version__}")
     print(f"Generating test file {destination_file}")
@@ -50,7 +47,7 @@ def use_case1(destination_file):
     document = Document("text")
     body = document.body
 
-    for numero, path in enumerate(Path(SAMPLES).iterdir()):
+    for numero, path in enumerate(smp_dir.iterdir()):
         # print(numero, path)
         filename = path.name
         heading = Header(1, text=filename)
@@ -66,7 +63,7 @@ def use_case1(destination_file):
             # compute size
             image = Image.open(path)
             width, height = image.size
-            draw_size = (f"{width/400:.2f}in", f"{height/400:.2f}in")
+            draw_size = (f"{width / 400:.2f}in", f"{height / 400:.2f}in")
             image_frame = Frame.image_frame(
                 image_uri,
                 size=draw_size,
@@ -101,7 +98,7 @@ def use_case1(destination_file):
     document.save(destination_file, pretty=True)
 
 
-def test_use_case1(tmp_path):
+def test_use_case1(tmp_path, samples_dir):
     path = tmp_path / "use_case_1.odt"
-    use_case1(path)
+    use_case1(path, samples_dir)
     assert path.is_file()

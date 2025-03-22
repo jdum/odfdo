@@ -21,7 +21,6 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 
 from collections.abc import Iterable
-from pathlib import Path
 
 import pytest
 
@@ -29,12 +28,10 @@ from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.paragraph import LineBreak, Paragraph, Spacer, Tab
 
-SAMPLE = Path(__file__).parent / "samples" / "base_text.odt"
-
 
 @pytest.fixture
-def document() -> Iterable[Document]:
-    document = Document(SAMPLE)
+def document(samples) -> Iterable[Document]:
+    document = Document(samples("base_text.odt"))
     yield document
 
 
@@ -366,7 +363,7 @@ def test_append_plain_text_guess_utf8_3_no_format():
     # expected = "<text:p> A test, with some é and and 5 spaces. </text:p>"
     # new rule, the result must comply with standard
     expected = (
-        "<text:p><text:s/>A test, with some é and and " "5 spaces.<text:s/></text:p>"
+        "<text:p><text:s/>A test, with some é and and 5 spaces.<text:s/></text:p>"
     )
     assert para.serialize() == expected
 
@@ -790,9 +787,7 @@ def test_text_spaces_se4_no_format():
 
 
 def test_tail():
-    data = (
-        "<text:p>Le Père Noël a une " "<text:span>moustache</text:span> rouge.</text:p>"
-    )
+    data = "<text:p>Le Père Noël a une <text:span>moustache</text:span> rouge.</text:p>"
     paragraph = Element.from_tag(data)
     paragraph.set_span("highlight", regex="rouge")
     expected = (
@@ -823,8 +818,7 @@ def test_text_several():
 
 def test_tail_several():
     data = (
-        "<text:p>Le <text:span>Père</text:span> rouge a une "
-        "moustache rouge.</text:p>"
+        "<text:p>Le <text:span>Père</text:span> rouge a une moustache rouge.</text:p>"
     )
     paragraph = Element.from_tag(data)
     paragraph.set_span("highlight", regex="rouge")

@@ -23,7 +23,6 @@
 
 from collections.abc import Iterable
 from datetime import datetime
-from pathlib import Path
 
 import pytest
 
@@ -33,12 +32,10 @@ from odfdo.list import List
 from odfdo.note import Annotation, Note
 from odfdo.paragraph import Paragraph
 
-SAMPLE = Path(__file__).parent / "samples" / "note.odt"
-
 
 @pytest.fixture
-def document() -> Iterable[Document]:
-    document = Document(SAMPLE)
+def document(samples) -> Iterable[Document]:
+    document = Document(samples("note.odt"))
     yield document
 
 

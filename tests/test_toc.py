@@ -20,15 +20,12 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 
 from collections.abc import Iterable
-from pathlib import Path
 
 import pytest
 
 from odfdo.document import Document
 from odfdo.toc import TOC
 
-SAMPLE = Path(__file__).parent / "samples" / "toc.odt"
-SAMPLE_TOC = Path(__file__).parent / "samples" / "toc_done.odt"
 SAMPLE_EXPECTED = [
     "Table des matières",
     "1. Level 1 title 1",
@@ -47,14 +44,14 @@ SAMPLE_EXPECTED = [
 
 
 @pytest.fixture
-def sample() -> Iterable[Document]:
-    document = Document(SAMPLE)
+def sample(samples) -> Iterable[Document]:
+    document = Document(samples("toc.odt"))
     yield document
 
 
 @pytest.fixture
-def sample_toc() -> Iterable[Document]:
-    document = Document(SAMPLE_TOC)
+def sample_toc(samples) -> Iterable[Document]:
+    document = Document(samples("toc_done.odt"))
     yield document
 
 

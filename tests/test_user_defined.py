@@ -22,19 +22,16 @@
 
 from collections.abc import Iterable
 from datetime import datetime
-from pathlib import Path
 
 import pytest
 
 from odfdo.document import Document
 from odfdo.variable import UserDefined
 
-SAMPLES = Path(__file__).parent / "samples"
-
 
 @pytest.fixture
-def document() -> Iterable[Document]:
-    document = Document(SAMPLES / "meta.odt")
+def document(samples) -> Iterable[Document]:
+    document = Document(samples("meta.odt"))
     yield document
 
 

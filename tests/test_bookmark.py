@@ -20,7 +20,6 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 
 from collections.abc import Iterable
-from pathlib import Path
 
 import pytest
 
@@ -29,13 +28,12 @@ from odfdo.bookmark import Bookmark, BookmarkEnd, BookmarkStart
 from odfdo.document import Document
 from odfdo.paragraph import Paragraph
 
-SAMPLE = Path(__file__).parent / "samples" / "bookmark.odt"
 ZOE = "你好 Zoé"
 
 
 @pytest.fixture
-def sample_body() -> Iterable[Element]:
-    document = Document(SAMPLE)
+def sample_body(samples) -> Iterable[Element]:
+    document = Document(samples("bookmark.odt"))
     yield document.body
 
 

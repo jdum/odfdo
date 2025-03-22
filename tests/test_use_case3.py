@@ -19,7 +19,6 @@
 # https://github.com/lpod/lpod-python
 # Authors: Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 
-from pathlib import Path
 
 from odfdo import (
     Cell,
@@ -32,8 +31,6 @@ from odfdo import (
     make_table_cell_border_string,
     rgb2hex,
 )
-
-SAMPLES = Path(__file__).parent / "samples"
 
 
 def use_case3(destination_file):

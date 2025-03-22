@@ -22,15 +22,12 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 
-from pathlib import Path
 
 import pytest
 
 from odfdo.const import ODF_EXTENSIONS
 from odfdo.document import container_from_template
 from odfdo.utils import to_bytes
-
-SAMPLES = Path(__file__).parent / "samples"
 
 
 def test_bad_template():

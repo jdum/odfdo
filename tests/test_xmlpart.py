@@ -21,7 +21,6 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 
 from collections.abc import Iterable
-from pathlib import Path
 
 import pytest
 from lxml.etree import _ElementTree
@@ -32,13 +31,11 @@ from odfdo.content import Content
 from odfdo.element import Element
 from odfdo.xmlpart import XmlPart
 
-SAMPLES = Path(__file__).parent / "samples"
-
 
 @pytest.fixture
-def exemple_container() -> Iterable[Container]:
+def exemple_container(samples) -> Iterable[Container]:
     container = Container()
-    container.open(SAMPLES / "example.odt")
+    container.open(samples("example.odt"))
     yield container
 
 
@@ -79,7 +76,7 @@ def test_pretty_serialize_base():
     # With pretty = True
     element = Element.from_tag("<root><a>spam</a><b/></root>")
     serialized = element.serialize(pretty=True)
-    expected = "<root>\n" "  <a>spam</a>\n" "  <b/>\n" "</root>\n"
+    expected = "<root>\n  <a>spam</a>\n  <b/>\n</root>\n"
     assert serialized == expected
 
 
@@ -118,18 +115,18 @@ def test_get_body(exemple_container):
     assert body.tag == "office:text"
 
 
-def test_pretty_serialize_internal_not_pretty():
+def test_pretty_serialize_internal_not_pretty(samples):
     container = Container()
-    container.open(SAMPLES / "issue_28_pretty.odt")
+    container.open(samples("issue_28_pretty.odt"))
     content = XmlPart(ODF_CONTENT, container)
     serialized = content.serialize()
     expected = b'This is an example with =&gt;</text:span><text:span text:style-name="T4"> v</text:span><text:span text:style-name="T5">8</text:span><text:span text:style-name="T4">.1.</text:span><text:span text:style-name="T5">4</text:span><text:span text:style-name="T4"> &lt;</text:span><text:span text:style-name="T6">= spaces </text:span><text:span text:style-name="T7">after reading and writing with odfdo.'
     assert expected in serialized
 
 
-def test_pretty_serialize_internal_pretty():
+def test_pretty_serialize_internal_pretty(samples):
     container = Container()
-    container.open(SAMPLES / "issue_28_pretty.odt")
+    container.open(samples("issue_28_pretty.odt"))
     content = XmlPart(ODF_CONTENT, container)
     serialized = content.pretty_serialize()
     print(serialized.decode())
@@ -137,9 +134,9 @@ def test_pretty_serialize_internal_pretty():
     assert expected in serialized
 
 
-def test_pretty_serialize_internal_pretty2():
+def test_pretty_serialize_internal_pretty2(samples):
     container = Container()
-    container.open(SAMPLES / "issue_28_pretty.odt")
+    container.open(samples("issue_28_pretty.odt"))
     content = XmlPart(ODF_CONTENT, container)
     serialized = content.serialize(pretty=True)
     expected = b'This is an example with =&gt;</text:span><text:span text:style-name="T4"> v</text:span><text:span text:style-name="T5">8</text:span><text:span text:style-name="T4">.1.</text:span><text:span text:style-name="T5">4</text:span><text:span text:style-name="T4"> &lt;</text:span><text:span text:style-name="T6">= spaces </text:span><text:span text:style-name="T7">after reading and writing with odfdo.'

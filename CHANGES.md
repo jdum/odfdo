@@ -1,5 +1,13 @@
 # Odfdo Release Notes
 
+## [3.13.9] - 2025-03-22
+
+Technical update: reorganize tests.
+
+### Changed
+
+-   Organize tests with more fixtures and sub directories.
+
 ## [3.13.8] - 2025-03-15
 
 Technical update: update `poetry` to version 2.1, reformat `pyproject.toml`, move source code in the `src` directory.

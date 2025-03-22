@@ -20,7 +20,6 @@
 
 from collections.abc import Iterable
 from os.path import isfile
-from pathlib import Path
 
 import pytest
 
@@ -38,8 +37,6 @@ from odfdo.const import (
 from odfdo.container import Container
 from odfdo.document import Document
 
-SAMPLES = Path(__file__).parent / "samples"
-
 
 @pytest.fixture
 def document() -> Iterable:
@@ -53,15 +50,15 @@ def test_add_file_non_exists(document):
         document.add_file("non exists")
 
 
-def test_add_file_manifest(document):
-    document.add_file(SAMPLES / "image.png")
+def test_add_file_manifest(document, samples):
+    document.add_file(samples("image.png"))
     manifest = document.manifest
     paths = manifest.get_path_medias()
     assert ("Pictures/ceddccf10506d07cc0990639e79f8c72.png", "image/png") in paths
 
 
-def test_add_file_get_part(document):
-    png = SAMPLES / "image.png"
+def test_add_file_get_part(document, samples):
+    png = samples("image.png")
     document.add_file(png)
     expected = png.read_bytes()
     container = document.container
@@ -69,9 +66,9 @@ def test_add_file_get_part(document):
     assert content == expected
 
 
-def test_add_manifest_rdf_1(tmp_path):
+def test_add_manifest_rdf_1(tmp_path, samples):
     base = Container()
-    base.open(SAMPLES / "example.odt")
+    base.open(samples("example.odt"))
     content = base.get_part(ODF_CONTENT)
     styles = base.get_part(ODF_STYLES)
     meta = base.get_part(ODF_META)
@@ -94,9 +91,9 @@ def test_add_manifest_rdf_1(tmp_path):
     assert rdf.decode() == new_container.default_manifest_rdf
 
 
-def test_manifest_rdf_2(tmp_path):
+def test_manifest_rdf_2(tmp_path, samples):
     base = Container()
-    base.open(SAMPLES / "example.odt")
+    base.open(samples("example.odt"))
     content = base.get_part(ODF_CONTENT)
     styles = base.get_part(ODF_STYLES)
     meta = base.get_part(ODF_META)
@@ -127,4 +124,3 @@ def test_manifest_rdf_2(tmp_path):
     assert isfile(path_m1)
     path_m2 = tmp_path / "example.odt.folder" / ODF_MANIFEST_RDF
     assert isfile(path_m2)
-

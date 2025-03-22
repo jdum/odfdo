@@ -23,21 +23,18 @@
 from collections import namedtuple
 from collections.abc import Iterable
 from datetime import datetime
-from pathlib import Path
 
 import pytest
 
 from odfdo.document import Document
 from odfdo.tracked_changes import TrackedChanges
 
-SAMPLE = Path(__file__).parent / "samples" / "tracked_changes.odt"
-
 Sample = namedtuple("Sample", ["doc", "changes"])
 
 
 @pytest.fixture
-def sample() -> Iterable[Sample]:
-    document = Document(SAMPLE)
+def sample(samples) -> Iterable[Sample]:
+    document = Document(samples("tracked_changes.odt"))
     yield Sample(doc=document, changes=document.body.get_tracked_changes())
 
 
@@ -45,8 +42,8 @@ def test_instance_tracked_changes(sample):
     assert isinstance(sample.changes, TrackedChanges)
 
 
-def test_tracked_changes_property(sample):
-    document2 = Document(SAMPLE)
+def test_tracked_changes_property(sample, samples):
+    document2 = Document(samples("tracked_changes.odt"))
     sample2 = Sample(doc=document2, changes=document2.body.tracked_changes)
     assert isinstance(sample2.changes, TrackedChanges)
     assert sample.changes.serialize() == sample2.changes.serialize()

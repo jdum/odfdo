@@ -19,12 +19,10 @@
 import os
 import random
 import time
-from pathlib import Path
 
 from odfdo import __version__ as version
 from odfdo.table import Row, Table
 
-SAMPLES = Path(__file__).parent / "samples"
 DEBUG = True
 MAXPRINT = 10
 

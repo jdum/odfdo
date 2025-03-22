@@ -20,7 +20,6 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 
 from collections.abc import Iterable
-from pathlib import Path
 
 import pytest
 
@@ -28,19 +27,18 @@ from odfdo import Element
 from odfdo.document import Document
 from odfdo.reference import ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
 
-SAMPLES = Path(__file__).parent / "samples"
 ZOE = "你好 Zoé"
 
 
 @pytest.fixture
-def body1() -> Iterable[Element]:
-    document = Document(SAMPLES / "bookmark.odt").clone
+def body1(samples) -> Iterable[Element]:
+    document = Document(samples("bookmark.odt")).clone
     yield document.body
 
 
 @pytest.fixture
-def body2() -> Iterable[Element]:
-    document = Document(SAMPLES / "base_text.odt").clone
+def body2(samples) -> Iterable[Element]:
+    document = Document(samples("base_text.odt")).clone
     yield document.body
 
 
@@ -98,7 +96,7 @@ def test_get_reference_mark_start_list(body1):
     result = body1.get_reference_mark_starts()
     assert len(result) == 1
     element = result[0]
-    expected = "<text:reference-mark-start " 'text:name="Nouvelle référence"/>'
+    expected = '<text:reference-mark-start text:name="Nouvelle référence"/>'
     assert element.serialize() == expected
 
 
@@ -115,7 +113,7 @@ def test_get_reference_mark_end_list(body1):
     result = body1.get_reference_mark_ends()
     assert len(result) == 1
     element = result[0]
-    expected = "<text:reference-mark-end " 'text:name="Nouvelle référence"/>'
+    expected = '<text:reference-mark-end text:name="Nouvelle référence"/>'
     assert element.serialize() == expected
 
 
@@ -151,8 +149,7 @@ def test_get_referenced_1_list(body2):
     assert isinstance(referenced, list)
     assert len(referenced) == 1
     expected = (
-        '<text:p text:style-name="Text_20_body">'
-        "paragraph of the second title</text:p>"
+        '<text:p text:style-name="Text_20_body">paragraph of the second title</text:p>'
     )
     assert referenced[0].serialize() == expected
 

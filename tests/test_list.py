@@ -20,13 +20,11 @@
 # Authors: Romain Gauthier <romain@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 
-from pathlib import Path
 
 from odfdo.const import ODF_CONTENT
 from odfdo.document import Document
 from odfdo.list import List, ListItem
 
-SAMPLE = Path(__file__).parent / "samples" / "list.odt"
 ZOE = "你好 Zoé"
 
 
@@ -75,8 +73,8 @@ def test_create_list_with_non_iterable_str():
     assert str(a_list) == " -  abc\n"
 
 
-def test_insert_list():
-    document = Document(SAMPLE)
+def test_insert_list(samples):
+    document = Document(samples("list.odt"))
     content = document.get_part(ODF_CONTENT)
     clone = content.clone
     item = ListItem()
@@ -383,19 +381,15 @@ def test_get_item_by_content():
     )
     assert item.serialize(pretty=True) == expected
     item = spam_list.get_item(content=r"eggs")
-    expected = "<text:list-item>\n" "  <text:p>eggs</text:p>\n" "</text:list-item>\n"
+    expected = "<text:list-item>\n  <text:p>eggs</text:p>\n</text:list-item>\n"
     assert item.serialize(pretty=True) == expected
 
 
 def test_get_formatted_text():
     # Create the items
-    spam = ListItem(
-        "In this picture, there are 47 people;\n" "none of them can be seen."
-    )
-    ham = ListItem(
-        "In this film, we hope to show you the\n" "value of not being seen.\n"
-    )
-    eggs = ListItem("Here is Mr. Bagthorpe of London, " "SE14.\n")
+    spam = ListItem("In this picture, there are 47 people;\nnone of them can be seen.")
+    ham = ListItem("In this film, we hope to show you the\nvalue of not being seen.\n")
+    eggs = ListItem("Here is Mr. Bagthorpe of London, SE14.\n")
     foo = ListItem("He cannot be seen.")
     bar = ListItem("Now I am going to ask him to stand up.")
     baz = ListItem("Mr. Bagthorpe, will you stand up please?")

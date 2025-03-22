@@ -24,7 +24,6 @@ import io
 from collections.abc import Iterable
 from datetime import datetime, timedelta
 from decimal import Decimal
-from pathlib import Path
 from textwrap import dedent
 
 import pytest
@@ -37,12 +36,10 @@ from odfdo.meta_auto_reload import MetaAutoReload
 from odfdo.meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from odfdo.meta_template import MetaTemplate
 
-META_DOC = Path(__file__).parent / "samples" / "meta.odt"
-
 
 @pytest.fixture
-def meta() -> Iterable:
-    document = Document(META_DOC)
+def meta(samples) -> Iterable:
+    document = Document(samples("meta.odt"))
     yield document.get_part(ODF_META)
 
 
@@ -351,16 +348,16 @@ def test_generator_setter(meta):
     assert clone.generator == generator
 
 
-def test_generator_default_unmodified():
-    document = Document(META_DOC)
+def test_generator_default_unmodified(samples):
+    document = Document(samples("meta.odt"))
     with io.BytesIO() as bytes_content:
         document.save(bytes_content)
     # document saved, generator string should be ours
     assert document.meta.get_generator() == GENERATOR
 
 
-def test_generator_default_modified():
-    document = Document(META_DOC)
+def test_generator_default_modified(samples):
+    document = Document(samples("meta.odt"))
     document.meta.set_generator("custom generator")
     with io.BytesIO() as bytes_content:
         document.save(bytes_content)

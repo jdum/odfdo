@@ -20,7 +20,6 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 
 from collections.abc import Iterable
-from pathlib import Path
 
 import pytest
 
@@ -28,12 +27,10 @@ from odfdo import Element
 from odfdo.document import Document
 from odfdo.paragraph import Span
 
-SAMPLES = Path(__file__).parent / "samples"
-
 
 @pytest.fixture
-def body() -> Iterable[Element]:
-    document = Document(SAMPLES / "span_style.odt")
+def body(samples) -> Iterable[Element]:
+    document = Document(samples("span_style.odt"))
     yield document.body
 
 
@@ -46,8 +43,7 @@ def test_create_span():
 def test_create_span_naive_spaces():
     span = Span("my text   ", style="my_style")
     expected = (
-        '<text:span text:style-name="my_style">my text'
-        '<text:s text:c="3"/></text:span>'
+        '<text:span text:style-name="my_style">my text<text:s text:c="3"/></text:span>'
     )
     assert span.serialize() == expected
 

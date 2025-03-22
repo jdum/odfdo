@@ -20,7 +20,6 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 
 from collections.abc import Iterable
-from pathlib import Path
 
 import pytest
 
@@ -29,13 +28,12 @@ from odfdo.element import Element
 from odfdo.frame import Frame
 from odfdo.header import Header
 
-FRAME = Path(__file__).parent / "samples" / "frame_image.odp"
 ZOE = "你好 Zoé"
 
 
 @pytest.fixture
-def frame_body() -> Iterable[Element]:
-    document = Document(FRAME)
+def frame_body(samples) -> Iterable[Element]:
+    document = Document(samples("frame_image.odp"))
     yield document.body
 
 

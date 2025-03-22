@@ -21,7 +21,6 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 
 from collections.abc import Iterable
-from pathlib import Path
 
 import pytest
 
@@ -32,13 +31,12 @@ from odfdo.element import NEXT_SIBLING
 from odfdo.frame import Frame
 from odfdo.image import DrawImage
 
-IMG_SAMPLE = Path(__file__).parent / "samples" / "frame_image.odp"
 IMG_PATH = "Pictures/100002010000012C00000042188DCB81589D2C10.png"
 
 
 @pytest.fixture
-def sample_body() -> Iterable[Element]:
-    document = Document(IMG_SAMPLE)
+def sample_body(samples) -> Iterable[Element]:
+    document = Document(samples("frame_image.odp"))
     yield document.body
 
 
@@ -80,8 +78,8 @@ def test_get_image_by_path(sample_body):
     assert element.url == IMG_PATH
 
 
-def test_insert_image(tmp_path):
-    document = Document(IMG_SAMPLE)
+def test_insert_image(tmp_path, samples):
+    document = Document(samples("frame_image.odp"))
     body = document.body
     path = "a/path"
     image = DrawImage(path)

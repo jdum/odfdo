@@ -25,7 +25,6 @@
 
 from importlib import resources as rso
 from io import BytesIO
-from pathlib import Path
 
 import pytest
 
@@ -38,8 +37,6 @@ from odfdo.meta import Meta
 from odfdo.paragraph import Paragraph
 from odfdo.styles import Styles
 
-SAMPLES = Path(__file__).parent / "samples"
-
 
 def _copied_template(tmp_path, template):
     src = rso.files("odfdo.templates") / template
@@ -48,9 +45,9 @@ def _copied_template(tmp_path, template):
     return dest
 
 
-def test_non_existing():
+def test_non_existing(samples):
     with pytest.raises(IOError):
-        Document(SAMPLES / "notexisting")
+        Document(samples("notexisting"))
 
 
 def test_text_template(tmp_path):
@@ -149,70 +146,70 @@ def test_drawing_type_4():
     assert document.mimetype == ODF_EXTENSIONS["odg"]
 
 
-def test_case_filesystem():
-    assert Document(SAMPLES / "example.odt")
+def test_case_filesystem(samples):
+    assert Document(samples("example.odt"))
 
 
-def test_case_get_mimetype():
-    document = Document(SAMPLES / "example.odt")
+def test_case_get_mimetype(samples):
+    document = Document(samples("example.odt"))
     assert document.mimetype == ODF_EXTENSIONS["odt"]
 
 
-def test_case_get_content():
-    document = Document(SAMPLES / "example.odt")
+def test_case_get_content(samples):
+    document = Document(samples("example.odt"))
     content = document.get_part(ODF_CONTENT)
     assert isinstance(content, Content)
 
 
-def test_case_get_meta():
-    document = Document(SAMPLES / "example.odt")
+def test_case_get_meta(samples):
+    document = Document(samples("example.odt"))
     meta = document.get_part(ODF_META)
     assert isinstance(meta, Meta)
 
 
-def test_case_get_styles():
-    document = Document(SAMPLES / "example.odt")
+def test_case_get_styles(samples):
+    document = Document(samples("example.odt"))
     styles = document.get_part(ODF_STYLES)
     assert isinstance(styles, Styles)
 
 
-def test_case_get_manifest():
-    document = Document(SAMPLES / "example.odt")
+def test_case_get_manifest(samples):
+    document = Document(samples("example.odt"))
     manifest = document.get_part(ODF_MANIFEST)
     assert isinstance(manifest, Manifest)
 
 
-def test_case_get_body():
-    document = Document(SAMPLES / "example.odt")
+def test_case_get_body(samples):
+    document = Document(samples("example.odt"))
     body = document.body
     assert body.tag == "office:text"
 
 
-def test_case_clone_body_none():
-    document = Document(SAMPLES / "example.odt")
+def test_case_clone_body_none(samples):
+    document = Document(samples("example.odt"))
     _dummy = document.body
     clone = document.clone
     # new body cache should be empty
     assert clone._Document__body is None
 
 
-def test_case_clone_xmlparts_empty():
-    document = Document(SAMPLES / "example.odt")
+def test_case_clone_xmlparts_empty(samples):
+    document = Document(samples("example.odt"))
     clone = document.clone
     # new xmlparts cache should be empty
     assert clone._Document__xmlparts == {}
 
 
-def test_case_clone_same_content():
-    document = Document(SAMPLES / "example.odt")
+def test_case_clone_same_content(samples):
+    document = Document(samples("example.odt"))
     s_orig = document.body.serialize()
     clone = document.clone
     s_clone = clone.body.serialize()
     assert s_clone == s_orig
 
 
-def test_case_clone_different_changes_1():
-    document = Document(SAMPLES / "example.odt")
+def test_case_clone_different_changes_1(samples):
+    document = Document(samples("example.odt"))
     s_orig = document.body.serialize()
     clone = document.clone
     clone.body.append(Paragraph("some text"))
@@ -220,8 +217,8 @@ def test_case_clone_different_changes_1():
     assert s_clone != s_orig
 
 
-def test_case_clone_different_unchanged_1():
-    document = Document(SAMPLES / "example.odt")
+def test_case_clone_different_unchanged_1(samples):
+    document = Document(samples("example.odt"))
     s_orig = document.body.serialize()
     clone = document.clone
     clone.body.append(Paragraph("some text"))
@@ -229,8 +226,8 @@ def test_case_clone_different_unchanged_1():
     assert s_after == s_orig
 
 
-def test_case_clone_different_unchanged_2():
-    document = Document(SAMPLES / "example.odt")
+def test_case_clone_different_unchanged_2(samples):
+    document = Document(samples("example.odt"))
     clone = document.clone
     clone.body.append(Paragraph("some text"))
     s_clone1 = clone.body.serialize()
@@ -239,8 +236,8 @@ def test_case_clone_different_unchanged_2():
     assert s_clone1 == s_clone2
 
 
-def test_case_save_nogenerator(tmp_path):
-    document = Document(SAMPLES / "example.odt")
+def test_case_save_nogenerator(tmp_path, samples):
+    document = Document(samples("example.odt"))
     temp = BytesIO()
     document.save(temp)
     temp.seek(0)
@@ -249,8 +246,8 @@ def test_case_save_nogenerator(tmp_path):
     assert generator.startswith("odfdo")
 
 
-def test_case_save_generator():
-    document = Document(SAMPLES / "example.odt")
+def test_case_save_generator(samples):
+    document = Document(samples("example.odt"))
     document.get_part(ODF_META).set_generator("toto")
     temp = BytesIO()
     document.save(temp)
@@ -336,104 +333,104 @@ def test_show_styles(tmp_path):
     assert no_styles == ""
 
 
-def test_bg_image_get_mimetype():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_mimetype(samples):
+    document = Document(samples("background.odp"))
     mimetype = document.mimetype
     assert mimetype == ODF_EXTENSIONS["odp"]
 
 
-def test_bg_image_get_content():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_content(samples):
+    document = Document(samples("background.odp"))
     content = document.get_part(ODF_CONTENT)
     assert isinstance(content, Content)
 
 
-def test_bg_image_get_meta():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_meta(samples):
+    document = Document(samples("background.odp"))
     meta = document.get_part(ODF_META)
     assert isinstance(meta, Meta)
 
 
-def test_bg_image_get_styles():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_styles(samples):
+    document = Document(samples("background.odp"))
     styles = document.get_part(ODF_STYLES)
     assert isinstance(styles, Styles)
 
 
-def test_bg_image_get_manifest():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_manifest(samples):
+    document = Document(samples("background.odp"))
     manifest = document.get_part(ODF_MANIFEST)
     assert isinstance(manifest, Manifest)
 
 
-def test_bg_image_get_body():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_body(samples):
+    document = Document(samples("background.odp"))
     body = document.body
     assert body.tag == "office:presentation"
 
 
-def test_bg_image_get_styles_method():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_styles_method(samples):
+    document = Document(samples("background.odp"))
     styles = document.get_styles()
     assert len(styles) == 112
 
 
-def test_bg_image_get_styles_family_paragraph():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_styles_family_paragraph(samples):
+    document = Document(samples("background.odp"))
     styles = document.get_styles(family="paragraph")
     assert len(styles) == 7
 
 
-def test_bg_image_get_styles_family_paragraph_bytes():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_styles_family_paragraph_bytes(samples):
+    document = Document(samples("background.odp"))
     styles = document.get_styles(family=b"paragraph")
     assert len(styles) == 7
 
 
-def test_bg_image_get_styles_family_text():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_styles_family_text(samples):
+    document = Document(samples("background.odp"))
     styles = document.get_styles(family="text")
     assert len(styles) == 0
 
 
-def test_bg_image_get_styles_family_graphic():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_styles_family_graphic(samples):
+    document = Document(samples("background.odp"))
     styles = document.get_styles(family="graphic")
     assert len(styles) == 44
 
 
-def test_bg_image_get_styles_family_page_layout_automatic():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_styles_family_page_layout_automatic(samples):
+    document = Document(samples("background.odp"))
     styles = document.get_styles(family="page-layout", automatic=True)
     assert len(styles) == 3
 
 
-def test_bg_image_get_styles_family_page_layout_no_automatic():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_styles_family_page_layout_no_automatic(samples):
+    document = Document(samples("background.odp"))
     styles = document.get_styles(family="page-layout")
     assert len(styles) == 3
 
 
-def test_bg_image_get_styles_family_master_page():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_styles_family_master_page(samples):
+    document = Document(samples("background.odp"))
     styles = document.get_styles(family="master-page")
     assert len(styles) == 1
 
 
-def test_bg_image_get_style_automatic():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_style_automatic(samples):
+    document = Document(samples("background.odp"))
     style = document.get_style("paragraph", "P1")
     assert style is not None
 
 
-def test_bg_image_get_style_named():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_get_style_named(samples):
+    document = Document(samples("background.odp"))
     style = document.get_style("", "Paper_20_Crumpled")
     assert style is not None
 
 
-def test_bg_image_add_bg_image():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_add_bg_image(samples):
+    document = Document(samples("background.odp"))
     tag = (
         "<draw:fill-image"
         ' draw:name="background_test"'
@@ -454,8 +451,8 @@ def test_bg_image_add_bg_image():
     assert style is not None
 
 
-def test_bg_image_add_bg_image_style():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_add_bg_image_style(samples):
+    document = Document(samples("background.odp"))
     tag = (
         "<draw:fill-image"
         ' draw:name="background_test"'
@@ -470,9 +467,9 @@ def test_bg_image_add_bg_image_style():
     assert style is not None
 
 
-def test_bg_image_add_bg_image_style_twice():
+def test_bg_image_add_bg_image_style_twice(samples):
     """Check that prior style of same name is replaced."""
-    document = Document(SAMPLES / "background.odp")
+    document = Document(samples("background.odp"))
     tag = (
         "<draw:fill-image"
         ' draw:name="background_test"'
@@ -492,8 +489,8 @@ def test_bg_image_add_bg_image_style_twice():
     assert result == expected
 
 
-def test_bg_image_show_styles():
-    document = Document(SAMPLES / "background.odp")
+def test_bg_image_show_styles(samples):
+    document = Document(samples("background.odp"))
     # XXX hard to unit test
     all_styles = document.show_styles()
     assert "auto   used:" in all_styles
@@ -513,13 +510,13 @@ def test_repr_empty():
     assert repr(document) == "<Document type=text path=None>"
 
 
-def test_repr_text():
-    document = Document(SAMPLES / "example.odt")
+def test_repr_text(samples):
+    document = Document(samples("example.odt"))
     assert "example.odt" in repr(document)
 
 
-def test_repr_spreadsheet():
-    document = Document(SAMPLES / "simple_table.ods")
+def test_repr_spreadsheet(samples):
+    document = Document(samples("simple_table.ods"))
     result = repr(document)
     assert "type=spreadsheet" in result
     assert "simple_table.ods" in result
@@ -531,24 +528,24 @@ def test_str_empty():
     assert str(document) == ""
 
 
-def test_str_text():
-    document = Document(SAMPLES / "example.odt")
+def test_str_text(samples):
+    document = Document(samples("example.odt"))
     result = str(document)
     assert "odfdo Test Case Document" in result
     assert "This is the second paragraph" in result
     assert "First paragraph[*] of the second section" in result
 
 
-def test_str_spreadsheet():
-    document = Document(SAMPLES / "simple_table.ods")
+def test_str_spreadsheet(samples):
+    document = Document(samples("simple_table.ods"))
     result = str(document)
     assert "1 1 1 2 3 3 3" in result
     assert "A float" in result
     assert "3.14" in result
 
 
-def test_insert_style_paragraph():
-    document = Document(SAMPLES / "example.odt")
+def test_insert_style_paragraph(samples):
+    document = Document(samples("example.odt"))
     style = Element.from_tag(
         '<style:style style:name="custom" '
         'style:display-name="custom" '
@@ -573,8 +570,8 @@ def test_insert_style_paragraph():
     assert result == expected
 
 
-def test_insert_style_date():
-    document = Document(SAMPLES / "example.odt")
+def test_insert_style_date(samples):
+    document = Document(samples("example.odt"))
     style = Element.from_tag(
         "<number:date-style "
         'style:name="nr-nl-date" '
@@ -598,8 +595,8 @@ def test_insert_style_date():
     assert result2
 
 
-def test_insert_style_currency():
-    document = Document(SAMPLES / "example.odt")
+def test_insert_style_currency(samples):
+    document = Document(samples("example.odt"))
     style = Element.from_tag(
         "<number:currency-style "
         'style:name="nr-nl-currency-gt0" '
@@ -625,8 +622,8 @@ def test_insert_style_currency():
     assert result2
 
 
-def test_insert_style_currency_2():
-    document = Document(SAMPLES / "example.odt")
+def test_insert_style_currency_2(samples):
+    document = Document(samples("example.odt"))
     style = Element.from_tag(
         "<number:currency-style "
         'style:name="nr-nl-currency">'
@@ -655,8 +652,8 @@ def test_insert_style_currency_2():
     assert result2
 
 
-def test_insert_style_composite_1():
-    document = Document(SAMPLES / "example.odt")
+def test_insert_style_composite_1(samples):
+    document = Document(samples("example.odt"))
     style_date = Element.from_tag(
         "<number:date-style "
         'style:name="nr-nl-date" '
@@ -703,8 +700,8 @@ def test_insert_style_composite_1():
     assert result == expected
 
 
-def test_insert_style_composite_2():
-    document = Document(SAMPLES / "example.odt")
+def test_insert_style_composite_2(samples):
+    document = Document(samples("example.odt"))
     style_date = Element.from_tag(
         "<number:date-style "
         'style:name="nr-nl-date" '

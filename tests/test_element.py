@@ -22,7 +22,6 @@
 
 from collections import namedtuple
 from collections.abc import Iterable
-from pathlib import Path
 from re import compile
 
 import pytest
@@ -38,9 +37,6 @@ from odfdo.element import (
 )
 from odfdo.xmlpart import XmlPart
 
-SAMPLES = Path(__file__).parent / "samples"
-EXAMPLE = SAMPLES / "example.odt"
-SPAN_STYLES = SAMPLES / "span_style.odt"
 SPECIAL_CHARS = 'using < & " characters'
 
 Sample = namedtuple("Sample", ["container", "content", "para", "anno", "span"])
@@ -51,8 +47,8 @@ class DummyElement(Element):
 
 
 @pytest.fixture
-def sample() -> Iterable[Sample]:
-    container = Container(EXAMPLE)
+def sample(samples) -> Iterable[Sample]:
+    container = Container(samples("example.odt"))
     content = XmlPart(ODF_CONTENT, container)
     para = content.get_element("//text:p[1]")
     anno = content.get_element("//office:annotation[1]")
@@ -61,8 +57,8 @@ def sample() -> Iterable[Sample]:
 
 
 @pytest.fixture
-def span_styles() -> Iterable[Sample]:
-    container = Container(SPAN_STYLES)
+def span_styles(samples) -> Iterable[Sample]:
+    container = Container(samples("span_style.odt"))
     content = XmlPart(ODF_CONTENT, container)
     para = content.get_element("//text:p")
     anno = ""

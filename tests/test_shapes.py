@@ -21,7 +21,6 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 
 from collections.abc import Iterable
-from pathlib import Path
 
 import pytest
 
@@ -31,12 +30,10 @@ from odfdo.draw_page import DrawPage
 from odfdo.paragraph import Paragraph
 from odfdo.shapes import ConnectorShape, EllipseShape, LineShape, RectangleShape
 
-SAMPLES = Path(__file__).parent / "samples"
-
 
 @pytest.fixture
-def body() -> Iterable[Element]:
-    document = Document(SAMPLES / "base_shapes.odg")
+def body(samples) -> Iterable[Element]:
+    document = Document(samples("base_shapes.odg"))
     yield document.body
 
 

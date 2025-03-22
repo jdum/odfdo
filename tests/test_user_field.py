@@ -21,21 +21,19 @@
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 
 from collections.abc import Iterable
-from pathlib import Path
 
 import pytest
 
 from odfdo.document import Document
 from odfdo.variable import UserFieldDecl, UserFieldGet, UserFieldInput
 
-SAMPLES = Path(__file__).parent / "samples"
 ZOE = "你好 Zoé"
 CHAMP = "Champêtre"
 
 
 @pytest.fixture
-def document() -> Iterable[Document]:
-    document = Document(SAMPLES / "variable.odt")
+def document(samples) -> Iterable[Document]:
+    document = Document(samples("variable.odt"))
     yield document
 
 

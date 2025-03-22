@@ -20,7 +20,6 @@
 
 from collections.abc import Iterable
 from decimal import Decimal
-from pathlib import Path
 
 import pytest
 
@@ -30,13 +29,11 @@ from odfdo.element import Element
 from odfdo.table import Table
 from odfdo.xmlpart import XmlPart
 
-SAMPLES = Path(__file__).parent / "samples"
-
 
 @pytest.fixture
-def chart_container() -> Iterable[Container]:
+def chart_container(samples) -> Iterable[Container]:
     container = Container()
-    container.open(SAMPLES / "chart.odt")
+    container.open(samples("chart.odt"))
     yield container
 
 

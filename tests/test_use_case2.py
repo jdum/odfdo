@@ -21,7 +21,6 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 
 from datetime import date, time
-from pathlib import Path
 from sys import version_info
 
 from PIL import Image
@@ -48,10 +47,8 @@ from odfdo import (
     rgb2hex,
 )
 
-SAMPLES = Path(__file__).parent / "samples"
 
-
-def use_case1(destination_file):
+def use_case1(destination_file, source_path):
     print("odfdo test use case 2")
     print(f"version: {__version__}")
     print(f"Generating test file {destination_file}")
@@ -61,12 +58,11 @@ def use_case1(destination_file):
 
     # 0- The image
     # ------------
-    path = SAMPLES / "image.png"
-    image = Image.open(path)
+    image = Image.open(source_path)
     width, height = image.size
     # Add the image
-    image_uri = document.add_file(path)
-    draw_size = (f"{width/100:.2f}cm", f"{height/100:.2f}cm")
+    image_uri = document.add_file(source_path)
+    draw_size = (f"{width / 100:.2f}cm", f"{height / 100:.2f}cm")
     image_frame = Frame.image_frame(
         image_uri,
         size=draw_size,
@@ -293,7 +289,8 @@ def use_case1(destination_file):
     document.save(destination_file, pretty=True)
 
 
-def test_use_case2(tmp_path):
+def test_use_case2(tmp_path, samples):
     path = tmp_path / "use_case_2.odt"
-    use_case1(path)
+    image_path = samples("image.png")
+    use_case1(path, image_path)
     assert path.is_file()

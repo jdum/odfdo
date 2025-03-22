@@ -19,7 +19,6 @@
 # https://github.com/lpod/lpod-python
 
 from collections.abc import Iterable
-from pathlib import Path
 from textwrap import dedent
 
 import pytest
@@ -27,145 +26,124 @@ import pytest
 from odfdo.document import Document
 from odfdo.paragraph import Paragraph
 
-SAMPLE_BT = Path(__file__).parent / "samples" / "base_text.odt"
-SAMPLE_EX = Path(__file__).parent / "samples" / "example.odt"
-SAMPLE_BOOK = Path(__file__).parent / "samples" / "bookmark.odt"
-SAMPLE_I28 = Path(__file__).parent / "samples" / "issue_28_pretty.odt"
-SAMPLE_LIST = Path(__file__).parent / "samples" / "list.odt"
-SAMPLE_META = Path(__file__).parent / "samples" / "meta.odt"
-SAMPLE_NOTE = Path(__file__).parent / "samples" / "note.odt"
-SAMPLE_PB = Path(__file__).parent / "samples" / "pagebreak.odt"
-SAMPLE_TOC2 = Path(__file__).parent / "samples" / "toc_done.odt"
-SAMPLE_TOC = Path(__file__).parent / "samples" / "toc.odt"
-SAMPLE_TC = Path(__file__).parent / "samples" / "tracked_changes.odt"
-SAMPLE_UF = Path(__file__).parent / "samples" / "user_fields.odt"
-SAMPLE_VAR = Path(__file__).parent / "samples" / "variable.odt"
-SAMPLE_CA1 = Path(__file__).parent / "samples" / "base_md_text.odt"
-SAMPLE_CA2 = Path(__file__).parent / "samples" / "md_style.odt"
-SAMPLE_CA3 = Path(__file__).parent / "samples" / "md_fixed.odt"
-SAMPLE_DORMEUR = Path(__file__).parent / "samples" / "dormeur_notes.odt"
-SAMPLE_LOREM = Path(__file__).parent / "samples" / "lorem.odt"
-SAMPLE_IMG = Path(__file__).parent / "samples" / "chair.odt"
-SAMPLE_TAB = Path(__file__).parent / "samples" / "table.odt"
-
 
 @pytest.fixture
-def document_base() -> Iterable[Document]:
-    document = Document(SAMPLE_BT)
+def document_base(samples) -> Iterable[Document]:
+    document = Document(samples("base_text.odt"))
     yield document
 
 
 @pytest.fixture
-def document_example() -> Iterable[Document]:
-    document = Document(SAMPLE_EX)
+def document_example(samples) -> Iterable[Document]:
+    document = Document(samples("example.odt"))
     yield document
 
 
 @pytest.fixture
-def document_bookmark() -> Iterable[Document]:
-    document = Document(SAMPLE_BOOK)
+def document_bookmark(samples) -> Iterable[Document]:
+    document = Document(samples("bookmark.odt"))
     yield document
 
 
 @pytest.fixture
-def document_i28() -> Iterable[Document]:
-    document = Document(SAMPLE_I28)
+def document_i28(samples) -> Iterable[Document]:
+    document = Document(samples("issue_28_pretty.odt"))
     yield document
 
 
 @pytest.fixture
-def document_list() -> Iterable[Document]:
-    document = Document(SAMPLE_LIST)
+def document_list(samples) -> Iterable[Document]:
+    document = Document(samples("list.odt"))
     yield document
 
 
 @pytest.fixture
-def document_meta() -> Iterable[Document]:
-    document = Document(SAMPLE_META)
+def document_meta(samples) -> Iterable[Document]:
+    document = Document(samples("meta.odt"))
     yield document
 
 
 @pytest.fixture
-def document_note() -> Iterable[Document]:
-    document = Document(SAMPLE_NOTE)
+def document_note(samples) -> Iterable[Document]:
+    document = Document(samples("note.odt"))
     yield document
 
 
 @pytest.fixture
-def document_pb() -> Iterable[Document]:
-    document = Document(SAMPLE_PB)
+def document_pb(samples) -> Iterable[Document]:
+    document = Document(samples("pagebreak.odt"))
     yield document
 
 
 @pytest.fixture
-def document_toc2() -> Iterable[Document]:
-    document = Document(SAMPLE_TOC2)
+def document_toc2(samples) -> Iterable[Document]:
+    document = Document(samples("toc_done.odt"))
     yield document
 
 
 @pytest.fixture
-def document_toc() -> Iterable[Document]:
-    document = Document(SAMPLE_TOC)
+def document_toc(samples) -> Iterable[Document]:
+    document = Document(samples("toc.odt"))
     yield document
 
 
 @pytest.fixture
-def document_tc() -> Iterable[Document]:
-    document = Document(SAMPLE_TC)
+def document_tc(samples) -> Iterable[Document]:
+    document = Document(samples("tracked_changes.odt"))
     yield document
 
 
 @pytest.fixture
-def document_uf() -> Iterable[Document]:
-    document = Document(SAMPLE_UF)
+def document_uf(samples) -> Iterable[Document]:
+    document = Document(samples("user_fields.odt"))
     yield document
 
 
 @pytest.fixture
-def document_var() -> Iterable[Document]:
-    document = Document(SAMPLE_VAR)
+def document_var(samples) -> Iterable[Document]:
+    document = Document(samples("variable.odt"))
     yield document
 
 
 @pytest.fixture
-def document_case1() -> Iterable[Document]:
-    document = Document(SAMPLE_CA1)
+def document_case1(samples) -> Iterable[Document]:
+    document = Document(samples("base_md_text.odt"))
     yield document
 
 
 @pytest.fixture
-def document_case2() -> Iterable[Document]:
-    document = Document(SAMPLE_CA2)
+def document_case2(samples) -> Iterable[Document]:
+    document = Document(samples("md_style.odt"))
     yield document
 
 
 @pytest.fixture
-def document_case3() -> Iterable[Document]:
-    document = Document(SAMPLE_CA3)
+def document_case3(samples) -> Iterable[Document]:
+    document = Document(samples("md_fixed.odt"))
     yield document
 
 
 @pytest.fixture
-def document_dormeur() -> Iterable[Document]:
-    document = Document(SAMPLE_DORMEUR)
+def document_dormeur(samples) -> Iterable[Document]:
+    document = Document(samples("dormeur_notes.odt"))
     yield document
 
 
 @pytest.fixture
-def document_lorem() -> Iterable[Document]:
-    document = Document(SAMPLE_LOREM)
+def document_lorem(samples) -> Iterable[Document]:
+    document = Document(samples("lorem.odt"))
     yield document
 
 
 @pytest.fixture
-def document_img() -> Iterable[Document]:
-    document = Document(SAMPLE_IMG)
+def document_img(samples) -> Iterable[Document]:
+    document = Document(samples("chair.odt"))
     yield document
 
 
 @pytest.fixture
-def document_tab() -> Iterable[Document]:
-    document = Document(SAMPLE_TAB)
+def document_tab(samples) -> Iterable[Document]:
+    document = Document(samples("table.odt"))
     yield document
 
 

@@ -23,7 +23,6 @@
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 
 from os.path import isfile, join
-from pathlib import Path
 
 import pytest
 
@@ -41,11 +40,9 @@ from odfdo.const import (
 from odfdo.container import Container
 from odfdo.utils import to_bytes
 
-SAMPLES = Path(__file__).parent / "samples"
 
-
-def test_filesystem():
-    path = SAMPLES / "example.odt"
+def test_filesystem(samples):
+    path = samples("example.odt")
     container = Container()
     container.open(path)
     mimetype = container.get_part("mimetype")
@@ -54,41 +51,41 @@ def test_filesystem():
     assert umimetype == ODF_EXTENSIONS["odt"]
 
 
-def test_get_part_xml():
+def test_get_part_xml(samples):
     container = Container()
-    container.open(SAMPLES / "example.odt")
+    container.open(samples("example.odt"))
     content = container.get_part(ODF_CONTENT)
     assert b"<office:document-content" in content
 
 
-def test_get_part_mimetype():
+def test_get_part_mimetype(samples):
     container = Container()
-    container.open(SAMPLES / "example.odt")
+    container.open(samples("example.odt"))
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["odt"])
     assert umimetype == ODF_EXTENSIONS["odt"]
 
 
-def test_mimetype_setter():
+def test_mimetype_setter(samples):
     container = Container()
-    container.open(SAMPLES / "example.odt")
+    container.open(samples("example.odt"))
     container.mimetype = ODF_EXTENSIONS["odt"]
     assert container.mimetype == ODF_EXTENSIONS["odt"]
 
 
-def test_set_part():
+def test_set_part(samples):
     container = Container()
-    container.open(SAMPLES / "example.odt")
+    container.open(samples("example.odt"))
     path = join("Pictures", "a.jpg")
     data = to_bytes("JFIFIThinéééékImAnImage")
     container.set_part(path, data)
     assert container.get_part(path) == data
 
 
-def test_del_part():
+def test_del_part(samples):
     container = Container()
-    container.open(SAMPLES / "example.odt")
+    container.open(samples("example.odt"))
     # Not a realistic test
     path = "content"
     container.del_part(path)
@@ -96,13 +93,13 @@ def test_del_part():
         container.get_part(path)
 
 
-def test_save_zip(tmp_path):
+def test_save_zip(tmp_path, samples):
     """TODO: 2 cases
     1. from ZIP to ZIP
     2. from "flat" to ZIP
     """
     container = Container()
-    container.open(SAMPLES / "example.odt")
+    container.open(samples("example.odt"))
     container.save(tmp_path / "example.odt")
     new_container = Container()
     new_container.open(tmp_path / "example.odt")
@@ -110,9 +107,9 @@ def test_save_zip(tmp_path):
     assert mimetype == to_bytes(ODF_EXTENSIONS["odt"])
 
 
-def test_save_folder(tmp_path):
+def test_save_folder(tmp_path, samples):
     container = Container()
-    container.open(SAMPLES / "example.odt")
+    container.open(samples("example.odt"))
     path1 = tmp_path / "example.odt"
     container.save(str(path1), packaging=FOLDER)
     path = tmp_path / "example.odt.folder" / "mimetype"
@@ -127,9 +124,9 @@ def test_save_folder(tmp_path):
     assert isfile(path)
 
 
-def test_save_folder_pathlib(tmp_path):
+def test_save_folder_pathlib(tmp_path, samples):
     container = Container()
-    container.open(SAMPLES / "example.odt")
+    container.open(samples("example.odt"))
     path1 = tmp_path / "example.odt"
     container.save(path1, packaging=FOLDER)
     path = tmp_path / "example.odt.folder" / "mimetype"
@@ -144,9 +141,9 @@ def test_save_folder_pathlib(tmp_path):
     assert isfile(path)
 
 
-def test_save_folder_to_zip(tmp_path):
+def test_save_folder_to_zip(tmp_path, samples):
     container = Container()
-    container.open(SAMPLES / "example.odt")
+    container.open(samples("example.odt"))
     path1 = tmp_path / "example.odt"
     container.save(path1, packaging=FOLDER)
     path = tmp_path / "example.odt.folder" / "mimetype"
@@ -161,9 +158,9 @@ def test_save_folder_to_zip(tmp_path):
     assert mimetype == to_bytes(ODF_EXTENSIONS["odt"])
 
 
-def test_load_folder(tmp_path):
+def test_load_folder(tmp_path, samples):
     container = Container()
-    container.open(SAMPLES / "example.odt")
+    container.open(samples("example.odt"))
     path1 = tmp_path / "example_f.odt"
     container.save(path1, packaging=FOLDER)
     new_container = Container()
@@ -193,18 +190,18 @@ def test_str_empty():
     assert str(container) == repr(container)
 
 
-def test_repr():
+def test_repr(samples):
     container = Container()
-    container.open(SAMPLES / "example.odt")
+    container.open(samples("example.odt"))
     result = repr(container)
     assert result.startswith("<Container type=application/vnd.oasis.opendocument.text")
     assert " path=" in result
     assert result.endswith("example.odt>")
 
 
-def test_str():
+def test_str(samples):
     container = Container()
-    container.open(SAMPLES / "example.odt")
+    container.open(samples("example.odt"))
     assert str(container) == repr(container)
 
 
@@ -213,9 +210,9 @@ def test_default_manifest_rdf():
     assert "rdf:RDF" in container.default_manifest_rdf
 
 
-def test_manifest_rdf_0(tmp_path):
+def test_manifest_rdf_0(tmp_path, samples):
     base = Container()
-    base.open(SAMPLES / "example.odt")
+    base.open(samples("example.odt"))
     content = base.get_part(ODF_CONTENT)
     styles = base.get_part(ODF_STYLES)
     container = Container()
@@ -226,10 +223,9 @@ def test_manifest_rdf_0(tmp_path):
     assert set(container.parts) == expected
 
 
-
-def test_manifest_rdf_2(tmp_path):
+def test_manifest_rdf_2(tmp_path, samples):
     base = Container()
-    base.open(SAMPLES / "example.odt")
+    base.open(samples("example.odt"))
     content = base.get_part(ODF_CONTENT)
     styles = base.get_part(ODF_STYLES)
     meta = base.get_part(ODF_META)
@@ -250,9 +246,9 @@ def test_manifest_rdf_2(tmp_path):
     assert mimetype.decode() == ODF_TEXT
 
 
-def test_manifest_rdf_3(tmp_path):
+def test_manifest_rdf_3(tmp_path, samples):
     base = Container()
-    base.open(SAMPLES / "example.odt")
+    base.open(samples("example.odt"))
     content = base.get_part(ODF_CONTENT)
     styles = base.get_part(ODF_STYLES)
     meta = base.get_part(ODF_META)
@@ -271,4 +267,3 @@ def test_manifest_rdf_3(tmp_path):
     new_container.open(path)
     content2 = new_container.get_part(ODF_CONTENT)
     assert content2 == content
-

@@ -21,7 +21,6 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 
 from collections.abc import Iterable
-from pathlib import Path
 
 import pytest
 
@@ -29,13 +28,12 @@ from odfdo.const import ODF_MANIFEST, ODF_PRESENTATION
 from odfdo.document import Document
 from odfdo.manifest import Manifest
 
-SAMPLE = Path(__file__).parent / "samples" / "frame_image.odp"
 IMG_PATH = "Pictures/100002010000012C00000042188DCB81589D2C10.png"
 
 
 @pytest.fixture
-def base_manifest() -> Iterable[Manifest]:
-    document = Document(SAMPLE)
+def base_manifest(samples) -> Iterable[Manifest]:
+    document = Document(samples("frame_image.odp"))
     yield document.get_part(ODF_MANIFEST)
 
 

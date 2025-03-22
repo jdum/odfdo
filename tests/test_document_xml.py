@@ -19,20 +19,17 @@
 # https://github.com/lpod/lpod-python
 import io
 from collections.abc import Iterable
-from pathlib import Path
 
 import pytest
 
 from odfdo import Document, Frame, Paragraph
 
-SAMPLES = Path(__file__).parent / "samples"
-
 
 @pytest.fixture
-def doc_xml() -> Iterable:
+def doc_xml(samples) -> Iterable:
     doc = Document("odt")
     doc.body.clear()
-    img_url = doc.add_file(SAMPLES / "image.png")
+    img_url = doc.add_file(samples("image.png"))
     image_frame = Frame.image_frame(
         img_url,
         size=("6cm", "4cm"),

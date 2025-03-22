@@ -19,12 +19,9 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 
-from pathlib import Path
 
 from odfdo.document import Document
 from odfdo.draw_page import DrawPage
-
-SAMPLES = Path(__file__).parent / "samples"
 
 
 def test_create_simple_page():
@@ -57,15 +54,15 @@ def test_create_complex_page():
     )
 
 
-def test_get_draw_page_list():
-    document = Document(SAMPLES / "example.odp")
+def test_get_draw_page_list(samples):
+    document = Document(samples("example.odp"))
     body = document.body
     result = body.get_draw_pages()
     assert len(result) == 2
 
 
-def test_get_draw_page_list_style():
-    document = Document(SAMPLES / "example.odp")
+def test_get_draw_page_list_style(samples):
+    document = Document(samples("example.odp"))
     body = document.body.clone
     result = body.get_draw_pages(style="dp1")
     assert len(result) == 2
@@ -73,15 +70,15 @@ def test_get_draw_page_list_style():
     assert len(result) == 0
 
 
-def test_odf_draw_page():
-    document = Document(SAMPLES / "example.odp")
+def test_odf_draw_page(samples):
+    document = Document(samples("example.odp"))
     body = document.body
     draw_page = body.get_draw_page()
     assert isinstance(draw_page, DrawPage)
 
 
-def test_get_draw_page_by_name():
-    document = Document(SAMPLES / "example.odp")
+def test_get_draw_page_by_name(samples):
+    document = Document(samples("example.odp"))
     body = document.body.clone
     good = body.get_draw_page(name="Titre")
     assert good is not None
@@ -89,15 +86,15 @@ def test_get_draw_page_by_name():
     assert bad is None
 
 
-def test_get_page_name():
-    document = Document(SAMPLES / "example.odp")
+def test_get_page_name(samples):
+    document = Document(samples("example.odp"))
     body = document.body
     page = body.get_draw_page(name="Titre")
     assert page.name == "Titre"
 
 
-def test_set_page_name():
-    document = Document(SAMPLES / "example.odp")
+def test_set_page_name(samples):
+    document = Document(samples("example.odp"))
     body = document.body.clone
     page = body.get_draw_page(position=0)
     name = "Intitulé"

@@ -22,7 +22,6 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 
 from collections.abc import Iterable
-from pathlib import Path
 
 import pytest
 
@@ -30,12 +29,10 @@ from odfdo.const import ODF_CONTENT
 from odfdo.content import Content
 from odfdo.document import Document
 
-SAMPLES = Path(__file__).parent / "samples"
-
 
 @pytest.fixture
-def base_content() -> Iterable[Content]:
-    document = Document(SAMPLES / "base_text.odt")
+def base_content(samples) -> Iterable[Content]:
+    document = Document(samples("base_text.odt"))
     yield document.get_part(ODF_CONTENT)
 
 

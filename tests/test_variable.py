@@ -22,7 +22,6 @@
 
 from collections.abc import Iterable
 from datetime import datetime, time
-from pathlib import Path
 
 import pytest
 
@@ -46,13 +45,12 @@ from odfdo.variable import (
     VarTitle,
 )
 
-SAMPLES = Path(__file__).parent / "samples"
 ZOE = "你好 Zoé"
 
 
 @pytest.fixture
-def document() -> Iterable[Document]:
-    document = Document(SAMPLES / "variable.odt")
+def document(samples) -> Iterable[Document]:
+    document = Document(samples("variable.odt"))
     yield document
 
 
@@ -216,9 +214,7 @@ def test_create_chapter():
 
 def test_create_chapter_complex():
     chapter = VarChapter(display="number-and-name", outline_level=1)
-    expected = (
-        '<text:chapter text:display="number-and-name" ' 'text:outline-level="1"/>'
-    )
+    expected = '<text:chapter text:display="number-and-name" text:outline-level="1"/>'
     assert chapter.serialize() == expected
 
 

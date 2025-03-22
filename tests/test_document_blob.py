@@ -20,11 +20,8 @@
 
 import base64
 import io
-from pathlib import Path
 
 from odfdo.document import Blob
-
-SAMPLES = Path(__file__).parent / "samples"
 
 
 def test_blob_null():
@@ -34,50 +31,50 @@ def test_blob_null():
     assert blob.mime_type == ""
 
 
-def test_blob_png():
-    png = SAMPLES / "image.png"
+def test_blob_png(samples):
+    png = samples("image.png")
     blob = Blob.from_path(png)
     assert blob.name == "ceddccf10506d07cc0990639e79f8c72.png"
     assert blob.mime_type == "image/png"
 
 
-def test_blob_png_content():
-    png = SAMPLES / "image.png"
+def test_blob_png_content(samples):
+    png = samples("image.png")
     expected = png.read_bytes()
     blob = Blob.from_path(png)
     assert blob.content == expected
 
 
-def test_blob_png_str():
-    png = str(SAMPLES / "image.png")
+def test_blob_png_str(samples):
+    png = str(samples("image.png"))
     blob = Blob.from_path(png)
     assert blob.name == "ceddccf10506d07cc0990639e79f8c72.png"
     assert blob.mime_type == "image/png"
 
 
-def test_blob_png_content_str():
-    png = SAMPLES / "image.png"
+def test_blob_png_content_str(samples):
+    png = samples("image.png")
     expected = png.read_bytes()
     blob = Blob.from_path(str(png))
     assert blob.content == expected
 
 
-def test_blob_jpg():
-    png = SAMPLES / "image2.jpg"
+def test_blob_jpg(samples):
+    png = samples("image2.jpg")
     blob = Blob.from_path(png)
     assert blob.name == "b011604234764865b75f7dbd903992de.jpg"
     assert blob.mime_type == "image/jpeg"
 
 
-def test_blob_jpg_content():
-    png = SAMPLES / "image2.jpg"
+def test_blob_jpg_content(samples):
+    png = samples("image2.jpg")
     expected = png.read_bytes()
     blob = Blob.from_path(png)
     assert blob.content == expected
 
 
-def test_blob_io():
-    png = SAMPLES / "image.png"
+def test_blob_io(samples):
+    png = samples("image.png")
     with io.BytesIO() as bytes_content:
         bytes_content.write(png.read_bytes())
         bytes_content.seek(0)
@@ -86,8 +83,8 @@ def test_blob_io():
     assert blob.mime_type == "application/octet-stream"
 
 
-def test_blob_io_content():
-    png = SAMPLES / "image.png"
+def test_blob_io_content(samples):
+    png = samples("image.png")
     expected = png.read_bytes()
     with io.BytesIO() as bytes_content:
         bytes_content.write(png.read_bytes())
@@ -96,8 +93,8 @@ def test_blob_io_content():
     assert blob.content == expected
 
 
-def test_blob_b64():
-    png = SAMPLES / "image.png"
+def test_blob_b64(samples):
+    png = samples("image.png")
     content = png.read_bytes()
     b64string = base64.standard_b64encode(content)
     blob = Blob.from_base64(b64string, "image/png")
@@ -105,8 +102,8 @@ def test_blob_b64():
     assert blob.mime_type == "image/png"
 
 
-def test_blob_b64_content():
-    png = SAMPLES / "image.png"
+def test_blob_b64_content(samples):
+    png = samples("image.png")
     content = png.read_bytes()
     b64string = base64.standard_b64encode(content)
     blob = Blob.from_base64(b64string, "image/png")
