@@ -20,14 +20,15 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Meta class for meta.xml part.
-"""
+"""Meta class for meta.xml part."""
+
 from __future__ import annotations
 
 import json
 from datetime import date as dtdate
 from datetime import datetime, timedelta
 from decimal import Decimal
+from operator import itemgetter
 from string import ascii_letters, digits
 from typing import Any
 
@@ -685,7 +686,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
              'meta:page-count': 4,
              'meta:paragraph-count': 5,
              'meta:word-count': 6,
-             'meta:character-count': 7}
+             'meta:character-count': 7,
+             'meta:non-whitespace-character-count': 3}
         """
         element = self.get_element("//meta:document-statistic")
         if element is None:
@@ -712,7 +714,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
                              'meta:page-count': 4,
                              'meta:paragraph-count': 5,
                              'meta:word-count': 6,
-                             'meta:character-count': 7}
+                             'meta:character-count': 7,
+                             'meta:non-whitespace-character-count': 3}
             >>> document.meta.set_statistic(statistic)
         """
         if not isinstance(statistic, dict):
@@ -741,7 +744,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
              'meta:page-count': 4,
              'meta:paragraph-count': 5,
              'meta:word-count': 6,
-             'meta:character-count': 7}
+             'meta:character-count': 7,
+             'meta:non-whitespace-character-count':3}
         """
         return self.get_statistic()
 
@@ -769,6 +773,21 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             value = self._get_meta_value(item)
             result[name] = value
         return result
+
+    def _user_defined_metadata_list(self) -> list[dict[str, Any]]:
+        user_defined: list[dict[str, Any]] = []
+        for item in self.get_elements("//meta:user-defined"):
+            if not isinstance(item, Element):
+                continue
+            # Read the values
+            name = item.get_attribute_string("meta:name")
+            if not name:
+                continue
+            value, value_type, _text = self._get_meta_value_full(item)
+            user_defined.append(
+                {"meta:name": name, "meta:value-type": value_type, "value": value}
+            )
+        return sorted(user_defined, key=itemgetter("meta:name"))
 
     def clear_user_defined_metadata(self) -> None:
         """Remove all user-defined metadata."""
@@ -917,21 +936,6 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
                 )
             }
 
-        def _user_defined() -> list[dict[str, Any]]:
-            user_defined: list[dict[str, Any]] = []
-            for item in self.get_elements("//meta:user-defined"):
-                if not isinstance(item, Element):
-                    continue
-                # Read the values
-                name = item.get_attribute_string("meta:name")
-                if not name:
-                    continue
-                value, value_type, _text = self._get_meta_value_full(item)
-                user_defined.append(
-                    {"meta:name": name, "meta:value-type": value_type, "value": value}
-                )
-            return user_defined
-
         def _meta_template() -> dict[str, Any] | None:
             template = self.template
             if template is None:
@@ -959,7 +963,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             "meta:generator": self.generator,
             "dc:title": self.title,
             "dc:description": self.description,
-            "dc:creator": self.initial_creator,
+            "dc:creator": self.creator,
             "meta:keyword": self.keyword,
             "dc:subject": self.subject,
             "dc:language": self.language,
@@ -969,7 +973,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             "meta:template": _meta_template(),
             "meta:auto-reload": _meta_reload(),
             "meta:hyperlink-behaviour": _meta_behaviour(),
-            "meta:user-defined": _user_defined(),
+            "meta:user-defined": self._user_defined_metadata_list(),
         }
 
         if not full:
@@ -977,7 +981,6 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return meta_data
 
     def _as_json_dict(self, full: bool = False) -> dict[str, Any]:
-
         def _convert(data: dict[str, Any]) -> None:
             for key, val in data.items():
                 if isinstance(val, datetime):
@@ -1027,7 +1030,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         _append_info("Language", "dc:language")
         _append_info("Modification date", "dc:date")
         _append_info("Creation date", "meta:creation-date")
-        _append_info("Initial creator", "dc:creator")
+        _append_info("Creator", "dc:creator")
+        _append_info("Initial creator", "meta:initial-creator")
         _append_info("Keyword", "meta:keyword")
         _append_info("Editing duration", "meta:editing-duration")
         _append_info("Editing cycles", "meta:editing-cycles")
@@ -1045,3 +1049,188 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             result.append(f"  - {item['meta:name']}: {item['value']}")
 
         return "\n".join(result)
+
+    @staticmethod
+    def _complete_stats(
+        current_stats: dict[str, int],
+        imported_stats: dict[str, int] | None,
+    ) -> dict[str, int]:
+        if imported_stats is None:
+            imported_stats = {}
+            current_stats = {}
+        new: dict[str, int] = {}
+        for key in (
+            "meta:table-count",
+            "meta:image-count",
+            "meta:object-count",
+            "meta:page-count",
+            "meta:paragraph-count",
+            "meta:word-count",
+            "meta:character-count",
+            "meta:non-whitespace-character-count",
+        ):
+            new[key] = imported_stats.get(key, current_stats.get(key, 0))
+        return new
+
+    def from_dict(self, data: dict[str, Any]) -> None:
+        """Set the metadata of the document from a Python dict.
+
+        The loaded metadata are merged with the existing metadata.
+        If the new value of a key is None:
+            - meta:creation-date: use current time,
+            - dc:date: use creation date,
+            - meta:editing-duration: set to zero,
+            - meta:editing-cycles: set to 1,
+            - meta:generator: use odfdo generator string.
+            Other keys (not mandatory keys): remove key/value pair from
+            metadata.
+
+        Arguments:
+
+            data -- dict of metadata.
+        """
+
+        def _value_delete(key: str) -> Any:
+            value = data.get(key, current.get(key))
+            if value is None:
+                child = self.get_element(f"//{key}")
+                if child is not None:
+                    self.delete_element(child)
+            return value
+
+        current = self.as_dict()
+        new_stats = self._complete_stats(
+            current["meta:document-statistic"],
+            data.get("meta:document-statistic", {}),
+        )
+        # mandatory
+        self.statistic = new_stats
+
+        key = "meta:creation-date"
+        creation_date = data.get(key, current.get(key))
+        if creation_date is None:
+            creation_date = datetime.now().replace(microsecond=0)
+        self.creation_date = creation_date
+
+        key = "dc:date"
+        dc_date = data.get(key, current.get(key))
+        if dc_date is None:
+            dc_date = creation_date
+        if dc_date < creation_date:
+            dc_date = creation_date
+        max_editing = dc_date - creation_date
+        self.date = dc_date
+
+        key = "meta:editing-duration"
+        editing_duration = data.get(key, current.get(key))
+        if editing_duration is None:
+            editing_duration = timedelta(0)
+        if editing_duration > max_editing:
+            editing_duration = max_editing
+        self.editing_duration = editing_duration
+
+        key = "meta:editing-cycles"
+        editing_cycles = data.get(key, current.get(key))
+        if editing_cycles is None:
+            editing_cycles = 1
+        self.editing_cycles = max(editing_cycles, 1)
+
+        key = "meta:generator"
+        generator = data.get(key, current.get(key))
+        if not generator:
+            generator = GENERATOR
+        self.generator = generator
+
+        # not mandatory values
+        # - if not in imported: keep original value
+        # - if imported is None: erase original value
+
+        key = "dc:title"
+        value = _value_delete(key)
+        if value is not None:
+            self.title = value
+
+        key = "dc:description"
+        value = _value_delete(key)
+        if value is not None:
+            self.description = value
+
+        key = "dc:creator"
+        value = _value_delete(key)
+        if value is not None:
+            self.creator = value
+
+        key = "meta:keyword"
+        value = _value_delete(key)
+        if value is not None:
+            self.keyword = value
+
+        key = "dc:subject"
+        value = _value_delete(key)
+        if value is not None:
+            self.subject = value
+
+        key = "dc:language"
+        value = _value_delete(key)
+        if value is not None:
+            self.language = value
+
+        key = "meta:initial-creator"
+        value = _value_delete(key)
+        if value is not None:
+            self.initial_creator = value
+
+        key = "meta:print-date"
+        value = _value_delete(key)
+        if value is not None:
+            self.print_date = value
+
+        key = "meta:printed-by"
+        value = _value_delete(key)
+        if value is not None:
+            self.printed_by = value
+
+        key = "meta:template"
+        value = _value_delete(key)
+        if value is not None:
+            value = value.as_dict()
+            self.set_template(
+                date=value["meta:date"],
+                href=value["xlink:href"],
+                title=value["xlink:title"],
+            )
+
+        key = "meta:auto-reload"
+        value = _value_delete(key)
+        if value is not None:
+            value = value.as_dict()
+            self.set_auto_reload(
+                delay=value["meta:delay"],
+                href=value["xlink:href"],
+            )
+
+        key = "meta:hyperlink-behaviour"
+        value = _value_delete(key)
+        if value is not None:
+            value = value.as_dict()
+            self.set_hyperlink_behaviour(
+                target_frame_name=value["office:target-frame-name"],
+                show=value["xlink:show"],
+            )
+
+        key = "meta:user-defined"
+        if key in data:
+            value = data[key]
+            if value is None:
+                self.clear_user_defined_metadata()
+            else:
+                current = self._user_defined_metadata_list()
+                current_dict = {d["meta:name"]: d for d in current}
+                current_value = {d["meta:name"]: d for d in value}
+                current_dict.update(current_value)
+                new_ud = {
+                    v["meta:name"]: v["value"]
+                    for v in current_dict.values()
+                    if v["value"] is not None
+                }
+                self.user_defined_metadata = new_ud

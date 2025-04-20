@@ -2,6 +2,7 @@
 
 ## [3.13.10] - 2025-04-20
 
+Add a method to set the metadata of the document from a Python dict.
 Added `lxml` version 5.3.2 to the test suite.
 Fix incorrect docstring of DrawImage (issue 56).
 Technical update: apply more ruff's style recommendations.
@@ -12,6 +13,7 @@ Technical update: apply more ruff's style recommendations.
 
 ### Added
 
+-   Add methods: `Meta.from_dict()`.
 -   Version 5.3.2 of `lxml` added to `tox.ini`.
 
 ### Fixed

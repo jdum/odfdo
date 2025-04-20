@@ -744,3 +744,308 @@ def test_meta_export_json_full(meta):
 
     print(exported)
     assert exported == expected
+
+
+def test_meta_from_dict_1(meta):
+    imported = {
+        "meta:creation-date": datetime(2024, 7, 14, 12, 00, 00),
+        "dc:date": datetime(2009, 7, 31, 15, 59, 13),
+        "meta:editing-duration": timedelta(seconds=100),
+        "meta:editing-cycles": 1,
+        "dc:subject": None,
+    }
+    expected = {
+        "meta:creation-date": datetime(2024, 7, 14, 12, 00, 00),
+        "dc:date": datetime(2024, 7, 14, 12, 00, 00),
+        "meta:editing-duration": timedelta(seconds=0),
+        "meta:editing-cycles": 1,
+        "meta:document-statistic": {
+            "meta:table-count": 0,
+            "meta:image-count": 0,
+            "meta:object-count": 0,
+            "meta:page-count": 1,
+            "meta:paragraph-count": 1,
+            "meta:word-count": 4,
+            "meta:character-count": 27,
+            "meta:non-whitespace-character-count": 24,
+        },
+        "meta:generator": "LibreOffice/6.0.3.2$MacOSX_X86_64 LibreOffice_project/8f48d515416608e3a835360314dac7e47fd0b821",
+        "dc:title": "Intitulé",
+        "dc:description": "Comments\nCommentaires\n评论",
+        "dc:creator": None,
+        "meta:keyword": "Mots-clés",
+        "dc:subject": None,
+        "dc:language": None,
+        "meta:initial-creator": None,
+        "meta:print-date": None,
+        "meta:printed-by": None,
+        "meta:auto-reload": None,
+        "meta:hyperlink-behaviour": None,
+        "meta:template": None,
+        "meta:user-defined": [
+            {
+                "meta:name": "Achevé à la date",
+                "meta:value-type": "date",
+                "value": datetime(2009, 7, 31, 0, 0),
+            },
+            {
+                "meta:name": "Numéro du document",
+                "meta:value-type": "float",
+                "value": Decimal("3"),
+            },
+            {"meta:name": "Référence", "meta:value-type": "boolean", "value": True},
+            {
+                "meta:name": "Vérifié par",
+                "meta:value-type": "string",
+                "value": "Moi-même",
+            },
+        ],
+    }
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    assert result == expected
+
+
+def test_meta_from_dict_2(meta):
+    imported = {
+        "meta:creation-date": datetime(2024, 7, 14, 12, 00, 00),
+        "dc:date": datetime(2009, 7, 31, 15, 59, 13),
+        "meta:editing-duration": timedelta(seconds=100),
+        "meta:editing-cycles": 1,
+        "dc:subject": None,
+        "meta:user-defined": None,
+    }
+    expected = {
+        "meta:creation-date": datetime(2024, 7, 14, 12, 00, 00),
+        "dc:date": datetime(2024, 7, 14, 12, 00, 00),
+        "meta:editing-duration": timedelta(seconds=0),
+        "meta:editing-cycles": 1,
+        "meta:document-statistic": {
+            "meta:table-count": 0,
+            "meta:image-count": 0,
+            "meta:object-count": 0,
+            "meta:page-count": 1,
+            "meta:paragraph-count": 1,
+            "meta:word-count": 4,
+            "meta:character-count": 27,
+            "meta:non-whitespace-character-count": 24,
+        },
+        "meta:generator": "LibreOffice/6.0.3.2$MacOSX_X86_64 LibreOffice_project/8f48d515416608e3a835360314dac7e47fd0b821",
+        "dc:title": "Intitulé",
+        "dc:description": "Comments\nCommentaires\n评论",
+        "dc:creator": None,
+        "meta:keyword": "Mots-clés",
+        "dc:subject": None,
+        "dc:language": None,
+        "meta:initial-creator": None,
+        "meta:print-date": None,
+        "meta:printed-by": None,
+        "meta:auto-reload": None,
+        "meta:hyperlink-behaviour": None,
+        "meta:template": None,
+        "meta:user-defined": [],
+    }
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    assert result == expected
+
+
+def test_meta_from_dict_3(meta):
+    imported = {
+        "meta:creation-date": datetime(2024, 7, 14, 12, 00, 00),
+        "dc:date": datetime(2009, 7, 31, 15, 59, 13),
+        "meta:editing-duration": timedelta(seconds=100),
+        "meta:editing-cycles": 1,
+        "dc:subject": None,
+        "meta:user-defined": [
+            {
+                "meta:name": "New property",
+                "meta:value-type": "string",
+                "value": "Anatole",
+            }
+        ],
+    }
+    expected = {
+        "meta:creation-date": datetime(2024, 7, 14, 12, 00, 00),
+        "dc:date": datetime(2024, 7, 14, 12, 00, 00),
+        "meta:editing-duration": timedelta(seconds=0),
+        "meta:editing-cycles": 1,
+        "meta:document-statistic": {
+            "meta:table-count": 0,
+            "meta:image-count": 0,
+            "meta:object-count": 0,
+            "meta:page-count": 1,
+            "meta:paragraph-count": 1,
+            "meta:word-count": 4,
+            "meta:character-count": 27,
+            "meta:non-whitespace-character-count": 24,
+        },
+        "meta:generator": "LibreOffice/6.0.3.2$MacOSX_X86_64 LibreOffice_project/8f48d515416608e3a835360314dac7e47fd0b821",
+        "dc:title": "Intitulé",
+        "dc:description": "Comments\nCommentaires\n评论",
+        "dc:creator": None,
+        "meta:keyword": "Mots-clés",
+        "dc:subject": None,
+        "dc:language": None,
+        "meta:initial-creator": None,
+        "meta:print-date": None,
+        "meta:printed-by": None,
+        "meta:auto-reload": None,
+        "meta:hyperlink-behaviour": None,
+        "meta:template": None,
+        "meta:user-defined": [
+            {
+                "meta:name": "Achevé à la date",
+                "meta:value-type": "date",
+                "value": datetime(2009, 7, 31, 0, 0),
+            },
+            {
+                "meta:name": "New property",
+                "meta:value-type": "string",
+                "value": "Anatole",
+            },
+            {
+                "meta:name": "Numéro du document",
+                "meta:value-type": "float",
+                "value": Decimal("3"),
+            },
+            {"meta:name": "Référence", "meta:value-type": "boolean", "value": True},
+            {
+                "meta:name": "Vérifié par",
+                "meta:value-type": "string",
+                "value": "Moi-même",
+            },
+        ],
+    }
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    assert result == expected
+
+
+def test_meta_from_dict_4(meta):
+    imported = {
+        "meta:creation-date": datetime(2024, 7, 14, 12, 00, 00),
+        "dc:date": datetime(2009, 7, 31, 15, 59, 13),
+        "meta:editing-duration": timedelta(seconds=100),
+        "meta:editing-cycles": 1,
+        "meta:document-statistic": None,
+        "meta:generator": "toto",
+        "dc:subject": None,
+        "dc:title": None,
+        "dc:description": None,
+        "dc:keyword": None,
+        "meta:user-defined": [
+            {
+                "meta:name": "Achevé à la date",
+                "value": None,
+            }
+        ],
+    }
+    expected = {
+        "meta:creation-date": datetime(2024, 7, 14, 12, 00, 00),
+        "dc:date": datetime(2024, 7, 14, 12, 00, 00),
+        "meta:editing-duration": timedelta(seconds=0),
+        "meta:editing-cycles": 1,
+        "meta:document-statistic": {
+            "meta:table-count": 0,
+            "meta:image-count": 0,
+            "meta:object-count": 0,
+            "meta:page-count": 0,
+            "meta:paragraph-count": 0,
+            "meta:word-count": 0,
+            "meta:character-count": 0,
+            "meta:non-whitespace-character-count": 0,
+        },
+        "meta:generator": "toto",
+        "dc:title": None,
+        "dc:description": None,
+        "dc:creator": None,
+        "meta:keyword": "Mots-clés",
+        "dc:subject": None,
+        "dc:language": None,
+        "meta:initial-creator": None,
+        "meta:print-date": None,
+        "meta:printed-by": None,
+        "meta:auto-reload": None,
+        "meta:hyperlink-behaviour": None,
+        "meta:template": None,
+        "meta:user-defined": [
+            {
+                "meta:name": "Numéro du document",
+                "meta:value-type": "float",
+                "value": Decimal("3"),
+            },
+            {"meta:name": "Référence", "meta:value-type": "boolean", "value": True},
+            {
+                "meta:name": "Vérifié par",
+                "meta:value-type": "string",
+                "value": "Moi-même",
+            },
+        ],
+    }
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    assert result == expected
+
+
+def test_meta_from_dict_5(meta):
+    imported = {
+        "meta:creation-date": datetime(2024, 7, 14, 12, 00, 00),
+        "dc:date": datetime(2009, 7, 31, 15, 59, 13),
+        "meta:editing-duration": timedelta(seconds=100),
+        "meta:editing-cycles": 1,
+        "meta:document-statistic": {
+            "meta:table-count": 1,
+            "meta:image-count": 22,
+            "meta:object-count": 33,
+            "meta:page-count": 444,
+            "meta:paragraph-count": 555,
+            "meta:word-count": 666,
+            "meta:character-count": 777,
+            "meta:non-whitespace-character-count": 888,
+        },
+        "meta:generator": "toto",
+        "dc:subject": None,
+        "dc:title": None,
+        "dc:description": None,
+        "dc:keyword": None,
+        "meta:user-defined": [
+            {
+                "meta:name": "Achevé à la date",
+                "value": None,
+            }
+        ],
+    }
+    expected = {
+        "meta:creation-date": datetime(2024, 7, 14, 12, 00, 00),
+        "dc:date": datetime(2024, 7, 14, 12, 00, 00),
+        "meta:editing-cycles": 1,
+        "meta:document-statistic": {
+            "meta:table-count": 1,
+            "meta:image-count": 22,
+            "meta:object-count": 33,
+            "meta:page-count": 444,
+            "meta:paragraph-count": 555,
+            "meta:word-count": 666,
+            "meta:character-count": 777,
+            "meta:non-whitespace-character-count": 888,
+        },
+        "meta:generator": "toto",
+        "meta:keyword": "Mots-clés",
+        "meta:user-defined": [
+            {
+                "meta:name": "Numéro du document",
+                "meta:value-type": "float",
+                "value": Decimal("3"),
+            },
+            {"meta:name": "Référence", "meta:value-type": "boolean", "value": True},
+            {
+                "meta:name": "Vérifié par",
+                "meta:value-type": "string",
+                "value": "Moi-même",
+            },
+        ],
+    }
+    meta.from_dict(imported)
+    result = meta.as_dict(full=False)
+    assert result == expected
