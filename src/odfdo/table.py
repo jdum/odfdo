@@ -663,7 +663,7 @@ class Table(MDTable, CachedElement):
         COL_MIN = 16
 
         free_size = LINE_MAX - (cols_nb - 1) * 3 - 4
-        real_size = sum([cols_size[i] for i in range(cols_nb)])
+        real_size = sum(cols_size[i] for i in range(cols_nb))
         if real_size > free_size:
             factor = float(free_size) / real_size
 

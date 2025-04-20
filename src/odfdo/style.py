@@ -688,8 +688,6 @@ class Style(Element):
                 element.del_attribute(key)
             elif isinstance(value, (str, bool, tuple)):
                 element.set_attribute(key, value)
-            else:
-                pass
 
     def del_properties(
         self,

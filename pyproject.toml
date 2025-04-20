@@ -156,9 +156,9 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/test_*" = ["S101", "RUF005", "B007", "UP017", "YTT204"]
-"tests/*/test_*" = ["S101", "RUF005", "B007", "UP017", "YTT204"]
-"recipes/*" = ["S101", "SIM102"]
+"tests/test_*" = ["S101", "S404", "RUF005", "B007", "UP017", "YTT204"]
+"tests/*/test_*" = ["S101", "S404", "RUF005", "B007", "UP017", "YTT204"]
+"recipes/*" = ["S101", "SIM102", "B903"]
 "recipes/accessing_a_single_element.py" = ["RUF001"]
 
 [tool.coverage.report]

@@ -4,6 +4,7 @@ from odfdo import Document, Header, Paragraph, Table
 
 _DOC_SEQUENCE = 55
 
+
 def main():
     document = Document("text")
     body = document.body

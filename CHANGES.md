@@ -3,6 +3,11 @@
 ## [3.13.10] - 2025-04-20
 
 Added `lxml` version 5.3.2 to the test suite.
+Technical update: apply more ruff's style recommendations.
+
+### Changed
+
+-   Applies ruff's style recommendations.
 
 ### Added
 

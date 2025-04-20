@@ -83,7 +83,7 @@ def generate_document():
 
     for count, blurb in enumerate(CONTENT):
         text = blurb
-        name = f"{count+1} - { text[:10]}"
+        name = f"{count + 1} - { text[:10]}"
         page = DrawPage(name)
         # choosing some style:
         size = 48

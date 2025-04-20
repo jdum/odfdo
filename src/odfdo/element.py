@@ -172,7 +172,7 @@ def xpath_compile(path: str) -> XPath:
     return XPath(path, namespaces=ODF_NAMESPACES, regexp=False)
 
 
-_xpath_text = xpath_compile("//text()")  #  descendant and self
+_xpath_text = xpath_compile("//text()")  # descendant and self
 _xpath_text_descendant = xpath_compile("descendant::text()")
 _xpath_text_main = xpath_compile("//*[not (parent::office:annotation)]/text()")
 _xpath_text_main_descendant = xpath_compile(
@@ -1397,32 +1397,32 @@ class Element(MDBase):
         """
         # child_tag = element.tag
         current = self.__element
-        _element = element.__element
+        lx_element = element.__element
         if start:
             text = current.text
             if text is not None:
                 current.text = None
-                tail = _element.tail
+                tail = lx_element.tail
                 if tail is None:
                     tail = text
                 else:
                     tail = tail + text
-                _element.tail = tail
+                lx_element.tail = tail
             position = 0
         if position is not None:
-            current.insert(position, _element)
+            current.insert(position, lx_element)
         elif xmlposition is FIRST_CHILD:
-            current.insert(0, _element)
+            current.insert(0, lx_element)
         elif xmlposition is LAST_CHILD:
-            current.append(_element)
+            current.append(lx_element)
         elif xmlposition is NEXT_SIBLING:
             parent = current.getparent()
             index = parent.index(current)  # type: ignore
-            parent.insert(index + 1, _element)  # type: ignore
+            parent.insert(index + 1, lx_element)  # type: ignore
         elif xmlposition is PREV_SIBLING:
             parent = current.getparent()
             index = parent.index(current)  # type: ignore
-            parent.insert(index, _element)  # type: ignore
+            parent.insert(index, lx_element)  # type: ignore
         else:
             raise ValueError("(xml)position must be defined")
 

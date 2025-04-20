@@ -1044,8 +1044,8 @@ class Document(MDDocument):
         infos.sort(key=itemgetter("family", "name"))
         # Show common and used first
         infos.sort(key=itemgetter("type", "used"), reverse=True)
-        max_family = str(max([len(x["family"]) for x in infos]))  # type: ignore
-        max_parent = str(max([len(x["parent"]) for x in infos]))  # type: ignore
+        max_family = str(max(len(x["family"]) for x in infos))  # type: ignore
+        max_parent = str(max(len(x["parent"]) for x in infos))  # type: ignore
         formater = (
             "%(type)s used:%(used)s family:%(family)-0"
             + max_family

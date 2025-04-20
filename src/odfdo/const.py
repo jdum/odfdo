@@ -39,11 +39,11 @@ ODF_TEMPLATES = {
     "graphics": "drawing.otg",
     "graphic": "drawing.otg",
     # TODO
-    #'chart': 'templates/chart.otc',
-    #'image': 'templates/image.oti',
-    #'formula': 'templates/image.otf',
-    #'master': 'templates/image.odm',
-    #'web': 'templates/image.oth',
+    # 'chart': 'templates/chart.otc',
+    # 'image': 'templates/image.oti',
+    # 'formula': 'templates/image.otf',
+    # 'master': 'templates/image.odm',
+    # 'web': 'templates/image.oth',
 }
 
 ODF_TEXT = "application/vnd.oasis.opendocument.text"
