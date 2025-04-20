@@ -1,5 +1,13 @@
 # Odfdo Release Notes
 
+## [3.13.10] - 2025-04-20
+
+Added `lxml` version 5.3.2 to the test suite.
+
+### Added
+
+-   Version 5.3.2 of `lxml` added to `tox.ini`.
+
 ## [3.13.9] - 2025-03-22
 
 Technical update: migrate from `poetry` build environment to `uv`, and reorganize tests.
