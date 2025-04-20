@@ -18,8 +18,8 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""DrawImage class for "draw:image".
-"""
+"""DrawImage class for "draw:image"."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -29,9 +29,11 @@ from .element import Element, PropDef, register_element_class
 
 class DrawImage(Element):
     """The "draw:image" element represents an image. An image can be
-    either:
-    - A link to an external resource or
-    - Embedded in the document (Not implemented in this version)
+    either a link to an external resource or most often embedded into
+    the document.
+    When image is embedded in the document, the url parameter is a
+    reference to the local document obtained by copying the source
+    image into the document, ie: url = document.add_file(image_path)
 
     Warning: image elements must be stored in a frame "draw:frame",
     see Frame().

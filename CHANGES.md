@@ -3,15 +3,20 @@
 ## [3.13.10] - 2025-04-20
 
 Added `lxml` version 5.3.2 to the test suite.
+Fix incorrect docstring of DrawImage (issue 56).
 Technical update: apply more ruff's style recommendations.
 
 ### Changed
 
--   Applies ruff's style recommendations.
+-   Apply ruff's style recommendations.
 
 ### Added
 
 -   Version 5.3.2 of `lxml` added to `tox.ini`.
+
+### Fixed
+
+-   Update incorrect docstring of DrawImage.
 
 ## [3.13.9] - 2025-03-22
 
