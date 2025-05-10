@@ -1,12 +1,13 @@
 # Odfdo Release Notes
 
-## [3.13.11] - 2025-04-xx
+## [3.13.11] - 2025-05-10
 
-Technical update: refactor code for get_formatted_text()
+Technical updates: refactor code for get_formatted_text() and Element.get_value().
 
 ### Changed
 
 -   Refactor code for get_formatted_text()
+-   Refactor code for Element.get_value()
 
 ## [3.13.10] - 2025-04-20
 

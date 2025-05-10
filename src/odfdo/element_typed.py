@@ -125,65 +125,89 @@ class ElementTyped(Element):
 
         return text
 
+    def _get_typed_value_boolean(self) -> Any:
+        return self.get_attribute("office:boolean-value")
+
+    def _get_typed_value_number_type(self) -> Decimal | int | float:
+        read_number = self.get_attribute("office:value")
+        if not isinstance(read_number, (Decimal, str)):
+            raise TypeError(f'Wrong type for "office:value": {type(read_number)}')
+        value = Decimal(read_number)
+        # Return 3 instead of 3.0 if possible
+        with contextlib.suppress(ValueError):
+            if int(value) == value:
+                return int(value)
+        return value
+
+    def _get_typed_value_float(self) -> Decimal | int | float:
+        return self._get_typed_value_number_type()
+
+    def _get_typed_value_percentage(self) -> Decimal | int | float:
+        return self._get_typed_value_number_type()
+
+    def _get_typed_value_currency(self) -> Decimal | int | float:
+        return self._get_typed_value_number_type()
+
+    def _get_typed_value_date(self) -> date | datetime:
+        read_attribute = self.get_attribute("office:date-value")
+        if not isinstance(read_attribute, str):
+            raise TypeError(
+                f'Wrong type for "office:date-value": {type(read_attribute)}'
+            )
+        if "T" in read_attribute:
+            return DateTime.decode(read_attribute)
+        return Date.decode(read_attribute)
+
+    def _get_typed_value_string(self, try_get_text: bool) -> str | None:
+        value = self.get_attribute("office:string-value")
+        if value is not None:
+            return str(value)
+        if try_get_text:
+            list_value = [para.inner_text for para in self.get_elements("text:p")]
+            if list_value:
+                return "\n".join(list_value)
+        return None
+
+    def _get_typed_value_time(self) -> timedelta:
+        read_value = self.get_attribute("office:time-value")
+        if not isinstance(read_value, str):
+            raise TypeError(f'Wrong type for "office:time-value": {type(read_value)}')
+        return Duration.decode(read_value)
+
     def _get_typed_value(
         self,
-        value_type: str | None = None,
+        value_type: str = "",
         try_get_text: bool = True,
-    ) -> tuple[Any, str | None]:
+    ) -> Any:
         """Return Python typed value.
 
         Only for "with office:value-type" elements, not for meta fields."""
-        value: Decimal | str | bool | None = None
+        if value_type == "string":
+            return self._get_typed_value_string(try_get_text)
+        method = getattr(self, f"_get_typed_value_{value_type}", None)
+        if method is None:
+            raise TypeError(f"Unexpected value type: {value_type}")
+        return method()
+
+    def _get_value_and_type(
+        self, value_type: str | None = None, try_get_text: bool = True
+    ) -> tuple[Any, str]:
         if value_type is None:
             read_value_type = self.get_attribute("office:value-type")
             if isinstance(read_value_type, bool):
                 raise TypeError(
                     f'Wrong type for "office:value-type": {type(read_value_type)}'
                 )
+            if read_value_type is None:
+                return None, None
             value_type = read_value_type
-        # value_type = to_str(value_type)
-        if value_type == "boolean":
-            value = self.get_attribute("office:boolean-value")
-            return (value, value_type)
-        if value_type in {"float", "percentage", "currency"}:
-            read_number = self.get_attribute("office:value")
-            if not isinstance(read_number, (Decimal, str)):
-                raise TypeError(f'Wrong type for "office:value": {type(read_number)}')
-            value = Decimal(read_number)
-            # Return 3 instead of 3.0 if possible
-            with contextlib.suppress(ValueError):
-                if int(value) == value:
-                    return (int(value), value_type)
-            return (value, value_type)
-        if value_type == "date":
-            read_attribute = self.get_attribute("office:date-value")
-            if not isinstance(read_attribute, str):
-                raise TypeError(
-                    f'Wrong type for "office:date-value": {type(read_attribute)}'
-                )
-            if "T" in read_attribute:
-                return (DateTime.decode(read_attribute), value_type)
-            return (Date.decode(read_attribute), value_type)
-        if value_type == "string":
-            value = self.get_attribute("office:string-value")
-            if value is not None:
-                return (str(value), value_type)
-            if try_get_text:
-                list_value = [para.inner_text for para in self.get_elements("text:p")]
-                if list_value:
-                    return ("\n".join(list_value), value_type)
-            return (None, value_type)
-        if value_type == "time":
-            read_value = self.get_attribute("office:time-value")
-            if not isinstance(read_value, str):
-                raise TypeError(
-                    f'Wrong type for "office:time-value": {type(read_value)}'
-                )
-            time_value = Duration.decode(read_value)
-            return (time_value, value_type)
-        if value_type is None:
-            return (None, None)
-        raise ValueError(f'Unexpected value type: "{value_type}"')
+        return (
+            self._get_typed_value(
+                value_type=value_type,
+                try_get_text=try_get_text,
+            ),
+            value_type,
+        )
 
     def get_value(
         self,
@@ -194,12 +218,9 @@ class ElementTyped(Element):
         """Return Python typed value.
 
         Only for "with office:value-type" elements, not for meta fields."""
+        value, actual_type = self._get_value_and_type(
+            value_type=value_type, try_get_text=try_get_text
+        )
         if get_type:
-            return self._get_typed_value(
-                value_type=value_type,
-                try_get_text=try_get_text,
-            )
-        return self._get_typed_value(
-            value_type=value_type,
-            try_get_text=try_get_text,
-        )[0]
+            return (value, actual_type)
+        return value
