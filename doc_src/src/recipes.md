@@ -107,7 +107,6 @@ Minimal example of how to add an item to a list.
 
 Read the text content from an .odt file.
 
-
 ??? code "recipes/get_text_content_from_odt_file.py"
     ```python
     {% include "../../recipes/get_text_content_from_odt_file.py" %}

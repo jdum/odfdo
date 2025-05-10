@@ -2,12 +2,17 @@
 
 ## [3.13.11] - 2025-05-10
 
+Added `lxml` version 5.4.0 to the test suite.
 Technical updates: refactor code for get_formatted_text() and Element.get_value().
 
 ### Changed
 
 -   Refactor code for get_formatted_text()
 -   Refactor code for Element.get_value()
+
+### Added
+
+-   Version 5.4.0 of `lxml` added to `tox.ini`.
 
 ## [3.13.10] - 2025-04-20
 
