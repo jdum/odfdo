@@ -1,5 +1,13 @@
 # Odfdo Release Notes
 
+## [3.13.11] - 2025-04-xx
+
+Technical update: refactor code for get_formatted_text()
+
+### Changed
+
+-   Refactor code for get_formatted_text()
+
 ## [3.13.10] - 2025-04-20
 
 Add a method to set the metadata of the document from a Python dict.

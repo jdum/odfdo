@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-"""Read the text content from an .odt file.
-"""
+"""Read the text content from an .odt file."""
+
 import os
 import sys
 from pathlib import Path

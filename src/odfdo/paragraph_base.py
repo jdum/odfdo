@@ -30,137 +30,9 @@ from __future__ import annotations
 import contextlib
 from typing import Any
 
-from .element import Element, EText, PropDef, _get_lxml_tag, register_element_class
+from .element import Element, PropDef, _get_lxml_tag, register_element_class
 from .mixin_md import MDLineBreak, MDSpacer, MDTab
-
-
-def _get_formatted_text(
-    element: Element,
-    context: dict | None = None,
-    with_text: bool = True,
-) -> str:
-    if context is None:
-        context = {}
-    document = context.get("document", None)
-    rst_mode = context.get("rst_mode", False)
-
-    result: list[str] = []
-    objects: list[Element | EText] = []
-    if with_text:
-        objects = element.xpath("*|text()")
-    else:
-        objects = [x for x in element.children]  # noqa: C416
-    for obj in objects:
-        if isinstance(obj, EText):
-            result.append(obj)
-            continue
-        tag = obj.tag
-        # Good tags with text
-        if tag in ("text:a", "text:p"):
-            result.append(_get_formatted_text(obj, context, with_text=True))
-            continue
-        # Try to convert some styles in rst_mode
-        if tag == "text:span":
-            text = _get_formatted_text(obj, context, with_text=True)
-            if not rst_mode:
-                result.append(text)
-                continue
-            if not text.strip():
-                result.append(text)
-                continue
-            if hasattr(obj, "style"):
-                style = obj.style
-            else:
-                style = None
-            if not style:
-                result.append(text)
-                continue
-            if document:
-                style = document.get_style("text", style)
-                properties = style.get_properties()
-            else:
-                properties = None
-            if properties is None:
-                result.append(text)
-                continue
-            # Compute before, text and after
-            before = ""
-            for c in text:
-                if c.isspace():
-                    before += c
-                else:
-                    break
-            after = ""
-            for c in reversed(text):
-                if c.isspace():
-                    after = c + after
-                else:
-                    break
-            text = text.strip()
-            # Bold ?
-            if properties.get("fo:font-weight") == "bold":
-                result.append(before)
-                result.append("**")
-                result.append(text)
-                result.append("**")
-                result.append(after)
-                continue
-            # Italic ?
-            if properties.get("fo:font-style") == "italic":
-                result.append(before)
-                result.append("*")
-                result.append(text)
-                result.append("*")
-                result.append(after)
-                continue
-            # Unknown style, ...
-            result.append(before)
-            result.append(text)
-            result.append(after)
-            continue
-        # Footnote or endnote
-        if tag == "text:note":
-            note_class = obj.note_class  # type:ignore
-            container = {
-                "footnote": context["footnotes"],
-                "endnote": context["endnotes"],
-            }[note_class]
-            citation = obj.citation  # type:ignore
-            if not citation:
-                # Would only happen with hand-made documents
-                citation = len(container)
-            body = obj.note_body  # type:ignore
-            container.append((citation, body))
-            if rst_mode:
-                marker = {"footnote": " [#]_ ", "endnote": " [*]_ "}[note_class]
-            else:
-                marker = {"footnote": "[{citation}]", "endnote": "({citation})"}[
-                    note_class
-                ]
-            result.append(marker.format(citation=citation))
-            continue
-        # Annotations
-        if tag == "office:annotation":
-            context["annotations"].append(obj.note_body)  # type:ignore
-            if rst_mode:
-                result.append(" [#]_ ")
-            else:
-                result.append("[*]")
-            continue
-        # Tabulation
-        if tag == "text:tab":
-            result.append("\t")
-            continue
-        # Line break
-        if tag == "text:line-break":
-            if rst_mode:
-                result.append("\n|")
-            else:
-                result.append("\n")
-            continue
-        # other cases:
-        result.append(obj.get_formatted_text(context))
-    return "".join(result)
+from .paragraph_base_formatted import formatted_text
 
 
 class Spacer(MDSpacer, Element):
@@ -302,7 +174,7 @@ class ParagraphBase(Element):
                 "images": [],
                 "no_img_level": 0,
             }
-        content = _get_formatted_text(self, context, with_text=True)
+        content = formatted_text(self, context)
         if simple:
             return content
         else:
