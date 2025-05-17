@@ -79,7 +79,7 @@ def _add_object_text_span(
     result: list[str],
 ) -> None:
     text = formatted_text(obj, context)
-    if not context.get("rst_mode", False) or not text.strip():
+    if not context.get("rst_mode") or not text.strip():
         result.append(text)
         return
     if hasattr(obj, "style"):
@@ -128,7 +128,7 @@ def _add_object_text_note_foot(
         citation = len(container)
     body = obj.note_body  # type:ignore
     container.append((citation, body))
-    if context.get("rst_mode", False):
+    if context.get("rst_mode"):
         marker = " [#]_ "
     else:
         marker = f"[{citation}]"
@@ -147,7 +147,7 @@ def _add_object_text_note_end(
         citation = len(container)
     body = obj.note_body  # type:ignore
     container.append((citation, body))
-    if context.get("rst_mode", False):
+    if context.get("rst_mode"):
         marker = " [*]_ "
     else:
         marker = f"({citation})"
@@ -160,7 +160,7 @@ def _add_object_text_annotation(
     result: list[str],
 ) -> None:
     context["annotations"].append(obj.note_body)  # type:ignore
-    if context.get("rst_mode", False):
+    if context.get("rst_mode"):
         result.append(" [#]_ ")
     else:
         result.append("[*]")
@@ -179,7 +179,7 @@ def _add_object_text_line_break(
     context: dict[str, Any],
     result: list[str],
 ) -> None:
-    if context.get("rst_mode", False):
+    if context.get("rst_mode"):
         result.append("\n|")
     else:
         result.append("\n")
