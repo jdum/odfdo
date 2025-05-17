@@ -1,5 +1,14 @@
 # Odfdo Release Notes
 
+## [3.13.12] - 2025-05-17
+
+Technical updates: refactor code for isiterable() function, define Unit class in its own file, apply ruff.
+
+### Changed
+
+-   Define Unit class in its own file odfdo.unit.py (previous import from odfdo.datatype is still allowed to maintain compatibility).
+-   Refactor code of isiterable() function.
+
 ## [3.13.11] - 2025-05-10
 
 Added `lxml` version 5.4.0 to the test suite.
@@ -7,8 +16,8 @@ Technical updates: refactor code for get_formatted_text() and Element.get_value(
 
 ### Changed
 
--   Refactor code for get_formatted_text()
--   Refactor code for Element.get_value()
+-   Refactor code for get_formatted_text().
+-   Refactor code for Element.get_value().
 
 ### Added
 
