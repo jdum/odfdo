@@ -27,12 +27,12 @@ from collections.abc import Iterable
 from decimal import Decimal
 from typing import Any
 
-from .datatype import Unit
 from .element import Element, PropDef, register_element_class
 from .image import DrawImage
 from .mixin_md import MDDrawFrame, MDDrawTextBox
 from .paragraph import Paragraph
 from .style import Style
+from .unit import Unit
 
 # This DPI is computed to have:
 # 640 px (width of your wiki) <==> 17 cm (width of a normal ODT page)

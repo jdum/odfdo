@@ -193,77 +193,7 @@ def test_bool_bad_encode_pne():
         Boolean.decode("1")
 
 
-def test_str():
+def test_str_unit_compatibility():
     unit = Unit("1.847mm")
     assert unit.value == Decimal("1.847")
     assert unit.unit == "mm"
-
-
-def test_str_str():
-    unit = Unit("1.847mm")
-    assert str(unit) == "1.847mm"
-
-
-def test_int():
-    unit = Unit(1)
-    assert unit.value == Decimal("1")
-    assert unit.unit == "cm"
-
-
-def test_float():
-    unit = Unit(3.14)
-    assert unit.value == Decimal("3.14")
-    assert unit.unit == "cm"
-
-
-def test_encode():
-    value = "1.847mm"
-    unit = Unit(value)
-    assert str(unit) == value
-
-
-def test_eq():
-    unit1 = Unit("2.54cm")
-    unit2 = Unit("2.54cm")
-    assert unit1 == unit2
-
-
-def test_lt():
-    unit1 = Unit("2.53cm")
-    unit2 = Unit("2.54cm")
-    assert unit1 < unit2
-
-
-def test_nlt():
-    unit1 = Unit("2.53cm")
-    unit2 = Unit("2.54cm")
-    assert not (unit1 > unit2)
-
-
-def test_gt():
-    unit1 = Unit("2.54cm")
-    unit2 = Unit("2.53cm")
-    assert unit1 > unit2
-
-
-def test_ngt():
-    unit1 = Unit("2.54cm")
-    unit2 = Unit("2.53cm")
-    assert not (unit1 < unit2)
-
-
-def test_le():
-    unit1 = Unit("2.54cm")
-    unit2 = Unit("2.54cm")
-    assert unit1 <= unit2
-
-
-def test_ge():
-    unit1 = Unit("2.54cm")
-    unit2 = Unit("2.54cm")
-    assert unit1 >= unit2
-
-
-def test_convert():
-    unit = Unit("10cm")
-    assert unit.convert("px") == Unit("283px")

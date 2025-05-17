@@ -18,14 +18,15 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""Data types (Boolean, Date, DateTime, Duration, Unit).
-"""
+"""Data types (Boolean, Date, DateTime, Duration)."""
+
 from __future__ import annotations
 
 import sys
 from datetime import date, datetime, timedelta
-from decimal import Decimal
-from functools import total_ordering
+
+# for compatibility:
+from .unit import Unit  # noqa: F401
 
 DATE_FORMAT = "%Y-%m-%d"
 
@@ -182,56 +183,3 @@ class Duration:
         seconds = microseconds / 1000000
 
         return sign + DURATION_FORMAT % (hours, minutes, seconds)
-
-
-@total_ordering
-class Unit:
-    """Class for conversion between ODF units and Python types."""
-
-    def __init__(self, value: str | float | int | Decimal, unit: str = "cm"):
-        if isinstance(value, str):
-            digits = []
-            nondigits = []
-            for char in value:
-                if char.isdigit() or char == ".":
-                    digits.append(char)
-                else:
-                    nondigits.append(char)
-            value = "".join(digits)
-            if nondigits:
-                unit = "".join(nondigits)
-        elif isinstance(value, float):
-            value = str(value)
-        self.value = Decimal(value)
-        self.unit = unit
-
-    def __str__(self) -> str:
-        return str(self.value) + self.unit
-
-    def __repr__(self) -> str:
-        return f"{object.__repr__(self)} {self}"
-
-    def _check_other(self, other: Unit) -> None:
-        if not isinstance(other, Unit):
-            raise TypeError(f"Can only compare Unit: {other!r}")
-        if self.unit != other.unit:
-            raise NotImplementedError(f"Conversion not implemented yet {other!r}")
-
-    def __lt__(self, other: Unit) -> bool:
-        self._check_other(other)
-        return self.value < other.value
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Unit):
-            return False
-        self._check_other(other)
-        return self.value == other.value
-
-    def convert(self, unit: str, dpi: int | Decimal | float = 72) -> Unit:
-        if unit == "px":
-            if self.unit == "in":
-                return Unit(int(self.value * int(dpi)), "px")
-            elif self.unit == "cm":
-                return Unit(int(self.value / Decimal("2.54") * int(dpi)), "px")
-            raise NotImplementedError(str(self.unit))
-        raise NotImplementedError(str(unit))
