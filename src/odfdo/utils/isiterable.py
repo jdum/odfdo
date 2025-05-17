@@ -22,6 +22,7 @@
 #          Romain Gauthier <romain@itaapy.com>
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import Any
 
 
@@ -29,8 +30,4 @@ def isiterable(instance: Any) -> bool:
     """Return True if instance is iterable, but considering str and bytes as not iterable."""
     if isinstance(instance, (str, bytes)):
         return False
-    try:
-        iter(instance)
-    except TypeError:
-        return False
-    return True
+    return isinstance(instance, Iterable)
