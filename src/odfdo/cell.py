@@ -545,5 +545,17 @@ class Cell(ElementTyped):
 
     _is_spanned = is_spanned  # compatibility
 
+    def span_area(self) -> tuple[int, int]:
+        """Return the tuple (nb_columns, nb_rows) of the zone covered
+        by a spanned cell.
+
+        If the cell is not spanned, return (0,0).
+
+        Return: tuple[int, int]
+        """
+        columns = self.get_attribute_integer("table:number-columns-spanned") or 0
+        rows = self.get_attribute_integer("table:number-rows-spanned") or 0
+        return (columns, rows)
+
 
 register_element_class_list(Cell, (Cell._tag, "table:covered-table-cell"))

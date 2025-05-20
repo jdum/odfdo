@@ -298,3 +298,31 @@ def test_get_value_10(table):
 
 def test_get_value_11(table):
     assert table.get_value("e6") is None
+
+
+def test_span_area_none(table):
+    assert table.get_cell("a1").span_area() == (0, 0)
+
+
+def test_span_area_foo(table):
+    assert table.get_cell("b3").span_area() == (2, 3)
+
+
+def test_span_area_foo_none(table):
+    assert table.get_cell("b4").span_area() == (0, 0)
+
+
+def test_span_area_horiz(table):
+    assert table.get_cell("g3").span_area() == (4, 1)
+
+
+def test_span_area_horiz_none(table):
+    assert table.get_cell("g4").span_area() == (0, 0)
+
+
+def test_span_area_vert(table):
+    assert table.get_cell("e4").span_area() == (1, 3)
+
+
+def test_span_area_vert_none(table):
+    assert table.get_cell("e5").span_area() == (0, 0)
