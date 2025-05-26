@@ -45,11 +45,11 @@ def alpha_to_digit(alpha: str) -> int:
     if isinstance(alpha, int):
         return alpha
     if not alpha.isalpha():
-        raise ValueError(f'column name "{alpha}" is malformed')
+        raise ValueError(f"Column value {alpha!r} is malformed")
     column = 0
     for c in alpha.lower():
-        v = ord(c) - ord("a") + 1
-        column = column * 26 + v
+        val = ord(c) - ord("a") + 1
+        column = column * 26 + val
     return column - 1
 
 
@@ -66,31 +66,6 @@ def digit_to_alpha(digit: int | str) -> str:
     return column
 
 
-# def _coordinates_to_alpha_area(coord: str | tuple | list) -> tuple[str, str, str]:
-#     # assuming : either (x,y) or (x,y,z,t), with positive values
-#     if isinstance(coord, str):
-#         # either A1 or A1:B2, returns A1:A1 if needed
-#         parts = coord.strip().split(":")
-#         if len(parts) == 1:
-#             start = end = parts[0]
-#         else:
-#             start = parts[0]
-#             end = parts[1]
-#     elif isiterable(coord):
-#         if len(coord) == 2:
-#             x, y = coord
-#             z, t = coord
-#         else:
-#             # should be 4 int
-#             x, y, z, t = coord
-#         start = digit_to_alpha(x) + str(y + 1)
-#         end = digit_to_alpha(z) + str(t + 1)
-#     else:
-#         raise ValueError
-#     crange = start + ":" + end
-#     return (start, end, crange)
-
-
 def increment(value: int, step: int) -> int:
     while value < 0:
         if step == 0:
@@ -102,8 +77,17 @@ def increment(value: int, step: int) -> int:
 def convert_coordinates(
     obj: tuple | list | str,
 ) -> tuple[int | None, ...]:
-    """Translates "D3" to (3, 2) or return (1, 2) untouched.
-    Translates "A1:B3" to (0,0,1,2)
+    """Translate any coordinates to tuple of integers.
+
+    Returns: tuple of int or None
+
+    Examples:
+        >>> convert_coordinates("D3")
+        (3, 2)
+        >>> convert_coordinates((1, 2))
+        (1, 2)
+        >>> convert_coordinates("A1:B3")
+        (0, 0, 1, 2)
     """
     # By (1, 2) ?
     if isiterable(obj):
@@ -135,6 +119,6 @@ def convert_coordinates(
             # maybe 'A:C' row coordinates
             line = None
         if line and line <= 0:
-            raise ValueError(f'Coordinates "{obj}" malformed')
+            raise ValueError(f"Coordinates {obj!r} malformed")
         coordinates.append(line)
     return tuple(coordinates)
