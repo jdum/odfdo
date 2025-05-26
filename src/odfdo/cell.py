@@ -503,7 +503,12 @@ class Cell(ElementTyped):
 
         Return: bool
         """
-        if self.value is not None or self.children or self.is_spanned():
+        if (
+            self.value is not None
+            or self.children
+            or self.is_covered()
+            or self.is_spanned()
+        ):
             return False
         if not aggressive and self.style is not None:  # noqa: SIM103
             return False
@@ -516,13 +521,22 @@ class Cell(ElementTyped):
         """
         return self.tag == "table:covered-table-cell"
 
-    def is_spanned(self) -> bool:
+    def is_spanned(self, covered: bool = True) -> bool:
         """Return whether the cell is spanned over several cells.
 
-        Returns: True | False
+        If covered is True (the default), covered cells are considered as
+        spanned, else only the top left cell. The top left contains the
+        attributes "table:number-columns-spanned" and
+        "table:number-rows-spanned".
+
+        Arguments:
+
+            covered -- bool
+
+        Return: True | False
         """
         if self.is_covered():
-            return True
+            return covered
         if self.get_attribute("table:number-columns-spanned") is not None:
             return True
         if self.get_attribute("table:number-rows-spanned") is not None:  # noqa: SIM103
