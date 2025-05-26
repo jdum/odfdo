@@ -1,5 +1,28 @@
 # Odfdo Release Notes
 
+## [3.14.0] - 2025-05-26
+
+-   Improve methods for retrieving information from cells spanned in tables.
+
+    -   Add boolean argument `covered` to the method `Cell.is_spanned()`. If `covered` is set to True (the default), all covered cells of the spanned area return True, otherwise, only the top-left cell returns True. The top-left cell in the spanned area contains the `"table:number-columns-spanned"` and `"table:number-rows-spanned "` attributes. The default behavior of `Cell.is_spanned()` remains unchanged from previous versions.
+
+    -   Add `Cell.is_covered()` method: returns whether the cell is covered (`table:covered-table-cell` tag), meaning it is part of a spanned area of cells, but not the top-left one.
+
+    -   Add `Cell.span_area()` method:  returns the tuple (number of columns, number of rows) of the area covered by a spanned cell. If the cell is not spanned, returns (0, 0).
+
+-   Small refactoring in `coordinates.py`.
+
+### Changed
+
+-   Add boolean argument `covered` to the method `Cell.is_spanned()`. The default behavior of `Cell.is_spanned()` remains unchanged from previous versions.
+-   Small refactoring in `coordinates.py`.
+-   Update test suite.
+
+### Added
+
+-   Add `Cell.is_covered()` method.
+-   Add `Cell.span_area()` method.
+
 ## [3.13.12] - 2025-05-17
 
 Technical updates: refactor code for isiterable() function, define Unit class in its own file, apply ruff.
