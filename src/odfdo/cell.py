@@ -509,12 +509,19 @@ class Cell(ElementTyped):
             return False
         return True
 
+    def is_covered(self) -> bool:
+        """Return whether the cell is covered (tag table:covered-table-cell).
+
+        Returns: True | False
+        """
+        return self.tag == "table:covered-table-cell"
+
     def is_spanned(self) -> bool:
         """Return whether the cell is spanned over several cells.
 
         Returns: True | False
         """
-        if self.tag == "table:covered-table-cell":
+        if self.is_covered():
             return True
         if self.get_attribute("table:number-columns-spanned") is not None:
             return True
