@@ -62,6 +62,92 @@ _re_spaces_split = re.compile(r"( +)")
 _re_only_spaces = re.compile(r"^ +$")
 
 
+def _by_offset_wrapper(
+    method: Callable,
+    element: Element,
+    offset: int,
+    *args: Any,
+    **kwargs: Any,
+) -> None:
+    length = int(kwargs.get("length", 0))
+    counted = 0
+    for text in element.xpath("descendant::text()"):
+        if len(text) + counted <= offset:  # type: ignore
+            counted += len(text)  # type: ignore
+            continue
+        if length > 0:
+            length = min(length, len(text))  # type: ignore
+        else:
+            length = len(text)  # type: ignore
+        # Static information about the text node
+        container = text.parent
+        if container is None:
+            continue
+        upper = container.parent
+        is_text = text.is_text()  # type: ignore
+        start = offset - counted
+        end = start + length
+        # Do not use the text node as it changes at each loop
+        if is_text:
+            text_str = container.text or ""
+        else:
+            text_str = container.tail or ""
+        before = text_str[:start]
+        match = text_str[start:end]
+        tail = text_str[end:]
+        result = method(element, match, tail, *args, **kwargs)
+        if is_text:
+            container.text = before
+            # Insert as first child
+            container.insert(result, position=0)
+        else:
+            container.tail = before
+            # Insert as next sibling
+            if upper:
+                index = upper.index(container)
+                upper.insert(result, position=index + 1)
+
+
+def _by_regex_wrapper(
+    method: Callable,
+    element: Element,
+    regex: str,
+    *args: Any,
+    **kwargs: Any,
+) -> None:
+    pattern = re.compile(regex)
+    for text in element.xpath("descendant::text()"):
+        # Static information about the text node
+        container = text.parent
+        if container is None:
+            continue
+        upper = container.parent
+        is_text = text.is_text()  # type: ignore
+        # Group positions are calculated and static, so apply in
+        # reverse order to preserve positions
+        for group in reversed(list(pattern.finditer(text))):
+            start, end = group.span()
+            # Do not use the text node as it changes at each loop
+            if is_text:
+                text_str = container.text or ""
+            else:
+                text_str = container.tail or ""
+            before = text_str[:start]
+            match = text_str[start:end]
+            tail = text_str[end:]
+            result = method(element, match, tail, *args, **kwargs)
+            if is_text:
+                container.text = before
+                # Insert as first child
+                container.insert(result, position=0)
+            else:
+                container.tail = before
+                # Insert as next sibling
+                if upper:
+                    index = upper.index(container)
+                    upper.insert(result, position=index + 1)
+
+
 def _by_regex_offset(method: Callable) -> Callable:
     @wraps(method)
     def wrapper(element: Element, *args: Any, **kwargs: Any) -> None:
@@ -80,79 +166,24 @@ def _by_regex_offset(method: Callable) -> Callable:
 
             length -- int
         """
-        offset = kwargs.get("offset")
-        regex = kwargs.get("regex")
+        offset = kwargs.pop("offset", None)
+        regex = kwargs.pop("regex", None)
         if offset is not None:
-            length = kwargs.get("length", 0)
-            counted = 0
-            for text in element.xpath("descendant::text()"):
-                if len(text) + counted <= offset:  # type: ignore
-                    counted += len(text)  # type: ignore
-                    continue
-                if length > 0:
-                    length = min(length, len(text))  # type: ignore
-                else:
-                    length = len(text)  # type: ignore
-                # Static information about the text node
-                container = text.parent
-                if container is None:
-                    continue
-                upper = container.parent
-                is_text = text.is_text()  # type: ignore
-                start = offset - counted
-                end = start + length
-                # Do not use the text node as it changes at each loop
-                if is_text:
-                    text_str = container.text or ""
-                else:
-                    text_str = container.tail or ""
-                before = text_str[:start]
-                match = text_str[start:end]
-                tail = text_str[end:]
-                result = method(element, match, tail, *args, **kwargs)
-                if is_text:
-                    container.text = before
-                    # Insert as first child
-                    container.insert(result, position=0)
-                else:
-                    container.tail = before
-                    # Insert as next sibling
-                    if upper:
-                        index = upper.index(container)
-                        upper.insert(result, position=index + 1)
-                return
+            return _by_offset_wrapper(
+                method,
+                element,
+                int(offset),
+                *args,
+                **kwargs,
+            )
         if regex:
-            pattern = re.compile(regex)
-            for text in element.xpath("descendant::text()"):
-                # Static information about the text node
-                container = text.parent
-                if container is None:
-                    continue
-                upper = container.parent
-                is_text = text.is_text()  # type: ignore
-                # Group positions are calculated and static, so apply in
-                # reverse order to preserve positions
-                for group in reversed(list(pattern.finditer(text))):
-                    start, end = group.span()
-                    # Do not use the text node as it changes at each loop
-                    if is_text:
-                        text_str = container.text or ""
-                    else:
-                        text_str = container.tail or ""
-                    before = text_str[:start]
-                    match = text_str[start:end]
-                    tail = text_str[end:]
-                    result = method(element, match, tail, *args, **kwargs)
-                    if is_text:
-                        container.text = before
-                        # Insert as first child
-                        container.insert(result, position=0)
-                    else:
-                        container.tail = before
-                        # Insert as next sibling
-                        if upper:
-                            index = upper.index(container)
-                            upper.insert(result, position=index + 1)
+            return _by_regex_wrapper(
+                method,
+                element,
+                str(regex),
+                *args,
+                **kwargs,
+            )
 
     return wrapper
 
