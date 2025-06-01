@@ -19,7 +19,7 @@
 # https://github.com/lpod/lpod-python
 from __future__ import annotations
 
-from ..const import CSS3_COLORMAP
+from .css3_colormap import CSS3_COLORMAP
 
 
 def hex2rgb(color: str) -> tuple[int, int, int]:

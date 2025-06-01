@@ -40,7 +40,7 @@ __all__ = [  # noqa: RUF022
 ]
 from typing import Any
 
-from .const import CSS3_COLORMAP, ODF_PROPERTIES
+from .const import ODF_PROPERTIES
 from .datatype import Boolean
 from .element import (
     Element,
@@ -60,6 +60,7 @@ from .utils import (
     rgb2hex,
     to_str,
 )
+from .utils.css3_colormap import CSS3_COLORMAP
 
 # This mapping is not exhaustive, it only contains cases where replacing
 # '_' with '-' and adding the "fo:" prefix is not enough
