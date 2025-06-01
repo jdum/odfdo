@@ -1,5 +1,19 @@
 # Odfdo Release Notes
 
+## [3.14.1] - 2025-06-01
+
+-   Technical updates: code refactoring. Compatibility with previous versions is maintained.
+
+### Changed
+
+-   Refactor `Paragraph._by_regex_offset` method.
+-   Move `CSS3_COLORMAP` constant in utils directory. Link with previous location in `odfdo.const` is kept for compatibility.
+-   Refactor `Element.text_content` property.
+
+### Added
+
+-   Add `utils/css3_colormap.py` file.
+
 ## [3.14.0] - 2025-05-26
 
 -   Improve methods for retrieving information from cells spanned in tables.
