@@ -374,16 +374,16 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
         return text_box.text_content
 
     @text_content.setter
-    def text_content(self, text_or_element: Element | str) -> None:
+    def text_content(self, text: str | Element | None) -> None:
         text_box = self.get_element("draw:text-box")
         if text_box is None:
             text_box = Element.from_tag("draw:text-box")
             self.append(text_box)
-        if isinstance(text_or_element, Element):
+        if isinstance(text, Element):
             text_box.clear()
-            text_box.append(text_or_element)
+            text_box.append(text)
         else:
-            text_box.text_content = text_or_element
+            text_box.text_content = text
 
     def get_image(
         self,

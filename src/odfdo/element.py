@@ -1108,7 +1108,7 @@ class Element(MDBase):
         return content
 
     @text_content.setter
-    def text_content(self, text: str | None) -> None:
+    def text_content(self, text: str | Element | None) -> None:
         paragraphs = self.get_elements("text:p")
         if not paragraphs:
             # E.g., text:p in draw:text-box in draw:frame
@@ -1125,7 +1125,9 @@ class Element(MDBase):
         element = paragraph.__element
         # Clear but the attributes
         del element[:]
-        element.text = text
+        if text is None:
+            text = ""
+        element.text = str(text)
 
     def _erase_text_content(self) -> None:
         paragraphs = self.get_elements("text:p")
