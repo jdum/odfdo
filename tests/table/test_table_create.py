@@ -101,6 +101,22 @@ def test_width_height():
     assert table.serialize() == expected
 
 
+def test_width_height_str():
+    table = Table("A Table", width="1", height="2")
+    expected = (
+        '<table:table table:name="A Table">'
+        "<table:table-column/>"
+        "<table:table-row>"
+        "<table:table-cell/>"
+        "</table:table-row>"
+        "<table:table-row>"
+        "<table:table-cell/>"
+        "</table:table-row>"
+        "</table:table>"
+    )
+    assert table.serialize() == expected
+
+
 def test_print():
     table = Table("Printable")
     expected = '<table:table table:name="Printable"/>'
@@ -127,5 +143,5 @@ def test_print_ranges_list():
 
 def test_style():
     table = Table("A Table", style="A Style")
-    expected = '<table:table table:name="A Table" ' 'table:style-name="A Style"/>'
+    expected = '<table:table table:name="A Table" table:style-name="A Style"/>'
     assert table.serialize() == expected

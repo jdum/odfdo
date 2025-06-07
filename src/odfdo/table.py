@@ -316,8 +316,8 @@ class Table(MDTable, CachedElement):
     def __init__(
         self,
         name: str | None = None,
-        width: int | None = None,
-        height: int | None = None,
+        width: int | str | None = None,
+        height: int | str | None = None,
         protected: bool = False,
         protection_key: str | None = None,
         printable: bool = True,
@@ -353,9 +353,9 @@ class Table(MDTable, CachedElement):
 
             name -- str
 
-            width -- int
+            width -- int | str
 
-            height -- int
+            height -- int | str
 
             protected -- bool
 
@@ -384,8 +384,8 @@ class Table(MDTable, CachedElement):
                 self.style = style
             # Prefill the table
             if width is not None or height is not None:
-                width = width or 1
-                height = height or 1
+                width = int(width or 1)
+                height = int(height or 1)
                 # Column groups for style information
                 columns = Column(repeated=width)
                 self._append(columns)
