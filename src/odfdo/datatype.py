@@ -49,6 +49,8 @@ class Boolean:
 
     @staticmethod
     def encode(value: bool | str | bytes) -> str:
+        if isinstance(value, bytes):
+            value = value.decode()
         if value is True or str(value).lower() == "true":
             return "true"
         elif value is False or str(value).lower() == "false":
