@@ -29,7 +29,7 @@ from __future__ import annotations
 
 import contextlib
 from datetime import date, datetime, timedelta
-from decimal import ConversionSyntax, Decimal
+from decimal import ConversionSyntax, Decimal, InvalidOperation
 from typing import Any
 
 from .datatype import Boolean, Date, DateTime, Duration
@@ -225,7 +225,7 @@ class Cell(ElementTyped):
     def decimal(self, value: str | Float | int | Decimal | None) -> None:
         try:
             value_decimal = Decimal(value)
-        except (ValueError, TypeError, ConversionSyntax):
+        except (ValueError, TypeError, ConversionSyntax, InvalidOperation):
             value_decimal = Decimal("0.0")
         value_str = str(value_decimal)
         self.clear()
