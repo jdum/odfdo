@@ -19,6 +19,7 @@
 
 -   Allow decode boolean from bytes (mostly for test coverage).
 -   An Exception type was missing in `Cell.decimal`.
+-   Fix docstrings of modules
 
 ## [3.14.1] - 2025-06-01
 

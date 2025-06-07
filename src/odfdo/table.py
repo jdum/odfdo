@@ -21,7 +21,7 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Table class for "table:table" and HeaderRows, Cell, Row, Column,
+"""Table class for "table:table" tag, and RowGroup, Column,
 NamedRange related classes.
 """
 

@@ -21,9 +21,7 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Table class for "table:table" and HeaderRows, Cell, Row, Column,
-NamedRange related classes.
-"""
+"""Row class for "table:table-row" tag."""
 
 from __future__ import annotations
 

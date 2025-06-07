@@ -21,8 +21,8 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Table class for HeaderRows.
-"""
+"""HeaderRows class for "table:table-header-rows" tag."""
+
 from __future__ import annotations
 
 from .element import Element, register_element_class
