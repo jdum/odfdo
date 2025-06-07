@@ -1,7 +1,8 @@
 # Odfdo Release Notes
 
-## [3.14.2] - 2025-06-xx
+## [3.14.2] - 2025-06-07
 
+-   The `Style` class for the `table` area accepts two new arguments useful for a table in a text context: 'width' and 'align'. Example: `Style("table", "style_name", width="5cm", align="left", margin_left="2cm")`.
 -   `Cell.date` property now returns `datetime.date` type (was `datetime.datetime`). `Cell.value` still returns a `datetime.datetime`. Note: OpenDocument format does not differentiate between "date" and "datetime", so `Cell.date` and `Cell.datetime` are best guesses in case the user expects such a specific value.
 -   Allow to use string to define width and height in Table creation, ie `table = Table("table", width="4")`
 -   Compatibility with previous versions is maintained, at the exception of `Cell.date` type.
@@ -13,7 +14,8 @@
 
 ### Added
 
--   Add more tests for Cell class corerage.
+-   Style class for area 'table' accepts two new argumaents: 'width' and 'align'.
+-   Add more tests for Cell class coverage.
 
 ### Fixed
 

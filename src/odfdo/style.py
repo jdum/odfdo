@@ -358,9 +358,12 @@ class Style(Element):
         height: str | None = None,
         use_optimal_height: bool = False,
         # For family 'table-column'
-        width: str | None = None,
         break_before: str | None = None,
         break_after: str | None = None,
+        # for family 'table'
+        align: str | None = None,
+        # For family 'table-column' or 'table'
+        width: str | None = None,
         # For family 'graphic'
         min_height: str | None = None,
         # For family 'font-face'
@@ -437,6 +440,12 @@ class Style(Element):
             break_before -- 'page', 'column' or 'auto'
 
             break_after -- 'page', 'column' or 'auto'
+
+        'table' Properties:
+
+            width -- str, e.g. '5cm'
+
+            align -- 'left', 'center', 'margins' or 'right'
         """
         self._family: str | None = None
         tag_or_elem = kwargs.get("tag_or_elem")
@@ -537,6 +546,14 @@ class Style(Element):
                     kwargs["fo:break-before"] = break_before
                 if break_after:
                     kwargs["fo:break-after"] = break_after
+            # Table
+            elif area == "table":
+                if width:
+                    kwargs["style:width"] = width
+                if align:
+                    if align not in {"center", "left", "margins", "right"}:
+                        raise ValueError(f"Invalid align value: {align!r}")
+                    kwargs["table:align"] = align
             # Graphic
             elif area == "graphic":
                 if min_height:

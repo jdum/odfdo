@@ -19,6 +19,8 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 
+import pytest
+
 from odfdo.style import Style
 
 
@@ -119,3 +121,47 @@ def test_table_column_width():
         'style:family="table-column"><style:table-column-properties '
         'style:column-width="5cm"/></style:style>'
     )
+
+
+def test_table_width():
+    style = Style("table", "tab1", width="5cm")
+    assert style.serialize() == (
+        "<style:style "
+        'style:family="table" '
+        'style:name="tab1">'
+        "<style:table-properties "
+        'style:width="5cm"/>'
+        "</style:style>"
+    )
+
+
+def test_table_width_align_left():
+    style = Style("table", "tab1", width="5cm", align="left")
+    assert style.serialize() == (
+        "<style:style "
+        'style:family="table" '
+        'style:name="tab1">'
+        "<style:table-properties "
+        'style:width="5cm" '
+        'table:align="left"/>'
+        "</style:style>"
+    )
+
+
+def test_table_width_align_left_marge():
+    style = Style("table", "tab1", width="5cm", align="left", margin_left="2cm")
+    assert style.serialize() == (
+        "<style:style "
+        'style:family="table" '
+        'style:name="tab1">'
+        "<style:table-properties "
+        'fo:margin-left="2cm" '
+        'style:width="5cm" '
+        'table:align="left"/>'
+        "</style:style>"
+    )
+
+
+def test_table_align_wrong():
+    with pytest.raises(ValueError):
+        Style("table", "tab1", align="wrong")
