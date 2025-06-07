@@ -326,3 +326,17 @@ def test_span_area_vert(table):
 
 def test_span_area_vert_none(table):
     assert table.get_cell("e5").span_area() == (0, 0)
+
+
+def test_is_spanned_when_some_attribute_missing(table):
+    coord = "b3"
+    cell = table.get_cell(coord)
+    cell.del_attribute("table:number-columns-spanned")
+    assert cell.is_spanned() is True
+
+
+def test_is_spanned_when_some_attribute_missing_2(table):
+    coord = "b3"
+    cell = table.get_cell(coord)
+    cell.del_attribute("table:number-rows-spanned")
+    assert cell.is_spanned() is True

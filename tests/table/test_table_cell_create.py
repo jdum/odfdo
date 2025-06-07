@@ -140,7 +140,8 @@ def test_date():
 
 def test_date_value():
     cell = Cell(date(2009, 6, 30))
-    assert cell.value == datetime(2009, 6, 30, 0, 0)
+    assert cell.value == datetime(2009, 6, 30)
+    assert cell.date == date(2009, 6, 30)
 
 
 def test_date_repr():
@@ -395,16 +396,88 @@ def test_string_value_property2_number():
     assert cell.string == "1.23"
 
 
-def test_value_property():
+def test_value_property_set_int():
     cell = Cell(1.54, cell_type="currency", currency="EUR")
     cell.value = 1
     assert cell.value == 1
+
+
+def test_value_property_set_int_2():
+    cell = Cell(1.54, cell_type="currency", currency="EUR")
     cell.value = "2"
     assert cell.value == "2"
+
+
+def test_value_property_set_str():
+    cell = Cell(1.54, cell_type="currency", currency="EUR")
     cell.value = "hop"
     assert cell.value == "hop"
+
+
+def test_value_property_set_str_2():
+    cell = Cell(1.54, cell_type="currency", currency="EUR")
     cell.value = "éû"
     assert cell.value == "éû"
+
+
+def test_value_property_set_float():
+    cell = Cell(1.54, cell_type="currency", currency="EUR")
+    cell.value = 1.5
+    assert cell.value == 1.5
+
+
+def test_value_property_set_timedelta():
+    cell = Cell(1.54, cell_type="currency", currency="EUR")
+    cell.value = timedelta(50, 10)
+    assert cell.value == timedelta(50, 10)
+
+
+def test_value_property_set_timedelta_getter():
+    cell = Cell(1.54, cell_type="currency", currency="EUR")
+    cell.value = timedelta(50, 10)
+    assert cell.duration == timedelta(50, 10)
+
+
+def test_value_property_timedelta_getter_empty():
+    cell = Cell(1.54, cell_type="currency", currency="EUR")
+    assert cell.duration == timedelta(0)
+
+
+def test_value_property_set_datetime():
+    cell = Cell(1.54, cell_type="currency", currency="EUR")
+    cell.value = datetime(2009, 6, 30, 0, 0)
+    assert cell.value == datetime(2009, 6, 30, 0, 0)
+
+
+def test_value_property_set_datetime_getter():
+    cell = Cell(1.54, cell_type="currency", currency="EUR")
+    cell.value = datetime(2009, 6, 30, 0, 0)
+    assert cell.datetime == datetime(2009, 6, 30, 0, 0)
+
+
+def test_value_property_datetime_getter_empty():
+    cell = Cell(1.54, cell_type="currency", currency="EUR")
+    assert cell.datetime == datetime.fromtimestamp(0)
+
+
+def test_value_property_set_date():
+    cell = Cell(1.54, cell_type="currency", currency="EUR")
+    cell.value = date(2009, 6, 30)
+    # return alwais a datetime as value
+    assert cell.value == datetime(2009, 6, 30)
+    assert cell.date == date(2009, 6, 30)
+
+
+def test_value_property_set_date_getter():
+    cell = Cell(1.54, cell_type="currency", currency="EUR")
+    cell.value = date(2009, 6, 30)
+    assert cell.date == date(2009, 6, 30)
+
+
+def test_value_property_date_getter_empty():
+    cell = Cell(1.54, cell_type="currency", currency="EUR")
+    # return alwais a datetime as value
+    assert cell.date == date.fromtimestamp(0)
 
 
 def test_value_property_bytes():
@@ -514,6 +587,14 @@ def test_decimal_value_property_2():
     assert cell.decimal == dec("1.56")
 
 
+def test_decimal_value_property_3():
+    cell = Cell(0.0, cell_type="currency", currency="EUR")
+    cell.decimal = "oops"
+    assert cell.float == 0.0
+    assert cell.value == dec("0.0")
+    assert cell.decimal == dec("0.0")
+
+
 def test_int_value_property():
     cell = Cell(0, cell_type="float")
     assert cell.float == 0.0
@@ -527,6 +608,14 @@ def test_int_value_property_2():
     assert cell.float == 4.0
     assert cell.value == 4
     assert cell.int == 4
+
+
+def test_int_value_property_3():
+    cell = Cell(0, cell_type="float")
+    cell.int = "oops"
+    assert cell.float == 0.0
+    assert cell.value == 0
+    assert cell.int == 0
 
 
 def test_float_property2():
@@ -568,6 +657,100 @@ def test_bool_property_as_numeric_2():
     assert cell.int == 0
     assert cell.float == 0.0
     assert cell.decimal == dec("0")
+
+
+def test_bool_property_as_str_1():
+    cell = Cell(0, cell_type="float")
+    cell.bool = "True"
+    assert cell.int == 1
+    assert cell.float == 1.0
+    assert cell.decimal == dec("1")
+
+
+def test_bool_property_as_str_2():
+    cell = Cell(0, cell_type="float")
+    cell.bool = "true"
+    assert cell.int == 1
+    assert cell.float == 1.0
+    assert cell.decimal == dec("1")
+
+
+def test_bool_property_as_str_3():
+    cell = Cell(0, cell_type="float")
+    cell.bool = "False"
+    assert cell.int == 0
+    assert cell.float == 0.0
+    assert cell.decimal == dec("0")
+
+
+def test_bool_property_as_str_4():
+    cell = Cell(0, cell_type="float")
+    cell.bool = "false"
+    assert cell.int == 0
+    assert cell.float == 0.0
+    assert cell.decimal == dec("0")
+
+
+def test_bool_property_as_str_5():
+    cell = Cell(0, cell_type="float")
+    with pytest.raises(TypeError):
+        cell.bool = "oops"
+
+
+def test_bool_property_as_bytes_1():
+    cell = Cell(0, cell_type="float")
+    cell.bool = b"True"
+    assert cell.int == 1
+    assert cell.float == 1.0
+    assert cell.decimal == dec("1")
+
+
+def test_bool_property_as_bytes_2():
+    cell = Cell(0, cell_type="float")
+    cell.bool = b"true"
+    assert cell.int == 1
+    assert cell.float == 1.0
+    assert cell.decimal == dec("1")
+
+
+def test_bool_property_as_bytes_3():
+    cell = Cell(0, cell_type="float")
+    cell.bool = b"False"
+    assert cell.int == 0
+    assert cell.float == 0.0
+    assert cell.decimal == dec("0")
+
+
+def test_bool_property_as_bytes_4():
+    cell = Cell(0, cell_type="float")
+    cell.bool = b"false"
+    assert cell.int == 0
+    assert cell.float == 0.0
+    assert cell.decimal == dec("0")
+
+
+def test_bool_property_as_bytes_5():
+    cell = Cell(0, cell_type="float")
+    with pytest.raises(TypeError):
+        cell.bool = b"oops"
+
+
+def test_bool_property_as_object_1():
+    cell = Cell(0, cell_type="float")
+    cell.bool = []
+    assert cell.bool is False
+    assert cell.int == 0
+    assert cell.float == 0.0
+    assert cell.decimal == dec("0")
+
+
+def test_bool_property_as_object_2():
+    cell = Cell(0, cell_type="float")
+    cell.bool = [1, 2, 3]
+    assert cell.bool is True
+    assert cell.int == 1
+    assert cell.float == 1.0
+    assert cell.decimal == dec("1")
 
 
 def test_decimal_property():

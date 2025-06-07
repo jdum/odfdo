@@ -8,8 +8,17 @@
 
 ### Changed
 
+-   `Cell.date` property now returns `datetime.date`.
 -   Allow use of string when defining Table height and width.
 
+### Added
+
+-   Add more tests for Cell class corerage.
+
+### Fixed
+
+-   Allow decode boolean from bytes (mostly for test coverage).
+-   An Exception type was missing in `Cell.decimal`.
 
 ## [3.14.1] - 2025-06-01
 
