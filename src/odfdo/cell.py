@@ -338,7 +338,7 @@ class Cell(ElementTyped):
         """Set / get the value of the cell as a date."""
         value = self.get_attribute("office:date-value")
         if isinstance(value, str):
-            return Date.decode(value)
+            return Date.decode(value).date()
         return date.fromtimestamp(0)
 
     @date.setter

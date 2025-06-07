@@ -1,5 +1,16 @@
 # Odfdo Release Notes
 
+## [3.14.2] - 2025-06-xx
+
+-   `Cell.date` property now returns `datetime.date` type (was `datetime.datetime`). `Cell.value` still returns a `datetime.datetime`. Note: OpenDocument format does not differentiate between "date" and "datetime", so `Cell.date` and `Cell.datetime` are best guesses in case the user expects such a specific value.
+-   Allow to use string to define width and height in Table creation, ie `table = Table("table", width="4")`
+-   Compatibility with previous versions is maintained, at the exception of `Cell.date` type.
+
+### Changed
+
+-   Allow use of string when defining Table height and width.
+
+
 ## [3.14.1] - 2025-06-01
 
 -   Technical updates: code refactoring. Compatibility with previous versions is maintained.
