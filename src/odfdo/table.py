@@ -21,9 +21,7 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Table class for "table:table" tag, and RowGroup, Column,
-NamedRange related classes.
-"""
+"""Table class for "table:table" tag, and Column, NamedRange related classes."""
 
 from __future__ import annotations
 
@@ -55,6 +53,7 @@ from .element_cached import (
 from .frame import Frame
 from .mixin_md import MDTable
 from .row import Row
+from .row_group import RowGroup  # noqa: F401
 from .utils import (
     convert_coordinates,
     digit_to_alpha,
@@ -141,36 +140,6 @@ def _get_python_value(data: Any, encoding: str) -> Any:
     # TODO Try some other types ?
     # So a text
     return data
-
-
-class RowGroup(Element):
-    """ "table:table-row-group" group rows with common properties."""
-
-    # TODO
-    _tag = "table:table-row-group"
-
-    def __init__(
-        self,
-        height: int | None = None,
-        width: int | None = None,
-        **kwargs: Any,
-    ) -> None:
-        """Create a group of rows, optionnaly filled with "height" number of
-        rows, of "width" cells each.
-
-        Row group bear style information applied to a series of rows.
-
-        Arguments:
-
-            height -- int
-
-            width -- int
-        """
-        super().__init__(**kwargs)
-        if self._do_init and height is not None:
-            for _i in range(height):
-                row = Row(width=width)
-                self.append(row)
 
 
 class Column(Element):
@@ -3286,8 +3255,6 @@ def import_from_csv(
     return table
 
 
-# register_element_class(CellCovered)
 register_element_class(Column)
-register_element_class(RowGroup)
 register_element_class(Table)
 register_element_class(NamedRange)

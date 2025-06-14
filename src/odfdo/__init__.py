@@ -167,6 +167,8 @@ from .meta_template import MetaTemplate
 from .note import Annotation, AnnotationEnd, Note
 from .paragraph import LineBreak, PageBreak, Paragraph, Spacer, Span, Tab
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
+from .row import Row
+from .row_group import RowGroup
 from .section import Section
 from .shapes import ConnectorShape, DrawGroup, EllipseShape, LineShape, RectangleShape
 from .smil import AnimPar, AnimSeq, AnimTransFilter
@@ -183,7 +185,7 @@ from .style import (
     make_table_cell_border_string,
 )
 from .styles import Styles
-from .table import Column, NamedRange, Row, RowGroup, Table
+from .table import Column, NamedRange, Table
 from .toc import (
     TOC,
     IndexTitle,
