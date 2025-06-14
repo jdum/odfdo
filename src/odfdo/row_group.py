@@ -34,7 +34,11 @@ from .row import Row
 class RowGroup(Element):
     """ODF row group "table:table-row-group" with common properties.
 
-    Partial implementation."""
+    Partial implementation.
+
+    The <table:table-row-group> element groups adjacent table rows.
+    Every row group can contain header rows, and nested row groups.
+    A row group can be visible or hidden."""
 
     # TODO
     _tag = "table:table-row-group"
@@ -61,6 +65,9 @@ class RowGroup(Element):
             for _i in range(height):
                 row = Row(width=width)
                 self.append(row)
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
 
 
 register_element_class(RowGroup)
