@@ -1,5 +1,30 @@
 # Odfdo Release Notes
 
+## [3.14.3] - 2025-06-14
+
+-   The rarely used `RowGroup` class is moved to a dedicated module and tests are added for this class. A new property `Table.row_groups` returning the list of row groups of the table is available.
+-   A new recipe explains how to add a page footer by using the method `Style.set_page_footer()`.
+-   Compatibility with previous versions is maintained.
+
+### Changed
+
+-   The `RowGroup` class is moved to a dedicated module.
+-   Refactoring of the `RowGroup` class.
+-   Small refactoring of `Cell.repeated` setter.
+-   Refactor recipe `create_a_text_document_with_tables_in_it.py`.
+-   Update versions of development dependencies.
+
+### Added
+
+-   Add a new property `Table.row_groups`.
+-   Add tests for the `RowGroup` class.
+-   Add recipe `add_a_custom_footer_to_a_text_document.py`.
+
+### Fixed
+
+-   Fix some `Xpath` commands to fetch rows inside row groups.
+-   Fix `Style.set_page_footer()` when the new footer is a string.
+
 ## [3.14.2] - 2025-06-07
 
 -   The `Style` class for the `table` area accepts two new arguments useful for a table in a text context: 'width' and 'align'. Example: `Style("table", "style_name", width="5cm", align="left", margin_left="2cm")`.
@@ -21,7 +46,7 @@
 
 -   Allow decode boolean from bytes (mostly for test coverage).
 -   An Exception type was missing in `Cell.decimal`.
--   Fix docstrings of modules
+-   Fix docstrings of modules.
 
 ## [3.14.1] - 2025-06-01
 

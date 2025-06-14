@@ -804,7 +804,7 @@ wheels = [
 
 [[package]]
 name = "odfdo"
-version = "3.14.2"
+version = "3.14.3"
 source = { editable = "." }
 dependencies = [
     { name = "lxml", version = "4.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },

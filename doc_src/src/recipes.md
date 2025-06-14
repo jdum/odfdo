@@ -174,7 +174,7 @@ Minimal example of how to add an footnote to a text document.
 
 ### Create a text document with tables in it
 
-Build a basic commercial document, with numerical values displayed in
+Build a commercial document, with numerical values displayed in
 both the text and in a table.
 
 
@@ -210,6 +210,20 @@ Create a document with styles.
 ??? code "recipes/create_a_text_document_from_plain_text_with_layout.py"
     ```python
     {% include "../../recipes/create_a_text_document_from_plain_text_with_layout.py" %}
+    ```
+
+### Add a custom footer to a text document
+
+Minimal example of setting a page footer using Style.set_page_footer().
+
+Note: the created footer uses the current footer style, to change that
+footer style, use the method  set_footer_style() on the 'page-layout'
+style family.
+
+
+??? code "recipes/add_a_custom_footer_to_a_text_document.py"
+    ```python
+    {% include "../../recipes/add_a_custom_footer_to_a_text_document.py" %}
     ```
 
 ### How to add a picture to a text document
