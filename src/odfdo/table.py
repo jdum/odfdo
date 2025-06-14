@@ -53,7 +53,7 @@ from .element_cached import (
 from .frame import Frame
 from .mixin_md import MDTable
 from .row import Row
-from .row_group import RowGroup  # noqa: F401
+from .row_group import RowGroup
 from .utils import (
     convert_coordinates,
     digit_to_alpha,
@@ -75,6 +75,7 @@ _xpath_column = xpath_compile(
 _xpath_column_idx = xpath_compile(
     "(table:table-column|table:table-columns/table:table-column|table:table-header-columns/table:table-column)[$idx]"
 )
+_xpath_row_group = xpath_compile("table:table-row-group")
 
 
 def _table_name_check(name: Any) -> str:
@@ -1227,6 +1228,14 @@ class Table(MDTable, CachedElement):
     #
     # Rows
     #
+
+    @property
+    def row_groups(self) -> list[RowGroup]:
+        """Get the list of all RowGroup.
+
+        Return: list of RowGroup
+        """
+        return self.get_elements(_xpath_row_group)  # type: ignore
 
     def _get_rows(self) -> list[Row]:
         return self.get_elements(_xpath_row)  # type: ignore
