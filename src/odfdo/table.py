@@ -64,18 +64,26 @@ from .utils import (
 
 _RE_TABLE_NAME = re.compile(r"^\'|[\n\\/\*\?:\][]|\'$")
 _xpath_row = xpath_compile(
-    "table:table-row|table:table-rows/table:table-row|table:table-header-rows/table:table-row"
+    "table:table-row|table:table-rows/table:table-row|"
+    "table:table-header-rows/table:table-row|"
+    "table:table-row-group/child::table:table-row"
 )
 _xpath_row_idx = xpath_compile(
-    "(table:table-row|table:table-rows/table:table-row|table:table-header-rows/table:table-row)[$idx]"
+    "(table:table-row|table:table-rows/table:table-row|"
+    "table:table-header-rows/table:table-row|"
+    "table:table-row-group/child::table:table-row)[$idx]"
 )
 _xpath_column = xpath_compile(
-    "table:table-column|table:table-columns/table:table-column|table:table-header-columns/table:table-column"
+    "table:table-column|table:table-columns/table:table-column|"
+    "table:table-header-columns/table:table-column"
 )
 _xpath_column_idx = xpath_compile(
-    "(table:table-column|table:table-columns/table:table-column|table:table-header-columns/table:table-column)[$idx]"
+    "(table:table-column|table:table-columns/table:table-column|"
+    "table:table-header-columns/table:table-column)[$idx]"
 )
-_xpath_row_group = xpath_compile("table:table-row-group")
+_xpath_row_group = xpath_compile(
+    "table:table-row-group|table:table-row-group/child::table:table-row-group"
+)
 
 
 def _table_name_check(name: Any) -> str:
