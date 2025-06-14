@@ -457,11 +457,9 @@ class Cell(ElementTyped):
                 return
             # parent may be group of rows, not table
             if isinstance(upper, Element) and upper._tag == "table:table-row":
-                break
+                upper._compute_row_cache()
+                return
             child = upper
-        # fixme : need to optimize this
-        if isinstance(upper, Element) and upper._tag == "table:table-row":
-            upper._compute_row_cache()
 
     @property
     def style(self) -> str | None:
