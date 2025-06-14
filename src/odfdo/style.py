@@ -991,6 +991,7 @@ class Style(Element):
         for item in elem_list:
             if isinstance(item, str):
                 paragraph = Element.from_tag("text:p")
+                paragraph.append_plain_text(item)  # type: ignore
                 paragraph.style = style  # type: ignore
                 header_or_footer.append(paragraph)
             elif isinstance(item, Element):
