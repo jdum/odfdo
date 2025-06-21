@@ -1,5 +1,15 @@
 # Odfdo Release Notes
 
+## [3.14.4] - 2025-06-21
+
+-   Technical updates: refactoring of some recipes' code and improvement of test coverage.
+-   Improve `README.md`
+
+### Changed
+
+-   Refactor recipes: `remove_span_styles`, `make_a_presentation_from_text_with_different_styles`, `how_to_add_a_table_to_a_document`, `get_text_content_from_odt_file`, `change_image_in_many_documents`, `basic_presentation_hello_world`, `add_text_span_styles`, `add_private_annotations_to_a_document`, `add_logo_on_presentation`, `add_a_custom_footer_to_a_text_document`, `accessing_other_element_from_element_like_list`, `accessing_a_single_element.py accessing_a_list_of_elements`, `accessibility_check_on_a_document`.
+-   Improve tests for table coordinates, `MetaAutoReload`, `Link`, `Manifest`, `Meta`, `Content`, `MetaHyperlinkBehaviour`, `Row`.
+
 ## [3.14.3] - 2025-06-14
 
 -   The rarely used `RowGroup` class is moved to a dedicated module and tests are added for this class. A new property `Table.row_groups` returning the list of row groups of the table is available.

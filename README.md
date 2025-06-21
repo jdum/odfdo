@@ -5,12 +5,18 @@
 [![License](https://img.shields.io/github/license/jdum/odfdo)](https://img.shields.io/github/license/jdum/odfdo)
 [![PyPI Downloads](https://static.pepy.tech/badge/odfdo/month)](https://pepy.tech/projects/odfdo)
 
-Python library for OpenDocument format (ODF)
+OpenDocument Format (ODF, ISO/IEC 26300) library for Python
 
 ![logo](https://raw.githubusercontent.com/jdum/odfdo/master/odfdo.png)
 
-`odfdo` is a Python3 library implementing the ISO/IEC 26300 OpenDocument Format
-standard.
+`odfdo` is a Python library for programmatically creating, parsing, and editing OpenDocument Format (ODF) files.  It provides an interface for interacting with `.odt`, `.ods`, `.odp`, and other ODF file types. The library comes with a set of utilities and recipes for common actions to make it easier to use.
+
+-   Document Creation: Generate new ODF documents.
+-   Content Manipulation: Add, modify, or delete text, paragraphs or tables.
+-   Table Operations: Create, populate, and modify tables.
+-   Style Management: Control formatting through different ways.
+-   Drawing and Presentation: Less advanced features, but allow work with elements in `.odg` and `.odp` files.
+-   Metadata: Read and write document metadata.
 
 Project:
 https://github.com/jdum/odfdo
@@ -27,37 +33,70 @@ Apache License, Version 2.0
 
 Installation from Pypi (recommended):
 
-```python
+```bash
 pip install odfdo
 ```
 
 Installation from sources:
 
-```python
-pip install .
+```bash
+uv sync
 ```
 
-After installation from sources, you can check everything is working (some requirements: `pytest`, Pillow, ...):
+After installation from sources, you can check everything is working
 
-```
-pytest
+```bash
+uv run pytest
 ```
 
-The tests should run for a few seconds or minutes and issue no error.
+The tests should run for a few minutes and issue no error.
 
 The full test suite uses `tox` to check different `Python` and `lxml` versions.
 
 A special effort is made to limit the dependencies of this library: the only dependency (outside development) is `lxml`. The `lxml` versions depend mainly on the version of Python used, see the `pyproject.toml` file for details.
 
-# Usage
+# Usage Overview
+
+## Creating a "Hello world" Text Document
 
 ```python
 from odfdo import Document, Paragraph
 
 doc = Document('text')
 doc.body.append(Paragraph("Hello world!"))
+
 doc.save("hello.odt")
 ```
+
+## Modifying a Spreadsheet
+
+```python
+from odfdo import Document
+
+doc = Document('existing_spreadsheet.ods')
+sheet = doc.body.get_table(0)
+
+print(f"Value of A1: {sheet.get_cell('A1').value}")
+sheet.set_value('B2', 'Updated Value')
+
+doc.save('modified_spreadsheet.ods')
+```
+
+## Utilities
+
+A few scripts are provided with `odfdo`:
+
+-   `odfdo-diff`: show a _diff_ between two .odt document.
+-   `odfdo-folder`: convert standard ODF file to folder and files, and reverse.
+-   `odfdo-headers`: print the headers of an ODF file.
+-   `odfdo-highlight`: highlight the text matching a pattern (regex) in an ODF file.
+-   `odfdo-markdown`: export text document in Markdown format to stdout.
+-   `odfdo-replace`: find a pattern (regex) in an ODF file and replace by some string.
+-   `odfdo-show`: dump text from an ODF file to the standard output, and optionally styles and meta informations.
+-   `odfdo-styles`: command line interface tool to manipulate styles of ODF files.
+-   `odfdo-table-shrink`: shrink tables to optimize width and height.
+-   `odfdo-userfield`: show or set the user-field content in an ODF file.
+
 
 # tl;dr
 
@@ -68,44 +107,23 @@ doc.save("hello.odt")
 There is no detailed documentation or tutorial, but:
 
 -   the `recipes` folder contains more than 60 working sample scripts,
--   the `doc` folder contains an auto generated HTML documentation, including recipes.
+-   the `doc` folder contains an API reference documentation (auto generated), including recipes.
 
-When installing odfdo, a few scripts are installed:
 
--   `odfdo-diff`: show a _diff_ between two .odt document.
--   `odfdo-folder`: convert standard ODF file to folder and files, and reverse.
--   `odfdo-show`: dump text from an ODF file to the standard output, and optionally styles and meta informations.
--   `odfdo-styles`: command line interface tool to manipulate styles of ODF files.
--   `odfdo-replace`: find a pattern (regex) in an ODF file and replace by some string.
--   `odfdo-userfield`: show or set the user-field content in an ODF file.
--   `odfdo-highlight`: highlight the text matching a pattern (regex) in an ODF file.
--   `odfdo-headers`: print the headers of an ODF file.
--   `odfdo-table-shrink`: shrink tables to optimize width and height.
--   `odfdo-markdown`: export text document in Markdown format to stdout.
+# About styles
 
-About styles: the best way to apply style is by merging styles from a template
+The best way to apply style is by merging styles from a template
 document into your generated document (See `odfdo-styles` script).
-Styles are a complex matter in ODF, so trying to generate styles programmatically
-is not recommended.
+Styles are a complex matter in ODF, so trying to generate styles programmatically is not recommended.
+Several recipes provide an example of manipulating styles, including: `change_paragraph_styles_methods.py`,`create_basic_text_styles`, `add_text_span_styles`.
 
-# Limitations
-
-`odfdo` is intended to facilitate the generation of ODF documents,
-nevertheless a basic knowledge of the ODF format is necessary.
-
-ODF document rendering can vary greatly from software to software. Especially the
-"styles" of the document allow an adaptation of the rendering for a particular
-software.
-
-The best (only ?) way to apply style is by merging styles from a template
-document into your generated document. However a few recipes show how to make
-programmatically some basic styles: `create_basic_text_styles`, `add_text_span_styles`).
 
 # Related project
 
 I you work on `.ods` files (spreadsheet), you may be interested by these scripts using
 this library to parse/generate `.ods` files:
 `https://github.com/jdum/odsgenerator` and `https://github.com/jdum/odsparsator`
+
 
 # Former lpod-python library
 

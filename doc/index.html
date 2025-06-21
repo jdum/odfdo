@@ -351,10 +351,17 @@
 <a href="https://img.shields.io/github/actions/workflow/status/jdum/odfdo/main.yml?branch%3Adevel"><img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/jdum/odfdo/main.yml?branch=devel" /></a>
 <a href="https://img.shields.io/github/license/jdum/odfdo"><img alt="License" src="https://img.shields.io/github/license/jdum/odfdo" /></a>
 <a href="https://pepy.tech/projects/odfdo"><img alt="PyPI Downloads" src="https://static.pepy.tech/badge/odfdo/month" /></a></p>
-<p>Python library for OpenDocument format (ODF)</p>
+<p>OpenDocument Format (ODF, ISO/IEC 26300) library for Python</p>
 <p><img alt="logo" src="https://raw.githubusercontent.com/jdum/odfdo/master/odfdo.png" /></p>
-<p><code>odfdo</code> is a Python3 library implementing the ISO/IEC 26300 OpenDocument Format
-standard.</p>
+<p><code>odfdo</code> is a Python library for programmatically creating, parsing, and editing OpenDocument Format (ODF) files.  It provides an interface for interacting with <code>.odt</code>, <code>.ods</code>, <code>.odp</code>, and other ODF file types. The library comes with a set of utilities and recipes for common actions to make it easier to use.</p>
+<ul>
+<li>Document Creation: Generate new ODF documents.</li>
+<li>Content Manipulation: Add, modify, or delete text, paragraphs or tables.</li>
+<li>Table Operations: Create, populate, and modify tables.</li>
+<li>Style Management: Control formatting through different ways.</li>
+<li>Drawing and Presentation: Less advanced features, but allow work with elements in <code>.odg</code> and <code>.odp</code> files.</li>
+<li>Metadata: Read and write document metadata.</li>
+</ul>
 <p>Project:
 https://github.com/jdum/odfdo</p>
 <p>Author:
@@ -364,58 +371,64 @@ Apache License, Version 2.0</p>
 <p><code>odfdo</code> is a derivative work of the former <code>lpod-python</code> project.</p>
 <h1 id="installation">Installation</h1>
 <p>Installation from Pypi (recommended):</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><span class="n">pip</span> <span class="n">install</span> <span class="n">odfdo</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1">pip<span class="w"> </span>install<span class="w"> </span>odfdo
 </span></code></pre></div>
 <p>Installation from sources:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><span class="n">pip</span> <span class="n">install</span> <span class="o">.</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1">uv<span class="w"> </span>sync
 </span></code></pre></div>
-<p>After installation from sources, you can check everything is working (some requirements: <code>pytest</code>, Pillow, &hellip;):</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1">pytest
+<p>After installation from sources, you can check everything is working</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1">uv<span class="w"> </span>run<span class="w"> </span>pytest
 </span></code></pre></div>
-<p>The tests should run for a few seconds or minutes and issue no error.</p>
+<p>The tests should run for a few minutes and issue no error.</p>
 <p>The full test suite uses <code>tox</code> to check different <code>Python</code> and <code>lxml</code> versions.</p>
 <p>A special effort is made to limit the dependencies of this library: the only dependency (outside development) is <code>lxml</code>. The <code>lxml</code> versions depend mainly on the version of Python used, see the <code>pyproject.toml</code> file for details.</p>
-<h1 id="usage">Usage</h1>
+<h1 id="usage-overview">Usage Overview</h1>
+<h2 id="creating-a-hello-world-text-document">Creating a &ldquo;Hello world&rdquo; Text Document</h2>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><span class="kn">from</span><span class="w"> </span><span class="nn">odfdo</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Paragraph</span>
 </span><span id="__span-3-2">
 </span><span id="__span-3-3"><span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>
 </span><span id="__span-3-4"><span class="n">doc</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Paragraph</span><span class="p">(</span><span class="s2">&quot;Hello world!&quot;</span><span class="p">))</span>
-</span><span id="__span-3-5"><span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;hello.odt&quot;</span><span class="p">)</span>
+</span><span id="__span-3-5">
+</span><span id="__span-3-6"><span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;hello.odt&quot;</span><span class="p">)</span>
 </span></code></pre></div>
+<h2 id="modifying-a-spreadsheet">Modifying a Spreadsheet</h2>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><span class="kn">from</span><span class="w"> </span><span class="nn">odfdo</span><span class="w"> </span><span class="kn">import</span> <span class="n">Document</span>
+</span><span id="__span-4-2">
+</span><span id="__span-4-3"><span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="s1">&#39;existing_spreadsheet.ods&#39;</span><span class="p">)</span>
+</span><span id="__span-4-4"><span class="n">sheet</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-4-5">
+</span><span id="__span-4-6"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value of A1: </span><span class="si">{</span><span class="n">sheet</span><span class="o">.</span><span class="n">get_cell</span><span class="p">(</span><span class="s1">&#39;A1&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-4-7"><span class="n">sheet</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;B2&#39;</span><span class="p">,</span> <span class="s1">&#39;Updated Value&#39;</span><span class="p">)</span>
+</span><span id="__span-4-8">
+</span><span id="__span-4-9"><span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;modified_spreadsheet.ods&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="utilities">Utilities</h2>
+<p>A few scripts are provided with <code>odfdo</code>:</p>
+<ul>
+<li><code>odfdo-diff</code>: show a <em>diff</em> between two .odt document.</li>
+<li><code>odfdo-folder</code>: convert standard ODF file to folder and files, and reverse.</li>
+<li><code>odfdo-headers</code>: print the headers of an ODF file.</li>
+<li><code>odfdo-highlight</code>: highlight the text matching a pattern (regex) in an ODF file.</li>
+<li><code>odfdo-markdown</code>: export text document in Markdown format to stdout.</li>
+<li><code>odfdo-replace</code>: find a pattern (regex) in an ODF file and replace by some string.</li>
+<li><code>odfdo-show</code>: dump text from an ODF file to the standard output, and optionally styles and meta informations.</li>
+<li><code>odfdo-styles</code>: command line interface tool to manipulate styles of ODF files.</li>
+<li><code>odfdo-table-shrink</code>: shrink tables to optimize width and height.</li>
+<li><code>odfdo-userfield</code>: show or set the user-field content in an ODF file.</li>
+</ul>
 <h1 id="tldr">tl;dr</h1>
 <p>&lsquo;Intended Audience :: Developers&rsquo;</p>
 <h1 id="documentation">Documentation</h1>
 <p>There is no detailed documentation or tutorial, but:</p>
 <ul>
 <li>the <code>recipes</code> folder contains more than 60 working sample scripts,</li>
-<li>the <code>doc</code> folder contains an auto generated HTML documentation, including recipes.</li>
+<li>the <code>doc</code> folder contains an API reference documentation (auto generated), including recipes.</li>
 </ul>
-<p>When installing odfdo, a few scripts are installed:</p>
-<ul>
-<li><code>odfdo-diff</code>: show a <em>diff</em> between two .odt document.</li>
-<li><code>odfdo-folder</code>: convert standard ODF file to folder and files, and reverse.</li>
-<li><code>odfdo-show</code>: dump text from an ODF file to the standard output, and optionally styles and meta informations.</li>
-<li><code>odfdo-styles</code>: command line interface tool to manipulate styles of ODF files.</li>
-<li><code>odfdo-replace</code>: find a pattern (regex) in an ODF file and replace by some string.</li>
-<li><code>odfdo-userfield</code>: show or set the user-field content in an ODF file.</li>
-<li><code>odfdo-highlight</code>: highlight the text matching a pattern (regex) in an ODF file.</li>
-<li><code>odfdo-headers</code>: print the headers of an ODF file.</li>
-<li><code>odfdo-table-shrink</code>: shrink tables to optimize width and height.</li>
-<li><code>odfdo-markdown</code>: export text document in Markdown format to stdout.</li>
-</ul>
-<p>About styles: the best way to apply style is by merging styles from a template
+<h1 id="about-styles">About styles</h1>
+<p>The best way to apply style is by merging styles from a template
 document into your generated document (See <code>odfdo-styles</code> script).
-Styles are a complex matter in ODF, so trying to generate styles programmatically
-is not recommended.</p>
-<h1 id="limitations">Limitations</h1>
-<p><code>odfdo</code> is intended to facilitate the generation of ODF documents,
-nevertheless a basic knowledge of the ODF format is necessary.</p>
-<p>ODF document rendering can vary greatly from software to software. Especially the
-&ldquo;styles&rdquo; of the document allow an adaptation of the rendering for a particular
-software.</p>
-<p>The best (only ?) way to apply style is by merging styles from a template
-document into your generated document. However a few recipes show how to make
-programmatically some basic styles: <code>create_basic_text_styles</code>, <code>add_text_span_styles</code>).</p>
+Styles are a complex matter in ODF, so trying to generate styles programmatically is not recommended.
+Several recipes provide an example of manipulating styles, including: <code>change_paragraph_styles_methods.py</code>,<code>create_basic_text_styles</code>, <code>add_text_span_styles</code>.</p>
 <h1 id="related-project">Related project</h1>
 <p>I you work on <code>.ods</code> files (spreadsheet), you may be interested by these scripts using
 this library to parse/generate <code>.ods</code> files:

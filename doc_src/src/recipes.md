@@ -25,7 +25,8 @@ Create a basic spreadsheet with "Hello World" in the first cell.
 
 ### Basic presentation hello world
 
-Write a basic "Hello World" in the middle of the first page of a presentaion.
+Write a basic "Hello World" in the middle of the first page
+of a presentation.
 
 
 ??? code "recipes/basic_presentation_hello_world.py"
@@ -186,7 +187,6 @@ both the text and in a table.
 ### How to add a table to a document
 
 Minimal example of how to add a table to a text document.
-
 
 ??? code "recipes/how_to_add_a_table_to_a_document.py"
     ```python
