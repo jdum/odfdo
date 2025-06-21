@@ -13,7 +13,8 @@ DATA = Path(__file__).parent / "data"
 SOURCE = "collection2.odt"
 
 
-def read_source_document():
+def read_source_document() -> Document:
+    """Return the source Document."""
     try:
         source = sys.argv[1]
     except IndexError:
@@ -21,23 +22,31 @@ def read_source_document():
     return Document(source)
 
 
-def main():
-    doc = read_source_document()
-
+def read_text_content(document: Document) -> str:
     # just verify what type of document it is:
-    print("Type of document:", doc.get_type())
-
+    print("Type of document:", document.get_type())
     # A quick way to get the text content:
-    text = doc.get_formatted_text()
+    text = document.get_formatted_text()
 
     print("Size :", len(text))
 
     # Let's show the beginning :
     print(text[:320])
 
+    return text
+
+
+def main() -> None:
+    document = read_source_document()
+    text = read_text_content(document)
+    test_unit(text)
+
+
+def test_unit(text: str) -> None:
     # only for test suite:
     if "ODFDO_TESTING" not in os.environ:
         return
+
     assert len(text) == 56828
 
 
