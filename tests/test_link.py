@@ -215,3 +215,17 @@ def test_str(sample_body):
 def test_str2(sample_body):
     link = Link("https://example.com/")
     assert str(link) == "(https://example.com/)"
+
+
+def test_target_frame_1(sample_body):
+    link = Link("https://example.com/", target_frame="_blank")
+    assert str(link) == "(https://example.com/)"
+    assert link.target_frame == "_blank"
+    assert link.show == "new"
+
+
+def test_target_frame_2(sample_body):
+    link = Link("https://example.com/", target_frame="replace")
+    assert str(link) == "(https://example.com/)"
+    assert link.target_frame == "replace"
+    assert link.show == "replace"
