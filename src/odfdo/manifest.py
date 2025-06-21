@@ -19,8 +19,8 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
-"""Manifest class for manifest.xml part.
-"""
+"""Manifest class for manifest.xml part."""
+
 from __future__ import annotations
 
 from .element import Element, EText
@@ -53,7 +53,7 @@ class Manifest(XmlPart):
         xpath_query = "//manifest:file-entry"
         result = []
         for file_entry in self.xpath(xpath_query):
-            if not isinstance(file_entry, Element):
+            if not isinstance(file_entry, Element):  # pragma: no cover
                 continue
             result.append(
                 (
