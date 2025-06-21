@@ -47,3 +47,9 @@ def test_as_dict():
         "xlink:show": "_top",
     }
     assert behaviour.as_dict() == expected
+
+
+def test_str():
+    behaviour = MetaHyperlinkBehaviour(target_frame_name="some_frame", show="_top")
+    expected = "(some_frame)"
+    assert str(behaviour) == expected
