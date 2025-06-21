@@ -3,10 +3,11 @@
 except in titles.
 """
 
+import os
 import sys
 from pathlib import Path
 
-from odfdo import Document
+from odfdo import Body, Document, Element
 
 _DOC_SEQUENCE = 520
 DATA = Path(__file__).parent / "data"
@@ -15,39 +16,32 @@ OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "nostyle"
 TARGET = "document.odt"
 
 
-def save_new(document: Document, name: str):
+def read_source_document() -> Document:
+    """Return the source Document."""
+    try:
+        source = sys.argv[1]
+    except IndexError:
+        source = DATA / SOURCE
+    return Document(source)
+
+
+def save_new(document: Document, name: str) -> None:
+    """Save a recipe result Document."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     new_path = OUTPUT_DIR / name
     print("Saving:", new_path)
     document.save(new_path, pretty=True)
 
 
-def remove_text_span(element):
+def remove_text_span(body: Body) -> None:
+    """Remove span styles from an Element, except in titles."""
     tag = "text:span"
     keep_inside_tag = "text:h"
     context = (tag, keep_inside_tag, False)
-    element, _is_modified = _tree_remove_tag(element, context)
+    body, _is_modified = _tree_remove_tag(body, context)
 
 
-def main():
-    try:
-        source = Path(sys.argv[1])
-    except IndexError:
-        source = DATA / SOURCE
-
-    document = Document(str(source))
-    body = document.body
-
-    print("Removing span styles from", source.name)
-    print("'text:span' occurrences:", len(body.spans))
-
-    remove_text_span(body)
-    print("'text:span' occurrences after removal:", len(body.spans))
-
-    save_new(document, TARGET)
-
-
-def _tree_remove_tag(element, context):
+def _tree_remove_tag(element: Element, context: tuple) -> Element:
     """Send back a copy of the element, without span styles. Element should be
     either paragraph or heading.
 
@@ -98,6 +92,30 @@ def _tree_remove_tag(element, context):
         else:
             element.tail = tail
     return (element, True)
+
+
+def clean_document(document: Document) -> None:
+    """Remove span styles from a Document."""
+    body = document.body
+
+    print("'text:span' occurrences:", len(body.spans))
+    remove_text_span(body)
+    print("'text:span' occurrences after removal:", len(body.spans))
+
+
+def main() -> None:
+    document = read_source_document()
+    clean_document(document)
+    test_unit(document)
+    save_new(document, TARGET)
+
+
+def test_unit(document: Document) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+
+    assert len(document.body.spans) == 1
 
 
 if __name__ == "__main__":
