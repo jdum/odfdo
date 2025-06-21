@@ -301,6 +301,14 @@ def test_set_cell_repeat_repeat(row_repeats):
     assert row.width == 7
 
 
+def test_set_cell_none(row_repeats):
+    row = row_repeats
+    row.set_cell(1, None)
+    assert row.get_values() == [1, None, 1, 2, 3, 3, 3]
+    # Test repetitions are synchronized
+    assert row.width == 7
+
+
 def test_insert(row):
     cell = row.insert_cell(3)
     assert type(cell) is Cell
@@ -325,6 +333,17 @@ def test_insert_cell_repeat(row_repeats):
     # Test repetitions are synchronized
     assert row.width == 8
     assert cell.x == 6
+    assert cell.y == 0
+
+
+def test_insert_cell_width(row_repeats):
+    row = row_repeats
+    assert row.width == 7
+    cell = row.insert_cell(7, Cell("Inserted"))
+    assert row.get_values() == [1, 1, 1, 2, 3, 3, 3, "Inserted"]
+    # Test repetitions are synchronized
+    assert row.width == 8
+    assert cell.x == 7
     assert cell.y == 0
 
 
@@ -359,6 +378,12 @@ def test_insert_cell_repeat_repeat_bis(row_repeats):
     assert cell.y == 0
 
 
+def test_extend_cells(row_repeats):
+    row = row_repeats
+    row.extend_cells()
+    assert row.width == 7
+
+
 def test_append_cell(row):
     orig_row = row.clone
     cell = row.append_cell()
@@ -384,6 +409,18 @@ def test_delete_cell(row):
     assert row.width == 6
 
 
+def test_delete_cell_width(row):
+    row.delete_cell(7)
+    assert row.get_values() == [1, 1, 1, 2, 3, 3, 3]
+    assert row.width == 7
+
+
+def test_delete_cell_width_2(row):
+    row.delete_cell(8)
+    assert row.get_values() == [1, 1, 1, 2, 3, 3, 3]
+    assert row.width == 7
+
+
 def test_delete_cell_repeat(row_repeats):
     row = row_repeats
     row.delete_cell(-1)
@@ -400,11 +437,32 @@ def test_set_cells_1(row):
     assert row.width == 7
 
 
+def test_set_cells_1_start_none(row):
+    cells = [Cell(value=10)]
+    row.set_cells(cells, start=None)
+    assert row.get_values() == [10, 1, 1, 2, 3, 3, 3]
+    assert row.width == 7
+
+
+def test_set_cells_none(row):
+    cells = None
+    row.set_cells(cells)
+    assert row.get_values() == [1, 1, 1, 2, 3, 3, 3]
+    assert row.width == 7
+
+
 def test_set_cells_2(row):
     cells = [Cell(value=10), Cell(value=20)]
     row.set_cells(cells)
     assert row.get_values() == [10, 20, 1, 2, 3, 3, 3]
     # Test repetitions are synchronized
+    assert row.width == 7
+
+
+def test_set_cells_3(row):
+    cells = [Cell(value=10), None, Cell(value=20)]
+    row.set_cells(cells)
+    assert row.get_values() == [10, None, 20, 2, 3, 3, 3]
     assert row.width == 7
 
 
@@ -513,6 +571,13 @@ def test_set_cells_3_start_1_repeats_4(row):
 def test_set_values_empty():
     row = Row()
     row.set_values([1, 2, 3, 4])
+    assert row.width == 4
+    assert row.get_values() == [1, 2, 3, 4]
+
+
+def test_set_values_empty_start_none():
+    row = Row()
+    row.set_values([1, 2, 3, 4], start=None)
     assert row.width == 4
     assert row.get_values() == [1, 2, 3, 4]
 

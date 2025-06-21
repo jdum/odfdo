@@ -168,16 +168,14 @@ class Row(CachedElement):
                 return
             # parent may be group of rows, not table
             if isinstance(upper, Element) and upper._tag == "table:table":
-                break
+                upper._compute_table_cache()
+                if hasattr(self, "_tmap"):
+                    self._tmap.clear()
+                    self._tmap.extend(upper._tmap)
+                else:
+                    self._tmap = upper._tmap
+                return
             current = upper
-        # fixme : need to optimize this
-        if isinstance(upper, Element) and upper._tag == "table:table":
-            upper._compute_table_cache()
-            if hasattr(self, "_tmap"):
-                del self._tmap[:]
-                self._tmap.extend(upper._tmap)
-            else:
-                self._tmap = upper._tmap
 
     @property
     def style(self) -> str | None:
@@ -236,14 +234,14 @@ class Row(CachedElement):
                 else:
                     cell = self._get_element_idx2(_xpath_cell_idx, idx)  # type: ignore
                     if not isinstance(cell, Cell):
-                        raise TypeError(f"Not a cell: {cell!r}")
+                        raise TypeError(f"Not a cell: {cell!r}")  # pragma: no cover
                     self._indexes["_rmap"][idx] = cell
                 repeated = juska - before
                 before = juska
                 for _i in range(repeated or 1):
                     # Return a copy without the now obsolete repetition
                     if cell is None:
-                        cell = Cell()
+                        cell = Cell()  # pragma: no cover
                     else:
                         cell = cell.clone
                         if repeated > 1:
@@ -259,7 +257,7 @@ class Row(CachedElement):
             if end is None:
                 try:
                     end = self._rmap[-1]
-                except Exception:
+                except Exception:  # pragma: no cover
                     end = -1
             start_map = find_odf_idx(self._rmap, start)
             if start_map is None:
@@ -276,14 +274,14 @@ class Row(CachedElement):
                 else:
                     cell = self._get_element_idx2(_xpath_cell_idx, idx)  # type: ignore
                     if not isinstance(cell, Cell):
-                        raise TypeError(f"Not a cell: {cell!r}")
+                        raise TypeError(f"Not a cell: {cell!r}")  # pragma: no cover
                     self._indexes["_rmap"][idx] = cell
                 repeated = juska - before
                 before = juska
                 for _i in range(repeated or 1):
                     if x <= end:
                         if cell is None:
-                            cell = Cell()
+                            cell = Cell()  # pragma: no cover
                         else:
                             cell = cell.clone
                             if repeated > 1 or (x == start and start > 0):
@@ -389,7 +387,7 @@ class Row(CachedElement):
         x = self._translate_x_from_any(x)
         cell = self._get_cell2(x, clone=clone)
         if not cell:
-            return None
+            return None  # pragma: no cover
         cell.y = self.y
         cell.x = x
         return cell

@@ -557,6 +557,16 @@ def test_get_cell_coord(row):
     assert cell.get_value() is None
 
 
+def test_get_cells_coord_none(row):
+    cells = row.get_cells((100, 200))
+    assert len(cells) == 0
+
+
+def test_get_cell_coord_none(row):
+    cell = row.get_cell(2000)
+    assert cell
+
+
 def test_get_value_coord(row):
     row.append_cell(Cell("Appended"))
     value = row.get_value(-1)

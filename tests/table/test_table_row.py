@@ -26,7 +26,19 @@ from collections.abc import Iterable
 
 import pytest
 
-from odfdo.table import Cell, Row
+from odfdo.document import Document
+from odfdo.table import Cell, Row, Table
+
+
+@pytest.fixture
+def table(samples) -> Iterable[Table]:
+    # simpletable :
+    #   1	1	1	2	3	3	3
+    #   1	1	1	2	3	3	3
+    #   1	1	1	2	3	3	3
+    #   1   2	3	4	5	6	7
+    document = Document(samples("simple_table.ods"))
+    yield document.body.get_table(name="Example1")
 
 
 @pytest.fixture
@@ -37,6 +49,14 @@ def row() -> Iterable[Row]:
     # Add regular cell
     row.append(Cell(style="ce5"))
     yield row
+
+
+def test_row_str(row):
+    assert str(row) == "1\n"
+
+
+def test_row_repr(row):
+    assert repr(row) == "<Row y=None>"
 
 
 def test_get_row_repeated(row):
@@ -89,3 +109,100 @@ def test_rstrip():
     row.set_cell(3, Cell(style="ce5"))
     row.rstrip()
     assert row.width == 4
+
+
+def test_rstrip_aggressive():
+    row = Row(width=100)
+    row.set_value(0, 1)
+    row.set_value(1, 2)
+    row.set_value(2, 3)
+    row.set_cell(3, Cell(style="ce5"))
+    row.rstrip(aggressive=True)
+    assert row.width == 3
+
+
+def test_rstrip_empty():
+    row = Row(width=100)
+    row.rstrip(aggressive=True)
+    assert row.width == 0
+
+
+def test_table_row_repeated_cache(table):
+    row = table.rows[3]
+    assert not row.repeated
+    del row._tmap
+    row.repeated = 3
+    assert hasattr(row, "_tmap")
+
+
+def test_force_width_1():
+    row = Row(width=3)
+    row.set_value(0, 1)
+    row.set_value(1, 2)
+    row.set_value(2, 3)
+    assert row.width == 3
+    row.force_width(3)
+    assert row.width == 3
+    assert row.get_values() == [1, 2, 3]
+
+
+def test_force_width_2():
+    row = Row(width=3)
+    row.set_value(0, 1)
+    row.set_value(1, 2)
+    row.set_value(2, 3)
+    assert row.width == 3
+    # no effect expected: foce_width do not delete, neither extend
+    # # only reduce repeated of empty
+    row.force_width(2)
+    assert row.width == 3
+    assert row.get_values() == [1, 2, 3]
+
+
+def test_force_width_3():
+    row = Row()
+    row.set_value(0, 1)
+    row.set_value(1, 2)
+    row.set_value(2, 3)
+    cell = Cell(repeated=4)
+    row.append_cell(cell)
+    cell = row.last_cell()
+    assert cell.repeated == 4
+    assert row.get_values() == [1, 2, 3, None, None, None, None]
+    cell = row.last_cell()
+    assert cell is not None
+    assert cell.is_empty(aggressive=True)
+    assert cell.repeated == 4
+    assert row.width == 7
+    assert row._current_length() == 7
+    row.force_width(5)
+    assert row.width == 5
+    assert row.last_cell().repeated == 2
+
+
+def test_current_length_1():
+    row = Row()
+    row.set_value(0, 1)
+    row.set_value(1, 2)
+    assert row._current_length() == 2
+
+
+def test_current_length_2():
+    row = Row()
+    row.set_value(0, 1)
+    assert row._current_length() == 1
+
+
+def test_current_length_3():
+    row = Row()
+    assert row._current_length() == 1  # minimal width
+
+
+def test_minimized_width():
+    row = Row()
+    assert row.minimized_width() == 1
+
+
+def test_last_cell_none():
+    row = Row()
+    assert row.last_cell() is None
