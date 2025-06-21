@@ -61,6 +61,14 @@ def test_get_style(base_content):
     assert style.family == "section"
 
 
+def test_get_style_2(base_content):
+    # trst a missing context
+    ctx = base_content.get_element("//office:font-face-decls")
+    ctx.delete()
+    style = base_content.get_style("section", "Sect1")
+    assert style.family == "section"
+
+
 def test_repr(base_content):
     assert repr(base_content) == "<Content part_name=content.xml>"
 
