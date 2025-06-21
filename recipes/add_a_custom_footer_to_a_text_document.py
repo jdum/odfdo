@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Minimal example of setting a page footer using Style.set_page_footer().
 
 Note: the created footer uses the current footer style, to change that
@@ -15,7 +16,8 @@ OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "styled4"
 TARGET = "document.odt"
 
 
-def save_new(document: Document, name: str):
+def save_new(document: Document, name: str) -> None:
+    """Save a recipe result Document."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     new_path = OUTPUT_DIR / name
     print("Saving:", new_path)
@@ -23,6 +25,7 @@ def save_new(document: Document, name: str):
 
 
 def make_document() -> Document:
+    """Generate a short document with a page footer."""
     text_1 = (
         "Lorem ipsum dolor sit amet,\n\t"
         "consectetuer adipiscing elit.\n\tSed"
