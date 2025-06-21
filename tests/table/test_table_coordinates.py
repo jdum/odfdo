@@ -24,7 +24,12 @@
 
 import pytest
 
-from odfdo.utils import alpha_to_digit, convert_coordinates, digit_to_alpha
+from odfdo.utils import (
+    alpha_to_digit,
+    convert_coordinates,
+    digit_to_alpha,
+    translate_from_any,
+)
 
 
 def test_digit_toalpha_to_digit():
@@ -136,3 +141,23 @@ def testconvert_coordinates_partial_4():
 def testconvert_coordinates_partial_bad_4():
     assert convert_coordinates(" : $$$ ") == (None, None, None, None)
     assert convert_coordinates(" B 3: $$$ ") == (1, 2, None, None)
+
+
+def test_translate_from_any_1():
+    result = translate_from_any(42, 0, 0)
+    assert result == 42
+
+
+def test_translate_from_any_2():
+    result = translate_from_any("42", 0, 1)
+    assert result == 41
+
+
+def test_translate_from_any_3():
+    with pytest.raises(TypeError):
+        translate_from_any("//42", 0, 1)
+
+
+def test_translate_from_any_4():
+    with pytest.raises(TypeError):
+        translate_from_any([], 0, 1)
