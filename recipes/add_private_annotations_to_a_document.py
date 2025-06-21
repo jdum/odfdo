@@ -4,6 +4,7 @@
 Annotations are notes that do not appear in the document but typically
 on a side bar in a desktop application. So they are not printed.
 """
+
 import os
 from pathlib import Path
 
@@ -14,14 +15,16 @@ OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "annotated"
 TARGET = "annotated_document.odt"
 
 
-def save_new(document: Document, name: str):
+def save_new(document: Document, name: str) -> None:
+    """Save a recipe result Document."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     new_path = OUTPUT_DIR / name
     print("Saving:", new_path)
     document.save(new_path, pretty=True)
 
 
-def base_document():
+def base_document() -> Document:
+    """Generate a basic document."""
     document = Document("text")
     body = document.body
 
@@ -50,11 +53,10 @@ def base_document():
     return document
 
 
-def main():
-    document = base_document()
+def insert_annotation(document: Document) -> None:
+    """Insert a not printable annotation in a document."""
     body = document.body
     paragraph = body.get_paragraph(content="consulat")
-
     # Annotations are inserted like notes but they are simpler:
     # Annotation arguments:
     # after   =>  The word after what the annotation is inserted.
@@ -62,14 +64,25 @@ def main():
     # creator =>  The author of the annotation.
     # date    =>  A datetime value, by default datetime.now().
     paragraph.insert_annotation(
-        after="Domitius", body="Talking about Lucius Domitius", creator="Luis"
+        after="Domitius",
+        body="Talking about Lucius Domitius",
+        creator="Luis",
     )
 
+
+def main() -> None:
+    document = base_document()
+    insert_annotation(document)
+    test_unit(document)
     save_new(document, TARGET)
 
+
+def test_unit(document: Document) -> None:
     # only for test suite:
-    if "ODFDO_TESTING" in os.environ:
-        assert len(body.get_annotations(creator="Luis")) == 1
+    if "ODFDO_TESTING" not in os.environ:
+        return
+
+    assert len(document.body.get_annotations(creator="Luis")) == 1
 
 
 if __name__ == "__main__":
