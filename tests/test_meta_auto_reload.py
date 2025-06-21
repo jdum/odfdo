@@ -67,3 +67,10 @@ def test_as_dict():
         "xlink:type": "simple",
     }
     assert reload.as_dict() == expected
+
+
+def test_str():
+    delay = timedelta(seconds=15)
+    reload = MetaAutoReload(delay=delay, href="some url")
+    expected = "(some url)"
+    assert str(reload) == expected
