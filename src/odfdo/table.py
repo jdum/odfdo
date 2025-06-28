@@ -2894,17 +2894,20 @@ class Table(MDTable, CachedElement):
         self,
         path_or_file: str | Path | None = None,
         dialect: str = "excel",
-    ) -> Any:
-        """Write the table as CSV in the file.
+        **fmtparams: Any,
+    ) -> str | None:
+        """Export the table as CSV.
 
-        If the file is a string, it is opened as a local path. Else an
-        opened file-like is expected.
+        Save the CSV content to the path_or_file path, or return the content
+        text if path_or_file is None.
 
         Arguments:
 
-            path_or_file -- str or file-like
+            path_or_file -- str or Path or None
 
             dialect -- str, python csv.dialect, can be 'excel', 'unix'...
+
+            **fmtparams -- names parameters passed to csv.writer method
         """
 
         def write_content(csv_writer: object) -> None:
@@ -2913,19 +2916,60 @@ class Table(MDTable, CachedElement):
                 for value in values:
                     if value is None:
                         value = ""
-                    if isinstance(value, str):
-                        value = value.strip()
                     line.append(value)
                 csv_writer.writerow(line)  # type: ignore
 
-        out = StringIO(newline="")
-        csv_writer = csv.writer(out, dialect=dialect)
+        content = StringIO(newline="")
+        csv_writer = csv.writer(content, dialect=dialect, **fmtparams)
         write_content(csv_writer)
-        if path_or_file is None:
-            return out.getvalue()
-        path = Path(path_or_file)
-        path.write_text(out.getvalue())
-        return None
+        if path_or_file:
+            Path(path_or_file).write_text(content.getvalue())
+            return None
+        return content.getvalue()
+
+    @classmethod
+    def from_csv(
+        cls,
+        content: str,
+        name: str,
+        style: str | None = None,
+        **fmtparams: Any,
+    ) -> Table:
+        """Import the CSV text content into a Table. If the path_or_file
+        parameter is a Path or a string, it is opened as a path. Else a
+        opened file-like is expected.
+
+        CSV format can be autodetected to a certain limit. Use **fmtparams to
+        define cvs.reader parameters.
+
+        Arguments:
+
+          contenr -- str, CSV content
+
+          name -- str, name of the Table
+
+          style -- str, style of the Table
+
+          **fmtparams -- names parameters passed to csv.reader method
+        """
+        data = content.splitlines(True)
+        # Sniff the dialect
+        sample = "".join(data[:100])
+        dialect = csv.Sniffer().sniff(sample)
+        # Make the rows
+        reader = csv.reader(data, dialect, **fmtparams)
+        table = cls(name, style=style)
+        encoding = fmtparams.get("encoding", "utf-8")
+        for line in reader:
+            row = Row()
+            # rstrip line
+            while line and not line[-1].strip():
+                line.pop()
+            for value in line:
+                cell = Cell(_get_python_value(value, encoding))
+                row.append_cell(cell, clone=False)
+            table.append_row(row, clone=False)
+        return table
 
 
 class NamedRange(Element):
@@ -3203,38 +3247,25 @@ def import_from_csv(
     path_or_file: str | Path | object,
     name: str,
     style: str | None = None,
-    delimiter: str | None = None,
-    quotechar: str | None = None,
-    lineterminator: str | None = None,
-    encoding: str = "utf-8",
+    **fmtparams,
 ) -> Table:
-    """Convert the CSV file to an Table. If the file is a string, it is
-    opened as a local path. Else a open file-like is expected; it will not be
-    closed afterwards.
+    """Import the CSV file into a Table. If the path_or_file parameter is
+    a Path or a string, it is opened as a path. Else a opened file-like is
+    expected.
 
-    CSV format can be autodetected to a certain limit, but encoding is
-    important.
+    CSV format can be autodetected to a certain limit. Use **fmtparams to
+    define cvs.reader parameters.
 
     Arguments:
 
-      path_or_file -- str or file-like
+      path_or_file -- str, Path or file-like
 
-      name -- str
+      name -- str, name of the Table
 
-      style -- str
+      style -- str, style of the Table
 
-      delimiter -- str
-
-      quotechar -- str
-
-      lineterminator -- str
-
-      encoding -- str
+      **fmtparams -- names parameters passed to csv.reader method
     """
-
-    # Load the data
-    # XXX Load the entire file in memory
-    # Alternative: a file-wrapper returning the sample then the rest
     if isinstance(path_or_file, (str, Path)):
         content_b = Path(path_or_file).read_bytes()
     elif isinstance(path_or_file, StringIO):
@@ -3246,30 +3277,7 @@ def import_from_csv(
         content = content_b.decode()
     else:
         content = content_b
-    data = content.splitlines(True)
-    # Sniff the dialect
-    sample = "".join(data[:100])
-    dialect = csv.Sniffer().sniff(sample)
-    # We can overload the result
-    if delimiter is not None:
-        dialect.delimiter = delimiter
-    if quotechar is not None:
-        dialect.quotechar = quotechar
-    if lineterminator is not None:
-        dialect.lineterminator = lineterminator
-    # Make the rows
-    reader = csv.reader(data, dialect)
-    table = Table(name, style=style)
-    for line in reader:
-        row = Row()
-        # rstrip line
-        while line and not line[-1].strip():
-            line.pop()
-        for value in line:
-            cell = Cell(_get_python_value(value, encoding))
-            row.append_cell(cell, clone=False)
-        table.append_row(row, clone=False)
-    return table
+    return Table.from_csv(content, name, **fmtparams)
 
 
 register_element_class(Column)
