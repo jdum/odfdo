@@ -2135,8 +2135,8 @@ class Table(MDTable, CachedElement):
 
     # Columns
 
-    def _get_columns(self) -> list:
-        return self.get_elements(_xpath_column)
+    def _get_columns(self) -> list[Column]:
+        return self.get_elements(_xpath_column)  # type: ignore
 
     def traverse_columns(
         self,
@@ -2155,61 +2155,32 @@ class Table(MDTable, CachedElement):
 
         Copies are returned, use set_column() to push them back.
         """
-        idx = -1
-        before = -1
-        x = 0
-        if start is None and end is None:
-            for juska in self._cmap:
-                idx += 1
-                if idx in self._indexes["_cmap"]:
-                    column = self._indexes["_cmap"][idx]
-                else:
-                    column = self._get_element_idx2(_xpath_column_idx, idx)
-                    self._indexes["_cmap"][idx] = column
-                repeated = juska - before
-                before = juska
-                for _i in range(repeated or 1):
-                    # Return a copy without the now obsolete repetition
-                    column = column.clone
-                    column.x = x
-                    x += 1
-                    if repeated > 1:
-                        column.repeated = None
-                    yield column
-        else:
-            if start is None:
-                start = 0
-            start = max(0, start)
-            if end is None:
-                try:
-                    end = self._cmap[-1]
-                except Exception:
-                    end = -1
-            start_map = find_odf_idx(self._cmap, start)
-            if start_map is None:
+        if start is None:
+            start = 0
+        start = max(0, start)
+        if end is None:
+            end = 2**32
+        if end < start:
+            return
+        x = -1
+        for column in self._yield_odf_columns():
+            x += 1
+            if x < start:
+                continue
+            if x > end:
                 return
-            if start_map > 0:
-                before = self._cmap[start_map - 1]
-            idx = start_map - 1
-            before = start - 1
-            x = start
-            for juska in self._cmap[start_map:]:
-                idx += 1
-                if idx in self._indexes["_cmap"]:
-                    column = self._indexes["_cmap"][idx]
-                else:
-                    column = self._get_element_idx2(_xpath_column_idx, idx)
-                    self._indexes["_cmap"][idx] = column
-                repeated = juska - before
-                before = juska
-                for _i in range(repeated or 1):
-                    if x <= end:
-                        column = column.clone
-                        column.x = x
-                        x += 1
-                        if repeated > 1 or (x == start and start > 0):
-                            column.repeated = None
-                        yield column
+            column.x = x
+            yield column
+
+    def _yield_odf_columns(self):
+        for column in self._get_columns():
+            if column.repeated is None:
+                yield column
+            else:
+                for _ in range(column.repeated):
+                    column_copy = column.clone
+                    column_copy.repeated = None
+                    yield column_copy
 
     def get_columns(
         self,
