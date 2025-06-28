@@ -236,6 +236,22 @@ Create an empty text document and add a picture in a frame.
     {% include "../../recipes/how_to_add_a_picture_to_a_text_document.py" %}
     ```
 
+### How to add a right aligned picture to a text document
+
+Create an empty text document and add a picture in a frame,
+aligned to the right or to the left.
+
+Aligning an image requires applying a style to the frame. To do
+this, use the default frame position style and customize it. The
+frame position style allows you to choose alignment relative to
+the paragraph (default) or the page.
+
+
+??? code "recipes/how_to_add_a_right_aligned_picture_to_a_text_document.py"
+    ```python
+    {% include "../../recipes/how_to_add_a_right_aligned_picture_to_a_text_document.py" %}
+    ```
+
 ### How to add a title to a text document
 
 Minimal example of how to add a Header of first level to a text document.
@@ -454,7 +470,6 @@ in a different order.
 
 Open a text document with an embedded chart and change some values.
 
-
 ??? code "recipes/change_values_of_a_chart_inside_a_document.py"
     ```python
     {% include "../../recipes/change_values_of_a_chart_inside_a_document.py" %}
@@ -670,6 +685,24 @@ Save a document as BytesIO.
 ??? code "recipes/save_document_as_bytesio.py"
     ```python
     {% include "../../recipes/save_document_as_bytesio.py" %}
+    ```
+
+### Export tables to csv format
+
+Export tables to CSV format.
+
+??? code "recipes/export_tables_to_csv_format.py"
+    ```python
+    {% include "../../recipes/export_tables_to_csv_format.py" %}
+    ```
+
+### Import csv content into a table
+
+Import CSV content into a table.
+
+??? code "recipes/import_csv_content_into_a_table.py"
+    ```python
+    {% include "../../recipes/import_csv_content_into_a_table.py" %}
     ```
 
 ### Search and replace words
