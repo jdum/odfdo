@@ -263,14 +263,14 @@ class Column(Element):
             if isinstance(upper, Table):
                 break
             current = upper
-        # fixme : need to optimize this
-        if isinstance(upper, Table):
-            upper._compute_table_cache()
-            if hasattr(self, "_cmap"):
-                del self._cmap[:]
-                self._cmap.extend(upper._cmap)
-            else:
-                self._cmap = upper._cmap
+        # # fixme : need to optimize this
+        # if isinstance(upper, Table):
+        #     upper._compute_table_cache()
+        #     if hasattr(self, "_cmap"):
+        #         del self._cmap[:]
+        #         self._cmap.extend(upper._cmap)
+        #     else:
+        #         self._cmap = upper._cmap
 
     @property
     def style(self) -> str | None:
