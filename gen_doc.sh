@@ -11,6 +11,7 @@ cp -f README.md doc_src/src
 cp -f CHANGES.md doc_src/src
 cd doc_src
 rm -fr site
+uv sync --group doc
 python << END
 import os
 from importlib import import_module
