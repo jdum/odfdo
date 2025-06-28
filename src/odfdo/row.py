@@ -93,8 +93,8 @@ class Row(CachedElement):
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} y={self.y}>"
 
-    def _get_cells(self) -> list[Element]:
-        return self.get_elements(_xpath_cell)
+    def _get_cells(self) -> list[Cell]:
+        return self.get_elements(_xpath_cell)  # type: ignore
 
     def _translate_row_coordinates(
         self,
@@ -205,6 +205,16 @@ class Row(CachedElement):
     def _translate_x_from_any(self, x: str | int) -> int:
         return translate_from_any(x, self.width, 0)
 
+    def _yield_odf_cells(self):
+        for cell in self._get_cells():
+            if cell.repeated is None:
+                yield cell
+            else:
+                for _ in range(cell.repeated):
+                    cell_copy = cell.clone
+                    cell_copy.repeated = None
+                    yield cell_copy
+
     def traverse(
         self,
         start: int | None = None,
@@ -222,74 +232,23 @@ class Row(CachedElement):
 
         Copies are returned, use set_cell() to push them back.
         """
-        idx = -1
-        before = -1
-        x = 0
-        cell: Cell
-        if start is None and end is None:
-            for juska in self._rmap:
-                idx += 1
-                if idx in self._indexes["_rmap"]:
-                    cell = self._indexes["_rmap"][idx]
-                else:
-                    cell = self._get_element_idx2(_xpath_cell_idx, idx)  # type: ignore
-                    if not isinstance(cell, Cell):
-                        raise TypeError(f"Not a cell: {cell!r}")  # pragma: no cover
-                    self._indexes["_rmap"][idx] = cell
-                repeated = juska - before
-                before = juska
-                for _i in range(repeated or 1):
-                    # Return a copy without the now obsolete repetition
-                    if cell is None:
-                        cell = Cell()  # pragma: no cover
-                    else:
-                        cell = cell.clone
-                        if repeated > 1:
-                            cell.repeated = None
-                    cell.y = self.y
-                    cell.x = x
-                    x += 1
-                    yield cell
-        else:
-            if start is None:
-                start = 0
-            start = max(0, start)
-            if end is None:
-                try:
-                    end = self._rmap[-1]
-                except Exception:  # pragma: no cover
-                    end = -1
-            start_map = find_odf_idx(self._rmap, start)
-            if start_map is None:
+        if start is None:
+            start = 0
+        start = max(0, start)
+        if end is None:
+            end = 2**32
+        if end < start:
+            return
+        x = -1
+        for cell in self._yield_odf_cells():
+            x += 1
+            if x < start:
+                continue
+            if x > end:
                 return
-            if start_map > 0:
-                before = self._rmap[start_map - 1]
-            idx = start_map - 1
-            before = start - 1
-            x = start
-            for juska in self._rmap[start_map:]:
-                idx += 1
-                if idx in self._indexes["_rmap"]:
-                    cell = self._indexes["_rmap"][idx]
-                else:
-                    cell = self._get_element_idx2(_xpath_cell_idx, idx)  # type: ignore
-                    if not isinstance(cell, Cell):
-                        raise TypeError(f"Not a cell: {cell!r}")  # pragma: no cover
-                    self._indexes["_rmap"][idx] = cell
-                repeated = juska - before
-                before = juska
-                for _i in range(repeated or 1):
-                    if x <= end:
-                        if cell is None:
-                            cell = Cell()  # pragma: no cover
-                        else:
-                            cell = cell.clone
-                            if repeated > 1 or (x == start and start > 0):
-                                cell.repeated = None
-                        cell.y = self.y
-                        cell.x = x
-                        x += 1
-                        yield cell
+            cell.x = x
+            cell.y = self.y
+            yield cell
 
     def get_cells(
         self,
