@@ -98,7 +98,7 @@ class DateTime:
             return datetime.fromisoformat(data)
         except ValueError:
             # maybe python 3.9
-            if sys.version_info.major == 3:
+            if sys.version_info.major == 3:  # noqa: UP036
                 if sys.version_info.minor == 9:
                     return _decode_39_310(data)
                 if sys.version_info.minor == 10:
