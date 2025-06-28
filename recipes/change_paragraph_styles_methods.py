@@ -3,6 +3,7 @@
 by changing the paragraph style itself or by using Span to select parts
 of the paragraph. Includes several ways to create or import styles.
 """
+
 import os
 from collections.abc import Iterator
 from itertools import cycle
@@ -20,31 +21,21 @@ TARGET_AFTER = "document_after.odt"
 
 
 def save_new(document: Document, name: str) -> None:
+    """Save a recipe result Document."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     new_path = OUTPUT_DIR / name
     print("Saving:", new_path)
-    document.save(new_path)
-
-
-def main() -> None:
-    document = Document("odt")
-    make_base_document(document)
-    save_new(document, TARGET_BEFORE)
-    add_some_styles(document)
-    add_style_from_xml(document)
-    import_style_from_other_doc(document)
-    apply_styles(document)
-    test_unit(document)
-    save_new(document, TARGET_AFTER)
+    document.save(new_path, pretty=True)
 
 
 def iter_lorem() -> Iterator[str]:
+    """Return infinite iterator on Lorem Ipsum content."""
     return cycle(lr.strip() for lr in LOREM.replace("\n", " ").split("."))
 
 
-def make_base_document(document: Document) -> None:
-    """Fill document from parts or lorem ipsum content."""
-    # Create the document
+def make_base_document() -> Document:
+    """Generate document from parts of lorem ipsum content."""
+    document = Document("odt")
     body = document.body
     body.clear()
     # Add some content with headers
@@ -56,9 +47,11 @@ def make_base_document(document: Document) -> None:
         body.append(title)
         for _j in range(5):
             body.append(Paragraph(next(lorem) + ". " + next(lorem) + "."))
+    return document
 
 
 def add_some_styles(document) -> None:
+    """Add programmatically generated styles to the document."""
     # Always simpler to copy styles from an actual .odt existing file, but:
     document.insert_style(
         Style(
@@ -127,6 +120,7 @@ def add_some_styles(document) -> None:
 
 
 def add_style_from_xml(document: Document) -> None:
+    """Add styles defined by XML content to the document."""
     # Styles can be defined by WML definition
     document.insert_style(
         Element.from_tag(
@@ -147,49 +141,50 @@ def add_style_from_xml(document: Document) -> None:
 
 
 def import_style_from_other_doc(document: Document) -> None:
+    """Add styles imported from another document to the document."""
     styled_doc = Document(DATA / STYLED_SOURCE)
     highlight = styled_doc.get_style("text", display_name="Yellow Highlight")
     document.insert_style(highlight, automatic=True)
 
 
 def apply_styles(document: Document) -> None:
-    """Apply some style changes to document."""
+    """Apply some style changes to the document."""
 
-    def change_all_headers():
+    def change_all_headers() -> None:
         style = document.get_style(family="text", display_name="green")
         # header styles should include some hints about he numeration level
         # So, here we just prefer to apply style with a span
         for header in document.body.headers:
             header.set_span(style.name, offset=0)
 
-    def change_all_paragraphs():
+    def change_all_paragraphs() -> None:
         style = document.get_style(family="paragraph", display_name="bold-blue")
         for para in document.body.paragraphs:
             para.style = style.name
 
-    def change_some_paragraph():
+    def change_some_paragraph() -> None:
         style = document.get_style(family="paragraph", display_name="italic-red")
         document.body.get_paragraph(3).style = style.name
         document.body.get_paragraph(5).style = style.name
         document.body.get_paragraph(7).style = style.name
 
-    def apply_span_regex():
+    def apply_span_regex() -> None:
         yellow = document.get_style(family="text", display_name="bold-yellow-blue")
         white = document.get_style(family="text", display_name="bold-white-black")
         for para in document.body.paragraphs:
             para.set_span(yellow.name, regex=r"tortor|ipsum")
             para.set_span(white.name, regex=r"A\w+")
 
-    def apply_span_offset():
+    def apply_span_offset() -> None:
         red = document.get_style(family="text", display_name="italic-red-yellow")
         para = document.body.get_paragraph(2)
         para.set_span(red.name, offset=9, length=22)
 
-    def apply_custom_style():
+    def apply_custom_style() -> None:
         para = document.body.get_paragraph(13)
         para.style = "custom"
 
-    def apply_imported_style():
+    def apply_imported_style() -> None:
         para = document.body.get_paragraph(14)
         style = document.get_style(family="text", display_name="Yellow Highlight")
         # feature: to not highlight spaces, make as many Spans as required:
@@ -206,27 +201,40 @@ def apply_styles(document: Document) -> None:
     apply_imported_style()
 
 
+def main() -> None:
+    document = make_base_document()
+    save_new(document, TARGET_BEFORE)
+    add_some_styles(document)
+    add_style_from_xml(document)
+    import_style_from_other_doc(document)
+    apply_styles(document)
+    test_unit(document)
+    save_new(document, TARGET_AFTER)
+
+
 def test_unit(document: Document) -> None:
     # only for test suite:
-    if "ODFDO_TESTING" in os.environ:
-        assert len(list(document.body.paragraphs)) == 15
-        for display_name in (
-            "bold-blue",
-            "italic-red",
-            "custom",
-        ):
-            style = document.get_style(family="paragraph", display_name=display_name)
-            assert document.get_styled_elements(style.name)
-        for display_name in (
-            "green",
-            "bold-yellow-blue",
-            "bold-white-black",
-            "Yellow Highlight",
-        ):
-            style = document.get_style(family="text", display_name=display_name)
-            assert document.get_styled_elements(style.name)
-        style = document.get_style(family="text", display_name="Yellow Highlight")
-        assert len(document.get_styled_elements(style.name)) == 21
+    if "ODFDO_TESTING" not in os.environ:
+        return
+
+    assert len(list(document.body.paragraphs)) == 15
+    for display_name in (
+        "bold-blue",
+        "italic-red",
+        "custom",
+    ):
+        style = document.get_style(family="paragraph", display_name=display_name)
+        assert document.get_styled_elements(style.name)
+    for display_name in (
+        "green",
+        "bold-yellow-blue",
+        "bold-white-black",
+        "Yellow Highlight",
+    ):
+        style = document.get_style(family="text", display_name=display_name)
+        assert document.get_styled_elements(style.name)
+    style = document.get_style(family="text", display_name="Yellow Highlight")
+    assert len(document.get_styled_elements(style.name)) == 21
 
 
 if __name__ == "__main__":
