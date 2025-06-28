@@ -1,5 +1,26 @@
 # Odfdo Release Notes
 
+## [3.14.5] - 2025-06-28
+
+-   Improve CVS conversion: refactor `Table.to_csv()`, `import_from_csv()`, add classmethod `Table.from_csv()`, and add recipes `export_tables_to_csv_format` and `import_csv_content_into_a_table`.
+-   Add recipe `how_to_add_a_right_aligned_picture_to_a_text_document`.
+-   Technical updates: refactoring of Table iterators and some recipes' code, configure `mypy` code analysis and refactoring.
+
+### Changed
+
+-   Refactor `Table.to_csv()`, `import_from_csv()`.
+-   Refactor recipes: `change_paragraph_styles_methods`, `change_values_of_a_chart_inside_a_document`, `concatenate_presentations`, `copy_style_from_another_document`.
+-   Refactor `Table.traverse_columns()` iterator.
+-   Refactor `Row.traverse()`.
+-   Remove unused cache for columns.
+-   start work on mypy configuration and analysis.
+
+### Added
+
+-   Add classmethod `Table.from_csv()`.
+-   Add recipes `export_tables_to_csv_format.py` and `import_csv_content_into_a_table.py`.
+-   Add recipe `how_to_add_a_right_aligned_picture_to_a_text_document`.
+
 ## [3.14.4] - 2025-06-21
 
 -   Technical updates: refactoring of some recipes' code and improvement of test coverage.
