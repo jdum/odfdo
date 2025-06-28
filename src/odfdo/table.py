@@ -2894,7 +2894,8 @@ class Table(MDTable, CachedElement):
         csv_writer = csv.writer(content, dialect=dialect, **fmtparams)
         write_content(csv_writer)
         if path_or_file:
-            Path(path_or_file).write_text(content.getvalue())
+            # windows fix: write file as binary
+            Path(path_or_file).write_bytes(content.getvalue().encode())
             return None
         return content.getvalue()
 
