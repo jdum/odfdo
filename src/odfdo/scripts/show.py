@@ -112,18 +112,18 @@ def dump_pictures(document: Document, target: str | Path) -> None:
 def spreadsheet_to_stdout(document: Document) -> None:
     body = document.body
     for table in body.tables:
-        table.rstrip(aggressive=True)  # type: ignore
-        print(table.to_csv(None))  # type: ignore
+        table.rstrip(aggressive=True)
+        print(table.to_csv(None))
 
 
 def spreadsheet_to_csv(document: Document, output: Path) -> None:
     body = document.body
     for table in body.tables:
-        name = table.name  # type: ignore
+        name = table.name
         filename = clean_filename(name) + ".csv"
         print(filename)
-        table.rstrip(aggressive=True)  # type: ignore
-        table.to_csv(output / filename)  # type: ignore
+        table.rstrip(aggressive=True)
+        table.to_csv(output / filename)
 
 
 def print_format_error(doc_type: str) -> None:

@@ -19,8 +19,8 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
-"""Container class, ODF file management.
-"""
+"""Container class, ODF file management."""
+
 from __future__ import annotations
 
 import base64
@@ -263,7 +263,7 @@ class Container:
                 raise FileNotFoundError(str(self.path))
             self.__path_like = self.path
         if (self.path or isinstance(self.__path_like, io.BytesIO)) and is_zipfile(
-            self.__path_like  # type: ignore
+            self.__path_like
         ):
             self.__packaging = ZIP
             return self._read_zip()
@@ -460,7 +460,6 @@ class Container:
         return root[0]
 
     def _xml_content(self, pretty: bool = True) -> bytes:
-
         mimetype = self.__parts["mimetype"].decode("utf8")
         doc_xml = (
             OFFICE_PREFIX.decode("utf8")

@@ -91,7 +91,7 @@ class VarSet(ElementTyped):
             if not display:
                 self.display = "none"
             else:
-                self.text = text  # type: ignore
+                self.text = text
 
     def set_value(self, value: Any) -> None:
         name = self.get_attribute("text:name")
@@ -133,7 +133,7 @@ class VarGet(ElementTyped):
             text = self.set_value_and_type(
                 value=value, value_type=value_type, text=text
             )
-            self.text = text  # type: ignore
+            self.text = text
 
 
 VarGet._define_attribut_property()
@@ -193,7 +193,7 @@ class UserFieldGet(ElementTyped):
             text = self.set_value_and_type(
                 value=value, value_type=value_type, text=text
             )
-            self.text = text  # type: ignore
+            self.text = text
 
             if style:
                 self.style = style
@@ -261,7 +261,7 @@ class UserDefined(ElementTyped):
             text = self.set_value_and_type(
                 value=value, value_type=value_type, text=text
             )
-            self.text = text  # type: ignore
+            self.text = text
 
 
 UserDefined._define_attribut_property()
@@ -330,7 +330,7 @@ class VarDate(Element):
                 self.data_style = data_style
             if text is None and date is not None:
                 text = Date.encode(date)
-            self.text = text  # type: ignore
+            self.text = text
             if date_adjust is not None:
                 self.date_adjust = Duration.encode(date_adjust)
 

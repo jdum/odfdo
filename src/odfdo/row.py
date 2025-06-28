@@ -83,7 +83,7 @@ class Row(CachedElement):
         if self._do_init:
             if width is not None:
                 for _i in range(width):
-                    self.append(Cell())  # type:ignore
+                    self.append(Cell())
             if repeated:
                 self.repeated = repeated
             if style is not None:
@@ -709,7 +709,7 @@ class Row(CachedElement):
             aggressive -- bool
         """
         for cell in reversed(self._get_cells()):
-            if not cell.is_empty(aggressive=aggressive):  # type: ignore
+            if not cell.is_empty(aggressive=aggressive):
                 break
             self.delete(cell)
         self._compute_row_cache()
@@ -755,7 +755,7 @@ class Row(CachedElement):
         Return Cell | None
         """
         try:
-            return self._get_cells()[-1]  # type: ignore
+            return self._get_cells()[-1]
         except IndexError:
             return None
 
@@ -791,7 +791,7 @@ class Row(CachedElement):
 
         Return: bool
         """
-        return all(cell.is_empty(aggressive=aggressive) for cell in self._get_cells())  # type: ignore
+        return all(cell.is_empty(aggressive=aggressive) for cell in self._get_cells())
 
 
 register_element_class(Row)

@@ -238,9 +238,9 @@ class EText(str):
     # There's some black magic in inheriting from str
     def __init__(
         self,
-        text_result: str | bytes,
+        text_result: _Element,
     ) -> None:
-        self.__parent = text_result.getparent()  # type: ignore
+        self.__parent = text_result.getparent()
         self.__is_text = text_result.is_text
         self.__is_tail = text_result.is_tail
 
@@ -650,8 +650,8 @@ class Element(MDBase):
                     wrapper.text = text[to_index:to_end]
                     wrapper.tail = text[to_end:]
                     parent = from_container.getparent()
-                    index = parent.index(from_container)  # type: ignore
-                    parent.insert(index + 1, wrapper)  # type: ignore
+                    index = parent.index(from_container)
+                    parent.insert(index + 1, wrapper)
                 return
             else:
                 # Exit to the second part where we search for the end text
@@ -672,8 +672,8 @@ class Element(MDBase):
         # Stack the copy into the surrounding element
         wrapper.append(container2)
         parent = from_container.getparent()
-        index = parent.index(from_container)  # type: ignore
-        parent.insert(index + 1, wrapper)  # type: ignore
+        index = parent.index(from_container)
+        parent.insert(index + 1, wrapper)
 
         xpath_result = _xpath_text_descendant(wrapper)
         if not isinstance(xpath_result, list):
@@ -698,7 +698,7 @@ class Element(MDBase):
                 next_one = container_to.getnext()
                 if next_one is None:
                     next_one = container_to.getparent()
-                next_one.tail = text_after  # type: ignore
+                next_one.tail = text_after
             return
         raise ValueError("End text not found")
 
@@ -768,21 +768,21 @@ class Element(MDBase):
         element = self.__element
         result = element.xpath(f"({xpath_query})[1]", namespaces=ODF_NAMESPACES)
         if result:
-            return Element.from_tag(result[0])  # type:ignore
+            return Element.from_tag(result[0])
         return None
 
     def _get_element_idx(self, xpath_query: XPath | str, idx: int) -> Element | None:
         element = self.__element
         result = element.xpath(f"({xpath_query})[{idx + 1}]", namespaces=ODF_NAMESPACES)
         if result:
-            return Element.from_tag(result[0])  # type:ignore
+            return Element.from_tag(result[0])
         return None
 
     def _get_element_idx2(self, xpath_instance: XPath, idx: int) -> Element | None:
         element = self.__element
         result = xpath_instance(element, idx=idx + 1)
         if result:
-            return Element.from_tag(result[0])  # type:ignore
+            return Element.from_tag(result[0])
         return None
 
     @property
@@ -1031,15 +1031,15 @@ class Element(MDBase):
                 if not container:
                     continue
                 if text.is_text():  # type: ignore
-                    container.text = new_text  # type: ignore
+                    container.text = new_text
                 else:
-                    container.tail = new_text  # type: ignore
+                    container.tail = new_text
                 if formatted and container.tag in {  # type; ignore
                     "text:h",
                     "text:p",
                     "text:span",
                 }:
-                    container.append_plain_text("")  # type; ignore
+                    container.append_plain_text("")  # type: ignore[attr-defined]
                 count += number
         return count
 
@@ -1245,7 +1245,7 @@ class Element(MDBase):
                         tail = current.tail
                         if tail:
                             # got a tail => the parent should be either t:p or t:h
-                            target.text = tail  # type: ignore
+                            target.text = tail
                         current, target = current._get_successor(target)  # type: ignore
                         state = 1
                         continue
@@ -1255,7 +1255,7 @@ class Element(MDBase):
                         new_target.delete(child)
                     new_target.text = ""
                     new_target.tail = ""
-                    target.__append(new_target)  # type: ignore
+                    target.__append(new_target)
                     target = new_target
                     current = current.children[0]
                     continue
@@ -1278,12 +1278,12 @@ class Element(MDBase):
                         new_target.delete(child)
                     new_target.text = ""
                     new_target.tail = ""
-                    target.__append(new_target)  # type: ignore
+                    target.__append(new_target)
                     target = new_target
                     current = current.children[0]
                     continue
                 # collect
-                target.__append(current.clone)  # type: ignore
+                target.__append(current.clone)
                 current, target = current._get_successor(target)  # type: ignore
                 continue
         # Now resu should be the "parent" of inserted parts
@@ -1419,12 +1419,12 @@ class Element(MDBase):
             current.append(lx_element)
         elif xmlposition is NEXT_SIBLING:
             parent = current.getparent()
-            index = parent.index(current)  # type: ignore
-            parent.insert(index + 1, lx_element)  # type: ignore
+            index = parent.index(current)
+            parent.insert(index + 1, lx_element)
         elif xmlposition is PREV_SIBLING:
             parent = current.getparent()
-            index = parent.index(current)  # type: ignore
-            parent.insert(index, lx_element)  # type: ignore
+            index = parent.index(current)
+            parent.insert(index, lx_element)
         else:
             raise ValueError("(xml)position must be defined")
 
@@ -1655,7 +1655,7 @@ class Element(MDBase):
         elements = xpath_instance(element)
         result: list[Element | EText] = []
         if hasattr(elements, "__iter__"):
-            for obj in elements:  # type: ignore
+            for obj in elements:
                 if isinstance(obj, (str, bytes)):
                     result.append(EText(obj))
                 elif isinstance(obj, _Element):

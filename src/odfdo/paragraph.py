@@ -1032,9 +1032,9 @@ class Span(MDSpan, Paragraph):
             if text:
                 if formatted:
                     self.text = ""
-                    self.append_plain_text(text)  # type:ignore
+                    self.append_plain_text(text)
                 else:
-                    self.text = self._unformatted(text)  # type:ignore
+                    self.text = self._unformatted(text)
             if style:
                 self.style = style
 

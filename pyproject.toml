@@ -63,6 +63,9 @@ dev = [
     "isort>=6.0.1",
     "coverage>=7.9.1",
     "pytest-cov>=6.2.1",
+    "mypy>=1.16.1",
+    "mypy-extensions>=1.1.0",
+    "typing-extensions>=4.14.0",
 ]
 
 [tool.uv]
@@ -155,6 +158,33 @@ skip_empty = true
 [tool.coverage.run]
 branch = true
 source = ["odfdo"]
+
+[tool.mypy]
+files = ["src/odfdo"]
+disallow_untyped_defs = true
+disallow_any_unimported = false
+no_implicit_optional = true
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = "lxml.etree"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "odfdo.mixin_md"
+disable_error_code = ["attr-defined"]
+
+[[tool.mypy.overrides]]
+module = "odfdo.mixin_dc_date"
+disable_error_code = ["attr-defined"]
+
+[[tool.mypy.overrides]]
+module = "odfdo.mixin_dc_creator"
+disable_error_code = ["attr-defined"]
+
 
 [tool.pytest.ini_options]
 minversion = "8.0"

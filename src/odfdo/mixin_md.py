@@ -180,11 +180,12 @@ class MDStyle:
 
     def _md_styling(self) -> Callable:
         def get_text_props(document: Any, name: str) -> dict[str, Any]:
+            prop: dict[str, Any] = {}
             style = document.get_style("text", name)
             if not style:
                 style = document.get_style("paragraph", name)
             if not style:
-                return {}
+                return prop
             parent_style = document.get_parent_style(style)
             if parent_style:
                 prop = parent_style.get_text_properties()
@@ -286,7 +287,7 @@ class MDNote(MDBase):
             MD_GLOBAL["footnote"].append(str(self))
         else:
             MD_GLOBAL["endnote"].append(str(self))
-        return citation + post_styler(self.tail)
+        return citation + str(post_styler(self.tail))
 
     def _md_collect(self) -> list[str]:
         if content := self._md_format():
@@ -319,7 +320,7 @@ class MDTab(MDStyle):
 
 class MDLineBreak(MDStyle):
     def _md_format(self, post_styler: Callable = _as_none) -> str:
-        return "\\\n" + post_styler(self.tail)
+        return "\\\n" + str(post_styler(self.tail))
 
     def _md_collect(self) -> list[str]:
         if content := self._md_format():

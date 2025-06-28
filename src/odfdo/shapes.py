@@ -22,6 +22,7 @@
 """Drawing classes ShapeBase, LineShape, RectangleShape, EllipseShape,
 ConnectorShape and DrawGroup.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -395,7 +396,7 @@ class DrawGroup(Element, AnchorMix, ZMix, PosMix):
 DrawGroup._define_attribut_property()
 
 registered_shapes = [
-    s._tag for s in (LineShape, RectangleShape, EllipseShape, ConnectorShape)  # type: ignore
+    s._tag for s in (LineShape, RectangleShape, EllipseShape, ConnectorShape)
 ]
 register_element_class(LineShape)
 register_element_class(RectangleShape)

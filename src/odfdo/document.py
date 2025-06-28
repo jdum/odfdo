@@ -784,7 +784,7 @@ class Document(MDDocument):
             if not existing_style.name.startswith(AUTOMATIC_PREFIX):
                 continue
             try:
-                index = int(existing_style.name[len(AUTOMATIC_PREFIX) :])  # type: ignore
+                index = int(existing_style.name[len(AUTOMATIC_PREFIX) :])
             except ValueError:
                 continue
             max_index = max(max_index, index)
@@ -1195,7 +1195,7 @@ class Document(MDDocument):
 
     def get_cell_style_properties(
         self, table: str | int, coord: tuple | list | str
-    ) -> dict[str, str]:  # type: ignore
+    ) -> dict[str, str]:
         """Return the style properties of a table cell of a .ods document,
         from the cell style or from the row style."""
 
@@ -1240,7 +1240,7 @@ class Document(MDDocument):
     def get_table_style(
         self,
         table: str | int,
-    ) -> Style | None:  # type: ignore
+    ) -> Style | None:
         """Return the Style instance the table.
 
         Arguments:

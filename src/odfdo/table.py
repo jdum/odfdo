@@ -3163,7 +3163,7 @@ class NamedRange(Element):
         table = body.get_table(name=self.table_name)
         if table is None:
             raise ValueError
-        return table.get_value(self.start, get_type)  # type: ignore
+        return table.get_value(self.start, get_type)
 
     def set_values(
         self,
@@ -3181,7 +3181,7 @@ class NamedRange(Element):
         table = body.get_table(name=self.table_name)
         if table is None:
             raise ValueError
-        table.set_values(  # type: ignore
+        table.set_values(
             values,
             coord=self.crange,
             style=style,
@@ -3205,7 +3205,7 @@ class NamedRange(Element):
         table = body.get_table(name=self.table_name)
         if table is None:
             raise ValueError
-        table.set_value(  # type: ignore
+        table.set_value(
             coord=self.start,
             value=value,
             cell_type=cell_type,

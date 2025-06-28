@@ -18,8 +18,8 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""Header class for "text:h".
-"""
+"""Header class for "text:h"."""
+
 from __future__ import annotations
 
 from re import sub
@@ -80,9 +80,9 @@ class Header(Paragraph, MDHeader):
             if text:
                 if formatted:
                     self.text = ""
-                    self.append_plain_text(text)  # type:ignore
+                    self.append_plain_text(text)
                 else:
-                    self.text = self._unformatted(text)  # type:ignore
+                    self.text = self._unformatted(text)
             if restart_numbering:
                 self.restart_numbering = True
             if start_value is not None:

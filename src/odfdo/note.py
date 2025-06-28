@@ -20,8 +20,8 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Note class for "text:note" and Annotation class for "office:annotation".
-"""
+"""Note class for "text:note" and Annotation class for "office:annotation"."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -108,7 +108,7 @@ class Note(MDNote, Element):
     def citation(self, text: str | None) -> None:
         note_citation = self.get_element("text:note-citation")
         if note_citation:
-            note_citation.text = text  # type:ignore
+            note_citation.text = text
 
     @property
     def note_body(self) -> str:
@@ -190,7 +190,7 @@ class Annotation(MDTail, Element, DcCreatorMixin, DcDateMixin):
         super().__init__(**kwargs)
 
         if self._do_init:
-            self.note_body = text_or_element  # type:ignore
+            self.note_body = text_or_element
             if creator:
                 self.creator = creator
             if date is None:
