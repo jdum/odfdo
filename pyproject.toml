@@ -118,20 +118,7 @@ select = [
     # tryceratops
     "TRY",
 ]
-# ignore = [
-#   # Use specific rule codes when ignoring type issues
-#   "PGH003",
-#   # Using `lxml` to parse untrusted data is known to be vulnerable to XML attacks
-#   #"S320",
-#   # Convert to `datetime.UTC` alias
-#   "UP017",
-#   # import *` used; unable to detect undefined names
-#   "F403",
-#   "E402",
-# ]
 ignore = [
-    # Using `lxml` to parse untrusted data is known to be vulnerable to XML attacks
-    "S320",
     # LineTooLong
     "E501",
     # DoNotAssignLambda
