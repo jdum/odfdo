@@ -159,9 +159,6 @@ def show_output(
     if doc_type in {"text", "text-template", "presentation", "presentation-template"}:
         (output / "content.rst").write_text(doc.get_formatted_text(rst_mode=args.rst))
     elif doc_type in {"spreadsheet", "spreadsheet-template"}:
-        print(doc)
-        print(doc.path)
-        print(doc.body)
         spreadsheet_to_csv(doc, output)
     else:
         print_format_error(doc_type)
