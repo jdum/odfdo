@@ -1233,7 +1233,7 @@ class Document(MDDocument):
         """Return the background color of a table cell of a .ods document,
         from the cell style, or from the row or column.
 
-        If color is not defined, return default value.."""
+        If color is not defined, return default value."""
         found = self.get_cell_style_properties(table, coord).get("fo:background-color")
         return found or default
 

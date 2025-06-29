@@ -318,7 +318,8 @@ class Element(MDBase):
         tag = to_str(tree_element.tag)
         klass = _class_registry.get(tag, cls)
         element = klass(tag_or_elem=tree_element)
-        element._copy_cache(cache)
+        if cache:
+            element._copy_cache(cache)
         return element
 
     def _copy_cache(self, cache: tuple | None) -> None:
@@ -747,7 +748,6 @@ class Element(MDBase):
         return result
 
     def get_elements(self, xpath_query: XPath | str) -> list[Element]:
-        cache: tuple | None = None
         element = self.__element
         if isinstance(xpath_query, str):
             new_xpath_query = xpath_compile(xpath_query)
@@ -757,7 +757,7 @@ class Element(MDBase):
         if not isinstance(result, list):
             raise TypeError("Bad XPath result")
         return [
-            Element.from_tag_for_clone(e, cache)
+            Element.from_tag_for_clone(e, None)
             for e in result
             if isinstance(e, _Element)
         ]

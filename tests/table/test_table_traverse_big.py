@@ -24,7 +24,7 @@ from collections.abc import Iterable
 import pytest
 
 from odfdo.document import Document
-from odfdo.table import Table, _xpath_row_idx
+from odfdo.table import _XP_ROW_IDX, Table
 
 
 @pytest.fixture
@@ -72,14 +72,14 @@ def test_get_row_5200(table):
 
 
 def test_get_row_raw_5100(table):
-    row = table._get_element_idx2(_xpath_row_idx, 5100)
+    row = table._get_element_idx2(_XP_ROW_IDX, 5100)
     assert row.get_values() == ["same"]
     assert row.y is None
     assert row.repeated == 100
 
 
 def test_get_row_raw_5101(table):
-    row = table._get_element_idx2(_xpath_row_idx, 5101)
+    row = table._get_element_idx2(_XP_ROW_IDX, 5101)
     print(row.serialize())
     assert row.get_values() == [5101]
     assert row.y is None

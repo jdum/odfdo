@@ -29,24 +29,17 @@ import contextlib
 from collections.abc import Iterable, Iterator
 from typing import Any
 
+from lxml.etree import XPath, _Element
+
 from .cell import Cell
 from .element import Element, register_element_class, xpath_compile
-from .element_cached import (
-    CachedElement,
-    delete_item_in_vault,
-    find_odf_idx,
-    insert_item_in_vault,
-    insert_map_once,
-    make_cache_map,
-    set_item_in_vault,
-)
+from .table_cache import _XP_CELL_IDX, RowCache, TableCache
 from .utils import convert_coordinates, increment, translate_from_any
 
 _xpath_cell = xpath_compile("(table:table-cell|table:covered-table-cell)")
-_xpath_cell_idx = xpath_compile("(table:table-cell|table:covered-table-cell)[$idx]")
 
 
-class Row(CachedElement):
+class Row(Element):
     """ODF table row "table:table-row" """
 
     _tag = "table:table-row"
@@ -74,12 +67,10 @@ class Row(CachedElement):
             style -- str
         """
         super().__init__(**kwargs)
+        self._table_cache = TableCache()
+        self._row_cache = RowCache()
         self.y = None
-        self._indexes = {}
-        self._indexes["_rmap"] = {}
         self._compute_row_cache()
-        self._tmap = []
-        self._cmap = []
         if self._do_init:
             if width is not None:
                 for _i in range(width):
@@ -92,6 +83,34 @@ class Row(CachedElement):
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} y={self.y}>"
+
+    def get_elements(self, xpath_query: XPath | str) -> list[Element]:
+        element = self._Element__element
+        if isinstance(xpath_query, str):
+            new_xpath_query = xpath_compile(xpath_query)
+            result = new_xpath_query(element)
+        else:
+            result = xpath_query(element)
+        if not isinstance(result, list):
+            raise TypeError("Bad XPath result")
+        cache = (self._table_cache, self._row_cache)
+        return [
+            Element.from_tag_for_clone(e, cache)
+            for e in result
+            if isinstance(e, _Element)
+        ]
+
+    def _copy_cache(self, cache: tuple | None) -> None:
+        """Copy cache when cloning."""
+        self._table_cache = cache[0]
+        if cache[1]:
+            self._row_cache = cache[1]
+
+    def clear(self) -> None:
+        """Remove text, children and attributes from the Row."""
+        self._Element__element.clear()
+        self._table_cache = TableCache()
+        self._row_cache = RowCache()
 
     def _get_cells(self) -> list[Cell]:
         return self.get_elements(_xpath_cell)  # type: ignore
@@ -115,7 +134,7 @@ class Row(CachedElement):
         idx_repeated_seq = self.elements_repeated_sequence(
             _xpath_cell, "table:number-columns-repeated"
         )
-        self._rmap = make_cache_map(idx_repeated_seq)
+        self._row_cache.make_cell_map(idx_repeated_seq)
 
     # Public API
 
@@ -123,9 +142,8 @@ class Row(CachedElement):
     def clone(self) -> Row:
         clone = Element.clone.fget(self)  # type: ignore
         clone.y = self.y
-        clone._rmap = self._rmap[:]
-        clone._tmap = self._tmap[:]
-        clone._cmap = self._cmap[:]
+        clone._table_cache = TableCache.copy(self._table_cache)
+        clone._row_cache = RowCache.copy(self._row_cache)
         return clone
 
     def _set_repeated(self, repeated: int | None) -> None:
@@ -168,12 +186,8 @@ class Row(CachedElement):
                 return
             # parent may be group of rows, not table
             if isinstance(upper, Element) and upper._tag == "table:table":
-                upper._compute_table_cache()
-                if hasattr(self, "_tmap"):
-                    self._tmap.clear()
-                    self._tmap.extend(upper._tmap)
-                else:
-                    self._tmap = upper._tmap
+                upper._table_cache = self._table_cache  # type: ignore
+                upper._compute_table_cache()  # type: ignore
                 return
             current = upper
 
@@ -196,11 +210,7 @@ class Row(CachedElement):
 
         Return: int
         """
-        try:
-            value = self._rmap[-1] + 1
-        except Exception:
-            value = 0
-        return value
+        return self._row_cache.width()
 
     def _translate_x_from_any(self, x: str | int) -> int:
         return translate_from_any(x, self.width, 0)
@@ -320,16 +330,14 @@ class Row(CachedElement):
             return self._get_cell2_base(x)
 
     def _get_cell2_base(self, x: int) -> Cell | None:
-        idx = find_odf_idx(self._rmap, x)
-        cell: Cell
-        if idx is not None:
-            if idx in self._indexes["_rmap"]:
-                cell = self._indexes["_rmap"][idx]
-            else:
-                cell = self._get_element_idx2(_xpath_cell_idx, idx)  # type: ignore
-                self._indexes["_rmap"][idx] = cell
-            return cell
-        return None
+        idx = self._row_cache.cell_idx(x)
+        if idx is None:
+            return None
+        cell = self._row_cache.cached_cell(idx)
+        if cell is None:
+            cell = self._get_element_idx2(_XP_CELL_IDX, idx)
+            self._row_cache.store_cell(cell, idx)
+        return cell
 
     def get_cell(self, x: int, clone: bool = True) -> Cell | None:
         """Get the cell at position "x" starting from 0. Alphabetical
@@ -407,10 +415,9 @@ class Row(CachedElement):
             cell_back = self.append_cell(cell, _repeated=repeated, clone=clone)
         else:
             # Inside the defined row
-            set_item_in_vault(x, cell, self, _xpath_cell_idx, "_rmap", clone=clone)
-            cell.x = x
-            cell.y = self.y
-            cell_back = cell
+            cell_back = self._row_cache.set_cell_in_cache(x, cell, self, clone=clone)
+            cell_back.x = x
+            cell_back.y = self.y
         return cell_back
 
     def set_value(
@@ -472,10 +479,9 @@ class Row(CachedElement):
         # Outside the defined row
         diff = x - self.width
         if diff < 0:
-            insert_item_in_vault(x, cell, self, _xpath_cell_idx, "_rmap")
-            cell.x = x
-            cell.y = self.y
-            cell_back = cell
+            cell_back = self._row_cache.insert_cell_in_cache(x, cell, self)
+            cell_back.x = x
+            cell_back.y = self.y
         elif diff == 0:
             cell_back = self.append_cell(cell, clone=clone)
         else:
@@ -516,7 +522,7 @@ class Row(CachedElement):
         self._append(cell)
         if _repeated is None:
             _repeated = cell.repeated or 1
-        self._rmap = insert_map_once(self._rmap, len(self._rmap), _repeated)
+        self._row_cache.insert_cell_map_once(_repeated)
         cell.x = self.width - 1
         cell.y = self.y
         return cell
@@ -538,7 +544,7 @@ class Row(CachedElement):
         x = self._translate_x_from_any(x)
         if x >= self.width:
             return
-        delete_item_in_vault(x, self, _xpath_cell_idx, "_rmap")
+        self._row_cache.delete_cell_in_cache(x, self)
 
     def get_values(
         self,
@@ -713,7 +719,7 @@ class Row(CachedElement):
                 break
             self.delete(cell)
         self._compute_row_cache()
-        self._indexes["_rmap"] = {}
+        self._row_cache.clear_cell_indexes()
 
     def _current_length(self) -> int:
         """Return the current estimated length of the row.
@@ -746,7 +752,7 @@ class Row(CachedElement):
         else:
             min_width = 1
         self._compute_row_cache()
-        self._indexes["_rmap"] = {}
+        self._row_cache.clear_cell_indexes()
         return min_width
 
     def last_cell(self) -> Cell | None:

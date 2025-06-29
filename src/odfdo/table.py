@@ -38,22 +38,16 @@ from pathlib import Path
 from textwrap import wrap
 from typing import Any
 
+from lxml.etree import XPath, _Element
+
 from .cell import Cell
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element, register_element_class, xpath_compile
-from .element_cached import (
-    CachedElement,
-    delete_item_in_vault,
-    find_odf_idx,
-    insert_item_in_vault,
-    insert_map_once,
-    make_cache_map,
-    set_item_in_vault,
-)
 from .frame import Frame
 from .mixin_md import MDTable
 from .row import Row
 from .row_group import RowGroup
+from .table_cache import _XP_COLUMN_IDX, _XP_ROW_IDX, TableCache
 from .utils import (
     convert_coordinates,
     digit_to_alpha,
@@ -63,25 +57,16 @@ from .utils import (
 )
 
 _RE_TABLE_NAME = re.compile(r"^\'|[\n\\/\*\?:\][]|\'$")
-_xpath_row = xpath_compile(
+_XP_ROW = xpath_compile(
     "table:table-row|table:table-rows/table:table-row|"
     "table:table-header-rows/table:table-row|"
     "table:table-row-group/child::table:table-row"
 )
-_xpath_row_idx = xpath_compile(
-    "(table:table-row|table:table-rows/table:table-row|"
-    "table:table-header-rows/table:table-row|"
-    "table:table-row-group/child::table:table-row)[$idx]"
-)
-_xpath_column = xpath_compile(
+_XP_COLUMN = xpath_compile(
     "table:table-column|table:table-columns/table:table-column|"
     "table:table-header-columns/table:table-column"
 )
-_xpath_column_idx = xpath_compile(
-    "(table:table-column|table:table-columns/table:table-column|"
-    "table:table-header-columns/table:table-column)[$idx]"
-)
-_xpath_row_group = xpath_compile(
+_XP_ROW_GROUP = xpath_compile(
     "table:table-row-group|table:table-row-group/child::table:table-row-group"
 )
 
@@ -263,14 +248,6 @@ class Column(Element):
             if isinstance(upper, Table):
                 break
             current = upper
-        # # fixme : need to optimize this
-        # if isinstance(upper, Table):
-        #     upper._compute_table_cache()
-        #     if hasattr(self, "_cmap"):
-        #         del self._cmap[:]
-        #         self._cmap.extend(upper._cmap)
-        #     else:
-        #         self._cmap = upper._cmap
 
     @property
     def style(self) -> str | None:
@@ -285,7 +262,7 @@ class Column(Element):
         self.set_style_attribute("table:style-name", style)
 
 
-class Table(MDTable, CachedElement):
+class Table(MDTable, Element):
     """ODF table "table:table" """
 
     _tag = "table:table"
@@ -346,9 +323,7 @@ class Table(MDTable, CachedElement):
             style -- str
         """
         super().__init__(**kwargs)
-        self._indexes = {}
-        self._indexes["_cmap"] = {}
-        self._indexes["_tmap"] = {}
+        self._table_cache = TableCache()
         if self._do_init:
             self.name = name
             if protected:
@@ -396,6 +371,31 @@ class Table(MDTable, CachedElement):
         )
         write_content(csv_writer)
         return out.getvalue()
+
+    def get_elements(self, xpath_query: XPath | str) -> list[Element]:
+        element = self._Element__element  # type: ignore
+        if isinstance(xpath_query, str):
+            new_xpath_query = xpath_compile(xpath_query)
+            result = new_xpath_query(element)
+        else:
+            result = xpath_query(element)
+        if not isinstance(result, list):
+            raise TypeError("Bad XPath result")
+        cache = (self._table_cache, None)
+        return [
+            Element.from_tag_for_clone(e, cache)
+            for e in result
+            if isinstance(e, _Element)
+        ]
+
+    def _copy_cache(self, cache: tuple | None) -> None:
+        """Copy cache when cloning."""
+        self._table_cache = cache[0]
+
+    def clear(self) -> None:
+        """Remove text, children and attributes from the Row."""
+        self._Element__element.clear()  # type: ignore
+        self._table_cache = TableCache()
 
     def _translate_y_from_any(self, y: str | int) -> int:
         # "3" (couting from 1) -> 2 (couting from 0)
@@ -558,13 +558,13 @@ class Table(MDTable, CachedElement):
 
     def _compute_table_cache(self) -> None:
         idx_repeated_seq = self.elements_repeated_sequence(
-            _xpath_row, "table:number-rows-repeated"
+            _XP_ROW, "table:number-rows-repeated"
         )
-        self._tmap = make_cache_map(idx_repeated_seq)
+        self._table_cache.make_row_map(idx_repeated_seq)
         idx_repeated_seq = self.elements_repeated_sequence(
-            _xpath_column, "table:number-columns-repeated"
+            _XP_COLUMN, "table:number-columns-repeated"
         )
-        self._cmap = make_cache_map(idx_repeated_seq)
+        self._table_cache.make_col_map(idx_repeated_seq)
 
     def _update_width(self, row: Row) -> None:
         """Synchronize the number of columns if the row is bigger.
@@ -743,11 +743,7 @@ class Table(MDTable, CachedElement):
 
         Return: int
         """
-        try:
-            height = self._tmap[-1] + 1
-        except Exception:
-            height = 0
-        return height
+        return self._table_cache.height()
 
     @property
     def width(self) -> int:
@@ -759,21 +755,7 @@ class Table(MDTable, CachedElement):
         Return: int
         """
         # Columns are our reference for user expected width
-
-        try:
-            width = self._cmap[-1] + 1
-        except Exception:
-            width = 0
-
-        # columns = self._get_columns()
-        # repeated = self.xpath(
-        #        'table:table-column/@table:number-columns-repeated')
-        # unrepeated = len(columns) - len(repeated)
-        # ws = sum(int(r) for r in repeated) + unrepeated
-        # if w != ws:
-        #    print "WARNING   ws", ws, "w", w
-
-        return width
+        return self._table_cache.width()
 
     @property
     def size(self) -> tuple[int, int]:
@@ -1070,7 +1052,7 @@ class Table(MDTable, CachedElement):
             # keep count of the biggest row
             max_width = max(max_width, row.width)
         # raz cache of rows
-        self._indexes["_tmap"] = {}
+        self._table_cache.clear_row_indexes()
         # Step 3: trim columns to match max_width
         columns = self._get_columns()
         repeated_cols = self.xpath("table:table-column/@table:number-columns-repeated")
@@ -1092,7 +1074,7 @@ class Table(MDTable, CachedElement):
                     if diff == 0:
                         break
         # raz cache of columns
-        self._indexes["_cmap"] = {}
+        self._table_cache.clear_col_indexes()
         self._compute_table_cache()
 
     def optimize_width(self) -> None:
@@ -1123,7 +1105,7 @@ class Table(MDTable, CachedElement):
         except IndexError:
             pass
         # raz cache of rows
-        self._indexes["_tmap"] = {}
+        self._table_cache.clear_row_indexes()
 
     def _optimize_width_length(self) -> int:
         return max(row.minimized_width() for row in self._get_rows())
@@ -1154,7 +1136,7 @@ class Table(MDTable, CachedElement):
                     if diff == 0:
                         break
         # raz cache of columns
-        self._indexes["_cmap"] = {}
+        self._table_cache.clear_col_indexes()
         self._compute_table_cache()
 
     def transpose(self, coord: tuple | list | str | None = None) -> None:
@@ -1243,10 +1225,10 @@ class Table(MDTable, CachedElement):
 
         Return: list of RowGroup
         """
-        return self.get_elements(_xpath_row_group)  # type: ignore
+        return self.get_elements(_XP_ROW_GROUP)  # type: ignore
 
     def _get_rows(self) -> list[Row]:
-        return self.get_elements(_xpath_row)  # type: ignore
+        return self.get_elements(_XP_ROW)  # type: ignore
 
     def traverse(
         self,
@@ -1350,15 +1332,14 @@ class Table(MDTable, CachedElement):
         return row
 
     def _get_row2_base(self, y: int) -> Row | None:
-        idx = find_odf_idx(self._tmap, y)
-        if idx is not None:
-            if idx in self._indexes["_tmap"]:
-                row = self._indexes["_tmap"][idx]
-            else:
-                row = self._get_element_idx2(_xpath_row_idx, idx)
-                self._indexes["_tmap"][idx] = row
-            return row
-        return None
+        idx = self._table_cache.row_idx(y)
+        if idx is None:
+            return None
+        row = self._table_cache.cached_row(idx)
+        if row is None:
+            row = self._get_element_idx2(_XP_ROW_IDX, idx)
+            self._table_cache.store_row(row, idx)
+        return row
 
     def get_row(self, y: int | str, clone: bool = True, create: bool = True) -> Row:
         """Get the row at the given "y" position.
@@ -1414,9 +1395,7 @@ class Table(MDTable, CachedElement):
             row_back = self.append_row(row, _repeated=repeated, clone=clone)
         else:
             # Inside the defined table
-            row_back = set_item_in_vault(  # type: ignore
-                y, row, self, _xpath_row_idx, "_tmap", clone=clone
-            )
+            row_back = self._table_cache.set_row_in_cache(y, row, self, clone=clone)
         # print self.serialize(True)
         # Update width if necessary
         self._update_width(row_back)
@@ -1446,7 +1425,7 @@ class Table(MDTable, CachedElement):
         y = self._translate_y_from_any(y)
         diff = y - self.height
         if diff < 0:
-            row_back = insert_item_in_vault(y, row, self, _xpath_row_idx, "_tmap")
+            row_back = self._table_cache.insert_row_in_cache(y, row, self)
         elif diff == 0:
             row_back = self.append_row(row, clone=clone)
         else:
@@ -1509,7 +1488,7 @@ class Table(MDTable, CachedElement):
         self._append(row)
         if _repeated is None:
             _repeated = row.repeated or 1
-        self._tmap = insert_map_once(self._tmap, len(self._tmap), _repeated)
+        self._table_cache.insert_row_map_once(_repeated)
         row.y = self.height - 1
         # Initialize columns
         if not self._get_columns():
@@ -1534,7 +1513,7 @@ class Table(MDTable, CachedElement):
         if y >= self.height:
             return
         # Inside the defined table
-        delete_item_in_vault(y, self, _xpath_row_idx, "_tmap")
+        self._table_cache.delete_row_in_cache(y, self)
 
     def get_row_values(
         self,
@@ -2136,7 +2115,7 @@ class Table(MDTable, CachedElement):
     # Columns
 
     def _get_columns(self) -> list[Column]:
-        return self.get_elements(_xpath_column)  # type: ignore
+        return self.get_elements(_XP_COLUMN)  # type: ignore
 
     def traverse_columns(
         self,
@@ -2216,16 +2195,15 @@ class Table(MDTable, CachedElement):
         # Outside the defined table
         if x >= self.width:
             return Column()
-        # Inside the defined table
-        odf_idx = find_odf_idx(self._cmap, x)
-        if odf_idx is not None:
-            column = self._get_element_idx2(_xpath_column_idx, odf_idx)
+        idx = self._table_cache.col_idx(x)
+        if idx is None:
+            return None
+        column = self._table_cache.cached_col(idx)
+        if column is None:
+            column = self._get_element_idx2(_XP_COLUMN_IDX, idx)
             if column is None:
                 return None
-            # fixme : no clone here => change doc and unit tests
-            return column.clone  # type: ignore
-            # return row
-        return None
+        return column.clone  # type: ignore
 
     @property
     def columns(self) -> list[Column]:
@@ -2294,9 +2272,7 @@ class Table(MDTable, CachedElement):
             column_back = self.append_column(column, _repeated=repeated)
         else:
             # Inside the defined table
-            column_back = set_item_in_vault(  # type: ignore
-                x, column, self, _xpath_column_idx, "_cmap"
-            )
+            column_back = self._table_cache.set_col_in_cache(x, column, self)
         return column_back
 
     def insert_column(
@@ -2323,9 +2299,7 @@ class Table(MDTable, CachedElement):
         x = self._translate_x_from_any(x)
         diff = x - self.width
         if diff < 0:
-            column_back = insert_item_in_vault(
-                x, column, self, _xpath_column_idx, "_cmap"
-            )
+            column_back = self._table_cache.insert_col_in_cache(x, column, self)
         elif diff == 0:
             column_back = self.append_column(column.clone)
         else:
@@ -2358,16 +2332,19 @@ class Table(MDTable, CachedElement):
         Arguments:
 
             column -- Column
+
+            _repeated -- (optional), repeated value of the column
         """
         if column is None:
             column = Column()
+            _repeated = 1
         else:
             column = column.clone
-        if not self._cmap:
+        odf_idx = self._table_cache.col_map_length() - 1
+        if odf_idx < 0:
             position = 0
         else:
-            odf_idx = len(self._cmap) - 1
-            last_column = self._get_element_idx2(_xpath_column_idx, odf_idx)
+            last_column = self._get_element_idx2(_XP_COLUMN_IDX, odf_idx)
             if last_column is None:
                 raise ValueError
             position = self.index(last_column) + 1
@@ -2376,7 +2353,7 @@ class Table(MDTable, CachedElement):
         # Repetitions are accepted
         if _repeated is None:
             _repeated = column.repeated or 1
-        self._cmap = insert_map_once(self._cmap, len(self._cmap), _repeated)
+        self._table_cache.insert_col_map_once(_repeated)
         # No need to update row widths
         return column
 
@@ -2396,7 +2373,7 @@ class Table(MDTable, CachedElement):
         if x >= self.width:
             return
         # Inside the defined table
-        delete_item_in_vault(x, self, _xpath_column_idx, "_cmap")
+        self._table_cache.delete_col_in_cache(x, self)
         # Update width
         width = self.width
         for row in self._get_rows():

@@ -28,6 +28,7 @@ import pytest
 
 from odfdo.document import Document
 from odfdo.table import Cell, Row, Table
+from odfdo.table_cache import TableCache
 
 
 @pytest.fixture
@@ -130,9 +131,9 @@ def test_rstrip_empty():
 def test_table_row_repeated_cache(table):
     row = table.rows[3]
     assert not row.repeated
-    del row._tmap
+    row._table_cache = TableCache()
     row.repeated = 3
-    assert hasattr(row, "_tmap")
+    assert row._table_cache.row_idx(5) == 3
 
 
 def test_force_width_1():

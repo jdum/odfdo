@@ -73,9 +73,26 @@ def test_get_row(table):
     assert row.y == 3
 
 
-def test_get_row_repeat(table):
+def test_get_row_repeat_1(table):
     # Set a repetition manually
-    table.get_elements("table:table-row")[1].repeated = 2
+    row_1 = table.get_elements("table:table-row")[1]
+    assert row_1._table_cache.row_map == [0, 1, 2, 3]
+    row_1.repeated = 2
+    assert row_1._table_cache.row_map == [0, 2, 3, 4]
+
+
+def test_get_row_repeat_1_cache_id(table):
+    # Set a repetition manually
+    row_1 = table.get_elements("table:table-row")[1]
+    row_1.repeated = 2
+    assert id(row_1._table_cache) == id(table._table_cache)
+
+
+def test_get_row_repeat_2(table):
+    # Set a repetition manually
+    row_1 = table.get_elements("table:table-row")[1]
+    row_1.repeated = 2
+    assert row_1.repeated == 2
     row = table.get_row(4)
     assert row.get_values() == [1, 2, 3, 4, 5, 6, 7]
     assert row.y == 4
