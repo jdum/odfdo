@@ -16,14 +16,13 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-import os
+
 import random
 import time
 
-from odfdo import __version__ as version
 from odfdo.table import Row, Table
 
-DEBUG = True
+DEBUG = False
 MAXPRINT = 10
 
 
@@ -194,24 +193,15 @@ def run_repeated(D):
     return table
 
 
-def run_all_perf():
-    print(version)
-    total = chrono()
-    # for r,c  in [(10,8)]:
-    for r, c in [(10, 10), (100, 10), (100, 100), (1000, 10)]:
-        D = initial_compute(lines=r, cols=c)
-        run_append_rows(D)
-        t = run_set_rows(D)
-        run_swap(D, t)
-        run_swap_transpose(D, t)
-        t = run_random_set_value(D)
-        run_random_get_value(D, t)
-        run_repeated(D)
-    print("Total", end=" ")
-    total.delta()
-
-
-def test_all_perf():
-    if "ODFDO_TESTING_PERFS" in os.environ:
-        run_all_perf()
-    assert True
+def run_perf_test(rows: int, cols: int) -> None:
+    print(f"rows: {rows} cols:{cols}")
+    duration = chrono()
+    D = initial_compute(lines=rows, cols=cols)
+    run_append_rows(D)
+    t = run_set_rows(D)
+    run_swap(D, t)
+    run_swap_transpose(D, t)
+    t = run_random_set_value(D)
+    run_random_get_value(D, t)
+    run_repeated(D)
+    duration.delta()
