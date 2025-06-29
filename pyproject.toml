@@ -66,6 +66,7 @@ dev = [
     "mypy>=1.16.1",
     "mypy-extensions>=1.1.0",
     "typing-extensions>=4.14.0",
+    "pytest-xdist>=3.7.0",
 ]
 
 [tool.uv]
@@ -152,13 +153,6 @@ ignore = [
 "recipes/*" = ["S101", "SIM102", "B903"]
 "recipes/accessing_a_single_element.py" = ["RUF001"]
 
-[tool.coverage.report]
-skip_empty = true
-
-[tool.coverage.run]
-branch = true
-source = ["odfdo"]
-
 [tool.mypy]
 files = ["src/odfdo"]
 disallow_untyped_defs = true
@@ -185,7 +179,16 @@ disable_error_code = ["attr-defined"]
 module = "odfdo.mixin_dc_creator"
 disable_error_code = ["attr-defined"]
 
-
 [tool.pytest.ini_options]
 minversion = "8.0"
 testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+source = ["odfdo"]
+
+[tool.coverage.report]
+skip_empty = true
+show_missing = false
+fail_under = 70
