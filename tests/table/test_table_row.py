@@ -207,3 +207,9 @@ def test_minimized_width():
 def test_last_cell_none():
     row = Row()
     assert row.last_cell() is None
+
+
+def test_get_elements():
+    row = Row()
+    result = row.get_elements("wrong")
+    assert result == []

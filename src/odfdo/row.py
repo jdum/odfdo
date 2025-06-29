@@ -91,7 +91,7 @@ class Row(Element):
             result = new_xpath_query(element)
         else:
             result = xpath_query(element)
-        if not isinstance(result, list):
+        if not isinstance(result, list):  # pragma: no cover
             raise TypeError("Bad XPath result")
         cache = (self._table_cache, self._row_cache)
         return [
@@ -103,7 +103,7 @@ class Row(Element):
     def _copy_cache(self, cache: tuple | None) -> None:
         """Copy cache when cloning."""
         self._table_cache = cache[0]
-        if cache[1]:
+        if cache[1]:  # pragma: no cover
             self._row_cache = cache[1]
 
     def clear(self) -> None:
