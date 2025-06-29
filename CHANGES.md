@@ -1,5 +1,25 @@
 # Odfdo Release Notes
 
+## [3.14.6] - 2025-06-29
+
+-   Add support for the `lxml` library version 6.0.0.
+-   Fix a slowness of `odfdo-show`on big tables.
+-   Technical updates: refactor internal cache for `Table` and `Row`, add tests for `Row` class, improve typing and doc strings on module `odfdo.element`, improve test suite speed.
+
+### Changed
+
+-   Refactor cache system in `Row` and `Table` methods.
+-   Refactor `Element`class for better type hints.
+-   Configure test suite using `pytest-xdist`
+
+### Added
+
+-   Add internal module `odfdo.table_cache` with classes `RowCache`, `TableCache`.
+
+### Fixed
+
+-   Fix `odfdo-show` slowness on big tables.
+
 ## [3.14.5] - 2025-06-28
 
 -   Improve CVS conversion: refactor `Table.to_csv()`, `import_from_csv()`, add classmethod `Table.from_csv()`, and add recipes `export_tables_to_csv_format` and `import_csv_content_into_a_table`.
