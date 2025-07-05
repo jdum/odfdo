@@ -23,15 +23,17 @@ def read_source_document() -> Document:
 
 
 def read_text_content(document: Document) -> str:
+    """Return the text content of the document."""
     # just verify what type of document it is:
     print("Type of document:", document.get_type())
     # A quick way to get the text content:
     text = document.get_formatted_text()
 
-    print("Size :", len(text))
+    print("Size of text:", len(text))
 
     # Let's show the beginning :
-    print(text[:320])
+    print("Start of the text:")
+    print(text[:240])
 
     return text
 
