@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-"""Create basic text styles.
+"""Create basic text styles with the Style class API.
+
+Styles are applied to entire paragraphs or headings, or to words using Span.
+
+The create_style_steel() and create_style_special() functions below are
+examples of styles that combine the area="text" and area="Graphic" or
+area="paragraph" properties. The Style class API allows for basic styling,
+but for more complex situations, it is recommended to use a document as a
+template or copy the XML definition of an existing style. The recipe
+change_paragraph_styles_methods.py shows these different methods.
 """
+
 import os
 from pathlib import Path
 
@@ -12,13 +22,18 @@ TARGET = "document.odt"
 
 
 def save_new(document: Document, name: str) -> None:
+    """Save a recipe result Document."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     new_path = OUTPUT_DIR / name
     print("Saving:", new_path)
     document.save(new_path, pretty=True)
 
 
-def _create_style_header_blue(document: Document) -> None:
+def create_style_header_blue(document: Document) -> None:
+    """A style derived from the standard heading style.
+
+    Bold blue font 160%, outline level 1
+    """
     style = Style(
         family="paragraph",
         name="header_blue",
@@ -33,7 +48,11 @@ def _create_style_header_blue(document: Document) -> None:
     document.insert_style(style)
 
 
-def _create_style_header_navy(document: Document) -> None:
+def create_style_header_navy(document: Document) -> None:
+    """A style derived from the standard heading style.
+
+    Bold navy blue font 120%, outline Level 2
+    """
     style = Style(
         family="paragraph",
         name="header_navy",
@@ -48,7 +67,11 @@ def _create_style_header_navy(document: Document) -> None:
     document.insert_style(style)
 
 
-def _create_style_steel(document: Document) -> None:
+def create_style_steel(document: Document) -> None:
+    """A style derived from the standard text style.
+
+    Yellow font on dark blue
+    """
     style = Style(
         family="paragraph",
         area="text",
@@ -67,7 +90,11 @@ def _create_style_steel(document: Document) -> None:
     document.insert_style(style)
 
 
-def _create_style_special(document: Document) -> None:
+def create_style_special(document: Document) -> None:
+    """A style derived from the standard text style with fixed font.
+
+    Courier New font, antique white background, 2cm margin and centered text
+    """
     style = Style(
         family="paragraph",
         area="text",
@@ -91,7 +118,11 @@ def _create_style_special(document: Document) -> None:
     document.insert_style(style)
 
 
-def _create_style_bold_gold(document: Document) -> None:
+def create_style_bold_gold(document: Document) -> None:
+    """A style derived from the standard text style.
+
+    Bold font in dark goldenrod color
+    """
     style = Style(
         family="text",
         name="bold_gold",
@@ -102,7 +133,11 @@ def _create_style_bold_gold(document: Document) -> None:
     document.insert_style(style)
 
 
-def _create_style_italic_lime(document: Document) -> None:
+def create_style_italic_lime(document: Document) -> None:
+    """An italic style derived from the standard text style.
+
+    Font italic, size 120%, color lime green
+    """
     style = Style(
         family="text",
         name="italic_lime",
@@ -115,15 +150,17 @@ def _create_style_italic_lime(document: Document) -> None:
 
 
 def add_styles(document: Document) -> None:
-    _create_style_header_blue(document)
-    _create_style_header_navy(document)
-    _create_style_steel(document)
-    _create_style_special(document)
-    _create_style_bold_gold(document)
-    _create_style_italic_lime(document)
+    """Add text styles to the document."""
+    create_style_header_blue(document)
+    create_style_header_navy(document)
+    create_style_steel(document)
+    create_style_special(document)
+    create_style_bold_gold(document)
+    create_style_italic_lime(document)
 
 
 def add_content(document: Document) -> None:
+    """Add some styled paragraphs and headers to the document."""
     body = document.body
     body.append(Header(1, "First level header", style="header_blue"))
 
@@ -162,6 +199,7 @@ def add_content(document: Document) -> None:
 
 
 def create_document() -> Document:
+    """Generate a text Document with styles."""
     document = Document()
     body = document.body
     body.clear()
@@ -180,6 +218,7 @@ def test_unit(document: Document) -> None:
     # only for test suite:
     if "ODFDO_TESTING" not in os.environ:
         return
+
     style1 = document.get_style("paragraph", "header_blue").serialize()
     assert 'name="header_blue"' in style1
     assert 'color="#0000FF"' in style1
