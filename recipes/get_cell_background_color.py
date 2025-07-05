@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-"""Read the background color of a table cell.
-"""
+"""Read the background color of a table cell."""
+
 import os
 import sys
 from pathlib import Path
@@ -12,7 +12,8 @@ DATA = Path(__file__).parent / "data"
 SOURCE = "cell_color.ods"
 
 
-def read_source_document():
+def read_source_document() -> Document:
+    """Return the source Document."""
     try:
         source = sys.argv[1]
     except IndexError:
@@ -20,40 +21,49 @@ def read_source_document():
     return Document(source)
 
 
-def main():
-    doc = read_source_document()
+def read_color(document: Document) -> list[tuple[str, str]]:
+    """Read cell background color from the table 0 (first sheet)."""
+    result = []
 
-    # reading color from the table 0 (first sheet)
-    color_b2 = doc.get_cell_background_color(0, "b2")
-    print("Color for B2", color_b2)
+    color = document.get_cell_background_color(0, "b2")
+    result.append(("Color for B2", color))
 
-    color_b3 = doc.get_cell_background_color(0, "b3")
-    print("Color for B3", color_b3)
+    color = document.get_cell_background_color(0, "b3")
+    result.append(("Color for B3", color))
 
-    color_c3 = doc.get_cell_background_color(0, "c3")
-    print("Color for C3", color_c3)
+    color = document.get_cell_background_color(0, "c3")
+    result.append(("Color for C3", color))
 
-    # default is "#ffffff"
-    color_d3 = doc.get_cell_background_color(0, "d3")
-    print("Color for D3", color_d3)
+    color = document.get_cell_background_color(0, "d3")
+    result.append(('Color for D3 (default is "#ffffff")', color))
 
-    # set another default
-    color_e3 = doc.get_cell_background_color(0, "e3", "#123456")
-    print("Color for e3", color_e3)
+    color = document.get_cell_background_color(0, "e3", "#123456")
+    result.append(("Color for e3 (providing another default)", color))
 
-    # read very far cell
-    color_far = doc.get_cell_background_color(0, (1000, 10000))
-    print("Color for far", color_far)
+    color = document.get_cell_background_color(0, (1000, 10000))
+    result.append(("Color for far away cell", color))
 
+    print("\n".join(": ".join(x) for x in result))
+    return result
+
+
+def main() -> None:
+    document = read_source_document()
+    result = read_color(document)
+    test_unit(result)
+
+
+def test_unit(colors: list[tuple[str, str]]) -> None:
     # only for test suite:
     if "ODFDO_TESTING" not in os.environ:
         return
-    assert color_b2 == "#2a6099"
-    assert color_b3 == "#ff4000"
-    assert color_c3 == "#ffff00"
-    assert color_d3 == "#ffffff"
-    assert color_e3 == "#123456"
-    assert color_far == "#ffffff"
+
+    assert colors[0][1] == "#2a6099"
+    assert colors[1][1] == "#ff4000"
+    assert colors[2][1] == "#ffff00"
+    assert colors[3][1] == "#ffffff"
+    assert colors[4][1] == "#123456"
+    assert colors[5][1] == "#ffffff"
 
 
 if __name__ == "__main__":
