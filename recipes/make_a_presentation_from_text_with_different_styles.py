@@ -25,6 +25,20 @@ azertyuiop azertyuiop azertyuiop azertyuiop azertyuiop azertyuiop azertyuiop aze
 end.
 """.splitlines()
 
+# If text length is bigger then first value, use second value as font size:
+TEXT_LEN_FONT_SIZE = [
+    (95, 10),
+    (80, 11),
+    (65, 14),
+    (50, 16),
+    (40, 20),
+    (30, 24),
+    (20, 32),
+    (10, 40),
+    (5, 44),
+    (-1, 48),
+]
+
 
 def save_new(document: Document, name: str) -> None:
     """Save a recipe result Document."""
@@ -34,7 +48,7 @@ def save_new(document: Document, name: str) -> None:
     document.save(new_path, pretty=True)
 
 
-def create_style() -> Style:
+def create_base_style() -> Style:
     """Creating a smooth style for the graphic item."""
     base_style = Style(
         "graphic",
@@ -66,41 +80,42 @@ def create_style() -> Style:
     return base_style
 
 
+def add_styles(document: Document) -> None:
+    """Generate all styles usable by the presentation as variations of a
+    base style."""
+    base_style = create_base_style()
+    for _, font_size in TEXT_LEN_FONT_SIZE:
+        variant_style: Style = base_style.clone
+        variant_style.set_attribute("style:name", f"Gloup{font_size}")
+        variant_style.set_properties(area="text", size=f"{font_size}pt")
+        document.insert_style(variant_style)
+
+
 def generate_document() -> Document:
     """Generate a Presentation Document with different styles."""
     presentation = Document("presentation")
     body = presentation.body
     body.clear()
 
-    base_style = create_style()
-    presentation.insert_style(base_style)
-
-    # Making o lot of variations
-    variants = [10, 11, 14, 16, 20, 24, 32, 40, 44]
-    text_size = [95, 80, 65, 50, 40, 30, 20, 10, 5]
-    for size in variants:
-        variant_style = base_style.clone
-        variant_style.set_attribute("style:name", f"Gloup{size}")
-        variant_style.set_properties(area="text", size=f"{size}pt")
-        presentation.insert_style(variant_style)
+    add_styles(presentation)
 
     for count, blurb in enumerate(CONTENT):
         text = blurb
         name = f"{count + 1} - {text[:10]}"
         page = DrawPage(name)
         # choosing some style:
-        size = 48
-        for index, max_size in enumerate(text_size):
-            if len(text) > max_size:
-                size = variants[index]
+        for text_len, font_size in TEXT_LEN_FONT_SIZE:
+            if len(text) > text_len:
+                size = font_size
                 break
+        style_name = f"Gloup{size}"
 
         text_frame = Frame.text_frame(
             text,
             size=("24cm", "2cm"),
             position=("2cm", "8cm"),
-            style=f"Gloup{size}",
-            text_style=f"Gloup{size}",
+            style=style_name,
+            text_style=style_name,
         )
 
         page.append(text_frame)
