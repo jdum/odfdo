@@ -9,7 +9,7 @@ _DOC_SEQUENCE = 28
 
 
 def generate_list() -> List:
-    """Return a document with a 3x3 table."""
+    """Return a small List."""
     drink_list = List(["chocolate", "coffee"])
     item = ListItem("tea")
     drink_list.append(item)
