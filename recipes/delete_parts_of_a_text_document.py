@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-"""Idea comming from issue #49:
-Deleting content from one point to another in a .odt document.
+"""Deleting content from one point to another in a .odt document.
+
+(Idea from an answer to problem #49).
 """
 
 import os
@@ -15,18 +16,26 @@ TARGET_FINAL = "document_final.odt"
 
 
 class KeepingState:
-    def __init__(self, initial: str):
-        self.step = initial
+    """Minimalistic class to remember our process state while parsing
+    the content.
+
+    State can be "before", "deleting" or "after".
+    """
+
+    def __init__(self, initial_state: str = "before") -> None:
+        self.step = initial_state
 
 
-def save_new(document: Document, name: str):
+def save_new(document: Document, name: str) -> None:
+    """Save a recipe result Document."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     new_path = OUTPUT_DIR / name
     print("Saving:", new_path)
     document.save(new_path, pretty=True)
 
 
-def create_base_document():
+def create_base_document() -> Document:
+    """Return a document containing content requiring deletion."""
     document = Document("text")
     body = document.body
     body.clear()
@@ -110,29 +119,49 @@ def create_base_document():
     return document
 
 
-def keep_element(state: KeepingState, elem: Element) -> bool:
-    # keep everythin until "part B"
+def keep_element(
+    state: KeepingState,
+    start_marker: str,
+    end_marker: str,
+    elem: Element,
+) -> bool:
+    """Returns True if the current element should be kept, False if it
+    should be deleted.
+
+    Finds the start_marker in heading elements only and the end_marker
+    at the beginning of a paragraph element.
+    """
+    # keep everything until "part B"
     if state.step == "before":
-        if isinstance(elem, Header) and "part B" in str(elem):
+        if isinstance(elem, Header) and start_marker in str(elem):
             state.step = "deleting"
-    # delete everythin until paragraph strating with "Aenean"
+    # delete everything until paragraph starting with "Aenean"
     if state.step == "deleting":
-        if isinstance(elem, Paragraph) and str(elem).startswith("Aenean"):
+        if isinstance(elem, Paragraph) and str(elem).startswith(end_marker):
             state.step = "after"
     return state.step != "deleting"
 
 
-def main():
-    document = create_base_document()
-    save_new(document, TARGET_INITIAL)
-    # Removing part B and half the part C
-    state = KeepingState("before")
-    keep_list = []
+def delete_content(document: Document, start_marker: str, end_marker: str) -> None:
+    """Delete elements from the document between the start_marker (included)
+    and the end_marker (excluded).
+    """
+    state = KeepingState()
+    keep_list: list[Element] = []
     for elem in document.body.children:
-        if keep_element(state, elem):
+        if keep_element(state, start_marker, end_marker, elem):
             keep_list.append(elem)
     document.body.clear()
     document.body.extend(keep_list)
+
+
+def main() -> None:
+    document = create_base_document()
+    save_new(document, TARGET_INITIAL)
+    # Deleting content from "part B" to "Aenean".
+    # By deleting all of part B and half of part C, the end
+    # of part C will be therefore in the continuity of part A
+    delete_content(document, "part B", "Aenean")
     save_new(document, TARGET_FINAL)
     test_unit(document)
 
@@ -141,11 +170,10 @@ def test_unit(document: Document) -> None:
     # only for test suite:
     if "ODFDO_TESTING" not in os.environ:
         return
+
     text0 = str(document.body.get_paragraph(position=0))
-    print(text0)
     assert text0.startswith("Lorem")
     text1 = str(document.body.get_paragraph(position=3))
-    print(text1)
     assert text1.startswith("Morbi")
 
 
