@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-"""Create a basic text document with list and sublists.
-"""
+"""Create a short text document with list of items and some sublists."""
+
 import os
 from pathlib import Path
 
@@ -11,7 +11,8 @@ OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "basic_sublist"
 TARGET = "document.odt"
 
 
-def save_new(document: Document, name: str):
+def save_new(document: Document, name: str) -> None:
+    """Save a recipe result Document."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     new_path = OUTPUT_DIR / name
     print("Saving:", new_path)
@@ -71,6 +72,12 @@ def generate_document():
     #
 
     return document
+
+
+def main() -> None:
+    document = generate_document()
+    test_unit(document)
+    save_new(document, TARGET)
 
 
 def test_unit(document: Document) -> None:
