@@ -29,7 +29,6 @@ def cm(x: float) -> str:
     return f"{x:.2f}cm"
 
 
-# some graphic computations
 class Vector:
     """Vector class with Koch calculation."""
 
