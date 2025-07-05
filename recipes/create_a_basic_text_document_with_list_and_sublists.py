@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-"""Create a short text document with list of items and some sublists."""
+"""Create a short text document containing a list of items and a few sublists.
+The code demonstrates several manipulations of the list and its items, then
+displays the result to standard output."""
 
 import os
 from pathlib import Path
@@ -19,23 +21,22 @@ def save_new(document: Document, name: str) -> None:
     document.save(new_path, pretty=True)
 
 
-def main():
-    document = generate_document()
-    test_unit(document)
-    save_new(document, TARGET)
-
-
-def generate_document():
+def generate_document() -> Document:
+    """Generate a basic document containing some lists and sublists."""
     document = Document("text")
     body = document.body
+    body.clear()
 
-    # Adding List
+    # Make a list:
     name_list = List(["Arthur", "Ford", "Trillian"])
+    # It is possible to add an item to the list afterwards:
     item = ListItem("Marvin")
     name_list.append_item(item)
+
+    # add list to the document:
     body.append(name_list)
 
-    # Adding Sublist¶
+    # Adding Sublist:
     # A sublist is simply a list as an item of another list:
     item.append(List(["Paranoid Android", "older than the universe"]))
 
@@ -45,6 +46,7 @@ def generate_document():
     # - Ford
     # - Trillian
     # - Marvin
+    #
     #   - Paranoid Android
     #   - older than the universe
 
@@ -66,6 +68,7 @@ def generate_document():
     # - Trillian
     # - Zaphod
     # - Marvin
+    #
     #   - Paranoid Android
     #   - older than the universe
     # - and many others
@@ -84,6 +87,7 @@ def test_unit(document: Document) -> None:
     # only for test suite:
     if "ODFDO_TESTING" not in os.environ:
         return
+
     assert document.get_formatted_text().strip() == (
         "- Arthur\n"
         "- some dolphins\n"
