@@ -1,12 +1,11 @@
-"""Minimal example of how to add a paragraph.
-"""
+"""Minimal example of how to add a paragraph."""
 
 from odfdo import Document, Paragraph
 
 _DOC_SEQUENCE = 12
 
 
-def main():
+def main() -> None:
     document = Document("text")
     body = document.body
 
