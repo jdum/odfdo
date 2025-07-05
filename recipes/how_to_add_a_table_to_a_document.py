@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Minimal example of how to add a table to a text document."""
 
 import os
@@ -8,16 +9,15 @@ _DOC_SEQUENCE = 55
 
 
 def generate_document() -> Document:
-    """Add a 3x3 table to a new document."""
+    """Return a document with a 3x3 table."""
     document = Document("text")
     body = document.body
 
-    # Let's add another section to make our document clear:
     body.append(Header(1, "Tables"))
     body.append(Paragraph("A 3x3 table:"))
 
     # Creating a table :
-    table = Table("Table 1", width=3, height=3)
+    table = Table("Table name", width=3, height=3)
     body.append(table)
     return document
 
