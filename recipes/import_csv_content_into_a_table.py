@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Import CSV content into a table."""
+"""Import a CSV file and load data into a table."""
 
 import os
 import sys
