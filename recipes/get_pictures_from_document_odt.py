@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-"""Get all the pictures embeded in an .odt file.
-"""
+"""Retrieve all the pictures embeded in an .odt file."""
+
+import os
 import sys
 from pathlib import Path
 from pprint import pformat
@@ -16,7 +17,8 @@ SOURCE = "collection.odt"
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "found_pics"
 
 
-def read_source_document():
+def read_source_document() -> Document:
+    """Return the source Document."""
     try:
         source = sys.argv[1]
     except IndexError:
@@ -24,35 +26,44 @@ def read_source_document():
     return Document(source)
 
 
-def main():
-    doc = read_source_document()
-    # show the list the content of the document parts
-    parts = doc.parts
-    print("Parts:")
+def read_pictures(document: Document) -> list[Path]:
+    """Return the list of files retrieved from the document."""
+    parts = document.parts
+    print("ODF parts of the document:")
     print(pformat(parts))
-    print()
-
-    # We want the images of the document.
-    body = doc.body
-    found_pics = body.images
-    print("Pics :")
-    print(pformat(found_pics))
     print()
 
     # we use the get_part function from odfdo to get the actual content
     # of the image, to copy the images out of the .odt file:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    for pic in found_pics:
+    # images are DrawImage instances
+    for draw_image in document.body.images:
         # where is the image actual content in the file:
-        url = pic.url
-        image_content = doc.get_part(url)
+        url = draw_image.url
+        image_content = document.get_part(url)
         origin_path = Path(url)
         destination_path = OUTPUT_DIR / origin_path.name
         destination_path.write_bytes(image_content)
 
-    print(f"Files in {OUTPUT_DIR}:")
-    for file in OUTPUT_DIR.glob("*"):
+    result = sorted(OUTPUT_DIR.glob("*"))
+    print(f"Picture files in {OUTPUT_DIR}:")
+    for file in result:
         print(file.name)
+    return result
+
+
+def main() -> None:
+    document = read_source_document()
+    path_list = read_pictures(document)
+    test_unit(path_list)
+
+
+def test_unit(path_list: list[Path]) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+
+    assert len(path_list) == 9
 
 
 if __name__ == "__main__":
