@@ -4,9 +4,8 @@
 import os
 import sys
 from pathlib import Path
-from typing import Any
 
-from odfdo import Document, Element
+from odfdo import Document, Link, remove_tree
 
 _DOC_SEQUENCE = 510
 DATA = Path(__file__).parent / "data"
@@ -32,93 +31,13 @@ def save_new(document: Document, name: str) -> None:
     document.save(new_path, pretty=True)
 
 
-def sub_tree_remove_tag(
-    element: Element,
-    context: dict[str, Any],
-) -> tuple[list, bool]:
-    """Remove tag in the children of the element."""
-    modified = False
-    sub_elements = []
-    for child in element.children:
-        striped, is_modified = tree_remove_tag(child, context)
-        if is_modified:
-            modified = True
-        if isinstance(striped, list):
-            sub_elements.extend(striped)
-        else:
-            sub_elements.append(striped)
-    return sub_elements, modified
-
-
-def tree_remove_tag(
-    element: Element,
-    context: dict[str, Any],
-) -> tuple[list | Element, bool]:
-    """Remove tag in the element, recursive.
-
-    Context argument contains: tag to remove, protection tag, protection flag.
-    Protection tag protect from change sub elements one sub level depth.
-    """
-    buffer = element.clone
-    tag = context["tag"]
-    protect_tag = context["protect_tag"]
-    protected = context["protected"]
-    if element.tag == protect_tag and protected:
-        protect_below = True
-    else:
-        protect_below = False
-    sub_context: dict[str, Any] = {
-        "tag": tag,
-        "protect_tag": protect_tag,
-        "protected": protect_below,
-    }
-    sub_elements, modified = sub_tree_remove_tag(buffer, sub_context)
-    if element.tag == tag and not protected:
-        list_element = []
-        text = buffer.text
-        tail = buffer.tail
-        if text is not None:
-            list_element.append(text)
-        list_element.extend(sub_elements)
-        if tail is not None:
-            list_element.append(tail)
-        return list_element, True
-    if not modified:
-        # no change in element sub tree, no change on element
-        return element, False
-    element.clear()
-    try:
-        for key, value in buffer.attributes.items():
-            element.set_attribute(key, value)
-    except ValueError:
-        print(f"Incorrect attribute in {buffer}")
-    text = buffer.text
-    tail = buffer.tail
-    if text is not None:
-        element.append(text)
-    for elem in sub_elements:
-        element.append(elem)
-    if tail is not None:
-        element.tail = tail
-    return element, True
-
-
-def remove_links(element: Element) -> None:
-    context: dict[str, Any] = {
-        "tag": "text:a",
-        "protect_tag": "none",
-        "protected": False,
-    }
-    tree_remove_tag(element, context)
-
-
 def remove_all_links(document: Document) -> list[tuple[str, int]]:
     """Remove all links and return statistics."""
     body = document.body
     result: list[tuple[str, int]] = []
 
     result.append(("source, links occurrences:", len(body.get_links())))
-    remove_links(body)
+    remove_tree(body, Link)
     result.append(("final, links occurrences:", len(body.get_links())))
 
     for line in result:
