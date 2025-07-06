@@ -14,10 +14,30 @@ markdown_extensions:
     - pymdownx.snippets
     - pymdownx.superfences
     - pymdownx.details
+    - toc:
+          toc_depth: 2
 
 theme:
     name: material
     locale: en
+    palette:
+        # Dark Mode
+        - scheme: slate
+          toggle:
+              icon: material/weather-sunny
+              name: Dark mode
+          primary: green
+          accent: deep purple
+
+        # Light Mode
+        - scheme: default
+          toggle:
+              icon: material/weather-night
+              name: Light mode
+          primary: blue
+          accent: deep orange
+    features:
+        - toc.follow
     # features:
     # - navigation.instant
     # - navigation.tabs
@@ -30,8 +50,22 @@ plugins:
 
     - mkdocstrings:
           default_handler: python
-          #handlers:
-          #    python:
+          handlers:
+              python:
+                  options:
+                      filters:
+                          - '!^_'
+                          - '^__init__$'
+                      show_if_no_docstring: true
+                      summary:
+                          attributes: true
+                          functions: true
+                          classes: true
+                          modules: false
+                      show_signature: true
+                      separate_signature: true
+                      show_signature_annotations: true
+                      signature_crossrefs: true
           #rendering:
           #    show_source: true
 
