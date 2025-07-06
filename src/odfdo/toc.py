@@ -403,7 +403,10 @@ class TOC(MDToc, Element):
 
         # Save the title
         index_body = self.body
-        title = index_body.get_element("text:index-title")  # type: ignore
+        if index_body is None:
+            title = ""
+        else:
+            title = index_body.get_element("text:index-title")  # type: ignore
 
         # Clean the old index-body
         self.body = None
@@ -416,7 +419,7 @@ class TOC(MDToc, Element):
         # Insert default TOC style
         if use_default_styles:
             automatic_styles = body.get_element("//office:automatic-styles")
-            if isinstance(automatic_styles, Element):
+            if isinstance(automatic_styles, Element):  # pragma: nocover
                 for level in range(1, 11):
                     if (
                         automatic_styles.get_style(
@@ -432,7 +435,7 @@ class TOC(MDToc, Element):
         level_indexes: dict[int, int] = {}
         for header in body.headers:
             level = header.get_attribute_integer("text:outline-level") or 0
-            if level is None or level > outline_level:
+            if level > outline_level:
                 continue
             number_str = self._header_numbering(level_indexes, level)
             # Make the title with "1.2.3. Title" format
