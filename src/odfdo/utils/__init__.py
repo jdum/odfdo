@@ -8,6 +8,7 @@ from .coordinates import (
 )
 from .formula import oooc_to_ooow
 from .isiterable import isiterable
+from .remove_tree import remove_tree
 from .str_convert import bytes_to_str, str_to_bytes, to_bytes, to_str
 from .style_constants import (
     FALSE_FAMILY_MAP_REVERSE,
@@ -34,6 +35,7 @@ __all__ = [
     "isiterable",
     "make_xpath_query",
     "oooc_to_ooow",
+    "remove_tree",
     "rgb2hex",
     "str_to_bytes",
     "to_bytes",

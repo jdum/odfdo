@@ -140,6 +140,7 @@ __all__ = [  # noqa: RUF022
     "hex2rgb",
     "hexa_color",
     "make_table_cell_border_string",
+    "remove_tree",
     "rgb2hex",
 ]
 
@@ -205,7 +206,7 @@ from .tracked_changes import (
     TextInsertion,
     TrackedChanges,
 )
-from .utils import hex2rgb, hexa_color, rgb2hex
+from .utils import hex2rgb, hexa_color, remove_tree, rgb2hex
 from .variable import (
     UserDefined,
     UserFieldDecl,
