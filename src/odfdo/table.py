@@ -1108,7 +1108,10 @@ class Table(MDTable, Element):
         self._table_cache.clear_row_indexes()
 
     def _optimize_width_length(self) -> int:
-        return max(row.minimized_width() for row in self._get_rows())
+        try:
+            return max(row.minimized_width() for row in self._get_rows())
+        except ValueError:
+            return 0
 
     def _optimize_width_rstrip_rows(self, width: int) -> None:
         for row in self._get_rows():
