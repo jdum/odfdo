@@ -136,7 +136,6 @@ NEXT_SIBLING = 2
 PREV_SIBLING = 3
 STOPMARKER = 5
 
-"office:version="
 # An empty XML document with all namespaces declared
 NAMESPACES_XML = (
     OFFICE_PREFIX
