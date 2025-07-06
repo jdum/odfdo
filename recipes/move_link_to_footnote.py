@@ -4,10 +4,12 @@ text) into a footnote. Of course, removing links already inside notes, just
 keeping plain text URL. (Side note: most office suite dislike notes in notes)
 """
 
+import os
 import sys
 from pathlib import Path
+from typing import Any
 
-from odfdo import Document
+from odfdo import Document, Element
 
 _DOC_SEQUENCE = 500
 DATA = Path(__file__).parent / "data"
@@ -16,32 +18,109 @@ OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "footnote1"
 TARGET = "document.odt"
 
 
-def save_new(document: Document, name: str):
+def read_source_document() -> Document:
+    """Return the source Document."""
+    try:
+        source = sys.argv[1]
+    except IndexError:
+        source = DATA / SOURCE
+    return Document(source)
+
+
+def save_new(document: Document, name: str) -> None:
+    """Save a recipe result Document."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     new_path = OUTPUT_DIR / name
     print("Saving:", new_path)
     document.save(new_path, pretty=True)
 
 
-def remove_links(element):
-    tag = "text:a"
-    keep_inside_tag = "None"
-    context = (tag, keep_inside_tag, False)
-    element, _is_modified = _tree_remove_tag(element, context)
+def sub_tree_remove_tag(
+    element: Element,
+    context: dict[str, Any],
+) -> tuple[list, bool]:
+    """Remove tag in the children of the element."""
+    modified = False
+    sub_elements = []
+    for child in element.children:
+        striped, is_modified = tree_remove_tag(child, context)
+        if is_modified:
+            modified = True
+        if isinstance(striped, list):
+            sub_elements.extend(striped)
+        else:
+            sub_elements.append(striped)
+    return sub_elements, modified
 
 
-def main():
+def tree_remove_tag(
+    element: Element,
+    context: dict[str, Any],
+) -> tuple[list | Element, bool]:
+    """Remove tag in the element, recursive.
+
+    Context argument contains: tag to remove, protection tag, protection flag.
+    Protection tag protect from change sub elements one sub level depth.
+    """
+    buffer = element.clone
+    tag = context["tag"]
+    protect_tag = context["protect_tag"]
+    protected = context["protected"]
+    if element.tag == protect_tag and protected:
+        protect_below = True
+    else:
+        protect_below = False
+    sub_context: dict[str, Any] = {
+        "tag": tag,
+        "protect_tag": protect_tag,
+        "protected": protect_below,
+    }
+    sub_elements, modified = sub_tree_remove_tag(buffer, sub_context)
+    if element.tag == tag and not protected:
+        list_element = []
+        text = buffer.text
+        tail = buffer.tail
+        if text is not None:
+            list_element.append(text)
+        list_element.extend(sub_elements)
+        if tail is not None:
+            list_element.append(tail)
+        return list_element, True
+    if not modified:
+        # no change in element sub tree, no change on element
+        return element, False
+    element.clear()
     try:
-        source = Path(sys.argv[1])
-    except IndexError:
-        source = DATA / SOURCE
+        for key, value in buffer.attributes.items():
+            element.set_attribute(key, value)
+    except ValueError:
+        print(f"Incorrect attribute in {buffer}")
+    text = buffer.text
+    tail = buffer.tail
+    if text is not None:
+        element.append(text)
+    for elem in sub_elements:
+        element.append(elem)
+    if tail is not None:
+        element.tail = tail
+    return element, True
 
-    document = Document(str(source))
+
+def remove_links(element: Element) -> None:
+    context: dict[str, Any] = {
+        "tag": "text:a",
+        "protect_tag": "none",
+        "protected": False,
+    }
+    tree_remove_tag(element, context)
+
+
+def convert_links(document: Document) -> list[tuple[str, int]]:
     body = document.body
+    result: list[tuple[str, int]] = []
 
-    print("Moving links to footnotes from", source)
-    print("links occurrences:", len(body.get_links()))
-    print("footnotes occurences:", len(body.get_notes()))
+    result.append(("source, links occurrences:", len(body.get_links())))
+    result.append(("source, footnotes occurences:", len(body.get_notes())))
 
     counter_links_in_notes = 0
     for note in body.get_notes():
@@ -52,8 +131,7 @@ def main():
             new_tail = f" (link: {url}) {tail}"
             link.tail = new_tail
             remove_links(note)
-
-    print("links in notes:", counter_links_in_notes)
+    result.append(("source, links inside notes:", counter_links_in_notes))
 
     counter_added_note = 0  # added notes counter
     for paragraph in body.paragraphs:
@@ -70,61 +148,34 @@ def main():
             )
         remove_links(paragraph)
 
-    print("links occurrences:", len(body.get_links()))
-    print("footnotes occurences:", len(body.get_notes()))
+    result.append(("final, links occurrences:", len(body.get_links())))
+    result.append(("final, added footnotes:", counter_added_note))
+    result.append(("final, footnotes occurences:", len(body.get_notes())))
 
+    for line in result:
+        print(line[0], line[1])
+
+    return result
+
+
+def main() -> None:
+    document = read_source_document()
+    result = convert_links(document)
+    test_unit(result)
     save_new(document, TARGET)
 
 
-def _tree_remove_tag(element, context):
-    """Remove tag in the element, recursive.
-    - context: tuple (tag to remove, protection tag, protection flag)
-    where protection tag protect from change sub elements one sub
-    level depth"""
-    buffer = element.clone
-    modified = False
-    sub_elements = []
-    tag, keep_inside_tag, protected = context
-    if keep_inside_tag and element.tag == keep_inside_tag:
-        protect_below = True
-    else:
-        protect_below = False
-    for child in buffer.children:
-        striped, is_modified = _tree_remove_tag(
-            child, (tag, keep_inside_tag, protect_below)
-        )
-        if is_modified:
-            modified = True
-        if isinstance(striped, list):
-            for item in striped:
-                sub_elements.append(item)
-        else:
-            sub_elements.append(striped)
-    if not protected and element.tag == tag:
-        element = []
-        modified = True
-    else:
-        if not modified:
-            # no change in element sub tree, no change on element
-            return (element, False)
-        element.clear()
-        try:
-            for key, value in buffer.attributes.items():
-                element.set_attribute(key, value)
-        except ValueError:
-            print("Incorrect attribute in", buffer)
-    text = buffer.text
-    tail = buffer.tail
-    if text is not None:
-        element.append(text)
-    for child in sub_elements:
-        element.append(child)
-    if tail is not None:
-        if isinstance(element, list):
-            element.append(tail)
-        else:
-            element.tail = tail
-    return (element, True)
+def test_unit(result: list[tuple[str, int]]) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+
+    assert result[0][1] == 352
+    assert result[1][1] == 49
+    assert result[2][1] == 38
+    assert result[3][1] == 0
+    assert result[4][1] == 314
+    assert result[5][1] == 363
 
 
 if __name__ == "__main__":
