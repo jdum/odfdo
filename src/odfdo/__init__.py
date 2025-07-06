@@ -41,6 +41,8 @@ __all__ = [  # noqa: RUF022
     "Content",
     "Content",
     "Database",
+    "DcCreatorMixin",
+    "DcDateMixin",
     "Document",
     "DrawFillImage",
     "DrawGroup",
@@ -75,6 +77,7 @@ __all__ = [  # noqa: RUF022
     "PREV_SIBLING",
     "PageBreak",
     "Paragraph",
+    "ParagraphBase",
     "Presentation",
     "RectangleShape",
     "Reference",
@@ -165,8 +168,11 @@ from .meta import Meta
 from .meta_auto_reload import MetaAutoReload
 from .meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from .meta_template import MetaTemplate
+from .mixin_dc_creator import DcCreatorMixin
+from .mixin_dc_date import DcDateMixin
 from .note import Annotation, AnnotationEnd, Note
 from .paragraph import LineBreak, PageBreak, Paragraph, Spacer, Span, Tab
+from .paragraph_base import ParagraphBase
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
 from .row import Row
 from .row_group import RowGroup
