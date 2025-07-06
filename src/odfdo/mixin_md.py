@@ -518,8 +518,6 @@ class MDTable(MDStyle):
             return "|".join(items)
 
         def format_cell(val: Any, filler: str = " ") -> str:
-            if val is None:
-                return ""
             if isinstance(val, list):
                 result = []
                 for element in val:  # paragraph
@@ -562,7 +560,7 @@ class MDTable(MDStyle):
         _restore_global(safe_global)
         result = []
         result.append(bars(fill_line(self.get_row_sub_elements(0))))
-        result.append(bars(fill_line(["---"] * self.width, "-")))
+        result.append(bars(fill_line(["-"] * self.width, "-")))
         for idx in range(1, self.height):
             result.append(bars(fill_line(self.get_row_sub_elements(idx))))
         result.append("")
