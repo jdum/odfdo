@@ -1,6 +1,8 @@
 #!/usr/bin/env python
-"""Search and replace words in a text document.
-"""
+"""Search and replace words in a text document."""
+
+import os
+import sys
 from pathlib import Path
 
 from odfdo import Document
@@ -12,14 +14,24 @@ OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "replaced_text"
 TARGET = "lorem_replaced.odt"
 
 
-def save_new(document: Document, name: str):
+def read_source_document() -> Document:
+    """Return the source Document."""
+    try:
+        source = sys.argv[1]
+    except IndexError:
+        source = DATA / SOURCE
+    return Document(source)
+
+
+def save_new(document: Document, name: str) -> None:
+    """Save a recipe result Document."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     new_path = OUTPUT_DIR / name
     print("Saving:", new_path)
     document.save(new_path, pretty=True)
 
 
-def search_replace(document):
+def search_replace(document: Document) -> None:
     body = document.body
 
     # replace a string in the full document
@@ -38,10 +50,21 @@ def search_replace(document):
     body.replace(r"pul[a-z]+", "(pulvinar)")
 
 
-def main():
-    document = Document(DATA / SOURCE)
+def main() -> None:
+    document = read_source_document()
     search_replace(document)
+    test_unit(document)
     save_new(document, TARGET)
+
+
+def test_unit(document: Document) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+
+    body = document.body
+    assert len(body.search_all("replaced")) == 3
+    assert len(body.search_all("(pulvinar)")) == 2
 
 
 if __name__ == "__main__":
