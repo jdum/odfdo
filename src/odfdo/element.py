@@ -1340,7 +1340,7 @@ class Element(MDBase):
         as_text: bool = False,
         clean: bool = True,
         no_header: bool = True,
-    ) -> list | Element | str:
+    ) -> list | str:
         """Returns elements between tag1 and tag2, tag1 and tag2 shall
         be unique and having an id attribute.
         (WARN: buggy if tag1/tag2 defines a malformed odf xml.)
