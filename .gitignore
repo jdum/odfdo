@@ -9,6 +9,8 @@ dist/
 wheels/
 *.egg-info
 
+docs/
+
 .venv
 .ropeproject/
 *~
