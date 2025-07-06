@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-"""Read a document from BytesIO.
-"""
+"""Read a document from BytesIO."""
+
 import io
+import os
 from pathlib import Path
 
 from odfdo import Document
@@ -11,7 +12,7 @@ DATA = Path(__file__).parent / "data"
 SOURCE = "lorem.odt"
 
 
-def main():
+def document_from_bytesio() -> Document:
     file_path = DATA / SOURCE
     with io.BytesIO() as bytes_content:
         # read the file in the BytesIO (or read from some network)
@@ -19,9 +20,20 @@ def main():
         # Create the odfdo.Document from the BytesIO
         bytes_content.seek(0)
         document = Document(bytes_content)
-        # check :
-        if document.body.search("Lorem ipsum dolor sit amet") is None:
-            raise ValueError("string not found")
+        return document
+
+
+def main() -> None:
+    document = document_from_bytesio()
+    test_unit(document)
+
+
+def test_unit(document: Document) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+
+    assert document.body.search("Lorem ipsum dolor sit amet") is not None
 
 
 if __name__ == "__main__":
