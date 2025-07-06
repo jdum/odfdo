@@ -5,8 +5,7 @@ Most recipes are autonomous scripts doing actual modifications of ODF sample fil
 
 ### How to write hello world in a text document
 
-Create a basic spreadsheet with "Hello World" in the first cell.
-
+Create a minimal text document with "Hello World" in a pragraph.
 
 ??? code "recipes/how_to_write_hello_world_in_a_text_document.py"
     ```python
@@ -15,8 +14,7 @@ Create a basic spreadsheet with "Hello World" in the first cell.
 
 ### How to write hello world in a spreadsheet document
 
-Create a basic spreadsheet with "Hello World" in the first cell.
-
+Create a minimal spreadsheet with "Hello World" in the first cell.
 
 ??? code "recipes/how_to_write_hello_world_in_a_spreadsheet_document.py"
     ```python
@@ -38,7 +36,6 @@ of a presentation.
 
 Create a basic text document with headers and praragraphs.
 
-
 ??? code "recipes/create_a_basic_text_document.py"
     ```python
     {% include "../../recipes/create_a_basic_text_document.py" %}
@@ -47,7 +44,6 @@ Create a basic text document with headers and praragraphs.
 ### How to add a paragraph to a text document
 
 Minimal example of how to add a paragraph.
-
 
 ??? code "recipes/how_to_add_a_paragraph_to_a_text_document.py"
     ```python
@@ -58,7 +54,6 @@ Minimal example of how to add a paragraph.
 
 Create a basic text document with a list.
 
-
 ??? code "recipes/create_a_basic_text_document_with_a_list.py"
     ```python
     {% include "../../recipes/create_a_basic_text_document_with_a_list.py" %}
@@ -66,8 +61,9 @@ Create a basic text document with a list.
 
 ### Create a basic text document with list and sublists
 
-Create a basic text document with list and sublists.
-
+Create a short text document containing a list of items and a few sublists.
+The code demonstrates several manipulations of the list and its items, then
+displays the result to standard output.
 
 ??? code "recipes/create_a_basic_text_document_with_list_and_sublists.py"
     ```python
@@ -76,32 +72,29 @@ Create a basic text document with list and sublists.
 
 ### How to add a sublist to a list
 
-Minimal example of how to add a paragraph.
-
+Minimal example of how to add a sublist to a list.
 
 ??? code "recipes/how_to_add_a_sublist_to_a_list.py"
     ```python
     {% include "../../recipes/how_to_add_a_sublist_to_a_list.py" %}
     ```
 
-### How to insert a new item within a list
-
-Minimal example of how to insert a new item within a list.
-
-
-??? code "recipes/how_to_insert_a_new_item_within_a_list.py"
-    ```python
-    {% include "../../recipes/how_to_insert_a_new_item_within_a_list.py" %}
-    ```
-
 ### How to add an item to a list
 
 Minimal example of how to add an item to a list.
 
-
 ??? code "recipes/how_to_add_an_item_to_a_list.py"
     ```python
     {% include "../../recipes/how_to_add_an_item_to_a_list.py" %}
+    ```
+
+### How to insert a new item within a list
+
+Minimal example of how to insert a new item within a list.
+
+??? code "recipes/how_to_insert_a_new_item_within_a_list.py"
+    ```python
+    {% include "../../recipes/how_to_insert_a_new_item_within_a_list.py" %}
     ```
 
 ### Get text content from odt file
@@ -115,7 +108,8 @@ Read the text content from an .odt file.
 
 ### Create a basic text document with a table of content
 
-Create a basic text document with a table of content.
+Create a basic document containing some paragraphs and headers, add a
+Table of Content from its headers.
 
 
 ??? code "recipes/create_a_basic_text_document_with_a_table_of_content.py"
@@ -123,20 +117,9 @@ Create a basic text document with a table of content.
     {% include "../../recipes/create_a_basic_text_document_with_a_table_of_content.py" %}
     ```
 
-### How to add a table of content to a document
-
-Adding a table of content to an existing text document.
-
-
-??? code "recipes/how_to_add_a_table_of_content_to_a_document.py"
-    ```python
-    {% include "../../recipes/how_to_add_a_table_of_content_to_a_document.py" %}
-    ```
-
 ### Update a text document with a table of content
 
 Update the table of contents of a document.
-
 
 ??? code "recipes/update_a_text_document_with_a_table_of_content.py"
     ```python
@@ -145,7 +128,9 @@ Update the table of contents of a document.
 
 ### Create a basic text document with annotations
 
-Create a basic text document with annotations.
+Create a basic document containing some paragraphs and headers, add some
+annotations. Annotations are notes that don't appear in the document but
+typically on a side bar in a desktop application. So they are not printed.
 
 
 ??? code "recipes/create_a_basic_text_document_with_annotations.py"
@@ -155,7 +140,8 @@ Create a basic text document with annotations.
 
 ### Create a basic text document with footnotes
 
-Create a basic text document with footnotes.
+Create a basic document containing some paragraphs and headers, add some
+footnotes. Footnotes are displayed at the end of the pages of the document.
 
 
 ??? code "recipes/create_a_basic_text_document_with_footnotes.py"
@@ -166,6 +152,21 @@ Create a basic text document with footnotes.
 ### How to add footnote to a text document
 
 Minimal example of how to add an footnote to a text document.
+
+Notes are quite complex so they deserve a dedicated API on paragraphs:
+
+paragraph.insert_note()
+
+The arguments are:
+
+after    =>   The word after what the “¹” citation is inserted.
+note_id  =>       A unique identifier of the note in the document.
+citation =>   The symbol the user sees to follow the footnote.
+body     =>   The footnote itself, at the end of the page.
+
+odfdo creates footnotes by default. To create endnotes (notes
+that appear at the end of the document), add the parameter:
+note_class='endnote'.
 
 
 ??? code "recipes/how_to_add_footnote_to_a_text_document.py"
@@ -195,16 +196,17 @@ Minimal example of how to add a table to a text document.
 
 ### Create a text document from plain text with layout
 
-Create a document with styles.
+Create a text document with custom styles. In this recipe, the styles
+are created from their XML definition.
 
- We want to:
+Steps:
 
-  - remove standard styles from the document
+ - Remove standard styles from the document,
 
-  - set some styles grabed from a styles.xml ODF file (or generated)
+ - set some styles grabed from a styles.xml ODF file (or generated),
 
-  - insert plain "python" text, containing some          , 
-, and spaces
+ - insert plain "python" text, containing some   , 
+, and spaces.
 
 
 ??? code "recipes/create_a_text_document_from_plain_text_with_layout.py"
@@ -255,7 +257,6 @@ the paragraph (default) or the page.
 ### How to add a title to a text document
 
 Minimal example of how to add a Header of first level to a text document.
-
 
 ??? code "recipes/how_to_add_a_title_to_a_text_document.py"
     ```python
@@ -315,7 +316,6 @@ contains. Here are quick examples of iteration on `Paragraphs` and `Lists` from 
 
 Create an empty text document and add a list.
 
-
 ??? code "recipes/how_to_add_a_list_to_a_text_document.py"
     ```python
     {% include "../../recipes/how_to_add_a_list_to_a_text_document.py" %}
@@ -324,6 +324,10 @@ Create an empty text document and add a list.
 ### How to add a manual page break
 
 Adding a manual page break to a text document.
+
+Page breaks are build by a specific style. However, odfdo provides a PageBreak
+class to facilitate the inclusion of page breaks. This recipe illustrates
+the use of PageBreak and the underlying styling mechanism.
 
 
 ??? code "recipes/how_to_add_a_manual_page_break.py"
@@ -334,7 +338,6 @@ Adding a manual page break to a text document.
 ### Create a basic drawing
 
 Insert a circle and a lot of lines (a fractal) in a text document.
-
 
 ??? code "recipes/create_a_basic_drawing.py"
     ```python
@@ -386,8 +389,7 @@ presentation slide deck.
 
 ### Get pictures from document odt
 
-Get all the pictures embeded in an .odt file.
-
+Retrieve all the pictures embeded in an .odt file.
 
 ??? code "recipes/get_pictures_from_document_odt.py"
     ```python
@@ -490,6 +492,14 @@ by changing size and color of each parts of words.
 
 Minimal example of copy of a style from another document.
 
+Document.get_style() main parameters:
+family        : The family of the style, text styles apply on individual
+                characters.
+display_name  : The name of the style as we see it in a desktop
+                application. Styles have an internal name
+                (“Yellow_20_Highlight” in this example) but here we use
+                the display_name instead.
+
 
 ??? code "recipes/how_to_copy_some_style_from_another_document.py"
     ```python
@@ -510,7 +520,16 @@ For more advanced version, see the odfdo-style script.
 
 ### Create basic text styles
 
-Create basic text styles.
+Create basic text styles with the Style class API.
+
+Styles are applied to entire paragraphs or headings, or to words using Span.
+
+The create_style_steel() and create_style_special() functions below are
+examples of styles that combine the area="text" and area="Graphic" or
+area="paragraph" properties. The Style class API allows for basic styling,
+but for more complex situations, it is recommended to use a document as a
+template or copy the XML definition of an existing style. The recipe
+change_paragraph_styles_methods.py shows these different methods.
 
 
 ??? code "recipes/create_basic_text_styles.py"
@@ -521,7 +540,6 @@ Create basic text styles.
 ### How to apply a style to a paragraph
 
 Minimal example of how to add a styled paragraph to a document.
-
 
 ??? code "recipes/how_to_apply_a_style_to_a_paragraph.py"
     ```python
@@ -542,8 +560,9 @@ of the paragraph. Includes several ways to create or import styles.
 
 ### Delete parts of a text document
 
-Idea comming from issue #49:
 Deleting content from one point to another in a .odt document.
+
+(Idea from an answer to problem #49).
 
 
 ??? code "recipes/delete_parts_of_a_text_document.py"
@@ -553,8 +572,16 @@ Deleting content from one point to another in a .odt document.
 
 ### Create color chart in spreadsheet
 
-Create some color chart in a spreadsheet using cells styles.
-(adapted from the odfdo library test cases)
+Create some color chart in a spreadsheet using cells styles functions.
+
+For cells, use of functions:
+    make_table_cell_border_string()
+    create_table_cell_style()
+    rgb2hex()
+
+Apply a row style to define the row height.
+
+Apply a column style to define the column width.
 
 
 ??? code "recipes/create_color_chart_in_spreadsheet.py"
@@ -566,7 +593,6 @@ Create some color chart in a spreadsheet using cells styles.
 
 Read the background color of a table cell.
 
-
 ??? code "recipes/get_cell_background_color.py"
     ```python
     {% include "../../recipes/get_cell_background_color.py" %}
@@ -574,7 +600,7 @@ Read the background color of a table cell.
 
 ### Extract a sub table from some big table
 
-Create a table of 1000 lines and 100 columns, extract a sub table
+Open a table of 1000 lines and 100 columns, extract a sub table
 of 100 lines 26 columns, save the result in a spreadsheet document.
 
 
@@ -596,8 +622,7 @@ and compute the table size.
 
 ### Make spreadsheet with named ranges
 
-Create a spreadsheet with two tables, using some named ranges.
-
+Create a spreadsheet with two tables, using named ranges to fill cells.
 
 ??? code "recipes/make_spreadsheet_with_named_ranges.py"
     ```python
@@ -608,6 +633,8 @@ Create a spreadsheet with two tables, using some named ranges.
 
 Demo of quick introspecting of a document's elements.
 
+The body object of a document is a mapping of an XML tree from which we
+can access other elements we are looking for (parent, children).
 
 ??? code "recipes/introspecting_elements.py"
     ```python
@@ -617,6 +644,13 @@ Demo of quick introspecting of a document's elements.
 ### Show meta data
 
 Print the metadata informations of a ODF file.
+
+Metadata are accessible through the meta part: meta = document.get_part("meta.xml")
+or the shortcut: document.meta.
+
+You then get access to various getters and setters. The getters return
+Python types and the respective setters take the same Python type as
+a parameter.
 
 
 ??? code "recipes/show_meta_data.py"
@@ -638,7 +672,7 @@ keeping plain text URL. (Side note: most office suite dislike notes in notes)
 
 ### Remove http links
 
-Remove the links (the text:a tag), keeping the inner text.
+Remove all the links (the text:a tag), keeping the inner text.
 
 ??? code "recipes/remove_http_links.py"
     ```python
@@ -658,8 +692,8 @@ except in titles.
 
 ### Retrieve all pictures from odf files
 
-Analyse a list of files and directory (recurse), open all ODF documents
-and copy pictures from documents in a directory.
+Scan a list of files and directories (recursion), open all ODF documents
+and copy document images to a target directory.
 
 
 ??? code "recipes/retrieve_all_pictures_from_ODF_files.py"
@@ -671,7 +705,6 @@ and copy pictures from documents in a directory.
 
 Read a document from BytesIO.
 
-
 ??? code "recipes/read_document_from_bytesio.py"
     ```python
     {% include "../../recipes/read_document_from_bytesio.py" %}
@@ -680,7 +713,6 @@ Read a document from BytesIO.
 ### Save document as bytesio
 
 Save a document as BytesIO.
-
 
 ??? code "recipes/save_document_as_bytesio.py"
     ```python
@@ -698,7 +730,7 @@ Export tables to CSV format.
 
 ### Import csv content into a table
 
-Import CSV content into a table.
+Import a CSV file and load data into a table.
 
 ??? code "recipes/import_csv_content_into_a_table.py"
     ```python
@@ -708,7 +740,6 @@ Import CSV content into a table.
 ### Search and replace words
 
 Search and replace words in a text document.
-
 
 ??? code "recipes/search_and_replace_words.py"
     ```python
@@ -728,9 +759,9 @@ make requests on the table, by regex or value.
 
 ### Transpose table
 
-Transpose a table. Create a spreadsheet table (example: 50 rows and 20
-columns), and subsequently create a new table in a separate sheet where the
-columns and rows are now swapped (e.g. 20 rows and 50 columns).
+Transpose a table. Create a spreadsheet table (for example: 50 rows and
+20 columns), then create a new table in a separate sheet where the columns
+and rows are swapped (for example: 20 rows and 50 columns).
 
 
 ??? code "recipes/transpose_table.py"

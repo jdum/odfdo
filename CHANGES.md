@@ -1,5 +1,30 @@
 # Odfdo Release Notes
 
+## [3.14.7] - 2025-07-06
+
+-   Fixes for rare situations on table of contents without title, creation of `Annotation`, empty `Tables` optimization.
+-   Cosmetic improvement of Markdown export of small tables.
+-   Added the `util.remove_tree()` function, used in a few recipes, to recursively remove a tag
+-   Technical updates: refactor all recipes to have the same structure, small refactoring of code and tests.
+
+### Changed
+
+-   Refactor all recipes.
+-   Small refactoring of `Element`class for better type hints.
+-   Improve markdown export of small tables.
+-   Configure test coeverage.
+
+### Added
+
+-   Added the `util.remove_tree()` function.
+-   Add tests for `odfdo.toc` module
+
+### Fixed
+
+-   Allow `Table.optimize_width()` to optimize an empty table.
+-   Fix `Annotation` creation with a name passed as argument.
+-   Fix `TOC` having empty title.
+
 ## [3.14.6] - 2025-06-29
 
 -   Add support for the `lxml` library version 6.0.0.
