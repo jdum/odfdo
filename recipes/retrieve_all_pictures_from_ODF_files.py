@@ -1,7 +1,9 @@
 #!/usr/bin/env python
-"""Analyse a list of files and directory (recurse), open all ODF documents
-and copy pictures from documents in a directory.
+"""Scan a list of files and directories (recursion), open all ODF documents
+and copy document images to a target directory.
 """
+
+import os
 import sys
 import time
 from hashlib import sha256
@@ -20,8 +22,10 @@ counter_odf = 0
 counter_outside = 0
 
 
-def store_image(path, name, content):
-    """Image new name is "odffile_imagename"."""
+def store_image(path: Path, name: str, content: bytes) -> None:
+    """Save the found image in result directory.
+
+    Image new name is "odffile_imagename"."""
     global counter_image
 
     base = path.name.replace(".", "_")
@@ -36,7 +40,7 @@ def store_image(path, name, content):
     counter_image += 1
 
 
-def parse_odf_pics(path: Path):
+def parse_odf_pics(path: Path) -> None:
     """Using odfdo for:
     - open possible ODF document: Document (including URI)
     - find images inside the document: get_image_list, get_attribute
@@ -68,34 +72,47 @@ def parse_odf_pics(path: Path):
             store_image(path, image_name, image_content)
 
 
-def known_pic(content) -> bool:
-    """Remember already seen images by sha256 footprint."""
-    footprint = sha256(content).digest()
-    if footprint in known_images:
+def known_pic(content: bytes) -> bool:
+    """Remember the images already seen by sha256 fingerprint."""
+    fingerprint = sha256(content).digest()
+    if fingerprint in known_images:
         return True
-    known_images.add(footprint)
+    known_images.add(fingerprint)
     return False
 
 
-def analyse_document(source):
+def scan_document(source: Path) -> list[int]:
+    """Recursively parse ODF files to copy images."""
+    t0 = time.time()
     for path in source.glob("**/*"):
         if path.is_file():
             parse_odf_pics(path)
-
-
-def main():
-    try:
-        source = sys.argv[1]
-    except IndexError:
-        source = DATA
-
-    t0 = time.time()
-    analyse_document(Path(source))
     elapsed = time.time() - t0
     print(
         f"{counter_image} images copied ({counter_outside} not found) from "
         f"{counter_odf} ODF files to {OUTPUT_DIR} in {elapsed:.2f}sec."
     )
+    return [counter_image, counter_outside, counter_odf]
+
+
+def main() -> None:
+    try:
+        source = Path(sys.argv[1])
+    except IndexError:
+        source = DATA
+
+    result = scan_document(source)
+    test_unit(result)
+
+
+def test_unit(result: list[int]) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+
+    assert result[0] == 15
+    assert result[1] == 0
+    assert result[2] == 19
 
 
 if __name__ == "__main__":
