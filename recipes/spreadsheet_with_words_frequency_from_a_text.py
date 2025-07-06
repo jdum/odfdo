@@ -2,26 +2,22 @@
 """Load an ODF text, store the frequency of words in a spreadsheet,
 make requests on the table, by regex or value.
 """
+
+import os
 import sys
 from pathlib import Path
 
 from odfdo import Document, Table
 
 _DOC_SEQUENCE = 710
-OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "freq"
 SOURCE = "collection2.odt"
 DATA = Path(__file__).parent / "data"
+OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "freq"
 TARGET = "frequency.ods"
 
 
-def save_new(document: Document, name: str):
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    new_path = OUTPUT_DIR / name
-    print("Saving:", new_path)
-    document.save(new_path, pretty=True)
-
-
-def read_source_document():
+def read_source_document() -> Document:
+    """Return the source Document."""
     try:
         source = sys.argv[1]
     except IndexError:
@@ -29,32 +25,16 @@ def read_source_document():
     return Document(source)
 
 
-def main():
-    document = generate_document()
-    save_new(document, TARGET)
-    _expected_result = """
-    Word frequency analysis of collection2.odt
-    Nb of words: 9128
-    Unique words found: 2337
-    Rows in the table : 2337
-    Words corresponding to the regex: ^the
-      word: the                   occurences: 644
-      word: they                  occurences: 15
-      word: their                 occurences: 11
-      word: then                  occurences: 10
-      word: there                 occurences: 7
-      word: these                 occurences: 4
-      word: them                  occurences: 4
-      word: themselves            occurences: 2
-      word: theme                 occurences: 2
-      word: themed                occurences: 1
-      word: theatrical            occurences: 1
-    List of words of frequency 15: two, they, release, one, its, his, film,
-    episodes, but, adaptation, UK, Radio, J, 0
-"""
+def save_new(document: Document, name: str) -> None:
+    """Save a recipe result Document."""
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    new_path = OUTPUT_DIR / name
+    print("Saving:", new_path)
+    document.save(new_path, pretty=True)
 
 
-def frequence_count(document):
+def frequence_count(document: Document) -> dict[str, int]:
+    """Word frequency analysis of a document."""
     print("Word frequency analysis of", Path(document.container.path).name)
     text = str(document.body)
     for char in "():;!.,[]{}#@/\\=-_+*#@`\"'":
@@ -71,11 +51,10 @@ def frequence_count(document):
     return frequences
 
 
-def generate_document():
-    document_source = read_source_document()
+def scan_document(source: Document) -> Document:
+    """Return a spreadsheet containing the word frequency of the source document."""
     spreadsheet = Document("spreadsheet")
-
-    frequences = frequence_count(document_source)
+    frequences = frequence_count(source)
 
     # Populate the table in the spreadsheet
     body = spreadsheet.body
@@ -83,10 +62,10 @@ def generate_document():
     table = Table("Frequency Table")
     body.append(table)
 
-    sorted_keys = reversed([(value, key) for key, value in frequences.items()])
+    sorted_keys = sorted([(value, key) for key, value in frequences.items()])
+    sorted_keys.reverse()
 
-    # one solution :
-
+    # possible solution :
     # for value, key in sorted:
     #    row = Row()
     #    row.set_value(0, key)
@@ -113,6 +92,25 @@ def generate_document():
             found.append(word)
     print("List of words of frequency 15:", ", ".join(found))
     return spreadsheet
+
+
+def main() -> None:
+    document = read_source_document()
+    freqs = scan_document(document)
+    test_unit(freqs)
+    save_new(freqs, TARGET)
+
+
+def test_unit(freqs: Document) -> None:
+    # only for test suite:
+    if "ODFDO_TESTING" not in os.environ:
+        return
+
+    table = freqs.body.get_table(0)
+    assert table.get_cell("A1").value == "the"
+    assert table.get_cell("B1").value == 699
+    assert table.get_cell("A50").value == "which"
+    assert table.get_cell("B50").value == 23
 
 
 if __name__ == "__main__":
