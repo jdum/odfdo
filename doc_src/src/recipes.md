@@ -160,9 +160,9 @@ paragraph.insert_note()
 The arguments are:
 
 after    =>   The word after what the “¹” citation is inserted.
-note_id  =>       A unique identifier of the note in the document.
+note_id  =>	  A unique identifier of the note in the document.
 citation =>   The symbol the user sees to follow the footnote.
-body     =>   The footnote itself, at the end of the page.
+body 	 =>   The footnote itself, at the end of the page.
 
 odfdo creates footnotes by default. To create endnotes (notes
 that appear at the end of the document), add the parameter:
@@ -205,7 +205,7 @@ Steps:
 
  - set some styles grabed from a styles.xml ODF file (or generated),
 
- - insert plain "python" text, containing some   , 
+ - insert plain "python" text, containing some 	 , 
 , and spaces.
 
 
