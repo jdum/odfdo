@@ -94,6 +94,7 @@ IndexTitle._define_attribut_property()
 
 class TabStopStyle(Element):
     """ODF "style:tab-stop"
+
     Base style for a TOC entryBase style for a TOC entry
     """
 
@@ -143,6 +144,8 @@ class TabStopStyle(Element):
                 self.style_position = style_position
             if style_type:
                 self.style_type = style_type
+        else:
+            pass  # pragma: nocover
 
 
 TabStopStyle._define_attribut_property()

@@ -24,7 +24,9 @@ from collections.abc import Iterable
 import pytest
 
 from odfdo.document import Document
-from odfdo.toc import TOC
+from odfdo.element import Element
+from odfdo.style import Style
+from odfdo.toc import TOC, IndexTitle, TabStopStyle
 
 SAMPLE_EXPECTED = [
     "Table des matières",
@@ -57,6 +59,41 @@ def sample_toc(samples) -> Iterable[Document]:
 
 def get_toc_lines(toc):
     return [paragraph.text for paragraph in toc.paragraphs]
+
+
+def test_index_title_class():
+    title = IndexTitle()
+    assert isinstance(title, IndexTitle)
+
+
+def test_index_title_style():
+    title = IndexTitle(style="Standard", xml_id="abc")
+    assert isinstance(title, IndexTitle)
+
+
+def test_tab_stop_style_class():
+    element = TabStopStyle()
+    assert isinstance(element, TabStopStyle)
+
+
+def test_tab_stop_style_class_from_tag():
+    element = Element.from_tag("<style:tab-stop/>")
+    assert isinstance(element, Style)
+
+
+def test_tab_stop_style_argsg():
+    element = TabStopStyle(
+        style_type="right",
+        leader_style="dotted",
+        leader_text=".",
+        style_char="Standard",
+        leader_color="#000",
+        leader_text_style="dotted",
+        leader_type="Standard",
+        leader_width="1cm",
+        style_position="default",
+    )
+    assert isinstance(element, TabStopStyle)
 
 
 def test_get_tocs(sample_toc):
@@ -130,3 +167,153 @@ def test_str(sample):
     result = str(toc)
     for line in SAMPLE_EXPECTED:
         assert line in result
+
+
+def test_toc_args():
+    toc = TOC(
+        title="Table des matières", name="table", style="Standard", protected=False
+    )
+    assert "Table des matières" in str(toc)
+
+
+def test_toc_no_title_bad_args():
+    toc = TOC(title="")
+    assert "Table des matières" not in str(toc)
+
+
+def test_toc_create_toc_source_args():
+    element = TOC.create_toc_source(
+        title="title",
+        outline_level=2,
+        title_style="Standard",
+        entry_style="Standard_%s",
+    )
+    assert str(element) == "title"
+
+
+def test_toc_create_toc_source_bad_args():
+    element = TOC.create_toc_source(
+        title="title",
+        outline_level=2,
+        title_style="",
+        entry_style="",
+    )
+    assert str(element) == "title"
+
+
+def test_get_formatted_text(sample):
+    toc = TOC("Table des matières")
+    toc.fill(sample)
+    result = toc.get_formatted_text()
+    assert result.startswith("Table des matières\n1. Level 1")
+
+
+def test_get_formatted_text_ctx(sample):
+    toc = TOC("Table des matières")
+    toc.fill(sample)
+    ctx = {"rst_mode": True}
+    result = toc.get_formatted_text(ctx)
+    assert result == "\n.. contents::\n\n"
+
+
+def test_outline_level():
+    toc = TOC("Table des matières")
+    result = toc.outline_level
+    assert result == 0
+
+
+def test_outline_level_no_source():
+    toc = TOC("Table des matières")
+    source = toc.get_element("text:table-of-content-source")
+    source.delete()
+    result = toc.outline_level
+    assert result is None
+
+
+def test_set_outline_level():
+    toc = TOC("Table des matières")
+    toc.outline_level = 2
+    result = toc.outline_level
+    assert result == 2
+
+
+def test_set_outline_level_no_source():
+    toc = TOC("Table des matières")
+    source = toc.get_element("text:table-of-content-source")
+    source.delete()
+    toc.outline_level = 2
+    result = toc.outline_level
+    assert result == 2
+
+
+def test_set_some_body():
+    toc = TOC("Table des matières")
+    toc.body = Element.from_tag("text:index-body")
+    assert toc.body.serialize() == "<text:index-body/>"
+
+
+def test_set_none_body():
+    toc = TOC("Table des matières")
+    toc.body = None
+    assert toc.body.serialize() == "<text:index-body/>"
+
+
+def test_set_toc_title_1():
+    toc = TOC("Table des matières")
+    source = toc.get_element("text:table-of-content-source")
+    source.delete()
+    toc.set_toc_title("new title")
+    assert str(toc).startswith("new title")
+
+
+def test_set_toc_title_2():
+    toc = TOC("Table des matières")
+    toc.set_toc_title("new title")
+    assert str(toc).startswith("new title")
+
+
+def test_set_toc_title_3():
+    toc = TOC("Table des matières")
+    toc.set_toc_title("new title", style="Standard")
+    assert str(toc).startswith("new title")
+
+
+def test_set_toc_title_4():
+    toc = TOC("Table des matières")
+    index_title = toc.body.get_element(IndexTitle._tag)
+    index_title.clear()
+    toc.set_toc_title("new title", style="Standard")
+    assert str(toc).startswith("new title")
+
+
+def test_set_toc_title_5():
+    toc = TOC("Table des matières")
+    index_title = toc.body.get_element(IndexTitle._tag)
+    index_title.clear()
+    toc.set_toc_title(
+        "new title",
+        style="Standard",
+        text_style="Standard",
+    )
+    assert str(toc).startswith("new title")
+
+
+def test_get_title_1():
+    toc = TOC("Table des matières")
+    result = toc.get_title()
+    assert result == "Table des matières"
+
+
+def test_get_title_2():
+    toc = TOC("Table des matières")
+    toc.body.delete()
+    result = toc.get_title()
+    assert result == ""
+
+
+def test_get_title_3():
+    toc = TOC("Table des matières")
+    index_title = toc.body.get_element(IndexTitle._tag)
+    index_title.delete()
+    result = toc.get_title()
+    assert result == ""
