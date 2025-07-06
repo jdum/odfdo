@@ -1,6 +1,6 @@
 [project]
 name = "odfdo"
-version = "3.14.7"
+version = "3.14.8"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 readme = "README.md"
@@ -34,6 +34,7 @@ dependencies = [
 homepage = "https://github.com/jdum/odfdo"
 repository = "https://github.com/jdum/odfdo"
 changelog = "https://github.com/jdum/odfdo/blob/master/CHANGES.md"
+documentation = "https://jdum.github.io/odfdo/"
 
 [project.scripts]
 odfdo-diff = "odfdo.scripts.diff:main"
