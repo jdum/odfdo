@@ -198,7 +198,7 @@ class Annotation(MDTail, Element, DcCreatorMixin, DcDateMixin):
             self.date = date
             if not name:
                 name = get_unique_office_name(parent)
-                self.name = name
+            self.name = name
 
     @property
     def dc_creator(self) -> str | None:
