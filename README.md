@@ -43,17 +43,22 @@ Installation from sources:
 uv sync
 ```
 
-After installation from sources, you can check everything is working
+After installation from sources, you can check everything is working. The tests should run for a few seconds and issue no error.
 
 ```bash
+uv sync --dev
 uv run pytest
 ```
 
-The tests should run for a few minutes and issue no error.
+To generate the documentation in the `./docs` directory:
 
-The full test suite uses `tox` to check different `Python` and `lxml` versions.
+```bash
+uv sync --group doc
+uv run python doc_src/generate_doc.py
+```
 
-A special effort is made to limit the dependencies of this library: the only dependency (outside development) is `lxml`. The `lxml` versions depend mainly on the version of Python used, see the `pyproject.toml` file for details.
+A special effort has been made to limit the dependencies of this library: the only (non-development) dependency is `lxml`. Versions of `lxml` depend mainly on the version of Python used; see the `pyproject.toml` file for details.
+
 
 # Usage Overview
 
@@ -107,7 +112,7 @@ A few scripts are provided with `odfdo`:
 There is no detailed documentation or tutorial, but:
 
 -   the `recipes` folder contains more than 60 working sample scripts,
--   the `doc` folder contains an API reference documentation (auto generated), including recipes.
+-   the auto-generated documentation exposes public APIs and recipes.
 
 
 # About styles
