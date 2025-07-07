@@ -171,6 +171,7 @@ from .meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from .meta_template import MetaTemplate
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
+from .named_range import NamedRange
 from .note import Annotation, AnnotationEnd, Note
 from .paragraph import LineBreak, PageBreak, Paragraph, Spacer, Span, Tab
 from .paragraph_base import ParagraphBase
@@ -193,7 +194,7 @@ from .style import (
     make_table_cell_border_string,
 )
 from .styles import Styles
-from .table import NamedRange, Table
+from .table import Table
 from .toc import (
     TOC,
     IndexTitle,

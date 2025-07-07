@@ -17,11 +17,16 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""Body, specialized class of Element in charge of actual content management.
-"""
+"""Body, specialized class of Element in charge of actual content management."""
+
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from .element import Element, PropDef, register_element_class
+
+if TYPE_CHECKING:
+    from .table import Table
 
 
 class Body(Element):
@@ -36,7 +41,7 @@ class Body(Element):
         self,
         style: str | None = None,
         content: str | None = None,
-    ) -> list[Element]:
+    ) -> list[Table]:
         """Return all the tables that match the criteria.
 
         Arguments:
@@ -52,7 +57,7 @@ class Body(Element):
         )
 
     @property
-    def tables(self) -> list[Element]:
+    def tables(self) -> list[Table]:
         """Return all the tables.
 
         Return: list of Table
@@ -64,7 +69,7 @@ class Body(Element):
         position: int = 0,
         name: str | None = None,
         content: str | None = None,
-    ) -> Element | None:
+    ) -> Table | None:
         """Return the table that matches the criteria.
 
         Arguments:

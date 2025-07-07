@@ -59,6 +59,7 @@ if TYPE_CHECKING:
     from .image import DrawImage
     from .link import Link
     from .list import List
+    from .named_range import NamedRange
     from .note import Annotation, AnnotationEnd, Note
     from .paragraph import Paragraph, Span
     from .reference import (
@@ -76,7 +77,6 @@ if TYPE_CHECKING:
         RectangleShape,
     )
     from .style import Style
-    from .table import NamedRange
     from .toc import TOC
     from .tracked_changes import (
         TextChange,

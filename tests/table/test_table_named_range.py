@@ -27,7 +27,8 @@ from collections.abc import Iterable
 import pytest
 
 from odfdo.document import Document
-from odfdo.table import NamedRange, Table
+from odfdo.named_range import NamedRange
+from odfdo.table import Table
 
 
 @pytest.fixture
