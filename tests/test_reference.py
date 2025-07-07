@@ -25,7 +25,15 @@ import pytest
 
 from odfdo import Element
 from odfdo.document import Document
-from odfdo.reference import ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
+from odfdo.reference import (
+    Reference,
+    ReferenceMark,
+    ReferenceMarkEnd,
+    ReferenceMarkStart,
+    remove_all_reference_marks,
+    remove_reference_mark,
+    strip_references,
+)
 
 ZOE = "你好 Zoé"
 
@@ -40,6 +48,76 @@ def body1(samples) -> Iterable[Element]:
 def body2(samples) -> Iterable[Element]:
     document = Document(samples("base_text.odt")).clone
     yield document.body
+
+
+def test_reference_class():
+    ref = Reference()
+    assert isinstance(ref, Reference)
+
+
+def test_reference_args():
+    ref = Reference(name="refname", ref_format="chapter")
+    assert ref.name == "refname"
+    assert ref.ref_format == "chapter"
+
+
+def test_reference_args_default():
+    ref = Reference(name="refname")
+    assert ref.ref_format == "page"
+
+
+def test_reference_args_default_none():
+    # incomplete content:
+    ref = Element.from_tag("<text:reference-ref/>")
+    assert isinstance(ref, Reference)
+    assert ref.ref_format is None
+
+
+def test_reference_update(body1):
+    marks = body1.get_reference_mark_starts()
+    mark = marks[0]
+    ref_name = mark.name
+    ref = Reference(name=ref_name, ref_format="text")
+    body1.append(ref)  # required
+    mark_start = body1.get_reference_mark(name=ref_name)
+    # same mark as before
+    assert isinstance(mark_start, ReferenceMarkStart)
+    ref_text = mark_start.referenced_text()
+    expected = "Élise"
+    assert ref_text == expected
+    assert ref.text == ""
+    ref.update()
+    assert ref.text == expected
+
+
+def test_reference_update_not(body1):
+    marks = body1.get_reference_mark_starts()
+    mark = marks[0]
+    ref_name = mark.name
+    ref = Reference(name=ref_name, ref_format="page")
+    body1.append(ref)  # required
+    mark_start = body1.get_reference_mark(name=ref_name)
+    # same mark as before
+    assert isinstance(mark_start, ReferenceMarkStart)
+    ref_text = mark_start.referenced_text()
+    expected = "Élise"
+    assert ref_text == expected
+    assert ref.text == ""
+    ref.update()
+    # only update for 'text' format
+    assert ref.text == ""
+
+
+def test_reference_update_not_bad(body1):
+    ref_name = "bad name"
+    ref = Reference(name=ref_name, ref_format="text")
+    body1.append(ref)  # required
+    mark_start = body1.get_reference_mark(name=ref_name)
+    # same mark as before
+    assert mark_start is None
+    assert ref.text == ""
+    ref.update()
+    assert ref.text == ""
 
 
 def test_create_reference_mark():
@@ -107,6 +185,14 @@ def test_get_reference_mark_end(body1):
     get = body1.get_reference_mark_end(name=ZOE)
     expected = f'<text:reference-mark-end text:name="{ZOE}"/>'
     assert get.serialize() == expected
+
+
+def test_get_reference_mark_end_referenced(body1):
+    para = body1.get_paragraph()
+    reference_mark_end = ReferenceMarkEnd(ZOE)
+    para.append(reference_mark_end)
+    ref_end = body1.get_reference_mark_end(name=ZOE)
+    assert ref_end.referenced_text() == ""
 
 
 def test_get_reference_mark_end_list(body1):
@@ -254,3 +340,52 @@ def test_get_referenced_no_header(body2):
         "</office:text>"
     )
     assert referenced == expected
+
+
+def test_get_referenced_empty():
+    ref = ReferenceMarkStart()
+    with pytest.raises(ValueError):
+        ref.get_referenced()
+
+
+def test_reference_delete(body2):
+    head = body2.get_header()
+    head.set_reference_mark("one", content=head)
+    ref = body2.get_reference_mark(name="one")
+    ref.delete()
+    ref2 = body2.get_reference_mark(name="one")
+    assert ref2 is None
+
+
+def test_strip_references(body1):
+    marks = body1.get_reference_mark_starts()
+    mark = marks[0]
+    ref_name = mark.name
+    ref = Reference(name=ref_name, ref_format="text")
+    body1.append(ref)
+    refs = body1.get_references()
+    assert len(refs) == 1
+    strip_references(body1)
+    assert not body1.get_references()
+
+
+def test_remove_all_reference_marks(body1):
+    marks = body1.get_reference_mark_starts()
+    assert len(marks) == 1
+    remove_all_reference_marks(body1)
+    assert not body1.get_reference_mark_starts()
+
+
+def test_remove_reference_mark_1(body1):
+    remove_reference_mark(body1, 0)
+    assert not body1.get_reference_mark_starts()
+
+
+def test_remove_reference_mark_2(body1):
+    remove_reference_mark(body1, name="Nouvelle référence")
+    assert not body1.get_reference_mark_starts()
+
+
+def test_remove_reference_mark_3(body1):
+    remove_reference_mark(body1, name="wrong")
+    assert len(body1.get_reference_mark_starts()) == 1

@@ -19,40 +19,13 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Reference related classes for "text:reference-..." tags.
-"""
+"""Reference related classes for "text:reference-..." tags."""
+
 from __future__ import annotations
 
 from typing import Any
 
 from .element import Element, PropDef, register_element_class
-
-
-def _get_referenced(
-    body: Element,
-    start: Element,
-    end: Element,
-    no_header: bool,
-    clean: bool,
-    as_xml: bool,
-    as_list: bool,
-) -> Element | list | str | None:
-    """Retrieve data from body between some start and end."""
-    if body is None or start is None or end is None:
-        return None
-    content_list = body.get_between(
-        start, end, as_text=False, no_header=no_header, clean=clean
-    )
-    if as_list:
-        return content_list
-    referenced = Element.from_tag("office:text")
-    if isinstance(content_list, list):
-        for chunk in content_list:
-            referenced.append(chunk)
-    if as_xml:
-        return referenced.serialize()
-    else:
-        return referenced
 
 
 class Reference(Element):
@@ -107,7 +80,7 @@ class Reference(Element):
 
     _tag = "text:reference-ref"
     _properties = (PropDef("name", "text:ref-name"),)
-    format_allowed = (
+    FORMAT_ALLOWED = (
         "chapter",
         "direction",
         "page",
@@ -161,7 +134,7 @@ class Reference(Element):
 
             ref_format -- str
         """
-        if not ref_format or ref_format not in self.format_allowed:
+        if not ref_format or ref_format not in self.FORMAT_ALLOWED:
             ref_format = "page"
         self.set_attribute("text:reference-format", ref_format)
 
@@ -176,7 +149,7 @@ class Reference(Element):
             return None
         body = self.document_body
         if not body:
-            body = self.root
+            body = self.root  # pragma: nocover
         name = self.name
         reference = body.get_reference_mark(name=name)
         if not reference:
@@ -313,18 +286,28 @@ class ReferenceMarkStart(Element):
                        content in a "office:text'" element, instead simply
                        return a raw list of odf elements.
         """
-        name = self.name
-        parent = self.parent
-        if parent is None:
-            raise ValueError("Reference need some upper document part")
+        if self.parent is None:
+            raise ValueError(
+                "Reference need some upper document part"
+            )  # pragma: nocover
         body = self.document_body
         if not body:
-            body = parent
-        end = body.get_reference_mark_end(name=name)
+            body = self.parent
+        end = body.get_reference_mark_end(name=self.name)
         if end is None:
             raise ValueError("No reference-end found")
-        start = self
-        return _get_referenced(body, start, end, no_header, clean, as_xml, as_list)
+        content_list = body.get_between(
+            self, end, as_text=False, no_header=no_header, clean=clean
+        )
+        if as_list:
+            return content_list
+        referenced = Element.from_tag("office:text")
+        for chunk in content_list:
+            referenced.append(chunk)
+        if as_xml:
+            return referenced.serialize()
+        else:
+            return referenced
 
     def delete(self, child: Element | None = None, keep_tail: bool = True) -> None:
         """Delete the given element from the XML tree. If no element is given,
@@ -340,17 +323,16 @@ class ReferenceMarkStart(Element):
             keep_tail -- boolean (default to True), True for most usages.
         """
         if child is not None:  # act like normal delete
-            return super().delete(child, keep_tail)
+            return super().delete(child, keep_tail)  # pragma: nocover
         name = self.name
-        parent = self.parent
-        if parent is None:
-            raise ValueError("Can't delete the root element")
+        if self.parent is None:
+            raise ValueError("Can't delete the root element")  # pragma: nocover
         body = self.document_body
         if not body:
-            body = parent
-        end = body.get_reference_mark_end(name=name)
-        if end:
-            end.delete()
+            body = self.parent  # pragma: nocover
+        ref_end = body.get_reference_mark_end(name=name)
+        if ref_end:  # pragma: nocover
+            ref_end.delete()
         # act like normal delete
         return super().delete()
 
@@ -363,8 +345,8 @@ def strip_references(element: Element) -> Element | list:
     sub elements (for example the referenced value if format is 'text').
     Nota : using the .delete() on the reference mark will delete inner content.
     """
-    strip = ("text:reference-ref",)
-    return element.strip_tags(strip)
+    to_strip = ("text:reference-ref",)
+    return element.strip_tags(to_strip)
 
 
 def remove_all_reference_marks(element: Element) -> Element | list:
@@ -372,12 +354,12 @@ def remove_all_reference_marks(element: Element) -> Element | list:
     'text:reference-mark-end' tags of the element, keeping inner sub elements.
     Nota : using the .delete() on the reference mark will delete inner content.
     """
-    strip = (
+    to_strip = (
         "text:reference-mark",
         "text:reference-mark-start",
         "text:reference-mark-end",
     )
-    return element.strip_tags(strip)
+    return element.strip_tags(to_strip)
 
 
 def remove_reference_mark(
@@ -390,14 +372,14 @@ def remove_reference_mark(
     position, keeping inner sub elements.
     Nota : using the .delete() on the reference mark will delete inner content.
     """
-    start = element.get_reference_mark(position=position, name=name)
-    end = element.get_reference_mark_end(position=position, name=name)
-    target = []
-    if start:
-        target.append(start)
-    if end:
-        target.append(end)
-    element.strip_elements(target)
+    start_ref = element.get_reference_mark(position=position, name=name)
+    end_ref = element.get_reference_mark_end(position=position, name=name)
+    to_strip = []
+    if start_ref:
+        to_strip.append(start_ref)
+    if end_ref:
+        to_strip.append(end_ref)
+    element.strip_elements(to_strip)
 
 
 register_element_class(Reference)
