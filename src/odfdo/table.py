@@ -41,6 +41,7 @@ from typing import Any
 from lxml.etree import XPath, _Element
 
 from .cell import Cell
+from .column import Column
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element, register_element_class, xpath_compile
 from .frame import Frame
@@ -134,132 +135,6 @@ def _get_python_value(data: Any, encoding: str) -> Any:
     # TODO Try some other types ?
     # So a text
     return data
-
-
-class Column(Element):
-    """ODF table column "table:table-column" """
-
-    _tag = "table:table-column"
-
-    def __init__(
-        self,
-        default_cell_style: str | None = None,
-        repeated: int | None = None,
-        style: str | None = None,
-        **kwargs: Any,
-    ) -> None:
-        """Create a column group element of the optionally given style. Cell
-        style can be set for the whole column. If the properties apply to
-        several columns, give the number of repeated columns.
-
-        Columns don't contain cells, just style information.
-
-        You don't generally have to create columns by hand, use the Table API.
-
-        Arguments:
-
-            default_cell_style -- str
-
-            repeated -- int
-
-            style -- str
-        """
-        super().__init__(**kwargs)
-        self.x = None
-        if self._do_init:
-            if default_cell_style:
-                self.default_cell_style = default_cell_style
-            if repeated and repeated > 1:
-                self.repeated = repeated
-            if style:
-                self.style = style
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} x={self.x}>"
-
-    @property
-    def clone(self) -> Column:
-        clone = Element.clone.fget(self)  # type: ignore
-        clone.x = self.x
-        return clone
-
-    def get_default_cell_style(self) -> str | None:
-        """Get or set the default cell style for column.
-
-        (See also self.default_cell_style property.)
-        """
-        return self.get_attribute_string("table:default-cell-style-name")
-
-    def set_default_cell_style(self, style: Element | str | None) -> None:
-        """Get or set the default cell style for column.
-
-        (See also self.default_cell_style property.)
-        """
-        self.set_style_attribute("table:default-cell-style-name", style)
-
-    @property
-    def default_cell_style(self) -> str | None:
-        """Get or set the default cell style for column."""
-        return self.get_attribute_string("table:default-cell-style-name")
-
-    @default_cell_style.setter
-    def default_cell_style(self, style: Element | str | None) -> None:
-        self.set_style_attribute("table:default-cell-style-name", style)
-
-    def _set_repeated(self, repeated: int | None) -> None:
-        """Internal only. Set the number of times the column is repeated, or
-        None to delete it. Without changing cache.
-
-        Arguments:
-
-            repeated -- int or None
-        """
-        if repeated is None or repeated < 2:
-            with contextlib.suppress(KeyError):
-                self.del_attribute("table:number-columns-repeated")
-            return
-        self.set_attribute("table:number-columns-repeated", str(repeated))
-
-    @property
-    def repeated(self) -> int | None:
-        """Get /set the number of times the column is repeated.
-
-        Always None when using the table API.
-
-        Return: int or None
-        """
-        repeated = self.get_attribute("table:number-columns-repeated")
-        if repeated is None:
-            return None
-        return int(repeated)
-
-    @repeated.setter
-    def repeated(self, repeated: int | None) -> None:
-        self._set_repeated(repeated)
-        # update cache
-        current: Element = self
-        while True:
-            # look for Table, parent may be group of rows
-            upper = current.parent
-            if not upper:
-                # lonely column
-                return
-            # parent may be group of rows, not table
-            if isinstance(upper, Table):
-                break
-            current = upper
-
-    @property
-    def style(self) -> str | None:
-        """Get /set the style of the column itself.
-
-        Return: str
-        """
-        return self.get_attribute_string("table:style-name")
-
-    @style.setter
-    def style(self, style: str | Element) -> None:
-        self.set_style_attribute("table:style-name", style)
 
 
 class Table(MDTable, Element):
@@ -3232,6 +3107,5 @@ def import_from_csv(
     return Table.from_csv(content, name, **fmtparams)
 
 
-register_element_class(Column)
 register_element_class(Table)
 register_element_class(NamedRange)

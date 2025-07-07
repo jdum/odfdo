@@ -26,7 +26,7 @@ from collections.abc import Iterable
 
 import pytest
 
-from odfdo.table import Column
+from odfdo.column import Column
 
 
 @pytest.fixture

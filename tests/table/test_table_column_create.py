@@ -22,7 +22,7 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 
-from odfdo.table import Column
+from odfdo.column import Column
 
 
 def test_default():

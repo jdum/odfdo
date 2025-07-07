@@ -877,7 +877,7 @@ class Element(MDBase):
             return
         element.set(lxml_tag, str(value))
 
-    def set_style_attribute(self, name: str, value: Element | str) -> None:
+    def set_style_attribute(self, name: str, value: Element | str | None) -> None:
         """Shortcut to accept a style object as a value."""
         if isinstance(value, Element):
             value = str(value.name)  # type:ignore

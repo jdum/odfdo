@@ -151,6 +151,7 @@ __all__ = [  # noqa: RUF022
 from .body import Body, Chart, Database, Drawing, Image, Presentation, Spreadsheet, Text
 from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
 from .cell import Cell
+from .column import Column
 from .container import Container
 from .content import Content
 from .document import Document
@@ -192,7 +193,7 @@ from .style import (
     make_table_cell_border_string,
 )
 from .styles import Styles
-from .table import Column, NamedRange, Table
+from .table import NamedRange, Table
 from .toc import (
     TOC,
     IndexTitle,

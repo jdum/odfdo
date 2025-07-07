@@ -30,9 +30,10 @@ if TYPE_CHECKING:
     from lxml.etree import XPath
 
     from .cell import Cell
+    from .column import Column
     from .element import Element
     from .row import Row
-    from .table import Column, Table
+    from .table import Table
 
 _XP_ROW_IDX = xpath_compile(
     "(table:table-row|table:table-rows/table:table-row|"
