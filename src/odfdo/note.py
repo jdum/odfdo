@@ -76,6 +76,7 @@ class Note(MDNote, Element):
         PropDef("note_class", "text:note-class"),
         PropDef("note_id", "text:id"),
     )
+    NOTE_CLASS = {"footnote", "endnote"}
 
     def __init__(
         self,
@@ -133,7 +134,7 @@ class Note(MDNote, Element):
             raise TypeError(f'Unexpected type for body: "{type(text_or_element)}"')
 
     def check_validity(self) -> None:
-        if not self.note_class:
+        if not self.note_class or self.note_class not in self.NOTE_CLASS:
             raise ValueError('Note class must be "footnote" or "endnote"')
         if not self.note_id:
             raise ValueError("Note must have an id")
