@@ -17,8 +17,8 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""Mixin class for <dc:creator>.
-"""
+"""Mixin class for <dc:creator>."""
+
 from __future__ import annotations
 
 from .element import Element
@@ -37,7 +37,7 @@ class DcCreatorMixin:
             >>> document.meta.get_creator()
             Unknown
         """
-        element = self.get_element("//dc:creator")
+        element = self.clone.get_element("//dc:creator")
         if element is None:
             return None
         return element.text

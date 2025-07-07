@@ -17,8 +17,8 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""Mixin class for <dc:date>.
-"""
+"""Mixin class for <dc:date>."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -35,7 +35,7 @@ class DcDateMixin:
 
         Return: datetime (or None if inexistant)
         """
-        element = self.get_element("//dc:date")
+        element = self.clone.get_element("//dc:date")
         if element is None:
             return None
         dtdate = element.text
