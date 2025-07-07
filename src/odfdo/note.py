@@ -25,7 +25,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, ClassVar
 
 from .element import Element, PropDef, register_element_class
 from .mixin_dc_creator import DcCreatorMixin
@@ -76,7 +76,7 @@ class Note(MDNote, Element):
         PropDef("note_class", "text:note-class"),
         PropDef("note_id", "text:id"),
     )
-    NOTE_CLASS = {"footnote", "endnote"}
+    NOTE_CLASS: ClassVar = {"footnote", "endnote"}
 
     def __init__(
         self,

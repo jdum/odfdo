@@ -39,6 +39,188 @@ def document(samples) -> Iterable[Document]:
     yield document
 
 
+def test_get_office_names_0():
+    doc = Document()
+    assert doc.body.get_office_names() == []
+
+
+def test_get_office_names_1(document):
+    assert document.body.get_office_names() == []
+
+
+def test_get_office_names_2(document):
+    annotation = Annotation(
+        "Some annotation",
+        creator="John Doe",
+        date=datetime(2025, 6, 7, 12, 00, 00),
+    )
+    document.body.append(annotation)
+    assert document.body.get_office_names() == ["__Fieldmark__lpod_1"]
+
+
+def test_get_office_names_3(document):
+    annotation1 = Annotation(
+        "Some annotation 1",
+        creator="John Doe",
+        date=datetime(2025, 6, 7, 12, 00, 00),
+        parent=document.body,
+    )
+    document.body.append(annotation1)
+    annotation2 = Annotation(
+        "Some annotation 1",
+        creator="John Doe",
+        date=datetime(2025, 6, 7, 12, 00, 00),
+        parent=document.body,
+    )
+    document.body.append(annotation2)
+    assert set(document.body.get_office_names()) == {
+        "__Fieldmark__lpod_1",
+        "__Fieldmark__lpod_2",
+    }
+
+
+def test_note_class():
+    note = Note()
+    assert isinstance(note, Note)
+
+
+def test_note_minimal_tag():
+    note = Element.from_tag('<text:note text:note-class="footnote"/>')
+    assert isinstance(note, Note)
+
+
+def test_note_empty_citation():
+    note = Note()
+    assert note.citation == ""
+
+
+def test_note_empty_citation_without_tag():
+    note = Element.from_tag('<text:note text:note-class="footnote"/>')
+    assert note.citation == ""
+
+
+def test_note_empty_citation_without_tag_setter_inactif():
+    note = Element.from_tag('<text:note text:note-class="footnote"/>')
+    note.citation = "no place to store this"
+    assert note.citation == ""
+
+
+def test_note_empty_body():
+    note = Note()
+    assert note.note_body == ""
+
+
+def test_note_empty_body_without_tag():
+    note = Element.from_tag('<text:note text:note-class="footnote"/>')
+    assert note.note_body == ""
+
+
+def test_note_empty_body_without_tag_setter_inactif():
+    note = Element.from_tag('<text:note text:note-class="footnote"/>')
+    note.note_body = "no place to store this"
+    assert note.note_body == ""
+
+
+def test_note_body_setter():
+    note = Note()
+    note.note_body = "initial"
+    assert note.note_body == "initial"
+    note.note_body = None
+    assert note.note_body == ""
+
+
+def test_note_body_setter_element():
+    content = Paragraph("content")
+    note = Note()
+    note.note_body = "initial"
+    assert note.note_body == "initial"
+    note.note_body = content
+    assert str(note.note_body) == "content"
+
+
+def test_note_body_setter_wrong_type():
+    note = Note()
+    with pytest.raises(TypeError):
+        note.note_body = []
+
+
+def test_note_check_valid_no_class_0():
+    note = Element.from_tag("<text:note/>")
+    with pytest.raises(ValueError):
+        note.check_validity()
+
+
+def test_note_check_valid_no_class_1():
+    note = Element.from_tag('<text:note text:note-class=""/>')
+    with pytest.raises(ValueError):
+        note.check_validity()
+
+
+def test_note_check_valid_no_class_2():
+    note = Element.from_tag('<text:note text:note-class="wrong"/>')
+    with pytest.raises(ValueError):
+        note.check_validity()
+
+
+def test_note_check_valid_no_id_0():
+    note = Element.from_tag('<text:note text:note-class="footnote"/>')
+    with pytest.raises(ValueError):
+        note.check_validity()
+
+
+def test_note_check_valid_no_id_1():
+    note = Element.from_tag('<text:note text:note-class="footnote"  text:id=""/>')
+    with pytest.raises(ValueError):
+        note.check_validity()
+
+
+def test_note_check_valid_no_citation_0():
+    note = Element.from_tag('<text:note text:note-class="footnote" text:id="note1"/>')
+    with pytest.raises(ValueError):
+        note.check_validity()
+
+
+def test_note_check_valid_no_citation_1():
+    note = Element.from_tag(
+        '<text:note text:note-class="footnote" text:id="note1">'
+        "<text:note-citation></text:note-citation></text:note>"
+    )
+    with pytest.raises(ValueError):
+        note.check_validity()
+
+
+def test_note_check_valid_no_body_0():
+    note = Element.from_tag(
+        '<text:note text:note-class="footnote" text:id="note1">'
+        "<text:note-citation>Some citation</text:note-citation></text:note>"
+    )
+    assert note.check_validity() is None
+
+
+def test_note_check_valid_no_body_1():
+    note = Element.from_tag(
+        '<text:note text:note-class="footnote" text:id="note1">'
+        "<text:note-citation>Some citation</text:note-citation>"
+        "<text:note-body></text:note-body>"
+        "</text:note>"
+    )
+    assert note.check_validity() is None
+
+
+def test_note_str_no_citation():
+    note = Element.from_tag(
+        '<text:note text:note-class="footnote" text:id="note1">'
+        "<text:note-citation></text:note-citation>"
+        "<text:note-body>"
+        '<text:p text:style-name="Standard">'
+        "a footnote"
+        "</text:p>"
+        "</text:note-body>"
+        "</text:note>"
+    )
+    assert str(note) == "a footnote"
+
+
 def test_create_note1():
     # With an odf_element
     note_body = Paragraph("a footnote", style="Standard")
