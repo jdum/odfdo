@@ -783,12 +783,11 @@ class Element(MDBase):
         return result
 
     def get_elements(self, xpath_query: XPath | str) -> list[Element]:
-        element = self.__element
         if isinstance(xpath_query, str):
             new_xpath_query = xpath_compile(xpath_query)
-            result = new_xpath_query(element)
+            result = new_xpath_query(self.__element)
         else:
-            result = xpath_query(element)
+            result = xpath_query(self.__element)
         if not isinstance(result, list):
             raise TypeError("Bad XPath result")
         return [
@@ -797,11 +796,8 @@ class Element(MDBase):
             if isinstance(e, _Element)
         ]
 
-    # fixme : need original get_element as wrapper of get_elements
-
     def get_element(self, xpath_query: XPath | str) -> Element | None:
-        element = self.__element
-        result = element.xpath(f"({xpath_query})[1]", namespaces=ODF_NAMESPACES)
+        result = self.__element.xpath(f"({xpath_query})[1]", namespaces=ODF_NAMESPACES)
         if result:
             return Element.from_tag(result[0])
         return None

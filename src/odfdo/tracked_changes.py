@@ -23,6 +23,7 @@
 """TrackedChanges class for "text:tracked-changes" and related classes
 (ChangeInfo, TextInsertion, TextChange...).
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -76,8 +77,6 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
         Return: str or list of str.
         """
         content = self.paragraphs
-        if content is None:
-            content = []
         text = [para.get_formatted_text(simple=True) for para in content]  # type: ignore
         if joined:
             return "\n".join(text)
@@ -149,15 +148,15 @@ class TextInsertion(Element):
         Return: list or Element or text
         """
         current = self.parent  # text:changed-region
-        if not current:
-            raise ValueError
+        if not isinstance(current, TextChangedRegion):
+            raise TypeError("Missing parent TextChangedRegion")
         idx = current.get_id()  # type: ignore
         body = self.document_body
         if not body:
-            body = self.root
+            body = self.root  # pragma: nocover
         text_change = body.get_text_change_start(idx=idx)
         if not text_change:
-            raise ValueError
+            raise ValueError  # pragma: nocover
         return text_change.get_inserted(  # type: ignore
             as_text=as_text, no_header=no_header, clean=clean
         )
@@ -267,6 +266,7 @@ class TextDeletion(TextInsertion):
         children = self.children
         inner = [elem for elem in children if elem.tag != "office:change-info"]
         if no_header:  # crude replace t:h by t:p
+            print("noheader")
             new_inner = []
             for element in inner:
                 if element.tag == "text:h":
@@ -275,7 +275,7 @@ class TextDeletion(TextInsertion):
                     para = Element.from_tag("text:p")
                     para.text = text
                     for child in children:
-                        para.append(child)
+                        para.append(child)  # pragma: nocover
                     new_inner.append(para)
                 else:
                     new_inner.append(element)
@@ -376,7 +376,7 @@ class TextChangedRegion(Element):
         """
         child = self.get_change_element()
         if not child:
-            raise ValueError
+            raise ValueError("Empty TextChangedRegion")
         child.set_change_info(  # type: ignore
             change_info=change_info, creator=creator, date=date, comments=comments
         )
@@ -449,12 +449,12 @@ class TrackedChanges(MDZap, Element):
         if role is None:
             return changed_regions
         result: list[Element] = []
-        for regien in changed_regions:
-            changed = regien.get_change_element()  # type: ignore
+        for region in changed_regions:
+            changed = region.get_change_element()  # type: ignore
             if not changed:
-                continue
+                continue  # pragma: nocover
             if changed.tag.endswith(role):
-                result.append(regien)
+                result.append(region)
         return result
 
     def get_changed_region(
@@ -509,7 +509,7 @@ class TextChange(Element):
     ) -> Element | None:
         changed_region = self.get_changed_region(tracked_changes=tracked_changes)
         if not changed_region:
-            return None
+            return None  # pragma: nocover
         return changed_region.get_change_info()  # type: ignore
 
     def get_change_element(
@@ -518,7 +518,7 @@ class TextChange(Element):
     ) -> Element | None:
         changed_region = self.get_changed_region(tracked_changes=tracked_changes)
         if not changed_region:
-            return None
+            return None  # pragma: nocover
         return changed_region.get_change_element()  # type: ignore
 
     def get_deleted(
@@ -535,11 +535,10 @@ class TextChange(Element):
         """
         changed = self.get_change_element(tracked_changes=tracked_changes)
         if not changed:
-            return None
+            return None  # pragma: nocover
         return changed.get_deleted(  # type: ignore
             as_text=as_text,
             no_header=no_header,
-            clean=clean,
         )
 
     def get_inserted(
@@ -573,10 +572,12 @@ class TextChangeEnd(TextChange):
         idx = self.get_id()
         parent = self.parent
         if parent is None:
-            raise ValueError("Can not find end tag: no parent available.")
+            raise ValueError(
+                "Can not find end tag: no parent available."
+            )  # pragma: nocover
         body = self.document_body
         if not body:
-            body = self.root
+            body = self.root  # pragma: nocover
         return body.get_text_change_start(idx=idx)  # type: ignore
 
     def get_end(self) -> TextChangeEnd | None:
@@ -622,7 +623,7 @@ class TextChangeEnd(TextChange):
             return None
         body = self.document_body
         if not body:
-            body = self.root
+            body = self.root  # pragma: nocover
         return body.get_between(
             start, end, as_text=as_text, no_header=no_header, clean=clean
         )
@@ -645,7 +646,9 @@ class TextChangeStart(TextChangeEnd):
         idx = self.get_id()
         parent = self.parent
         if parent is None:
-            raise ValueError("Can not find end tag: no parent available.")
+            raise ValueError(
+                "Can not find end tag: no parent available."
+            )  # pragma: nocover
         body = self.document_body
         if not body:
             body = self.root
@@ -669,16 +672,16 @@ class TextChangeStart(TextChangeEnd):
             keep_tail -- boolean (default to True), True for most usages.
         """
         if child is not None:  # act like normal delete
-            return super().delete(child, keep_tail)
+            return super().delete(child, keep_tail)  # pragma: nocover
         idx = self.get_id()
         parent = self.parent
         if parent is None:
-            raise ValueError("cannot delete the root element")
+            raise ValueError("cannot delete the root element")  # pragma: nocover
         body = self.document_body
         if not body:
-            body = parent
+            body = parent  # pragma: nocover
         end = body.get_text_change_end(idx=idx)
-        if end:
+        if end:  # pragma: nocover
             end.delete()
         # act like normal delete
         super().delete()
