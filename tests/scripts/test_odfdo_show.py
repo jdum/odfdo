@@ -11,7 +11,7 @@ SCRIPT = Path(show.__file__)
 
 
 def run_params(params: list):
-    command = [sys.executable, SCRIPT] + params
+    command = [sys.executable, SCRIPT, *params]
     proc = subprocess.Popen(
         command,
         text=True,
