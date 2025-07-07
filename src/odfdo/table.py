@@ -2807,7 +2807,7 @@ def import_from_csv(
         content = content_b.decode()
     else:
         content = content_b
-    return Table.from_csv(content, name, **fmtparams)
+    return Table.from_csv(content=content, name=name, style=style, **fmtparams)
 
 
 register_element_class(Table)
