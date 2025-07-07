@@ -674,12 +674,11 @@ class TextChangeStart(TextChangeEnd):
         if child is not None:  # act like normal delete
             return super().delete(child, keep_tail)  # pragma: nocover
         idx = self.get_id()
-        parent = self.parent
-        if parent is None:
+        if self.parent is None:
             raise ValueError("cannot delete the root element")  # pragma: nocover
         body = self.document_body
         if not body:
-            body = parent  # pragma: nocover
+            body = self.parent  # pragma: nocover
         end = body.get_text_change_end(idx=idx)
         if end:  # pragma: nocover
             end.delete()
