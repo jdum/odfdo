@@ -33,7 +33,7 @@ from .style import Style
 
 
 class Column(Element):
-    """ODF table column "table:table-column" """
+    """A Column of a table, "table:table-column"."""
 
     _tag = "table:table-column"
 
@@ -44,7 +44,9 @@ class Column(Element):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a column group element of the optionally given style. Cell
+        """A Column of a table, "table:table-column".
+
+        Create a column group element of the optionally given style. Cell
         style can be set for the whole column. If the properties apply to
         several columns, give the number of repeated columns.
 

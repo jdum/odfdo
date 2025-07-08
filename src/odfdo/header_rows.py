@@ -29,6 +29,8 @@ from .element import Element, register_element_class
 
 
 class HeaderRows(Element):
+    """A header row of a table, "table:table-header-rows"."""
+
     _tag = "table:table-header-rows"
 
 

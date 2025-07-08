@@ -20,7 +20,7 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-"""Content class for content.xml part."""
+"""Representation of the "content.xml" part."""
 
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ from .xmlpart import XmlPart
 
 
 class Content(XmlPart):
-    # The following two seem useless but they match styles API
+    """Representation of the "content.xml" part."""
 
     def _get_style_contexts(self, family: str | None) -> tuple:
         if family == "font-face":

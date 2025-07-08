@@ -34,10 +34,14 @@ from .element_typed import ElementTyped
 
 
 class VarDecls(Element):
+    """Container of variables declarations, "text:variable-decls"."""
+
     _tag = "text:variable-decls"
 
 
 class VarDecl(Element):
+    """A variable declaration, "text:variable-decl"."""
+
     _tag = "text:variable-decl"
     _properties = (
         PropDef("name", "text:name"),
@@ -50,6 +54,7 @@ class VarDecl(Element):
         value_type: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a variable declaration "text:variable-decl"."""
         super().__init__(**kwargs)
         if self._do_init:
             if name:
@@ -62,6 +67,8 @@ VarDecl._define_attribut_property()
 
 
 class VarSet(ElementTyped):
+    """Representation of a variable setter, "text:variable-set"."""
+
     _tag = "text:variable-set"
     _properties = (
         PropDef("name", "text:name"),
@@ -79,6 +86,7 @@ class VarSet(ElementTyped):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a variable setter, "text:variable-set"."""
         super().__init__(**kwargs)
         if self._do_init:
             if name:
@@ -109,6 +117,8 @@ VarSet._define_attribut_property()
 
 
 class VarGet(ElementTyped):
+    """Representation of a variable getter, "text:variable-get"."""
+
     _tag = "text:variable-get"
     _properties = (
         PropDef("name", "text:name"),
@@ -124,6 +134,7 @@ class VarGet(ElementTyped):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a variable getter "text:variable-get"."""
         super().__init__(**kwargs)
         if self._do_init:
             if name:
@@ -140,10 +151,14 @@ VarGet._define_attribut_property()
 
 
 class UserFieldDecls(Element):
+    """Container of user fields declarations, "text:user-field-decls"."""
+
     _tag = "text:user-field-decls"
 
 
 class UserFieldDecl(ElementTyped):
+    """Declaration of a user field, "text:user-field-decl"."""
+
     _tag = "text:user-field-decl"
     _properties = (PropDef("name", "text:name"),)
 
@@ -154,6 +169,7 @@ class UserFieldDecl(ElementTyped):
         value_type: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a user field "text:user-field-decl"."""
         super().__init__(**kwargs)
         if self._do_init:
             if name:
@@ -171,6 +187,8 @@ UserFieldDecl._define_attribut_property()
 
 
 class UserFieldGet(ElementTyped):
+    """Representation of user field getter, "text:user-field-get"."""
+
     _tag = "text:user-field-get"
     _properties = (
         PropDef("name", "text:name"),
@@ -186,6 +204,7 @@ class UserFieldGet(ElementTyped):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a user field getter "text:user-field-get"."""
         super().__init__(**kwargs)
         if self._do_init:
             if name:
@@ -203,6 +222,8 @@ UserFieldGet._define_attribut_property()
 
 
 class UserFieldInput(UserFieldGet):
+    """Representation of user field input, "text:user-field-input"."""
+
     _tag = "text:user-field-input"
 
 
@@ -210,24 +231,7 @@ UserFieldInput._define_attribut_property()
 
 
 class UserDefined(ElementTyped):
-    """Return a user defined field "text:user-defined". If the current
-    document is provided, try to extract the content of the meta user defined
-    field of same name.
-
-    Arguments:
-
-        name -- str, name of the user defined field
-
-        value -- python typed value, value of the field
-
-        value_type -- str, office:value-type known type
-
-        text -- str
-
-        style -- str
-
-        from_document -- ODF document
-    """
+    """A user defined field, "text:user-defined"."""
 
     _tag = "text:user-defined"
     _properties = (
@@ -245,6 +249,25 @@ class UserDefined(ElementTyped):
         from_document: Document | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a user defined field "text:user-defined".
+
+        If the current document is provided, try to extract
+        the content of the meta user defined field of same name.
+
+        Arguments:
+
+            name -- str, name of the user defined field
+
+            value -- python typed value, value of the field
+
+            value_type -- str, office:value-type known type
+
+            text -- str
+
+            style -- str
+
+            from_document -- ODF document
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if name:
@@ -268,11 +291,7 @@ UserDefined._define_attribut_property()
 
 
 class VarPageNumber(Element):
-    """
-    select_page -- string in ('previous', 'current', 'next')
-
-    page_adjust -- int (to add or subtract to the page number)
-    """
+    """Variable for page number, "text:page-number"."""
 
     _tag = "text:page-number"
     _properties = (
@@ -286,6 +305,12 @@ class VarPageNumber(Element):
         page_adjust: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a variable for page number "text:page-number".
+
+        select_page -- string in ('previous', 'current', 'next')
+
+        page_adjust -- int (to add or subtract to the page number)
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if select_page is None:
@@ -299,10 +324,14 @@ VarPageNumber._define_attribut_property()
 
 
 class VarPageCount(Element):
+    """Variable for page count, "text:page-count"."""
+
     _tag = "text:page-count"
 
 
 class VarDate(Element):
+    """Variable for a date, "text:date"."""
+
     _tag = "text:date"
     _properties = (
         PropDef("date", "text:date-value"),
@@ -320,6 +349,7 @@ class VarDate(Element):
         date_adjust: timedelta | None = None,
         **kwargs: Any,
     ) -> None:
+        """create avariable for a date "text:date"."""
         super().__init__(**kwargs)
         if self._do_init:
             if date:
@@ -339,6 +369,8 @@ VarDate._define_attribut_property()
 
 
 class VarTime(Element):
+    """Variable for a time, "text:time"."""
+
     _tag = "text:time"
     _properties = (
         PropDef("time", "text:time-value"),
@@ -356,6 +388,7 @@ class VarTime(Element):
         time_adjust: timedelta | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a variable for a time "text:time"."""
         super().__init__(**kwargs)
         if self._do_init:
             if time is None:
@@ -386,6 +419,8 @@ VarTime._define_attribut_property()
 
 
 class VarChapter(Element):
+    """Variable for a chapter, "text:chapter"."""
+
     _tag = "text:chapter"
     _properties = (
         PropDef("display", "text:display"),
@@ -405,7 +440,9 @@ class VarChapter(Element):
         outline_level: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """display can be: 'number', 'name', 'number-and-name', 'plain-number' or
+        """Create a variable for a chapter "text:chapter".
+
+        display can be: 'number', 'name', 'number-and-name', 'plain-number' or
         'plain-number-and-name'
         """
         super().__init__(**kwargs)
@@ -421,6 +458,8 @@ VarChapter._define_attribut_property()
 
 
 class VarFileName(Element):
+    """Variable for the file name, "text:file-name"."""
+
     _tag = "text:file-name"
     _properties = (
         PropDef("display", "text:display"),
@@ -439,7 +478,10 @@ class VarFileName(Element):
         fixed: bool = False,
         **kwargs: Any,
     ) -> None:
-        """display can be: 'full', 'path', 'name' or 'name-and-extension'"""
+        """Create a variable for the file name "text:file-name".
+
+        display can be: 'full', 'path', 'name' or 'name-and-extension'
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if display not in VarFileName.DISPLAY_VALUE_CHOICE:
@@ -453,10 +495,13 @@ VarFileName._define_attribut_property()
 
 
 class VarInitialCreator(Element):
+    """Variable for the initial creator, "text:initial-creator"."""
+
     _tag = "text:initial-creator"
     _properties = (PropDef("fixed", "text:fixed"),)
 
     def __init__(self, fixed: bool = False, **kwargs: Any) -> None:
+        """Create a variable for the initial creator "text:initial-creator"."""
         super().__init__(**kwargs)
         if self._do_init and fixed:
             self.fixed = True
@@ -466,6 +511,8 @@ VarInitialCreator._define_attribut_property()
 
 
 class VarCreationDate(Element):
+    """Variable for the creation date, "text:creation-date"."""
+
     _tag = "text:creation-date"
     _properties = (
         PropDef("fixed", "text:fixed"),
@@ -478,6 +525,7 @@ class VarCreationDate(Element):
         data_style: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a variable for the creation date "text:creation-date"."""
         super().__init__(**kwargs)
         if self._do_init:
             if fixed:
@@ -490,6 +538,8 @@ VarCreationDate._define_attribut_property()
 
 
 class VarCreationTime(Element):
+    """Variable for the creation time, "text:creation-time"."""
+
     _tag = "text:creation-time"
     _properties = (
         PropDef("fixed", "text:fixed"),
@@ -502,6 +552,7 @@ class VarCreationTime(Element):
         data_style: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a variable for the creation time "text:creation-time"."""
         super().__init__(**kwargs)
         if self._do_init:
             if fixed:
@@ -514,6 +565,8 @@ VarCreationTime._define_attribut_property()
 
 
 class VarDescription(VarInitialCreator):
+    """Variable for the text description, "text:description"."""
+
     _tag = "text:description"
 
 
@@ -521,6 +574,8 @@ VarDescription._define_attribut_property()
 
 
 class VarTitle(VarInitialCreator):
+    """Variable for the title, "text:title"."""
+
     _tag = "text:title"
 
 
@@ -528,6 +583,8 @@ VarTitle._define_attribut_property()
 
 
 class VarSubject(VarInitialCreator):
+    """Variable for the subject, "text:subject"."""
+
     _tag = "text:subject"
 
 
@@ -535,6 +592,8 @@ VarSubject._define_attribut_property()
 
 
 class VarKeywords(VarInitialCreator):
+    """Variable for the keywords, "text:keywords"."""
+
     _tag = "text:keywords"
 
 

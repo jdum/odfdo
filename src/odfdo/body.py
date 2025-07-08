@@ -17,7 +17,7 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""Body, specialized class of Element in charge of actual content management."""
+"""Body, root of the document content."""
 
 from __future__ import annotations
 
@@ -30,9 +30,7 @@ if TYPE_CHECKING:
 
 
 class Body(Element):
-    """Body, specialized class of Element in charge of actual content
-    management.
-    """
+    """Root of the document content, "office:body"."""
 
     _tag: str = "office:body"
     _properties: tuple[PropDef, ...] = ()
@@ -95,63 +93,49 @@ class Body(Element):
 
 
 class Chart(Body):
-    """Chart, specialized class of Element in charge of actual content
-    management.
-    """
+    """Root of the Chart document content, "office:chart"."""
 
     _tag: str = "office:chart"
     _properties: tuple[PropDef, ...] = ()
 
 
 class Database(Body):
-    """Database, specialized class of Element in charge of actual content
-    management.
-    """
+    """Root of the Database document content, "office:database"."""
 
     _tag: str = "office:database"
     _properties: tuple[PropDef, ...] = ()
 
 
 class Drawing(Body):
-    """Drawing, specialized class of Element in charge of actual content
-    management.
-    """
+    """Root of the Drawing document content, "office:drawing"."""
 
     _tag: str = "office:drawing"
     _properties: tuple[PropDef, ...] = ()
 
 
 class Image(Body):
-    """Image, specialized class of Element in charge of actual content
-    management.
-    """
+    """Root of the Image document content, "office:image"."""
 
     _tag: str = "office:image"
     _properties: tuple[PropDef, ...] = ()
 
 
 class Presentation(Body):
-    """Presentation, specialized class of Element in charge of actual content
-    management.
-    """
+    """Root of the Presentation document content, "office:presentation"."""
 
     _tag: str = "office:presentation"
     _properties: tuple[PropDef, ...] = ()
 
 
 class Spreadsheet(Body):
-    """Spreadsheet, specialized class of Element in charge of actual content
-    management.
-    """
+    """Root of the Spreadsheet document content, "office:spreadsheet"."""
 
     _tag: str = "office:spreadsheet"
     _properties: tuple[PropDef, ...] = ()
 
 
 class Text(Body):
-    """Text, specialized class of Element in charge of actual content
-    management.
-    """
+    """Root of the Text document content, "office:text"."""
 
     _tag: str = "office:text"
     _properties: tuple[PropDef, ...] = ()

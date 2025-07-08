@@ -32,7 +32,7 @@ from .frame import AnchorMix, PosMix, SizeMix, ZMix
 
 
 class ShapeBase(Element, SizeMix, PosMix):
-    """Base class for shapes"""
+    """Base class for shapes (internal)."""
 
     _tag = "draw:shape-odfdo-notodf"
     _properties: tuple[PropDef, ...] = (
@@ -87,22 +87,7 @@ ShapeBase._define_attribut_property()
 
 
 class LineShape(ShapeBase):
-    """Create a line shape.
-
-    Arguments:
-
-        style -- str
-
-        text_style -- str
-
-        draw_id -- str
-
-        layer -- str
-
-        p1 -- (str, str)
-
-        p2 -- (str, str)
-    """
+    """A line shape, "draw:line"."""
 
     _tag = "draw:line"
     _properties: tuple[PropDef, ...] = (
@@ -122,6 +107,22 @@ class LineShape(ShapeBase):
         p2: tuple | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a line shape "draw:line".
+
+        Arguments:
+
+            style -- str
+
+            text_style -- str
+
+            draw_id -- str
+
+            layer -- str
+
+            p1 -- (str, str)
+
+            p2 -- (str, str)
+        """
         kwargs.update(
             {
                 "style": style,
@@ -144,23 +145,7 @@ LineShape._define_attribut_property()
 
 
 class RectangleShape(ShapeBase):
-    """Create a rectangle shape.
-
-    Arguments:
-
-        style -- str
-
-        text_style -- str
-
-        draw_id -- str
-
-        layer -- str
-
-        position -- (str, str)
-
-        size -- (str, str)
-
-    """
+    """A rectangle shape, "draw:rect"."""
 
     _tag = "draw:rect"
     _properties: tuple[PropDef, ...] = ()
@@ -175,6 +160,22 @@ class RectangleShape(ShapeBase):
         size: tuple | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a rectangle shape "draw:rect".
+
+        Arguments:
+
+            style -- str
+
+            text_style -- str
+
+            draw_id -- str
+
+            layer -- str
+
+            position -- (str, str)
+
+            size -- (str, str)
+        """
         kwargs.update(
             {
                 "style": style,
@@ -192,23 +193,7 @@ RectangleShape._define_attribut_property()
 
 
 class EllipseShape(ShapeBase):
-    """Create a ellipse shape.
-
-    Arguments:
-
-        style -- str
-
-        text_style -- str
-
-        draw_id -- str
-
-        layer -- str
-
-        position -- (str, str)
-
-        size -- (str, str)
-
-    """
+    """An ellipse shape, "draw:ellipse"."""
 
     _tag = "draw:ellipse"
     _properties: tuple[PropDef, ...] = ()
@@ -223,6 +208,22 @@ class EllipseShape(ShapeBase):
         size: tuple | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a ellipse shape "draw:ellipse".
+
+        Arguments:
+
+            style -- str
+
+            text_style -- str
+
+            draw_id -- str
+
+            layer -- str
+
+            position -- (str, str)
+
+            size -- (str, str)
+        """
         kwargs.update(
             {
                 "style": style,
@@ -240,26 +241,7 @@ EllipseShape._define_attribut_property()
 
 
 class ConnectorShape(ShapeBase):
-    """Create a Connector shape.
-
-    Arguments:
-
-        style -- str
-
-        text_style -- str
-
-        draw_id -- str
-
-        layer -- str
-
-        connected_shapes -- (shape, shape)
-
-        glue_points -- (point, point)
-
-        p1 -- (str, str)
-
-        p2 -- (str, str)
-    """
+    """A connector shape, "draw:connector"."""
 
     _tag = "draw:connector"
     _properties: tuple[PropDef, ...] = (
@@ -285,6 +267,26 @@ class ConnectorShape(ShapeBase):
         p2: tuple | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a Connector shape "draw:connector".
+
+        Arguments:
+
+            style -- str
+
+            text_style -- str
+
+            draw_id -- str
+
+            layer -- str
+
+            connected_shapes -- (shape, shape)
+
+            glue_points -- (point, point)
+
+            p1 -- (str, str)
+
+            p2 -- (str, str)
+        """
         kwargs.update(
             {
                 "style": style,
@@ -313,7 +315,7 @@ ConnectorShape._define_attribut_property()
 
 
 class DrawGroup(Element, AnchorMix, ZMix, PosMix):
-    """The DrawGroup "draw:g" element represents a group of drawing shapes.
+    """Representation of a group of drawing shapes, "draw:g".
 
     Warning: implementation is currently minimal.
 
@@ -373,6 +375,7 @@ class DrawGroup(Element, AnchorMix, ZMix, PosMix):
         presentation_style: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a group of drawing shapes "draw:g"."""
         super().__init__(**kwargs)
         if self._do_init:
             if z_index is not None:

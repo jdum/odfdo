@@ -240,9 +240,15 @@ def normalize_path(path: str) -> str:
 
 
 class Container:
-    """Representation of the ODF file."""
+    """Storage of the ODF document, as zip or other format."""
 
     def __init__(self, path: Path | str | io.BytesIO | None = None) -> None:
+        """Storage of the ODF document, as zip or other format.
+
+        Arguments:
+
+        path -- path like, io.BytesIO or None
+        """
         self.__parts: dict[str, bytes | None] = {}
         self.__parts_ts: dict[str, int] = {}
         self.__path_like: Path | str | io.BytesIO | None = None

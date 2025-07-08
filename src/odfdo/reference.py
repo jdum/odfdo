@@ -29,7 +29,8 @@ from .element import Element, PropDef, register_element_class
 
 
 class Reference(Element):
-    """A reference to a content marked by a reference mark.
+    """A reference to a content marked by a reference mark, "text:reference-ref"."
+
     The odf_reference element ("text:reference-ref") represents a field that
     references a "text:reference-mark-start" or "text:reference-mark" element.
     Its text:reference-format attribute specifies what is displayed from the
@@ -94,8 +95,10 @@ class Reference(Element):
     )
 
     def __init__(self, name: str = "", ref_format: str = "", **kwargs: Any) -> None:
-        """Create a reference to a content marked by a reference mark. An
-        actual reference mark with the provided name should exist.
+        """Create a reference to a content marked by a reference mark
+        "text:reference-ref".
+
+        An actual reference mark with the provided name should exist.
 
         Consider using: odfdo.paragraph.insert_reference()
 
@@ -162,7 +165,8 @@ Reference._define_attribut_property()
 
 
 class ReferenceMark(Element):
-    """A point reference.
+    """A point reference, "text:reference-mark".
+
     A point reference marks a position in text and is represented by a single
     "text:reference-mark" element.
     """
@@ -171,7 +175,9 @@ class ReferenceMark(Element):
     _properties = (PropDef("name", "text:name"),)
 
     def __init__(self, name: str = "", **kwargs: Any) -> None:
-        """A point reference. A point reference marks a position in text and is
+        """A point reference "text:reference-mark".
+
+        A point reference marks a position in text and is
         represented by a single "text:reference-mark" element.
         Consider using the wrapper: odfdo.paragraph.set_reference_mark()
 
@@ -188,9 +194,7 @@ ReferenceMark._define_attribut_property()
 
 
 class ReferenceMarkEnd(Element):
-    """The "text:reference-mark-end" element represents the end of a range
-    reference.
-    """
+    """End of a range reference, "text:reference-mark-end"."""
 
     _tag = "text:reference-mark-end"
     _properties = (PropDef("name", "text:name"),)
@@ -225,9 +229,7 @@ ReferenceMarkEnd._define_attribut_property()
 
 
 class ReferenceMarkStart(Element):
-    """The "text:reference-mark-start" element represents the start of a
-    range reference.
-    """
+    """Start of a range reference, "text:reference-mark-start"."""
 
     _tag = "text:reference-mark-start"
     _properties = (PropDef("name", "text:name"),)

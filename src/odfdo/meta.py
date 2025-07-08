@@ -20,7 +20,7 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Meta class for meta.xml part."""
+"""Representation of the "meta.xml" part."""
 
 from __future__ import annotations
 
@@ -47,6 +47,8 @@ GENERATOR = f"odfdo {__version__}"
 
 
 class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
+    """Representation of the "meta.xml" part."""
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._generator_modified: bool = False

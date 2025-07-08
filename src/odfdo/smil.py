@@ -21,6 +21,7 @@
 """Classes for ODF implementation of SMIL (Synchronized Multimedia
 Integration Language).
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -29,16 +30,7 @@ from .element import Element, PropDef, register_element_class
 
 
 class AnimPar(Element):
-    """A container for SMIL Presentation Animations.
-
-    Arguments:
-
-        presentation_node_type -- default, on-click, with-previous,
-                                  after-previous, timing-root, main-sequence
-                                  and interactive-sequence
-
-        smil_begin -- indefinite, 10s, [id].click, [id].begin
-    """
+    """Container for SMIL animations, "anim:par"."""
 
     _tag = "anim:par"
     _properties = (
@@ -52,6 +44,16 @@ class AnimPar(Element):
         smil_begin: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a container for SMIL presentation animations "anim:par".
+
+        Arguments:
+
+            presentation_node_type -- default, on-click, with-previous,
+                                      after-previous, timing-root, main-sequence
+                                      and interactive-sequence
+
+            smil_begin -- indefinite, 10s, [id].click, [id].begin
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if presentation_node_type:
@@ -64,15 +66,10 @@ AnimPar._define_attribut_property()
 
 
 class AnimSeq(Element):
-    """TA container for SMIL Presentation Animations. Animations
-    inside this block are executed after the slide has executed its initial
-    transition.
+    """A container for SMIL Presentation Animations, "anim:seq".
 
-    Arguments:
-
-        presentation_node_type -- default, on-click, with-previous,
-                                  after-previous, timing-root, main-sequence
-                                  and interactive-sequence
+    Animations inside this block are executed after the slide
+    has executed its initial transition.
     """
 
     _tag = "anim:seq"
@@ -83,6 +80,17 @@ class AnimSeq(Element):
         presentation_node_type: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a container for SMIL Presentation Animations "anim:seq".
+
+        Animations inside this block are executed after the slide
+        has executed its initial transition.
+
+        Arguments:
+
+            presentation_node_type -- default, on-click, with-previous,
+                                      after-previous, timing-root, main-sequence
+                                      and interactive-sequence
+        """
         super().__init__(**kwargs)
         if self._do_init and presentation_node_type:
             self.presentation_node_type = presentation_node_type
@@ -92,23 +100,7 @@ AnimSeq._define_attribut_property()
 
 
 class AnimTransFilter(Element):
-    """
-    Class to make a beautiful transition between two frames.
-
-    Arguments:
-
-      smil_dur -- str, duration
-
-      smil_type and smil_subtype -- see http://www.w3.org/TR/SMIL20/
-                    smil-transitions.html#TransitionEffects-Appendix
-                                    to get a list of all types/subtypes
-
-      smil_direction -- forward, reverse
-
-      smil_fadeColor -- forward, reverse
-
-      smil_mode -- in, out
-    """
+    """Transition between two frames, "anim:transitionFilter"."""
 
     _tag = "anim:transitionFilter"
     _properties = (
@@ -130,6 +122,22 @@ class AnimTransFilter(Element):
         smil_mode: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a transition between two frames "anim:transitionFilter".
+
+        Arguments:
+
+          smil_dur -- str, duration
+
+          smil_type and smil_subtype -- see http://www.w3.org/TR/SMIL20/
+                        smil-transitions.html#TransitionEffects-Appendix
+                                        to get a list of all types/subtypes
+
+          smil_direction -- forward, reverse
+
+          smil_fadeColor -- forward, reverse
+
+          smil_mode -- in, out
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if smil_dur:

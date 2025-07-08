@@ -25,6 +25,8 @@ from .element import Element
 
 
 class DcCreatorMixin:
+    """Creator of the document, "dc:creator"."""
+
     def get_creator(self) -> str | None:
         """Get the creator of the document.
 

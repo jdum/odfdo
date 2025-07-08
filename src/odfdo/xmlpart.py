@@ -19,8 +19,8 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
-"""XmlPart base class for XML parts.
-"""
+"""XmlPart base class for XML parts."""
+
 from __future__ import annotations
 
 from copy import deepcopy
@@ -40,6 +40,7 @@ class XmlPart:
     """
 
     def __init__(self, part_name: str, container: Container) -> None:
+        """Representation of an XML part."""
         self.part_name = part_name
         self.container = container
 

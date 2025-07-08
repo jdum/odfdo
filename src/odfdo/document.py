@@ -69,7 +69,10 @@ UNDERLINE_LVL = ["=", "-", ":", "`", "'", '"', "~", "^", "_", "*", "+"]
 
 
 class Blob:
+    """Management of binary large objects (BLOBs)."""
+
     def __init__(self) -> None:
+        """Management of binary large objects (BLOBs)."""
         self.content: bytes = b""
         self.name: str = ""
         self.mime_type: str = ""
@@ -200,36 +203,40 @@ def container_from_template(template: str | Path | io.BytesIO) -> Container:
 
 
 class Document(MDDocument):
-    """Abstraction of the ODF document.
-
-    To create a new Document, several possibilities:
-
-        - Document() or Document("text") or Document("odt")
-            -> an "empty" document of type text
-        - Document("spreadsheet") or Document("ods")
-            -> an "empty" document of type spreadsheet
-        - Document("presentation") or Document("odp")
-            -> an "empty" document of type presentation
-        - Document("drawing") or Document("odg")
-            -> an "empty" document of type drawing
-
-        Meaning of “empty”: these documents are copies of the default
-        templates documents provided with this library, which, as templates,
-        are not really empty. It may be useful to clear the newly created
-        document: document.body.clear(), or adjust meta informations like
-        description or default language: document.meta.language = 'fr-FR'
-
-    If the argument is not a known template type, or is a Path,
-    Document(file) will load the content of the ODF file.
-
-    To explicitly create a document from a custom template, use the
-    Document.new(path) method whose argument is the path to the template file.
-    """
+    """Abstraction of the ODF document."""
 
     def __init__(
         self,
         target: str | bytes | Path | Container | io.BytesIO | None = "text",
     ) -> None:
+        """Abstraction of the ODF document.
+
+        To create a new Document, several possibilities:
+
+            - Document() or Document("text") or Document("odt")
+                -> an "empty" document of type text
+
+            - Document("spreadsheet") or Document("ods")
+                -> an "empty" document of type spreadsheet
+
+            - Document("presentation") or Document("odp")
+                -> an "empty" document of type presentation
+
+            - Document("drawing") or Document("odg")
+                -> an "empty" document of type drawing
+
+            Meaning of “empty”: these documents are copies of the default
+            templates documents provided with this library, which, as templates,
+            are not really empty. It may be useful to clear the newly created
+            document: document.body.clear(), or adjust meta informations like
+            description or default language: document.meta.language = 'fr-FR'
+
+        If the argument is not a known template type, or is a Path,
+        Document(file) will load the content of the ODF file.
+
+        To explicitly create a document from a custom template, use the
+        Document.new(path) method whose argument is the path to the template file.
+        """
         # Cache of XML parts
         self.__xmlparts: dict[str, XmlPart] = {}
         # Cache of the body

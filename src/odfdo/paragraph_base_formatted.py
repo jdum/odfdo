@@ -35,6 +35,7 @@ RE_SP_POST = re.compile(r"\s*$")
 
 
 def formatted_text(element: Element, context: dict[str, Any]) -> str:
+    """Return plain text formatted with \\n and spaces."""
     result: list[str] = []
     objects: list[Element | EText] = element.xpath("*|text()")
     for obj in objects:

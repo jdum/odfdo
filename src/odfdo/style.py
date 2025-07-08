@@ -283,20 +283,21 @@ def create_table_cell_style(
 
 
 class Style(Element):
-    """Style class for all these tags:
+    """Style class for many ODF tags, "style:style", "number:date-style",...
 
-    'style:style'
-    'number:date-style',
-    'number:number-style',
-    'number:percentage-style',
-    'number:time-style'
-    'style:font-face',
-    'style:master-page',
-    'style:page-layout',
-    'style:presentation-page-layout',
-    'text:list-style',
-    'text:outline-style',
-    'style:tab-stops',
+    Partial list:
+    "style:style",
+    "number:date-style",
+    "number:number-style",
+    "number:percentage-style",
+    "number:time-style",
+    "style:font-face",
+    "style:master-page",
+    "style:page-layout",
+    "style:presentation-page-layout",
+    "text:list-style",
+    "text:outline-style",
+    "style:tab-stops"
     ...
     """
 
@@ -374,7 +375,9 @@ class Style(Element):
         # Every other property
         **kwargs: Any,
     ) -> None:
-        """Create a style of the given family. The name is not mandatory at this
+        """Create a style of the given family.
+
+        The name is not mandatory at this
         point but will become required when inserting in a document as a common
         style.
 
@@ -1075,6 +1078,8 @@ Style._define_attribut_property()
 
 
 class BackgroundImage(Style, DrawImage):
+    """Style for a background image, "style:background-image"."""
+
     _tag = "style:background-image"
     _properties: tuple[PropDef, ...] = (
         PropDef("name", "style:name"),
@@ -1100,6 +1105,7 @@ class BackgroundImage(Style, DrawImage):
         # Every other property
         **kwargs: Any,
     ):
+        """Create style for a background image "style:background-image"."""
         kwargs["family"] = "background-image"
         super().__init__(**kwargs)
         if self._do_init:

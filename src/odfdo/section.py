@@ -29,14 +29,7 @@ from .element import Element, PropDef, register_element_class
 
 
 class Section(Element):
-    """ODF section "text:section"
-
-    Arguments:
-
-        style -- str
-
-        name -- str
-    """
+    """ODF section, "text:section"."""
 
     _tag = "text:section"
     _properties = (
@@ -50,6 +43,14 @@ class Section(Element):
         name: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """ODF section, "text:section".
+
+        Arguments:
+
+            style -- str
+
+            name -- str
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if style:

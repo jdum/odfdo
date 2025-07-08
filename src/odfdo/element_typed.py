@@ -32,6 +32,8 @@ from .utils import bytes_to_str
 
 
 class ElementTyped(Element):
+    """Subclass of Element for classes managing typed values."""
+
     def set_value_and_type(
         self,
         value: Any,

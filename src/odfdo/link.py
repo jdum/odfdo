@@ -31,7 +31,7 @@ from .paragraph_base import ParagraphBase
 
 
 class Link(MDLink, ParagraphBase):
-    """Link class, "text:a" ODF element."""
+    """Representation of a link (URL), "text:a"."""
 
     _tag = "text:a"
     _properties: tuple[PropDef, ...] = (
@@ -56,6 +56,8 @@ class Link(MDLink, ParagraphBase):
         **kwargs: Any,
     ) -> None:
         """
+        Representation of a link (URL), "text:a".
+
         Arguments:
 
             url -- str

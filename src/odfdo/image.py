@@ -29,15 +29,12 @@ from .element import Element, PropDef, register_element_class
 
 
 class DrawImage(Element):
-    """The "draw:image" element represents an image. An image can be
+    """
+    An ODF image, "draw:image".
+
+    The "draw:image" element represents an image. An image can be
     either a link to an external resource or most often embedded into
     the document.
-    When image is embedded in the document, the url parameter is a
-    reference to the local document obtained by copying the source
-    image into the document, ie: url = document.add_file(image_path)
-
-    Warning: image elements must be stored in a frame "draw:frame",
-    see Frame().
     """
 
     _tag = "draw:image"
@@ -58,7 +55,16 @@ class DrawImage(Element):
         filter_name: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initialisation of an DrawImage.
+        """An ODF image, "draw:image".
+
+        When image is embedded in the document, the url parameter is a
+        reference to the local document obtained by copying the source
+        image into the document, ie: url = document.add_file(image_path)
+
+        Warning: image elements must be stored in a frame "draw:frame",
+        see Frame().
+
+        Initialisation of an DrawImage.
 
         Arguments:
 
@@ -85,6 +91,8 @@ DrawImage._define_attribut_property()
 
 
 class DrawFillImage(DrawImage):
+    """A link to a bitmap resource, "draw:fill-image"."""
+
     _tag = "draw:fill-image"
     _properties: tuple[PropDef, ...] = (
         PropDef("display_name", "draw:display-name"),
@@ -101,7 +109,10 @@ class DrawFillImage(DrawImage):
         width: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """The "draw:fill-image" element specifies a link to a bitmap
+        """
+        A link to a bitmap resource, "draw:fill-image".
+
+        The "draw:fill-image" element specifies a link to a bitmap
         resource. Fill image are not available as automatic styles.
         The "draw:fill-image" element is usable within the following element:
         "office:styles"

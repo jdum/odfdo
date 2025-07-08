@@ -39,7 +39,7 @@ from .paragraph import Paragraph
 
 
 class ListItem(MDListItem, Element):
-    """ODF element "text:list-item", item of a List."""
+    """An item of a list, "text:list-item"."""
 
     _tag = "text:list-item"
 
@@ -48,7 +48,9 @@ class ListItem(MDListItem, Element):
         text_or_element: str | Element | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a list item element, optionaly passing at creation time a
+        """An item of a list, "text:list-item".
+
+        Create a list item element, optionaly passing at creation time a
         string or Element as content.
 
         Arguments:
@@ -70,7 +72,7 @@ class ListItem(MDListItem, Element):
 
 
 class List(MDList, Element):
-    """ODF List "text:list"."""
+    """A list of elements, "text:list"."""
 
     _tag = "text:list"
     _properties = (PropDef("style", "text:style-name"),)
@@ -81,7 +83,9 @@ class List(MDList, Element):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a list element, optionaly loading the list by a list of
+        """A list of elements, "text:list".
+
+        Create a list element, optionaly loading the list by a list of
         item (str or elements).
 
         The list_content argument is just a shortcut for the most common case.

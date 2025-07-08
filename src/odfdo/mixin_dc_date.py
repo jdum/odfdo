@@ -17,7 +17,7 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""Mixin class for <dc:date>."""
+"""Mixin class for "dc:date"."""
 
 from __future__ import annotations
 
@@ -28,6 +28,8 @@ from .element import Element
 
 
 class DcDateMixin:
+    """Date of the document, "dc:date"."""
+
     def get_modification_date(self) -> datetime | None:
         """Get the last modified date of the document.
 

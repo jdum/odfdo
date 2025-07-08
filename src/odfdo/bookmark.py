@@ -18,7 +18,7 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""Bookmark class for "text:bookmark" tag and BookmarkStart, BookmarkEnd ."""
+"""Bookmark class for "text:bookmark" tag and BookmarkStart, BookmarkEnd."""
 
 from __future__ import annotations
 
@@ -28,18 +28,18 @@ from .element import Element, PropDef, register_element_class
 
 
 class Bookmark(Element):
-    """
-    Bookmark class for ODF "text:bookmark"
-
-    Arguments:
-
-        name -- str
-    """
+    """Bookmark class, "text:bookmark" tag."""
 
     _tag = "text:bookmark"
     _properties = (PropDef("name", "text:name"),)
 
     def __init__(self, name: str = "", **kwargs: Any) -> None:
+        """Bookmark class, "text:bookmark" tag.
+
+        Arguments:
+
+            name -- str
+        """
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
@@ -49,18 +49,13 @@ Bookmark._define_attribut_property()
 
 
 class BookmarkStart(Element):
-    """
-    BookmarkStart class for ODF "text:bookmark-start"
-
-    Arguments:
-
-        name -- str
-    """
+    """Bookmark start marker, "text:bookmark-start"."""
 
     _tag = "text:bookmark-start"
     _properties = (PropDef("name", "text:name"),)
 
     def __init__(self, name: str = "", **kwargs: Any) -> None:
+        """Bookmark start marker, "text:bookmark-start"."""
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
@@ -70,8 +65,7 @@ BookmarkStart._define_attribut_property()
 
 
 class BookmarkEnd(Element):
-    """
-    BookmarkEnd class for ODF "text:bookmark-end"
+    """Bookmark end marker, "text:bookmark-end".
 
     Arguments:
 

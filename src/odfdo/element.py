@@ -147,6 +147,8 @@ _re_anyspace = re.compile(r" +")
 
 
 class PropDef(NamedTuple):
+    """Named tuple for class properties (internal)."""
+
     name: str
     attr: str
     family: str = ""
@@ -264,8 +266,9 @@ def _register_element_class(cls: type[Element], qname: str) -> None:
 
 
 class EText(str):
-    """Representation of an XML text node. Created to hide the specifics of
-    lxml in searching text nodes using XPath.
+    """Representation of an XML text node (internal).
+
+    Created to hide the specifics of lxml in searching text nodes using XPath.
 
     Constructed like any str object but only accepts lxml text objects.
     """
@@ -295,15 +298,13 @@ class EText(str):
 
 
 class Element(MDBase):
-    """Super class of all ODF classes.
-
-    Representation of an XML element. Abstraction of the XML library behind.
-    """
+    """Base class of all ODF classes, abstraction of the underlying XML."""
 
     _tag: str = ""
     _properties: tuple[PropDef, ...] = ()
 
     def __init__(self, **kwargs: Any) -> None:
+        """Base class of all ODF classes, abstraction of the underlying XML."""
         tag_or_elem = kwargs.pop("tag_or_elem", None)
         if tag_or_elem is None:
             # Instance for newly created object: create new lxml element and

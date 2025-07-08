@@ -129,9 +129,9 @@ class PosMix:
 
 
 class ZMix:
-    """z-index position
+    """z-index position.
 
-    z-index is an integer
+    z-index is an integer.
     """
 
     @property
@@ -166,9 +166,9 @@ class SizeMix:
 
 
 class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
-    """ODF Frame "draw:frame"
+    """ODF Frame, "draw:frame".
 
-    Frames are not useful by themselves. You should consider calling
+    Frames are not useful by themselves. Consider calling
     Frame.image_frame() or Frame.text_frame directly.
     """
 
@@ -201,7 +201,13 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
         presentation_style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a frame element of the given size. Position is relative to the
+        """
+        ODF Frame, "draw:frame".
+
+        Frames are not useful by themselves. Consider calling
+        Frame.image_frame() or Frame.text_frame directly.
+
+        Create a frame element of the given size. Position is relative to the
         context the frame is inserted in. If positioned by page, give the page
         number and the x, y position.
 
@@ -494,7 +500,7 @@ Frame._define_attribut_property()
 
 
 class DrawTextBox(MDDrawTextBox, Element):
-    """ODF Frame "draw:text-box"
+    """ODF text box, "draw:text-box".
 
     Minimal class to facilitate internal iteration.
     """

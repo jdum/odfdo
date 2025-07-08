@@ -19,7 +19,7 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
-"""Manifest class for manifest.xml part."""
+"""Representation of the "manifest.xml" part."""
 
 from __future__ import annotations
 
@@ -28,6 +28,8 @@ from .xmlpart import XmlPart
 
 
 class Manifest(XmlPart):
+    """Representation of the "manifest.xml" part."""
+
     def get_paths(self) -> list[Element | EText]:
         """Return the list of full paths in the manifest.
 

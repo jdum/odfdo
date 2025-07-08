@@ -32,11 +32,11 @@ from .row import Row
 
 
 class RowGroup(Element):
-    """ODF row group "table:table-row-group" with common properties.
+    """A group of rows  with common properties, "table:table-row-group".
 
     Partial implementation.
 
-    The <table:table-row-group> element groups adjacent table rows.
+    The "table:table-row-group" element groups adjacent table rows.
     Every row group can contain header rows, and nested row groups.
     A row group can be visible or hidden."""
 
@@ -49,8 +49,8 @@ class RowGroup(Element):
         width: int | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a group of rows, optionnaly filled with "height" number of
-        rows, of "width" cells each.
+        """Create a group of rows, "table:table-row-group", optionnaly
+        filled with "height" number of rows, of "width" cells each.
 
         Row group bear style information applied to a series of rows.
 

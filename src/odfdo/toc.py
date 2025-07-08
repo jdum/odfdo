@@ -39,7 +39,7 @@ def _toc_entry_style_name(level: int) -> str:
 
 
 class IndexTitle(Element):
-    """The "text:index-title" element contains the title of an index.
+    """The title of an index, "text:index-title".
 
     The element has the following attributes:
     text:name, text:protected, text:protection-key,
@@ -69,6 +69,14 @@ class IndexTitle(Element):
         xml_id: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create title of an index "text:index-title".
+
+        The element has the following attributes:
+        text:name, text:protected, text:protection-key,
+        text:protection-key-digest-algorithm, text:style-name, xml:id.
+
+        The actual title is stored in a child element
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if name:
@@ -93,10 +101,7 @@ IndexTitle._define_attribut_property()
 
 
 class TabStopStyle(Element):
-    """ODF "style:tab-stop"
-
-    Base style for a TOC entryBase style for a TOC entry
-    """
+    """Base style for a TOC entryBase style for a TOC entry, "style:tab-stop"."""
 
     _tag = "style:tab-stop"
     _properties = (
@@ -124,6 +129,7 @@ class TabStopStyle(Element):
         style_type: str | None = None,
         **kwargs: Any,
     ):
+        """Create style for a TOC entryBase style for a TOC entry "style:tab-stop"."""
         super().__init__(**kwargs)
         if self._do_init:
             if style_char:
@@ -170,42 +176,17 @@ def default_toc_level_style(level: int) -> Style:
 
 
 class TOC(MDToc, Element):
-    """Table of content.
+    """A table of content, "text:table-of-content".
+
     The "text:table-of-content" element represents a table of contents for a
     document. The items that can be listed in a table of contents are:
+
       - Headings (as defined by the outline structure of the document), up to
         a selected level.
+
       - Table of contents index marks.
+
       - Paragraphs formatted with specified paragraph styles.
-
-
-    Implementation:
-    Default parameters are what most people use: protected from manual
-    modifications and not limited in title levels.
-
-    The name is mandatory and derived automatically from the title if not
-    given. Provide one in case of a conflict with other TOCs in the same
-    document.
-
-    The "text:table-of-content" element has the following attributes:
-    text:name, text:protected, text:protection-key,
-    text:protection-key-digest-algorithm, text:style-name and xml:id.
-
-    Arguments:
-
-        title -- str
-
-        name -- str
-
-        protected -- bool
-
-        outline_level -- int
-
-        style -- str
-
-        title_style -- str
-
-        entry_style -- str
     """
 
     _tag = "text:table-of-content"
@@ -231,6 +212,35 @@ class TOC(MDToc, Element):
         entry_style: str = "Contents_20_%d",
         **kwargs: Any,
     ) -> None:
+        """Create a table of content "text:table-of-content".
+
+        Default parameters are what most people use: protected from manual
+        modifications and not limited in title levels.
+
+        The name is mandatory and derived automatically from the title if not
+        given. Provide one in case of a conflict with other TOCs in the same
+        document.
+
+        The "text:table-of-content" element has the following attributes:
+        text:name, text:protected, text:protection-key,
+        text:protection-key-digest-algorithm, text:style-name and xml:id.
+
+        Arguments:
+
+            title -- str
+
+            name -- str
+
+            protected -- bool
+
+            outline_level -- int
+
+            style -- str
+
+            title_style -- str
+
+            entry_style -- str
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if style:
@@ -452,17 +462,18 @@ TOC._define_attribut_property()
 
 
 class IndexTitleTemplate(Element):
-    """ODF "text:index-title-template"
-
-    Arguments:
-
-        style -- str
-    """
+    """Template style for title, "text:index-title-template"."""
 
     _tag = "text:index-title-template"
     _properties = (PropDef("style", "text:style-name"),)
 
     def __init__(self, style: str | None = None, **kwargs: Any) -> None:
+        """Create template style for title "text:index-title-template".
+
+        Arguments:
+
+            style -- str
+        """
         super().__init__(**kwargs)
         if self._do_init and style:
             self.style = style
@@ -472,12 +483,7 @@ IndexTitleTemplate._define_attribut_property()
 
 
 class TocEntryTemplate(Element):
-    """ODF "text:table-of-content-entry-template"
-
-    Arguments:
-
-        style -- str
-    """
+    """Template for entry of TOC, "text:table-of-content-entry-template"."""
 
     _tag = "text:table-of-content-entry-template"
     _properties = (PropDef("style", "text:style-name"),)
@@ -488,6 +494,12 @@ class TocEntryTemplate(Element):
         outline_level: int | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create template for entry of TOC "text:table-of-content-entry-template".
+
+        Arguments:
+
+            style -- str
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if style:

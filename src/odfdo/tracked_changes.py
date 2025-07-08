@@ -37,19 +37,17 @@ from .paragraph import Paragraph
 
 
 class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
-    """The "office:change-info" element represents who made a change and when.
+    """Representation of informations of a change, "office:change-info".
+
+    The "office:change-info" element represents who made a change and when.
     It may also contain a comment (one or more Paragrah "text:p" elements)
     on the change.
 
     The comments available in the ChangeInfo are available through:
-      - paragraphs property, get_paragraphs and get_paragraph methods for actual Paragraph.
-      - get_comments for a plain text version
 
-      Arguments:
+       - paragraphs property, get_paragraphs and get_paragraph methods for actual Paragraph.
 
-         creator -- str (or None)
-
-         date -- datetime (or None)
+       - get_comments for a plain text version
     """
 
     _tag = "office:change-info"
@@ -60,6 +58,14 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
         date: datetime | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create informations of a change "office:change-info".
+
+        Arguments:
+
+           creator -- str (or None)
+
+           date -- datetime (or None)
+        """
         super().__init__(**kwargs)
         if self._do_init:
             self.creator = creator or "Unknown"
@@ -101,7 +107,9 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
 
 
 class TextInsertion(Element):
-    """The TextInsertion "text:insertion" element contains the information
+    """Informations on a text insertion, "text:insertion".
+
+    The TextInsertion "text:insertion" element contains the information
     that identifies the person responsible for a change and the date of
     that change. This information may also contain one or more "text:p"
     Paragraph which contain a comment on the insertion. The
@@ -218,7 +226,9 @@ class TextInsertion(Element):
 
 
 class TextDeletion(TextInsertion):
-    """The TextDeletion "text:deletion" contains information that identifies
+    """Informations on a text deletion, "text:deletion".
+
+    The TextDeletion "text:deletion" contains information that identifies
     the person responsible for a deletion and the date of that deletion.
     This information may also contain one or more Paragraph which contains
     a comment on the deletion. The TextDeletion element may also contain
@@ -313,7 +323,9 @@ class TextDeletion(TextInsertion):
 
 
 class TextFormatChange(TextInsertion):
-    """The TextFormatChange "text:format-change" element represents any change
+    """A change in text formatting, "text:format-change".
+
+    The TextFormatChange "text:format-change" element represents any change
     in formatting attributes. The region where the change took place is
     marked by "text:change-start", "text:change-end" or "text:change"
     elements.
@@ -326,7 +338,9 @@ class TextFormatChange(TextInsertion):
 
 
 class TextChangedRegion(Element):
-    """Each TextChangedRegion "text:changed-region" element contains a single
+    """A changed region of text, "text:changed-region".
+
+    Each TextChangedRegion "text:changed-region" element contains a single
     element, one of TextInsertion, TextDeletion or TextFormatChange that
     corresponds to a change being tracked within the scope of the
     "text:tracked-changes" element that contains the "text:changed-region"
@@ -336,9 +350,12 @@ class TextChangedRegion(Element):
     elements that identify where the change applies to markup in the scope of
     the "text:tracked-changes" element.
 
-    Warning : for this implementation, text:change should be referenced only
-              once in the scope, which is different from ODF 1.2 requirement:
-             " A "text:changed-region" can be referenced by more than one
+    Warning :
+
+    For this implementation, text:change should be referenced only
+    once in the scope, which is different from ODF 1.2 requirement:
+
+            " A "text:changed-region" can be referenced by more than one
              change, but the corresponding referencing change mark elements
              shall be of the same change type - insertion, format change or
              deletion. "
@@ -420,7 +437,9 @@ class TextChangedRegion(Element):
 
 
 class TrackedChanges(MDZap, Element):
-    """The TrackedChanges "text:tracked-changes" element acts as a container
+    """A tracked change, "text:tracked-changes".
+
+    The TrackedChanges "text:tracked-changes" element acts as a container
     for TextChangedRegion elements that represent changes in a certain
     scope of an OpenDocument document. This scope is the element in which
     the TrackedChanges element occurs. Changes in this scope shall be
@@ -476,7 +495,9 @@ class TrackedChanges(MDZap, Element):
 
 
 class TextChange(Element):
-    """The TextChange "text:change" element marks a position in an empty
+    """A text change position, "text:change".
+
+    The TextChange "text:change" element marks a position in an empty
     region where text has been deleted.
     """
 
@@ -560,7 +581,9 @@ class TextChange(Element):
 
 
 class TextChangeEnd(TextChange):
-    """The TextChangeEnd "text:change-end" element marks the end of a region
+    """End of a changed region, "text:change-end".
+
+    The TextChangeEnd "text:change-end" element marks the end of a region
     with content where text has been inserted or the format has been
     changed.
     """
@@ -630,7 +653,9 @@ class TextChangeEnd(TextChange):
 
 
 class TextChangeStart(TextChangeEnd):
-    """The TextChangeStart "text:change-start" element marks the start of a
+    """Start of a changed region, "text:change-start".
+
+    The TextChangeStart "text:change-start" element marks the start of a
     region with content where text has been inserted or the format has
     been changed.
     """

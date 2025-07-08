@@ -27,6 +27,8 @@ from .element import Element, PropDef, register_element_class
 
 
 class MetaHyperlinkBehaviour(Element):
+    """The hyperlink-behaviour properties, "meta:hyperlink-behaviour"."""
+
     _tag = "meta:hyperlink-behaviour"
     _properties: tuple[PropDef, ...] = (
         PropDef("target_frame_name", "office:target-frame-name"),
@@ -40,6 +42,8 @@ class MetaHyperlinkBehaviour(Element):
         **kwargs: Any,
     ) -> None:
         """
+        The hyperlink-behaviour properties, "meta:hyperlink-behaviour".
+
         The <meta:hyperlink-behaviour> element specifies the default behavior
         for hyperlinks in a document.
 

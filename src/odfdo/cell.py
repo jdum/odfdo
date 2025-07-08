@@ -39,7 +39,7 @@ Float = float
 
 
 class Cell(ElementTyped):
-    """ "table:table-cell" table cell element."""
+    """A cell of a table, "table:table-cell" and "table:covered-table-cell"."""
 
     _tag = "table:table-cell"
 
@@ -54,7 +54,9 @@ class Cell(ElementTyped):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a cell element containing the given value. The textual
+        """Cell of a Table, "table:table-cell".
+
+        Create a cell element containing the given value. The textual
         representation is automatically formatted but can be provided. Cell
         type can be deduced as well, unless the number is a percentage or
         currency. If cell type is "currency", the currency must be given.

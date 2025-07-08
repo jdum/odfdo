@@ -19,8 +19,8 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-"""Styles class for styles.xml part.
-"""
+"""Representation of the "styles.xml" part."""
+
 from __future__ import annotations
 
 from .element import Element
@@ -55,6 +55,8 @@ CONTEXT_MAPPING = {
 
 
 class Styles(XmlPart):
+    """Representation of the "styles.xml" part."""
+
     def _get_style_contexts(
         self, family: str, automatic: bool = False
     ) -> list[Element]:

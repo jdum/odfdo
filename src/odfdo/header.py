@@ -31,7 +31,7 @@ from .paragraph import Paragraph
 
 
 class Header(Paragraph, MDHeader):
-    """Specialised paragraph for headings "text:h"."""
+    """A title, a specialized paragraph, "text:h"."""
 
     _tag = "text:h"
     _properties = (
@@ -52,7 +52,9 @@ class Header(Paragraph, MDHeader):
         formatted: bool = True,
         **kwargs: Any,
     ) -> None:
-        """Create a header element of the given style and level, containing the
+        """A title, a specialized paragraph, "text:h".
+
+        Create a header element of the given style and level, containing the
         optional given text.
 
         Level count begins at 1.

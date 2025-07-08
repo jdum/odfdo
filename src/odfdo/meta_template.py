@@ -29,6 +29,8 @@ from .element import Element, PropDef, register_element_class
 
 
 class MetaTemplate(Element):
+    """Container for the meta template properties, "meta:template"."""
+
     _tag = "meta:template"
     _properties: tuple[PropDef, ...] = (
         PropDef("date", "meta:date"),
@@ -45,7 +47,8 @@ class MetaTemplate(Element):
         title: str = "",
         **kwargs: Any,
     ) -> None:
-        """
+        """Container for the meta template properties, "meta:template".
+
         The <meta:template> element specifies a IRI for the document template
         that was used to create a document. The IRI is specified as an
         Xlink.

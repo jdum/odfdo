@@ -63,7 +63,9 @@ def _forbidden_in_named_range() -> set[str]:
 
 
 class NamedRange(Element):
-    """ODF Named Range "table:named-range". Identifies inside the spreadsheet
+    """ODF named range of cells in a table, "table:named-range".
+
+    Identifies inside the spreadsheet
     a range of cells of a table by a name and the name of the table.
 
     Name Ranges have the following attributes:
@@ -91,9 +93,11 @@ class NamedRange(Element):
         usage: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a Named Range element. 'name' must contains only letters, digits
-           and '_', and must not be like a coordinate as 'A1'. 'table_name' must be
-           a correct table name (no "'" or "/" in it).
+        """ODF named range of cells in a table, "table:named-range".
+
+        Create a Named Range element. 'name' must contains only letters, digits
+        and '_', and must not be like a coordinate as 'A1'. 'table_name' must be
+        a correct table name (no "'" or "/" in it).
 
         Arguments:
 

@@ -18,7 +18,7 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""DrawPage class for "draw:page" tag."""
+"""ODF draw page for presentations and drawings, "draw:page"."""
 
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ from .smil import AnimPar, AnimTransFilter
 
 
 class DrawPage(Element):
-    """ODF draw page "draw:page", for pages of presentation and drawings."""
+    """ODF draw page for presentations and drawings, "draw:page"."""
 
     _tag = "draw:page"
     _properties = (
@@ -53,6 +53,8 @@ class DrawPage(Element):
         **kwargs: Any,
     ) -> None:
         """
+        ODF draw page for presentations and drawings, "draw:page".
+
         Arguments:
 
             draw_id -- str

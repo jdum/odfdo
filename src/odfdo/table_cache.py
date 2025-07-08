@@ -248,7 +248,7 @@ def _delete_item_in_vault(
 
 
 class RowCache:
-    """Internal cache for Row."""
+    """Cache for Row (internal)."""
 
     __slots__ = ("cell_elements", "cell_map")
 
@@ -368,7 +368,7 @@ class RowCache:
 
 
 class TableCache:
-    """Internal cache for Table."""
+    """Cache for Table (internal)."""
 
     __slots__ = ("col_elements", "col_map", "row_elements", "row_map")
 

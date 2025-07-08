@@ -40,7 +40,7 @@ _xpath_cell = xpath_compile("(table:table-cell|table:covered-table-cell)")
 
 
 class Row(Element):
-    """ODF table row "table:table-row" """
+    """A row of a table, "table:table-row"."""
 
     _tag = "table:table-row"
     _append = Element.append
@@ -52,7 +52,8 @@ class Row(Element):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """create a Row, optionally filled with "width" number of cells.
+        """Create a Row, "table:table-row", optionally filled with
+        "width" number of cells.
 
         Rows contain cells, their number determine the number of columns.
 

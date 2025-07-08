@@ -37,7 +37,7 @@ DURATION_FORMAT = "PT%02dH%02dM%02dS"
 
 
 class Boolean:
-    """Class for conversion between ODF boolean format and Python bool."""
+    """Conversion between ODF boolean format and Python bool."""
 
     @staticmethod
     def decode(data: str) -> bool:
@@ -59,7 +59,7 @@ class Boolean:
 
 
 class Date:
-    """Class for conversion between ODF date formats and Python datetime."""
+    """Conversion between ODF date formats and Python datetime."""
 
     @staticmethod
     def decode(data: str) -> datetime:
@@ -75,7 +75,7 @@ class Date:
 
 
 class DateTime:
-    """Class for conversion between ODF date/hour formats and Python datetime."""
+    """Conversion between ODF date/hour formats and Python datetime."""
 
     @staticmethod
     def decode(data: str) -> datetime:
@@ -115,8 +115,7 @@ class DateTime:
 
 
 class Duration:
-    """Class for conversion between ODF duration s (ISO 8601 format) and
-    Python timedelta"""
+    """Conversion between ODF duration (ISO8601 format) and Python timedelta."""
 
     @staticmethod
     def decode(data: str) -> timedelta:

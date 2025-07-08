@@ -112,7 +112,7 @@ def _get_python_value(data: Any, encoding: str) -> Any:
 
 
 class Table(MDTable, Element):
-    """ODF table "table:table" """
+    """A table, in a spreadsheet or other document, "table:table"."""
 
     _tag = "table:table"
     _append = Element.append
@@ -129,8 +129,8 @@ class Table(MDTable, Element):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a table element, optionally prefilled with "height" rows of
-        "width" cells each.
+        """Create a table element "table:table", optionally prefilled with
+        "height" rows of "width" cells each.
 
         The "name" parameter is required and cannot contain []*?:/ or \\
         characters, ' (apostrophe) cannot be the first or last character.

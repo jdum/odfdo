@@ -189,9 +189,10 @@ def _by_regex_offset(method: Callable) -> Callable:
 
 
 class Paragraph(MDParagraph, ParagraphBase):
-    """Specialised element for paragraphs "text:p". The "text:p" element
-    represents a paragraph, which is the basic unit of text in an OpenDocument
-    file.
+    """An ODF paragraph, "text:p".
+
+    The "text:p" element represents a paragraph, which is
+    the basic unit of text in an OpenDocument file.
     """
 
     _tag = "text:p"
@@ -203,8 +204,9 @@ class Paragraph(MDParagraph, ParagraphBase):
         formatted: bool = True,
         **kwargs: Any,
     ):
-        """Create a paragraph element of the given style containing the optional
-        given text.
+        """
+        Create a paragraph element "text:p" of the given style containing the
+        pptional given text.
 
         If "formatted" is True (the default), the given text is appended with <CR>,
         <TAB> and multiple spaces replaced by ODF corresponding tags.
@@ -998,7 +1000,7 @@ class Paragraph(MDParagraph, ParagraphBase):
 
 
 class Span(MDSpan, Paragraph):
-    """Specialised paragraph for span "text:span"."""
+    """A span tag (syled text in paragraph), "text:span"."""
 
     _tag = "text:span"
     _properties = (

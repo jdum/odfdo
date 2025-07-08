@@ -36,7 +36,9 @@ from .paragraph_base_formatted import formatted_text
 
 
 class Spacer(MDSpacer, Element):
-    """This element shall be used to represent the second and all following “ “
+    """Representation of several spaces, "text:s".
+
+    This element shall be used to represent the second and all following “ “
     (U+0020, SPACE) characters in a sequence of “ “ (U+0020, SPACE) characters.
     Note: It is not an error if the character preceding the element is not a
     white space character, but it is good practice to use this element only for
@@ -47,7 +49,8 @@ class Spacer(MDSpacer, Element):
     _properties: tuple[PropDef, ...] = (PropDef("number", "text:c"),)
 
     def __init__(self, number: int | None = 1, **kwargs: Any):
-        """
+        """Representation of several spaces, "text:s".
+
         Arguments:
 
             number -- int
@@ -95,7 +98,9 @@ Spacer._define_attribut_property()
 
 
 class Tab(MDTab, Element):
-    """This element represents the [UNICODE] tab character (HORIZONTAL
+    """Representation of a tabulation, "text:tab".
+
+    This element represents the [UNICODE] tab character (HORIZONTAL
     TABULATION, U+0009).
 
     The position attribute contains the number of the tab-stop to which
@@ -110,7 +115,8 @@ class Tab(MDTab, Element):
     _properties: tuple[PropDef, ...] = (PropDef("position", "text:tab-ref"),)
 
     def __init__(self, position: int | None = None, **kwargs: Any) -> None:
-        """
+        """Representation of a tabulation, "text:tab".
+
         Arguments:
 
             position -- int
@@ -131,11 +137,12 @@ Tab._define_attribut_property()
 
 
 class LineBreak(MDLineBreak, Element):
-    """This element represents a line break "text:line-break" """
+    """Representation of a line break, "text:line-break"."""
 
     _tag = "text:line-break"
 
     def __init__(self, **kwargs: Any) -> None:
+        """Representation of a line break, "text:line-break"."""
         super().__init__(**kwargs)
 
     def __str__(self) -> str:
@@ -153,6 +160,7 @@ class ParagraphBase(Element):
     _properties: tuple[PropDef, ...] = (PropDef("style", "text:style-name"),)
 
     def __init__(self, **kwargs: Any) -> None:
+        """Base class for Paragraph like classes."""
         super().__init__(**kwargs)
 
     def __str__(self) -> str:
