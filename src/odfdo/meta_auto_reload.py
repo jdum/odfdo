@@ -17,8 +17,7 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""MetaAutoReload class for "meta:auto-reload".
-"""
+"""MetaAutoReload class for "meta:auto-reload" tag."""
 
 from __future__ import annotations
 
@@ -88,4 +87,5 @@ class MetaAutoReload(Element):
 
 
 MetaAutoReload._define_attribut_property()
+
 register_element_class(MetaAutoReload)

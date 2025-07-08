@@ -19,7 +19,7 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
-"""Frame class for "draw:frame"."""
+"""Frame class for "draw:frame" tag and DrawTextBox for "draw:text-box" tag."""
 
 from __future__ import annotations
 

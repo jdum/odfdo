@@ -18,7 +18,7 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""TOC class for "text:table-of-content" and IndexTitle, TabStopStyle,
+"""TOC class for "text:table-of-content" tag and IndexTitle, TabStopStyle,
 IndexTitleTemplate, TocEntryTemplate related classes.
 """
 

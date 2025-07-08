@@ -18,7 +18,8 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""DrawImage class for "draw:image"."""
+"""DrawImage class for "draw:image" tag and DrawFillImage for
+"draw:fill-image" tag."""
 
 from __future__ import annotations
 

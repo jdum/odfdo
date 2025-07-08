@@ -17,8 +17,7 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""MetaHyperlinkBehaviour class for "meta:hyperlink-behaviour".
-"""
+"""MetaHyperlinkBehaviour class for "meta:hyperlink-behaviour" tag."""
 
 from __future__ import annotations
 
@@ -74,4 +73,5 @@ class MetaHyperlinkBehaviour(Element):
 
 
 MetaHyperlinkBehaviour._define_attribut_property()
+
 register_element_class(MetaHyperlinkBehaviour)

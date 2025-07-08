@@ -19,8 +19,8 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-"""List class for "text:list".
-"""
+"""List class for "text:list" tag and ListItem for "text:list-item" tag ."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable

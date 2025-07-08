@@ -17,8 +17,7 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""MetaTemplate class for "meta:template".
-"""
+"""MetaTemplate class for "meta:template" tag."""
 
 from __future__ import annotations
 
@@ -90,4 +89,5 @@ class MetaTemplate(Element):
 
 
 MetaTemplate._define_attribut_property()
+
 register_element_class(MetaTemplate)

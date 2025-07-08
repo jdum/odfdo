@@ -20,8 +20,8 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-"""Content class for content.xml part.
-"""
+"""Content class for content.xml part."""
+
 from __future__ import annotations
 
 from odfdo.element import Element

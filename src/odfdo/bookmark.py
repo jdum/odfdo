@@ -18,8 +18,8 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""Bookmark class for "text:bookmark".
-"""
+"""Bookmark class for "text:bookmark" tag and BookmarkStart, BookmarkEnd ."""
+
 from __future__ import annotations
 
 from typing import Any

@@ -19,8 +19,8 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
-"""Section class for "text:section".
-"""
+"""Section class for "text:section" tag."""
+
 from __future__ import annotations
 
 from typing import Any

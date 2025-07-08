@@ -18,7 +18,7 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""Header class for "text:h"."""
+"""Header class for "text:h" tag."""
 
 from __future__ import annotations
 

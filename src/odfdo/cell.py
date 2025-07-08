@@ -21,7 +21,7 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Cell class for "table:table-cell" tag."""
+"""Cell class for "table:table-cell" and "table:covered-table-cell" tags."""
 
 from __future__ import annotations
 

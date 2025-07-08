@@ -21,7 +21,7 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Paragraph class for "text:p", Span class for "text:span"."""
+"""Paragraph class for "text:p" tag and PageBreak()."""
 
 from __future__ import annotations
 
