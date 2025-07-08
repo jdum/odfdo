@@ -109,11 +109,10 @@ A few scripts are provided with `odfdo`:
 
 # Documentation
 
-There is no detailed documentation or tutorial, but:
-
 -   the `recipes` folder contains more than 60 working sample scripts,
 -   the auto-generated documentation exposes public APIs and recipes.
 
+Online documentation: https://jdum.github.io/odfdo/
 
 # About styles
 
