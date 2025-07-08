@@ -1,4 +1,4 @@
-site_name: odfdo
+site_name: odfdo documentation
 repo_url: https://github.com/jdum/odfdo
 docs_dir: src
 use_directory_urls: false
@@ -20,13 +20,14 @@ markdown_extensions:
 theme:
     name: material
     locale: en
+    logo: odfdo.png
     palette:
         # Dark Mode
         - scheme: slate
           toggle:
               icon: material/weather-sunny
               name: Dark mode
-          primary: green
+          primary: blue grey
           accent: deep purple
 
         # Light Mode
@@ -46,7 +47,7 @@ theme:
     # - navigation.expand
 
 plugins:
-    - search
+    - search:
 
     - mkdocstrings:
           default_handler: python
