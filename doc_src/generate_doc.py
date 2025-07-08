@@ -68,7 +68,7 @@ def add_recipe_blocks(recipes: dict[int, tuple[Path, str]]) -> None:
         for key in sorted(recipes.keys()):
             path, docstring = recipes[key]
             print("recipe:", path.stem)
-            file.write(f"### {path.stem.replace('_', ' ').capitalize()}\n\n")
+            file.write(f"## {path.stem.replace('_', ' ').capitalize()}\n\n")
             file.write(f"{docstring}\n\n")
             file.write(f'??? code "recipes/{path.name}"\n')
             file.write("    ```python\n")
