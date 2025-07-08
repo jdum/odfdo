@@ -1,5 +1,37 @@
 # Odfdo Release Notes
 
+## [3.14.9] - 2025-07-08
+
+-   Improve documentation and docstrings.
+-   Move classes `Column` and `NamedRange` to their own module (compatibilty maintained with previous versions).
+-   Refactor of code and improvement of the tests coverage.
+
+### Changed
+
+-   Move class `Column` from `odfdo.table` module to module `odfdo.column`.
+-   Move class `NamedRange` from `odfdo.table` module to module `odfdo.named_range`.
+-   Refactor classes `NamedRange`.
+-   Refactor module `odfdo.tracked_changes`.
+-   Refactor module `odfdo.note`.
+-   Improve test coverage of tracked changes related classes.
+-   Improve test coverage for module `odfdo.note`.
+-   Documentation: show table of contents for recipes, add logo.
+-   Update many docstrings.
+-   Update Readme.
+
+### Added
+
+-   Add tests for modules `odfdo.smil`, `odfdo.reference`.
+
+### Removed
+
+-   Remove deprecated `gen_doc.sh`.
+
+### Fixed
+
+-   Fix style argument of function `import_from_csv()`.
+-   Fix `dc_creator` and `dc_date` for tracked changes use.
+
 ## [3.14.8] - 2025-07-06
 
 -  Publish documentation on https://jdum.github.io/odfdo/

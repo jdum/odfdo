@@ -3,7 +3,7 @@
 Recipes source code is in the `/recipes` directory of `odfdo` sources.
 Most recipes are autonomous scripts doing actual modifications of ODF sample files, you can check the results in the `recipes/recipes_output` directory.
 
-### How to write hello world in a text document
+## How to write hello world in a text document
 
 Create a minimal text document with "Hello World" in a pragraph.
 
@@ -12,7 +12,7 @@ Create a minimal text document with "Hello World" in a pragraph.
     {% include "../../recipes/how_to_write_hello_world_in_a_text_document.py" %}
     ```
 
-### How to write hello world in a spreadsheet document
+## How to write hello world in a spreadsheet document
 
 Create a minimal spreadsheet with "Hello World" in the first cell.
 
@@ -21,7 +21,7 @@ Create a minimal spreadsheet with "Hello World" in the first cell.
     {% include "../../recipes/how_to_write_hello_world_in_a_spreadsheet_document.py" %}
     ```
 
-### Basic presentation hello world
+## Basic presentation hello world
 
 Write a basic "Hello World" in the middle of the first page
 of a presentation.
@@ -32,7 +32,7 @@ of a presentation.
     {% include "../../recipes/basic_presentation_hello_world.py" %}
     ```
 
-### Create a basic text document
+## Create a basic text document
 
 Create a basic text document with headers and praragraphs.
 
@@ -41,7 +41,7 @@ Create a basic text document with headers and praragraphs.
     {% include "../../recipes/create_a_basic_text_document.py" %}
     ```
 
-### How to add a paragraph to a text document
+## How to add a paragraph to a text document
 
 Minimal example of how to add a paragraph.
 
@@ -50,7 +50,7 @@ Minimal example of how to add a paragraph.
     {% include "../../recipes/how_to_add_a_paragraph_to_a_text_document.py" %}
     ```
 
-### Create a basic text document with a list
+## Create a basic text document with a list
 
 Create a basic text document with a list.
 
@@ -59,7 +59,7 @@ Create a basic text document with a list.
     {% include "../../recipes/create_a_basic_text_document_with_a_list.py" %}
     ```
 
-### Create a basic text document with list and sublists
+## Create a basic text document with list and sublists
 
 Create a short text document containing a list of items and a few sublists.
 The code demonstrates several manipulations of the list and its items, then
@@ -70,7 +70,7 @@ displays the result to standard output.
     {% include "../../recipes/create_a_basic_text_document_with_list_and_sublists.py" %}
     ```
 
-### How to add a sublist to a list
+## How to add a sublist to a list
 
 Minimal example of how to add a sublist to a list.
 
@@ -79,7 +79,7 @@ Minimal example of how to add a sublist to a list.
     {% include "../../recipes/how_to_add_a_sublist_to_a_list.py" %}
     ```
 
-### How to add an item to a list
+## How to add an item to a list
 
 Minimal example of how to add an item to a list.
 
@@ -88,7 +88,7 @@ Minimal example of how to add an item to a list.
     {% include "../../recipes/how_to_add_an_item_to_a_list.py" %}
     ```
 
-### How to insert a new item within a list
+## How to insert a new item within a list
 
 Minimal example of how to insert a new item within a list.
 
@@ -97,7 +97,7 @@ Minimal example of how to insert a new item within a list.
     {% include "../../recipes/how_to_insert_a_new_item_within_a_list.py" %}
     ```
 
-### Get text content from odt file
+## Get text content from odt file
 
 Read the text content from an .odt file.
 
@@ -106,7 +106,7 @@ Read the text content from an .odt file.
     {% include "../../recipes/get_text_content_from_odt_file.py" %}
     ```
 
-### Create a basic text document with a table of content
+## Create a basic text document with a table of content
 
 Create a basic document containing some paragraphs and headers, add a
 Table of Content from its headers.
@@ -117,7 +117,7 @@ Table of Content from its headers.
     {% include "../../recipes/create_a_basic_text_document_with_a_table_of_content.py" %}
     ```
 
-### Update a text document with a table of content
+## Update a text document with a table of content
 
 Update the table of contents of a document.
 
@@ -126,7 +126,7 @@ Update the table of contents of a document.
     {% include "../../recipes/update_a_text_document_with_a_table_of_content.py" %}
     ```
 
-### Create a basic text document with annotations
+## Create a basic text document with annotations
 
 Create a basic document containing some paragraphs and headers, add some
 annotations. Annotations are notes that don't appear in the document but
@@ -138,7 +138,7 @@ typically on a side bar in a desktop application. So they are not printed.
     {% include "../../recipes/create_a_basic_text_document_with_annotations.py" %}
     ```
 
-### Create a basic text document with footnotes
+## Create a basic text document with footnotes
 
 Create a basic document containing some paragraphs and headers, add some
 footnotes. Footnotes are displayed at the end of the pages of the document.
@@ -149,7 +149,7 @@ footnotes. Footnotes are displayed at the end of the pages of the document.
     {% include "../../recipes/create_a_basic_text_document_with_footnotes.py" %}
     ```
 
-### How to add footnote to a text document
+## How to add footnote to a text document
 
 Minimal example of how to add an footnote to a text document.
 
@@ -174,7 +174,7 @@ note_class='endnote'.
     {% include "../../recipes/how_to_add_footnote_to_a_text_document.py" %}
     ```
 
-### Create a text document with tables in it
+## Create a text document with tables in it
 
 Build a commercial document, with numerical values displayed in
 both the text and in a table.
@@ -185,7 +185,7 @@ both the text and in a table.
     {% include "../../recipes/create_a_text_document_with_tables_in_it.py" %}
     ```
 
-### How to add a table to a document
+## How to add a table to a document
 
 Minimal example of how to add a table to a text document.
 
@@ -194,7 +194,7 @@ Minimal example of how to add a table to a text document.
     {% include "../../recipes/how_to_add_a_table_to_a_document.py" %}
     ```
 
-### Create a text document from plain text with layout
+## Create a text document from plain text with layout
 
 Create a text document with custom styles. In this recipe, the styles
 are created from their XML definition.
@@ -214,7 +214,7 @@ Steps:
     {% include "../../recipes/create_a_text_document_from_plain_text_with_layout.py" %}
     ```
 
-### Add a custom footer to a text document
+## Add a custom footer to a text document
 
 Minimal example of setting a page footer using Style.set_page_footer().
 
@@ -228,7 +228,7 @@ style family.
     {% include "../../recipes/add_a_custom_footer_to_a_text_document.py" %}
     ```
 
-### How to add a picture to a text document
+## How to add a picture to a text document
 
 Create an empty text document and add a picture in a frame.
 
@@ -238,7 +238,7 @@ Create an empty text document and add a picture in a frame.
     {% include "../../recipes/how_to_add_a_picture_to_a_text_document.py" %}
     ```
 
-### How to add a right aligned picture to a text document
+## How to add a right aligned picture to a text document
 
 Create an empty text document and add a picture in a frame,
 aligned to the right or to the left.
@@ -254,7 +254,7 @@ the paragraph (default) or the page.
     {% include "../../recipes/how_to_add_a_right_aligned_picture_to_a_text_document.py" %}
     ```
 
-### How to add a title to a text document
+## How to add a title to a text document
 
 Minimal example of how to add a Header of first level to a text document.
 
@@ -263,7 +263,7 @@ Minimal example of how to add a Header of first level to a text document.
     {% include "../../recipes/how_to_add_a_title_to_a_text_document.py" %}
     ```
 
-### Accessing a single element
+## Accessing a single element
 
 Example of methods and properties to analyse a document.
 
@@ -279,7 +279,7 @@ These methods return a single element (or None):
     {% include "../../recipes/accessing_a_single_element.py" %}
     ```
 
-### Accessing a list of elements
+## Accessing a list of elements
 
 Example of methods and properties to analyse a document.
 
@@ -299,7 +299,7 @@ These methods or properties return a list of elements:
     {% include "../../recipes/accessing_a_list_of_elements.py" %}
     ```
 
-### Accessing other element from element like list
+## Accessing other element from element like list
 
 Accessing elements from element-like list.
 
@@ -312,7 +312,7 @@ contains. Here are quick examples of iteration on `Paragraphs` and `Lists` from 
     {% include "../../recipes/accessing_other_element_from_element_like_list.py" %}
     ```
 
-### How to add a list to a text document
+## How to add a list to a text document
 
 Create an empty text document and add a list.
 
@@ -321,7 +321,7 @@ Create an empty text document and add a list.
     {% include "../../recipes/how_to_add_a_list_to_a_text_document.py" %}
     ```
 
-### How to add a manual page break
+## How to add a manual page break
 
 Adding a manual page break to a text document.
 
@@ -335,7 +335,7 @@ the use of PageBreak and the underlying styling mechanism.
     {% include "../../recipes/how_to_add_a_manual_page_break.py" %}
     ```
 
-### Create a basic drawing
+## Create a basic drawing
 
 Insert a circle and a lot of lines (a fractal) in a text document.
 
@@ -344,7 +344,7 @@ Insert a circle and a lot of lines (a fractal) in a text document.
     {% include "../../recipes/create_a_basic_drawing.py" %}
     ```
 
-### Add private annotations to a document
+## Add private annotations to a document
 
 Add not printable annotations to a document.
 
@@ -357,7 +357,7 @@ on a side bar in a desktop application. So they are not printed.
     {% include "../../recipes/add_private_annotations_to_a_document.py" %}
     ```
 
-### Accessibility check on a document
+## Accessibility check on a document
 
 Basic Accessibility test: check, for every picture in a document, if
 there is:
@@ -375,7 +375,7 @@ See test file `planes.odt` file and the result of the script.
     {% include "../../recipes/accessibility_check_on_a_document.py" %}
     ```
 
-### Add logo on presentation
+## Add logo on presentation
 
 Insert an image (e.g. the logo of an event, organization or a Creative Commons
 attribution) with size `x,y` at position `x2,y2` on a number of slides in a
@@ -387,7 +387,7 @@ presentation slide deck.
     {% include "../../recipes/add_logo_on_presentation.py" %}
     ```
 
-### Get pictures from document odt
+## Get pictures from document odt
 
 Retrieve all the pictures embeded in an .odt file.
 
@@ -396,7 +396,7 @@ Retrieve all the pictures embeded in an .odt file.
     {% include "../../recipes/get_pictures_from_document_odt.py" %}
     ```
 
-### Change image in many documents
+## Change image in many documents
 
 Change an image in many ODF files.
 
@@ -410,7 +410,7 @@ the logo in several hundred existing documents.
     {% include "../../recipes/change_image_in_many_documents.py" %}
     ```
 
-### Concatenate presentations
+## Concatenate presentations
 
 Concatenate several presentations (including presentations found in sub
 directories), possibly merge styles and images. Result for style may vary.
@@ -421,7 +421,7 @@ directories), possibly merge styles and images. Result for style may vary.
     {% include "../../recipes/concatenate_presentations.py" %}
     ```
 
-### Make a presentation from pictures of a text document
+## Make a presentation from pictures of a text document
 
 Open a .odt file with pictures in it, find and analyse all the images,
 create a new .odp presentation, display all the pictures in the presentation,
@@ -433,7 +433,7 @@ one image per frame.
     {% include "../../recipes/make_a_presentation_from_pictures_of_a_text_document.py" %}
     ```
 
-### Make presentation from images
+## Make presentation from images
 
 Create a presentation from a some images in a given directory,
 where each image is put on the center of its own page scaled to either
@@ -446,7 +446,7 @@ page and lose some info.
     {% include "../../recipes/make_presentation_from_images.py" %}
     ```
 
-### Make a presentation from text with different styles
+## Make a presentation from text with different styles
 
 Each line of the text becomes a slide of the presentation, we change of style
 depending on the length of text line.
@@ -457,7 +457,7 @@ depending on the length of text line.
     {% include "../../recipes/make_a_presentation_from_text_with_different_styles.py" %}
     ```
 
-### Extract and reorder slides
+## Extract and reorder slides
 
 Create a new presentation from a previous one by extracting some slides,
 in a different order.
@@ -468,7 +468,7 @@ in a different order.
     {% include "../../recipes/extract_and_reorder_slides.py" %}
     ```
 
-### Change values of a chart inside a document
+## Change values of a chart inside a document
 
 Open a text document with an embedded chart and change some values.
 
@@ -477,7 +477,7 @@ Open a text document with an embedded chart and change some values.
     {% include "../../recipes/change_values_of_a_chart_inside_a_document.py" %}
     ```
 
-### Add text span styles
+## Add text span styles
 
 Transform a not styled document into a multi styled document,
 by changing size and color of each parts of words.
@@ -488,7 +488,7 @@ by changing size and color of each parts of words.
     {% include "../../recipes/add_text_span_styles.py" %}
     ```
 
-### How to copy some style from another document
+## How to copy some style from another document
 
 Minimal example of copy of a style from another document.
 
@@ -506,7 +506,7 @@ display_name  : The name of the style as we see it in a desktop
     {% include "../../recipes/how_to_copy_some_style_from_another_document.py" %}
     ```
 
-### Copy style from another document
+## Copy style from another document
 
 Copy the styles from an existing document.
 
@@ -518,7 +518,7 @@ For more advanced version, see the odfdo-style script.
     {% include "../../recipes/copy_style_from_another_document.py" %}
     ```
 
-### Create basic text styles
+## Create basic text styles
 
 Create basic text styles with the Style class API.
 
@@ -537,7 +537,7 @@ change_paragraph_styles_methods.py shows these different methods.
     {% include "../../recipes/create_basic_text_styles.py" %}
     ```
 
-### How to apply a style to a paragraph
+## How to apply a style to a paragraph
 
 Minimal example of how to add a styled paragraph to a document.
 
@@ -546,7 +546,7 @@ Minimal example of how to add a styled paragraph to a document.
     {% include "../../recipes/how_to_apply_a_style_to_a_paragraph.py" %}
     ```
 
-### Change paragraph styles methods
+## Change paragraph styles methods
 
 Many examples of how to change paragraph (and in-paragraph) styles, either
 by changing the paragraph style itself or by using Span to select parts
@@ -558,7 +558,7 @@ of the paragraph. Includes several ways to create or import styles.
     {% include "../../recipes/change_paragraph_styles_methods.py" %}
     ```
 
-### Delete parts of a text document
+## Delete parts of a text document
 
 Deleting content from one point to another in a .odt document.
 
@@ -570,7 +570,7 @@ Deleting content from one point to another in a .odt document.
     {% include "../../recipes/delete_parts_of_a_text_document.py" %}
     ```
 
-### Create color chart in spreadsheet
+## Create color chart in spreadsheet
 
 Create some color chart in a spreadsheet using cells styles functions.
 
@@ -589,7 +589,7 @@ Apply a column style to define the column width.
     {% include "../../recipes/create_color_chart_in_spreadsheet.py" %}
     ```
 
-### Get cell background color
+## Get cell background color
 
 Read the background color of a table cell.
 
@@ -598,7 +598,7 @@ Read the background color of a table cell.
     {% include "../../recipes/get_cell_background_color.py" %}
     ```
 
-### Extract a sub table from some big table
+## Extract a sub table from some big table
 
 Open a table of 1000 lines and 100 columns, extract a sub table
 of 100 lines 26 columns, save the result in a spreadsheet document.
@@ -609,7 +609,7 @@ of 100 lines 26 columns, save the result in a spreadsheet document.
     {% include "../../recipes/extract_a_sub_table_from_some_big_table.py" %}
     ```
 
-### Make a basic spreadsheet
+## Make a basic spreadsheet
 
 Create a spreadsheet with one table and a few data, strip the table
 and compute the table size.
@@ -620,7 +620,7 @@ and compute the table size.
     {% include "../../recipes/make_a_basic_spreadsheet.py" %}
     ```
 
-### Make spreadsheet with named ranges
+## Make spreadsheet with named ranges
 
 Create a spreadsheet with two tables, using named ranges to fill cells.
 
@@ -629,7 +629,7 @@ Create a spreadsheet with two tables, using named ranges to fill cells.
     {% include "../../recipes/make_spreadsheet_with_named_ranges.py" %}
     ```
 
-### Introspecting elements
+## Introspecting elements
 
 Demo of quick introspecting of a document's elements.
 
@@ -641,7 +641,7 @@ can access other elements we are looking for (parent, children).
     {% include "../../recipes/introspecting_elements.py" %}
     ```
 
-### Show meta data
+## Show meta data
 
 Print the metadata informations of a ODF file.
 
@@ -658,7 +658,7 @@ a parameter.
     {% include "../../recipes/show_meta_data.py" %}
     ```
 
-### Move link to footnote
+## Move link to footnote
 
 Remove all links from a document, transforming each link information (URL,
 text) into a footnote. Of course, removing links already inside notes, just
@@ -670,7 +670,7 @@ keeping plain text URL. (Side note: most office suite dislike notes in notes)
     {% include "../../recipes/move_link_to_footnote.py" %}
     ```
 
-### Remove http links
+## Remove http links
 
 Remove all the links (the text:a tag), keeping the inner text.
 
@@ -679,7 +679,7 @@ Remove all the links (the text:a tag), keeping the inner text.
     {% include "../../recipes/remove_http_links.py" %}
     ```
 
-### Remove span styles
+## Remove span styles
 
 Remove span styles (like some words in bold in a paragraph),
 except in titles.
@@ -690,7 +690,7 @@ except in titles.
     {% include "../../recipes/remove_span_styles.py" %}
     ```
 
-### Retrieve all pictures from odf files
+## Retrieve all pictures from odf files
 
 Scan a list of files and directories (recursion), open all ODF documents
 and copy document images to a target directory.
@@ -701,7 +701,7 @@ and copy document images to a target directory.
     {% include "../../recipes/retrieve_all_pictures_from_ODF_files.py" %}
     ```
 
-### Read document from bytesio
+## Read document from bytesio
 
 Read a document from BytesIO.
 
@@ -710,7 +710,7 @@ Read a document from BytesIO.
     {% include "../../recipes/read_document_from_bytesio.py" %}
     ```
 
-### Save document as bytesio
+## Save document as bytesio
 
 Save a document as BytesIO.
 
@@ -719,7 +719,7 @@ Save a document as BytesIO.
     {% include "../../recipes/save_document_as_bytesio.py" %}
     ```
 
-### Export tables to csv format
+## Export tables to csv format
 
 Export tables to CSV format.
 
@@ -728,7 +728,7 @@ Export tables to CSV format.
     {% include "../../recipes/export_tables_to_csv_format.py" %}
     ```
 
-### Import csv content into a table
+## Import csv content into a table
 
 Import a CSV file and load data into a table.
 
@@ -737,7 +737,7 @@ Import a CSV file and load data into a table.
     {% include "../../recipes/import_csv_content_into_a_table.py" %}
     ```
 
-### Search and replace words
+## Search and replace words
 
 Search and replace words in a text document.
 
@@ -746,7 +746,7 @@ Search and replace words in a text document.
     {% include "../../recipes/search_and_replace_words.py" %}
     ```
 
-### Spreadsheet with words frequency from a text
+## Spreadsheet with words frequency from a text
 
 Load an ODF text, store the frequency of words in a spreadsheet,
 make requests on the table, by regex or value.
@@ -757,7 +757,7 @@ make requests on the table, by regex or value.
     {% include "../../recipes/spreadsheet_with_words_frequency_from_a_text.py" %}
     ```
 
-### Transpose table
+## Transpose table
 
 Transpose a table. Create a spreadsheet table (for example: 50 rows and
 20 columns), then create a new table in a separate sheet where the columns
