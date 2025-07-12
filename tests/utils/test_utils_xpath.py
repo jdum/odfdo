@@ -59,7 +59,30 @@ def test_two_attributes_position():
         "descendant::text:h", text_style="Standard", outline_level=1, position=1
     )
     expected = (
-        '(descendant::text:h[@text:outline-level="1"]'
-        '[@text:style-name="Standard"])[2]'
+        '(descendant::text:h[@text:outline-level="1"][@text:style-name="Standard"])[2]'
     )
+    assert query == expected
+
+
+def test_case_presentation_class():
+    query = make_xpath_query("descendant::text:p", presentation_class="foo")
+    expected = 'descendant::text:p[@presentation:class="foo"]'
+    assert query == expected
+
+
+def test_case_true_arguent():
+    query = make_xpath_query("descendant::text:p", change_id=True)
+    expected = "descendant::text:p[@text:change-id]"
+    assert query == expected
+
+
+def test_case_last_arg():
+    query = make_xpath_query("descendant::text:p", position=-1)
+    expected = "(descendant::text:p)[last()]"
+    assert query == expected
+
+
+def test_case_last_2_arg():
+    query = make_xpath_query("descendant::text:p", position=-2)
+    expected = "(descendant::text:p)[last()-1]"
     assert query == expected
