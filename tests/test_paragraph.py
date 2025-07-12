@@ -26,7 +26,8 @@ import pytest
 
 from odfdo.document import Document
 from odfdo.element import Element
-from odfdo.paragraph import LineBreak, Paragraph, Spacer, Tab
+from odfdo.paragraph import Paragraph
+from odfdo.paragraph_base import LineBreak, ParagraphBase, Spacer, Tab
 
 
 @pytest.fixture
@@ -550,6 +551,23 @@ def test_text():
     assert paragraph.serialize() == expected
 
 
+def test_text_setter_1():
+    text = "Le Père Noël a une moustache rouge."
+    paragraph = Paragraph(text)
+    paragraph.text = None
+    expected1 = "<text:p></text:p>"
+    expected2 = "<text:p/>"
+    assert paragraph.serialize() in (expected1, expected2)
+
+
+def test_text_setter_2():
+    text = "Le Père Noël a une moustache rouge."
+    paragraph = Paragraph(text)
+    paragraph.text = "new text"
+    expected = "<text:p>new text</text:p>"
+    assert paragraph.serialize() == expected
+
+
 def test_text_spaces_s1():
     text = " Le Père Noël a une moustache rouge."
     paragraph = Paragraph(text)
@@ -958,3 +976,99 @@ def test_set_reference_mark_before(document):
         "</text:p>"
     )
     assert para.serialize() == expected
+
+
+def test_spacer_setter_0():
+    spacer = Spacer()
+    spacer.text = None
+    expected = "<text:s/>"
+    assert spacer.serialize() == expected
+
+
+def test_spacer_setter_1():
+    spacer = Spacer()
+    spacer.text = ""
+    expected = "<text:s/>"
+    assert spacer.serialize() == expected
+
+
+def test_spacer_setter_2():
+    spacer = Spacer()
+    spacer.text = "x"
+    expected = "<text:s/>"
+    assert spacer.serialize() == expected
+
+
+def test_spacer_setter_3():
+    spacer = Spacer()
+    spacer.text = "xx"
+    expected = '<text:s text:c="2"/>'
+    assert spacer.serialize() == expected
+
+
+def test_spacer_setter_4():
+    spacer = Spacer()
+    spacer.text = "xxx"
+    expected = '<text:s text:c="3"/>'
+    assert spacer.serialize() == expected
+
+
+def test_tab_getter_0():
+    tab = Tab()
+    expected = "<text:tab/>"
+    assert tab.serialize() == expected
+
+
+def test_tab_getter_1():
+    tab = Tab()
+    assert tab.text == "\t"
+
+
+def test_line_break_getter_0():
+    lb = LineBreak()
+    expected = "<text:line-break/>"
+    assert lb.serialize() == expected
+
+
+def test_line_break_getter_1():
+    lb = LineBreak()
+    assert lb.text == "\n"
+
+
+def test_paragraph_base_class():
+    p = ParagraphBase()
+    assert isinstance(p, ParagraphBase)
+
+
+def test_paragraph_base_str():
+    p = ParagraphBase()
+    p.text = "content"
+    assert str(p) == "content"
+
+
+def test_paragraph_base_formatted():
+    p = ParagraphBase()
+    p.text = "content"
+    assert p.get_formatted_text() == "content\n\n"
+
+
+def test_paragraph_base_formatted_simple():
+    p = ParagraphBase()
+    p.text = "content"
+    assert p.get_formatted_text(simple=True) == "content"
+
+
+def test_paragraph_base_formatted_context_simple():
+    p = ParagraphBase()
+    p.text = "content"
+    context = {
+        "document": None,
+        "footnotes": [],
+        "endnotes": [],
+        "annotations": [],
+        "rst_mode": False,
+        "img_counter": 0,
+        "images": [],
+        "no_img_level": 0,
+    }
+    assert p.get_formatted_text(context, simple=True) == "content"
