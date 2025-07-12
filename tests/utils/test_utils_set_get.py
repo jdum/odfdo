@@ -22,7 +22,8 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 
 from odfdo.table import Cell
-from odfdo.variable import UserFieldDecl, VarSet
+from odfdo.variable import VarSet
+from odfdo.user_field import UserFieldDecl
 
 ZOE = "你好 Zoé"
 

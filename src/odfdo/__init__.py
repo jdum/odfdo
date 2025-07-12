@@ -215,13 +215,15 @@ from .tracked_changes import (
     TextInsertion,
     TrackedChanges,
 )
-from .utils import hex2rgb, hexa_color, remove_tree, rgb2hex
-from .variable import (
+from .user_field import (
     UserDefined,
     UserFieldDecl,
     UserFieldDecls,
     UserFieldGet,
     UserFieldInput,
+)
+from .utils import hex2rgb, hexa_color, remove_tree, rgb2hex
+from .variable import (
     VarChapter,
     VarCreationDate,
     VarCreationTime,

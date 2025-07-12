@@ -26,7 +26,7 @@ from datetime import datetime
 import pytest
 
 from odfdo.document import Document
-from odfdo.variable import UserDefined
+from odfdo.user_field import UserDefined
 
 
 @pytest.fixture

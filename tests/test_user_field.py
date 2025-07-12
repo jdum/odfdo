@@ -25,7 +25,7 @@ from collections.abc import Iterable
 import pytest
 
 from odfdo.document import Document
-from odfdo.variable import UserFieldDecl, UserFieldGet, UserFieldInput
+from odfdo.user_field import UserFieldDecl, UserFieldGet, UserFieldInput
 
 ZOE = "你好 Zoé"
 CHAMP = "Champêtre"
