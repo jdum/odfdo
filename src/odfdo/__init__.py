@@ -148,6 +148,7 @@ __all__ = [  # noqa: RUF022
 ]
 
 
+from .annotation import Annotation, AnnotationEnd
 from .body import Body, Chart, Database, Drawing, Image, Presentation, Spreadsheet, Text
 from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
 from .cell import Cell
@@ -172,7 +173,7 @@ from .meta_template import MetaTemplate
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
 from .named_range import NamedRange
-from .note import Annotation, AnnotationEnd, Note
+from .note import Note
 from .paragraph import LineBreak, PageBreak, Paragraph, Spacer, Span, Tab
 from .paragraph_base import ParagraphBase
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart

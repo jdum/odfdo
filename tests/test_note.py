@@ -22,14 +22,13 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 
 from collections.abc import Iterable
-from datetime import datetime
 
 import pytest
 
 from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.list import List
-from odfdo.note import Annotation, Note
+from odfdo.note import Note
 from odfdo.paragraph import Paragraph
 
 
@@ -37,46 +36,6 @@ from odfdo.paragraph import Paragraph
 def document(samples) -> Iterable[Document]:
     document = Document(samples("note.odt"))
     yield document
-
-
-def test_get_office_names_0():
-    doc = Document()
-    assert doc.body.get_office_names() == []
-
-
-def test_get_office_names_1(document):
-    assert document.body.get_office_names() == []
-
-
-def test_get_office_names_2(document):
-    annotation = Annotation(
-        "Some annotation",
-        creator="John Doe",
-        date=datetime(2025, 6, 7, 12, 00, 00),
-    )
-    document.body.append(annotation)
-    assert document.body.get_office_names() == ["__Fieldmark__lpod_1"]
-
-
-def test_get_office_names_3(document):
-    annotation1 = Annotation(
-        "Some annotation 1",
-        creator="John Doe",
-        date=datetime(2025, 6, 7, 12, 00, 00),
-        parent=document.body,
-    )
-    document.body.append(annotation1)
-    annotation2 = Annotation(
-        "Some annotation 1",
-        creator="John Doe",
-        date=datetime(2025, 6, 7, 12, 00, 00),
-        parent=document.body,
-    )
-    document.body.append(annotation2)
-    assert set(document.body.get_office_names()) == {
-        "__Fieldmark__lpod_1",
-        "__Fieldmark__lpod_2",
-    }
 
 
 def test_note_class():
@@ -409,173 +368,3 @@ def test_get_formatted_text(document):
         "(i) Les apparences sont trompeuses !\n"
     )
     assert document.get_formatted_text() == expected
-
-
-def test_create_annotation():
-    # Create
-    annotation = Annotation(
-        "Lost Dialogs",
-        creator="Plato",
-        date=datetime(2009, 6, 22, 17, 18, 42),
-    )
-    expected = (
-        '<office:annotation office:name="__Fieldmark__lpod_1">'
-        "<text:p>"
-        "Lost Dialogs"
-        "</text:p>"
-        "<dc:creator>Plato</dc:creator>"
-        "<dc:date>2009-06-22T17:18:42</dc:date>"
-        "</office:annotation>"
-    )
-    assert annotation.serialize() == expected
-
-
-def test_create_annotation_str():
-    # Create
-    annotation = Annotation(
-        "Lost Dialogs",
-        creator="Plato",
-        date=datetime(2009, 6, 22, 17, 18, 42),
-    )
-    expected = "Lost Dialogs\nPlato 2009-06-22 17:18:42"
-    assert str(annotation) == expected
-
-
-def test_get_annotation_list(document):
-    body = document.body
-    annotations = body.get_annotations()
-    assert len(annotations) == 1
-    annotation = annotations[0]
-    creator = annotation.dc_creator
-    assert creator == "Auteur inconnu"
-    date = annotation.dc_date
-    assert date == datetime(2009, 8, 3, 12, 9, 45)
-    text = annotation.text_content
-    expected = "Sauf qu'il est commenté !"
-    assert text == expected
-
-
-def test_get_annotation_list_properties_creator(document):
-    body = document.body
-    annotations = body.get_annotations()
-    annotation = annotations[0]
-    creator = annotation.creator
-    assert creator == "Auteur inconnu"
-
-
-def test_get_annotation_list_properties_date(document):
-    body = document.body
-    annotations = body.get_annotations()
-    annotation = annotations[0]
-    date = annotation.date
-    assert date == datetime(2009, 8, 3, 12, 9, 45)
-
-
-def test_get_annotation_list_author(document):
-    body = document.body
-    creator = "Auteur inconnu"
-    annotations = body.get_annotations(creator=creator)
-    assert len(annotations) == 1
-
-
-def test_get_annotation_list_bad_author(document):
-    body = document.body
-    creator = "Plato"
-    annotations = body.get_annotations(creator=creator)
-    assert len(annotations) == 0
-
-
-def test_get_annotation_list_start_date(document):
-    body = document.body
-    start_date = datetime(2009, 8, 1, 0, 0, 0)
-    annotations = body.get_annotations(start_date=start_date)
-    assert len(annotations) == 1
-
-
-def test_get_annotation_list_bad_start_date(document):
-    body = document.body
-    start_date = datetime(2009, 9, 1, 0, 0, 0)
-    annotations = body.get_annotations(start_date=start_date)
-    assert len(annotations) == 0
-
-
-def test_get_annotation_list_end_date(document):
-    body = document.body
-    end_date = datetime(2009, 9, 1, 0, 0, 0)
-    annotations = body.get_annotations(end_date=end_date)
-    assert len(annotations) == 1
-
-
-def test_get_annotation_list_bad_end_date(document):
-    body = document.body
-    end_date = datetime(2009, 8, 1, 0, 0, 0)
-    annotations = body.get_annotations(end_date=end_date)
-    assert len(annotations) == 0
-
-
-def test_get_annotation_list_start_date_end_date(document):
-    body = document.body
-    start_date = datetime(2009, 8, 1, 0, 0, 0)
-    end_date = datetime(2009, 9, 1, 0, 0, 0)
-    annotations = body.get_annotations(start_date=start_date, end_date=end_date)
-    assert len(annotations) == 1
-
-
-def test_get_annotation_list_bad_start_date_end_date(document):
-    body = document.body
-    start_date = datetime(2009, 5, 1, 0, 0, 0)
-    end_date = datetime(2009, 6, 1, 0, 0, 0)
-    annotations = body.get_annotations(start_date=start_date, end_date=end_date)
-    assert len(annotations) == 0
-
-
-def test_get_annotation_list_author_start_date_end_date(document):
-    body = document.body
-    creator = "Auteur inconnu"
-    start_date = datetime(2009, 8, 1, 0, 0, 0)
-    end_date = datetime(2009, 9, 1, 0, 0, 0)
-    annotations = body.get_annotations(
-        creator=creator, start_date=start_date, end_date=end_date
-    )
-    assert len(annotations) == 1
-
-
-def test_get_annotation_list_bad_author_start_date_end_date(document):
-    body = document.body
-    creator = "Plato"
-    start_date = datetime(2009, 6, 1, 0, 0, 0)
-    end_date = datetime(2009, 7, 1, 0, 0, 0)
-    annotations = body.get_annotations(
-        creator=creator, start_date=start_date, end_date=end_date
-    )
-    assert len(annotations) == 0
-
-
-def test_get_annotation_list_author_bad_start_date_end_date(document):
-    body = document.body
-    creator = "Auteur inconnu"
-    start_date = datetime(2009, 6, 23, 0, 0, 0)
-    end_date = datetime(2009, 7, 1, 0, 0, 0)
-    annotations = body.get_annotations(
-        creator=creator, start_date=start_date, end_date=end_date
-    )
-    assert len(annotations) == 0
-
-
-def test_insert_annotation():
-    text = "It's like you're in a cave."
-    creator = "Plato"
-    date = datetime(2009, 8, 19)
-    annotation = Annotation(text, creator=creator, date=date)
-    paragraph = Paragraph("Un paragraphe")
-    paragraph.insert_annotation(annotation, after="para")
-    expected = (
-        "<text:p>Un para"
-        '<office:annotation office:name="__Fieldmark__lpod_1">'
-        "<text:p>It's like you're in a cave.</text:p>"
-        "<dc:creator>Plato</dc:creator>"
-        "<dc:date>2009-08-19T00:00:00</dc:date>"
-        "</office:annotation>"
-        "graphe</text:p>"
-    )
-    assert paragraph.serialize() == expected

@@ -31,6 +31,7 @@ from datetime import datetime
 from functools import wraps  # for keeping trace of docstring with decorators
 from typing import Any
 
+from .annotation import Annotation, AnnotationEnd
 from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
 from .element import (
     FIRST_CHILD,
@@ -42,7 +43,7 @@ from .element import (
 )
 from .link import Link
 from .mixin_md import MDParagraph, MDSpan
-from .note import Annotation, AnnotationEnd, Note
+from .note import Note
 from .paragraph_base import LineBreak, ParagraphBase, Spacer, Tab
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
 
