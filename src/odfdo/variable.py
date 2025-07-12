@@ -280,7 +280,7 @@ class VarTime(Element):
                 text = time.strftime("%H:%M:%S")
             self.text = text
             if time_adjust is not None:
-                self.date_adjust = Duration.encode(time_adjust)
+                self.time_adjust = Duration.encode(time_adjust)
 
 
 VarTime._define_attribut_property()
