@@ -110,9 +110,11 @@ class VarSet(ElementTyped):
     def set_value(self, value: Any) -> None:
         name = self.get_attribute("text:name")
         display = self.get_attribute("text:display")
+        style = self.get_attribute("style:data-style-name")
         self.clear()
         text = self.set_value_and_type(value=value)
         self.set_attribute("text:name", name)
+        self.set_attribute("style:data-style-name", style)
         if display is not None:
             self.set_attribute("text:display", display)
         if isinstance(text, str):
