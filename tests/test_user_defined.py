@@ -35,6 +35,16 @@ def document(samples) -> Iterable[Document]:
     yield document
 
 
+def test_user_defined_class():
+    field = UserDefined()
+    assert isinstance(field, UserDefined)
+
+
+def test_user_defined_style():
+    field = UserDefined(style="some_style")
+    assert field.style == "some_style"
+
+
 def test_create_user_defined_1(document):
     element = UserDefined(
         "unknown_in_meta",
