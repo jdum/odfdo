@@ -144,6 +144,15 @@ def test_set_modification_date(meta):
     assert clone.get_modification_date() == now
 
 
+def test_set_modification_date_meta_special(meta):
+    clone = meta.clone
+    elem = clone.get_element("//dc:date")
+    elem.delete()
+    now = datetime.now().replace(microsecond=0)
+    clone.set_modification_date(now)
+    assert clone.get_modification_date() == now
+
+
 def test_modification_date_property(meta):
     clone = meta.clone
     now = datetime.now().replace(microsecond=0)
