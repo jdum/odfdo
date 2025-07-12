@@ -141,3 +141,87 @@ def test_insert_heading_tab(base_body):
     assert last_heading.text == "An inserted "
     assert "text:tab" in last_heading.serialize()
     assert last_heading.inner_text == "An inserted \t tab heading"
+
+
+def test_insert_heading_tab_not_fomatted(base_body):
+    heading = Header(
+        2, "An inserted \t tab heading", style="Heading_20_2", formatted=False
+    )
+    base_body.append(heading)
+    last_heading = base_body.get_headers()[-1]
+    assert heading.serialize() == last_heading.serialize()
+    assert last_heading.text == "An inserted tab heading"
+    assert last_heading.inner_text == "An inserted tab heading"
+
+
+def test_heading_restart_nb():
+    heading = Header(2, "An inserted \t tab heading", restart_numbering=True)
+    assert heading.restart_numbering is True
+
+
+def test_heading_start_value():
+    heading = Header(2, "An inserted \t tab heading", start_value=4)
+    assert heading.start_value == "4"
+
+
+def test_heading_suppress_nb():
+    heading = Header(2, "An inserted \t tab heading", suppress_numbering=True)
+    assert heading.suppress_numbering is True
+
+
+def test_heading_formatted():
+    heading = Header(2, "An inserted \t tab heading")
+    assert heading.get_formatted_text() == "An inserted tab heading"
+
+
+def test_heading_formatted_context():
+    heading = Header(2, "An inserted \t tab heading")
+    context = {
+        "document": None,
+        "footnotes": [],
+        "endnotes": [],
+        "annotations": [],
+        "rst_mode": False,
+        "img_counter": 0,
+        "images": [],
+        "no_img_level": 0,
+    }
+    assert heading.get_formatted_text(context) == "An inserted tab heading"
+
+
+def test_heading_formatted_context_rst():
+    heading = Header(2, "An inserted \t tab heading")
+    context = {
+        "document": None,
+        "footnotes": [],
+        "endnotes": [],
+        "annotations": [],
+        "rst_mode": True,
+        "img_counter": 0,
+        "images": [],
+        "no_img_level": 0,
+    }
+    assert heading.get_formatted_text(context) == (
+        "\nAn inserted tab heading\n=======================\n"
+    )
+
+
+def test_heading_formatted_context_max_level():
+    heading = Header(99, "An inserted \t tab heading")
+    assert heading.level == "99"
+
+
+def test_heading_formatted_context_max_level_2():
+    heading = Header(99, "An inserted \t tab heading")
+    context = {
+        "document": None,
+        "footnotes": [],
+        "endnotes": [],
+        "annotations": [],
+        "rst_mode": True,
+        "img_counter": 0,
+        "images": [],
+        "no_img_level": 0,
+    }
+    with pytest.raises(ValueError):
+        heading.get_formatted_text(context)
