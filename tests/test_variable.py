@@ -21,17 +21,19 @@
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 
 from collections.abc import Iterable
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 import pytest
 
 from odfdo.document import Document
+from odfdo.element import Element
 from odfdo.variable import (
     VarChapter,
     VarCreationDate,
     VarCreationTime,
     VarDate,
     VarDecl,
+    VarDecls,
     VarDescription,
     VarFileName,
     VarGet,
@@ -52,6 +54,280 @@ ZOE = "你好 Zoé"
 def document(samples) -> Iterable[Document]:
     document = Document(samples("variable.odt"))
     yield document
+
+
+def test_var_decls_class():
+    variable = VarDecls()
+    assert isinstance(variable, VarDecls)
+
+
+def test_var_decl_class():
+    variable = VarDecl()
+    assert isinstance(variable, VarDecl)
+
+
+def test_var_set_class():
+    variable = VarSet()
+    assert isinstance(variable, VarSet)
+
+
+def test_var_set_arg_style():
+    variable = VarSet(name="myvar", value=42, style="some_bold")
+    assert variable.style == "some_bold"
+
+
+def test_var_set_style_keep():
+    variable = VarSet(name="myvar", value=42, style="some_bold")
+    variable.set_value(55)
+    assert variable.style == "some_bold"
+
+
+def test_var_set_display_deleted():
+    variable = VarSet(name="myvar", value=42, style="some_bold")
+    variable.display = None
+    variable.set_value(55)
+    assert variable.display is None
+
+
+def test_var_set_display_keep_true():
+    variable = VarSet(name="myvar", value=42, style="some_bold")
+    variable.display = True
+    variable.set_value(55)
+    assert variable.display is True
+
+
+def test_var_set_display_keep_false():
+    variable = VarSet(name="myvar", value=42, style="some_bold")
+    variable.display = False
+    variable.set_value(55)
+    assert variable.display is False
+
+
+def test_var_set_display_no_text():
+    variable = VarSet(name="myvar", value=42, style="some_bold")
+    variable.display = "none"
+    variable.set_value(None)
+    assert variable.text == ""
+
+
+def test_var_get_class():
+    variable = VarGet()
+    assert isinstance(variable, VarGet)
+
+
+def test_var_get_arg_style():
+    variable = VarGet(name="myvar", style="some_bold")
+    assert variable.style == "some_bold"
+
+
+def test_var_get_arg_from_tag():
+    variable = Element.from_tag(
+        '<text:variable-get text:name="myvar" style:data-style-name="some_bold">'
+        "</text:variable-get>"
+    )
+    assert isinstance(variable, VarGet)
+
+
+def test_var_get_arg_from_tag2():
+    variable = Element.from_tag(
+        '<text:variable-get text:name="myvar" style:data-style-name="some_bold">'
+        "</text:variable-get>"
+    )
+    assert variable.style == "some_bold"
+    assert variable.name == "myvar"
+    assert not variable.text
+
+
+def test_var_page_number_class():
+    variable = VarPageNumber()
+    assert isinstance(variable, VarPageNumber)
+
+
+def test_var_page_number_from_tag():
+    variable = Element.from_tag('<text:page-number text:select-page="current"/>')
+    assert isinstance(variable, VarPageNumber)
+
+
+def test_var_page_number_from_tag2():
+    variable = Element.from_tag('<text:page-number text:select-page="current"/>')
+    assert variable.select_page == "current"
+
+
+def test_var_page_count_class():
+    variable = VarPageCount()
+    assert isinstance(variable, VarPageCount)
+
+
+def test_var_date_class():
+    variable = VarDate()
+    assert isinstance(variable, VarDate)
+
+
+def test_var_date_from_tag():
+    variable = Element.from_tag("<text:date></text:date>")
+    assert isinstance(variable, VarDate)
+
+
+def test_var_date_datetime():
+    variable = VarDate(date=datetime(1977, 12, 25, 12, 15, 10), data_style="date_style")
+    assert variable.date == "1977-12-25T12:15:10"
+
+
+def test_var_date_style():
+    variable = VarDate(date=datetime(1977, 12, 25, 12, 15, 10), data_style="date_style")
+    assert variable.data_style == "date_style"
+
+
+def test_var_date_adjust():
+    variable = VarDate(
+        date=datetime(1977, 12, 25, 12, 15, 10), date_adjust=timedelta(hours=2)
+    )
+    assert variable.date_adjust == "PT02H00M00S"
+
+
+def test_var_time_class():
+    variable = VarTime()
+    assert isinstance(variable, VarTime)
+
+
+def test_var_time_from_tag():
+    variable = Element.from_tag(
+        '<text:time text:time-value="1977-12-25T12:15:10">12:15:10</text:time>'
+    )
+    assert isinstance(variable, VarTime)
+
+
+def test_var_time_style():
+    variable = VarTime(data_style="date_style")
+    assert variable.data_style == "date_style"
+
+
+def test_var_time_adjust():
+    variable = VarTime(time_adjust=timedelta(hours=2))
+    assert variable.time_adjust == "PT02H00M00S"
+
+
+def test_var_chapter_class():
+    variable = VarChapter()
+    assert isinstance(variable, VarChapter)
+
+
+def test_var_chapter_from_tag():
+    variable = Element.from_tag('<text:chapter text:display="name"/>')
+    assert isinstance(variable, VarChapter)
+
+
+def test_var_chapter_wrong_display():
+    with pytest.raises(ValueError):
+        VarChapter(display="wrong")
+
+
+def test_var_file_name_class():
+    variable = VarFileName()
+    assert isinstance(variable, VarFileName)
+
+
+def test_var_file_name_from_tag():
+    variable = Element.from_tag(
+        '<text:file-name text:display="name-and-extension">file.odt</text:file-name>'
+    )
+    assert isinstance(variable, VarFileName)
+
+
+def test_var_file_name_from_tag2():
+    variable = Element.from_tag(
+        '<text:file-name text:display="name-and-extension">file.odt</text:file-name>'
+    )
+    assert variable.text == "file.odt"
+
+
+def test_var_file_name_wrong_display():
+    with pytest.raises(ValueError):
+        VarFileName(display="wrong")
+
+
+def test_var_initial_creator_class():
+    variable = VarInitialCreator()
+    assert isinstance(variable, VarInitialCreator)
+
+
+def test_var_initial_creator_from_tag():
+    variable = Element.from_tag(
+        '<text:initial-creator text:fixed="true">John Doe</text:initial-creator>'
+    )
+    assert isinstance(variable, VarInitialCreator)
+
+
+def test_var_initial_creator_from_tag2():
+    variable = Element.from_tag(
+        '<text:initial-creator text:fixed="true">John Doe</text:initial-creator>'
+    )
+    assert variable.text == "John Doe"
+
+
+def test_var_initial_creator_fixed():
+    variable = VarInitialCreator(fixed=True)
+    assert variable.fixed is True
+
+
+def test_var_creation_date_class():
+    variable = VarCreationDate()
+    assert isinstance(variable, VarCreationDate)
+
+
+def test_var_creation_date_from_tag():
+    variable = Element.from_tag("<text:creation-date/>")
+    assert isinstance(variable, VarCreationDate)
+
+
+def test_var_creation_date_fixed():
+    variable = VarCreationDate(fixed=True)
+    assert variable.fixed is True
+
+
+def test_var_creation_date_data_style():
+    variable = VarCreationDate(data_style="some_style")
+    assert variable.data_style == "some_style"
+
+
+def test_var_creation_time_class():
+    variable = VarCreationTime()
+    assert isinstance(variable, VarCreationTime)
+
+
+def test_var_creation_time_from_tag():
+    variable = Element.from_tag("<text:creation-time/>")
+    assert isinstance(variable, VarCreationTime)
+
+
+def test_var_creation_time_fixed():
+    variable = VarCreationTime(fixed=True)
+    assert variable.fixed is True
+
+
+def test_var_creation_time_data_style():
+    variable = VarCreationTime(data_style="some_style")
+    assert variable.data_style == "some_style"
+
+
+def test_var_description_class():
+    variable = VarDescription()
+    assert isinstance(variable, VarDescription)
+
+
+def test_var_title_class():
+    variable = VarTitle()
+    assert isinstance(variable, VarTitle)
+
+
+def test_var_subject_class():
+    variable = VarSubject()
+    assert isinstance(variable, VarSubject)
+
+
+def test_var_keywords_class():
+    variable = VarKeywords()
+    assert isinstance(variable, VarKeywords)
 
 
 def test_create_variable_decl():
