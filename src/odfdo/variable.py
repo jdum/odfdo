@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 from datetime import time as dt_time
-from typing import Any
+from typing import Any, ClassVar
 
 from .datatype import Date, DateTime, Duration
 from .element import Element, PropDef, register_element_class
@@ -294,7 +294,7 @@ class VarChapter(Element):
         PropDef("display", "text:display"),
         PropDef("outline_level", "text:outline-level"),
     )
-    DISPLAY_VALUE_CHOICE = {  # noqa: RUF012
+    DISPLAY_VALUE_CHOICE: ClassVar = {
         "number",
         "name",
         "number-and-name",
@@ -333,7 +333,7 @@ class VarFileName(Element):
         PropDef("display", "text:display"),
         PropDef("fixed", "text:fixed"),
     )
-    DISPLAY_VALUE_CHOICE = {  # noqa: RUF012
+    DISPLAY_VALUE_CHOICE: ClassVar = {
         "full",
         "path",
         "name",
