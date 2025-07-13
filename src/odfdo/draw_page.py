@@ -18,7 +18,7 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""ODF draw page for presentations and drawings, "draw:page"."""
+"""DrawPage class for "draw:page"."""
 
 from __future__ import annotations
 
@@ -80,28 +80,31 @@ class DrawPage(Element):
             if style:
                 self.style = style
 
+    def get_transition(self) -> AnimPar | None:
+        return self.get_element("anim:par")  # type: ignore
+
     def set_transition(
         self,
         smil_type: str,
         subtype: str | None = None,
         dur: str = "2s",
+        node_type: str = "default",
     ) -> None:
         # Create the new animation
-        anim_page = AnimPar(presentation_node_type="timing-root")
+        anim_page = AnimPar(presentation_node_type=node_type)
         anim_begin = AnimPar(smil_begin=f"{self.draw_id}.begin")
         transition = AnimTransFilter(
             smil_dur=dur, smil_type=smil_type, smil_subtype=subtype
         )
         anim_page.append(anim_begin)
         anim_begin.append(transition)
-
         # Replace when already a transition:
         #   anim:seq => After the frame's transition
         #   cf page 349 of OpenDocument-v1.0-os.pdf
         #   Conclusion: We must delete the first child 'anim:par'
-        existing = self.get_element("anim:par")
-        if existing:
-            self.delete(existing)
+        previous_transition = self.get_transition()
+        if previous_transition:
+            self.delete(previous_transition)
         self.append(anim_page)
 
     def get_shapes(self) -> list[Element]:
