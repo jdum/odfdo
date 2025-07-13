@@ -29,7 +29,7 @@ from odfdo.const import FOLDER
 from odfdo.document import Document
 from odfdo.element import NEXT_SIBLING
 from odfdo.frame import Frame
-from odfdo.image import DrawImage
+from odfdo.image import DrawFillImage, DrawImage
 
 IMG_PATH = "Pictures/100002010000012C00000042188DCB81589D2C10.png"
 
@@ -38,6 +38,11 @@ IMG_PATH = "Pictures/100002010000012C00000042188DCB81589D2C10.png"
 def sample_body(samples) -> Iterable[Element]:
     document = Document(samples("frame_image.odp"))
     yield document.body
+
+
+def test__draw_fill_image_class():
+    dfi = DrawFillImage()
+    assert isinstance(dfi, DrawFillImage)
 
 
 def test_create_image():
