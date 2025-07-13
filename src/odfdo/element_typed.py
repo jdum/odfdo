@@ -104,10 +104,10 @@ class ElementTyped(Element):
             if text is None:
                 text = str(Duration.encode(value))
             value = Duration.encode(value)
-        elif value is not None:
+        else:
             raise TypeError(f"Type unknown: '{value!r}'")
 
-        if value_type is not None:
+        if isinstance(value_type, str):
             self.set_attribute("office:value-type", value_type)
             self.set_attribute("calcext:value-type", value_type)
         if value_type == "boolean":
@@ -132,8 +132,6 @@ class ElementTyped(Element):
 
     def _get_typed_value_number_type(self) -> Decimal | int | float:
         read_number = self.get_attribute("office:value")
-        if not isinstance(read_number, (Decimal, str)):
-            raise TypeError(f'Wrong type for "office:value": {type(read_number)}')
         value = Decimal(read_number)
         # Return 3 instead of 3.0 if possible
         with contextlib.suppress(ValueError):
@@ -152,10 +150,6 @@ class ElementTyped(Element):
 
     def _get_typed_value_date(self) -> date | datetime:
         read_attribute = self.get_attribute("office:date-value")
-        if not isinstance(read_attribute, str):
-            raise TypeError(
-                f'Wrong type for "office:date-value": {type(read_attribute)}'
-            )
         if "T" in read_attribute:
             return DateTime.decode(read_attribute)
         return Date.decode(read_attribute)
@@ -172,8 +166,6 @@ class ElementTyped(Element):
 
     def _get_typed_value_time(self) -> timedelta:
         read_value = self.get_attribute("office:time-value")
-        if not isinstance(read_value, str):
-            raise TypeError(f'Wrong type for "office:time-value": {type(read_value)}')
         return Duration.decode(read_value)
 
     def _get_typed_value(
@@ -197,6 +189,7 @@ class ElementTyped(Element):
         if value_type is None:
             read_value_type = self.get_attribute("office:value-type")
             if isinstance(read_value_type, bool):
+                # for very old versions
                 raise TypeError(
                     f'Wrong type for "office:value-type": {type(read_value_type)}'
                 )
