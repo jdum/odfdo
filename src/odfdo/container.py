@@ -183,6 +183,8 @@ TEXT_CONTENT = {
     "text:word-count",
 }
 
+# "office:binary-data" removed,
+
 
 def printwarn(message: str) -> None:
     print(f"Warning: {message}", file=sys.stderr)

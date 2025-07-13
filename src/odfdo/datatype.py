@@ -79,7 +79,7 @@ class DateTime:
 
     @staticmethod
     def decode(data: str) -> datetime:
-        def _decode_39_310(data1: str) -> datetime:
+        def _decode_39_310(data1: str) -> datetime:  # pragma: nocover
             if data1.endswith("Z"):
                 data1 = data1[:-1] + "+00:00"
             try:
@@ -97,12 +97,9 @@ class DateTime:
         try:
             return datetime.fromisoformat(data)
         except ValueError:
-            # maybe python 3.9
-            if sys.version_info.major == 3:  # noqa: UP036
-                if sys.version_info.minor == 9:
-                    return _decode_39_310(data)
-                if sys.version_info.minor == 10:
-                    return _decode_39_310(data)
+            # maybe python 3.9 pr 3.10
+            if sys.version_info.minor in {9, 10}:  # pragma: nocover
+                return _decode_39_310(data)
             raise
 
     @staticmethod
