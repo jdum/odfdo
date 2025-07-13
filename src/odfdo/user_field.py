@@ -157,7 +157,6 @@ class UserDefined(ElementTyped):
 
 UserDefined._define_attribut_property()
 
-
 register_element_class(UserFieldDecls)
 register_element_class(UserFieldDecl)
 register_element_class(UserFieldGet)

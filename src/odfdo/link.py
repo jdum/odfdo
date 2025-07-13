@@ -19,7 +19,7 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Link class for "text:a"."""
+"""Link class for "text:a" tag."""
 
 from __future__ import annotations
 

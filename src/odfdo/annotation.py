@@ -20,7 +20,7 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Annotation class for "office:annotation"."""
+"""Annotation class for "office:annotation" tag."""
 
 from __future__ import annotations
 

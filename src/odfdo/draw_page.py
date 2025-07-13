@@ -18,7 +18,7 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""DrawPage class for "draw:page"."""
+"""DrawPage class for "draw:page" tag."""
 
 from __future__ import annotations
 

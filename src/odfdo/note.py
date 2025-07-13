@@ -20,7 +20,7 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Note class for "text:note" and Annotation class for "office:annotation"."""
+"""Note class for "text:note" tag."""
 
 from __future__ import annotations
 
@@ -129,6 +129,5 @@ class Note(MDNote, Element):
 
 
 Note._define_attribut_property()
-
 
 register_element_class(Note)
