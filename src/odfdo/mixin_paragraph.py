@@ -314,7 +314,12 @@ class ParaMixin:
         formatted: bool = True,
     ) -> None:
         if isinstance(str_or_element, Element):
-            self._Element__append(str_or_element)
+            if str_or_element.tag in {"text:p", "text:h", "text:s"}:
+                # minimal compliancy or spacer summation
+                self.append_plain_text(str(str_or_element))
+                self.append_plain_text(str_or_element.tail)
+            else:
+                self._Element__append(str_or_element)
         elif formatted:
             self.append_plain_text(str_or_element)
         else:

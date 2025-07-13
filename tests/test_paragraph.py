@@ -26,6 +26,7 @@ import pytest
 
 from odfdo.document import Document
 from odfdo.element import Element
+from odfdo.header import Header
 from odfdo.line_break import LineBreak
 from odfdo.paragraph import Paragraph
 from odfdo.spacer import Spacer
@@ -775,6 +776,27 @@ def test_multiple_append_2():
     paragraph.append(" ")
     paragraph.append(" ")
     expected = '<text:p>ab<text:line-break/>cd<text:s text:c="2"/></text:p>'
+    assert paragraph.serialize() == expected
+
+
+def test_init_append_element_paragraph():
+    elem = Paragraph("a")
+    paragraph = Paragraph(elem)
+    expected = "<text:p>a<text:line-break/></text:p>"
+    assert paragraph.serialize() == expected
+
+
+def test_init_append_element_header():
+    elem = Header(1, "header")
+    paragraph = Paragraph(elem)
+    expected = "<text:p>header<text:line-break/></text:p>"
+    assert paragraph.serialize() == expected
+
+
+def test_init_append_element_other():
+    elem = Tab()
+    paragraph = Paragraph(elem)
+    expected = "<text:p><text:tab/></text:p>"
     assert paragraph.serialize() == expected
 
 
