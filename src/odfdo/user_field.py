@@ -31,10 +31,14 @@ from .element_typed import ElementTyped
 
 
 class UserFieldDecls(Element):
+    """Container of user fields declarations, "text:user-field-decls"."""
+
     _tag = "text:user-field-decls"
 
 
 class UserFieldDecl(ElementTyped):
+    """Declaration of a user field, "text:user-field-decl"."""
+
     _tag = "text:user-field-decl"
     _properties = (PropDef("name", "text:name"),)
 
@@ -45,6 +49,7 @@ class UserFieldDecl(ElementTyped):
         value_type: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a user field "text:user-field-decl"."""
         super().__init__(**kwargs)
         if self._do_init:
             if name:
@@ -62,6 +67,8 @@ UserFieldDecl._define_attribut_property()
 
 
 class UserFieldGet(ElementTyped):
+    """Representation of user field getter, "text:user-field-get"."""
+
     _tag = "text:user-field-get"
     _properties = (
         PropDef("name", "text:name"),
@@ -77,6 +84,7 @@ class UserFieldGet(ElementTyped):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a user field getter "text:user-field-get"."""
         super().__init__(**kwargs)
         if self._do_init:
             if name:
@@ -94,6 +102,8 @@ UserFieldGet._define_attribut_property()
 
 
 class UserFieldInput(UserFieldGet):
+    """Representation of user field input, "text:user-field-input"."""
+
     _tag = "text:user-field-input"
 
 
@@ -101,24 +111,7 @@ UserFieldInput._define_attribut_property()
 
 
 class UserDefined(ElementTyped):
-    """Return a user defined field "text:user-defined". If the current
-    document is provided, try to extract the content of the meta user defined
-    field of same name.
-
-    Arguments:
-
-        name -- str, name of the user defined field
-
-        value -- python typed value, value of the field
-
-        value_type -- str, office:value-type known type
-
-        text -- str
-
-        style -- str
-
-        from_document -- ODF document
-    """
+    """A user defined field, "text:user-defined"."""
 
     _tag = "text:user-defined"
     _properties = (
@@ -136,6 +129,25 @@ class UserDefined(ElementTyped):
         from_document: Document | None = None,
         **kwargs: Any,
     ) -> None:
+        """Create a user defined field "text:user-defined".
+
+        If the current document is provided, try to extract
+        the content of the meta user defined field of same name.
+
+        Arguments:
+
+            name -- str, name of the user defined field
+
+            value -- python typed value, value of the field
+
+            value_type -- str, office:value-type known type
+
+            text -- str
+
+            style -- str
+
+            from_document -- ODF document
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if name:

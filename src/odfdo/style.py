@@ -169,14 +169,17 @@ def make_table_cell_border_string(
     line: str | None = None,
     color: str | tuple | None = None,
 ) -> str:
-    """Returns a string for style:table-cell-properties fo:border,
-    with default : "0.06pt solid #000000"
+    """Returns a string for "style:table-cell-properties" "fo:border".
+
+    With default: "0.06pt solid #000000"
+
+    Arguments:
 
         thick -- str or float or int
-        line -- str
-        color -- str or rgb 3-tuple, str is 'black', 'grey', ... or '#012345'
 
-    Returns : str
+        line -- str
+
+        color -- str or rgb 3-tuple, str is 'black', 'grey', ... or '#012345'
     """
     thick_string = _make_thick_string(thick)
     line_string = _make_line_string(line)
@@ -1137,6 +1140,7 @@ BackgroundImage._define_attribut_property()
 
 
 def default_number_style() -> Element:
+    """Return a default number style with two decimals."""
     return Element.from_tag(
         """<number:number-style style:name="lpod-default-number-style">
            <number:number number:decimal-places="2"
@@ -1146,6 +1150,7 @@ def default_number_style() -> Element:
 
 
 def default_percentage_style() -> Element:
+    """Return a default percentage style with two decimals."""
     return Element.from_tag(
         """<number:percentage-style
             style:name="lpod-default-percentage-style">
@@ -1157,6 +1162,7 @@ def default_percentage_style() -> Element:
 
 
 def default_time_style() -> Element:
+    """Return a default time style."""
     return Element.from_tag(
         """<number:time-style style:name="lpod-default-time-style">
            <number:hours number:style="long"/>
@@ -1169,6 +1175,7 @@ def default_time_style() -> Element:
 
 
 def default_date_style() -> Element:
+    """Return a default time style Y-M-D."""
     return Element.from_tag(
         """
            <number:date-style style:name="lpod-default-date-style">
@@ -1182,6 +1189,7 @@ def default_date_style() -> Element:
 
 
 def default_boolean_style() -> Element:
+    """Return a default boolean style."""
     return Element.from_tag(
         """<number:boolean-style style:name="lpod-default-boolean-style">
            <number:boolean/>
@@ -1190,6 +1198,7 @@ def default_boolean_style() -> Element:
 
 
 def default_currency_style() -> Element:
+    """Return a default currency style (€)."""
     return Element.from_tag(
         """<number:currency-style style:name="lpod-default-currency-style">
             <number:text>-</number:text>

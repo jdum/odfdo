@@ -38,7 +38,7 @@ from .mixin_paragraph_formatted import ParaFormattedTextMixin
 
 
 class Span(MDSpan, MDParagraph, ParaFormattedTextMixin, ParaMixin, Element):
-    """Specialised paragraph for span "text:span"."""
+    """A span tag (syled text in paragraph), "text:span"."""
 
     _tag = "text:span"
     _properties = (

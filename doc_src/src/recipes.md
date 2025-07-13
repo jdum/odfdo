@@ -290,7 +290,7 @@ These methods or properties return a list of elements:
     - `body.paragraphs`
     - `body.get_links()`
     - `body.get_notes()`
-    - `body.tables`
+    - `body.tables` (alias: body.sheets)
     - `body.get_paragraphs(content)`
 
 

@@ -33,7 +33,9 @@ from .mixin_md import MDSpacer
 
 
 class Spacer(MDSpacer, Element):
-    """This element shall be used to represent the second and all following “ “
+    """Representation of several spaces, "text:s".
+
+    This element shall be used to represent the second and all following “ “
     (U+0020, SPACE) characters in a sequence of “ “ (U+0020, SPACE) characters.
     Note: It is not an error if the character preceding the element is not a
     white space character, but it is good practice to use this element only for
@@ -44,7 +46,8 @@ class Spacer(MDSpacer, Element):
     _properties: tuple[PropDef, ...] = (PropDef("number", "text:c"),)
 
     def __init__(self, number: int | None = 1, **kwargs: Any):
-        """
+        """Representation of several spaces, "text:s".
+
         Arguments:
 
             number -- int

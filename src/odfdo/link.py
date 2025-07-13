@@ -31,7 +31,7 @@ from .mixin_paragraph_formatted import ParaFormattedTextMixin
 
 
 class Link(MDLink, ParaFormattedTextMixin, Element):
-    """Link class, "text:a" ODF element."""
+    """Representation of a link (URL), "text:a"."""
 
     _tag = "text:a"
     _properties: tuple[PropDef, ...] = (

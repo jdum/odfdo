@@ -46,8 +46,7 @@ def default_frame_position_style(
     horizontal_rel: str = "paragraph",
     vertical_rel: str = "paragraph",
 ) -> Style:
-    """Helper style for positioning frames in desktop applications that need
-    it.
+    """Generate a style for positioning frames in desktop applications.
 
     Default arguments should be enough.
 

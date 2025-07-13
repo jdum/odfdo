@@ -32,7 +32,9 @@ from .mixin_md import MDTab
 
 
 class Tab(MDTab, Element):
-    """This element represents the [UNICODE] tab character (HORIZONTAL
+    """Representation of a tabulation, "text:tab".
+
+    This element represents the [UNICODE] tab character (HORIZONTAL
     TABULATION, U+0009).
 
     The position attribute contains the number of the tab-stop to which
@@ -47,7 +49,8 @@ class Tab(MDTab, Element):
     _properties: tuple[PropDef, ...] = (PropDef("position", "text:tab-ref"),)
 
     def __init__(self, position: int | None = None, **kwargs: Any) -> None:
-        """
+        """Representation of a tabulation, "text:tab".
+
         Arguments:
 
             position -- int

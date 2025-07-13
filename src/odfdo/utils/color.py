@@ -23,8 +23,7 @@ from .css3_colormap import CSS3_COLORMAP
 
 
 def hex2rgb(color: str) -> tuple[int, int, int]:
-    """Turns a "#RRGGBB" hexadecimal color representation into a (R, G, B)
-    tuple.
+    """Convert "#RRGGBB" hexadecimal representation into (R, G, B) tuple.
 
     Arguments:
 
@@ -42,8 +41,7 @@ def hex2rgb(color: str) -> tuple[int, int, int]:
 
 
 def rgb2hex(color: str | tuple[int, int, int]) -> str:
-    """Turns a color name or a (R, G, B) color tuple into a "#RRGGBB"
-    hexadecimal representation.
+    """Convert color name or (R, G, B) tuple into "#RRGGBB" hexadecimal.
 
     Arguments:
 
@@ -78,8 +76,7 @@ def rgb2hex(color: str | tuple[int, int, int]) -> str:
 
 
 def hexa_color(color: str | tuple[int, int, int] | None = None) -> str | None:
-    """Convert a color definition of type tuple or string to hexadecimal
-    representation.
+    """Safe conversion from color tuple or string to hexadecimal representation.
 
     Empty string is converted to black.
     None is converted to None.

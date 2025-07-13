@@ -66,7 +66,7 @@ AnimPar._define_attribut_property()
 
 
 class AnimSeq(Element):
-    """A container for SMIL Presentation Animations, "anim:seq".
+    """Container for SMIL Presentation Animations, "anim:seq".
 
     Animations inside this block are executed after the slide
     has executed its initial transition.

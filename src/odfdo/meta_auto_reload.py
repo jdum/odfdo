@@ -29,7 +29,7 @@ from .element import Element, PropDef, register_element_class
 
 
 class MetaAutoReload(Element):
-    """Container for auto-reload properties, meta:auto-reload"."""
+    """Container for auto-reload properties, "meta:auto-reload"."""
 
     _tag = "meta:auto-reload"
     _properties: tuple[PropDef, ...] = (
@@ -46,7 +46,7 @@ class MetaAutoReload(Element):
         href: str = "",
         **kwargs: Any,
     ) -> None:
-        """Container for auto-reload properties, meta:auto-reload".
+        """Container for auto-reload properties, "meta:auto-reload".
 
         The <meta:auto-reload> element specifies whether a document is
         reloaded or replaced by another document after a specified period
