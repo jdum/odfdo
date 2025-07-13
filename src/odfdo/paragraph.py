@@ -60,7 +60,6 @@ __all__ = [
 ]
 
 _re_splitter = re.compile(r"(\n|\t)")
-_re_space = re.compile(r"^  +$")
 _re_sub_splitter = re.compile(r"[ \t\n]+")
 _re_spaces_split = re.compile(r"( +)")
 _re_only_spaces = re.compile(r"^ +$")
