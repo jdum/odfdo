@@ -20,10 +20,13 @@
 # Authors: Romain Gauthier <romain@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 
+import pytest
 
 from odfdo.const import ODF_CONTENT
 from odfdo.document import Document
+from odfdo.header import Header
 from odfdo.list import List, ListItem
+from odfdo.paragraph import Paragraph
 
 ZOE = "你好 Zoé"
 
@@ -432,3 +435,150 @@ def test_get_formatted_text():
         "    - Mr. Bagthorpe, will you stand up please?\n"
     )
     assert how_not_to_be_seen1.get_formatted_text(context) == expected
+
+
+def test_list_item_wrong_type():
+    with pytest.raises(TypeError):
+        ListItem([])
+
+
+def test_list_wrong_not_iterable():
+    lst = List(123)
+    assert len(lst.children) == 0
+
+
+def test_list_get_items():
+    lst = List(["A", "B", "C"])
+    assert len(lst.get_items()) == 3
+
+
+def test_list_get_item_1():
+    lst = List(["A", "B", "C"])
+    item = lst.get_item(1, "B")
+    assert isinstance(item, ListItem)
+
+
+def test_list_get_item_2():
+    lst = List(["A", "B", "C"])
+    item = lst.get_item(1, "xxx")
+    assert item is None
+
+
+def test_list_get_item_3():
+    lst = List(["A", "B", "C"])
+    item = lst.get_item(2)
+    assert isinstance(item, ListItem)
+    assert str(item) == " -  C\n"
+
+
+def test_list_set_list_header_1():
+    lst = List(["A", "B"])
+    lst.set_list_header(["C", "D"])
+    assert str(lst) == "C\nD\n -  A\n -  B\n"
+
+
+def test_list_set_list_header_2():
+    lst = List(["A", "B"])
+    lst.set_list_header("C")
+    assert str(lst) == "C\n -  A\n -  B\n"
+
+
+def test_list_set_list_header_3_wrong():
+    lst = List(["A", "B"])
+    with pytest.raises(TypeError):
+        lst.set_list_header({})
+
+
+def test_list_set_list_header_4():
+    lst = List(["A", "B"])
+    lst.set_list_header("Previous")
+    lst.set_list_header("New")
+    assert str(lst) == "New\n -  A\n -  B\n"
+
+
+def test_list_set_list_header_5():
+    lst = List(["A", "B"])
+    lst.set_list_header(Paragraph("C"))
+    assert str(lst) == "C\n -  A\n -  B\n"
+
+
+def test_list_set_list_header_6():
+    lst = List(["A", "B"])
+    lst.set_list_header(Paragraph("C"))
+    lst.insert_item(ListItem("Z"), 0)
+    assert str(lst) == " -  Z\nC\n -  A\n -  B\n"
+
+
+def test_list_set_list_header_7():
+    lst = List(["A", "B"])
+    lst.set_list_header(Paragraph("C"))
+    lst.insert_item(ListItem("Z"), 0)
+    lst.set_list_header("Y")
+    assert str(lst) == "Y\n -  Z\n -  A\n -  B\n"
+
+
+def test_list_insert_item():
+    lst = List(["A", "B"])
+    lst.insert_item(ListItem("Z"), 1)
+    assert str(lst) == " -  A\n -  Z\n -  B\n"
+
+
+def test_list_insert_item_wrong():
+    lst = List(["A", "B"])
+    with pytest.raises(ValueError):
+        lst.insert_item(ListItem("Z"))
+
+
+def test_list_get_formatted_text_1():
+    lst = List(["A", "B"])
+    result = lst.get_formatted_text()
+    assert result == "- A\n- B\n"
+
+
+def test_list_get_formatted_text_2():
+    lst = List(["A", "B"])
+    ctx = {
+        "document": None,
+        "footnotes": [],
+        "endnotes": [],
+        "annotations": [],
+        "rst_mode": True,
+        "img_counter": 0,
+        "images": [],
+        "no_img_level": 0,
+    }
+    result = lst.get_formatted_text(ctx)
+    assert result == "\n- A\n- B\n\n"
+
+
+def test_list_get_formatted_text_3_wrong_header():
+    lst = List(["A", "B", Header(1, "C")])
+    ctx = {
+        "document": None,
+        "footnotes": [],
+        "endnotes": [],
+        "annotations": [],
+        "rst_mode": False,
+        "img_counter": 0,
+        "images": [],
+        "no_img_level": 0,
+    }
+    result = lst.get_formatted_text(ctx)
+    assert result == "C"
+
+
+def test_list_get_formatted_text_4_sub():
+    sublist = List(["C", "D"])
+    lst = List(["A", "B", sublist])
+    ctx = {
+        "document": None,
+        "footnotes": [],
+        "endnotes": [],
+        "annotations": [],
+        "rst_mode": False,
+        "img_counter": 0,
+        "images": [],
+        "no_img_level": 0,
+    }
+    result = lst.get_formatted_text(ctx)
+    assert result == "- A\n- B\n- - C\n  - D\n"

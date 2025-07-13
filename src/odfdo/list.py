@@ -19,7 +19,7 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-"""List class for "text:list" tag and ListItem for "text:list-item" tag ."""
+"""List class for "text:list"."""
 
 from __future__ import annotations
 
@@ -64,7 +64,7 @@ class ListItem(MDListItem, Element):
             elif isinstance(text_or_element, Element):
                 self.append(text_or_element)
             elif text_or_element is not None:
-                raise TypeError("Expected str or Element")
+                raise TypeError(f"Expected str or Element, not {type(text_or_element)}")
 
     def __str__(self) -> str:
         self._md_initialize_level()
@@ -194,8 +194,17 @@ class List(MDList, Element):
 
     def get_formatted_text(self, context: dict | None = None) -> str:
         if context is None:
-            context = {}
-        rst_mode = context["rst_mode"]
+            context = {
+                "document": None,
+                "footnotes": [],
+                "endnotes": [],
+                "annotations": [],
+                "rst_mode": False,
+                "img_counter": 0,
+                "images": [],
+                "no_img_level": 0,
+            }
+        rst_mode = bool(context.get("rst_mode"))
         result = []
         if rst_mode:
             result.append("\n")
@@ -210,7 +219,7 @@ class List(MDList, Element):
                 if tag == "text:list" and not text.lstrip().startswith("-"):
                     # If the list didn't indent, don't either
                     # (inner title)
-                    return text
+                    return text  # pragma: nocover
                 textbuf.append(text)
             text_sum = "".join(textbuf)
             text_sum = text_sum.strip("\n")
