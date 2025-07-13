@@ -290,9 +290,7 @@ class MDNote(MDBase):
         return citation + str(post_styler(self.tail))
 
     def _md_collect(self) -> list[str]:
-        if content := self._md_format():
-            return [content + "\n"]
-        return []
+        return [self._md_format() + "\n"]
 
 
 class MDTail(MDStyle):
@@ -323,9 +321,7 @@ class MDLineBreak(MDStyle):
         return "\\\n" + str(post_styler(self.tail))
 
     def _md_collect(self) -> list[str]:
-        if content := self._md_format():
-            return [content]
-        return []
+        return [self._md_format()]
 
 
 class MDParagraph(MDStyle):
@@ -470,9 +466,7 @@ class MDLink(MDStyle):
         return content
 
     def _md_collect(self) -> list[str]:
-        if content := self._md_format():
-            return [content]
-        return []
+        return [self._md_format()]
 
 
 class MDDrawTextBox:
