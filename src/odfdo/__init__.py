@@ -174,7 +174,7 @@ from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
 from .named_range import NamedRange
 from .note import Note
-from .paragraph import LineBreak, PageBreak, Paragraph, Span, Tab
+from .paragraph import LineBreak, PageBreak, Paragraph, Span
 from .paragraph_base import ParagraphBase
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
 from .row import Row
@@ -196,6 +196,7 @@ from .style import (
     make_table_cell_border_string,
 )
 from .styles import Styles
+from .tab import Tab
 from .table import Table
 from .toc import (
     TOC,
