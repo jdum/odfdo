@@ -77,6 +77,7 @@ __all__ = [  # noqa: RUF022
     "PREV_SIBLING",
     "PageBreak",
     "Paragraph",
+    "ParaMixin",
     "Presentation",
     "RectangleShape",
     "Reference",
