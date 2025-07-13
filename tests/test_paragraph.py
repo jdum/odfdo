@@ -27,7 +27,7 @@ import pytest
 from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.paragraph import Paragraph
-from odfdo.paragraph_base import LineBreak, ParagraphBase, Spacer, Tab
+from odfdo.paragraph_base import LineBreak, Spacer, Tab
 
 
 @pytest.fixture
@@ -1035,31 +1035,20 @@ def test_line_break_getter_1():
     assert lb.text == "\n"
 
 
-def test_paragraph_base_class():
-    p = ParagraphBase()
-    assert isinstance(p, ParagraphBase)
-
-
-def test_paragraph_base_str():
-    p = ParagraphBase()
-    p.text = "content"
-    assert str(p) == "content"
-
-
-def test_paragraph_base_formatted():
-    p = ParagraphBase()
+def test_paragraph_formatted():
+    p = Paragraph()
     p.text = "content"
     assert p.get_formatted_text() == "content\n\n"
 
 
-def test_paragraph_base_formatted_simple():
-    p = ParagraphBase()
+def test_paragraph_formatted_simple():
+    p = Paragraph()
     p.text = "content"
     assert p.get_formatted_text(simple=True) == "content"
 
 
-def test_paragraph_base_formatted_context_simple():
-    p = ParagraphBase()
+def test_paragraph_formatted_context_simple():
+    p = Paragraph()
     p.text = "content"
     context = {
         "document": None,

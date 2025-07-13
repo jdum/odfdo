@@ -19,19 +19,19 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Link class for "text:a" tag."""
+"""Link class for "text:a"."""
 
 from __future__ import annotations
 
 from typing import Any
 
-from .element import PropDef, register_element_class
+from .element import Element, PropDef, register_element_class
 from .mixin_md import MDLink
-from .paragraph_base import ParagraphBase
+from .mixin_paragraph_formatted import ParaFormattedTextMixin
 
 
-class Link(MDLink, ParagraphBase):
-    """Representation of a link (URL), "text:a"."""
+class Link(MDLink, ParaFormattedTextMixin, Element):
+    """Link class, "text:a" ODF element."""
 
     _tag = "text:a"
     _properties: tuple[PropDef, ...] = (

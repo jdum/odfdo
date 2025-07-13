@@ -17,11 +17,7 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-# Authors: David Versmisse <david.versmisse@itaapy.com>
-#          Hervé Cauwelier <herve@itaapy.com>
-#          Romain Gauthier <romain@itaapy.com>
-#          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Utility functions to format paragraph like objects as text."""
+"""Mixin class for Paragraph.get_formatted_text()."""
 
 from __future__ import annotations
 
@@ -34,24 +30,12 @@ RE_SP_PRE = re.compile(r"^\s*")
 RE_SP_POST = re.compile(r"\s*$")
 
 
-def formatted_text(element: Element, context: dict[str, Any]) -> str:
-    """Return plain text formatted with \\n and spaces."""
-    result: list[str] = []
-    objects: list[Element | EText] = element.xpath("*|text()")
-    for obj in objects:
-        if isinstance(obj, EText):
-            result.append(obj)
-            continue
-        _add_object_text(obj, context, result)
-    return "".join(result)
-
-
 def _add_object_text_paragraph(
     obj: Element,
     context: dict[str, Any],
     result: list[str],
 ) -> None:
-    result.append(formatted_text(obj, context))
+    result.append(_formatted_text(obj, context))
 
 
 def _pre(text: str) -> str:
@@ -74,12 +58,23 @@ def _italic_styled(text: str) -> str:
     return f"{_pre(text)}*{text.strip()}*{_post(text)}"
 
 
+def _formatted_text(element: Element, context: dict[str, Any]) -> str:
+    result: list[str] = []
+    objects: list[Element | EText] = element.xpath("*|text()")
+    for obj in objects:
+        if isinstance(obj, EText):
+            result.append(obj)
+            continue
+        _add_object_text(obj, context, result)
+    return "".join(result)
+
+
 def _add_object_text_span(
     obj: Element,
     context: dict[str, Any],
     result: list[str],
 ) -> None:
-    text = formatted_text(obj, context)
+    text = _formatted_text(obj, context)
     if not context.get("rst_mode") or not text.strip():
         result.append(text)
         return
@@ -208,3 +203,29 @@ def _add_object_text(
         return _add_object_text_line_break(obj, context, result)
     else:
         result.append(obj.get_formatted_text(context))
+
+
+class ParaFormattedTextMixin:
+    """Mixin for get_formatted_text() method, for Paragraph like classes."""
+
+    def get_formatted_text(
+        self,
+        context: dict | None = None,
+        simple: bool = False,
+    ) -> str:
+        if not context:
+            context = {
+                "document": None,
+                "footnotes": [],
+                "endnotes": [],
+                "annotations": [],
+                "rst_mode": False,
+                "img_counter": 0,
+                "images": [],
+                "no_img_level": 0,
+            }
+        content = _formatted_text(self, context)
+        if simple:
+            return content
+        else:
+            return content + "\n\n"

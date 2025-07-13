@@ -21,9 +21,7 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Base class ParagraphBase and Spacer "text:s", Tab "text:tab", LineBreak
-"text:line-break".
-"""
+"""Spacer "text:s", Tab "text:tab", LineBreak "text:line-break"."""
 
 from __future__ import annotations
 
@@ -32,7 +30,6 @@ from typing import Any
 
 from .element import Element, PropDef, _get_lxml_tag, register_element_class
 from .mixin_md import MDLineBreak, MDSpacer, MDTab
-from .paragraph_base_formatted import formatted_text
 
 
 class Spacer(MDSpacer, Element):
@@ -153,45 +150,6 @@ class LineBreak(MDLineBreak, Element):
         return "\n"
 
 
-class ParagraphBase(Element):
-    """Base class for Paragraph like classes."""
-
-    _tag = "text:p-odfdo-notodf"
-    _properties: tuple[PropDef, ...] = (PropDef("style", "text:style-name"),)
-
-    def __init__(self, **kwargs: Any) -> None:
-        """Base class for Paragraph like classes."""
-        super().__init__(**kwargs)
-
-    def __str__(self) -> str:
-        return self.inner_text
-
-    def get_formatted_text(
-        self,
-        context: dict | None = None,
-        simple: bool = False,
-    ) -> str:
-        if not context:
-            context = {
-                "document": None,
-                "footnotes": [],
-                "endnotes": [],
-                "annotations": [],
-                "rst_mode": False,
-                "img_counter": 0,
-                "images": [],
-                "no_img_level": 0,
-            }
-        content = formatted_text(self, context)
-        if simple:
-            return content
-        else:
-            return content + "\n\n"
-
-
-ParagraphBase._define_attribut_property()
-
 register_element_class(Spacer)
 register_element_class(Tab)
 register_element_class(LineBreak)
-register_element_class(ParagraphBase)

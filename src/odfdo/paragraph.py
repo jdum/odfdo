@@ -21,14 +21,14 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Paragraph class for "text:p" tag and PageBreak()."""
+"""Paragraph class for "text:p", Span class for "text:span"."""
 
 from __future__ import annotations
 
 import re
 from collections.abc import Callable
 from datetime import datetime
-from functools import wraps  # for keeping trace of docstring with decorators
+from functools import wraps
 from typing import Any
 
 from .annotation import Annotation, AnnotationEnd
@@ -43,8 +43,9 @@ from .element import (
 )
 from .link import Link
 from .mixin_md import MDParagraph, MDSpan
+from .mixin_paragraph_formatted import ParaFormattedTextMixin
 from .note import Note
-from .paragraph_base import LineBreak, ParagraphBase, Spacer, Tab
+from .paragraph_base import LineBreak, Spacer, Tab
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
 
 __all__ = [
@@ -197,6 +198,7 @@ class Paragraph(MDParagraph, ParagraphBase):
     """
 
     _tag = "text:p"
+    _properties: tuple[PropDef, ...] = (PropDef("style", "text:style-name"),)
 
     def __init__(
         self,
@@ -998,6 +1000,9 @@ class Paragraph(MDParagraph, ParagraphBase):
         )
 
         return bookmark
+
+
+Paragraph._define_attribut_property()
 
 
 class Span(MDSpan, Paragraph):
