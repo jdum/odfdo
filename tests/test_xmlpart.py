@@ -25,7 +25,7 @@ from collections.abc import Iterable
 import pytest
 from lxml.etree import _ElementTree
 
-from odfdo.const import ODF_CONTENT
+from odfdo.const import ODF_CONTENT, ODF_META
 from odfdo.container import Container
 from odfdo.content import Content
 from odfdo.element import Element
@@ -113,6 +113,20 @@ def test_get_body(exemple_container):
     content_part = XmlPart(ODF_CONTENT, exemple_container)
     body = content_part.body
     assert body.tag == "office:text"
+
+
+def test_get_body_none(exemple_container):
+    content_part = XmlPart(ODF_META, exemple_container)
+    with pytest.raises(TypeError):
+        _ = content_part.body
+
+
+def test_set_body(exemple_container):
+    content_part = XmlPart(ODF_CONTENT, exemple_container)
+    body = content_part.body
+    body_clone = body.clone
+    content_part.body = body_clone
+    assert content_part.body.tag == "office:text"
 
 
 def test_pretty_serialize_internal_not_pretty(samples):
