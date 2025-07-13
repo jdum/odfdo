@@ -77,7 +77,6 @@ __all__ = [  # noqa: RUF022
     "PREV_SIBLING",
     "PageBreak",
     "Paragraph",
-    "ParagraphBase",
     "Presentation",
     "RectangleShape",
     "Reference",
@@ -163,6 +162,7 @@ from .frame import Frame, default_frame_position_style
 from .header import Header
 from .header_rows import HeaderRows
 from .image import DrawFillImage, DrawImage
+from .line_break import LineBreak
 from .link import Link
 from .list import List, ListItem
 from .manifest import Manifest
@@ -174,8 +174,7 @@ from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
 from .named_range import NamedRange
 from .note import Note
-from .paragraph import LineBreak, PageBreak, Paragraph, Span
-from .paragraph_base import ParagraphBase
+from .paragraph import PageBreak, Paragraph, Span
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
 from .row import Row
 from .row_group import RowGroup

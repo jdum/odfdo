@@ -21,53 +21,14 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Spacer "text:s", Tab "text:tab", LineBreak "text:line-break"."""
+"""LineBreak class to "text:line-break" tag."""
 
 from __future__ import annotations
 
 from typing import Any
 
-from .element import Element, PropDef, register_element_class
-from .mixin_md import MDLineBreak, MDTab
-
-
-class Tab(MDTab, Element):
-    """Representation of a tabulation, "text:tab".
-
-    This element represents the [UNICODE] tab character (HORIZONTAL
-    TABULATION, U+0009).
-
-    The position attribute contains the number of the tab-stop to which
-    a tab character refers. The position 0 marks the start margin of a
-    paragraph. Note: The position attribute is only a hint to help non-layout
-    oriented consumers to determine the tab/tab-stop association. Layout
-    oriented consumers should determine the tab positions based on the style
-    information
-    """
-
-    _tag = "text:tab"
-    _properties: tuple[PropDef, ...] = (PropDef("position", "text:tab-ref"),)
-
-    def __init__(self, position: int | None = None, **kwargs: Any) -> None:
-        """Representation of a tabulation, "text:tab".
-
-        Arguments:
-
-            position -- int
-        """
-        super().__init__(**kwargs)
-        if self._do_init and position is not None and position >= 0:
-            self.position = str(position)
-
-    def __str__(self) -> str:
-        return "\t"
-
-    @property
-    def text(self) -> str:
-        return "\t"
-
-
-Tab._define_attribut_property()
+from .element import Element, register_element_class
+from .mixin_md import MDLineBreak
 
 
 class LineBreak(MDLineBreak, Element):
@@ -87,5 +48,4 @@ class LineBreak(MDLineBreak, Element):
         return "\n"
 
 
-register_element_class(Tab)
 register_element_class(LineBreak)

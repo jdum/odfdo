@@ -23,6 +23,7 @@ from odfdo.cell import Cell
 from odfdo.document import Document
 from odfdo.frame import DrawTextBox, Frame
 from odfdo.header import Header
+from odfdo.line_break import LineBreak
 from odfdo.link import Link
 from odfdo.list import List, ListItem
 from odfdo.mixin_md import (
@@ -40,7 +41,6 @@ from odfdo.mixin_md import (
 )
 from odfdo.note import Note
 from odfdo.paragraph import Paragraph, Span
-from odfdo.paragraph_base import LineBreak
 from odfdo.table import Table
 from odfdo.toc import TOC
 from odfdo.tracked_changes import TrackedChanges
