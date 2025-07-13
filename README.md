@@ -19,7 +19,7 @@ OpenDocument Format (ODF, ISO/IEC 26300) library for Python
 -   Metadata: Read and write document metadata.
 
 Project:
-https://github.com/jdum/odfdo
+[https://github.com/jdum/odfdo](https://github.com/jdum/odfdo)
 
 Author:
 jerome.dumonteil@gmail.com
@@ -112,7 +112,7 @@ A few scripts are provided with `odfdo`:
 -   the `recipes` folder contains more than 60 working sample scripts,
 -   the auto-generated documentation exposes public APIs and recipes.
 
-Online documentation: https://jdum.github.io/odfdo/
+Online documentation: [https://jdum.github.io/odfdo](https://jdum.github.io/odfdo/)
 
 # About styles
 
@@ -126,7 +126,7 @@ Several recipes provide an example of manipulating styles, including: `change_pa
 
 I you work on `.ods` files (spreadsheet), you may be interested by these scripts using
 this library to parse/generate `.ods` files:
-`https://github.com/jdum/odsgenerator` and `https://github.com/jdum/odsparsator`
+[https://github.com/jdum/odsgenerator](https://github.com/jdum/odsgenerator) and [https://github.com/jdum/odsparsator](https://github.com/jdum/odsparsator)
 
 
 # Former lpod-python library
