@@ -128,7 +128,7 @@ class Styles(XmlPart):
         """
         for context in self._get_style_contexts(family):
             if context is None:
-                continue
+                continue  # pragma: nocover
             style = context.get_style(
                 family,
                 name_or_element=name_or_element,

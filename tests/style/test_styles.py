@@ -64,6 +64,22 @@ def test_get_styles_master_page(styles):
     assert len(style_list) == 1
 
 
+def test_styles_get_master_pages(styles):
+    style_list = styles.get_master_pages()
+    assert len(style_list) == 1
+    assert isinstance(style_list[0], Style)
+
+
+def test_styles_get_master_page(styles):
+    style = styles.get_master_page(0)
+    assert isinstance(style, Style)
+
+
+def test_styles_get_master_page_none(styles):
+    style = styles.get_master_page(5)
+    assert style is None
+
+
 def test_get_style_automatic(styles):
     style = styles.get_style("page-layout", "Mpm1")
     assert style is not None
