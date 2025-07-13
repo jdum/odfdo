@@ -174,7 +174,7 @@ from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
 from .named_range import NamedRange
 from .note import Note
-from .paragraph import LineBreak, PageBreak, Paragraph, Spacer, Span, Tab
+from .paragraph import LineBreak, PageBreak, Paragraph, Span, Tab
 from .paragraph_base import ParagraphBase
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
 from .row import Row
@@ -182,6 +182,7 @@ from .row_group import RowGroup
 from .section import Section
 from .shapes import ConnectorShape, DrawGroup, EllipseShape, LineShape, RectangleShape
 from .smil import AnimPar, AnimSeq, AnimTransFilter
+from .spacer import Spacer
 from .style import (
     BackgroundImage,
     Style,

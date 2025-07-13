@@ -27,7 +27,8 @@ import pytest
 from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.paragraph import Paragraph
-from odfdo.paragraph_base import LineBreak, Spacer, Tab
+from odfdo.paragraph_base import LineBreak, Tab
+from odfdo.spacer import Spacer
 
 
 @pytest.fixture

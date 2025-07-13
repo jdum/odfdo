@@ -45,8 +45,9 @@ from .link import Link
 from .mixin_md import MDParagraph, MDSpan
 from .mixin_paragraph_formatted import ParaFormattedTextMixin
 from .note import Note
-from .paragraph_base import LineBreak, Spacer, Tab
+from .paragraph_base import LineBreak, Tab
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
+from .spacer import Spacer
 
 __all__ = [
     "LineBreak",

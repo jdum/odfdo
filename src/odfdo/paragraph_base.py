@@ -25,73 +25,10 @@
 
 from __future__ import annotations
 
-import contextlib
 from typing import Any
 
-from .element import Element, PropDef, _get_lxml_tag, register_element_class
-from .mixin_md import MDLineBreak, MDSpacer, MDTab
-
-
-class Spacer(MDSpacer, Element):
-    """Representation of several spaces, "text:s".
-
-    This element shall be used to represent the second and all following “ “
-    (U+0020, SPACE) characters in a sequence of “ “ (U+0020, SPACE) characters.
-    Note: It is not an error if the character preceding the element is not a
-    white space character, but it is good practice to use this element only for
-    the second and all following SPACE characters in a sequence.
-    """
-
-    _tag = "text:s"
-    _properties: tuple[PropDef, ...] = (PropDef("number", "text:c"),)
-
-    def __init__(self, number: int | None = 1, **kwargs: Any):
-        """Representation of several spaces, "text:s".
-
-        Arguments:
-
-            number -- int
-        """
-        super().__init__(**kwargs)
-        if self._do_init:
-            if number and number >= 2:
-                self.number = str(number)
-            else:
-                self.number = None
-
-    def __str__(self) -> str:
-        return self.text
-
-    @property
-    def text(self) -> str:
-        """Get / set the text content of the element."""
-        return " " * self.length
-
-    @text.setter
-    def text(self, text: str | None) -> None:
-        if text is None:
-            text = ""
-        self.length = len(text)
-
-    @property
-    def length(self) -> int:
-        name = _get_lxml_tag("text:c")
-        value = self._Element__element.get(name)
-        if value is None:
-            return 1  # minimum 1 space
-        return int(value)
-
-    @length.setter
-    def length(self, value: int | None) -> None:
-        name = _get_lxml_tag("text:c")
-        if value is None or value < 2:
-            with contextlib.suppress(KeyError):
-                del self._Element__element.attrib[name]
-            return
-        self._Element__element.set(name, str(value))
-
-
-Spacer._define_attribut_property()
+from .element import Element, PropDef, register_element_class
+from .mixin_md import MDLineBreak, MDTab
 
 
 class Tab(MDTab, Element):
@@ -150,6 +87,5 @@ class LineBreak(MDLineBreak, Element):
         return "\n"
 
 
-register_element_class(Spacer)
 register_element_class(Tab)
 register_element_class(LineBreak)
