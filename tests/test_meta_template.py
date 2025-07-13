@@ -23,6 +23,21 @@ from odfdo.datatype import DateTime
 from odfdo.meta_template import MetaTemplate
 
 
+def test_repr():
+    template = MetaTemplate(href="http://exemple.com")
+    assert repr(template) == "<MetaTemplate tag=meta:template href=http://exemple.com>"
+
+
+def test_str_1():
+    template = MetaTemplate(href="http://exemple.com")
+    assert str(template) == "(http://exemple.com)"
+
+
+def test_str_2():
+    template = MetaTemplate(href="http://exemple.com", title="Example")
+    assert str(template) == "[Example](http://exemple.com)"
+
+
 def test_create_empty():
     template = MetaTemplate()
     expected = '<meta:template xlink:actuate="onRequest" xlink:type="simple" meta:date='
