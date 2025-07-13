@@ -66,24 +66,25 @@ class XmlPart:
             self.__root = Element.from_tag(tree.getroot())
         return self.__root
 
-    @property
-    def body(self) -> Element:
-        """Get or set the document body : 'office:body'"""
+    def _get_body(self) -> Element:
         body = self.root.document_body
         if not isinstance(body, Element):
             raise TypeError(f"No body found in {self.part_name!r}")
         return body
 
+    @property
+    def body(self) -> Element:
+        """Get or set the document body : 'office:body'"""
+        return self._get_body()
+
     @body.setter
     def body(self, new_body: Element) -> None:
-        body = self.root.document_body
-        if not isinstance(body, Element):
-            raise TypeError("//office:body not found in document")
+        body = self._get_body()
         tail = body.tail
         body.clear()
         for item in new_body.children:
             body.append(item)
-        if tail:
+        if tail:  # pragma: nocover
             body.tail = tail
 
     def get_elements(self, xpath_query: str) -> list[Element | EText]:
