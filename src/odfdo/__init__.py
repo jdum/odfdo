@@ -172,6 +172,7 @@ from .meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from .meta_template import MetaTemplate
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
+from .mixin_paragraph import ParaMixin
 from .named_range import NamedRange
 from .note import Note
 from .paragraph import PageBreak, Paragraph, Span

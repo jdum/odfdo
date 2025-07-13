@@ -50,7 +50,7 @@ __all__ = [
 ]
 
 
-class Paragraph(MDParagraph, ParagraphBase):
+class Paragraph(MDParagraph, ParaFormattedTextMixin, ParaMixin, Element):
     """An ODF paragraph, "text:p".
 
     The "text:p" element represents a paragraph, which is
