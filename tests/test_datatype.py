@@ -18,135 +18,154 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-import sys
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 
 import pytest
 
-from odfdo.datatype import Boolean, DateTime, Duration, Unit
+from odfdo.datatype import Boolean, Date, DateTime, Duration, Unit
 
 
 def test_datetime_encode():
-    date = datetime(2009, 0o6, 26, 11, 9, 36)
+    date_value = datetime(2009, 0o6, 26, 11, 9, 36)
     expected = "2009-06-26T11:09:36"
-    assert DateTime.encode(date) == expected
+    assert DateTime.encode(date_value) == expected
 
 
 def test_datetime_encode_micro():
-    date = datetime(2009, 6, 26, 11, 9, 36, 123456)
+    date_value = datetime(2009, 6, 26, 11, 9, 36, 123456)
     expected = "2009-06-26T11:09:36.123456"
-    assert DateTime.encode(date) == expected
+    assert DateTime.encode(date_value) == expected
 
 
 def test_datetime_encode_UTC():
-    date = datetime(2009, 6, 26, 11, 9, 36, tzinfo=timezone.utc)
+    date_value = datetime(2009, 6, 26, 11, 9, 36, tzinfo=timezone.utc)
     expected = "2009-06-26T11:09:36Z"
-    assert DateTime.encode(date) == expected
+    assert DateTime.encode(date_value) == expected
 
 
 def test_datetime_encode_micro_UTC():
-    date = datetime(2009, 6, 26, 11, 9, 36, 123456, tzinfo=timezone.utc)
+    date_value = datetime(2009, 6, 26, 11, 9, 36, 123456, tzinfo=timezone.utc)
     expected = "2009-06-26T11:09:36.123456Z"
-    assert DateTime.encode(date) == expected
+    assert DateTime.encode(date_value) == expected
 
 
 def test_datetime_encode_gmt2():
-    date = datetime(2009, 6, 26, 11, 9, 36, tzinfo=timezone(timedelta(hours=2)))
+    date_value = datetime(2009, 6, 26, 11, 9, 36, tzinfo=timezone(timedelta(hours=2)))
     expected = "2009-06-26T11:09:36+02:00"
-    assert DateTime.encode(date) == expected
+    assert DateTime.encode(date_value) == expected
 
 
 def test_datetime_encode_gmt_6():
-    date = datetime(2009, 6, 26, 11, 9, 36, tzinfo=timezone(timedelta(hours=-6)))
+    date_value = datetime(2009, 6, 26, 11, 9, 36, tzinfo=timezone(timedelta(hours=-6)))
     expected = "2009-06-26T11:09:36-06:00"
-    assert DateTime.encode(date) == expected
+    assert DateTime.encode(date_value) == expected
 
 
 def test_datetime_decode():
-    date = "2009-06-29T14:33:21"
+    date_value = "2009-06-29T14:33:21"
     expected = datetime(2009, 6, 29, 14, 33, 21)
-    assert DateTime.decode(date) == expected
+    assert DateTime.decode(date_value) == expected
 
 
 def test_datetime_decode_micro():
-    date = "2009-06-29T14:33:21.123456"
+    date_value = "2009-06-29T14:33:21.123456"
     expected = datetime(2009, 6, 29, 14, 33, 21, 123456)
-    assert DateTime.decode(date) == expected
+    assert DateTime.decode(date_value) == expected
 
 
 def test_datetime_decode_nano():
-    date = "2009-06-29T14:33:21.123456789"
-    if sys.version_info.major == 3 and sys.version_info.minor >= 11:
-        expected = datetime(2009, 6, 29, 14, 33, 21, 123456)
-        assert DateTime.decode(date) == expected
-    else:
-        expected = datetime(2009, 6, 29, 14, 33, 21, 123456)
-        assert DateTime.decode(date) == expected
+    date_value = "2009-06-29T14:33:21.123456789"
+    expected = datetime(2009, 6, 29, 14, 33, 21, 123456)
+    assert DateTime.decode(date_value) == expected
 
 
 def test_datetime_decode_utc():
-    date = "2009-06-29T14:33:21Z"
+    date_value = "2009-06-29T14:33:21Z"
     expected = datetime(2009, 6, 29, 14, 33, 21, tzinfo=timezone.utc)
-    assert DateTime.decode(date) == expected
+    assert DateTime.decode(date_value) == expected
 
 
 def test_datetime_decode_utc_00():
-    date = "2009-06-29T14:33:21+00:00"
+    date_value = "2009-06-29T14:33:21+00:00"
     expected = datetime(2009, 6, 29, 14, 33, 21, tzinfo=timezone.utc)
-    assert DateTime.decode(date) == expected
+    assert DateTime.decode(date_value) == expected
 
 
 def test_datetime_decode_gmt2():
-    date = "2009-06-29T14:33:21+02:00"
+    date_value = "2009-06-29T14:33:21+02:00"
     expected = datetime(2009, 6, 29, 14, 33, 21, tzinfo=timezone(timedelta(hours=2)))
-    assert DateTime.decode(date) == expected
+    assert DateTime.decode(date_value) == expected
 
 
 def test_datetime_decode_gmt_6():
-    date = "2009-06-29T14:33:21-06:00"
+    date_value = "2009-06-29T14:33:21-06:00"
     expected = datetime(2009, 6, 29, 14, 33, 21, tzinfo=timezone(timedelta(hours=-6)))
-    assert DateTime.decode(date) == expected
+    assert DateTime.decode(date_value) == expected
 
 
 def test_datetime_decode_utc_micro():
-    date = "2009-06-29T14:33:21.123456Z"
+    date_value = "2009-06-29T14:33:21.123456Z"
     expected = datetime(2009, 6, 29, 14, 33, 21, 123456, tzinfo=timezone.utc)
-    assert DateTime.decode(date) == expected
+    assert DateTime.decode(date_value) == expected
 
 
 def test_datetime_decode_utc_00_micro():
-    date = "2009-06-29T14:33:21.123456+00:00"
+    date_value = "2009-06-29T14:33:21.123456+00:00"
     expected = datetime(2009, 6, 29, 14, 33, 21, 123456, tzinfo=timezone.utc)
-    assert DateTime.decode(date) == expected
+    assert DateTime.decode(date_value) == expected
 
 
 def test_datetime_decode_gmt2_micro():
-    date = "2009-06-29T14:33:21.123456+02:00"
+    date_value = "2009-06-29T14:33:21.123456+02:00"
     expected = datetime(
         2009, 6, 29, 14, 33, 21, 123456, tzinfo=timezone(timedelta(hours=2))
     )
-    assert DateTime.decode(date) == expected
+    assert DateTime.decode(date_value) == expected
 
 
 def test_datetime_decode_utc_nano():
-    date = "2009-06-29T14:33:21.123456789Z"
+    date_value = "2009-06-29T14:33:21.123456789Z"
     expected = datetime(2009, 6, 29, 14, 33, 21, 123456, tzinfo=timezone.utc)
-    assert DateTime.decode(date) == expected
+    assert DateTime.decode(date_value) == expected
 
 
 def test_datetime_decode_utc_00_nano():
-    date = "2009-06-29T14:33:21.123456789+00:00"
+    date_value = "2009-06-29T14:33:21.123456789+00:00"
     expected = datetime(2009, 6, 29, 14, 33, 21, 123456, tzinfo=timezone.utc)
-    assert DateTime.decode(date) == expected
+    assert DateTime.decode(date_value) == expected
 
 
 def test_datetime_decode_gmt2_nano():
-    date = "2009-06-29T14:33:21.123456789+02:00"
+    date_value = "2009-06-29T14:33:21.123456789+02:00"
     expected = datetime(
         2009, 6, 29, 14, 33, 21, 123456, tzinfo=timezone(timedelta(hours=2))
     )
-    assert DateTime.decode(date) == expected
+    assert DateTime.decode(date_value) == expected
+
+
+def test_datetime_decode_raises():
+    date_value = "XXXXXX2009-06-29T14:33:21.123456789+02:00"
+    with pytest.raises(ValueError):
+        DateTime.decode(date_value)
+
+
+def test_date_decode():
+    date_value = "1999-12-25"
+    expected = datetime(1999, 12, 25)
+    assert Date.decode(date_value) == expected
+
+
+def test_date_encode_1():
+    date_value = date(1999, 12, 25)
+    expected = "1999-12-25"
+    assert Date.encode(date_value) == expected
+
+
+def test_date_encode_2():
+    date_value = datetime(1999, 12, 25, 0, 0, 0)
+    expected = "1999-12-25"
+    assert Date.encode(date_value) == expected
 
 
 def test_duration_encode():
@@ -155,10 +174,46 @@ def test_duration_encode():
     assert Duration.encode(duration) == expected
 
 
+def test_duration_encode_raises():
+    duration = []
+    with pytest.raises(TypeError):
+        Duration.encode(duration)
+
+
+def test_duration_encode_neg():
+    duration = timedelta(hours=-2)
+    expected = "-PT02H00M00S"
+    assert Duration.encode(duration) == expected
+
+
 def test_duration_decode():
     duration = "PT12H34M56S"
     expected = timedelta(0, 56, 0, 0, 34, 12)
     assert Duration.decode(duration) == expected
+
+
+def test_duration_decode_neg():
+    duration = "-PT02H00M00S"
+    expected = timedelta(hours=-2)
+    assert Duration.decode(duration) == expected
+
+
+def test_duration_decode_days():
+    duration = "PT01D02H00M00S"
+    expected = timedelta(days=1, hours=2)
+    assert Duration.decode(duration) == expected
+
+
+def test_duration_decode_raises_1():
+    duration = "PT02H00M42"
+    with pytest.raises(ValueError):
+        Duration.decode(duration)
+
+
+def test_duration_decode_raises_2():
+    duration = "x-PT02H00M00S"
+    with pytest.raises(ValueError):
+        Duration.decode(duration)
 
 
 def test_bool_encode():
@@ -171,6 +226,10 @@ def test_bool_encode():
 def test_bool_bad_encode_on():
     with pytest.raises(TypeError):
         Boolean.encode("on")
+
+
+def test_bool_encode_bytes():
+    assert Boolean.encode(b"True") == "true"
 
 
 def test_bool_bad_encode_one():
