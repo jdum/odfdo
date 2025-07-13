@@ -61,6 +61,7 @@ def test_replace1(samples):
     content.close()
     display_name = " ".join(["odfdo", "highlight", "bold"])
     name = display_name.replace(" ", "_20_")
+    print(document.body.serialize())
     assert len(document.body.get_spans(style=name)) == 1
 
 

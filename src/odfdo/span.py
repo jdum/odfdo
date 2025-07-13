@@ -21,7 +21,7 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Paragraph class for "text:p" tag."""
+"""Span class for "text:span" tag."""
 
 from __future__ import annotations
 
@@ -32,51 +32,36 @@ from .element import (
     PropDef,
     register_element_class,
 )
-from .line_break import LineBreak
-from .mixin_md import MDParagraph
+from .mixin_md import MDParagraph, MDSpan
 from .mixin_paragraph import ParaMixin
 from .mixin_paragraph_formatted import ParaFormattedTextMixin
-from .spacer import Spacer
-from .span import Span
-from .tab import Tab
-
-__all__ = [
-    "LineBreak",
-    "PageBreak",
-    "Paragraph",
-    "Spacer",
-    "Span",
-    "Tab",
-]
 
 
-class Paragraph(MDParagraph, ParagraphBase):
-    """An ODF paragraph, "text:p".
+class Span(MDSpan, MDParagraph, ParaFormattedTextMixin, ParaMixin, Element):
+    """Specialised paragraph for span "text:span"."""
 
-    The "text:p" element represents a paragraph, which is
-    the basic unit of text in an OpenDocument file.
-    """
-
-    _tag = "text:p"
-    _properties: tuple[PropDef, ...] = (PropDef("style", "text:style-name"),)
+    _tag = "text:span"
+    _properties = (
+        PropDef("style", "text:style-name"),
+        PropDef("class_names", "text:class-names"),
+    )
 
     def __init__(
         self,
-        text_or_element: str | bytes | Element | None = None,
+        text: str | None = None,
         style: str | None = None,
         formatted: bool = True,
         **kwargs: Any,
-    ):
-        """
-        Create a paragraph element "text:p" of the given style containing the
-        pptional given text.
+    ) -> None:
+        """Create a span element "text:span" of the given style containing the optional
+        given text.
 
         If "formatted" is True (the default), the given text is appended with <CR>,
         <TAB> and multiple spaces replaced by ODF corresponding tags.
 
         Arguments:
 
-            text -- str, bytes or Element
+            text -- str
 
             style -- str
 
@@ -84,32 +69,19 @@ class Paragraph(MDParagraph, ParagraphBase):
         """
         super().__init__(**kwargs)
         if self._do_init:
-            if isinstance(text_or_element, Element):
-                self.append(text_or_element)
-            else:
-                self.text = ""
+            if text:
                 if formatted:
-                    self.append_plain_text(text_or_element)
+                    self.text = ""
+                    self.append_plain_text(text)
                 else:
-                    self.append_plain_text(self._unformatted(text_or_element))
-            if style is not None:
+                    self.text = self._unformatted(text)
+            if style:
                 self.style = style
 
     def __str__(self) -> str:
-        # '\n' at the end slightly breaks compatibility, but is clearly better
-        return self.inner_text + "\n"
+        return self.inner_text
 
 
-Paragraph._define_attribut_property()
+Span._define_attribut_property()
 
-
-def PageBreak() -> Paragraph:
-    """Return an empty paragraph with a manual page break.
-
-    Using this function requires to register the page break style with:
-        document.add_page_break_style()
-    """
-    return Paragraph("", style="odfdopagebreak")
-
-
-register_element_class(Paragraph)
+register_element_class(Span)
