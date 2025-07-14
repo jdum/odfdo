@@ -1,5 +1,53 @@
 # Odfdo Release Notes
 
+## [3.14.10] - 2025-07-14
+
+-   Improve documentation and docstrings.
+-   Move classes `Column`, `Annotation`,user fields, `Spacer`, `Tab`,`Spacer`,`LineBreak`, and `Span` to their own module (compatibilty maintained with previous versions).
+-   Minor fixes on classes `odfdo.variable.VarSet` and `odfdo.variable.VarTime`.
+-   Refactor of code and improvement of the tests coverage.
+
+### Changed
+
+-   Improve test coverage for module `odfdo.meta`.
+-   Improve test coverage for module `odfdo.xpath_query`.
+-   Improve test coverage for module `odfdo.utils`.
+-   Improve test coverage for module `odfdo.mixin_paragraph`.
+-   Improve test coverage for module `odfdo.header`.
+-   Improve test coverage for module `odfdo.variable`.
+-   Improve test coverage for module `odfdo.user_field`.
+-   Improve test coverage for module `odfdo.image`.
+-   Improve test coverage for module `odfdo.list`.
+-   Improve test coverage for module `odfdo.draw_page`.
+-   Improve test coverage for module `odfdo.xmlpart`.
+-   Improve test coverage for module `odfdo.datatype`.
+-   Improve test coverage for module `odfdo.styles`.
+-   Improve test coverage for markdown mixin.
+-   Replace `ParagraphBase` by a mixin.
+-   Move class `Annotation` from `odfdo.note` module to module `odfdo.annotation`.
+-   Move classes about user fields from `odfdo.variable` module to module `odfdo.user_field`.
+-   Move class `Spacer` from `odfdo.paragraph_base` module to module `odfdo.spacer`.
+-   Move class `Tab` from `odfdo.paragraph` module to module `odfdo.tab`.
+-   Move class `LineBreak` from `odfdo.paragraph` module to module `odfdo.line_break`.
+-   Move class `Span` from `odfdo.paragraph` module to module `odfdo.span`.
+-   Refactor module `odfdo.variable`.
+-   Refactor module `odfdo.xmlpart`.
+-   Refactor module `odfdo.datatype`.
+-   Refactor module `odfdo.mixin_paragraph`.
+-   Update some docstrings.
+-   Update Readme.
+
+### Added
+
+-   Add tests for typed elements classes (variables).
+-   Add more `Unit` conversions to pixel, add test for `Unit` class.
+-   Add argument `node_type` to `DrawPage.set_transition()`.
+
+### Fixed
+
+-   Fix `odfdo.variable.VarSet`: keep style when set a value.
+-   Fix `odfdo.variable.VarTime` attribute time_adjust.
+
 ## [3.14.9] - 2025-07-08
 
 -   Improve documentation and docstrings.

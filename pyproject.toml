@@ -1,6 +1,6 @@
 [project]
 name = "odfdo"
-version = "3.14.9"
+version = "3.14.10"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 readme = "README.md"
