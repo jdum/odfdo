@@ -290,7 +290,7 @@ These methods or properties return a list of elements:
     - `body.paragraphs`
     - `body.get_links()`
     - `body.get_notes()`
-    - `body.tables`
+    - `body.tables` (alias: body.sheets)
     - `body.get_paragraphs(content)`
 
 
@@ -688,6 +688,16 @@ except in titles.
 ??? code "recipes/remove_span_styles.py"
     ```python
     {% include "../../recipes/remove_span_styles.py" %}
+    ```
+
+## How to remove all meta data
+
+Create a document with metadata, then remove all metadata,
+including user defined fields.
+
+??? code "recipes/how_to_remove_all_meta_data.py"
+    ```python
+    {% include "../../recipes/how_to_remove_all_meta_data.py" %}
     ```
 
 ## Retrieve all pictures from odf files
