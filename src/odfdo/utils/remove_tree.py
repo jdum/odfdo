@@ -54,19 +54,29 @@ def _tree_remove_tag(
     tag = context["tag"]
     safe_tag = context["safe_tag"]
     protected = context["protected"]
+    keep_children = context["keep_children"]
     sub_context: dict[str, Any] = {
         "tag": tag,
         "safe_tag": safe_tag,
         "protected": element.tag == safe_tag,
+        "keep_children": keep_children,
     }
     sub_elements, modified = _sub_tree_remove_tag(buffer, sub_context)
     if element.tag == tag and not protected:
         list_element = []
-        text = buffer.text
+        # special case when removing tab, spacer, linebreak, replace by space
+        if tag in {"text:tab", "text:line-break"}:
+            text = " "
+        # a space must already be before spacer:
+        elif tag == "text:s":
+            text = ""
+        else:
+            text = buffer.text
         tail = buffer.tail
-        if text is not None:
-            list_element.append(text)
-        list_element.extend(sub_elements)
+        if keep_children:
+            if text:
+                list_element.append(text)
+            list_element.extend(sub_elements)
         if tail is not None:
             list_element.append(tail)
         return list_element, True
@@ -77,11 +87,11 @@ def _tree_remove_tag(
     try:
         for key, value in buffer.attributes.items():
             element.set_attribute(key, value)
-    except ValueError:
+    except ValueError:  # pragma: nocover
         print(f"Incorrect attribute in {buffer}")
     text = buffer.text
     tail = buffer.tail
-    if text is not None:
+    if text:
         element.append(text)
     for elem in sub_elements:
         element.append(elem)
@@ -91,11 +101,15 @@ def _tree_remove_tag(
 
 
 def remove_tree(
-    element: Element, remove: type[Element], safe: type[Element] | None = None
+    element: Element,
+    remove: type[Element],
+    safe: type[Element] | None = None,
+    keep_children: bool = True,
 ) -> None:
     """Remove elements of class `remove` in the element, recursive.
 
     Elements whose parent is of class `safe` are not removed.
+    To remove text and child elements, set keep_children to False.
 
     Arguments:
 
@@ -104,6 +118,8 @@ def remove_tree(
         remove -- Element class, class to remove
 
         safe -- Element class, no remove if parent is safe
+
+        keep_inner- bool, keep inner text and element
     """
     if safe:
         safe_tag = safe().tag
@@ -113,5 +129,6 @@ def remove_tree(
         "tag": remove().tag,
         "safe_tag": safe_tag,
         "protected": False,
+        "keep_children": keep_children,
     }
     _tree_remove_tag(element, context)
