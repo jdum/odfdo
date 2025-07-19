@@ -1969,7 +1969,7 @@ class Table(MDTable, Element):
     def _get_columns(self) -> list[Column]:
         return self.get_elements(_XP_COLUMN)  # type: ignore
 
-    def traverse_columns(
+    def iterate_columns(
         self,
         start: int | None = None,
         end: int | None = None,
@@ -2003,6 +2003,8 @@ class Table(MDTable, Element):
             column.x = x
             yield column
 
+    traverse_columns = iterate_columns
+
     def _yield_odf_columns(self):
         for column in self._get_columns():
             if column.repeated is None:
@@ -2035,9 +2037,9 @@ class Table(MDTable, Element):
         else:
             x = t = None
         if not style:
-            return list(self.traverse_columns(start=x, end=t))
+            return list(self.iterate_columns(start=x, end=t))
         columns = []
-        for column in self.traverse_columns(start=x, end=t):
+        for column in self.iterate_columns(start=x, end=t):
             if style != column.style:
                 continue
             columns.append(column)
@@ -2066,7 +2068,7 @@ class Table(MDTable, Element):
 
         Return: list of columns
         """
-        return list(self.traverse_columns())
+        return list(self.iterate_columns())
 
     def get_column(self, x: int | str) -> Column:
         """Get the column at the given "x" position.
