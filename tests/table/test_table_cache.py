@@ -26,8 +26,12 @@ from collections.abc import Iterable
 
 import pytest
 
+from odfdo.cell import Cell
+from odfdo.column import Column
 from odfdo.document import Document
-from odfdo.table import Cell, Row, Table
+from odfdo.row import Row
+from odfdo.table import Table
+from odfdo.table_cache import RowCache, _erase_map_once, _insert_map_once
 
 
 @pytest.fixture
@@ -170,3 +174,268 @@ def test_basic_spreadsheet_case_property():
     table.rstrip()
     assert table.size == (10, 5)
     assert len(table.get_row(-1).cells) == 10
+
+
+def test_internal_bad_insert(table):
+    cache = table._table_cache
+    row_map = cache.row_map
+    bad_val = len(cache.row_map) + 1
+    with pytest.raises(IndexError):
+        _insert_map_once(row_map, bad_val, 0)
+
+
+def test_internal_bad_erase(table):
+    cache = table._table_cache
+    row_map = cache.row_map
+    bad_val = len(cache.row_map)
+    with pytest.raises(IndexError):
+        _erase_map_once(row_map, bad_val)
+
+
+def test_internal_del_row_0(table):
+    table.delete_row(0)
+    assert table.height == 3
+
+
+def test_internal_row_cache_str(table):
+    row = table.get_row(0)
+    cache = row._row_cache
+    assert str(cache) == "RC cell:[2, 3, 6]"
+
+
+def test_internal_row_map_length(table):
+    row = table.get_row(0)
+    cache = row._row_cache
+    assert len(cache.cell_map) == 3
+    assert cache.cell_map_length() == 3
+
+
+def test_internal_row_erase_cell(table):
+    row = table.get_row(0)
+    cache = row._row_cache
+    row.delete_cell(0)
+    assert cache.cell_map_length() == 3
+    assert str(cache) == "RC cell:[1, 2, 5]"
+
+
+def test_internal_row_erase_cell_2(table):
+    row = table.get_row(0)
+    cache = row._row_cache
+    row.delete_cell(0)
+    row.delete_cell(0)
+    assert cache.cell_map_length() == 3
+    assert str(cache) == "RC cell:[0, 1, 4]"
+
+
+def test_internal_row_erase_cell_3(table):
+    row = table.get_row(0)
+    cache = row._row_cache
+    row.delete_cell(0)
+    row.delete_cell(0)
+    row.delete_cell(0)
+    assert cache.cell_map_length() == 2
+    assert str(cache) == "RC cell:[0, 3]"
+
+
+def test_internal_set_cell_in_cache(table):
+    row = table.get_row(0)
+    cache = row._row_cache
+    cell = Cell()
+    with pytest.raises(ValueError):
+        cache.set_cell_in_cache(42, cell, row, True)
+
+
+def test_internal_set_cell_in_cache2(table):
+    row = table.get_row(0)
+    cache = row._row_cache
+    cell = row.get_cell(0)
+    cell.value = 42
+    row.set_cell(0, cell)
+    assert str(cache) == "RC cell:[0, 2, 3, 6]"
+    assert row.get_values() == [42, 1, 1, 2, 3, 3, 3]
+
+
+def test_internal_insert_cell_in_cache(table):
+    row = table.get_row(0)
+    cache = row._row_cache
+    cell = Cell()
+    with pytest.raises(ValueError):
+        cache.insert_cell_in_cache(42, cell, row)
+
+
+def test_internal_insert_cell_in_cache2(table):
+    row = table.get_row(0)
+    cache = row._row_cache
+    cell = row.get_cell(0)
+    cell.value = 42
+    row.insert_cell(0, cell)
+    assert str(cache) == "RC cell:[0, 3, 4, 7]"
+    assert row.get_values() == [42, 1, 1, 1, 2, 3, 3, 3]
+
+
+def test_internal_delete_cell_in_cache(table):
+    row = table.get_row(0)
+    cache = row._row_cache
+    with pytest.raises(ValueError):
+        cache.delete_cell_in_cache(42, row)
+
+
+def test_internal_delete_cell_in_cache2():
+    cache = RowCache()
+    current_cached = cache.cached_cell(0)
+    assert current_cached is None
+
+
+def test_internal_cell_in_cache(table):
+    row = table.get_row(0)
+    cache = row._row_cache
+    assert cache.cell_map == [2, 3, 6]
+    assert len(cache.cell_elements) == 0
+    row.get_cell(0)
+    assert len(cache.cell_elements) == 1
+
+
+def test_internal_cell_in_cache_then_delete(table):
+    row = table.get_row(0)
+    cache = row._row_cache
+    assert cache.cell_map == [2, 3, 6]
+    assert len(cache.cell_elements) == 0
+    row.get_cell(0)
+    row.delete_cell(0)
+    assert len(cache.cell_elements) == 0
+
+
+def test_internal_table_cache_str(table):
+    cache = table._table_cache
+    assert str(cache) == "TC row:[0, 1, 2, 3] col:[1, 3, 6]"
+
+
+def test_internal_table_row_map_length(table):
+    cache = table._table_cache
+    assert len(cache.row_map) == 4
+
+
+def test_internal_table_col_map_length(table):
+    cache = table._table_cache
+    assert len(cache.col_map) == 3
+    assert cache.col_map_length() == 3
+
+
+def test_internal_table_row_bad_idx(table):
+    cache = table._table_cache
+    assert cache.row_idx(1000) is None
+
+
+def test_internal_table_col_bad_idx(table):
+    cache = table._table_cache
+    assert cache.col_idx(1000) is None
+
+
+def test_internal_table_erase_row(table):
+    cache = table._table_cache
+    table.get_row(0)
+    table.delete_row(0)
+    assert len(cache.row_map) == 3
+    assert str(cache) == "TC row:[0, 1, 2] col:[1, 3, 6]"
+
+
+def test_internal_table_set_row_in_cache(table):
+    cache = table._table_cache
+    row = Row()
+    with pytest.raises(ValueError):
+        cache.set_row_in_cache(42, row, table, False)
+
+
+def test_internal_table_set_col_in_cache(table):
+    cache = table._table_cache
+    col = Column()
+    with pytest.raises(ValueError):
+        cache.set_col_in_cache(42, col, table)
+
+
+def test_internal_table_set_col_in_cache_ok(table):
+    cache = table._table_cache
+    col = table.get_column(0)
+    table.insert_column(0, col)
+    table.insert_column(-1, col)
+    assert str(cache) == "TC row:[0, 1, 2, 3] col:[1, 3, 5, 7, 9, 10]"
+
+
+def test_internal_table_set_col_in_cache_ok2(table):
+    previous = table.width
+    table.get_column(0)
+    new_col = Column()
+    table.set_column(0, new_col)
+    assert table.width == previous
+
+
+def test_internal_table_get_col_in_cache_0(table):
+    cache = table._table_cache
+    assert len(cache.col_elements) == 0
+
+
+def test_internal_table_get_col_in_cache_1(table):
+    cache = table._table_cache
+    idx = cache.col_idx(0)
+    assert idx == 0
+
+
+def test_internal_table_get_col_in_cache_2(table):
+    cache = table._table_cache
+    col = cache.cached_col(0)
+    assert col is None
+
+
+def test_internal_table_get_col_in_cache_3(table):
+    cache = table._table_cache
+    col = table.get_column(0)
+    col = cache.cached_col(0)
+    assert isinstance(col, Column)
+
+
+def test_internal_table_insert_row_in_cache(table):
+    cache = table._table_cache
+    row = Row()
+    with pytest.raises(ValueError):
+        cache.insert_row_in_cache(42, row, table)
+
+
+def test_internal_table_insert_row_in_cache2(table):
+    cache = table._table_cache
+    row = table.get_row(0)
+    table.insert_row(0, row)
+    table.insert_row(0, row)
+    assert str(cache) == "TC row:[0, 1, 2, 3, 4, 5] col:[1, 3, 6]"
+
+
+def test_internal_table_insert_column_in_cache(table):
+    cache = table._table_cache
+    col = Column()
+    with pytest.raises(ValueError):
+        cache.insert_col_in_cache(42, col, table)
+
+
+def test_internal_table_insert_column_in_cache2(table):
+    cache = table._table_cache
+    col = table.get_column(0)
+    table.insert_column(0, col)
+    table.insert_column(0, col)
+    assert str(cache) == "TC row:[0, 1, 2, 3] col:[1, 3, 5, 7, 10]"
+
+
+def test_internal_table_delete_row_in_cache(table):
+    cache = table._table_cache
+    with pytest.raises(ValueError):
+        cache.delete_row_in_cache(42, table)
+
+
+def test_internal_table_delete_col_in_cache(table):
+    cache = table._table_cache
+    with pytest.raises(ValueError):
+        cache.delete_col_in_cache(42, table)
+
+
+def test_internal_table_delete_col_in_cache_ok(table):
+    cache = table._table_cache
+    table.get_column(0)
+    cache.delete_col_in_cache(0, table)
