@@ -25,25 +25,31 @@
 from odfdo.column import Column
 
 
-def test_default():
+def test_column_init():
     column = Column()
     expected = "<table:table-column/>"
     assert column.serialize() == expected
 
 
-def test_default_cell_style():
+def test_column_repr():
+    column = Column()
+    expected = "<Column x=None>"
+    assert repr(column) == expected
+
+
+def test_column_default_cell_style():
     column = Column(default_cell_style="A Style")
     expected = '<table:table-column table:default-cell-style-name="A Style"/>'
     assert column.serialize() == expected
 
 
-def test_style():
+def test_column_style():
     column = Column(style="A Style")
     expected = '<table:table-column table:style-name="A Style"/>'
     assert column.serialize() == expected
 
 
-def test_all():
+def test_column_all():
     column = Column(style="co1", default_cell_style="Standard", repeated=3)
     expected = (
         "<table:table-column "
