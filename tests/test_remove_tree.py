@@ -23,14 +23,13 @@ from collections.abc import Iterable
 import pytest
 
 from odfdo.document import Document
-from odfdo.element import Element
 from odfdo.header import Header
 from odfdo.line_break import LineBreak
+from odfdo.link import Link
+from odfdo.list import List
 from odfdo.paragraph import Paragraph
 from odfdo.spacer import Spacer
 from odfdo.tab import Tab
-from odfdo.link import Link
-from odfdo.list import List
 from odfdo.utils.remove_tree import remove_tree
 
 

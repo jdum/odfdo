@@ -29,9 +29,9 @@ from odfdo.style import Style
 from odfdo.toc import (
     TOC,
     IndexTitle,
-    TocEntryTemplate,
-    TabStopStyle,
     IndexTitleTemplate,
+    TabStopStyle,
+    TocEntryTemplate,
 )
 
 SAMPLE_EXPECTED = [
