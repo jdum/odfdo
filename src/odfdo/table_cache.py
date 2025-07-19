@@ -22,7 +22,7 @@
 from __future__ import annotations
 
 from bisect import bisect_left, insort
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from .element import xpath_compile
 
@@ -31,7 +31,6 @@ if TYPE_CHECKING:
 
     from .cell import Cell
     from .column import Column
-    from .element import Element
     from .row import Row
     from .table import Table
 
@@ -55,7 +54,11 @@ def _make_cache_map(idx_repeated_seq: list[tuple[int, int]]) -> list[int]:
     return cache_map
 
 
-def _insert_map_once(orig_map: list, odf_idx: int, repeated: int) -> list[int]:
+def _insert_map_once(
+    cache_map: list[int],
+    odf_idx: int,
+    repeated: int,
+) -> list[int]:
     """Add an item (cell or row) to the map
 
         map  --  cache map
@@ -67,51 +70,50 @@ def _insert_map_once(orig_map: list, odf_idx: int, repeated: int) -> list[int]:
     odf_idx is NOT position (col or row), neither raw XML position, but ODF index
     """
     repeated = repeated or 1
-    if odf_idx > len(orig_map):
+    if odf_idx > len(cache_map):
         raise IndexError
     if odf_idx > 0:
-        before = orig_map[odf_idx - 1]
+        before = cache_map[odf_idx - 1]
     else:
         before = -1
     juska = before + repeated  # aka max position value for item
-    if odf_idx == len(orig_map):
-        insort(orig_map, juska)
-        return orig_map
-    new_map = orig_map[:odf_idx]
+    if odf_idx == len(cache_map):
+        insort(cache_map, juska)
+        return cache_map
+    new_map = cache_map[:odf_idx]
     new_map.append(juska)
-    new_map.extend([(x + repeated) for x in orig_map[odf_idx:]])
+    new_map.extend([(x + repeated) for x in cache_map[odf_idx:]])
     return new_map
 
 
-def _erase_map_once(orig_map: list, odf_idx: int) -> list[int]:
+def _erase_map_once(cache_map: list[int], odf_idx: int) -> list[int]:
     """Remove an item (cell or row) from the map
 
     map  --  cache map
 
     odf_idx  --  index in ODF XML
     """
-    if odf_idx >= len(orig_map):
+    if odf_idx >= len(cache_map):
         raise IndexError
     if odf_idx > 0:
-        before = orig_map[odf_idx - 1]
+        before = cache_map[odf_idx - 1]
     else:
         before = -1
-    current = orig_map[odf_idx]
+    current = cache_map[odf_idx]
     repeated = current - before
-    orig_map = orig_map[:odf_idx] + [(x - repeated) for x in orig_map[odf_idx + 1 :]]
-    return orig_map
+    cache_map = cache_map[:odf_idx] + [(x - repeated) for x in cache_map[odf_idx + 1 :]]
+    return cache_map
 
 
 def _insert_item_in_vault(
     position: int,
-    item: Element,
+    item: Cell | Row | Column,
     idx: int,
-    current_item: Element,
-    vault: Element,
+    current_item: Cell | Row | Column,
+    vault: Row | Table,
     vault_map: list[int],
-    vault_scheme: XPath,
-) -> tuple[list[int], Element]:
-    repeated = item.repeated or 1  # type: ignore
+) -> tuple[list[int], Cell | Row | Column]:
+    repeated = item.repeated or 1
     target_idx = vault.index(current_item)
     current_cache = vault_map[idx]
     if idx > 0:
@@ -145,18 +147,18 @@ def _insert_item_in_vault(
 
 def _set_item_in_vault(
     position: int,
-    item: Element,
+    item: Cell | Row | Column,
     idx: int,
-    current_item: Element,
-    vault: Element,
+    current_item: Cell | Row | Column,
+    vault: Row | Table,
     vault_map: list[int],
     vault_scheme: XPath,
     clone: bool = True,
-) -> tuple[list[int], Element]:
+) -> tuple[list[int], Cell | Row | Column]:
     """Set the item (cell, row) in its vault (row, table), updating the
     cache map.
     """
-    repeated = item.repeated or 1  # type: ignore
+    repeated = item.repeated or 1
     target_idx = vault.index(current_item)
     current_cache = vault_map[idx]
     if idx > 0:
@@ -223,10 +225,9 @@ def _set_item_in_vault(
 
 
 def _delete_item_in_vault(
-    position: int,
     idx: int,
-    current_item: Element,
-    vault: Element,
+    current_item: Cell | Row | Column,
+    vault: Row | Table,
     vault_map: list[int],
 ) -> list[int]:
     current_cache = vault_map[idx]
@@ -252,9 +253,9 @@ class RowCache:
 
     __slots__ = ("cell_elements", "cell_map")
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.cell_map: list[int] = []
-        self.cell_elements: dict[int, Any] = {}
+        self.cell_elements: dict[int, Cell] = {}
 
     def __str__(self) -> str:
         return f"RC cell:{self.cell_map!r}"
@@ -289,19 +290,19 @@ class RowCache:
     def cell_map_length(self) -> int:
         return len(self.cell_map)
 
-    def cached_cell(self, idx: int) -> Any:
+    def cached_cell(self, idx: int) -> Cell | None:
         """Retrieve Cell in cache."""
         return self.cell_elements.get(idx)
 
-    def store_cell(self, cell: Any, idx: int) -> None:
+    def store_cell(self, cell: Cell, idx: int) -> None:
         """Store Cell in cache."""
         self.cell_elements[idx] = cell
 
     def insert_cell_map_once(self, repeated: int) -> None:
         self.cell_map = _insert_map_once(self.cell_map, len(self.cell_map), repeated)
 
-    def erase_cell_map_once(self, odf_idx: int) -> None:
-        self.cell_map = _erase_map_once(self.cell_map, odf_idx)
+    # def erase_cell_map_once(self, odf_idx: int) -> None:
+    #     self.cell_map = _erase_map_once(self.cell_map, odf_idx)
 
     def make_cell_map(self, idx_repeated_sequence: list[tuple[int, int]]) -> None:
         self.cell_map = _make_cache_map(idx_repeated_sequence)
@@ -316,17 +317,24 @@ class RowCache:
         idx = self.cell_idx(x)
         if idx is None:
             raise ValueError
-        current_cached_cell = self.cached_cell(idx)
+        current_cached_cell: Cell | None = self.cached_cell(idx)
         if current_cached_cell is None:
-            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)
+            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)  # type: ignore[assignment]
         if not current_cached_cell:
-            raise ValueError
+            raise ValueError  # pragma: nocover
         self.clear_cell_indexes()
         emap, new_cell = _set_item_in_vault(
-            x, cell, idx, current_cached_cell, vault, self.cell_map, _XP_CELL_IDX, clone
+            x,
+            cell,
+            idx,
+            current_cached_cell,
+            vault,
+            self.cell_map,
+            _XP_CELL_IDX,
+            clone,
         )
         self.cell_map = emap
-        return new_cell  # type: ignore
+        return new_cell  # type: ignore[return-value]
 
     def insert_cell_in_cache(
         self,
@@ -337,17 +345,22 @@ class RowCache:
         idx = self.cell_idx(x)
         if idx is None:
             raise ValueError
-        current_cached_cell = self.cached_cell(idx)
+        current_cached_cell: Cell | None = self.cached_cell(idx)
         if current_cached_cell is None:
-            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)
+            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)  # type: ignore[assignment]
         if not current_cached_cell:
-            raise ValueError
+            raise ValueError  # pragma: nocover
         self.clear_cell_indexes()
         emap, new_cell = _insert_item_in_vault(
-            x, cell, idx, current_cached_cell, vault, self.cell_map, _XP_CELL_IDX
+            x,
+            cell,
+            idx,
+            current_cached_cell,
+            vault,
+            self.cell_map,
         )
         self.cell_map = emap
-        return new_cell  # type: ignore
+        return new_cell  # type: ignore[return-value]
 
     def delete_cell_in_cache(
         self,
@@ -357,13 +370,18 @@ class RowCache:
         idx = self.cell_idx(x)
         if idx is None:
             raise ValueError
-        current_cached_cell = self.cached_cell(idx)
+        current_cached_cell: Cell | None = self.cached_cell(idx)
         if current_cached_cell is None:
-            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)
+            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)  # type: ignore[assignment]
         if not current_cached_cell:
-            raise ValueError
+            raise ValueError  # pragma: nocover
         self.clear_cell_indexes()
-        emap = _delete_item_in_vault(x, idx, current_cached_cell, vault, self.cell_map)
+        emap = _delete_item_in_vault(
+            idx,
+            current_cached_cell,
+            vault,
+            self.cell_map,
+        )
         self.cell_map = emap
 
 
@@ -372,11 +390,11 @@ class TableCache:
 
     __slots__ = ("col_elements", "col_map", "row_elements", "row_map")
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.row_map: list[int] = []
         self.col_map: list[int] = []
-        self.row_elements: dict[int, Any] = {}
-        self.col_elements: dict[int, Any] = {}
+        self.row_elements: dict[int, Row] = {}
+        self.col_elements: dict[int, Column] = {}
 
     def __str__(self) -> str:
         return f"TC row:{self.row_map!r} col:{self.col_map!r}"
@@ -434,33 +452,33 @@ class TableCache:
     def col_map_length(self) -> int:
         return len(self.col_map)
 
-    def cached_row(self, idx: int) -> Any:
+    def cached_row(self, idx: int) -> Row | None:
         """Retrieve Row in cache."""
         return self.row_elements.get(idx)
 
-    def cached_col(self, idx: int) -> Any:
+    def cached_col(self, idx: int) -> Column | None:
         """Retrieve Column in cache."""
         return self.col_elements.get(idx)
 
-    def store_row(self, row: Any, idx: int) -> None:
+    def store_row(self, row: Row, idx: int) -> None:
         """Store Row in cache."""
         self.row_elements[idx] = row
 
-    def store_col(self, col: Any, idx: int) -> None:
+    def store_col(self, col: Column, idx: int) -> None:
         """Store Column in cache."""
         self.col_elements[idx] = col
 
     def insert_row_map_once(self, repeated: int) -> None:
         self.row_map = _insert_map_once(self.row_map, len(self.row_map), repeated)
 
-    def erase_row_map_once(self, odf_idx: int) -> None:
-        self.row_map = _erase_map_once(self.row_map, odf_idx)
+    # def erase_row_map_once(self, odf_idx: int) -> None:
+    #     self.row_map = _erase_map_once(self.row_map, odf_idx)
 
     def insert_col_map_once(self, repeated: int) -> None:
         self.col_map = _insert_map_once(self.col_map, len(self.col_map), repeated)
 
-    def erase_col_map_once(self, odf_idx: int) -> None:
-        self.col_map = _erase_map_once(self.col_map, odf_idx)
+    # def erase_col_map_once(self, odf_idx: int) -> None:
+    #     self.col_map = _erase_map_once(self.col_map, odf_idx)
 
     def make_row_map(self, idx_repeated_sequence: list[tuple[int, int]]) -> None:
         self.row_map = _make_cache_map(idx_repeated_sequence)
@@ -478,17 +496,24 @@ class TableCache:
         idx = self.row_idx(y)
         if idx is None:
             raise ValueError
-        current_cached_row = self.cached_row(idx)
+        current_cached_row: Row | None = self.cached_row(idx)
         if current_cached_row is None:
-            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)
+            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)  # type: ignore[assignment]
         if not current_cached_row:
-            raise ValueError
+            raise ValueError  # pragma: nocover
         self.clear_row_indexes()
         emap, new_row = _set_item_in_vault(
-            y, row, idx, current_cached_row, vault, self.row_map, _XP_ROW_IDX, clone
+            y,
+            row,
+            idx,
+            current_cached_row,
+            vault,
+            self.row_map,
+            _XP_ROW_IDX,
+            clone,
         )
         self.row_map = emap
-        return new_row  # type: ignore
+        return new_row  # type: ignore[return-value]
 
     def insert_row_in_cache(
         self,
@@ -499,17 +524,22 @@ class TableCache:
         idx = self.row_idx(y)
         if idx is None:
             raise ValueError
-        current_cached_row = self.cached_row(idx)
+        current_cached_row: Row | None = self.cached_row(idx)
         if current_cached_row is None:
-            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)
+            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)  # type: ignore[assignment]
         if not current_cached_row:
-            raise ValueError
+            raise ValueError  # pragma: nocover
         self.clear_row_indexes()
         emap, new_row = _insert_item_in_vault(
-            y, row, idx, current_cached_row, vault, self.row_map, _XP_ROW_IDX
+            y,
+            row,
+            idx,
+            current_cached_row,
+            vault,
+            self.row_map,
         )
         self.row_map = emap
-        return new_row  # type: ignore
+        return new_row  # type: ignore[return-value]
 
     def delete_row_in_cache(
         self,
@@ -519,13 +549,18 @@ class TableCache:
         idx = self.row_idx(y)
         if idx is None:
             raise ValueError
-        current_cached_row = self.cached_row(idx)
+        current_cached_row: Row | None = self.cached_row(idx)
         if current_cached_row is None:
-            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)
+            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)  # type: ignore[assignment]
         if not current_cached_row:
-            raise ValueError
+            raise ValueError  # pragma: nocover
         self.clear_row_indexes()
-        emap = _delete_item_in_vault(y, idx, current_cached_row, vault, self.row_map)
+        emap = _delete_item_in_vault(
+            idx,
+            current_cached_row,
+            vault,
+            self.row_map,
+        )
         self.row_map = emap
 
     def set_col_in_cache(
@@ -537,17 +572,23 @@ class TableCache:
         idx = self.col_idx(x)
         if idx is None:
             raise ValueError
-        current_cached_col = self.cached_col(idx)
+        current_cached_col: Column | None = self.cached_col(idx)
         if current_cached_col is None:
-            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)
+            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)  # type: ignore[assignment]
         if not current_cached_col:
-            raise ValueError
+            raise ValueError  # pragma: nocover
         self.clear_col_indexes()
         emap, new_col = _set_item_in_vault(
-            x, column, idx, current_cached_col, vault, self.col_map, _XP_COLUMN_IDX
+            x,
+            column,
+            idx,
+            current_cached_col,
+            vault,
+            self.col_map,
+            _XP_COLUMN_IDX,
         )
         self.col_map = emap
-        return new_col  # type: ignore
+        return new_col  # type: ignore[return-value]
 
     def insert_col_in_cache(
         self,
@@ -558,17 +599,22 @@ class TableCache:
         idx = self.col_idx(x)
         if idx is None:
             raise ValueError
-        current_cached_col = self.cached_col(idx)
+        current_cached_col: Column | None = self.cached_col(idx)
         if current_cached_col is None:
-            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)
+            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)  # type: ignore[assignment]
         if not current_cached_col:
-            raise ValueError
+            raise ValueError  # pragma: nocover
         self.clear_col_indexes()
         emap, new_col = _insert_item_in_vault(
-            x, column, idx, current_cached_col, vault, self.col_map, _XP_COLUMN_IDX
+            x,
+            column,
+            idx,
+            current_cached_col,
+            vault,
+            self.col_map,
         )
         self.col_map = emap
-        return new_col  # type: ignore
+        return new_col  # type: ignore[return-value]
 
     def delete_col_in_cache(
         self,
@@ -578,11 +624,16 @@ class TableCache:
         idx = self.col_idx(x)
         if idx is None:
             raise ValueError
-        current_cached_col = self.cached_col(idx)
+        current_cached_col: Column | None = self.cached_col(idx)
         if current_cached_col is None:
-            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)
+            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)  # type: ignore[assignment]
         if not current_cached_col:
-            raise ValueError
+            raise ValueError  # pragma: nocover
         self.clear_col_indexes()
-        emap = _delete_item_in_vault(x, idx, current_cached_col, vault, self.col_map)
+        emap = _delete_item_in_vault(
+            idx,
+            current_cached_col,
+            vault,
+            self.col_map,
+        )
         self.col_map = emap
