@@ -426,7 +426,7 @@ class Table(MDTable, Element):
 
     def _get_formatted_text_normal(self, context: dict | None) -> str:
         result = []
-        for row in self.traverse():
+        for row in self.iterate_rows():
             for cell in row.iterate_cells():
                 value = cell.get_value(try_get_text=False)
                 # None ?
@@ -453,7 +453,7 @@ class Table(MDTable, Element):
         rows = []
         cols_nb = 0
         cols_size: dict[int, int] = {}
-        for odf_row in table.traverse():  # type: ignore
+        for odf_row in table.iterate_rows():  # type: ignore
             row = []
             for i, cell in enumerate(odf_row.iterate_cells()):
                 value = cell.get_value(try_get_text=False)
@@ -736,7 +736,7 @@ class Table(MDTable, Element):
         else:
             x = y = z = t = None
         data = []
-        for row in self.traverse(start=y, end=t):
+        for row in self.iterate_rows(start=y, end=t):
             if z is None:
                 width = self.width
             else:
@@ -793,7 +793,7 @@ class Table(MDTable, Element):
             x, y, z, t = self._translate_table_coordinates(coord)
         else:
             x = y = z = t = None
-        for row in self.traverse(start=y, end=t):
+        for row in self.iterate_rows(start=y, end=t):
             if z is None:
                 width = self.width
             else:
@@ -1006,7 +1006,7 @@ class Table(MDTable, Element):
         """
         data = []
         if coord is None:
-            for row in self.traverse():
+            for row in self.iterate_rows():
                 data.append(row.cells)
             transposed_data = zip_longest(*data)
             self.clear()
@@ -1036,7 +1036,7 @@ class Table(MDTable, Element):
                 t = self.height - 1
             else:
                 t = min(t, self.height - 1)
-            for row in self.traverse(start=y, end=t):
+            for row in self.iterate_rows(start=y, end=t):
                 data.append(list(row.iterate_cells(start=x, end=z)))
             transposed_data = zip_longest(*data)
             # clear locally
@@ -1082,7 +1082,7 @@ class Table(MDTable, Element):
     def _get_rows(self) -> list[Row]:
         return self.get_elements(_XP_ROW)  # type: ignore
 
-    def traverse(
+    def iterate_rows(
         self,
         start: int | None = None,
         end: int | None = None,
@@ -1116,6 +1116,8 @@ class Table(MDTable, Element):
             row.y = y
             yield row
 
+    traverse = iterate_rows
+
     def get_rows(
         self,
         coord: tuple | list | str | None = None,
@@ -1142,9 +1144,9 @@ class Table(MDTable, Element):
             y = t = None
         # fixme : not clones ?
         if not content and not style:
-            return list(self.traverse(start=y, end=t))
+            return list(self.iterate_rows(start=y, end=t))
         rows = []
-        for row in self.traverse(start=y, end=t):
+        for row in self.iterate_rows(start=y, end=t):
             if content and not row.match(content):
                 continue
             if style and style != row.style:
@@ -1159,7 +1161,7 @@ class Table(MDTable, Element):
         Return: list of rows
         """
         # fixme : not clones ?
-        return list(self.traverse())
+        return list(self.iterate_rows())
 
     def _yield_odf_rows(self):
         for row in self._get_rows():
@@ -1301,7 +1303,7 @@ class Table(MDTable, Element):
         self._compute_table_cache()
         # Update width if necessary
         width = self.width
-        for row in self.traverse():
+        for row in self.iterate_rows():
             if row.width > width:
                 width = row.width
         diff = width - self.width
@@ -1542,7 +1544,7 @@ class Table(MDTable, Element):
             x = y = z = t = None
         if flat:
             cells: list[Cell] = []
-            for row in self.traverse(start=y, end=t):
+            for row in self.iterate_rows(start=y, end=t):
                 row_cells = row.get_cells(
                     coord=(x, z),
                     cell_type=cell_type,
@@ -1553,7 +1555,7 @@ class Table(MDTable, Element):
             return cells
         else:
             lcells: list[list[Cell]] = []
-            for row in self.traverse(start=y, end=t):
+            for row in self.iterate_rows(start=y, end=t):
                 row_cells = row.get_cells(
                     coord=(x, z),
                     cell_type=cell_type,
@@ -1570,7 +1572,7 @@ class Table(MDTable, Element):
         Return: list of list of Cell
         """
         lcells: list[list[Cell]] = []
-        for row in self.traverse():
+        for row in self.iterate_rows():
             lcells.append(row.cells)
         return lcells
 
@@ -2273,10 +2275,10 @@ class Table(MDTable, Element):
             cell_type = cell_type.lower().strip()
         cells: list[Cell | None] = []
         if not style and not content and not cell_type:
-            for row in self.traverse():
+            for row in self.iterate_rows():
                 cells.append(row.get_cell(x, clone=True))
             return cells
-        for row in self.traverse():
+        for row in self.iterate_rows():
             cell = row.get_cell(x, clone=True)
             if cell is None:
                 raise ValueError
@@ -2374,7 +2376,7 @@ class Table(MDTable, Element):
         if len(cells) != height:
             raise ValueError(f"col mismatch: {height} cells expected")
         cells_iterator = iter(cells)
-        for y, row in enumerate(self.traverse()):
+        for y, row in enumerate(self.iterate_rows()):
             row.set_cell(x, next(cells_iterator))
             self.set_row(y, row)
 
