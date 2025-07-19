@@ -26,7 +26,13 @@ import pytest
 from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.style import Style
-from odfdo.toc import TOC, IndexTitle, TabStopStyle
+from odfdo.toc import (
+    TOC,
+    IndexTitle,
+    TocEntryTemplate,
+    TabStopStyle,
+    IndexTitleTemplate,
+)
 
 SAMPLE_EXPECTED = [
     "Table des matières",
@@ -136,6 +142,33 @@ def test_toc_fill_unattached_document(sample):
     assert toc_lines == SAMPLE_EXPECTED
 
 
+def test_toc_fill_unattached_document_no_title(sample):
+    toc = TOC("")
+    toc.fill(sample)
+    toc_lines = get_toc_lines(toc)
+    assert toc_lines == SAMPLE_EXPECTED[1:]
+
+
+def test_toc_fill_unattached_document_no_style(sample):
+    toc = TOC("Table des matières")
+    toc.fill(sample, use_default_styles=False)
+    toc_lines = get_toc_lines(toc)
+    assert toc_lines == SAMPLE_EXPECTED
+
+
+def test_toc_fill_unattached_document_outline_level(sample):
+    toc = TOC("Table des matières", outline_level=1)
+    toc.fill(sample)
+    toc_lines = get_toc_lines(toc)
+    expected = [
+        "Table des matières",
+        "1. Level 1 title 1",
+        "2. Level 1 title 2",
+        "3. Level 1 title 3",
+    ]
+    assert toc_lines == expected
+
+
 def test_toc_fill_attached(sample):
     document = sample.clone
     toc = TOC("Table des matières")
@@ -179,6 +212,63 @@ def test_toc_args():
 def test_toc_no_title_bad_args():
     toc = TOC(title="")
     assert "Table des matières" not in str(toc)
+
+
+def test_index_title_template_create():
+    index_title = IndexTitleTemplate()
+    assert index_title.tag == "text:index-title-template"
+
+
+def test_index_title_template_create_no_style():
+    index_title = IndexTitleTemplate()
+    assert index_title.style is None
+
+
+def test_index_title_template_create_style():
+    index_title = IndexTitleTemplate(style="Standard")
+    assert index_title.style == "Standard"
+
+
+def test_toc_entry_template_create():
+    entry = TocEntryTemplate()
+    assert entry.tag == "text:table-of-content-entry-template"
+
+
+def test_toc_entry_template_no_style():
+    entry = TocEntryTemplate()
+    assert entry.style is None
+
+
+def test_toc_entry_template_style():
+    entry = TocEntryTemplate(style="Standard")
+    assert entry.style == "Standard"
+
+
+def test_toc_entry_template_no_outline_level():
+    entry = TocEntryTemplate()
+    assert entry.outline_level is None
+
+
+def test_toc_entry_template_outline_level():
+    entry = TocEntryTemplate(outline_level=1)
+    assert entry.outline_level == 1
+
+
+def test_toc_entry_template_complete_defaults():
+    entry = TocEntryTemplate(outline_level=1)
+    entry.complete_defaults()
+    expected = (
+        "<text:table-of-content-entry-template "
+        'text:outline-level="1">'
+        "<text:index-entry-chapter/>"
+        "<text:index-entry-text/>"
+        "<text:index-entry-text/>"
+        '<text:index-entry-text style:type="right" '
+        'style:leader-char="."/>'
+        "<text:index-entry-page-number/>"
+        "</text:table-of-content-entry-template>"
+    )
+    assert entry.serialize() == expected
 
 
 def test_toc_create_toc_source_args():
