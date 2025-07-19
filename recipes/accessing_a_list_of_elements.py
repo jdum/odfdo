@@ -8,7 +8,7 @@ These methods or properties return a list of elements:
     - `body.paragraphs`
     - `body.get_links()`
     - `body.get_notes()`
-    - `body.tables`
+    - `body.tables` (alias: body.sheets)
     - `body.get_paragraphs(content)`
 """
 
@@ -76,6 +76,8 @@ def analysis(document: Document) -> dict[str, int]:
     # Our sample document has no table:
     # print("number of tables:", len(body.get_tables()))
     result["tables"] = len(body.tables)
+    # sheets is an alias of tables:
+    # result["tables"] = len(body.sheets)
 
     # Each get_xxx_list method provides parameters for filtering the results.
     # For example headings can be listed by level, annotations by creator, etc.
@@ -112,7 +114,7 @@ def test_unit(stats: dict[str, int]) -> None:
     if "ODFDO_TESTING" not in os.environ:
         return
 
-    assert stats["methods"] == 96
+    assert stats["methods"] == 98
     assert stats["headings"] == 29
     assert stats["images"] == 0
     assert stats["paragraphs"] == 175

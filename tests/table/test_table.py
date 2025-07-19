@@ -52,8 +52,20 @@ def test_get_table_list(body):
     assert len(body.get_tables()) == 3
 
 
+def test_get_sheets_alias(body):
+    assert body.get_tables == body.get_sheets
+
+
+def test_get_sheets_list(body):
+    assert len(body.get_sheets()) == 3
+
+
 def test_get_table_list_property(body):
     assert len(body.tables) == 3
+
+
+def test_get_sheets_list_property(body):
+    assert len(body.sheets) == 3
 
 
 def test_get_table_list_style(body):
@@ -64,6 +76,17 @@ def test_get_table_by_name(body):
     name = "New Table"
     body.append(Table(name))
     table = body.get_table(name=name)
+    assert table.name == name
+
+
+def test_get_sheet_alias(body):
+    assert body.get_sheet == body.get_table
+
+
+def test_get_sheet_by_name(body):
+    name = "New Table"
+    body.append(Table(name))
+    table = body.get_sheet(name=name)
     assert table.name == name
 
 

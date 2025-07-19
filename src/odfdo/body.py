@@ -42,6 +42,9 @@ class Body(Element):
     ) -> list[Table]:
         """Return all the tables that match the criteria.
 
+        The method is also accessible via the alias
+        get_sheets()
+
         Arguments:
 
             style -- str
@@ -54,13 +57,19 @@ class Body(Element):
             "descendant::table:table", table_style=style, content=content
         )
 
+    get_sheets = get_tables
+
     @property
     def tables(self) -> list[Table]:
         """Return all the tables.
 
+        The property is also accessible via the alias sheets.
+
         Return: list of Table
         """
         return self.get_elements("descendant::table:table")
+
+    sheets = tables
 
     def get_table(
         self,
@@ -69,6 +78,9 @@ class Body(Element):
         content: str | None = None,
     ) -> Table | None:
         """Return the table that matches the criteria.
+
+        The method is also accessible via the alias
+        get_sheet()
 
         Arguments:
 
@@ -90,6 +102,8 @@ class Body(Element):
                 content=content,
             )
         return result
+
+    get_sheet = get_table
 
 
 class Chart(Body):
