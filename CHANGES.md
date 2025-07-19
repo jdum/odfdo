@@ -1,5 +1,32 @@
 # Odfdo Release Notes
 
+## [3.14.11] - 2025-07-19
+
+-  For concept clarity, rename methods `Table.traverse()` to `Table.iterate_rows()`, `Table.traverse_columns()` to `Table.iterate_columns()`, `Row.traverse()` to `Row.iterate_cells()`, maintaining compatibility with aliases on previous names.
+-  Add alias names for `Body.get_table()`, `tables`, `get_table()`: `get_sheets()`, `sheets`, `get_sheet()`.
+-  Add the `Meta.strip()` method to clean all metadata from a document and a recipe showing how it works.
+-  Improve the `remove_tree()` utility function (used in recipes) by adding the `keep_children` argument.
+-  Optimize access to columns in tables.
+-  Refactor of code (type hints) and improvement of the tests coverage.
+
+### Changed
+
+-   Rename `Table.traverse()` -> `Table.iterate_rows()`, keep compatibility (alias nane).
+-   Rename `Table.traverse_columns()` -> `Table.iterate_columns()`, keep compatibility (alias nane).
+-   Rename `Row.traverse()` -> `Row.iterate_cells()`, keep compatibility (alias nane).
+-   Refactor module `odfdo.table_cache`.
+-   Use the cache to iterate over columns in tables.
+
+### Added
+
+-   Add aliases for `Body.get_table`, `tables`, `get_table`: `get_sheets`, `sheets`, `get_sheet`.
+-   Add argument "keep_children" to `remove_tree()` utility function, add tests for `remove_tree()`.
+-   Add method `how_to_remove_all_meta_data.py`.
+-   Add recipe `Meta.strip()`.
+-   Add tests for module `odfdo.TOC`.
+-   Add test for `Column`.
+-   Add tests for module `odfdo.table_cache`.
+
 ## [3.14.10] - 2025-07-14
 
 -   Improve documentation and docstrings.
