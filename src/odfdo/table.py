@@ -2055,6 +2055,7 @@ class Table(MDTable, Element):
             column = self._get_element_idx2(_XP_COLUMN_IDX, idx)
             if column is None:
                 return None
+            self._table_cache.store_col(column, idx)
         return column.clone  # type: ignore
 
     @property
