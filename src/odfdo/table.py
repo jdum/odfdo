@@ -427,7 +427,7 @@ class Table(MDTable, Element):
     def _get_formatted_text_normal(self, context: dict | None) -> str:
         result = []
         for row in self.traverse():
-            for cell in row.traverse():
+            for cell in row.iterate_cells():
                 value = cell.get_value(try_get_text=False)
                 # None ?
                 if value is None:
@@ -455,7 +455,7 @@ class Table(MDTable, Element):
         cols_size: dict[int, int] = {}
         for odf_row in table.traverse():  # type: ignore
             row = []
-            for i, cell in enumerate(odf_row.traverse()):
+            for i, cell in enumerate(odf_row.iterate_cells()):
                 value = cell.get_value(try_get_text=False)
                 # None ?
                 if value is None:
@@ -1007,7 +1007,7 @@ class Table(MDTable, Element):
         data = []
         if coord is None:
             for row in self.traverse():
-                data.append(list(row.traverse()))
+                data.append(row.cells)
             transposed_data = zip_longest(*data)
             self.clear()
             # new_rows = []
@@ -1037,7 +1037,7 @@ class Table(MDTable, Element):
             else:
                 t = min(t, self.height - 1)
             for row in self.traverse(start=y, end=t):
-                data.append(list(row.traverse(start=x, end=z)))
+                data.append(list(row.iterate_cells(start=x, end=z)))
             transposed_data = zip_longest(*data)
             # clear locally
             w = z - x + 1

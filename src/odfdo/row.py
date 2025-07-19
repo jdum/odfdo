@@ -226,7 +226,7 @@ class Row(Element):
                     cell_copy.repeated = None
                     yield cell_copy
 
-    def traverse(
+    def iterate_cells(
         self,
         start: int | None = None,
         end: int | None = None,
@@ -260,6 +260,8 @@ class Row(Element):
             cell.x = x
             cell.y = self.y
             yield cell
+
+    traverse = iterate_cells
 
     def get_cells(
         self,
@@ -298,7 +300,7 @@ class Row(Element):
         if cell_type:
             cell_type = cell_type.lower().strip()
         cells: list[Cell] = []
-        for cell in self.traverse(start=x, end=z):
+        for cell in self.iterate_cells(start=x, end=z):
             # Filter the cells by cell_type
             if cell_type:
                 ctype = cell.type
@@ -320,7 +322,7 @@ class Row(Element):
         Return: list of Cell
         """
         # fixme : not clones ?
-        return list(self.traverse())
+        return list(self.iterate_cells())
 
     def _get_cell2(self, x: int, clone: bool = True) -> Cell | None:
         if x >= self.width:
@@ -593,7 +595,7 @@ class Row(Element):
         if cell_type:
             cell_type = cell_type.lower().strip()
             values: list[Any | tuple[Any, Any]] = []
-            for cell in self.traverse(start=x, end=z):
+            for cell in self.iterate_cells(start=x, end=z):
                 # Filter the cells by cell_type
                 ctype = cell.type
                 if not ctype or not (ctype == cell_type or cell_type == "all"):
@@ -608,7 +610,7 @@ class Row(Element):
         else:
             return [
                 cell.get_value(get_type=get_type)
-                for cell in self.traverse(start=x, end=z)
+                for cell in self.iterate_cells(start=x, end=z)
             ]
 
     def get_sub_elements(
@@ -622,7 +624,7 @@ class Row(Element):
 
         Return: list of Elements.
         """
-        return [cell.children for cell in self.traverse()]
+        return [cell.children for cell in self.iterate_cells()]
 
     def set_cells(
         self,

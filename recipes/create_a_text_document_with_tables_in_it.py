@@ -210,7 +210,7 @@ def make_order_table(
 
     # Let's add some style on header row
     row = table.get_row(0)
-    for cell in row.traverse():
+    for cell in row.iterate_cells():
         cell.style = style_name
         row.set_cell(x=cell.x, cell=cell)
     table.set_row(row.y, row)

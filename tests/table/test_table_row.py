@@ -83,7 +83,12 @@ def test_get_row_width(row):
     assert row.width == 5
 
 
+def test_iterate_cells(row):
+    assert len(list(row.iterate_cells())) == 5
+
+
 def test_traverse_cells(row):
+    # compatibily traverse = iterate_cells
     assert len(list(row.traverse())) == 5
 
 
