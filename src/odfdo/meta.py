@@ -723,11 +723,15 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         if not isinstance(statistic, dict):
             raise TypeError("Statistic must be a dict")
         element = self.get_element("//meta:document-statistic")
+        if element is None:
+            element = Element.from_tag("meta:document-statistic")
+            self.get_meta_body().append(element)
         for key, value in statistic.items():
             try:
                 ivalue = int(value)
             except ValueError as e:
-                raise TypeError("Statistic value must be a int") from e
+                msg = f"Statistic value must be a int: {key}:{value!r}"
+                raise TypeError(msg) from e
             element.set_attribute(to_str(key), str(ivalue))
 
     @property
@@ -1236,3 +1240,39 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
                     if v["value"] is not None
                 }
                 self.user_defined_metadata = new_ud
+
+    def strip(
+        self,
+        generator: str = GENERATOR,
+        creation_date: datetime | None = None,
+    ) -> None:
+        """Strip metadata to their minimal content.
+
+        By default the new metadata values are:
+            - meta:creation-date: use current time,
+            - dc:date: use creation date,
+            - meta:editing-duration: set to zero,
+            - meta:editing-cycles: set to 1,
+            - meta:generator: use odfdo generator string.
+            - all meta:document-statistic values to 0.
+
+        All user defined metadata are removed.
+
+        Arguments:
+
+            generator -- str, string for the meta:generator field.
+
+            creation_date -- datetime or None, meta:creation-date value.
+        """
+
+        self.get_meta_body().clear()
+        self.statistic = self._complete_stats({}, None)
+        if creation_date is None:
+            self.creation_date = datetime.now().replace(microsecond=0)
+        else:
+            self.creation_date = creation_date.replace(microsecond=0)
+        self.date = self.creation_date
+        self.editing_duration = timedelta(0)
+        self.editing_cycles = 1
+        self.generator = generator
+        self.clear_user_defined_metadata()

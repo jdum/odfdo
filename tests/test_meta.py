@@ -1066,3 +1066,89 @@ def test_meta_from_dict_5(meta):
     meta.from_dict(imported)
     result = meta.as_dict(full=False)
     assert result == expected
+
+
+def test_meta_strip_1(samples):
+    document = Document(samples("meta.odt"))
+    meta = document.meta
+    dt = datetime(2024, 7, 14, 12, 13, 14)
+    meta.strip(creation_date=dt)
+    # check document updated
+    meta = document.meta
+    exported = meta.as_dict(True)
+    expected = {
+        "meta:creation-date": datetime(2024, 7, 14, 12, 13, 14),
+        "dc:date": datetime(2024, 7, 14, 12, 13, 14),
+        "meta:editing-duration": timedelta(0),
+        "meta:editing-cycles": 1,
+        "meta:document-statistic": {
+            "meta:table-count": 0,
+            "meta:image-count": 0,
+            "meta:object-count": 0,
+            "meta:page-count": 0,
+            "meta:paragraph-count": 0,
+            "meta:word-count": 0,
+            "meta:character-count": 0,
+            "meta:non-whitespace-character-count": 0,
+        },
+        "meta:generator": GENERATOR,
+        "dc:title": None,
+        "dc:description": None,
+        "dc:creator": None,
+        "meta:keyword": None,
+        "dc:subject": None,
+        "dc:language": None,
+        "meta:initial-creator": None,
+        "meta:print-date": None,
+        "meta:printed-by": None,
+        "meta:template": None,
+        "meta:auto-reload": None,
+        "meta:hyperlink-behaviour": None,
+        "meta:user-defined": [],
+    }
+
+    print(exported)
+    assert exported == expected
+
+
+def test_meta_strip_2(samples):
+    document = Document(samples("meta.odt"))
+    meta = document.meta
+    dt = datetime(2024, 7, 14, 12, 13, 14)
+    meta.strip(generator="unknown", creation_date=dt)
+    # check document updated
+    meta = document.meta
+    exported = meta.as_dict(True)
+    expected = {
+        "meta:creation-date": datetime(2024, 7, 14, 12, 13, 14),
+        "dc:date": datetime(2024, 7, 14, 12, 13, 14),
+        "meta:editing-duration": timedelta(0),
+        "meta:editing-cycles": 1,
+        "meta:document-statistic": {
+            "meta:table-count": 0,
+            "meta:image-count": 0,
+            "meta:object-count": 0,
+            "meta:page-count": 0,
+            "meta:paragraph-count": 0,
+            "meta:word-count": 0,
+            "meta:character-count": 0,
+            "meta:non-whitespace-character-count": 0,
+        },
+        "meta:generator": "unknown",
+        "dc:title": None,
+        "dc:description": None,
+        "dc:creator": None,
+        "meta:keyword": None,
+        "dc:subject": None,
+        "dc:language": None,
+        "meta:initial-creator": None,
+        "meta:print-date": None,
+        "meta:printed-by": None,
+        "meta:template": None,
+        "meta:auto-reload": None,
+        "meta:hyperlink-behaviour": None,
+        "meta:user-defined": [],
+    }
+
+    print(exported)
+    assert exported == expected
