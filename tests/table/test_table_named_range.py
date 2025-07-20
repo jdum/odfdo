@@ -27,6 +27,7 @@ from collections.abc import Iterable
 import pytest
 
 from odfdo.document import Document
+from odfdo.element import Element
 from odfdo.named_range import NamedRange
 from odfdo.table import Table
 
@@ -109,6 +110,25 @@ def test_create_nr():
     assert nr.serialize() == result
 
 
+def test_create_nr_minimal():
+    minimal = "<table:named-range/>"
+    nr = Element.from_tag(minimal)
+    assert isinstance(nr, NamedRange)
+
+
+def test_create_nr_minimal_2():
+    minimal = (
+        '<table:named-range table:name="nr_name_ù" table:range-usable-as="filter"/>'
+    )
+    nr = Element.from_tag(minimal)
+    assert isinstance(nr, NamedRange)
+
+
+def test_create_bad_nr_coordinate():
+    with pytest.raises(ValueError):
+        NamedRange("nr_name_ù", table_name="table name é")
+
+
 def test_usage_1():
     nr = NamedRange("a123a", "A1:C2", "tablename")
     assert nr.usage is None
@@ -185,7 +205,7 @@ def test_table_name_3():
 
 def test_range_1():
     nr = NamedRange("nr_name", "A1:C2", "tablename")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         nr.set_range("   ")
 
 
@@ -288,8 +308,7 @@ def test_body_table_get_3(table2):
 
 def test_body_table_get_4(table2):
     back_nr = table2.get_named_range("nr_1")
-    n = back_nr.name
-    assert n == "nr_1"
+    assert back_nr.name == "nr_1"
 
 
 def test_body_table_get_4_1(table2):
@@ -310,6 +329,72 @@ def test_body_table_get_4_2(table2):
 def test_body_table_get_5(table):
     back_nr = table.get_named_range("nr_1")
     assert back_nr is None
+
+
+def test_body_table_rename_1(table2):
+    back_nr = table2.get_named_range("nr_1")
+    back_nr.name = "new_name"
+    assert back_nr.name == "new_name"
+
+
+def test_body_table_rename_2(table2):
+    back_nr = table2.get_named_range("nr_1")
+    back_nr.name = "new_name"
+    back_nr2 = table2.get_named_range("nr_1")
+    assert back_nr2 is None
+
+
+def test_body_table_rename_3(table2):
+    back_nr = table2.get_named_range("nr_1")
+    back_nr.name = "new_name"
+    back_nr2 = table2.get_named_range("new_name")
+    assert isinstance(back_nr2, NamedRange)
+
+
+def test_body_table_rename_4(table2):
+    back_nr = table2.get_named_range("nr_1")
+    back_nr.name = "new_name"
+    back_nr2 = table2.get_named_range("new_name")
+    expected = (
+        '<table:named-range table:name="new_name" '
+        'table:base-cell-address="$Example1.$C$1" '
+        'table:cell-range-address="$Example1.$C$1"/>'
+    )
+    assert back_nr2.serialize() == expected
+
+
+def test_body_table_rename_same(table2):
+    table2.set_named_range(
+        name="nr_1", table_name="Example1", crange="C5", usage="print-range"
+    )
+    nr = table2.get_named_range("nr_1")
+    assert nr.name == "nr_1"
+    assert nr.table_name == "Example1"
+    assert nr.start == (2, 4)
+    assert nr.end == (2, 4)
+    assert nr.crange == (2, 4, 2, 4)
+    assert nr.usage == "print-range"
+
+
+def test_body_table_rename_same_2(table2):
+    nr = table2.get_named_range("nr_6")
+    nr.name = "nr_1"
+    assert nr.name == "nr_1"
+    assert nr.table_name == "Example1"
+    assert nr.start == (3, 2)
+    assert nr.end == (5, 3)
+    assert nr.crange == (3, 2, 5, 3)
+    assert nr.usage == "print-range"
+
+
+def test_body_table_rename_same_3(table2):
+    table2.set_named_range(
+        name="nr_1", table_name="Example1", crange="C5", usage="print-range"
+    )
+    nr = table2.get_named_range("nr_1")
+    nr.name = "nr_42"
+    assert nr.name == "nr_42"
+    assert nr.table_name == "Example1"
 
 
 def test_body_table_set_0(table2):
@@ -341,6 +426,40 @@ def test_body_table_set_3(table2):
     assert back_nr.start == (0, 0)
     assert back_nr.end == (2, 1)
     assert back_nr.table_name == "Example1"
+
+
+def test_body_table_name_set(table2):
+    nr = table2.get_named_range("nr_6")
+    nr.table_name = "badname"
+    assert nr.table_name == "badname"
+
+
+def test_body_table_name_set_2(table2):
+    nr = table2.get_named_range("nr_6")
+    nr.table_name = "badname"
+    with pytest.raises(ValueError):
+        nr.get_values()
+
+
+def test_body_table_name_set_3(table2):
+    nr = table2.get_named_range("nr_6")
+    nr.table_name = "badname"
+    with pytest.raises(ValueError):
+        nr.get_value()
+
+
+def test_body_table_name_set_4(table2):
+    nr = table2.get_named_range("nr_6")
+    nr.table_name = "badname"
+    with pytest.raises(ValueError):
+        nr.set_values([1, 2, 3, 4])
+
+
+def test_body_table_name_set_5(table2):
+    nr = table2.get_named_range("nr_6")
+    nr.table_name = "badname"
+    with pytest.raises(ValueError):
+        nr.set_value(1)
 
 
 def test_body_table_delete_1(table2):
