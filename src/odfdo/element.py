@@ -379,7 +379,10 @@ class Element(MDBase):
         return root[0]
 
     def _base_attrib_getter(self, attr_name: str) -> str | None:
-        return self.__element.get(_get_lxml_tag(attr_name))
+        value = self.__element.get(_get_lxml_tag(attr_name))
+        if value is None:
+            return None
+        return str(value)
 
     def _base_attrib_setter(
         self,
@@ -407,7 +410,7 @@ class Element(MDBase):
                 return None
             elif value in ("true", "false"):
                 return Boolean.decode(value)
-            return str(value)
+            return value
 
         return getter
 
