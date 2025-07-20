@@ -41,12 +41,12 @@ def table(samples) -> Iterable[Table]:
     yield document.body.get_table(name="Example1")
 
 
-def test_iterate_rows(table):
-    assert len(list(table.iterate_rows())) == 4
+def test_iter_rows(table):
+    assert len(list(table.iter_rows())) == 4
 
 
 def test_traverse_func(table):
-    assert table.traverse == table.iterate_rows
+    assert table.traverse == table.iter_rows
 
 
 def test_traverse_rows(table):

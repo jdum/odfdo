@@ -42,13 +42,13 @@ def table(samples) -> Iterable[Table]:
     yield document.body.get_table(name="Example1")
 
 
-def test_iterate_columns(table):
-    assert len(list(table.iterate_columns())) == 7
+def test_iter_columns(table):
+    assert len(list(table.iter_columns())) == 7
 
 
 def test_traverse_func(table):
     # compatibility
-    assert table.traverse_columns == table.iterate_columns
+    assert table.traverse_columns == table.iter_columns
 
 
 def test_traverse_columns(table):

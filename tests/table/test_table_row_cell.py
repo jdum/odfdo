@@ -55,62 +55,62 @@ def row_repeats(samples) -> Iterable[Table]:
     yield table.get_row(0)
 
 
-def test_iterate_cells(row):
-    assert len(list(row.iterate_cells())) == 7
+def test_iter_cells(row):
+    assert len(list(row.iter_cells())) == 7
 
 
-def test_iterate_cells_coord_2_None(row):
-    assert len(list(row.iterate_cells(2, None))) == 5
+def test_iter_cells_coord_2_None(row):
+    assert len(list(row.iter_cells(2, None))) == 5
 
 
-def test_iterate_cells_coord_2_4(row):
-    assert len(list(row.iterate_cells(2, 4))) == 3
+def test_iter_cells_coord_2_4(row):
+    assert len(list(row.iter_cells(2, 4))) == 3
 
 
-def test_iterate_cells_coord_0_3(row):
-    assert len(list(row.iterate_cells(0, 3))) == 4
+def test_iter_cells_coord_0_3(row):
+    assert len(list(row.iter_cells(0, 3))) == 4
 
 
-def test_iterate_cells_coord_0_many(row):
-    assert len(list(row.iterate_cells(0, 55))) == 7
+def test_iter_cells_coord_0_many(row):
+    assert len(list(row.iter_cells(0, 55))) == 7
 
 
-def test_iterate_cells_coord_many_many(row):
-    assert len(list(row.iterate_cells(100, 55))) == 0
+def test_iter_cells_coord_many_many(row):
+    assert len(list(row.iter_cells(100, 55))) == 0
 
 
-def test_iterate_cells_coord_many_none(row):
-    assert len(list(row.iterate_cells(100, None))) == 0
+def test_iter_cells_coord_many_none(row):
+    assert len(list(row.iter_cells(100, None))) == 0
 
 
-def test_iterate_cells_coord_none_1(row):
-    assert len(list(row.iterate_cells(None, 1))) == 2
+def test_iter_cells_coord_none_1(row):
+    assert len(list(row.iter_cells(None, 1))) == 2
 
 
-def test_iterate_cells_coord_m5_1(row):
-    assert len(list(row.iterate_cells(-5, 1))) == 2
+def test_iter_cells_coord_m5_1(row):
+    assert len(list(row.iter_cells(-5, 1))) == 2
 
 
-def test_iterate_cells_coord_2_m1(row):
-    assert len(list(row.iterate_cells(2, -1))) == 0
+def test_iter_cells_coord_2_m1(row):
+    assert len(list(row.iter_cells(2, -1))) == 0
 
 
-def test_iterate_cells_coord_m5_m1(row):
-    assert len(list(row.iterate_cells(-5, -1))) == 0
+def test_iter_cells_coord_m5_m1(row):
+    assert len(list(row.iter_cells(-5, -1))) == 0
 
 
 def test_traverse_func(row):
-    # compatibility traverse = iterate_cells
-    assert row.traverse == row.iterate_cells
+    # compatibility traverse = iter_cells
+    assert row.traverse == row.iter_cells
 
 
 def test_traverse(row):
-    # compatibility traverse = iterate_cells
+    # compatibility traverse = iter_cells
     assert len(list(row.traverse())) == 7
 
 
 def test_traverse_cells_coord(row):
-    # compatibility traverse = iterate_cells
+    # compatibility traverse = iter_cells
     assert len(list(row.traverse(2, 4))) == 3
 
 

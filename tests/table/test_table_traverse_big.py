@@ -100,43 +100,43 @@ def test_get_row_raw_20100(table):
     assert row.repeated in (None, 1)
 
 
-def test_iterate_rows_all(table):
+def test_iter_rows_all(table):
     counter = 0
-    for _row in table.iterate_rows():
+    for _row in table.iter_rows():
         counter += 1
     assert counter == 20100
 
 
-def test_iterate_rows_1(table):
+def test_iter_rows_1(table):
     counter = 0
-    for _row in table.iterate_rows(0, 10000):
+    for _row in table.iter_rows(0, 10000):
         counter += 1
     assert counter == 10001
 
 
-def test_iterate_rows_2(table):
+def test_iter_rows_2(table):
     counter = 0
-    for _row in table.iterate_rows(1000, 50000):
+    for _row in table.iter_rows(1000, 50000):
         counter += 1
     assert counter == 19100
 
 
-def test_iterate_rows_3(table):
+def test_iter_rows_3(table):
     counter = 0
-    for _row in table.iterate_rows(19000, 20000):
+    for _row in table.iter_rows(19000, 20000):
         counter += 1
     assert counter == 1001
 
 
-def test_iterate_rows_4(table):
+def test_iter_rows_4(table):
     counter = 0
-    for _row in table.iterate_rows(19000, 19000):
+    for _row in table.iter_rows(19000, 19000):
         counter += 1
     assert counter == 1
 
 
-def test_iterate_rows_5(table):
+def test_iter_rows_5(table):
     counter = 0
-    for _row in table.iterate_rows(10, 9):
+    for _row in table.iter_rows(10, 9):
         counter += 1
     assert counter == 0
