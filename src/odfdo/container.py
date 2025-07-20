@@ -196,6 +196,7 @@ def pretty_indent(
     ending_level: int = 0,
     textual_parent: bool = False,
 ) -> _ElementTree | _Element:
+    """Return an indented _ElementTree"""
     nb_child = len(elem)
     follow_level = level + 1
     tag = f"{elem.prefix}:{elem.tag.rpartition('}')[2]}"
@@ -282,7 +283,8 @@ class Container:
             if is_folder:
                 self.__packaging = FOLDER
                 return self._read_folder()
-        raise TypeError(f"Document format not managed by odfdo: {type(path_or_file)}.")
+        msg = f"Document format not managed by odfdo: {type(path_or_file)}."
+        raise TypeError(msg)
 
     def _read_zip(self) -> None:
         if isinstance(self.__path_like, io.BytesIO):
@@ -306,12 +308,13 @@ class Container:
         try:
             mimetype, timestamp = self._get_folder_part("mimetype")
         except OSError:
-            printwarn("Corrupted or not an OpenDocument folder (missing mimetype)")
+            msg = "Corrupted or not an OpenDocument folder (missing mimetype)"
+            printwarn(msg)
             mimetype = b""
             timestamp = int(time.time())
         if bytes_to_str(mimetype) not in ODF_MIMETYPES:
-            message = f"Document of unknown type {mimetype!r}, try with ODF Text."
-            printwarn(message)
+            msg = f"Document of unknown type {mimetype!r}, try with ODF Text."
+            printwarn(msg)
             self.__parts["mimetype"] = str_to_bytes(ODF_EXTENSIONS["odt"])
             self.__parts_ts["mimetype"] = timestamp
 
@@ -506,7 +509,11 @@ class Container:
         else:
             return tostring(root, encoding="UTF-8", xml_declaration=True)
 
-    def _save_xml(self, target: Path | str | io.BytesIO, pretty: bool = True) -> None:
+    def _save_xml(
+        self,
+        target: Path | str | io.BytesIO,
+        pretty: bool = True,
+    ) -> None:
         """Save a XML flat ODF format from the available parts."""
         if isinstance(target, (Path, str)):
             target = Path(target).with_suffix(".xml")
@@ -566,21 +573,27 @@ class Container:
     def default_manifest_rdf(self) -> str:
         return (
             '<?xml version="1.0" encoding="utf-8"?>\n'
-            '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">\n'
+            '<rdf:RDF xmlns:rdf="http://www.w3.org/'
+            '1999/02/22-rdf-syntax-ns#">\n'
             '  <rdf:Description rdf:about="styles.xml">\n'
-            f'    <rdf:type rdf:resource="http://docs.oasis-open.org/ns/office/{OFFICE_VERSION}/meta/odf#StylesFile"/>\n'
+            '    <rdf:type rdf:resource="http://docs.oasis-open.org/'
+            f'ns/office/{OFFICE_VERSION}/meta/odf#StylesFile"/>\n'
             "  </rdf:Description>\n"
             '  <rdf:Description rdf:about="">\n'
-            f'    <ns0:hasPart xmlns:ns0="http://docs.oasis-open.org/ns/office/{OFFICE_VERSION}/meta/pkg#" rdf:resource="styles.xml"/>\n'
+            '    <ns0:hasPart xmlns:ns0="http://docs.oasis-open.org/ns/'
+            f'office/{OFFICE_VERSION}/meta/pkg#" rdf:resource="styles.xml"/>\n'
             "  </rdf:Description>\n"
             '  <rdf:Description rdf:about="content.xml">\n'
-            f'    <rdf:type rdf:resource="http://docs.oasis-open.org/ns/office/{OFFICE_VERSION}/meta/odf#ContentFile"/>\n'
+            '    <rdf:type rdf:resource="http://docs.oasis-open.org/'
+            f'ns/office/{OFFICE_VERSION}/meta/odf#ContentFile"/>\n'
             "  </rdf:Description>\n"
             '  <rdf:Description rdf:about="">\n'
-            f'    <ns0:hasPart xmlns:ns0="http://docs.oasis-open.org/ns/office/{OFFICE_VERSION}/meta/pkg#" rdf:resource="content.xml"/>\n'
+            '    <ns0:hasPart xmlns:ns0="http://docs.oasis-open.org/ns/office'
+            f'/{OFFICE_VERSION}/meta/pkg#" rdf:resource="content.xml"/>\n'
             "  </rdf:Description>\n"
             '  <rdf:Description rdf:about="">\n'
-            f'    <rdf:type rdf:resource="http://docs.oasis-open.org/ns/office/{OFFICE_VERSION}/meta/pkg#Document"/>\n'
+            '    <rdf:type rdf:resource="http://docs.oasis-open.org/ns/office'
+            f'/{OFFICE_VERSION}/meta/pkg#Document"/>\n'
             "  </rdf:Description>\n"
             "</rdf:RDF>\n"
         )
@@ -657,7 +670,8 @@ class Container:
             packaging = self.__packaging if self.__packaging else ZIP
         packaging = packaging.strip().lower()
         if packaging not in PACKAGING:
-            raise ValueError(f'Packaging of type "{packaging}" is not supported')
+            msg = f'Packaging of type "{packaging}" is not supported'
+            raise ValueError(msg)
         return packaging
 
     def _clean_save_target(
@@ -675,7 +689,11 @@ class Container:
                 target = target.split(".folder", 1)[0]
         return target  # type: ignore
 
-    def _save_as_zip(self, target: str | Path | io.BytesIO, backup: bool) -> None:
+    def _save_as_zip(
+        self,
+        target: str | Path | io.BytesIO,
+        backup: bool,
+    ) -> None:
         if isinstance(target, (str, Path)) and backup:
             self._do_backup(target)
         self._save_zip(target)
@@ -737,9 +755,8 @@ class Container:
         target = self._clean_save_target(target)
         if packaging == FOLDER:
             if isinstance(target, io.BytesIO):
-                raise TypeError(
-                    "Impossible to save on io.BytesIO with 'folder' packaging"
-                )
+                msg = "Impossible to save on io.BytesIO with 'folder' packaging"
+                raise TypeError(msg)
             self._save_as_folder(target, backup)
         elif packaging == XML:
             self._save_as_xml(target, backup, pretty)
