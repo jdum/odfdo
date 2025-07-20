@@ -378,17 +378,31 @@ class Element(MDBase):
         root = fromstring(NAMESPACES_XML % str_to_bytes(tag))
         return root[0]
 
+    def _base_attrib_getter(self, attr_name: str) -> str | None:
+        return self.__element.get(_get_lxml_tag(attr_name))
+
+    def _base_attrib_setter(
+        self,
+        attr_name: str,
+        value: str | int | float | bool | None,
+    ) -> None:
+        if value is None:
+            with contextlib.suppress(KeyError):
+                del self.__element.attrib[_get_lxml_tag(attr_name)]
+            return
+        if isinstance(value, bool):
+            value = Boolean.encode(value)
+        self.__element.set(_get_lxml_tag(attr_name), str(value))
+
     @staticmethod
     def _generic_attrib_getter(attr_name: str, family: str | None = None) -> Callable:
-        name = _get_lxml_tag(attr_name)
-
         def getter(self: Element) -> str | bool | None:
             try:
                 if family and self.family != family:  # type: ignore
                     return None
             except AttributeError:
                 return None
-            value = self.__element.get(name)
+            value = self._base_attrib_getter(attr_name)
             if value is None:
                 return None
             elif value in ("true", "false"):
@@ -399,21 +413,13 @@ class Element(MDBase):
 
     @staticmethod
     def _generic_attrib_setter(attr_name: str, family: str | None = None) -> Callable:
-        name = _get_lxml_tag(attr_name)
-
         def setter(self: Element, value: Any) -> None:
             try:
                 if family and self.family != family:  # type: ignore
                     return None
             except AttributeError:
                 return None
-            if value is None:
-                with contextlib.suppress(KeyError):
-                    del self.__element.attrib[name]
-                return
-            if isinstance(value, bool):
-                value = Boolean.encode(value)
-            self.__element.set(name, str(value))
+            self._base_attrib_setter(attr_name, value)
 
         return setter
 
