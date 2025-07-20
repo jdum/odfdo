@@ -1,8 +1,8 @@
 # Odfdo Release Notes
 
-## [3.14.11] - 2025-07-19
+## [3.15.0] - 2025-07-20
 
--  For concept clarity, rename methods `Table.traverse()` to `Table.iterate_rows()`, `Table.traverse_columns()` to `Table.iterate_columns()`, `Row.traverse()` to `Row.iterate_cells()`, maintaining compatibility with aliases on previous names.
+-  For concept clarity, rename iterator methods `Table.traverse()` to `Table.iter_rows()`, `Table.traverse_columns()` to `Table.iter_columns()`, `Row.traverse()` to `Row.iter_cells()`, maintaining compatibility with aliases on previous names.
 -  Add alias names for `Body.get_table()`, `tables`, `get_table()`: `get_sheets()`, `sheets`, `get_sheet()`.
 -  Add the `Meta.strip()` method to clean all metadata from a document and a recipe showing how it works.
 -  Improve the `remove_tree()` utility function (used in recipes) by adding the `keep_children` argument.
@@ -11,10 +11,13 @@
 
 ### Changed
 
--   Rename `Table.traverse()` -> `Table.iterate_rows()`, keep compatibility (alias nane).
--   Rename `Table.traverse_columns()` -> `Table.iterate_columns()`, keep compatibility (alias nane).
--   Rename `Row.traverse()` -> `Row.iterate_cells()`, keep compatibility (alias nane).
--   Refactor module `odfdo.table_cache`.
+-   Rename `Table.traverse()` -> `Table.iter_rows()`, keep compatibility (alias nane).
+-   Rename `Table.traverse_columns()` -> `Table.iter_columns()`, keep compatibility (alias nane).
+-   Rename `Row.traverse()` -> `Row.iter_cells()`, keep compatibility (alias nane).
+-   Refactor methods `set_span()` and `set_link()`.
+-   Refactor `Tab.text` property.
+-   Refactor modules `odfdo.table_cache`. `odfdo.container`. `odfdo.named_range`.
+-   Refactor generic getter/setter in module `odfdo.element`.
 -   Use the cache to iterate over columns in tables.
 
 ### Added
@@ -26,6 +29,12 @@
 -   Add tests for module `odfdo.TOC`.
 -   Add test for `Column`.
 -   Add tests for module `odfdo.table_cache`.
+-   Add tests for module `odfdo.named_range`.
+-   Add tests for module `odfdo.spacer`.
+
+### Fixed
+
+-   Fix crashing test in test suite for markdown.
 
 ## [3.14.10] - 2025-07-14
 
