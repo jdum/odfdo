@@ -64,7 +64,12 @@ class Tab(MDTab, Element):
 
     @property
     def text(self) -> str:
+        """Return "\\t"."""
         return "\t"
+
+    @text.setter
+    def text(self, text: str | None) -> None:
+        pass
 
 
 Tab._define_attribut_property()
