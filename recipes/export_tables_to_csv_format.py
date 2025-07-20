@@ -28,7 +28,7 @@ def export_tables_to_csv(document: Document) -> None:
         # default parameters produce an "excell" CSV format,
         # see Python csv library for options.
         # Note: body.sheets is an alias for body.tables
-        # 
+        #
         OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
         path = OUTPUT_DIR / f"content_{index}.csv"
         table.to_csv(path)
