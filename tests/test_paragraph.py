@@ -29,7 +29,6 @@ from odfdo.element import Element
 from odfdo.header import Header
 from odfdo.line_break import LineBreak
 from odfdo.paragraph import Paragraph
-from odfdo.spacer import Spacer
 from odfdo.tab import Tab
 
 
@@ -151,96 +150,6 @@ def test_get_paragraph_missed(document):
     assert paragraph is None
 
 
-def test_read_spacer_empty():
-    element = Element.from_tag("<text:s />")
-    assert isinstance(element, Spacer)
-    assert element.length == 1
-
-
-def test_read_spacer_empty_str():
-    element = Element.from_tag("<text:s />")
-    assert str(element) == " "
-
-
-def test_read_spacer_1():
-    element = Element.from_tag('<text:s text:c="1" />')
-    assert isinstance(element, Spacer)
-    assert element.length == 1
-
-
-def test_read_spacer_1_str():
-    element = Element.from_tag('<text:s text:c="1" />')
-    assert str(element) == " "
-
-
-def test_read_spacer_2():
-    element = Element.from_tag('<text:s text:c="2" />')
-    assert isinstance(element, Spacer)
-    assert element.length == 2
-
-
-def test_read_spacer_2_str():
-    element = Element.from_tag('<text:s text:c="2" />')
-    assert str(element) == "  "
-
-
-def test_create_space_1_base():
-    sp1 = Spacer()
-    expected = "<text:s/>"
-    assert sp1.serialize() == expected
-
-
-def test_create_space_1_number():
-    sp1 = Spacer()
-    assert sp1.number in (None, "1")
-
-
-def test_create_space_1_length():
-    sp1 = Spacer()
-    assert sp1.length == 1
-
-
-def test_create_space_1_length_mod_serialize():
-    sp1 = Spacer()
-    sp1.length = 3
-    expected = '<text:s text:c="3"/>'
-    assert sp1.serialize() == expected
-
-
-def test_create_space_1_length_mod_number():
-    sp1 = Spacer()
-    sp1.length = 3
-    assert sp1.number == "3"
-
-
-def test_create_space_1_length_mod_length():
-    sp1 = Spacer()
-    sp1.length = 3
-    assert sp1.length == 3
-
-
-def test_create_space_5_base():
-    sp1 = Spacer(5)
-    expected = '<text:s text:c="5"/>'
-    assert sp1.serialize() == expected
-
-
-def test_create_space_5_number():
-    sp1 = Spacer(5)
-    assert sp1.number == "5"
-
-
-def test_create_space_5_length():
-    sp1 = Spacer(5)
-    assert sp1.length == 5
-
-
-def test_create_spaces():
-    sp5 = Spacer(5)
-    expected = '<text:s text:c="5"/>'
-    assert sp5.serialize() == expected
-
-
 def test_create_tabulation():
     tab = Tab()
     expected = "<text:tab/>"
@@ -269,29 +178,9 @@ def test_create_line_break_str():
     assert str(lb) == "\n"
 
 
-def test_create_naive_spaces():
-    para = Paragraph("   ")
-    # old rules
-    # expected = '<text:p> <text:s text:c="2"/></text:p>'
-    expected = '<text:p><text:s text:c="3"/></text:p>'
-    assert para.serialize() == expected
-
-
-def test_create_naive_spaces_no_format():
-    para = Paragraph("   ", formatted=False)
-    expected = "<text:p><text:s/></text:p>"
-    assert para.serialize() == expected
-
-
 def test_create_naive_cr():
     para = Paragraph("\n")
     expected = "<text:p><text:line-break/></text:p>"
-    assert para.serialize() == expected
-
-
-def test_create_naive_cr_no_format():
-    para = Paragraph("\n", formatted=False)
-    expected = "<text:p><text:s/></text:p>"
     assert para.serialize() == expected
 
 
@@ -312,7 +201,6 @@ def test_plain_text_splitted_elements():
     content = para._replace_tabs_lb(content)
     assert content[0] == "A test,"
     assert isinstance(content[1], LineBreak)
-    assert isinstance(content[3], Spacer)
     assert isinstance(content[4], Tab)
     assert isinstance(content[6], LineBreak)
 
@@ -372,40 +260,6 @@ def test_append_plain_text_guess_utf8_3_no_format():
     assert para.serialize() == expected
 
 
-def test_paragraph_1_space():
-    para = Paragraph(" ")
-    # new rule
-    expected = "<text:p><text:s/></text:p>"
-    assert para.serialize() == expected
-
-
-def test_paragraph_2_spaces():
-    para = Paragraph("  ")
-    # new rule
-    expected = '<text:p><text:s text:c="2"/></text:p>'
-    assert para.serialize() == expected
-
-
-def test_paragraph_1_space_no_format():
-    para = Paragraph(" ", formatted=False)
-    expected = "<text:p><text:s/></text:p>"
-    assert para.serialize() == expected
-
-
-def test_paragraph_2_spaces_no_format():
-    para = Paragraph("  ", formatted=False)
-    # new rule
-    expected = "<text:p><text:s/></text:p>"
-    assert para.serialize() == expected
-
-
-def test_paragraph_any_spaces_no_format():
-    para = Paragraph("  \n\t ", formatted=False)
-    # new rule
-    expected = "<text:p><text:s/></text:p>"
-    assert para.serialize() == expected
-
-
 def test_append_plain_text_guess_utf8_4_no_format():
     txt = " A test,\n   \twith \n\n some \xe9 and \t and     5 spaces."
     para = Paragraph(" ")  # -> text:s text:c="1"/>
@@ -429,20 +283,6 @@ def test_append_plain_text_guess_utf8_5():
         'some é and <text:tab/> and <text:s text:c="4"/>'
         "5 spaces.</text:p>"
     )
-    assert para.serialize() == expected
-
-
-def test_space_plus_space():
-    para = Paragraph(" ")
-    para.append(" ")
-    expected = '<text:p><text:s text:c="2"/></text:p>'
-    assert para.serialize() == expected
-
-
-def test_space_plus_space_no_format():
-    para = Paragraph(" ")
-    para.append(" ", formatted=False)
-    expected = '<text:p><text:s text:c="2"/></text:p>'
     assert para.serialize() == expected
 
 
@@ -1042,41 +882,6 @@ def test_set_reference_mark_before(document):
         "</text:p>"
     )
     assert para.serialize() == expected
-
-
-def test_spacer_setter_0():
-    spacer = Spacer()
-    spacer.text = None
-    expected = "<text:s/>"
-    assert spacer.serialize() == expected
-
-
-def test_spacer_setter_1():
-    spacer = Spacer()
-    spacer.text = ""
-    expected = "<text:s/>"
-    assert spacer.serialize() == expected
-
-
-def test_spacer_setter_2():
-    spacer = Spacer()
-    spacer.text = "x"
-    expected = "<text:s/>"
-    assert spacer.serialize() == expected
-
-
-def test_spacer_setter_3():
-    spacer = Spacer()
-    spacer.text = "xx"
-    expected = '<text:s text:c="2"/>'
-    assert spacer.serialize() == expected
-
-
-def test_spacer_setter_4():
-    spacer = Spacer()
-    spacer.text = "xxx"
-    expected = '<text:s text:c="3"/>'
-    assert spacer.serialize() == expected
 
 
 def test_tab_getter_0():
