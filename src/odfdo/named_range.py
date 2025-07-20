@@ -218,6 +218,8 @@ class NamedRange(Element):
         else:
             x, y = digits
             z, t = digits
+        if x is None or y is None or z is None or t is None:
+            raise ValueError(f"Wrong format for cell range: {coord!r}")
         self.start = x, y  # type: ignore
         self.end = z, t  # type: ignore
         self.crange = x, y, z, t  # type: ignore
@@ -277,7 +279,7 @@ class NamedRange(Element):
             raise ValueError("Table is not inside a document.")
         table = body.get_table(name=self.table_name)
         if table is None:
-            raise ValueError
+            raise ValueError(f"Table not found: {self.table_name!r}")
         return table.get_values(self.crange, cell_type, complete, get_type, flat)
 
     def get_value(self, get_type: bool = False) -> Any:
@@ -289,7 +291,7 @@ class NamedRange(Element):
             raise ValueError("Table is not inside a document.")
         table: Table | None = body.get_table(name=self.table_name)
         if table is None:
-            raise ValueError
+            raise ValueError(f"Table not found: {self.table_name!r}")
         return table.get_value(self.start, get_type)
 
     def set_values(
@@ -307,7 +309,7 @@ class NamedRange(Element):
             raise ValueError("Table is not inside a document.")
         table = body.get_table(name=self.table_name)
         if table is None:
-            raise ValueError
+            raise ValueError(f"Table not found: {self.table_name!r}")
         table.set_values(
             values,
             coord=self.crange,
@@ -331,7 +333,7 @@ class NamedRange(Element):
             raise ValueError("Table is not inside a document.")
         table = body.get_table(name=self.table_name)
         if table is None:
-            raise ValueError
+            raise ValueError(f"Table not found: {self.table_name!r}")
         table.set_value(
             coord=self.start,
             value=value,
