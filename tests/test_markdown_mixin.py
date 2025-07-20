@@ -147,6 +147,7 @@ def test_md_toc_2():
 
 
 def test_md_note():
+    _set_global(None)
     note = Note()
     result = note._md_collect()
     assert result == ["[]\n"]
