@@ -858,6 +858,14 @@ def test_text_several():
     assert paragraph.serialize() == expected
 
 
+def test_text_several_result():
+    text = "Le Père rouge a une moustache rouge."
+    paragraph = Paragraph(text)
+    result = paragraph.set_span("highlight", regex="rouge")
+    assert isinstance(result, list)
+    assert len(result) == 2
+
+
 def test_tail_several():
     data = (
         "<text:p>Le <text:span>Père</text:span> rouge a une moustache rouge.</text:p>"
@@ -876,6 +884,16 @@ def test_tail_several():
     assert paragraph.serialize() == expected
 
 
+def test_tail_several_result():
+    data = (
+        "<text:p>Le <text:span>Père</text:span> rouge a une moustache rouge.</text:p>"
+    )
+    paragraph = Element.from_tag(data)
+    result = paragraph.set_span("highlight", regex="rouge")
+    assert isinstance(result, list)
+    assert len(result) == 2
+
+
 def test_offset():
     text = "Le Père Noël a une moustache rouge."
     paragraph = Paragraph(text)
@@ -887,6 +905,14 @@ def test_offset():
         "</text:p>"
     )
     assert paragraph.serialize() == expected
+
+
+def test_offset_result():
+    text = "Le Père Noël a une moustache rouge."
+    paragraph = Paragraph(text)
+    result = paragraph.set_span("highlight", offset=text.index("moustache"))
+    assert isinstance(result, list)
+    assert len(result) == 1
 
 
 def test_offset_length():
@@ -902,6 +928,22 @@ def test_offset_length():
         "</text:p>"
     )
     assert paragraph.serialize() == expected
+
+
+def test_set_span_none_regex():
+    text = "Le Père Noël a une moustache rouge."
+    paragraph = Paragraph(text)
+    paragraph.set_span("highlight")
+    expected = "<text:p>Le Père Noël a une moustache rouge.</text:p>"
+    assert paragraph.serialize() == expected
+
+
+def test_set_span_none_regex_result():
+    text = "Le Père Noël a une moustache rouge."
+    paragraph = Paragraph(text)
+    result = paragraph.set_span("highlight")
+    assert isinstance(result, list)
+    assert len(result) == 0
 
 
 def test_set_reference_mark_single(document):

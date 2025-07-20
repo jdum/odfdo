@@ -57,7 +57,8 @@ def _by_offset_wrapper(
     offset: int,
     *args: Any,
     **kwargs: Any,
-) -> None:
+) -> list[Span | Link]:
+    result: list[Span | Link] = []
     length = int(kwargs.get("length", 0))
     counted = 0
     for text in element.xpath("descendant::text()"):
@@ -82,19 +83,22 @@ def _by_offset_wrapper(
         else:
             text_str = container.tail or ""
         before = text_str[:start]
-        match = text_str[start:end]
+        match_string = text_str[start:end]
         tail = text_str[end:]
-        result = method(element, match, tail, *args, **kwargs)
+        target = method(element, *args, match_string=match_string, **kwargs)
+        target.tail = tail
         if is_text:
             container.text = before
             # Insert as first child
-            container.insert(result, position=0)
+            container.insert(target, position=0)
         else:
             container.tail = before
             # Insert as next sibling
             if upper:
                 index = upper.index(container)
-                upper.insert(result, position=index + 1)
+                upper.insert(target, position=index + 1)
+        result.append(target)
+    return result
 
 
 def _by_regex_wrapper(
@@ -103,7 +107,10 @@ def _by_regex_wrapper(
     regex: str,
     *args: Any,
     **kwargs: Any,
-) -> None:
+) -> list[Span | Link]:
+    result: list[Span | Link] = []
+    if not regex:
+        return result
     pattern = re.compile(regex)
     for text in element.xpath("descendant::text()"):
         # Static information about the text node
@@ -122,24 +129,27 @@ def _by_regex_wrapper(
             else:
                 text_str = container.tail or ""
             before = text_str[:start]
-            match = text_str[start:end]
+            match_string = text_str[start:end]
             tail = text_str[end:]
-            result = method(element, match, tail, *args, **kwargs)
+            target = method(element, *args, match_string=match_string, **kwargs)
+            target.tail = tail
             if is_text:
                 container.text = before
                 # Insert as first child
-                container.insert(result, position=0)
+                container.insert(target, position=0)
             else:
                 container.tail = before
                 # Insert as next sibling
                 if upper:
                     index = upper.index(container)
-                    upper.insert(result, position=index + 1)
+                    upper.insert(target, position=index + 1)
+            result.append(target)
+    return result
 
 
 def _by_regex_offset(method: Callable) -> Callable:
     @wraps(method)
-    def wrapper(element: Element, *args: Any, **kwargs: Any) -> None:
+    def wrapper(element: Element, *args, **kwargs: Any) -> list[Span | Link]:
         """Insert the result of method(element, ...) at the place matching the
         regex OR the positional arguments offset and length.
 
@@ -156,7 +166,7 @@ def _by_regex_offset(method: Callable) -> Callable:
             length -- int
         """
         offset = kwargs.pop("offset", None)
-        regex = kwargs.pop("regex", None)
+        regex = kwargs.pop("regex", "")
         if offset is not None:
             return _by_offset_wrapper(
                 method,
@@ -165,7 +175,7 @@ def _by_regex_offset(method: Callable) -> Callable:
                 *args,
                 **kwargs,
             )
-        if regex:
+        else:
             return _by_regex_wrapper(
                 method,
                 element,
@@ -678,38 +688,36 @@ class ParaMixin:
     @_by_regex_offset
     def set_span(
         self,
-        match: str,
-        tail: str,
         style: str,
         regex: str | None = None,
         offset: int | None = None,
         length: int = 0,
-    ) -> Span:
+        **kwargs,
+    ) -> list[Span]:
         """
-        set_span(style, regex=None, offset=None, length=0)
-        Apply the given style to text content matching the regex OR the
-        positional arguments offset and length.
+        Apply the given style  with a Span to text content matching either:
 
-        (match, tail: provided by regex decorator)
+          - the 'regex' match,
+          - or the string of length 'length' starting at 'offset'.
 
         Arguments:
 
             style -- str
 
-            regex -- str regular expression
+            regex -- str regular expression, or None
 
-            offset -- int
+            offset -- int, or None
 
             length -- int
+
+        Returns: list of generated Span instances.
         """
         # span = Span(match, style=style)
         # span.tail = tail
         span: Span = Element.from_tag("text:span")
         span.text = ""
-        span.append_plain_text(match)
-        span.tail = tail
+        span.append_plain_text(kwargs["match_string"])
         span.style = style
-
         return span
 
     def remove_spans(self, keep_heading: bool = True) -> Element | list:
@@ -736,33 +744,32 @@ class ParaMixin:
     @_by_regex_offset
     def set_link(
         self,
-        match: str,
-        tail: str,
         url: str,
         regex: str | None = None,
         offset: int | None = None,
         length: int = 0,
-    ) -> Element:
+        **kwargs,
+    ) -> list[Link]:
         """
-        set_link(url, regex=None, offset=None, length=0)
-        Make a link to the provided url from text content matching the regex
-        OR the positional arguments offset and length.
+        Make a link to the provided url from text content matching either:
 
-        (match, tail: provided by regex decorator)
+          - the 'regex' match,
+          - or the string of length 'length' starting at 'offset'.
 
         Arguments:
 
             url -- str
 
-            regex -- str regular expression
+            regex -- str regular expression, or None
 
-            offset -- int
+            offset -- int, or None
 
             length -- int
+
+        Returns: list of generated Link instances.
         """
-        link = Link(url, text=match)
-        link.tail = tail
-        return link
+
+        return Link(url, text=kwargs["match_string"])
 
     def remove_links(self) -> Element | list:
         """Send back a copy of the element, without links tags."""
