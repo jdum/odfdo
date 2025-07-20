@@ -25,10 +25,9 @@
 
 from __future__ import annotations
 
-import contextlib
 from typing import Any
 
-from .element import Element, PropDef, _get_lxml_tag, register_element_class
+from .element import Element, PropDef, register_element_class
 from .mixin_md import MDSpacer
 
 
@@ -45,7 +44,7 @@ class Spacer(MDSpacer, Element):
     _tag = "text:s"
     _properties: tuple[PropDef, ...] = (PropDef("number", "text:c"),)
 
-    def __init__(self, number: int | None = 1, **kwargs: Any):
+    def __init__(self, number: int | None = 1, **kwargs: Any) -> None:
         """Representation of several spaces, "text:s".
 
         Arguments:
@@ -55,7 +54,7 @@ class Spacer(MDSpacer, Element):
         super().__init__(**kwargs)
         if self._do_init:
             if number and number >= 2:
-                self.number = str(number)
+                self.number: str | None = str(number)
             else:
                 self.number = None
 
@@ -64,7 +63,7 @@ class Spacer(MDSpacer, Element):
 
     @property
     def text(self) -> str:
-        """Get / set the text content of the element."""
+        """Get / set the string (spaces)."""
         return " " * self.length
 
     @text.setter
@@ -75,20 +74,17 @@ class Spacer(MDSpacer, Element):
 
     @property
     def length(self) -> int:
-        name = _get_lxml_tag("text:c")
-        value = self._Element__element.get(name)
+        value = self._base_attrib_getter("text:c")
         if value is None:
             return 1  # minimum 1 space
         return int(value)
 
     @length.setter
     def length(self, value: int | None) -> None:
-        name = _get_lxml_tag("text:c")
-        if value is None or value < 2:
-            with contextlib.suppress(KeyError):
-                del self._Element__element.attrib[name]
-            return
-        self._Element__element.set(name, str(value))
+        if value is None or int(value) < 2:
+            self._base_attrib_setter("text:c", None)
+        else:
+            self._base_attrib_setter("text:c", int(value))
 
 
 Spacer._define_attribut_property()
