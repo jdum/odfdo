@@ -224,7 +224,7 @@ class ParaFormattedTextMixin:
                 "images": [],
                 "no_img_level": 0,
             }
-        content = _formatted_text(self, context)
+        content = _formatted_text(self, context)  # type:ignore[arg-type]
         if simple:
             return content
         else:
