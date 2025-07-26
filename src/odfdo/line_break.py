@@ -45,7 +45,12 @@ class LineBreak(MDLineBreak, Element):
 
     @property
     def text(self) -> str:
+        """Get / set the string (line break)."""
         return "\n"
+
+    @text.setter
+    def text(self, text: str | None) -> None:
+        pass
 
 
 register_element_class(LineBreak)
