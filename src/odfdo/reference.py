@@ -291,9 +291,7 @@ class ReferenceMarkStart(Element):
             raise ValueError(
                 "Reference need some upper document part"
             )  # pragma: nocover
-        body = self.document_body
-        if not body:
-            body = self.parent
+        body: Body | Element = self.document_body or self.parent
         end = body.get_reference_mark_end(name=self.name)
         if end is None:
             raise ValueError("No reference-end found")
@@ -328,9 +326,7 @@ class ReferenceMarkStart(Element):
         name = self.name
         if self.parent is None:
             raise ValueError("Can't delete the root element")  # pragma: nocover
-        body = self.document_body
-        if not body:
-            body = self.parent  # pragma: nocover
+        body: Body | Element = self.document_body or self.parent
         ref_end = body.get_reference_mark_end(name=name)
         if ref_end:  # pragma: nocover
             ref_end.delete()
@@ -375,7 +371,7 @@ def remove_reference_mark(
     """
     start_ref = element.get_reference_mark(position=position, name=name)
     end_ref = element.get_reference_mark_end(position=position, name=name)
-    to_strip = []
+    to_strip: list[ReferenceMark | ReferenceMarkStart | ReferenceMarkEnd] = []
     if start_ref:
         to_strip.append(start_ref)
     if end_ref:
