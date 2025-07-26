@@ -1,6 +1,6 @@
 [project]
 name = "odfdo"
-version = "3.15.0"
+version = "3.15.1"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 readme = "README.md"
@@ -59,8 +59,8 @@ doc = [
 dev = [
     "pillow>=11.3.0",
     "pytest>=8.4.0",
-    "tox>=4.27.0",
-    "ruff>=0.12.4",
+    "tox>=4.28.3",
+    "ruff>=0.12.5",
     "isort>=6.0.1",
     "coverage>=7.9.2",
     "pytest-cov>=6.2.1",

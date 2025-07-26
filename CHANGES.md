@@ -1,5 +1,13 @@
 # Odfdo Release Notes
 
+## [3.15.1] - 2025-07-26
+
+-  Refactor of code (type hints).
+
+### Changed
+
+-  Refactor `odfdo` modules for type hints: `reference`. `container`. `named_range`. `mixin_paragraph`. `mixin_paragraph_formatted`, `element`. `mixin_dc_creator`, `line_break`, `element_typed`, `container`, `body`, `xmlpart`.
+
 ## [3.15.0] - 2025-07-20
 
 -  For concept clarity, rename iterator methods `Table.traverse()` to `Table.iter_rows()`, `Table.traverse_columns()` to `Table.iter_columns()`, `Row.traverse()` to `Row.iter_cells()`, maintaining compatibility with aliases on previous names.
