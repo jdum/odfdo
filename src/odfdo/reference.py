@@ -23,9 +23,12 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .element import Element, PropDef, register_element_class
+
+if TYPE_CHECKING:
+    from .body import Body
 
 
 class Reference(Element):
@@ -150,15 +153,11 @@ class Reference(Element):
         if ref_format != "text":
             # only 'text' is implemented
             return None
-        body = self.document_body
-        if not body:
-            body = self.root  # pragma: nocover
+        body: Body | Element = self.document_body or self.root
         name = self.name
         reference = body.get_reference_mark(name=name)
-        if not reference:
-            return None
-        # we know it is a ReferenceMarkStart:
-        self.text = reference.referenced_text()  # type: ignore
+        if isinstance(reference, ReferenceMarkStart):
+            self.text = reference.referenced_text()
 
 
 Reference._define_attribut_property()
