@@ -195,10 +195,10 @@ class NamedRange(Element):
             raise ValueError("Name of the type 'ABC123' is not allowed.")
         with contextlib.suppress(Exception):
             # we are not on an inserted in a document.
-            body = self.document_body
-            named_range = body.get_named_range(name)  # type: ignore
-            if named_range:
-                named_range.delete()
+            if body := self.document_body:
+                named_range = body.get_named_range(name)
+                if named_range:
+                    named_range.delete()
         self.set_attribute("table:name", name)
 
     def set_table_name(self, name: str) -> None:
@@ -220,9 +220,9 @@ class NamedRange(Element):
             z, t = digits
         if x is None or y is None or z is None or t is None:
             raise ValueError(f"Wrong format for cell range: {coord!r}")
-        self.start = x, y  # type: ignore
-        self.end = z, t  # type: ignore
-        self.crange = x, y, z, t  # type: ignore
+        self.start = x, y
+        self.end = z, t
+        self.crange = x, y, z, t
 
     def set_range(
         self,
