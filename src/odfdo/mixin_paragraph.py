@@ -43,6 +43,7 @@ from .spacer import Spacer
 from .tab import Tab
 
 if TYPE_CHECKING:
+    from .body import Body
     from .paragraph import Span
 
 _re_splitter = re.compile(r"(\n|\t)")
@@ -121,7 +122,7 @@ def _by_regex_wrapper(
         is_text = text.is_text()  # type: ignore
         # Group positions are calculated and static, so apply in
         # reverse order to preserve positions
-        for group in reversed(list(pattern.finditer(text))):
+        for group in reversed(list(pattern.finditer(str(text)))):
             start, end = group.span()
             # Do not use the text node as it changes at each loop
             if is_text:
@@ -149,7 +150,7 @@ def _by_regex_wrapper(
 
 def _by_regex_offset(method: Callable) -> Callable:
     @wraps(method)
-    def wrapper(element: Element, *args, **kwargs: Any) -> list[Span | Link]:
+    def wrapper(element: Element, *args: Any, **kwargs: Any) -> list[Span | Link]:
         """Insert the result of method(element, ...) at the place matching the
         regex OR the positional arguments offset and length.
 
@@ -193,14 +194,14 @@ class ParaMixin:
     def _expand_spaces(self, added_string: str) -> list[Element | str]:
         result: list[Element | str] = []
 
-        def _merge_text(txt: str):
+        def _merge_text(txt: str) -> None:
             nonlocal result
             if result and isinstance(result[-1], str):
                 result[-1] += txt
             else:
                 result.append(txt)
 
-        for obj in self.xpath("*|text()"):
+        for obj in self.xpath("*|text()"):  # type: ignore[attr-defined]
             if isinstance(obj, EText):
                 _merge_text(str(obj))
                 continue
@@ -226,7 +227,7 @@ class ParaMixin:
         result: list[Element | str] = []
         content = [x for x in _re_spaces_split.split(text) if x]
 
-        def _merge_text(txt: str):
+        def _merge_text(txt: str) -> None:
             nonlocal result
             if result and isinstance(result[-1], str):
                 result[-1] += txt
@@ -302,11 +303,11 @@ class ParaMixin:
         content = self._expand_spaces(stext)
         content = self._merge_spaces(content)
         content = self._replace_tabs_lb(content)
-        for child in self.children:
-            self.delete(child, keep_tail=False)
+        for child in self.children:  # type: ignore[attr-defined]
+            self.delete(child, keep_tail=False)  # type: ignore[attr-defined]
         self.text = None
         for element in content:
-            self._Element__append(element)
+            self._Element__append(element)  # type: ignore[attr-defined]
 
     @staticmethod
     def _unformatted(text: str | bytes | None) -> str:
@@ -329,7 +330,7 @@ class ParaMixin:
                 self.append_plain_text(str(str_or_element))
                 self.append_plain_text(str_or_element.tail)
             else:
-                self._Element__append(str_or_element)
+                self._Element__append(str_or_element)  # type: ignore[attr-defined]
         elif formatted:
             self.append_plain_text(str_or_element)
         else:
@@ -363,11 +364,11 @@ class ParaMixin:
                 note_element.note_body = body
         note_element.check_validity()
         if isinstance(after, str):
-            self._insert(note_element, after=after, main_text=True)
+            self._insert(note_element, after=after, main_text=True)  # type: ignore[attr-defined]
         elif isinstance(after, Element):
             after.insert(note_element, FIRST_CHILD)
         else:
-            self.insert(note_element, FIRST_CHILD)
+            self.insert(note_element, FIRST_CHILD)  # type: ignore[attr-defined]
 
     def insert_annotation(
         self,
@@ -417,7 +418,10 @@ class ParaMixin:
 
         if annotation_element is None:
             annotation_element = Annotation(
-                text_or_element=body, creator=creator, date=date, parent=self
+                text_or_element=body,
+                creator=creator,
+                date=date,
+                parent=self,  # type: ignore[arg-type]
             )
         else:
             # XXX clone or modify the argument?
@@ -453,12 +457,12 @@ class ParaMixin:
             and isinstance(position, int)
         ):
             # Start tag
-            self._insert(
+            self._insert(  # type: ignore[attr-defined]
                 annotation_element, before=content, position=position, main_text=True
             )
             # End tag
             annotation_end = AnnotationEnd(annotation_element)
-            self._insert(
+            self._insert(  # type: ignore[attr-defined]
                 annotation_end, after=content, position=position, main_text=True
             )
             return annotation_element
@@ -472,10 +476,18 @@ class ParaMixin:
             and isinstance(position, tuple)
         ):
             # Start
-            self._insert(annotation_element, position=position[0], main_text=True)
+            self._insert(  # type: ignore[attr-defined]
+                annotation_element,
+                position=position[0],
+                main_text=True,
+            )
             # End
             annotation_end = AnnotationEnd(annotation_element)
-            self._insert(annotation_end, position=position[1], main_text=True)
+            self._insert(  # type: ignore[attr-defined]
+                annotation_end,
+                position=position[1],
+                main_text=True,
+            )
             return annotation_element
 
         # Without "content" nor "position"
@@ -483,7 +495,7 @@ class ParaMixin:
             raise ValueError("Bad arguments")
 
         # Insert
-        self._insert(
+        self._insert(  # type: ignore[attr-defined]
             annotation_element,
             before=before,
             after=after,
@@ -524,7 +536,7 @@ class ParaMixin:
 
         # remove existing end tag
         name = annotation_element.name
-        existing_end_tag = self.get_annotation_end(name=name)
+        existing_end_tag = self.get_annotation_end(name=name)  # type: ignore[attr-defined]
         if existing_end_tag:
             existing_end_tag.delete()
 
@@ -532,7 +544,7 @@ class ParaMixin:
         end_tag = AnnotationEnd(annotation_element)
 
         # Insert
-        self._insert(
+        self._insert(  # type: ignore[attr-defined]
             end_tag, before=before, after=after, position=position, main_text=True
         )
         return end_tag
@@ -598,12 +610,12 @@ class ParaMixin:
         ):
             # Start tag
             reference_start = ReferenceMarkStart(name)
-            self._insert(
+            self._insert(  # type: ignore[attr-defined]
                 reference_start, before=content, position=position, main_text=True
             )
             # End tag
             reference_end = ReferenceMarkEnd(name)
-            self._insert(
+            self._insert(  # type: ignore[attr-defined]
                 reference_end, after=content, position=position, main_text=True
             )
             return reference_start
@@ -629,7 +641,7 @@ class ParaMixin:
 
         # Insert a positional reference mark
         reference = ReferenceMark(name)
-        self._insert(
+        self._insert(  # type: ignore[attr-defined]
             reference,
             before=before,
             after=after,
@@ -669,7 +681,7 @@ class ParaMixin:
             # change it to a range reference:
             reference_mark.tag = ReferenceMarkStart._tag
 
-        existing_end_tag = self.get_reference_mark_end(name=name)
+        existing_end_tag = self.get_reference_mark_end(name=name)  # type: ignore[attr-defined]
         if existing_end_tag:
             existing_end_tag.delete()
 
@@ -677,13 +689,17 @@ class ParaMixin:
         end_tag = ReferenceMarkEnd(name)
 
         # Insert
-        self._insert(
+        self._insert(  # type: ignore[attr-defined]
             end_tag, before=before, after=after, position=position, main_text=True
         )
         return end_tag
 
     def insert_variable(self, variable_element: Element, after: str | None) -> None:
-        self._insert(variable_element, after=after, main_text=True)
+        self._insert(  # type: ignore[attr-defined]
+            variable_element,
+            after=after,
+            main_text=True,
+        )
 
     @_by_regex_offset
     def set_span(
@@ -692,7 +708,7 @@ class ParaMixin:
         regex: str | None = None,
         offset: int | None = None,
         length: int = 0,
-        **kwargs,
+        **kwargs: Any,
     ) -> list[Span]:
         """
         Apply the given style  with a Span to text content matching either:
@@ -714,14 +730,15 @@ class ParaMixin:
         """
         # span = Span(match, style=style)
         # span.tail = tail
-        span: Span = Element.from_tag("text:span")
-        span.text = ""
+        span: Span = Element.from_tag("text:span")  # type: ignore[assignment]
+        span.text = ""  # type: ignore[assignment]
         span.append_plain_text(kwargs["match_string"])
         span.style = style
-        return span
+        return span  # type: ignore[return-value]
 
-    def remove_spans(self, keep_heading: bool = True) -> Element | list:
-        """Send back a copy of the element, without span styles.
+    def remove_spans(self, keep_heading: bool = True) -> Element:
+        """Return copy of the element, without span styles.
+
         If keep_heading is True (default), the first level heading style is left
         unchanged.
         """
@@ -730,16 +747,16 @@ class ParaMixin:
             protect = ("text:h",)
         else:
             protect = None
-        return self.strip_tags(strip=strip, protect=protect)
+        return self.strip_tags(strip=strip, protect=protect)  # type: ignore[attr-defined,no-any-return]
 
-    def remove_span(self, spans: Element | list[Element]) -> Element | list:
-        """Send back a copy of the element, the spans (not a clone) removed.
+    def remove_span(self, spans: Element | list[Element]) -> Element:
+        """Return a copy of the element, the spans (not a clone) removed.
 
         Arguments:
 
             spans -- Element or list of Element
         """
-        return self.strip_elements(spans)
+        return self.strip_elements(spans)  # type: ignore[attr-defined,no-any-return]
 
     @_by_regex_offset
     def set_link(
@@ -748,7 +765,7 @@ class ParaMixin:
         regex: str | None = None,
         offset: int | None = None,
         length: int = 0,
-        **kwargs,
+        **kwargs: Any,
     ) -> list[Link]:
         """
         Make a link to the provided url from text content matching either:
@@ -769,22 +786,22 @@ class ParaMixin:
         Returns: list of generated Link instances.
         """
 
-        return Link(url, text=kwargs["match_string"])
+        return Link(url, text=kwargs["match_string"])  # type: ignore[return-value]
 
-    def remove_links(self) -> Element | list:
-        """Send back a copy of the element, without links tags."""
+    def remove_links(self) -> Element:
+        """Return a copy of the element, without links tags."""
         strip = (Link._tag,)
-        return self.strip_tags(strip=strip)
+        return self.strip_tags(strip=strip)  # type: ignore[attr-defined,no-any-return]
 
-    def remove_link(self, links: Link | list[Link]) -> Element | list:
-        """Send back a copy of the element (not a clone), with the sub links
+    def remove_link(self, links: Link | list[Link]) -> Element:
+        """Return a copy of the element (not a clone), with the sub links
            removed.
 
         Arguments:
 
             links -- Link or list of Link
         """
-        return self.strip_elements(links)
+        return self.strip_elements(links)  # type: ignore[attr-defined,no-any-return]
 
     def insert_reference(
         self,
@@ -835,19 +852,17 @@ class ParaMixin:
         reference = Reference(name, ref_format)
         if display is None and ref_format == "text":
             # get reference content
-            body = self.document_body
-            if not body:
-                body = self.root
+            body: Body | Element = self.document_body or self.root  # type: ignore[attr-defined]
             mark = body.get_reference_mark(name=name)
-            if mark:
-                display = mark.referenced_text  # type: ignore
+            if isinstance(mark, ReferenceMarkStart):
+                display = mark.referenced_text()
         if not display:
             display = " "
         reference.text = display
         if isinstance(after, Element):
             after.insert(reference, FIRST_CHILD)
         else:
-            self._insert(
+            self._insert(  # type: ignore[attr-defined]
                 reference, before=before, after=after, position=position, main_text=True
             )
 
@@ -916,10 +931,20 @@ class ParaMixin:
         ):
             # Start
             start = BookmarkStart(name)
-            self._insert(start, before=content, position=position, main_text=True)
+            self._insert(  # type: ignore[attr-defined]
+                start,
+                before=content,
+                position=position,
+                main_text=True,
+            )
             # End
             end = BookmarkEnd(name)
-            self._insert(end, after=content, position=position, main_text=True)
+            self._insert(  # type: ignore[attr-defined]
+                end,
+                after=content,
+                position=position,
+                main_text=True,
+            )
             return start, end
 
         # With "(int, int)" =>  automatically insert a "start" and an "end"
@@ -933,10 +958,18 @@ class ParaMixin:
         ):
             # Start
             start = BookmarkStart(name)
-            self._insert(start, position=position[0], main_text=True)
+            self._insert(  # type: ignore[attr-defined]
+                start,
+                position=position[0],
+                main_text=True,
+            )
             # End
             end = BookmarkEnd(name)
-            self._insert(end, position=position[1], main_text=True)
+            self._insert(  # type: ignore[attr-defined]
+                end,
+                position=position[1],
+                main_text=True,
+            )
             return start, end
 
         # Without "content" nor "position"
@@ -954,8 +987,12 @@ class ParaMixin:
             raise ValueError("bad arguments")
 
         # Insert
-        self._insert(
-            bookmark, before=before, after=after, position=position, main_text=True
+        self._insert(  # type: ignore[attr-defined]
+            bookmark,
+            before=before,
+            after=after,
+            position=position,
+            main_text=True,
         )
 
         return bookmark

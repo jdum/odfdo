@@ -1569,7 +1569,7 @@ class Element(MDBase):
     def strip_elements(
         self,
         sub_elements: Element | Iterable[Element],
-    ) -> Element | list:
+    ) -> Element:
         """Remove the tags of provided elements, keeping inner childs and text.
 
         Return : the striped element.
@@ -1595,7 +1595,7 @@ class Element(MDBase):
         strip: Iterable[str] | None = None,
         protect: Iterable[str] | None = None,
         default: str | None = "text:p",
-    ) -> Element | list:
+    ) -> Element:
         """Remove the tags listed in strip, recursively, keeping inner childs
         and text. Tags listed in protect stop the removal one level depth. If
         the first level element is stripped, default is used to embed the
