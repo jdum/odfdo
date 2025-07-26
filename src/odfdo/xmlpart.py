@@ -25,12 +25,15 @@ from __future__ import annotations
 
 from copy import deepcopy
 from io import BytesIO
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from lxml.etree import _Element, _ElementTree, parse, tostring
 
 from .container import Container, pretty_indent
 from .element import Element, EText
+
+if TYPE_CHECKING:
+    from .body import Body
 
 
 class XmlPart:
@@ -51,7 +54,7 @@ class XmlPart:
     def _get_tree(self) -> _ElementTree:
         if self.__tree is None:
             part = self.container.get_part(self.part_name)
-            self.__tree = parse(BytesIO(part))  # type: ignore
+            self.__tree = parse(BytesIO(part))  # type: ignore[arg-type]
         return self.__tree
 
     def __repr__(self) -> str:
@@ -66,14 +69,14 @@ class XmlPart:
             self.__root = Element.from_tag(tree.getroot())
         return self.__root
 
-    def _get_body(self) -> Element:
+    def _get_body(self) -> Body:
         body = self.root.document_body
         if not isinstance(body, Element):
             raise TypeError(f"No body found in {self.part_name!r}")
         return body
 
     @property
-    def body(self) -> Element:
+    def body(self) -> Body:
         """Get or set the document body : 'office:body'"""
         return self._get_body()
 
@@ -91,7 +94,7 @@ class XmlPart:
         root = self.root
         return root.xpath(xpath_query)
 
-    def get_element(self, xpath_query: str) -> Any:
+    def get_element(self, xpath_query: str) -> Element | EText | None:
         result = self.get_elements(xpath_query)
         if not result:
             return None
@@ -127,7 +130,7 @@ class XmlPart:
         xml_header = b'<?xml version="1.0" encoding="UTF-8"?>\n'
         tree = self._get_tree()
         bytes_tree = tostring(tree, encoding="unicode").encode("utf8")
-        return xml_header + bytes_tree
+        return xml_header + bytes_tree  # type: ignore[no-any-return]
 
     def pretty_serialize(self) -> bytes:
         xml_header = b'<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -135,7 +138,7 @@ class XmlPart:
             self.custom_pretty_tree(),
             encoding="unicode",
         ).encode("utf8")
-        return xml_header + bytes_tree
+        return xml_header + bytes_tree  # type: ignore[no-any-return]
 
     def custom_pretty_tree(self) -> _ElementTree | _Element:
         tree = self._get_tree()
