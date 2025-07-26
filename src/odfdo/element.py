@@ -1569,7 +1569,7 @@ class Element(MDBase):
     def strip_elements(
         self,
         sub_elements: Element | Iterable[Element],
-    ) -> Element:
+    ) -> Element | list[Element | str]:
         """Remove the tags of provided elements, keeping inner childs and text.
 
         Return : the striped element.
@@ -1595,7 +1595,7 @@ class Element(MDBase):
         strip: Iterable[str] | None = None,
         protect: Iterable[str] | None = None,
         default: str | None = "text:p",
-    ) -> Element:
+    ) -> Element | list[Element | str]:
         """Remove the tags listed in strip, recursively, keeping inner childs
         and text. Tags listed in protect stop the removal one level depth. If
         the first level element is stripped, default is used to embed the
@@ -1616,23 +1616,24 @@ class Element(MDBase):
 
         Return:
 
-            Element.
+            Element, or list of Element or string.
         """
         if not strip:
             return self
         if not protect:
             protect = ()
         protected = False
-        element, modified = Element._strip_tags(self, strip, protect, protected)
-        if modified and isinstance(element, list) and default:
-            new = Element.from_tag(default)
-            for content in element:
+        result: Element | list[Element | str] = []
+        result, modified = Element._strip_tags(self, strip, protect, protected)
+        if modified and isinstance(result, list) and default:
+            new: Element = Element.from_tag(default)
+            for content in result:
                 if isinstance(content, Element):
                     new.__append(content)
                 else:
                     new.text = content
-            element = new
-        return element
+            result = new
+        return result
 
     @staticmethod
     def _strip_tags(
@@ -1640,7 +1641,7 @@ class Element(MDBase):
         strip: Iterable[str],
         protect: Iterable[str],
         protected: bool,
-    ) -> tuple[Element | list, bool]:
+    ) -> tuple[Element | list[Element | str], bool]:
         """Sub method for strip_tags()."""
         element_clone = element.clone
         modified = False
@@ -1666,8 +1667,8 @@ class Element(MDBase):
             element_result: list[Element | str] = []
             if text is not None:
                 element_result.append(text)
-            for child in children:
-                element_result.append(child)
+            for child2 in children:
+                element_result.append(child2)
             if tail is not None:
                 element_result.append(tail)
             return (element_result, True)
@@ -1682,8 +1683,8 @@ class Element(MDBase):
                 sys.stderr.write(f"strip_tags(): bad attribute in {element_clone}\n")
             if text is not None:
                 element.__append(text)
-            for child in children:
-                element.__append(child)
+            for child3 in children:
+                element.__append(child3)
             if tail is not None:
                 element.tail = tail
             return (element, True)
