@@ -131,7 +131,9 @@ class ElementTyped(Element):
         return self.get_attribute("office:boolean-value")
 
     def _get_typed_value_number_type(self) -> Decimal | int | float:
-        read_number = self.get_attribute("office:value")
+        read_number = self.get_attribute_string("office:value")
+        if read_number is None:
+            raise ValueError('"office:value" has None value')
         value = Decimal(read_number)
         # Return 3 instead of 3.0 if possible
         with contextlib.suppress(ValueError):
@@ -149,13 +151,15 @@ class ElementTyped(Element):
         return self._get_typed_value_number_type()
 
     def _get_typed_value_date(self) -> date | datetime:
-        read_attribute = self.get_attribute("office:date-value")
+        read_attribute = self.get_attribute_string("office:date-value")
+        if read_attribute is None:
+            raise ValueError('"office:date-value" has None value')
         if "T" in read_attribute:
             return DateTime.decode(read_attribute)
         return Date.decode(read_attribute)
 
     def _get_typed_value_string(self, try_get_text: bool) -> str | None:
-        value = self.get_attribute("office:string-value")
+        value = self.get_attribute_string("office:string-value")
         if value is not None:
             return str(value)
         if try_get_text:
@@ -165,7 +169,9 @@ class ElementTyped(Element):
         return None
 
     def _get_typed_value_time(self) -> timedelta:
-        read_value = self.get_attribute("office:time-value")
+        read_value = self.get_attribute_string("office:time-value")
+        if read_value is None:
+            raise ValueError('"office:time-value" has None value')
         return Duration.decode(read_value)
 
     def _get_typed_value(
@@ -185,14 +191,9 @@ class ElementTyped(Element):
 
     def _get_value_and_type(
         self, value_type: str | None = None, try_get_text: bool = True
-    ) -> tuple[Any, str]:
+    ) -> tuple[Any, str | None]:
         if value_type is None:
-            read_value_type = self.get_attribute("office:value-type")
-            if isinstance(read_value_type, bool):
-                # for very old versions
-                raise TypeError(
-                    f'Wrong type for "office:value-type": {type(read_value_type)}'
-                )
+            read_value_type = self.get_attribute_string("office:value-type")
             if read_value_type is None:
                 return None, None
             value_type = read_value_type
