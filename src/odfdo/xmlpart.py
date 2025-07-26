@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from io import BytesIO
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from lxml.etree import _Element, _ElementTree, parse, tostring
 
