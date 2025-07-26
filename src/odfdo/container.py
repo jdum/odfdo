@@ -471,7 +471,12 @@ class Container:
         return root[0]
 
     def _xml_content(self, pretty: bool = True) -> bytes:
-        mimetype = self.__parts["mimetype"].decode("utf8")
+        mimetype_b = self.__parts["mimetype"]
+        if mimetype_b is None:
+            # use some default
+            mimetype = "application/vnd.oasis.opendocument.text"
+        else:
+            mimetype = mimetype_b.decode("utf8")
         doc_xml = (
             OFFICE_PREFIX.decode("utf8")
             + f'office:version="{OFFICE_VERSION}"\n'
@@ -501,13 +506,17 @@ class Container:
                 root.append(child)
         if pretty:
             xml_header = b'<?xml version="1.0" encoding="UTF-8"?>\n'
-            bytes_tree = tostring(
+            bytes_tree: bytes = tostring(
                 pretty_indent(root),
                 encoding="unicode",
             ).encode("utf8")
             return xml_header + bytes_tree
         else:
-            return tostring(root, encoding="UTF-8", xml_declaration=True)
+            return tostring(  # type: ignore[no-any-return]
+                root,
+                encoding="UTF-8",
+                xml_declaration=True,
+            )
 
     def _save_xml(
         self,
