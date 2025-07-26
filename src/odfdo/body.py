@@ -53,8 +53,10 @@ class Body(Element):
 
         Return: list of Table
         """
-        return self._filtered_elements(
-            "descendant::table:table", table_style=style, content=content
+        return self._filtered_elements(  # type: ignore[return-value]
+            "descendant::table:table",
+            table_style=style,
+            content=content,
         )
 
     get_sheets = get_tables
@@ -67,7 +69,7 @@ class Body(Element):
 
         Return: list of Table
         """
-        return self.get_elements("descendant::table:table")
+        return self.get_elements("descendant::table:table")  # type: ignore[return-value]
 
     sheets = tables
 
@@ -101,7 +103,7 @@ class Body(Element):
                 table_name=name,
                 content=content,
             )
-        return result
+        return result  # type: ignore[return-value]
 
     get_sheet = get_table
 
