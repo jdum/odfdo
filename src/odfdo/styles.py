@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from .element import Element
 from .style import Style
-from .utils import make_xpath_query
+from .utils import is_RFC3066, make_xpath_query
 from .xmlpart import XmlPart
 
 CONTEXT_MAPPING = {
@@ -100,6 +100,41 @@ class Styles(XmlPart):
             # print(context.serialize())
             result.extend(context.get_styles(family=family))
         return result
+
+    def get_default_styles(self) -> list[Style]:
+        """Return the list of styles in the Content part, optionally limited
+        to the given family, optionaly limited to automatic styles.
+
+        Arguments:
+
+            family -- str
+
+            automatic -- bool
+
+        Return: list of Style
+        """
+        result: list[Style] = self.get_elements("//style:default-style")
+        return result
+
+    def set_default_styles_language_country(self, value: str) -> None:
+        language = str(value)
+        if not is_RFC3066(language):
+            msg = 'Language must be "xx" lang or "xx-YY" lang-COUNTRY code (RFC3066)'
+            raise TypeError(msg)
+        lc = language.split("-")
+        if len(lc) == 2:
+            lang, country = lc
+        else:
+            lang = lc[0]
+            country = ""
+        styles = [
+            s for s in self.get_default_styles() if s.family in {"graphic", "paragraph"}
+        ]
+        for style in styles:
+            props = style.get_properties(area="text")
+            props["language"] = lang
+            props["country"] = country
+            style.set_properties(props, area="text")
 
     def get_style(
         self,
