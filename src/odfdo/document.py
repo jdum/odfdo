@@ -60,7 +60,7 @@ from .mixin_md import MDDocument
 from .style import Style
 from .styles import Styles
 from .table import Table
-from .utils import FAMILY_MAPPING, bytes_to_str
+from .utils import FAMILY_MAPPING, bytes_to_str, is_RFC3066
 from .xmlpart import XmlPart
 
 AUTOMATIC_PREFIX = "odfdo_auto_"
@@ -1319,3 +1319,47 @@ class Document(MDDocument):
         sheet.style = new_name  # type: ignore
         properties = {"table:display": Boolean.encode(displayed)}
         new_style.set_properties(properties)  # type: ignore
+
+    def get_language(self) -> str:
+        """Get the default language of the document from default styles.
+
+        (Note: the Metadata value may differ).
+
+        Return: str
+        """
+        return self.styles.default_language
+
+    def set_language(self, language: str) -> None:
+        """Set the default language of the document, both in
+        styles and metadata.
+
+        (Also available as "Document.language" property.)
+
+        Arguments:
+
+            language -- str
+
+        Example::
+
+            >>> document.set_language('fr-FR')
+        """
+        language = str(language)
+        if not is_RFC3066(language):
+            raise TypeError(
+                'Language must be "xx" lang or "xx-YY" lang-COUNTRY code (RFC3066)'
+            )
+        self.styles.default_language = language
+        self.meta.language = language
+
+    @property
+    def language(self) -> str | None:
+        """Get or set the default language of the document, both in
+        styles and metadata.
+
+        Return: str
+        """
+        return self.get_language()
+
+    @language.setter
+    def language(self, language: str) -> None:
+        return self.set_language(language)
