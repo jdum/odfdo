@@ -101,15 +101,9 @@ class Styles(XmlPart):
             result.extend(context.get_styles(family=family))
         return result
 
-    def get_default_styles(self) -> list[Style]:
-        """Return the list of styles in the Content part, optionally limited
-        to the given family, optionaly limited to automatic styles.
-
-        Arguments:
-
-            family -- str
-
-            automatic -- bool
+    @property
+    def default_styles(self) -> list[Style]:
+        """Return the list of default styles "style:default-styles".
 
         Return: list of Style
         """
@@ -128,7 +122,7 @@ class Styles(XmlPart):
             lang = lc[0]
             country = ""
         styles = [
-            s for s in self.get_default_styles() if s.family in {"graphic", "paragraph"}
+            s for s in self.default_styles if s.family in {"graphic", "paragraph"}
         ]
         for style in styles:
             props = style.get_properties(area="text")
