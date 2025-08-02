@@ -1,5 +1,26 @@
 # Odfdo Release Notes
 
+## [3.16.0] - 2025-08-02
+
+-  Added methods to set the default document language, both in the default styles (the value used by LibreOffice) and in the metadata. In short: using the new property `Document.language = "en-US"` will make `Document.langusge` value to "en-US", both the default styles and meta fields now have this value.
+- Small fixes in the Style properties management.
+
+### Changed
+
+-   Move `is_RFC3066()` test from `Meta._is_RFC3066()` to `utils.is_RFC3066()`.
+
+### Added
+
+-   Add warnings in `meta.py` docstring methods about default language.
+-   Add methods `styles.set_default_styles_language_country()`, `styles.get_default_styles()`, `Document.get_language()`, `Document.set_language()`.
+-   Add properties `styles.default_styles`, `styles.default_language`, `Document.language`.
+-   Add tests for `Document.language`.
+
+### Fixed
+
+-   Fix `style:use-window-font-color` beeing a color, which is not.
+-   Fix `style.set_properties()` broken for unknown properties.
+
 ## [3.15.1] - 2025-07-26
 
 -  Refactor of code (type hints).
