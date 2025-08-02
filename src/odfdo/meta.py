@@ -182,7 +182,10 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return self.set_subject(subject)
 
     def get_language(self) -> str | None:
-        """Get the default language of the document.
+        """Get the default language of the document BUT
+        only from the metadata, "dc:language".
+
+        Prefer the Document.get_language() function.
 
         (Also available as "self.language" property.)
 
@@ -199,7 +202,11 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return element.text
 
     def set_language(self, language: str) -> None:
-        """Set the default language of the document.
+        """Set the default language of the document BUT
+        only in the metadata, "dc:language".
+
+        To set globally the default language, prefer the
+        Document.set_language() function.
 
         (Also available as "self.language" property.)
 
@@ -224,7 +231,11 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     @property
     def language(self) -> str | None:
-        """Get or set the default language of the document <dc:language>.
+        """Get or set the default language of the document BUT
+        only in the metadata, "dc:language".
+
+        To set globally the default language, prefer the
+        Document.language property.
 
         Return: str (or None if inexistant)
         """
