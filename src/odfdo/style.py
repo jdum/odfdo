@@ -127,9 +127,11 @@ def _expand_properties_dict(properties: dict[str, str | dict]) -> dict[str, str 
     expanded = {}
     for key in sorted(properties.keys()):
         prop_key = _map_key(key)
-        if not prop_key:
+        if prop_key and key != prop_key:
+            expanded[prop_key] = properties[key]
             continue
-        expanded[prop_key] = properties[key]
+        if key not in expanded:
+            expanded[key] = properties[key]
     return expanded
 
 
