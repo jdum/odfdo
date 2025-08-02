@@ -111,6 +111,7 @@ class Styles(XmlPart):
         return result
 
     def set_default_styles_language_country(self, value: str) -> None:
+        """Set the default language in styles, in format "en-US"."""
         language = str(value)
         if not is_RFC3066(language):
             msg = 'Language must be "xx" lang or "xx-YY" lang-COUNTRY code (RFC3066)'
@@ -129,6 +130,24 @@ class Styles(XmlPart):
             props["language"] = lang
             props["country"] = country
             style.set_properties(props, area="text")
+
+    @property
+    def default_language(self) -> str:
+        """Get or set the default language from styles, in format "en-US"."""
+        styles = [s for s in self.default_styles if s.family == "paragraph"]
+        if not styles:
+            return ""
+        style = styles[0]
+        props = style.get_properties(area="text")
+        lang = str(props.get("fo:language", ""))
+        country = str(props.get("fo:country", ""))
+        if lang and country:
+            return f"{lang}-{country}"
+        return lang or country
+
+    @default_language.setter
+    def default_language(self, value: str) -> None:
+        return self.set_default_styles_language_country(value)
 
     def get_style(
         self,
