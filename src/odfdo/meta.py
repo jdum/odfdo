@@ -29,7 +29,6 @@ from datetime import date as dtdate
 from datetime import datetime, timedelta
 from decimal import Decimal
 from operator import itemgetter
-from string import ascii_letters, digits
 from typing import Any
 
 from .datatype import Boolean, Date, DateTime, Duration
@@ -39,7 +38,7 @@ from .meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from .meta_template import MetaTemplate
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
-from .utils import to_str
+from .utils import is_RFC3066, to_str
 from .version import __version__
 from .xmlpart import XmlPart
 
@@ -213,7 +212,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             >>> document.meta.set_language('fr-FR')
         """
         language = str(language)
-        if not self._is_RFC3066(language):
+        if not is_RFC3066(language):
             raise TypeError(
                 'Language must be "xx" lang or "xx-YY" lang-COUNTRY code (RFC3066)'
             )
@@ -222,27 +221,6 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             element = Element.from_tag("dc:language")
             self.get_meta_body().append(element)
         element.text = language
-
-    @staticmethod
-    def _is_RFC3066(lang: str) -> bool:
-        def test_part1(part1: str) -> bool:
-            if not 2 <= len(part1) <= 3:
-                return False
-            return all(x in ascii_letters for x in part1)
-
-        def test_part2(part2: str) -> bool:
-            return all(x in ascii_letters or x in digits for x in part2)
-
-        if not lang or not isinstance(lang, str):
-            return False
-        if "-" not in lang:
-            return test_part1(lang)
-        parts = lang.split("-")
-        if len(parts) > 3:
-            return False
-        if not test_part1(parts[0]):
-            return False
-        return all(test_part2(p) for p in parts[1:])
 
     @property
     def language(self) -> str | None:

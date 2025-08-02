@@ -9,6 +9,7 @@ from .coordinates import (
 from .formula import oooc_to_ooow
 from .isiterable import isiterable
 from .remove_tree import remove_tree
+from .rfc3066 import is_RFC3066
 from .str_convert import bytes_to_str, str_to_bytes, to_bytes, to_str
 from .style_constants import (
     FALSE_FAMILY_MAP_REVERSE,
@@ -32,6 +33,7 @@ __all__ = [
     "hex2rgb",
     "hexa_color",
     "increment",
+    "is_RFC3066",
     "isiterable",
     "make_xpath_query",
     "oooc_to_ooow",
