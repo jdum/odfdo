@@ -736,6 +736,5 @@ ODF_COLOR_PROPERTY = {
     "style:text-line-through-color",
     "style:text-overline-color",
     "style:text-underline-color",
-    "style:use-window-font-color",
     "svg:stroke-color",
 }
