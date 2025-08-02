@@ -38,6 +38,7 @@ __all__ = [  # noqa: RUF022
     "make_table_cell_border_string",
     "rgb2hex",
 ]
+from copy import deepcopy
 from typing import Any
 
 from .const import ODF_PROPERTIES
@@ -115,7 +116,7 @@ def _map_key(key: str) -> str | None:
 
 def _merge_dicts(dic_base: dict, *args: dict, **kwargs: Any) -> dict:
     """Merge two or more dictionaries into a new dictionary object."""
-    new_dict = dic_base.copy()
+    new_dict = deepcopy(dic_base)
     for dic in args:
         new_dict.update(dic)
     new_dict.update(kwargs)
@@ -605,7 +606,7 @@ class Style(Element):
         element = self.get_element(f"style:{area}-properties")
         if element is None:
             return None
-        properties: dict[str, str | dict] = element.attributes  # type: ignore
+        properties: dict[str, str | dict[str, Any]] = element.attributes  # type: ignore
         # Nested properties are nested dictionaries
         for child in element.children:
             properties[child.tag] = child.attributes
@@ -661,9 +662,9 @@ class Style(Element):
 
         Return: dict[str, str | bool]
         """
-        props: dict[str, str | bool] = self.get_properties(area="text") or {}
-        self._update_boolean_styles(props)
-        return props
+        props = self.get_properties(area="text") or {}
+        self._update_boolean_styles(props)  # type: ignore[arg-type]
+        return props  # type: ignore[return-value]
 
     def set_properties(
         self,
@@ -1107,7 +1108,7 @@ class BackgroundImage(Style, DrawImage):
         filter: str | None = None,  # noqa: A002
         # Every other property
         **kwargs: Any,
-    ):
+    ) -> None:
         """Create style for a background image "style:background-image"."""
         kwargs["family"] = "background-image"
         super().__init__(**kwargs)
