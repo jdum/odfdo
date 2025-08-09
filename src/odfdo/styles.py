@@ -61,22 +61,24 @@ class Styles(XmlPart):
         self, family: str, automatic: bool = False
     ) -> list[Element]:
         if automatic:
-            return [self.get_element("//office:automatic-styles")]
-        if not family:
+            elems = [self.get_element("//office:automatic-styles")]
+        elif family:
+            queries = CONTEXT_MAPPING.get(family) or (
+                "//office:styles",
+                "//office:automatic-styles",
+            )
+            if queries is None:
+                raise ValueError(f"Unknown family: {family!r}")
+            elems = [self.get_element(query) for query in queries]
+        else:
             # All possibilities
-            return [
+            elems = [
                 self.get_element("//office:automatic-styles"),
                 self.get_element("//office:styles"),
                 self.get_element("//office:master-styles"),
                 self.get_element("//office:font-face-decls"),
             ]
-        queries = CONTEXT_MAPPING.get(family) or (
-            "//office:styles",
-            "//office:automatic-styles",
-        )
-        # if queries is None:
-        #     raise ValueError(f"unknown family: {family}")
-        return [self.get_element(query) for query in queries]
+        return [e for e in elems if isinstance(e, Element)]
 
     def get_styles(self, family: str = "", automatic: bool = False) -> list[Element]:
         """Return the list of styles in the Content part, optionally limited
@@ -183,12 +185,13 @@ class Styles(XmlPart):
                 display_name=display_name,
             )
             if style is not None:
-                return style  # type: ignore
+                return style
         return None
 
     def get_master_pages(self) -> list[Element]:
         query = make_xpath_query("descendant::style:master-page")
-        return self.get_elements(query)  # type:ignore
+        elems = self.get_elements(query)
+        return [e for e in elems if isinstance(e, Element)]
 
     def get_master_page(self, position: int = 0) -> Element | None:
         results = self.get_master_pages()
