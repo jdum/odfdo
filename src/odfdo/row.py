@@ -27,14 +27,18 @@ from __future__ import annotations
 
 import contextlib
 from collections.abc import Iterable, Iterator
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from lxml.etree import XPath, _Element
+from lxml.etree import _Element
 
 from .cell import Cell
 from .element import Element, register_element_class, xpath_compile
 from .table_cache import _XP_CELL_IDX, RowCache, TableCache
 from .utils import convert_coordinates, increment, translate_from_any
+
+if TYPE_CHECKING:
+    from lxml.etree import XPath
+
 
 _xpath_cell = xpath_compile("(table:table-cell|table:covered-table-cell)")
 
@@ -86,7 +90,7 @@ class Row(Element):
         return f"<{self.__class__.__name__} y={self.y}>"
 
     def get_elements(self, xpath_query: XPath | str) -> list[Element]:
-        element = self._Element__element
+        element: _Element = self._Element__element  # type: ignore[attr-defined]
         if isinstance(xpath_query, str):
             new_xpath_query = xpath_compile(xpath_query)
             result = new_xpath_query(element)
@@ -101,7 +105,7 @@ class Row(Element):
             if isinstance(e, _Element)
         ]
 
-    def _copy_cache(self, cache: tuple | None) -> None:
+    def _copy_cache(self, cache: tuple) -> None:
         """Copy cache when cloning."""
         self._table_cache = cache[0]
         if cache[1]:  # pragma: no cover
@@ -109,12 +113,12 @@ class Row(Element):
 
     def clear(self) -> None:
         """Remove text, children and attributes from the Row."""
-        self._Element__element.clear()
+        self._Element__element.clear()  # type: ignore[attr-defined]
         self._table_cache = TableCache()
         self._row_cache = RowCache()
 
     def _get_cells(self) -> list[Cell]:
-        return self.get_elements(_xpath_cell)  # type: ignore
+        return self.get_elements(_xpath_cell)  # type: ignore[return-value]
 
     def _translate_row_coordinates(
         self,
@@ -141,11 +145,11 @@ class Row(Element):
 
     @property
     def clone(self) -> Row:
-        clone = Element.clone.fget(self)  # type: ignore
-        clone.y = self.y
-        clone._table_cache = TableCache.copy(self._table_cache)
-        clone._row_cache = RowCache.copy(self._row_cache)
-        return clone
+        cloned_row: Row = Element.clone.fget(self)  # type: ignore[attr-defined]
+        cloned_row.y = self.y
+        cloned_row._table_cache = TableCache.copy(self._table_cache)
+        cloned_row._row_cache = RowCache.copy(self._row_cache)
+        return cloned_row
 
     def _set_repeated(self, repeated: int | None) -> None:
         """Method Internal only. Set the numnber of times the row is
@@ -187,8 +191,8 @@ class Row(Element):
                 return
             # parent may be group of rows, not table
             if isinstance(upper, Element) and upper._tag == "table:table":
-                upper._table_cache = self._table_cache  # type: ignore
-                upper._compute_table_cache()  # type: ignore
+                upper._table_cache = self._table_cache  # type: ignore[attr-defined]
+                upper._compute_table_cache()  # type: ignore[attr-defined]
                 return
             current = upper
 
@@ -198,7 +202,7 @@ class Row(Element):
 
         Return: str
         """
-        return self.get_attribute("table:style-name")  # type: ignore
+        return self.get_attribute_string("table:style-name")
 
     @style.setter
     def style(self, style: str | Element) -> None:
@@ -216,7 +220,7 @@ class Row(Element):
     def _translate_x_from_any(self, x: str | int) -> int:
         return translate_from_any(x, self.width, 0)
 
-    def _yield_odf_cells(self):
+    def _yield_odf_cells(self) -> Iterator[Cell]:
         for cell in self._get_cells():
             if cell.repeated is None:
                 yield cell
@@ -250,7 +254,7 @@ class Row(Element):
             end = 2**32
         if end < start:
             return
-        x = -1
+        x: int = -1
         for cell in self._yield_odf_cells():
             x += 1
             if x < start:
@@ -327,18 +331,22 @@ class Row(Element):
     def _get_cell2(self, x: int, clone: bool = True) -> Cell | None:
         if x >= self.width:
             return Cell()
+        base_cell = self._get_cell2_base(x)
+        if base_cell is None:
+            return None
         if clone:
-            return self._get_cell2_base(x).clone  # type: ignore
-        else:
-            return self._get_cell2_base(x)
+            return base_cell.clone
+        return base_cell
 
     def _get_cell2_base(self, x: int) -> Cell | None:
         idx = self._row_cache.cell_idx(x)
         if idx is None:
             return None
-        cell = self._row_cache.cached_cell(idx)
+        cell: Cell | None = self._row_cache.cached_cell(idx)
         if cell is None:
-            cell = self._get_element_idx2(_XP_CELL_IDX, idx)
+            cell = self._get_element_idx2(_XP_CELL_IDX, idx)  # type: ignore[assignment]
+            if cell is None:
+                return None
             self._row_cache.store_cell(cell, idx)
         return cell
 
@@ -531,7 +539,7 @@ class Row(Element):
         return cell
 
     # fix for unit test and typos
-    append = append_cell  # type: ignore
+    append = append_cell  # type:ignore[assignment]
 
     def delete_cell(self, x: int | str) -> None:
         """Delete the cell at the given position "x" starting from 0.

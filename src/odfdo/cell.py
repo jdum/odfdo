@@ -83,8 +83,8 @@ class Cell(ElementTyped):
             style -- str
         """
         super().__init__(**kwargs)
-        self.x = None
-        self.y = None
+        self.x: int | None = None
+        self.y: int | None = None
         if self._do_init:
             self.set_value(
                 value,

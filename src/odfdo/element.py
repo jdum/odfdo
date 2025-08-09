@@ -359,8 +359,8 @@ class Element(MDBase):
             element._copy_cache(cache)
         return element
 
-    def _copy_cache(self, cache: tuple | None) -> None:
-        """Method eredefined for cahched elements."""
+    def _copy_cache(self, cache: tuple) -> None:
+        """Method redefined for cached elements."""
         pass
 
     @staticmethod
