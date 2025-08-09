@@ -25,8 +25,11 @@
 
 from __future__ import annotations
 
+import builtins
 import contextlib
-from datetime import date, datetime, timedelta
+from datetime import date as _date
+from datetime import datetime as _datetime
+from datetime import timedelta
 from decimal import ConversionSyntax, Decimal, InvalidOperation
 from typing import Any
 
@@ -34,8 +37,9 @@ from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element, register_element_class_list
 from .element_typed import ElementTyped
 
-# fix mismatch between float and Cell.float
-Float = float
+_int = builtins.int
+_float = builtins.float
+_bool = builtins.bool
 
 
 class Cell(ElementTyped):
@@ -50,7 +54,7 @@ class Cell(ElementTyped):
         cell_type: str | None = None,
         currency: str | None = None,
         formula: str | None = None,
-        repeated: int | None = None,
+        repeated: _int | None = None,
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
@@ -102,12 +106,12 @@ class Cell(ElementTyped):
         clone = Element.clone.fget(self)  # type: ignore
         clone.y = self.y
         clone.x = self.x
-        return clone
+        return clone  # type: ignore[no-any-return]
 
     @property
     def value(
         self,
-    ) -> str | bool | int | Float | Decimal | date | datetime | timedelta | None:
+    ) -> str | _bool | _int | _float | Decimal | _date | _datetime | timedelta | None:
         """Set / get the value of the cell. The type is read from the
         'office:value-type' attribute of the cell. When setting the value,
         the type of the value will determine the new value_type of the cell.
@@ -151,13 +155,13 @@ class Cell(ElementTyped):
         value: (
             str
             | bytes
-            | bool
-            | int
-            | Float
+            | _bool
+            | _int
+            | _float
             | Decimal
             | timedelta
-            | datetime
-            | date
+            | _datetime
+            | _date
             | None
         ),
     ) -> None:
@@ -165,19 +169,19 @@ class Cell(ElementTyped):
             self.clear()
         elif isinstance(value, (str, bytes)):
             self.string = value
-        elif isinstance(value, bool):
+        elif isinstance(value, _bool):
             self.bool = value
-        elif isinstance(value, Float):
+        elif isinstance(value, _float):
             self.float = value
         elif isinstance(value, Decimal):
             self.decimal = value
-        elif isinstance(value, int):
+        elif isinstance(value, _int):
             self.int = value
         elif isinstance(value, timedelta):
             self.duration = value
-        elif isinstance(value, datetime):
+        elif isinstance(value, _datetime):
             self.datetime = value
-        elif isinstance(value, date):
+        elif isinstance(value, _date):
             self.date = value
         else:
             raise TypeError(f"Unknown value type, try with set_value() : {value!r}")
@@ -190,19 +194,19 @@ class Cell(ElementTyped):
         return "1" if value == "true" else "0"
 
     @property
-    def float(self) -> Float:
+    def float(self) -> _float:
         """Set / get the value of the cell as a float (or 0.0)."""
         for tag in ("office:value", "office:string-value"):
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
                 with contextlib.suppress(ValueError, TypeError):
-                    return Float(read_attr)
-        return Float(self._bool_string)
+                    return _float(read_attr)
+        return _float(self._bool_string)
 
     @float.setter
-    def float(self, value: str | Float | int | Decimal | None) -> None:
+    def float(self, value: str | _float | _int | Decimal | None) -> None:
         try:
-            value_float = Float(value)
+            value_float = _float(value)  # type: ignore[arg-type]
         except (ValueError, TypeError, ConversionSyntax):
             value_float = 0.0
         value_str = str(value_float)
@@ -222,9 +226,9 @@ class Cell(ElementTyped):
         return Decimal(self._bool_string)
 
     @decimal.setter
-    def decimal(self, value: str | Float | int | Decimal | None) -> None:
+    def decimal(self, value: str | _float | _int | Decimal | None) -> None:
         try:
-            value_decimal = Decimal(value)
+            value_decimal = Decimal(value)  # type: ignore[arg-type]
         except (ValueError, TypeError, ConversionSyntax, InvalidOperation):
             value_decimal = Decimal("0.0")
         value_str = str(value_decimal)
@@ -234,19 +238,19 @@ class Cell(ElementTyped):
         self.text = value_str
 
     @property
-    def int(self) -> int:
+    def int(self) -> _int:
         """Set / get the value of the cell as a integer (or 0)."""
         for tag in ("office:value", "office:string-value"):
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
                 with contextlib.suppress(ValueError, TypeError):
                     return int(float(read_attr))
-        return int(self._bool_string)
+        return _int(self._bool_string)
 
     @int.setter
-    def int(self, value: str | Float | int | Decimal | None) -> None:
+    def int(self, value: str | _float | _int | Decimal | None) -> None:
         try:
-            value_int = int(value)  # type:ignore
+            value_int = _int(value)  # type:ignore
         except (ValueError, TypeError, ConversionSyntax):
             value_int = 0
         value_str = str(value_int)
@@ -266,7 +270,7 @@ class Cell(ElementTyped):
     @string.setter
     def string(
         self,
-        value: str | bytes | int | Float | Decimal | bool | None,
+        value: str | bytes | _int | _float | Decimal | _bool | None,
     ) -> None:
         self.clear()
         if value is None:
@@ -280,21 +284,21 @@ class Cell(ElementTyped):
         self.text = value_str
 
     @property
-    def bool(self) -> bool:
+    def bool(self) -> _bool:
         """Set / get the value of the cell as a boolean."""
         value = self.get_attribute_string("office:boolean-value")
         if isinstance(value, str):
             return value == "true"
-        return bool(self.int)
+        return _bool(self.int)
 
     @bool.setter
     def bool(
         self,
-        value: str | bytes | int | Float | Decimal | bool | None,
+        value: str | bytes | _int | _float | Decimal | _bool | None,
     ) -> None:
         self.clear()
         self.set_attribute("office:value-type", "boolean")
-        if isinstance(value, (bool, str, bytes)):
+        if isinstance(value, (_bool, str, bytes)):
             bvalue = Boolean.encode(value)
         else:
             bvalue = Boolean.encode(bool(value))
@@ -318,15 +322,15 @@ class Cell(ElementTyped):
         self.text = dvalue
 
     @property
-    def datetime(self) -> datetime:
+    def datetime(self) -> _datetime:
         """Set / get the value of the cell as a datetime."""
         value = self.get_attribute("office:date-value")
         if isinstance(value, str):
             return DateTime.decode(value)
-        return datetime.fromtimestamp(0)
+        return _datetime.fromtimestamp(0)
 
     @datetime.setter
-    def datetime(self, value: datetime) -> None:
+    def datetime(self, value: _datetime) -> None:
         self.clear()
         self.set_attribute("office:value-type", "date")
         dvalue = DateTime.encode(value)
@@ -334,15 +338,15 @@ class Cell(ElementTyped):
         self.text = dvalue
 
     @property
-    def date(self) -> date:
+    def date(self) -> _date:
         """Set / get the value of the cell as a date."""
         value = self.get_attribute("office:date-value")
         if isinstance(value, str):
             return Date.decode(value).date()
-        return date.fromtimestamp(0)
+        return _date.fromtimestamp(0)
 
     @date.setter
-    def date(self, value: date) -> None:
+    def date(self, value: _date) -> None:
         self.clear()
         self.set_attribute("office:value-type", "date")
         dvalue = Date.encode(value)
@@ -354,12 +358,12 @@ class Cell(ElementTyped):
         value: (
             str
             | bytes
-            | Float
-            | int
+            | _float
+            | _int
             | Decimal
-            | bool
-            | datetime
-            | date
+            | _bool
+            | _datetime
+            | _date
             | timedelta
             | None
         ),
@@ -423,7 +427,7 @@ class Cell(ElementTyped):
     def currency(self, currency: str) -> None:
         self.set_attribute("office:currency", currency)
 
-    def _set_repeated(self, repeated: int | None) -> None:
+    def _set_repeated(self, repeated: _int | None) -> None:
         """Internal only. Set the numnber of times the cell is repeated, or
         None to delete. Without changing cache.
         """
@@ -434,7 +438,7 @@ class Cell(ElementTyped):
         self.set_attribute("table:number-columns-repeated", str(repeated))
 
     @property
-    def repeated(self) -> int | None:
+    def repeated(self) -> _int | None:
         """Get / set the number of times the cell is repeated.
 
         Always None when using the table API.
@@ -444,10 +448,10 @@ class Cell(ElementTyped):
         repeated = self.get_attribute("table:number-columns-repeated")
         if repeated is None:
             return None
-        return int(repeated)
+        return _int(repeated)
 
     @repeated.setter
-    def repeated(self, repeated: int | None) -> None:
+    def repeated(self, repeated: _int | None) -> None:
         self._set_repeated(repeated)
         # update cache
         child: Element = self
@@ -459,7 +463,7 @@ class Cell(ElementTyped):
                 return
             # parent may be group of rows, not table
             if isinstance(upper, Element) and upper._tag == "table:table-row":
-                upper._compute_row_cache()
+                upper._compute_row_cache()  # type:ignore[attr-defined]
                 return
             child = upper
 
@@ -489,7 +493,7 @@ class Cell(ElementTyped):
     def formula(self, formula: str | None) -> None:
         self.set_attribute("table:formula", formula)
 
-    def is_empty(self, aggressive: bool = False) -> bool:
+    def is_empty(self, aggressive: _bool = False) -> _bool:
         """Return whether the cell has no value or the value evaluates
         to False (empty string), and no style.
 
@@ -512,14 +516,14 @@ class Cell(ElementTyped):
             return False
         return True
 
-    def is_covered(self) -> bool:
+    def is_covered(self) -> _bool:
         """Return whether the cell is covered (tag table:covered-table-cell).
 
         Returns: True | False
         """
         return self.tag == "table:covered-table-cell"
 
-    def is_spanned(self, covered: bool = True) -> bool:
+    def is_spanned(self, covered: _bool = True) -> _bool:
         """Return whether the cell is spanned over several cells.
 
         If covered is True (the default), covered cells are considered as
@@ -543,7 +547,7 @@ class Cell(ElementTyped):
 
     _is_spanned = is_spanned  # compatibility
 
-    def span_area(self) -> tuple[int, int]:
+    def span_area(self) -> tuple[_int, _int]:
         """Return the tuple (nb_columns, nb_rows) of the zone covered
         by a spanned cell.
 
