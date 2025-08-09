@@ -51,6 +51,7 @@ from .utils import (
 )
 
 if TYPE_CHECKING:
+    from .annotation import Annotation, AnnotationEnd
     from .body import Body
     from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
     from .draw_page import DrawPage
@@ -61,7 +62,6 @@ if TYPE_CHECKING:
     from .list import List
     from .named_range import NamedRange
     from .note import Note
-    from .annotation import Annotation, AnnotationEnd
     from .paragraph import Paragraph, Span
     from .reference import (
         Reference,
