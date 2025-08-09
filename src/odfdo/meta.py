@@ -29,7 +29,7 @@ from datetime import date as dtdate
 from datetime import datetime, timedelta
 from decimal import Decimal
 from operator import itemgetter
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element
@@ -42,6 +42,9 @@ from .utils import is_RFC3066, to_str
 from .version import __version__
 from .xmlpart import XmlPart
 
+if TYPE_CHECKING:
+    from .body import Metadata
+
 GENERATOR = f"odfdo {__version__}"
 
 
@@ -49,11 +52,13 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     """Representation of the "meta.xml" part."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Create the Meta XML part."""
         super().__init__(*args, **kwargs)
         self._generator_modified: bool = False
 
-    def get_meta_body(self) -> Element:
-        return self.get_element("//office:meta")
+    def get_meta_body(self) -> Metadata:
+        """Return the body of the "meta.xml" part."""
+        return self.get_element("//office:meta")  # type: ignore[return-value]
 
     def get_title(self) -> str | None:
         """Get the title of the document.
@@ -318,15 +323,13 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         element.text = DateTime.encode(date)
 
     def get_template(self) -> MetaTemplate | None:
-        """Get the MetaTemplate <meta:template> element or None."""
-        element = self.get_element("//meta:template")
-        if element is None:
-            return None
+        """Get the MetaTemplate "meta:template" element or None."""
+        element: MetaTemplate | None = self.get_element("//meta:template")  # type: ignore[assignment]
         return element
 
     @property
     def template(self) -> MetaTemplate | None:
-        """Get the MetaTemplate <meta:template> element or None."""
+        """Get the MetaTemplate "meta:template" element or None."""
         return self.get_template()
 
     def set_template(
@@ -344,9 +347,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     def get_auto_reload(self) -> MetaAutoReload | None:
         """Get the MetaAutoReload <meta:auto-reload> element or None."""
-        element = self.get_element("//meta:auto-reload")
-        if element is None:
-            return None
+        element: MetaAutoReload | None = self.get_element("//meta:auto-reload")  # type: ignore[assignment]
         return element
 
     @property
@@ -364,13 +365,13 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     def get_hyperlink_behaviour(self) -> MetaHyperlinkBehaviour | None:
         """Get the MetaHyperlinkBehaviour <meta:hyperlink-behaviour> element or None."""
-        element = self.get_element("//meta:hyperlink-behaviour")
-        if element is None:
-            return None
+        element: MetaHyperlinkBehaviour | None = self.get_element(  # type: ignore[assignment]
+            "//meta:hyperlink-behaviour"
+        )
         return element
 
     @property
-    def hyperlink_behaviour(self) -> MetaAutoReload | None:
+    def hyperlink_behaviour(self) -> MetaHyperlinkBehaviour | None:
         """Get the MetaHyperlinkBehaviour <meta:hyperlink-behaviour> element or None."""
         return self.get_hyperlink_behaviour()
 
@@ -830,7 +831,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         if not found:
             return None
         result["name"] = name
-        value, value_type, text = self._get_meta_value(item, full=True)  # type: ignore
+        value, value_type, text = self._get_meta_value(item, full=True)
         result["value"] = value
         result["value_type"] = value_type
         result["text"] = text
@@ -1219,8 +1220,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             if value is None:
                 self.clear_user_defined_metadata()
             else:
-                current = self._user_defined_metadata_list()
-                current_dict = {d["meta:name"]: d for d in current}
+                data_list = self._user_defined_metadata_list()
+                current_dict = {d["meta:name"]: d for d in data_list}
                 current_value = {d["meta:name"]: d for d in value}
                 current_dict.update(current_value)
                 new_ud = {

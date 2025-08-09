@@ -90,25 +90,31 @@ class XmlPart:
         if tail:  # pragma: nocover
             body.tail = tail
 
-    def get_elements(self, xpath_query: str) -> list[Element | EText]:
-        root = self.root
-        return root.xpath(xpath_query)
+    def get_elements(self, xpath_query: str) -> list[Element]:
+        """Returns the elements obtained from the XPath query applied to the
+        root of the XmlPart.
 
-    def get_element(self, xpath_query: str) -> Element | EText | None:
-        result = self.get_elements(xpath_query)
-        if not result:
-            return None
-        return result[0]
+        Return list of Element.
+        """
+        return self.root.get_elements(xpath_query)
+
+    def get_element(self, xpath_query: str) -> Element | None:
+        """Returns the first element obtained from the XPath query applied to
+        the root of the XmlPart.
+
+        Return an Element or None.
+        """
+        return self.root.get_element(xpath_query)
 
     def delete_element(self, child: Element) -> None:
         child.delete()
 
     def xpath(self, xpath_query: str) -> list[Element | EText]:
-        """Apply XPath query to the XML part. Return list of Element or
-        EText instances translated from the nodes found.
+        """Apply XPath query to the root of the part and its subtree.
+
+        Return list of Element or EText instances.
         """
-        root = self.root
-        return root.xpath(xpath_query)
+        return self.root.xpath(xpath_query)
 
     @property
     def clone(self) -> XmlPart:

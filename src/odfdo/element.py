@@ -794,6 +794,11 @@ class Element(MDBase):
         return result
 
     def get_elements(self, xpath_query: XPath | str) -> list[Element]:
+        """Returns the elements obtained from the XPath query applied to the
+        current element.
+
+        Return list of Element.
+        """
         if isinstance(xpath_query, str):
             new_xpath_query = xpath_compile(xpath_query)
             result = new_xpath_query(self.__element)
@@ -807,7 +812,12 @@ class Element(MDBase):
             if isinstance(e, _Element)
         ]
 
-    def get_element(self, xpath_query: XPath | str) -> Element | None:
+    def get_element(self, xpath_query: str) -> Element | None:
+        """Returns the first element obtained from the XPath query applied
+        to the current element.
+
+        Return an Element or None.
+        """
         result = self.__element.xpath(f"({xpath_query})[1]", namespaces=ODF_NAMESPACES)
         if result:
             return Element.from_tag(result[0])
@@ -1691,8 +1701,9 @@ class Element(MDBase):
             return (element, True)
 
     def xpath(self, xpath_query: str) -> list[Element | EText]:
-        """Apply XPath query to the element and its subtree. Return list of
-        Element or EText instances translated from the nodes found.
+        """Apply XPath query to the element and its subtree.
+
+        Return list of Element or EText instances.
         """
         element = self.__element
         xpath_instance = xpath_compile(xpath_query)

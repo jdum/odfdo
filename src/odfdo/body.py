@@ -157,11 +157,19 @@ class Text(Body):
     _properties: tuple[PropDef, ...] = ()
 
 
+class Metadata(Body):
+    """Root of the Meta document content, "office:meta"."""
+
+    _tag: str = "office:meta"
+    _properties: tuple[PropDef, ...] = ()
+
+
 register_element_class(Body)
 register_element_class(Chart)
 register_element_class(Database)
 register_element_class(Drawing)
 register_element_class(Image)
+register_element_class(Metadata)
 register_element_class(Presentation)
 register_element_class(Spreadsheet)
 register_element_class(Text)
