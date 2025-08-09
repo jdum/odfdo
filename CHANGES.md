@@ -1,5 +1,20 @@
 # Odfdo Release Notes
 
+## [3.16.1] - 2025-08-09
+
+-  Add a new recipe: `how_to_change_default_language.py` showing the use of the `document.language` property.
+-  Refactor of code (type hints).
+-  Migrate to the `uv_build` build system.
+
+### Changed
+
+-  Refactor `odfdo` modules for type hints: `cell`, `row`, `annotation`, `styles`, `body`, `element`, `meta`, `xmlpart`.
+-  Improve some doc strings in `odfdo.element` and `odfdo.xmlpart`.
+
+### Added
+
+-   Add class `body.Metadata`, for type hint purpose.
+
 ## [3.16.0] - 2025-08-02
 
 -  Added methods to set the default document language, both in the default styles (the value used by LibreOffice) and in the metadata. In short: using the new property `Document.language = "en-US"` will make `Document.langusge` value to "en-US", both the default styles and meta fields now have this value.
@@ -27,7 +42,7 @@
 
 ### Changed
 
--  Refactor `odfdo` modules for type hints: `reference`. `container`. `named_range`. `mixin_paragraph`. `mixin_paragraph_formatted`, `element`. `mixin_dc_creator`, `line_break`, `element_typed`, `container`, `body`, `xmlpart`.
+-  Refactor `odfdo` modules for type hints: `reference`, `container`, `named_range`, `mixin_paragraph`, `mixin_paragraph_formatted`, `element`, `mixin_dc_creator`, `line_break`, `element_typed`, `container`, `body`, `xmlpart`.
 
 ## [3.15.0] - 2025-07-20
 

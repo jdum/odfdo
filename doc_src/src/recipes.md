@@ -41,6 +41,15 @@ Create a basic text document with headers and praragraphs.
     {% include "../../recipes/create_a_basic_text_document.py" %}
     ```
 
+## How to change default language
+
+Change the default language of a document, both in metadata and default styles.
+
+??? code "recipes/how_to_change_default_language.py"
+    ```python
+    {% include "../../recipes/how_to_change_default_language.py" %}
+    ```
+
 ## How to add a paragraph to a text document
 
 Minimal example of how to add a paragraph.
