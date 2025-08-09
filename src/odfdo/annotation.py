@@ -25,12 +25,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .element import Element, PropDef, register_element_class
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
 from .mixin_md import MDTail
+
+if TYPE_CHECKING:
+    from .body import Body
 
 
 def get_unique_office_name(element: Element | None = None) -> str:
@@ -98,7 +101,7 @@ class Annotation(MDTail, Element, DcCreatorMixin, DcDateMixin):
         super().__init__(**kwargs)
 
         if self._do_init:
-            self.note_body = text_or_element  # type:ignore
+            self.note_body = text_or_element
             if creator:
                 self.creator = creator
             if date is None:
@@ -143,20 +146,18 @@ class Annotation(MDTail, Element, DcCreatorMixin, DcDateMixin):
             raise TypeError(f'Unexpected type for body: "{type(text_or_element)}"')
 
     @property
-    def start(self) -> Element:
+    def start(self) -> Annotation:
         """Return self."""
         return self
 
     @property
-    def end(self) -> Element | None:
+    def end(self) -> AnnotationEnd | None:
         """Return the corresponding annotation-end tag or None."""
         name = self.name
         parent = self.parent
         if parent is None:  # pragma: nocover
             raise ValueError("Can't find end tag: no parent available")
-        body = self.document_body
-        if not body:
-            body = parent
+        body: Body | Element = self.document_body or parent
         return body.get_annotation_end(name=name)
 
     def get_annotated(
@@ -189,9 +190,7 @@ class Annotation(MDTail, Element, DcCreatorMixin, DcDateMixin):
             if as_text:
                 return ""
             return None
-        body = self.document_body
-        if not body:
-            body = self.root  # pragma: nocover
+        body: Body | Element = self.document_body or self.root
         return body.get_between(
             self, end, as_text=as_text, no_header=no_header, clean=clean
         )
@@ -250,7 +249,7 @@ class AnnotationEnd(MDTail, Element):
 
     def __init__(
         self,
-        annotation: Element | None = None,
+        annotation: Annotation | None = None,
         name: str | None = None,
         **kwargs: Any,
     ) -> None:
@@ -278,13 +277,13 @@ class AnnotationEnd(MDTail, Element):
         super().__init__(**kwargs)
         if self._do_init:
             if annotation:
-                name = annotation.name  # type: ignore
+                name = annotation.name
             if not name:
                 raise ValueError("Annotation-end must have a name")
             self.name = name
 
     @property
-    def start(self) -> Element | None:
+    def start(self) -> Annotation | None:
         """Return the corresponding annotation starting tag or None."""
         name = self.name
         parent = self.parent
@@ -292,13 +291,11 @@ class AnnotationEnd(MDTail, Element):
             raise ValueError(
                 "Can't find start tag: no parent available"
             )  # pragma:nocover
-        body = self.document_body
-        if not body:
-            body = parent  # pragma:nocover
+        body: Body | Element = self.document_body or parent
         return body.get_annotation(name=name)
 
     @property
-    def end(self) -> Element:
+    def end(self) -> AnnotationEnd:
         """Return self."""
         return self
 

@@ -60,7 +60,8 @@ if TYPE_CHECKING:
     from .link import Link
     from .list import List
     from .named_range import NamedRange
-    from .note import Annotation, AnnotationEnd, Note
+    from .note import Note
+    from .annotation import Annotation, AnnotationEnd
     from .paragraph import Paragraph, Span
     from .reference import (
         Reference,
