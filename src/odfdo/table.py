@@ -32,7 +32,7 @@ from io import StringIO
 from itertools import zip_longest
 from pathlib import Path
 from textwrap import wrap
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from lxml.etree import XPath, _Element
 

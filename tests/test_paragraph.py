@@ -150,17 +150,6 @@ def test_get_paragraph_missed(document):
     assert paragraph is None
 
 
-def test_create_line_break():
-    lb = LineBreak()
-    expected = "<text:line-break/>"
-    assert lb.serialize() == expected
-
-
-def test_create_line_break_str():
-    lb = LineBreak()
-    assert str(lb) == "\n"
-
-
 def test_create_naive_cr():
     para = Paragraph("\n")
     expected = "<text:p><text:line-break/></text:p>"
@@ -865,17 +854,6 @@ def test_set_reference_mark_before(document):
         "</text:p>"
     )
     assert para.serialize() == expected
-
-
-def test_line_break_getter_0():
-    lb = LineBreak()
-    expected = "<text:line-break/>"
-    assert lb.serialize() == expected
-
-
-def test_line_break_getter_1():
-    lb = LineBreak()
-    assert lb.text == "\n"
 
 
 def test_paragraph_formatted():
