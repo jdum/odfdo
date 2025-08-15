@@ -332,7 +332,7 @@ class Row(Element):
         if x >= self.width:
             return Cell()
         base_cell = self._get_cell2_base(x)
-        if base_cell is None:
+        if base_cell is None:  # pragma: no cover
             return None
         if clone:
             return base_cell.clone
@@ -345,7 +345,7 @@ class Row(Element):
         cell: Cell | None = self._row_cache.cached_cell(idx)
         if cell is None:
             cell = self._get_element_idx2(_XP_CELL_IDX, idx)  # type: ignore[assignment]
-            if cell is None:
+            if cell is None:  # pragma: no cover
                 return None
             self._row_cache.store_cell(cell, idx)
         return cell
