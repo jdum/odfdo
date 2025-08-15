@@ -90,7 +90,7 @@ class Content(XmlPart):
         for context in self._get_style_contexts(family):
             if context is None:
                 continue
-            style = context.get_style(
+            style: Style | None = context.get_style(
                 family,
                 name_or_element=name_or_element,
                 display_name=display_name,
