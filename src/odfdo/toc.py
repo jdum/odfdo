@@ -367,7 +367,7 @@ class TOC(MDToc, Element):
                 paragraph = Paragraph()
                 index_title.append(paragraph)
             if text_style:
-                paragraph.style = text_style  # type: ignore
+                paragraph.style = text_style
             paragraph.text = title
 
     @staticmethod
