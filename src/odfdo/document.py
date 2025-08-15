@@ -35,7 +35,7 @@ from importlib import resources as rso
 from mimetypes import guess_type
 from operator import itemgetter
 from pathlib import Path
-from typing import Any, BinaryIO
+from typing import TYPE_CHECKING, Any, BinaryIO
 
 from .const import (
     ODF_CONTENT,
@@ -62,6 +62,9 @@ from .styles import Styles
 from .table import Table
 from .utils import FAMILY_MAPPING, bytes_to_str, is_RFC3066
 from .xmlpart import XmlPart
+
+if TYPE_CHECKING:
+    from .body import Body
 
 AUTOMATIC_PREFIX = "odfdo_auto_"
 
@@ -409,7 +412,7 @@ class Document(MDDocument):
         return self.mimetype.rsplit(".", 1)[-1]
 
     @property
-    def body(self) -> Element:
+    def body(self) -> Body:
         """Return the body element of the content part, where actual content
         is stored.
         """
