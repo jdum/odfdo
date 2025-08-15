@@ -27,13 +27,17 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .element import FIRST_CHILD, LAST_CHILD, Element, register_element_class
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
 from .mixin_md import MDZap
 from .paragraph import Paragraph
+
+if TYPE_CHECKING:
+    from .body import Body
+    from .element import Element
 
 
 class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
@@ -83,7 +87,7 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
         Return: str or list of str.
         """
         content = self.paragraphs
-        text = [para.get_formatted_text(simple=True) for para in content]  # type: ignore
+        text = [para.get_formatted_text(simple=True) for para in content]
         if joined:
             return "\n".join(text)
         return text
@@ -158,14 +162,12 @@ class TextInsertion(Element):
         current = self.parent  # text:changed-region
         if not isinstance(current, TextChangedRegion):
             raise TypeError("Missing parent TextChangedRegion")
-        idx = current.get_id()  # type: ignore
-        body = self.document_body
-        if not body:
-            body = self.root  # pragma: nocover
+        idx = current.get_id()
+        body: Body | Element = self.document_body or self.root
         text_change = body.get_text_change_start(idx=idx)
         if not text_change:
             raise ValueError  # pragma: nocover
-        return text_change.get_inserted(  # type: ignore
+        return text_change.get_inserted(
             as_text=as_text, no_header=no_header, clean=clean
         )
 
@@ -598,10 +600,8 @@ class TextChangeEnd(TextChange):
             raise ValueError(
                 "Can not find end tag: no parent available."
             )  # pragma: nocover
-        body = self.document_body
-        if not body:
-            body = self.root  # pragma: nocover
-        return body.get_text_change_start(idx=idx)  # type: ignore
+        body: Body | Element = self.document_body or self.root
+        return body.get_text_change_start(idx=idx)
 
     def get_end(self) -> TextChangeEnd | None:
         """Return self."""
@@ -644,9 +644,7 @@ class TextChangeEnd(TextChange):
             if as_text:
                 return ""
             return None
-        body = self.document_body
-        if not body:
-            body = self.root  # pragma: nocover
+        body: Body | Element = self.document_body or self.root
         return body.get_between(
             start, end, as_text=as_text, no_header=no_header, clean=clean
         )
@@ -674,9 +672,7 @@ class TextChangeStart(TextChangeEnd):
             raise ValueError(
                 "Can not find end tag: no parent available."
             )  # pragma: nocover
-        body = self.document_body
-        if not body:
-            body = self.root
+        body: Body | Element = self.document_body or self.root
         return body.get_text_change_end(idx=idx)  # type: ignore
 
     def delete(
@@ -701,9 +697,7 @@ class TextChangeStart(TextChangeEnd):
         idx = self.get_id()
         if self.parent is None:
             raise ValueError("cannot delete the root element")  # pragma: nocover
-        body = self.document_body
-        if not body:
-            body = self.parent  # pragma: nocover
+        body: Body | Element = self.document_body or self.root
         end = body.get_text_change_end(idx=idx)
         if end:  # pragma: nocover
             end.delete()
