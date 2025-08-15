@@ -63,7 +63,7 @@ class Column(Element):
             style -- str or None
         """
         super().__init__(**kwargs)
-        self.x = None
+        self.x: int | None = None
         if self._do_init:
             if default_cell_style:
                 self.default_cell_style = default_cell_style

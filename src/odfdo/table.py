@@ -32,7 +32,7 @@ from io import StringIO
 from itertools import zip_longest
 from pathlib import Path
 from textwrap import wrap
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from lxml.etree import XPath, _Element
 
@@ -53,6 +53,9 @@ from .utils import (
     isiterable,
     translate_from_any,
 )
+
+if TYPE_CHECKING:
+    from .element import EText
 
 _XP_ROW = xpath_compile(
     "table:table-row|table:table-rows/table:table-row|"
@@ -174,7 +177,7 @@ class Table(MDTable, Element):
         super().__init__(**kwargs)
         self._table_cache = TableCache()
         if self._do_init:
-            self.name = name
+            self.name = name or ""
             if protected:
                 self.protected = protected
                 self.set_protection_key = protection_key
@@ -206,7 +209,7 @@ class Table(MDTable, Element):
                     if isinstance(value, str):
                         value = value.strip()
                     line.append(value)
-                csv_writer.writerow(line)  # type: ignore
+                csv_writer.writerow(line)  # type: ignore[attr-defined]
 
         out = StringIO(newline=os.linesep)
         csv_writer = csv.writer(
@@ -222,7 +225,7 @@ class Table(MDTable, Element):
         return out.getvalue()
 
     def get_elements(self, xpath_query: XPath | str) -> list[Element]:
-        element = self._Element__element  # type: ignore
+        element = self._Element__element  # type: ignore[attr-defined]
         if isinstance(xpath_query, str):
             new_xpath_query = xpath_compile(xpath_query)
             result = new_xpath_query(element)
@@ -239,11 +242,11 @@ class Table(MDTable, Element):
 
     def _copy_cache(self, cache: tuple | None) -> None:
         """Copy cache when cloning."""
-        self._table_cache = cache[0]
+        self._table_cache = cache[0]  # type:ignore[index]
 
     def clear(self) -> None:
         """Remove text, children and attributes from the Row."""
-        self._Element__element.clear()  # type: ignore
+        self._Element__element.clear()  # type:ignore[attr-defined]
         self._table_cache = TableCache()
 
     def _translate_y_from_any(self, y: str | int) -> int:
@@ -446,14 +449,14 @@ class Table(MDTable, Element):
     def _get_formatted_text_rst(self, context: dict) -> str:
         context["no_img_level"] += 1
         # Strip the table => We must clone
-        table = self.clone
-        table.rstrip(aggressive=True)  # type: ignore
+        table: Table = self.clone  # type: ignore[assignment]
+        table.rstrip(aggressive=True)
 
         # Fill the rows
         rows = []
         cols_nb = 0
         cols_size: dict[int, int] = {}
-        for odf_row in table.iter_rows():  # type: ignore
+        for odf_row in table.iter_rows():
             row = []
             for i, cell in enumerate(odf_row.iter_cells()):
                 value = cell.get_value(try_get_text=False)
@@ -891,7 +894,7 @@ class Table(MDTable, Element):
         # Step 1: remove empty rows below the table
         for row in reversed(self._get_rows()):
             if row.is_empty(aggressive=aggressive):
-                row.parent.delete(row)  # type: ignore
+                row.parent.delete(row)  # type: ignore[union-attr]
             else:
                 break
         # Step 2: rstrip remaining rows
@@ -904,11 +907,13 @@ class Table(MDTable, Element):
         self._table_cache.clear_row_indexes()
         # Step 3: trim columns to match max_width
         columns = self._get_columns()
-        repeated_cols = self.xpath("table:table-column/@table:number-columns-repeated")
+        repeated_cols: list[EText] = self.xpath(  # type: ignore[assignment]
+            "table:table-column/@table:number-columns-repeated"
+        )
         if not isinstance(repeated_cols, list):
             raise TypeError
         unrepeated = len(columns) - len(repeated_cols)
-        column_width = sum(int(r) for r in repeated_cols) + unrepeated  # type: ignore
+        column_width = sum(int(r) for r in repeated_cols) + unrepeated
         diff = column_width - max_width
         if diff > 0:
             for column in reversed(columns):
@@ -918,7 +923,7 @@ class Table(MDTable, Element):
                     column.repeated = repeated
                     break
                 else:
-                    column.parent.delete(column)
+                    column.parent.delete(column)  # type: ignore[union-attr]
                     diff = -repeated
                     if diff == 0:
                         break
@@ -944,7 +949,7 @@ class Table(MDTable, Element):
                 break
         if count > 0:
             for row in reversed(self._get_rows()):
-                row.parent.delete(row)  # type: ignore
+                row.parent.delete(row)  # type: ignore[union-attr]
                 count -= 1
                 if count <= 0:
                     break
@@ -969,11 +974,13 @@ class Table(MDTable, Element):
     def _optimize_width_adapt_columns(self, width: int) -> None:
         # trim columns to match minimal_width
         columns = self._get_columns()
-        repeated_cols = self.xpath("table:table-column/@table:number-columns-repeated")
+        repeated_cols: list[EText] = self.xpath(  # type: ignore[assignment]
+            "table:table-column/@table:number-columns-repeated"
+        )
         if not isinstance(repeated_cols, list):
             raise TypeError
         unrepeated = len(columns) - len(repeated_cols)
-        column_width = sum(int(r) for r in repeated_cols) + unrepeated  # type: ignore
+        column_width = sum(int(r) for r in repeated_cols) + unrepeated
         diff = column_width - width
         if diff > 0:
             for column in reversed(columns):
@@ -983,7 +990,7 @@ class Table(MDTable, Element):
                     column.repeated = repeated
                     break
                 else:
-                    column.parent.delete(column)
+                    column.parent.delete(column)  # type: ignore[union-attr]
                     diff = -repeated
                     if diff == 0:
                         break
@@ -1077,10 +1084,10 @@ class Table(MDTable, Element):
 
         Return: list of RowGroup
         """
-        return self.get_elements(_XP_ROW_GROUP)  # type: ignore
+        return self.get_elements(_XP_ROW_GROUP)  # type: ignore[return-value]
 
     def _get_rows(self) -> list[Row]:
-        return self.get_elements(_XP_ROW)  # type: ignore
+        return self.get_elements(_XP_ROW)  # type: ignore[return-value]
 
     def iter_rows(
         self,
@@ -1163,7 +1170,7 @@ class Table(MDTable, Element):
         # fixme : not clones ?
         return list(self.iter_rows())
 
-    def _yield_odf_rows(self):
+    def _yield_odf_rows(self) -> Iterator[Row]:
         for row in self._get_rows():
             if row.repeated is None:
                 yield row
@@ -1189,9 +1196,11 @@ class Table(MDTable, Element):
         idx = self._table_cache.row_idx(y)
         if idx is None:
             return None
-        row = self._table_cache.cached_row(idx)
+        row: Row | None = self._table_cache.cached_row(idx)
         if row is None:
-            row = self._get_element_idx2(_XP_ROW_IDX, idx)
+            row = self._get_element_idx2(_XP_ROW_IDX, idx)  # type: ignore[assignment]
+            if row is None:
+                return None
             self._table_cache.store_row(row, idx)
         return row
 
@@ -1285,10 +1294,10 @@ class Table(MDTable, Element):
         else:
             self.append_row(Row(repeated=diff), _repeated=diff, clone=False)
             row_back = self.append_row(row, clone=clone)
-        row_back.y = y  # type: ignore
+        row_back.y = y
         # Update width if necessary
-        self._update_width(row_back)  # type: ignore
-        return row_back  # type: ignore
+        self._update_width(row_back)
+        return row_back
 
     def extend_rows(self, rows: list[Row] | None = None) -> None:
         """Append a list of rows at the end of the table.
@@ -1837,7 +1846,7 @@ class Table(MDTable, Element):
         if y is None:
             raise ValueError
         cell = self.get_cell((x, y))
-        image_frame = image_frame.clone  # type: ignore
+        image_frame = image_frame.clone  # type: ignore[assignment]
         # Remove any previous paragraph, frame, etc.
         for child in cell.children:
             cell.delete(child)
@@ -1969,7 +1978,7 @@ class Table(MDTable, Element):
     # Columns
 
     def _get_columns(self) -> list[Column]:
-        return self.get_elements(_XP_COLUMN)  # type: ignore
+        return self.get_elements(_XP_COLUMN)  # type: ignore[return-value]
 
     def iter_columns(
         self,
@@ -2007,7 +2016,7 @@ class Table(MDTable, Element):
 
     traverse_columns = iter_columns
 
-    def _yield_odf_columns(self):
+    def _yield_odf_columns(self) -> Iterator[Column]:
         for column in self._get_columns():
             if column.repeated is None:
                 yield column
@@ -2056,11 +2065,11 @@ class Table(MDTable, Element):
             return None
         column = self._table_cache.cached_col(idx)
         if column is None:
-            column = self._get_element_idx2(_XP_COLUMN_IDX, idx)
+            column = self._get_element_idx2(_XP_COLUMN_IDX, idx)  # type:ignore[assignment]
             if column is None:
                 return None
             self._table_cache.store_col(column, idx)
-        return column.clone  # type: ignore
+        return column.clone
 
     @property
     def columns(self) -> list[Column]:
@@ -2162,7 +2171,7 @@ class Table(MDTable, Element):
         else:
             self.append_column(Column(repeated=diff), _repeated=diff)
             column_back = self.append_column(column.clone)
-        column_back.x = x  # type: ignore
+        column_back.x = x
         # Repetitions are accepted
         repeated = column.repeated or 1
         # Update width on every row
@@ -2171,7 +2180,7 @@ class Table(MDTable, Element):
                 row.insert_cell(x, Cell(repeated=repeated))
             # Shorter rows don't need insert
             # Longer rows shouldn't exist!
-        return column_back  # type: ignore
+        return column_back
 
     def append_column(
         self,
@@ -2435,7 +2444,7 @@ class Table(MDTable, Element):
 
     # Named Range
 
-    def get_named_ranges(  # type: ignore
+    def get_named_ranges(
         self,
         table_name: str | list[str] | None = None,
     ) -> list[NamedRange]:
@@ -2455,7 +2464,7 @@ class Table(MDTable, Element):
             return []
         all_named_ranges = body.get_named_ranges()
         if not table_name:
-            return all_named_ranges  # type:ignore
+            return all_named_ranges
         filter_ = []
         if isinstance(table_name, str):
             filter_.append(table_name)
@@ -2465,13 +2474,9 @@ class Table(MDTable, Element):
             raise ValueError(
                 f"table_name must be string or Iterable, not {type(table_name)}"
             )
-        return [
-            nr
-            for nr in all_named_ranges
-            if nr.table_name in filter_  # type:ignore
-        ]
+        return [nr for nr in all_named_ranges if nr.table_name in filter_]
 
-    def get_named_range(self, name: str) -> NamedRange:
+    def get_named_range(self, name: str) -> NamedRange | None:
         """Returns the Name Ranges of the specified name. If
         table_name is provided, limits the search to these tables.
         Beware : named ranges are stored at the body level, thus do not call
@@ -2481,12 +2486,12 @@ class Table(MDTable, Element):
 
             name -- str, name of the named range object
 
-        Return : NamedRange
+        Return : NamedRange or None
         """
         body = self.document_body
         if not body:
             raise ValueError("Table is not inside a document")
-        return body.get_named_range(name)  # type: ignore
+        return body.get_named_range(name)
 
     def set_named_range(
         self,
@@ -2630,7 +2635,7 @@ class Table(MDTable, Element):
                         cell.clear()
             if val_list:
                 if len(val_list) == 1:
-                    cells[0][0].set_value(val_list[0])
+                    cells[0][0].set_value(val_list[0])  # type: ignore[arg-type]
                 else:
                     value = " ".join([str(v) for v in val_list if v])
                     cells[0][0].set_value(value)
@@ -2722,7 +2727,7 @@ class Table(MDTable, Element):
                     if value is None:
                         value = ""
                     line.append(value)
-                csv_writer.writerow(line)  # type: ignore
+                csv_writer.writerow(line)  # type: ignore[attr-defined]
 
         content = StringIO(newline="")
         csv_writer = csv.writer(content, dialect=dialect, **fmtparams)
@@ -2782,7 +2787,7 @@ def import_from_csv(
     path_or_file: str | Path | object,
     name: str,
     style: str | None = None,
-    **fmtparams,
+    **fmtparams: Any,
 ) -> Table:
     """Import the CSV file into a Table. If the path_or_file parameter is
     a Path or a string, it is opened as a path. Else a opened file-like is
@@ -2802,12 +2807,12 @@ def import_from_csv(
       **fmtparams -- names parameters passed to csv.reader method
     """
     if isinstance(path_or_file, (str, Path)):
-        content_b = Path(path_or_file).read_bytes()
+        content_b: str | bytes = Path(path_or_file).read_bytes()
     elif isinstance(path_or_file, StringIO):
         content_b = path_or_file.getvalue()
     else:
         # Leave the file we were given open
-        content_b = path_or_file.read()  # type: ignore
+        content_b = path_or_file.read()  # type: ignore[attr-defined]
     if isinstance(content_b, bytes):
         content = content_b.decode()
     else:
