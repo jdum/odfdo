@@ -34,7 +34,7 @@ def test_default():
 
 
 def test_bad_name_empty():
-    pytest.raises(TypeError, Table)
+    pytest.raises(ValueError, Table)
 
 
 def test_bad_name_1():
