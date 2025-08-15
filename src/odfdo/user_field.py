@@ -92,7 +92,7 @@ class UserFieldGet(ElementTyped):
             text = self.set_value_and_type(
                 value=value, value_type=value_type, text=text
             )
-            self.text = text  # type: ignore
+            self.text = text
 
             if style:
                 self.style = style
@@ -164,7 +164,7 @@ class UserDefined(ElementTyped):
             text = self.set_value_and_type(
                 value=value, value_type=value_type, text=text
             )
-            self.text = text  # type: ignore
+            self.text = text
 
 
 UserDefined._define_attribut_property()
