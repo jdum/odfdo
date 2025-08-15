@@ -271,7 +271,7 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
     @classmethod
     def image_frame(
         cls,
-        image: Element | str,
+        image: DrawImage | str,
         text: str | None = None,
         name: str | None = None,
         draw_id: str | None = None,
@@ -396,11 +396,11 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
         name: str | None = None,
         url: str | None = None,
         content: str | None = None,
-    ) -> Element | None:
-        return self.get_element("draw:image")
+    ) -> DrawImage | None:
+        return self.get_element("draw:image")  # type: ignore[return-value]
 
-    def set_image(self, url_or_element: Element | str) -> Element:
-        image = self.get_image()
+    def set_image(self, url_or_element: DrawImage | str) -> Element:
+        image: DrawImage | None = self.get_image()
         if image is None:
             if isinstance(url_or_element, Element):
                 image = url_or_element
