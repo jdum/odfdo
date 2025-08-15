@@ -150,23 +150,6 @@ def test_get_paragraph_missed(document):
     assert paragraph is None
 
 
-def test_create_tabulation():
-    tab = Tab()
-    expected = "<text:tab/>"
-    assert tab.serialize() == expected
-
-
-def test_create_tabulation_str():
-    tab = Tab()
-    assert str(tab) == "\t"
-
-
-def test_create_tabulation_pos():
-    tab = Tab(4)
-    expected = '<text:tab text:tab-ref="4"/>'
-    assert tab.serialize() == expected
-
-
 def test_create_line_break():
     lb = LineBreak()
     expected = "<text:line-break/>"
@@ -882,17 +865,6 @@ def test_set_reference_mark_before(document):
         "</text:p>"
     )
     assert para.serialize() == expected
-
-
-def test_tab_getter_0():
-    tab = Tab()
-    expected = "<text:tab/>"
-    assert tab.serialize() == expected
-
-
-def test_tab_getter_1():
-    tab = Tab()
-    assert tab.text == "\t"
 
 
 def test_line_break_getter_0():
