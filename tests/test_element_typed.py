@@ -145,8 +145,29 @@ def test_et_get_value_with_bad_date():
         et.get_value(value_type="date")
 
 
+def test_et_get_value_with_bad_date_2():
+    et = VarSet()
+    et.set_value_and_type(None, value_type="date")
+    with pytest.raises(ValueError):
+        et.get_value(value_type="date")
+
+
 def test_et_get_value_time():
     et = VarSet()
     et.set_value_and_type(timedelta(hours=2), value_type="time")
     result = et.get_value(value_type="time")
     assert result == timedelta(hours=2)
+
+
+def test_et_get_value_time_bad():
+    et = VarSet()
+    et.set_value_and_type(None, value_type="time")
+    with pytest.raises(ValueError):
+        et.get_value(value_type="time")
+
+
+def test_et_get_value_float_bad():
+    et = VarSet()
+    et.set_value_and_type(None, value_type="float")
+    with pytest.raises(ValueError):
+        et.get_value(value_type="float")
