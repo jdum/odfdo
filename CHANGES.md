@@ -1,15 +1,24 @@
 # Odfdo Release Notes
 
-## [3.16.1] - 2025-08-09
+## [3.16.2] - 2025-08-15
 
--  Add a new recipe: `how_to_change_default_language.py` showing the use of the `document.language` property.
--  Refactor of code (type hints).
--  Migrate to the `uv_build` build system.
+-   Code refactoring for type hints and improved test coverage.
 
 ### Changed
 
--  Refactor `odfdo` modules for type hints: `cell`, `row`, `annotation`, `styles`, `body`, `element`, `meta`, `xmlpart`.
--  Improve some doc strings in `odfdo.element` and `odfdo.xmlpart`.
+-   Refactor `odfdo` modules for type hints: `meta`, `content`, `mixin_paragraph`, `tracked_change`, `user_field.py`, `frame.py`, `toc`, `xmlpart`, `document`, `table`, `row`, `element_typed`, `highlight`.
+-   Add tests for `table` and `element_typed`, `tab`, `line_break`.
+
+## [3.16.1] - 2025-08-09
+
+-   Add a new recipe: `how_to_change_default_language.py` showing the use of the `document.language` property.
+-   Refactor of code (type hints).
+-   Migrate to the `uv_build` build system.
+
+### Changed
+
+-   Refactor `odfdo` modules for type hints: `cell`, `row`, `annotation`, `styles`, `body`, `element`, `meta`, `xmlpart`.
+-   Improve some doc strings in `odfdo.element` and `odfdo.xmlpart`.
 
 ### Added
 
@@ -17,8 +26,8 @@
 
 ## [3.16.0] - 2025-08-02
 
--  Added methods to set the default document language, both in the default styles (the value used by LibreOffice) and in the metadata. In short: using the new property `Document.language = "en-US"` will make `Document.langusge` value to "en-US", both the default styles and meta fields now have this value.
-- Small fixes in the Style properties management.
+-   Added methods to set the default document language, both in the default styles (the value used by LibreOffice) and in the metadata. In short: using the new property `Document.language = "en-US"` will make `Document.langusge` value to "en-US", both the default styles and meta fields now have this value.
+-   Small fixes in the Style properties management.
 
 ### Changed
 
@@ -38,20 +47,20 @@
 
 ## [3.15.1] - 2025-07-26
 
--  Refactor of code (type hints).
+-   Refactor of code (type hints).
 
 ### Changed
 
--  Refactor `odfdo` modules for type hints: `reference`, `container`, `named_range`, `mixin_paragraph`, `mixin_paragraph_formatted`, `element`, `mixin_dc_creator`, `line_break`, `element_typed`, `container`, `body`, `xmlpart`.
+-   Refactor `odfdo` modules for type hints: `reference`, `container`, `named_range`, `mixin_paragraph`, `mixin_paragraph_formatted`, `element`, `mixin_dc_creator`, `line_break`, `element_typed`, `container`, `body`, `xmlpart`.
 
 ## [3.15.0] - 2025-07-20
 
--  For concept clarity, rename iterator methods `Table.traverse()` to `Table.iter_rows()`, `Table.traverse_columns()` to `Table.iter_columns()`, `Row.traverse()` to `Row.iter_cells()`, maintaining compatibility with aliases on previous names.
--  Add alias names for `Body.get_table()`, `tables`, `get_table()`: `get_sheets()`, `sheets`, `get_sheet()`.
--  Add the `Meta.strip()` method to clean all metadata from a document and a recipe showing how it works.
--  Improve the `remove_tree()` utility function (used in recipes) by adding the `keep_children` argument.
--  Optimize access to columns in tables.
--  Refactor of code (type hints) and improvement of the tests coverage.
+-   For concept clarity, rename iterator methods `Table.traverse()` to `Table.iter_rows()`, `Table.traverse_columns()` to `Table.iter_columns()`, `Row.traverse()` to `Row.iter_cells()`, maintaining compatibility with aliases on previous names.
+-   Add alias names for `Body.get_table()`, `tables`, `get_table()`: `get_sheets()`, `sheets`, `get_sheet()`.
+-   Add the `Meta.strip()` method to clean all metadata from a document and a recipe showing how it works.
+-   Improve the `remove_tree()` utility function (used in recipes) by adding the `keep_children` argument.
+-   Optimize access to columns in tables.
+-   Refactor of code (type hints) and improvement of the tests coverage.
 
 ### Changed
 
