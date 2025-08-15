@@ -185,7 +185,10 @@ def apply_style(document: Document, style_name: str, pattern: str) -> None:
     for paragraph in chain(
         body.get_paragraphs(content=pattern), body.get_headers(content=pattern)
     ):
-        if paragraph.parent.tag in ("text:index-title", "text:index-body"):
+        if paragraph.parent and paragraph.parent.tag in (
+            "text:index-title",
+            "text:index-body",
+        ):
             continue
         paragraph.set_span(style=style_name, regex=pattern)
 
