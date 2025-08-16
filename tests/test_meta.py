@@ -22,19 +22,18 @@
 
 import io
 from collections.abc import Iterable
-from datetime import datetime, timedelta
 from datetime import date as dtdate
+from datetime import datetime, timedelta
 from decimal import Decimal
 from textwrap import dedent
 
 import pytest
 
 from odfdo.body import Metadata
-from odfdo.meta import Meta
 from odfdo.const import ODF_META
 from odfdo.datatype import DateTime, Duration
 from odfdo.document import Document
-from odfdo.meta import GENERATOR
+from odfdo.meta import GENERATOR, Meta
 from odfdo.meta_auto_reload import MetaAutoReload
 from odfdo.meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from odfdo.meta_template import MetaTemplate
@@ -876,7 +875,6 @@ def test_meta_export_dict(meta):
             },
         ],
     }
-    print(repr(exported))
     assert exported == expected
 
 
@@ -886,10 +884,68 @@ def test_meta_statistic_none(meta):
 
 
 def test_meta_export_dict_error(meta):
-    elem = meta.get_element("//meta:document-statistic")
-    elem.delete()
+    element = meta.get_element("//meta:document-statistic")
+    element.delete()
     with pytest.raises(LookupError):
         meta.as_dict()
+
+
+def test_meta_export_dict_auto_reload_hyperlink_behaviour(meta):
+    meta.set_auto_reload(timedelta(seconds=30))
+    meta.set_hyperlink_behaviour()
+    exported = meta.as_dict()
+    expected = {
+        "meta:creation-date": datetime(2009, 7, 31, 15, 57, 37),
+        "dc:date": datetime(2009, 7, 31, 15, 59, 13),
+        "meta:editing-duration": timedelta(seconds=330),
+        "meta:editing-cycles": 2,
+        "meta:document-statistic": {
+            "meta:table-count": 0,
+            "meta:image-count": 0,
+            "meta:object-count": 0,
+            "meta:page-count": 1,
+            "meta:paragraph-count": 1,
+            "meta:word-count": 4,
+            "meta:character-count": 27,
+            "meta:non-whitespace-character-count": 24,
+        },
+        "meta:generator": "LibreOffice/6.0.3.2$MacOSX_X86_64 LibreOffice_project/8f48d515416608e3a835360314dac7e47fd0b821",
+        "dc:title": "Intitulé",
+        "dc:description": "Comments\nCommentaires\n评论",
+        "meta:keyword": "Mots-clés",
+        "dc:subject": "Sujet de sa majesté",
+        "meta:auto-reload": {
+            "meta:delay": "PT00H00M30S",
+            "xlink:actuate": "onLoad",
+            "xlink:href": "",
+            "xlink:show": "replace",
+            "xlink:type": "simple",
+        },
+        "meta:hyperlink-behaviour": {
+            "office:target-frame-name": "_blank",
+            "xlink:show": "replace",
+        },
+        "meta:user-defined": [
+            {
+                "meta:name": "Achevé à la date",
+                "meta:value-type": "date",
+                "value": datetime(2009, 7, 31, 0, 0),
+            },
+            {
+                "meta:name": "Numéro du document",
+                "meta:value-type": "float",
+                "value": Decimal("3"),
+            },
+            {"meta:name": "Référence", "meta:value-type": "boolean", "value": True},
+            {
+                "meta:name": "Vérifié par",
+                "meta:value-type": "string",
+                "value": "Moi-même",
+            },
+        ],
+    }
+    print(exported)
+    assert exported == expected
 
 
 def test_meta_export_dict_full(meta):
@@ -941,7 +997,6 @@ def test_meta_export_dict_full(meta):
             },
         ],
     }
-    print(repr(exported))
     assert exported == expected
 
 
@@ -993,8 +1048,6 @@ def test_meta_export_json(meta):
         ]
     }"""
     )
-    print(exported)
-    print(expected)
     assert exported.strip() == expected.strip()
 
 
@@ -1054,8 +1107,6 @@ def test_meta_export_json_full(meta):
         ]
     }"""
     )
-
-    print(exported)
     assert exported == expected
 
 
@@ -1428,6 +1479,88 @@ def test_meta_from_dict_42(meta):
     meta.from_dict(imported)
     result = meta.as_dict(full=True)
     assert result == expected
+
+
+def test_meta_from_dict_modif_date(meta):
+    imported = {}
+    element = meta.get_element("//dc:date")
+    element.delete()
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    assert isinstance(result["dc:date"], datetime)
+
+
+def test_meta_from_dict_creation_date(meta):
+    imported = {}
+    element = meta.get_element("//meta:creation-date")
+    element.delete()
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    assert isinstance(result["meta:creation-date"], datetime)
+
+
+def test_meta_from_dict_generator(meta):
+    imported = {}
+    meta.generator = ""
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    assert result["meta:generator"].startswith("odfdo")
+
+
+def test_meta_from_dict_creator(meta):
+    key = "dc:creator"
+    content = "John"
+    imported = {key: content}
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    assert result[key] == content
+
+
+def test_meta_from_dict_language(meta):
+    key = "dc:language"
+    content = "fr-FR"
+    imported = {key: content}
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    assert result[key] == content
+
+
+def test_meta_from_dict_initial_creator(meta):
+    key = "meta:initial-creator"
+    content = "Homer"
+    imported = {key: content}
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    assert result[key] == content
+
+
+def test_meta_from_dict_printed_by(meta):
+    key = "meta:printed-by"
+    content = "Homer"
+    imported = {key: content}
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    assert result[key] == content
+
+
+def test_meta_from_dict_print_date(meta):
+    key = "meta:print-date"
+    content = datetime(2025, 1, 2, 3, 4, 5, 6)
+    imported = {key: content}
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    assert result[key] == content
+
+
+def test_meta_from_dict_meta_template(meta):
+    key = "meta:template"
+    template = MetaTemplate(datetime(2025, 1, 2, 3, 4, 5, 6), "url", "Title")
+    content = template.as_dict()
+    imported = {key: content}
+    print(imported)
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    assert result[key] == content
 
 
 def test_meta_strip_1(samples):

@@ -344,7 +344,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         href: str = "",
         title: str = "",
     ) -> None:
-        """Set the MetaTemplate <meta:template> element."""
+        """Set the MetaTemplate "meta:template" element."""
         template = MetaTemplate(date=date, href=href, title=title)
         current = self.template
         if isinstance(current, MetaTemplate):
@@ -352,17 +352,17 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         self.body.append(template)
 
     def get_auto_reload(self) -> MetaAutoReload | None:
-        """Get the MetaAutoReload <meta:auto-reload> element or None."""
+        """Get the MetaAutoReload "meta:auto-reload" element or None."""
         element: MetaAutoReload | None = self.get_element("//meta:auto-reload")  # type: ignore[assignment]
         return element
 
     @property
     def auto_reload(self) -> MetaAutoReload | None:
-        """Get the MetaAutoReload <meta:auto-reload> element or None."""
+        """Get the MetaAutoReload "meta:auto-reload" element or None."""
         return self.get_auto_reload()
 
     def set_auto_reload(self, delay: timedelta, href: str = "") -> None:
-        """Set the MetaAutoReload <meta:auto-reload> element."""
+        """Set the MetaAutoReload "meta:auto-reload" element."""
         autoreload = MetaAutoReload(delay=delay, href=href)
         current = self.auto_reload
         if isinstance(current, MetaAutoReload):
@@ -370,7 +370,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         self.body.append(autoreload)
 
     def get_hyperlink_behaviour(self) -> MetaHyperlinkBehaviour | None:
-        """Get the MetaHyperlinkBehaviour <meta:hyperlink-behaviour> element or None."""
+        """Get the MetaHyperlinkBehaviour "meta:hyperlink-behaviour" element
+        or None."""
         element: MetaHyperlinkBehaviour | None = self.get_element(  # type: ignore[assignment]
             "//meta:hyperlink-behaviour"
         )
@@ -378,7 +379,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     @property
     def hyperlink_behaviour(self) -> MetaHyperlinkBehaviour | None:
-        """Get the MetaHyperlinkBehaviour <meta:hyperlink-behaviour> element or None."""
+        """Get the MetaHyperlinkBehaviour "meta:hyperlink-behaviour" element
+        or None."""
         return self.get_hyperlink_behaviour()
 
     def set_hyperlink_behaviour(
@@ -386,7 +388,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         target_frame_name: str = "_blank",
         show: str = "replace",
     ) -> None:
-        """Set the MetaHyperlinkBehaviour <meta:hyperlink-behaviour> element."""
+        """Set the MetaHyperlinkBehaviour "meta:hyperlink-behaviour"
+        element."""
         behaviour = MetaHyperlinkBehaviour(
             target_frame_name=target_frame_name, show=show
         )
@@ -669,7 +672,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             self.generator = GENERATOR
 
     def get_statistic(self) -> dict[str, int] | None:
-        """Get the statistics about a document.
+        """Get the statistics about a document, "meta:document-statistic" tag.
 
         (Also available as "self.statistic" property.)
 
@@ -696,7 +699,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return statistic
 
     def set_statistic(self, statistic: dict[str, int]) -> None:
-        """Set the statistics about a document.
+        """Set the statistics about a document, "meta:document-statistic" tag.
 
         (Also available as "self.statistic" property.)
 
@@ -732,8 +735,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     @property
     def statistic(self) -> dict[str, int] | None:
-        """Get or set the statistics about a document
-        <meta:document-statistic>.
+        """Get or set the statistics about a document, "meta:document-statistic"
+        tag.
 
         Return: dict (or None if inexistant)
 
@@ -1059,9 +1062,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         result.append("Statistic:")
         statistic = data.get("meta:document-statistic", {})
-        if statistic:
-            for name, value in statistic.items():
-                result.append(f"  - {name[5:].replace('-', ' ').capitalize()}: {value}")
+        for name, value in statistic.items():
+            result.append(f"  - {name[5:].replace('-', ' ').capitalize()}: {value}")
 
         result.append("User defined metadata:")
         user_metadata = data.get("meta:user-defined", [])
@@ -1213,7 +1215,6 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         key = "meta:template"
         value = _value_delete(key)
         if value is not None:
-            value = value.as_dict()
             self.set_template(
                 date=value["meta:date"],
                 href=value["xlink:href"],
@@ -1223,7 +1224,6 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         key = "meta:auto-reload"
         value = _value_delete(key)
         if value is not None:
-            value = value.as_dict()
             self.set_auto_reload(
                 delay=value["meta:delay"],
                 href=value["xlink:href"],
@@ -1232,7 +1232,6 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         key = "meta:hyperlink-behaviour"
         value = _value_delete(key)
         if value is not None:
-            value = value.as_dict()
             self.set_hyperlink_behaviour(
                 target_frame_name=value["office:target-frame-name"],
                 show=value["xlink:show"],
