@@ -85,13 +85,18 @@ class MetaTemplate(Element):
 
     def as_dict(self) -> dict[str, Any]:
         """Return the MetaTemplate attributes as a Python dict."""
-        return {
-            "meta:date": DateTime.decode(self.date),
-            "xlink:actuate": self.actuate,
-            "xlink:href": self.href,
-            "xlink:title": self.title,
-            "xlink:type": self.type,
-        }
+        result: dict[str, Any] = {}
+        if self.date:
+            result["meta:date"] = DateTime.decode(self.date)
+        result.update(
+            {
+                "xlink:actuate": self.actuate or "",
+                "xlink:href": self.href or "",
+                "xlink:title": self.title or "",
+                "xlink:type": self.type or "",
+            }
+        )
+        return result
 
     def from_dict(self, data: dict[str, Any]) -> None:
         """Set all the MetaTemplate attributes from a Python dict."""

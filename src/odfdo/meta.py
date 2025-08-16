@@ -1018,6 +1018,12 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         for item in user_defined:
             _convert(item)
         meta_data["meta:user-defined"] = user_defined
+        meta_template = meta_data.get("meta:template")
+        if meta_template is not None:
+            _convert(meta_template)
+            meta_data["meta:template"] = meta_template
+        meta_data["meta:user-defined"] = user_defined
+
         _convert(meta_data)
         return meta_data
 
