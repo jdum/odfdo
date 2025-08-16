@@ -49,6 +49,16 @@ def test_as_dict():
     assert behaviour.as_dict() == expected
 
 
+def test_from_dict():
+    behaviour = MetaHyperlinkBehaviour(target_frame_name="initial_frame", show="")
+    imported = {
+        "office:target-frame-name": "new_frame",
+        "xlink:show": "_top",
+    }
+    behaviour.from_dict(imported)
+    assert behaviour.as_dict() == imported
+
+
 def test_str():
     behaviour = MetaHyperlinkBehaviour(target_frame_name="some_frame", show="_top")
     expected = "(some_frame)"

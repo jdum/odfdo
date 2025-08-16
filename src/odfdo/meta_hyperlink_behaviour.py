@@ -75,6 +75,11 @@ class MetaHyperlinkBehaviour(Element):
             "xlink:show": self.show,
         }
 
+    def from_dict(self, data: dict[str, Any]) -> None:
+        """Set all the MetaHyperlinkBehaviour attributes from a Python dict."""
+        self.target_frame_name = str(data.get("office:target-frame-name", ""))
+        self.show = str(data.get("xlink:show", "replace"))
+
 
 MetaHyperlinkBehaviour._define_attribut_property()
 
