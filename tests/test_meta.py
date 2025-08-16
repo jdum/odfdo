@@ -23,11 +23,14 @@
 import io
 from collections.abc import Iterable
 from datetime import datetime, timedelta
+from datetime import date as dtdate
 from decimal import Decimal
 from textwrap import dedent
 
 import pytest
 
+from odfdo.body import Metadata
+from odfdo.meta import Meta
 from odfdo.const import ODF_META
 from odfdo.datatype import DateTime, Duration
 from odfdo.document import Document
@@ -130,6 +133,16 @@ def test_language_property(meta):
     assert clone.get_language() == language
 
 
+def test_language_property_double(meta):
+    clone = meta.clone
+    language = "en-US"
+    language2 = "en-UK"
+    clone.language = language
+    assert clone.language == language
+    clone.language = language2
+    assert clone.language == language2
+
+
 def test_get_modification_date(meta):
     date = meta.get_modification_date()
     expected = DateTime.decode("2009-07-31T15:59:13")
@@ -175,6 +188,23 @@ def test_print_date_property(meta):
     assert clone.print_date == now
 
 
+def test_print_date_property_2(meta):
+    clone = meta.clone
+    now = datetime.now().replace(microsecond=0)
+    clone.print_date = now
+    # second change
+    now = now + timedelta(hours=1)
+    clone.print_date = now
+    assert clone.print_date == now
+
+
+def test_print_date_property_none(meta):
+    clone = meta.clone
+    now = datetime.now().replace(microsecond=0)
+    clone.print_date = None
+    assert clone.print_date - now < timedelta(hours=3)
+
+
 def test_get_creation_date(meta):
     date = meta.get_creation_date()
     expected = datetime(2009, 7, 31, 15, 57, 37)
@@ -193,6 +223,13 @@ def test_set_bad_creation_date(meta):
     date = "2009-06-29T14:15:45"
     with pytest.raises(AttributeError):
         clone.set_creation_date(date)
+
+
+def test_set_creation_date_none(meta):
+    clone = meta.clone
+    now_date = datetime.now()
+    clone.set_creation_date(None)
+    assert clone.get_creation_date() - now_date < timedelta(hours=3)
 
 
 def test_creation_date_property(meta):
@@ -222,11 +259,29 @@ def test_initial_creator_property(meta):
     assert clone.initial_creator == creator
 
 
+def test_initial_creator_property_twice(meta):
+    clone = meta.clone
+    creator = "Hervé"
+    creator2 = "John"
+    clone.initial_creator = creator
+    clone.initial_creator = creator2
+    assert clone.initial_creator == creator2
+
+
 def test_printed_by_property(meta):
     clone = meta.clone
     printer = "Jérôme"
     clone.printed_by = printer
     assert clone.printed_by == printer
+
+
+def test_printed_by_property_twice(meta):
+    clone = meta.clone
+    printer = "Jérôme"
+    printer2 = "John"
+    clone.printed_by = printer
+    clone.printed_by = printer2
+    assert clone.printed_by == printer2
 
 
 def test_get_creator(meta):
@@ -265,9 +320,9 @@ def test_set_keywords(meta):
 
 def test_keyword_property(meta):
     clone = meta.clone
-    keywords = "Nouveaux mots-clés"
-    clone.keyword = keywords
-    assert clone.keyword == keywords
+    keyword = "Nouveaux"
+    clone.keyword = keyword
+    assert clone.keyword == keyword
 
 
 def test_keywords_property(meta):
@@ -275,6 +330,16 @@ def test_keywords_property(meta):
     keywords = "Nouveaux mots-clés"
     clone.keywords = keywords
     assert clone.keywords == keywords
+
+
+def test_keyword_property_on_none(meta):
+    clone = meta.clone
+    element = clone.get_element("//meta:keyword")
+    if element:
+        element.delete()
+    word = "Albert"
+    clone.keywords = word
+    assert clone.keywords == word
 
 
 def test_get_editing_duration(meta):
@@ -330,7 +395,14 @@ def test_set_bad_editing_cycles(meta):
     clone = meta.clone
     cycles = "3"
     with pytest.raises(TypeError):
-        clone.set_editing_duration(cycles)
+        clone.editing_cycles = cycles
+
+
+def test_set_bad_editing_cycles_2(meta):
+    clone = meta.clone
+    cycles = -4
+    with pytest.raises(ValueError):
+        clone.editing_cycles = cycles
 
 
 def test_get_generator(meta):
@@ -430,6 +502,36 @@ def test_statistic_property(meta):
     assert clone.get_statistic() == statistic
 
 
+def test_statistic_property_none(meta):
+    clone = meta.clone
+    element = clone.get_element("//meta:document-statistic")
+    if element:
+        element.delete()
+    assert clone.statistic is None
+
+
+def test_statistic_property_bad(meta):
+    clone = meta.clone
+    with pytest.raises(TypeError):
+        clone.statistic = 42
+
+
+def test_statistic_property_bad_2(meta):
+    clone = meta.clone
+    statistic = {
+        "meta:table-count": "error",
+        "meta:image-count": 2,
+        "meta:object-count": 3,
+        "meta:page-count": 4,
+        "meta:paragraph-count": 5,
+        "meta:word-count": 6,
+        "meta:character-count": 7,
+        "meta:non-whitespace-character-count": 24,
+    }
+    with pytest.raises(TypeError):
+        clone.statistic = statistic
+
+
 def test_get_user_defined_metadata(meta):
     metadata = meta.get_user_defined_metadata()
     expected = {
@@ -473,6 +575,21 @@ def test_user_defined_metadata_property_getter(meta):
     assert metadata == expected
 
 
+def test_set_user_defined_metadata_none(meta):
+    # A new value
+    meta.set_user_defined_metadata("Prop5", 2)
+    # Change a value
+    meta.set_user_defined_metadata("Référence", None)
+    meta.set_user_defined_metadata("Vérifié par", None)
+    expected = {
+        "Achevé à la date": datetime(2009, 7, 31),
+        "Numéro du document": Decimal("3"),
+        "Prop5": Decimal("2"),
+    }
+    metadata = meta.get_user_defined_metadata()
+    assert metadata == expected
+
+
 def test_user_defined_metadata_clear(meta):
     meta.clear_user_defined_metadata()
     metadata = meta.user_defined_metadata
@@ -490,11 +607,121 @@ def test_user_defined_metadata_property_setter(meta):
     assert meta.get_user_defined_metadata() == new_data
 
 
+def test_set_user_defined_metadata_datetime(meta):
+    dt = datetime(2025, 1, 2, 3, 4, 5)
+    expected = {
+        "name": "when",
+        "text": "2025-01-02T03:04:05",
+        "value": dt,
+        "value_type": "date",
+    }
+    meta.set_user_defined_metadata("when", dt)
+    assert meta.get_user_defined_metadata_of_name("when") == expected
+
+
+def test_set_user_defined_metadata_date(meta):
+    dt = dtdate(2025, 1, 2)
+    expected = {
+        "name": "when",
+        "text": "2025-01-02",
+        "value": datetime(2025, 1, 2, 0, 0, 0),
+        "value_type": "date",
+    }
+    meta.set_user_defined_metadata("when", dt)
+    assert meta.get_user_defined_metadata_of_name("when") == expected
+
+
+def test_set_user_defined_metadata_timedelta(meta):
+    td = timedelta(hours=4)
+    expected = {
+        "name": "when",
+        "text": "PT04H00M00S",
+        "value": td,
+        "value_type": "time",
+    }
+    meta.set_user_defined_metadata("when", td)
+    assert meta.get_user_defined_metadata_of_name("when") == expected
+
+
+def test_set_user_defined_metadata_wrong_type(meta):
+    with pytest.raises(TypeError):
+        meta.set_user_defined_metadata("when", [])
+
+
 def test_get_user_defined_metadata_of_name(meta):
     ref = "Référence"
     metadata = meta.get_user_defined_metadata_of_name(ref)
     expected = {"name": ref, "text": "true", "value": True, "value_type": "boolean"}
     assert metadata == expected
+
+
+def test_get_user_defined_metadata_buggy_meta_name(meta):
+    ref = "Référence"
+    for item in meta.get_elements("//meta:user-defined"):
+        # Read the values
+        name = item.get_attribute("meta:name")
+        if name == ref:
+            item.set_attribute("meta:name", None)
+            break
+    metadata = meta.get_user_defined_metadata()
+    expected = {
+        "Achevé à la date": datetime(2009, 7, 31),
+        "Numéro du document": Decimal("3"),
+        "Vérifié par": "Moi-même",
+    }
+    assert metadata == expected
+
+
+def test_user_defined_metadata_list_buggy_meta_name(meta):
+    ref = "Référence"
+    for item in meta.get_elements("//meta:user-defined"):
+        # Read the values
+        name = item.get_attribute("meta:name")
+        if name == ref:
+            item.set_attribute("meta:name", None)
+            break
+    metadata_list = meta._user_defined_metadata_list()
+    expected = [
+        {
+            "meta:name": "Achevé à la date",
+            "meta:value-type": "date",
+            "value": datetime(2009, 7, 31, 0, 0),
+        },
+        {
+            "meta:name": "Numéro du document",
+            "meta:value-type": "float",
+            "value": Decimal("3"),
+        },
+        {"meta:name": "Vérifié par", "meta:value-type": "string", "value": "Moi-même"},
+    ]
+    assert metadata_list == expected
+
+
+def test_user_defined_metadata_list(meta):
+    td = timedelta(hours=5)
+    meta.set_user_defined_metadata("duration", td)
+    metadata_list = meta._user_defined_metadata_list()
+    print(metadata_list)
+    expected = [
+        {
+            "meta:name": "Achevé à la date",
+            "meta:value-type": "date",
+            "value": datetime(2009, 7, 31, 0, 0),
+        },
+        {
+            "meta:name": "Numéro du document",
+            "meta:value-type": "float",
+            "value": Decimal("3"),
+        },
+        {"meta:name": "Référence", "meta:value-type": "boolean", "value": True},
+        {"meta:name": "Vérifié par", "meta:value-type": "string", "value": "Moi-même"},
+        {
+            "meta:name": "duration",
+            "meta:value-type": "time",
+            "value": td,
+        },
+    ]
+    assert metadata_list == expected
 
 
 def test_no_meta_template(meta):
@@ -505,6 +732,9 @@ def test_no_meta_template(meta):
 
 def test_set_meta_template(meta):
     clone = meta.clone
+    current = clone.template
+    if isinstance(current, MetaTemplate):
+        current.delete()
     now = datetime.now().replace(microsecond=0)
     clone.set_template(date=now, href="some url", title="some title")
     template = clone.template
@@ -512,6 +742,21 @@ def test_set_meta_template(meta):
     assert template.date == DateTime.encode(now)
     assert template.href == "some url"
     assert template.title == "some title"
+
+
+def test_set_meta_template_twice(meta):
+    clone = meta.clone
+    now = datetime.now().replace(microsecond=0)
+    clone.set_template(date=now, href="some url", title="some title")
+    template = clone.template
+    assert isinstance(template, MetaTemplate)
+    # second change
+    clone.set_template(date=now, href="new url", title="new title")
+    template = clone.template
+    assert isinstance(template, MetaTemplate)
+    assert template.date == DateTime.encode(now)
+    assert template.href == "new url"
+    assert template.title == "new title"
 
 
 def test_no_meta_auto_reload(meta):
@@ -522,6 +767,9 @@ def test_no_meta_auto_reload(meta):
 
 def test_set_meta_auto_reload(meta):
     clone = meta.clone
+    current = clone.auto_reload
+    if isinstance(current, MetaAutoReload):
+        current.delete()
     delay = timedelta(seconds=15)
     clone.set_auto_reload(delay=delay, href="some url")
     reload = clone.auto_reload
@@ -533,6 +781,23 @@ def test_set_meta_auto_reload(meta):
     )
 
 
+def test_set_meta_auto_reload_twice(meta):
+    clone = meta.clone
+    delay = timedelta(seconds=15)
+    clone.set_auto_reload(delay=delay, href="some url")
+    reload = clone.auto_reload
+    assert isinstance(reload, MetaAutoReload)
+    # second change
+    clone.set_auto_reload(delay=delay, href="new url")
+    reload = clone.auto_reload
+    assert isinstance(reload, MetaAutoReload)
+    assert reload.delay == Duration.encode(delay)
+    assert reload.href == "new url"
+    assert repr(reload) == (
+        "<MetaAutoReload tag=meta:auto-reload href=new url delay=0:00:15>"
+    )
+
+
 def test_no_hyperlink_behaviour(meta):
     clone = meta.clone
     behaviour = clone.hyperlink_behaviour
@@ -541,6 +806,9 @@ def test_no_hyperlink_behaviour(meta):
 
 def test_set_hyperlink_behaviour(meta):
     clone = meta.clone
+    current = clone.hyperlink_behaviour
+    if isinstance(current, MetaHyperlinkBehaviour):
+        current.delete()
     clone.set_hyperlink_behaviour(target_frame_name="some_frame", show="_top")
     behaviour = clone.hyperlink_behaviour
     assert isinstance(behaviour, MetaHyperlinkBehaviour)
@@ -548,6 +816,22 @@ def test_set_hyperlink_behaviour(meta):
     assert behaviour.target_frame_name == "some_frame"
     assert repr(behaviour) == (
         "<MetaHyperlinkBehaviour tag=meta:hyperlink-behaviour target=some_frame show=_top>"
+    )
+
+
+def test_set_hyperlink_behaviour_twice(meta):
+    clone = meta.clone
+    clone.set_hyperlink_behaviour(target_frame_name="some_frame", show="_top")
+    behaviour = clone.hyperlink_behaviour
+    assert isinstance(behaviour, MetaHyperlinkBehaviour)
+    # second change
+    clone.set_hyperlink_behaviour(target_frame_name="new_frame", show="_top")
+    behaviour = clone.hyperlink_behaviour
+    assert isinstance(behaviour, MetaHyperlinkBehaviour)
+    assert behaviour.show == "_top"
+    assert behaviour.target_frame_name == "new_frame"
+    assert repr(behaviour) == (
+        "<MetaHyperlinkBehaviour tag=meta:hyperlink-behaviour target=new_frame show=_top>"
     )
 
 
@@ -594,6 +878,18 @@ def test_meta_export_dict(meta):
     }
     print(repr(exported))
     assert exported == expected
+
+
+def test_meta_statistic_none(meta):
+    with pytest.raises(TypeError):
+        meta.statistic = None
+
+
+def test_meta_export_dict_error(meta):
+    elem = meta.get_element("//meta:document-statistic")
+    elem.delete()
+    with pytest.raises(LookupError):
+        meta.as_dict()
 
 
 def test_meta_export_dict_full(meta):
@@ -1068,6 +1364,72 @@ def test_meta_from_dict_5(meta):
     assert result == expected
 
 
+def test_meta_from_dict_42(meta):
+    imported = {
+        "meta:creation-date": datetime(2024, 7, 14, 12, 00, 00),
+        "dc:date": datetime(2009, 7, 31, 15, 59, 13),
+        "meta:editing-duration": timedelta(seconds=100),
+        "meta:editing-cycles": 1,
+        "meta:document-statistic": None,
+        "meta:generator": "toto",
+        "dc:subject": None,
+        "dc:title": None,
+        "dc:description": None,
+        "dc:keyword": None,
+        "meta:user-defined": [
+            {
+                "meta:name": "Achevé à la date",
+                "value": None,
+            }
+        ],
+    }
+    expected = {
+        "meta:creation-date": datetime(2024, 7, 14, 12, 00, 00),
+        "dc:date": datetime(2024, 7, 14, 12, 00, 00),
+        "meta:editing-duration": timedelta(seconds=0),
+        "meta:editing-cycles": 1,
+        "meta:document-statistic": {
+            "meta:table-count": 0,
+            "meta:image-count": 0,
+            "meta:object-count": 0,
+            "meta:page-count": 0,
+            "meta:paragraph-count": 0,
+            "meta:word-count": 0,
+            "meta:character-count": 0,
+            "meta:non-whitespace-character-count": 0,
+        },
+        "meta:generator": "toto",
+        "dc:title": None,
+        "dc:description": None,
+        "dc:creator": None,
+        "meta:keyword": "Mots-clés",
+        "dc:subject": None,
+        "dc:language": None,
+        "meta:initial-creator": None,
+        "meta:print-date": None,
+        "meta:printed-by": None,
+        "meta:auto-reload": None,
+        "meta:hyperlink-behaviour": None,
+        "meta:template": None,
+        "meta:user-defined": [
+            {
+                "meta:name": "Numéro du document",
+                "meta:value-type": "float",
+                "value": Decimal("3"),
+            },
+            {"meta:name": "Référence", "meta:value-type": "boolean", "value": True},
+            {
+                "meta:name": "Vérifié par",
+                "meta:value-type": "string",
+                "value": "Moi-même",
+            },
+        ],
+    }
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    assert result == expected
+
+
 def test_meta_strip_1(samples):
     document = Document(samples("meta.odt"))
     meta = document.meta
@@ -1107,7 +1469,6 @@ def test_meta_strip_1(samples):
         "meta:user-defined": [],
     }
 
-    print(exported)
     assert exported == expected
 
 
@@ -1150,5 +1511,110 @@ def test_meta_strip_2(samples):
         "meta:user-defined": [],
     }
 
-    print(exported)
     assert exported == expected
+
+
+def test_meta_body_class(meta):
+    body = meta.body
+    assert isinstance(body, Metadata)
+
+
+def test_meta_body_serialize(meta):
+    body = meta.body
+    expected = (
+        "<office:meta>"
+        "<meta:creation-date>2009-07-31T15:57:37</meta:creation-date>"
+        "<meta:editing-duration>PT00H05M30S</meta:editing-duration>"
+        "<meta:editing-cycles>2</meta:editing-cycles>"
+        "<meta:generator>LibreOffice/6.0.3.2$MacOSX_X86_64 "
+        "LibreOffice_project/8f48d515416608e3a835360314dac7e47fd0b821"
+        "</meta:generator>"
+        "<dc:description>Comments\nCommentaires\n评论</dc:description>"
+        "<meta:keyword>Mots-clés</meta:keyword>"
+        "<dc:subject>Sujet de sa majesté</dc:subject>"
+        "<dc:title>Intitulé</dc:title>"
+        "<dc:date>2009-07-31T15:59:13</dc:date>"
+        '<meta:document-statistic meta:table-count="0" '
+        'meta:image-count="0" meta:object-count="0" '
+        'meta:page-count="1" meta:paragraph-count="1" '
+        'meta:word-count="4" meta:character-count="27" '
+        'meta:non-whitespace-character-count="24"/>'
+        '<meta:user-defined meta:name="Achevé à la date" '
+        'meta:value-type="date">2009-07-31T00:00:00</meta:user-defined>'
+        '<meta:user-defined meta:name="Numéro du document" '
+        'meta:value-type="float">3</meta:user-defined>'
+        '<meta:user-defined meta:name="Référence" '
+        'meta:value-type="boolean">true</meta:user-defined>'
+        '<meta:user-defined meta:name="Vérifié par">Moi-même'
+        "</meta:user-defined>"
+        "</office:meta>"
+    )
+    assert body.serialize() == expected
+
+
+def test_meta_body_clear(meta):
+    body = meta.body
+    body.clear()
+    expected = "<office:meta/>"
+    assert body.serialize() == expected
+
+
+def test_meta_body_from_no_dict_1(meta):
+    meta2 = meta.clone
+    body2 = meta2.body
+    body2.clear()
+    meta2.set_statistic({})
+    expected = (
+        "{\n"
+        '    "meta:document-statistic": {\n'
+        '        "meta:table-count": 0,\n'
+        '        "meta:image-count": 0,\n'
+        '        "meta:object-count": 0,\n'
+        '        "meta:page-count": 0,\n'
+        '        "meta:paragraph-count": 0,\n'
+        '        "meta:word-count": 0,\n'
+        '        "meta:character-count": 0,\n'
+        '        "meta:non-whitespace-character-count": 0\n'
+        "    },\n"
+        '    "meta:user-defined": []\n'
+        "}"
+    )
+    assert meta2.as_json() == expected
+
+
+def test_meta_body_from_no_dict_2(meta):
+    meta2 = meta.clone
+    meta.body.clear()
+    meta.set_statistic({})
+    body2 = meta2.body
+    body2.clear()
+    meta2.set_statistic({})
+    meta2_dict = meta2.as_dict()
+    meta.date = datetime(2025, 1, 2, 3, 4, 5, 6).replace(microsecond=0)
+    meta.creation_date = datetime(2025, 1, 2, 3, 4, 5, 6).replace(microsecond=0)
+    meta.generator = "gen"
+    meta.from_dict(meta2_dict)
+    expected = (
+        "{\n"
+        '    "meta:creation-date": "2025-01-02T03:04:05",\n'
+        '    "dc:date": "2025-01-02T03:04:05",\n'
+        '    "meta:editing-cycles": 1,\n'
+        '    "meta:document-statistic": {\n'
+        '        "meta:table-count": 0,\n'
+        '        "meta:image-count": 0,\n'
+        '        "meta:object-count": 0,\n'
+        '        "meta:page-count": 0,\n'
+        '        "meta:paragraph-count": 0,\n'
+        '        "meta:word-count": 0,\n'
+        '        "meta:character-count": 0,\n'
+        '        "meta:non-whitespace-character-count": 0\n'
+        "    },\n"
+        '    "meta:generator": "gen",\n'
+        '    "meta:user-defined": []\n'
+        "}"
+    )
+    assert meta.as_json() == expected
+
+
+def test_deprecated_meta_body(meta):
+    assert meta.meta_body.serialize() == meta.body.serialize()

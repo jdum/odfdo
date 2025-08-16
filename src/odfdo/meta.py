@@ -56,14 +56,15 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         super().__init__(*args, **kwargs)
         self._generator_modified: bool = False
 
-    def get_meta_body(self) -> Metadata:
-        """Return the body of the "meta.xml" part."""
+    def _get_body(self) -> Metadata:
         return self.get_element("//office:meta")  # type: ignore[return-value]
+
+    get_meta_body = _get_body
 
     @property
     def meta_body(self) -> Metadata:
         """Return the body of the "meta.xml" part."""
-        return self.get_meta_body()
+        return self._get_body()
 
     def get_title(self) -> str | None:
         """Get the title of the document.
@@ -93,7 +94,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         element = self.get_element("//dc:title")
         if element is None:
             element = Element.from_tag("dc:title")
-            self.meta_body.append(element)
+            self.body.append(element)
         element.text = title
 
     @property
@@ -135,7 +136,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         element = self.get_element("//dc:description")
         if element is None:
             element = Element.from_tag("dc:description")
-            self.meta_body.append(element)
+            self.body.append(element)
         element.text = description
 
     set_comments = set_description
@@ -176,7 +177,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         element = self.get_element("//dc:subject")
         if element is None:
             element = Element.from_tag("dc:subject")
-            self.meta_body.append(element)
+            self.body.append(element)
         element.text = subject
 
     @property
@@ -236,7 +237,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         element = self.get_element("//dc:language")
         if element is None:
             element = Element.from_tag("dc:language")
-            self.meta_body.append(element)
+            self.body.append(element)
         element.text = language
 
     @property
@@ -282,7 +283,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         element = self.get_element("//meta:creation-date")
         if element is None:
             element = Element.from_tag("meta:creation-date")
-            self.meta_body.append(element)
+            self.body.append(element)
         if date is None:
             date = datetime.now()
         element.text = DateTime.encode(date)
@@ -322,7 +323,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         element = self.get_element("//meta:print-date")
         if element is None:
             element = Element.from_tag("meta:print-date")
-            self.meta_body.append(element)
+            self.body.append(element)
         if date is None:
             date = datetime.now()
         element.text = DateTime.encode(date)
@@ -348,7 +349,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         current = self.template
         if isinstance(current, MetaTemplate):
             current.delete()
-        self.meta_body.append(template)
+        self.body.append(template)
 
     def get_auto_reload(self) -> MetaAutoReload | None:
         """Get the MetaAutoReload <meta:auto-reload> element or None."""
@@ -366,7 +367,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         current = self.auto_reload
         if isinstance(current, MetaAutoReload):
             current.delete()
-        self.meta_body.append(autoreload)
+        self.body.append(autoreload)
 
     def get_hyperlink_behaviour(self) -> MetaHyperlinkBehaviour | None:
         """Get the MetaHyperlinkBehaviour <meta:hyperlink-behaviour> element or None."""
@@ -392,7 +393,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         current = self.hyperlink_behaviour
         if isinstance(current, MetaHyperlinkBehaviour):
             current.delete()
-        self.meta_body.append(behaviour)
+        self.body.append(behaviour)
 
     def get_initial_creator(self) -> str | None:
         """Get the first creator of the document.
@@ -427,7 +428,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         element = self.get_element("//meta:initial-creator")
         if element is None:
             element = Element.from_tag("meta:initial-creator")
-            self.meta_body.append(element)
+            self.body.append(element)
         element.text = creator
 
     @property
@@ -460,7 +461,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         element = self.get_element("//meta:printed-by")
         if element is None:
             element = Element.from_tag("meta:printed-by")
-            self.meta_body.append(element)
+            self.body.append(element)
         element.text = printed_by
 
     def get_keywords(self) -> str | None:
@@ -489,7 +490,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         element = self.get_element("//meta:keyword")
         if element is None:
             element = Element.from_tag("meta:keyword")
-            self.meta_body.append(element)
+            self.body.append(element)
         element.text = keywords
 
     @property
@@ -535,7 +536,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         element = self.get_element("//meta:editing-duration")
         if element is None:
             element = Element.from_tag("meta:editing-duration")
-            self.meta_body.append(element)
+            self.body.append(element)
         element.text = Duration.encode(duration)
 
     @property
@@ -581,7 +582,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         element = self.get_element("//meta:editing-cycles")
         if element is None:
             element = Element.from_tag("meta:editing-cycles")
-            self.meta_body.append(element)
+            self.body.append(element)
         element.text = str(cycles)
 
     @property
@@ -623,7 +624,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         element = self.get_element("//meta:generator")
         if element is None:
             element = Element.from_tag("meta:generator")
-            self.meta_body.append(element)
+            self.body.append(element)
         element.text = generator
         self._generator_modified = True
 
@@ -720,7 +721,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         element = self.get_element("//meta:document-statistic")
         if element is None:
             element = Element.from_tag("meta:document-statistic")
-            self.meta_body.append(element)
+            self.body.append(element)
         for key, value in statistic.items():
             try:
                 ivalue = int(value)
@@ -765,8 +766,6 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """
         result: dict[str, Any] = {}
         for item in self.get_elements("//meta:user-defined"):
-            if not isinstance(item, Element):
-                continue
             # Read the values
             name = item.get_attribute_string("meta:name")
             if name is None:
@@ -778,8 +777,6 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     def _user_defined_metadata_list(self) -> list[dict[str, Any]]:
         user_defined: list[dict[str, Any]] = []
         for item in self.get_elements("//meta:user-defined"):
-            if not isinstance(item, Element):
-                continue
             # Read the values
             name = item.get_attribute_string("meta:name")
             if not name:
@@ -822,12 +819,12 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         Arguments:
 
             name -- string, name (meta:name content)
+
+        Returns: a dict with keys "name", "value", "value_type", "text".
         """
         result = {}
         found = False
         for item in self.get_elements("//meta:user-defined"):
-            if not isinstance(item, Element):
-                continue
             # Read the values
             name = item.get_attribute("meta:name")
             if name == keyname:
@@ -843,18 +840,30 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return result
 
     def set_user_defined_metadata(self, name: str, value: Any) -> None:
+        """Set a user defined metadata of that name and value.
+
+        If value is None, any existing metadata of that name is deleted.
+
+        Arguments:
+
+            name -- string, name (meta:name content)
+
+            value -- Decimal, date, time, boolean, str, None for deletion.
+        """
+        if value is None:
+            return self.delete_user_defined_metadata_of_name(name)
         if isinstance(value, bool):
             value_type = "boolean"
             value = "true" if value else "false"
         elif isinstance(value, (int, float, Decimal)):
             value_type = "float"
             value = str(value)
-        elif isinstance(value, dtdate):
-            value_type = "date"
-            value = str(Date.encode(value))
         elif isinstance(value, datetime):
             value_type = "date"
             value = str(DateTime.encode(value))
+        elif isinstance(value, dtdate):
+            value_type = "date"
+            value = str(Date.encode(value))
         elif isinstance(value, str):
             value_type = "string"
         elif isinstance(value, timedelta):
@@ -864,16 +873,25 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             raise TypeError(f'unexpected type "{type(value)}" for value')
         # Already the same element ?
         for metadata in self.get_elements("//meta:user-defined"):
-            if not isinstance(metadata, Element):
-                continue
             if metadata.get_attribute("meta:name") == name:
                 break
         else:
             metadata = Element.from_tag("meta:user-defined")
             metadata.set_attribute("meta:name", name)
-            self.meta_body.append(metadata)
+            self.body.append(metadata)
         metadata.set_attribute("meta:value-type", value_type)
         metadata.text = value
+
+    def delete_user_defined_metadata_of_name(self, name: str) -> None:
+        """Delete the user-defined metadata of that name.
+
+        Arguments:
+
+            name -- string, name (meta:name content)
+        """
+        for metadata in self.get_elements("//meta:user-defined"):
+            if metadata.get_attribute("meta:name") == name:
+                metadata.delete()
 
     def _get_meta_value(
         self, element: Element, full: bool = False
@@ -906,7 +924,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             return (text, value_type, text)
         if value_type == "time":
             return (Duration.decode(text), value_type, text)
-        raise TypeError(f"Unknown value type: '{value_type!r}'")
+        # should never happen
+        raise TypeError(f"Unknown value type: '{value_type!r}'")  # pragma: nocover
 
     def as_dict(self, full: bool = False) -> dict[str, Any]:
         """Return the metadata of the document as a Python dict.
@@ -1260,7 +1279,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             creation_date -- datetime or None, meta:creation-date value.
         """
 
-        self.meta_body.clear()
+        self.body.clear()
         self.statistic = self._complete_stats({}, None)
         if creation_date is None:
             self.creation_date = datetime.now().replace(microsecond=0)

@@ -21,24 +21,36 @@ from odfdo.utils import is_RFC3066
 
 
 def test_bad_type():
-    assert not is_RFC3066(None)
+    assert is_RFC3066(None) is False
 
 
 def test_ok_1():
-    assert is_RFC3066("fr")
+    assert is_RFC3066("fr") is True
 
 
 def test_ok_2():
-    assert is_RFC3066("en-US")
+    assert is_RFC3066("en-US") is True
 
 
 def test_ok_3():
-    assert is_RFC3066("nb-NO")
+    assert is_RFC3066("nb-NO") is True
 
 
 def test_bad_1():
-    assert not is_RFC3066("anyplace")
+    assert is_RFC3066("anyplace") is False
 
 
 def test_bad_2():
-    assert not is_RFC3066("")
+    assert is_RFC3066("") is False
+
+
+def test_bad_3():
+    assert is_RFC3066("-ef") is False
+
+
+def test_bad_4():
+    assert is_RFC3066("abcd-ef") is False
+
+
+def test_bad_5():
+    assert is_RFC3066("ab-cd-ef-gh") is False
