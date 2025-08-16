@@ -915,7 +915,7 @@ def test_meta_export_dict_auto_reload_hyperlink_behaviour(meta):
         "meta:keyword": "Mots-clés",
         "dc:subject": "Sujet de sa majesté",
         "meta:auto-reload": {
-            "meta:delay": "PT00H00M30S",
+            "meta:delay": timedelta(seconds=30),
             "xlink:actuate": "onLoad",
             "xlink:href": "",
             "xlink:show": "replace",
@@ -1557,7 +1557,6 @@ def test_meta_from_dict_meta_template(meta):
     template = MetaTemplate(datetime(2025, 1, 2, 3, 4, 5, 6), "url", "Title")
     content = template.as_dict()
     imported = {key: content}
-    print(imported)
     meta.from_dict(imported)
     result = meta.as_dict(full=True)
     assert result[key] == content

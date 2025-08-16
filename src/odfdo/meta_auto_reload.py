@@ -54,7 +54,7 @@ class MetaAutoReload(Element):
 
         Arguments:
 
-            delay -- timedelta
+            delay -- timedelta | None
 
             href -- str
         """
@@ -64,29 +64,50 @@ class MetaAutoReload(Element):
         self.show = "replace"
         self.type = "simple"
         if self._do_init:
-            if not isinstance(delay, timedelta):
-                raise TypeError("delay must be a timedelta")
-            self.delay = Duration.encode(delay)
+            self._set_delay(delay)
             self.href = href
 
     def __repr__(self) -> str:
+        if self.delay:
+            delay = Duration.decode(self.delay)
+        else:
+            delay = ""
         return (
-            f"<{self.__class__.__name__} tag={self.tag} "
-            f"href={self.href} delay={Duration.decode(self.delay)}>"
+            f"<{self.__class__.__name__} tag={self.tag} href={self.href} delay={delay}>"
         )
 
     def __str__(self) -> str:
         return f"({self.href})"
 
+    def _set_delay(self, delay: timedelta | None) -> None:
+        if delay is None:
+            delay = timedelta(0)
+        self.delay = Duration.encode(delay)
+
     def as_dict(self) -> dict[str, Any]:
         """Return the MetaAutoReload attributes as a Python dict."""
-        return {
-            "meta:delay": self.delay,
-            "xlink:actuate": self.actuate,
-            "xlink:href": self.href,
-            "xlink:show": self.show,
-            "xlink:type": self.type,
-        }
+        result: dict[str, Any] = {}
+        if self.delay:
+            result["meta:delay"] = Duration.decode(self.delay)
+        else:
+            result["meta:delay"] = timedelta(0)
+        result.update(
+            {
+                "xlink:actuate": self.actuate or "onLoad",
+                "xlink:href": self.href or "",
+                "xlink:show": self.show or "replace",
+                "xlink:type": self.type or "simple",
+            }
+        )
+        return result
+
+    def from_dict(self, data: dict[str, Any]) -> None:
+        """Set all the MetaAutoReload attributes from a Python dict."""
+        self._set_delay(data.get("meta:delay"))
+        self.actuate = data.get("xlink:actuate", "onLoad")
+        self.href = data.get("xlink:href", "")
+        self.show = data.get("xlink:show", "replace")
+        self.type = data.get("xlink:type", "simple")
 
 
 MetaAutoReload._define_attribut_property()

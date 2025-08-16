@@ -19,15 +19,13 @@
 # https://github.com/lpod/lpod-python
 from datetime import timedelta
 
-import pytest
-
 from odfdo.datatype import Duration
 from odfdo.meta_auto_reload import MetaAutoReload
 
 
 def test_create_missing_arg():
-    with pytest.raises(TypeError):
-        _ = MetaAutoReload()
+    reload = MetaAutoReload()
+    assert reload.delay == Duration.encode(timedelta(0))
 
 
 def test_create_minimal():
@@ -60,13 +58,28 @@ def test_as_dict():
     delay = timedelta(seconds=15)
     reload = MetaAutoReload(delay=delay, href="some url")
     expected = {
-        "meta:delay": "PT00H00M15S",
+        "meta:delay": delay,
         "xlink:actuate": "onLoad",
         "xlink:href": "some url",
         "xlink:show": "replace",
         "xlink:type": "simple",
     }
+    print(reload.as_dict())
     assert reload.as_dict() == expected
+
+
+def test_from_dict():
+    delay = timedelta(seconds=15)
+    reload = MetaAutoReload()
+    imported = {
+        "meta:delay": delay,
+        "xlink:actuate": "onLoad",
+        "xlink:href": "some url",
+        "xlink:show": "replace",
+        "xlink:type": "simple",
+    }
+    reload.from_dict(imported)
+    assert reload.as_dict() == imported
 
 
 def test_str():

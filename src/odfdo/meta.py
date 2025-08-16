@@ -1022,6 +1022,10 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         if meta_template is not None:
             _convert(meta_template)
             meta_data["meta:template"] = meta_template
+        reload = meta_data.get("auto-reload")
+        if reload is not None:
+            _convert(reload)
+            meta_data["auto-reload"] = reload
         meta_data["meta:user-defined"] = user_defined
 
         _convert(meta_data)
