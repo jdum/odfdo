@@ -1562,6 +1562,24 @@ def test_meta_from_dict_meta_template(meta):
     assert result[key] == content
 
 
+def test_meta_from_dict_auto_reload(meta):
+    key = "meta:auto-reload"
+    delay = timedelta(seconds=15)
+    meta.set_auto_reload(delay=delay, href="new url")
+    # reload = meta.auto_reload
+    imported = {}
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    content = {
+        "meta:delay": delay,
+        "xlink:actuate": "onLoad",
+        "xlink:href": "new url",
+        "xlink:show": "replace",
+        "xlink:type": "simple",
+    }
+    assert result[key] == content
+
+
 def test_meta_strip_1(samples):
     document = Document(samples("meta.odt"))
     meta = document.meta
