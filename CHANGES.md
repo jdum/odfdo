@@ -1,5 +1,21 @@
 # Odfdo Release Notes
 
+## [3.16.3] - 2025-08-16
+
+-   Small improvements to metadata handling such as loading metadata from dictionaries.
+-   Add test for the Styles module for better coverage.
+
+### Changed
+
+-   `MetaTemplate.as_dict()` now export date as a datetime object.
+-   Improve some doc strings in `odfdo.meta`.
+
+### Added
+
+-   Add method `Meta.delete_user_defined_metadata_of_name()`.
+-   Add methods `MetaTemplate.from_dict()`, add `MetaAutoReload.from_dict()`, `MetaHyperlinkBehaviour.from_dict()`.
+-   Add tests for `Styles`, `Meta`. `MetaAutoReload`.
+
 ## [3.16.2] - 2025-08-15
 
 -   Code refactoring for type hints and improved test coverage.
