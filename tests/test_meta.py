@@ -1051,6 +1051,66 @@ def test_meta_export_json(meta):
     assert exported.strip() == expected.strip()
 
 
+def test_meta_export_json_with_reload(meta):
+    delay = timedelta(seconds=15)
+    meta.set_auto_reload(delay, "some_url")
+    exported = meta.as_json()
+    expected = dedent(
+        """\
+    {
+        "meta:creation-date": "2009-07-31T15:57:37",
+        "dc:date": "2009-07-31T15:59:13",
+        "meta:editing-duration": "PT00H05M30S",
+        "meta:editing-cycles": 2,
+        "meta:document-statistic": {
+            "meta:table-count": 0,
+            "meta:image-count": 0,
+            "meta:object-count": 0,
+            "meta:page-count": 1,
+            "meta:paragraph-count": 1,
+            "meta:word-count": 4,
+            "meta:character-count": 27,
+            "meta:non-whitespace-character-count": 24
+        },
+        "meta:generator": "LibreOffice/6.0.3.2$MacOSX_X86_64 LibreOffice_project/8f48d515416608e3a835360314dac7e47fd0b821",
+        "dc:title": "Intitulé",
+        "dc:description": "Comments\\nCommentaires\\n评论",
+        "meta:keyword": "Mots-clés",
+        "dc:subject": "Sujet de sa majesté",
+        "meta:auto-reload": {
+            "meta:delay": "PT00H00M15S",
+            "xlink:actuate": "onLoad",
+            "xlink:href": "some_url",
+            "xlink:show": "replace",
+            "xlink:type": "simple"
+        },
+        "meta:user-defined": [
+            {
+                "meta:name": "Achevé à la date",
+                "meta:value-type": "date",
+                "value": "2009-07-31T00:00:00"
+            },
+            {
+                "meta:name": "Numéro du document",
+                "meta:value-type": "float",
+                "value": 3
+            },
+            {
+                "meta:name": "Référence",
+                "meta:value-type": "boolean",
+                "value": true
+            },
+            {
+                "meta:name": "Vérifié par",
+                "meta:value-type": "string",
+                "value": "Moi-même"
+            }
+        ]
+    }"""
+    )
+    assert exported.strip() == expected.strip()
+
+
 def test_meta_export_json_full(meta):
     exported = meta.as_json(True)
     expected = dedent(
@@ -1566,7 +1626,6 @@ def test_meta_from_dict_auto_reload(meta):
     key = "meta:auto-reload"
     delay = timedelta(seconds=15)
     meta.set_auto_reload(delay=delay, href="new url")
-    # reload = meta.auto_reload
     imported = {}
     meta.from_dict(imported)
     result = meta.as_dict(full=True)
@@ -1576,6 +1635,19 @@ def test_meta_from_dict_auto_reload(meta):
         "xlink:href": "new url",
         "xlink:show": "replace",
         "xlink:type": "simple",
+    }
+    assert result[key] == content
+
+
+def test_meta_from_dict_behaviour(meta):
+    key = "meta:hyperlink-behaviour"
+    meta.set_hyperlink_behaviour(target_frame_name="some_frame", show="_top")
+    imported = {}
+    meta.from_dict(imported)
+    result = meta.as_dict(full=True)
+    content = {
+        "office:target-frame-name": "some_frame",
+        "xlink:show": "_top",
     }
     assert result[key] == content
 
