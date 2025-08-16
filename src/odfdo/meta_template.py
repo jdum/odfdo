@@ -49,8 +49,8 @@ class MetaTemplate(Element):
     ) -> None:
         """Container for the meta template properties, "meta:template".
 
-        The <meta:template> element specifies a IRI for the document template
-        that was used to create a document. The IRI is specified as an
+        The <meta:template> element specifies a URI for the document template
+        that was used to create a document. The URI is specified as an
         Xlink.
 
         Arguments:
@@ -66,9 +66,7 @@ class MetaTemplate(Element):
         self.actuate = "onRequest"
         self.type = "simple"
         if self._do_init:
-            if date is None:
-                date = datetime.now()
-            self.date = DateTime.encode(date)
+            self._set_date(date)
             self.href = href
             self.title = title
 
@@ -80,15 +78,28 @@ class MetaTemplate(Element):
             return f"[{self.title}]({self.href})"
         return f"({self.href})"
 
+    def _set_date(self, date: datetime | None) -> None:
+        if date is None:
+            date = datetime.now()
+        self.date = DateTime.encode(date)
+
     def as_dict(self) -> dict[str, Any]:
         """Return the MetaTemplate attributes as a Python dict."""
         return {
-            "meta:date": self.date,
+            "meta:date": DateTime.decode(self.date),
             "xlink:actuate": self.actuate,
             "xlink:href": self.href,
             "xlink:title": self.title,
             "xlink:type": self.type,
         }
+
+    def from_dict(self, data: dict[str, Any]) -> None:
+        """Set all the MetaTemplate attributes from a Python dict."""
+        self._set_date(data.get("meta:date"))
+        self.actuate = data.get("xlink:actuate", "onRequest")
+        self.href = data.get("xlink:href", "")
+        self.title = data.get("xlink:title", "")
+        self.type = data.get("xlink:type", "simple")
 
 
 MetaTemplate._define_attribut_property()

@@ -60,10 +60,24 @@ def test_as_dict():
     dt = datetime(2024, 1, 31, 14, 59, 0).replace(microsecond=0)
     template = MetaTemplate(date=dt, href="some url", title="some title")
     expected = {
-        "meta:date": "2024-01-31T14:59:00",
+        "meta:date": dt,
         "xlink:actuate": "onRequest",
         "xlink:href": "some url",
         "xlink:title": "some title",
         "xlink:type": "simple",
     }
     assert template.as_dict() == expected
+
+
+def test_from_dict():
+    dt = datetime(2024, 1, 31, 14, 59, 0).replace(microsecond=0)
+    template = MetaTemplate()
+    imported = {
+        "meta:date": dt,
+        "xlink:actuate": "onRequest",
+        "xlink:href": "some url",
+        "xlink:title": "some title",
+        "xlink:type": "simple",
+    }
+    template.from_dict(imported)
+    assert template.as_dict() == imported
