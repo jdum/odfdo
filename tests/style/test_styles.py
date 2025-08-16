@@ -59,6 +59,11 @@ def test_get_styles_paragraph(styles):
     assert len(style_list) == 10
 
 
+def test_get_styles_paragraph_wrong(styles):
+    with pytest.raises(ValueError):
+        styles.get_styles(family="not_a_family")
+
+
 def test_get_styles_master_page(styles):
     style_list = styles.get_styles(family="master-page")
     assert len(style_list) == 1

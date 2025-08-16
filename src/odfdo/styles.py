@@ -67,8 +67,6 @@ class Styles(XmlPart):
                 "//office:styles",
                 "//office:automatic-styles",
             )
-            if queries is None:
-                raise ValueError(f"Unknown family: {family!r}")
             elems = [self.get_element(query) for query in queries]
         else:
             # All possibilities
@@ -94,7 +92,7 @@ class Styles(XmlPart):
         """
         result = []
         for context in self._get_style_contexts(family, automatic=automatic):
-            if context is None:
+            if context is None:  # pragma: nocover
                 continue
             # print('-ctx----', automatic)
             # print(context.tag)
