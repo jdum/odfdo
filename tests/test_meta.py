@@ -33,7 +33,7 @@ from odfdo.body import Metadata
 from odfdo.const import ODF_META
 from odfdo.datatype import DateTime, Duration
 from odfdo.document import Document
-from odfdo.meta import GENERATOR, Meta
+from odfdo.meta import GENERATOR
 from odfdo.meta_auto_reload import MetaAutoReload
 from odfdo.meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from odfdo.meta_template import MetaTemplate

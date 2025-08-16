@@ -68,6 +68,20 @@ def test_as_dict():
     assert reload.as_dict() == expected
 
 
+def test_as_dict_delay_none():
+    reload = MetaAutoReload(href="some url")
+    reload.delay = None
+    expected = {
+        "meta:delay": timedelta(0),
+        "xlink:actuate": "onLoad",
+        "xlink:href": "some url",
+        "xlink:show": "replace",
+        "xlink:type": "simple",
+    }
+    print(reload.as_dict())
+    assert reload.as_dict() == expected
+
+
 def test_from_dict():
     delay = timedelta(seconds=15)
     reload = MetaAutoReload()
@@ -87,3 +101,17 @@ def test_str():
     reload = MetaAutoReload(delay=delay, href="some url")
     expected = "(some url)"
     assert str(reload) == expected
+
+
+def test_repr():
+    delay = timedelta(seconds=15)
+    reload = MetaAutoReload(delay=delay, href="some url")
+    expected = "<MetaAutoReload tag=meta:auto-reload href=some url delay=0:00:15>"
+    assert repr(reload) == expected
+
+
+def test_repr_2():
+    reload = MetaAutoReload()
+    reload.delay = None
+    expected = "<MetaAutoReload tag=meta:auto-reload href= delay=>"
+    assert repr(reload) == expected
