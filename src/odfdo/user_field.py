@@ -134,7 +134,7 @@ class UserDefined(ElementTyped):
         If the current document is provided, try to extract
         the content of the meta user defined field of same name.
 
-        Arguments:
+        Args:
 
             name -- str, name of the user defined field
 

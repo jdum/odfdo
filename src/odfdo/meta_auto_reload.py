@@ -52,7 +52,7 @@ class MetaAutoReload(Element):
         reloaded or replaced by another document after a specified period
         of time has elapsed.
 
-        Arguments:
+        Args:
 
             delay -- timedelta | None
 

@@ -229,7 +229,7 @@ def register_element_class(cls: type[Element]) -> None:
     then transparent. Unassociated elements will be handled by the base
     Element class.
 
-    Arguments:
+    Args:
 
         cls -- Python class, subtype of Element.
     """
@@ -249,7 +249,7 @@ def register_element_class_list(cls: type[Element], tag_list: Iterable[str]) -> 
     "style:family" attribute. So the "family" attribute was added to register
     specialized style classes.
 
-    Arguments:
+    Args:
 
         cls -- Python class
 
@@ -333,11 +333,11 @@ class Element(MDBase):
         Turn an lxml Element or ODF string tag into an ODF XML Element
         of the relevant class.
 
-        Arguments:
+        Args:
 
             tag_or_elem -- ODF str tag or lxml.Element
 
-        Return: Element (or subclass) instance
+        Returns: Element (or subclass) instance
         """
         if isinstance(tag_or_elem, str):
             # assume the argument is a prefix:name tag
@@ -562,7 +562,7 @@ class Element(MDBase):
         Annotation text content is ignored.
 
 
-        Arguments:
+        Args:
 
         element -- Element
 
@@ -751,7 +751,7 @@ class Element(MDBase):
 
         Warning: direct change of tag does not change the element class.
 
-        Arguments:
+        Args:
 
             qname -- str (e.g. "text:span")
         """
@@ -950,11 +950,11 @@ class Element(MDBase):
 
         Python regular expression syntax applies.
 
-        Arguments:
+        Args:
 
             pattern -- str
 
-        Return: int or None
+        Returns: int or None
         """
         match = re.search(pattern, self.text_recursive)
         if match is None:
@@ -968,11 +968,11 @@ class Element(MDBase):
         Result is tuples of start and end position, or None.
         Python regular expression syntax applies.
 
-        Arguments:
+        Args:
 
             pattern -- str
 
-        Return: tuple[int,int] or None
+        Returns: tuple[int,int] or None
         """
         match = re.search(pattern, self.text_recursive)
         if match is None:
@@ -987,11 +987,11 @@ class Element(MDBase):
         the matches.
         Python regular expression syntax applies.
 
-        Arguments:
+        Args:
 
             pattern -- str
 
-        Return: list[tuple[int,int]]
+        Returns: list[tuple[int,int]]
         """
         results: list[tuple[int, int]] = []
         for match in re.finditer(pattern, self.text_recursive):
@@ -1005,12 +1005,12 @@ class Element(MDBase):
         If the end parameter is not set, return from start to the end
         of the recursive text.
 
-        Arguments:
+        Args:
 
             start -- int
             end -- int or None
 
-        Return: str
+        Returns: str
         """
         if start < 0:
             start = 0
@@ -1027,11 +1027,11 @@ class Element(MDBase):
 
         Python regular expression syntax applies.
 
-        Arguments:
+        Args:
 
             pattern -- str
 
-        Return: bool
+        Returns: bool
         """
         return self.search(pattern) is not None
 
@@ -1055,7 +1055,7 @@ class Element(MDBase):
         convert them into actual ODF elements to obtain a formatted result.
         On very complex contents, result may differ of expectations.
 
-        Arguments:
+        Args:
 
             pattern -- str
 
@@ -1063,7 +1063,7 @@ class Element(MDBase):
 
             formatted -- bool
 
-        Return: int
+        Returns: int
         """
         if not isinstance(pattern, str):
             # Fail properly if the pattern is an non-ascii bytestring
@@ -1191,7 +1191,7 @@ class Element(MDBase):
     def is_empty(self) -> bool:
         """Check if the element is empty : no text, no children, no tail.
 
-        Return: Boolean
+        Returns: Boolean
         """
         element = self.__element
         if element.tail is not None:
@@ -1369,7 +1369,7 @@ class Element(MDBase):
 
             - some text, part of a parent text:h or text:p
 
-        Arguments:
+        Args:
 
             tag1 -- Element
 
@@ -1381,7 +1381,7 @@ class Element(MDBase):
 
             no_header -- boolean
 
-        Return: list of odf_paragraph or odf_header
+        Returns: list of odf_paragraph or odf_header
         """
         inner = self._get_between_base(tag1, tag2)
 
@@ -1435,7 +1435,7 @@ class Element(MDBase):
 
         Position start at 0.
 
-        Arguments:
+        Args:
 
             element -- Element
 
@@ -1534,7 +1534,7 @@ class Element(MDBase):
 
         if keep_tail is True (default), the tail text is not erased.
 
-        Arguments:
+        Args:
 
             child -- Element
 
@@ -1583,7 +1583,7 @@ class Element(MDBase):
 
         Warning : no clone in sub_elements list.
 
-        Arguments:
+        Args:
 
             sub_elements -- Element or list of Element
         """
@@ -1613,7 +1613,7 @@ class Element(MDBase):
         strip_tags should be used by on purpose methods (strip_span ...)
         (Method name taken from lxml).
 
-        Arguments:
+        Args:
 
             strip -- iterable list of str odf tags, or None
 
@@ -1621,7 +1621,7 @@ class Element(MDBase):
 
             default -- str odf tag, or None
 
-        Return:
+        Returns:
 
             Element, or list of Element or string.
         """
@@ -1761,11 +1761,11 @@ class Element(MDBase):
         """Brute-force to find paragraphs, tables, etc. using the given style
         name (or all by default).
 
-        Arguments:
+        Args:
 
             name -- str
 
-        Return: list of Element
+        Returns: list of Element
         """
         # FIXME incomplete (and possibly inaccurate)
         return (
@@ -1820,13 +1820,13 @@ class Element(MDBase):
     ) -> list[Section]:
         """Return all the sections that match the criteria.
 
-        Arguments:
+        Args:
 
             style -- str
 
             content -- str regex
 
-        Return: list of Section
+        Returns: list of Section
         """
         return self._filtered_elements(
             "text:section", text_style=style, content=content
@@ -1838,7 +1838,7 @@ class Element(MDBase):
     ) -> list[Section]:
         """Return all the sections.
 
-        Return: list of Section
+        Returns: list of Section
         """
         return self.get_elements("text:section")  # type: ignore[return-value]
 
@@ -1849,13 +1849,13 @@ class Element(MDBase):
     ) -> Section | None:
         """Return the section that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
             content -- str regex
 
-        Return: Section or None if not found
+        Returns: Section or None if not found
         """
         return self._filtered_element(
             "descendant::text:section", position, content=content
@@ -1870,13 +1870,13 @@ class Element(MDBase):
     ) -> list[Paragraph]:
         """Return all the paragraphs that match the criteria.
 
-        Arguments:
+        Args:
 
             style -- str
 
             content -- str regex
 
-        Return: list of Paragraph
+        Returns: list of Paragraph
         """
         return self._filtered_elements(
             "descendant::text:p", text_style=style, content=content
@@ -1886,7 +1886,7 @@ class Element(MDBase):
     def paragraphs(self) -> list[Paragraph]:
         """Return all the paragraphs.
 
-        Return: list of Paragraph
+        Returns: list of Paragraph
         """
         return self.get_elements(
             "descendant::text:p",
@@ -1899,13 +1899,13 @@ class Element(MDBase):
     ) -> Paragraph | None:
         """Return the paragraph that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
             content -- str regex
 
-        Return: Paragraph or None if not found
+        Returns: Paragraph or None if not found
         """
         return self._filtered_element(
             "descendant::text:p",
@@ -1922,13 +1922,13 @@ class Element(MDBase):
     ) -> list[Span]:
         """Return all the spans that match the criteria.
 
-        Arguments:
+        Args:
 
             style -- str
 
             content -- str regex
 
-        Return: list of Span
+        Returns: list of Span
         """
         return self._filtered_elements(
             "descendant::text:span", text_style=style, content=content
@@ -1938,7 +1938,7 @@ class Element(MDBase):
     def spans(self) -> list[Span]:
         """Return all the spans.
 
-        Return: list of Span
+        Returns: list of Span
         """
         return self.get_elements("descendant::text:span")  # type: ignore[return-value]
 
@@ -1949,13 +1949,13 @@ class Element(MDBase):
     ) -> Span | None:
         """Return the span that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
             content -- str regex
 
-        Return: Span or None if not found
+        Returns: Span or None if not found
         """
         return self._filtered_element(
             "descendant::text:span", position, content=content
@@ -1971,13 +1971,13 @@ class Element(MDBase):
     ) -> list[Header]:
         """Return all the Headers that match the criteria.
 
-        Arguments:
+        Args:
 
             style -- str
 
             content -- str regex
 
-        Return: list of Header
+        Returns: list of Header
         """
         return self._filtered_elements(
             "descendant::text:h",
@@ -1990,7 +1990,7 @@ class Element(MDBase):
     def headers(self) -> list[Header]:
         """Return all the Headers.
 
-        Return: list of Header
+        Returns: list of Header
         """
         return self.get_elements("descendant::text:h")  # type: ignore[return-value]
 
@@ -2002,13 +2002,13 @@ class Element(MDBase):
     ) -> Header | None:
         """Return the Header that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
             content -- str regex
 
-        Return: Header or None if not found
+        Returns: Header or None if not found
         """
         return self._filtered_element(
             "descendant::text:h",
@@ -2026,13 +2026,13 @@ class Element(MDBase):
     ) -> list[List]:
         """Return all the lists that match the criteria.
 
-        Arguments:
+        Args:
 
             style -- str
 
             content -- str regex
 
-        Return: list of List
+        Returns: list of List
         """
         return self._filtered_elements(
             "descendant::text:list", text_style=style, content=content
@@ -2042,7 +2042,7 @@ class Element(MDBase):
     def lists(self) -> list[List]:
         """Return all the lists.
 
-        Return: list of List
+        Returns: list of List
         """
         return self.get_elements("descendant::text:list")  # type: ignore[return-value]
 
@@ -2053,13 +2053,13 @@ class Element(MDBase):
     ) -> List | None:
         """Return the list that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
             content -- str regex
 
-        Return: List or None if not found
+        Returns: List or None if not found
         """
         return self._filtered_element(
             "descendant::text:list", position, content=content
@@ -2077,7 +2077,7 @@ class Element(MDBase):
     ) -> list[Frame]:
         """Return all the frames that match the criteria.
 
-        Arguments:
+        Args:
 
             presentation_class -- str
 
@@ -2089,7 +2089,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: list of Frame
+        Returns: list of Frame
         """
         return self._filtered_elements(
             "descendant::draw:frame",
@@ -2104,7 +2104,7 @@ class Element(MDBase):
     def frames(self) -> list[Frame]:
         """Return all the frames.
 
-        Return: list of Frame
+        Returns: list of Frame
         """
         return self.get_elements("descendant::draw:frame")  # type: ignore[return-value]
 
@@ -2119,7 +2119,7 @@ class Element(MDBase):
     ) -> Frame | None:
         """Return the section that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
@@ -2133,7 +2133,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: Frame or None if not found
+        Returns: Frame or None if not found
         """
         return self._filtered_element(
             "descendant::draw:frame",
@@ -2155,7 +2155,7 @@ class Element(MDBase):
     ) -> list[DrawImage]:
         """Return all the images matching the criteria.
 
-        Arguments:
+        Args:
 
             style -- str
 
@@ -2163,7 +2163,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: list of DrawImage
+        Returns: list of DrawImage
         """
         return self._filtered_elements(
             "descendant::draw:image", text_style=style, url=url, content=content
@@ -2173,7 +2173,7 @@ class Element(MDBase):
     def images(self) -> list[DrawImage]:
         """Return all the images.
 
-        Return: list of DrawImage
+        Returns: list of DrawImage
         """
         return self.get_elements("descendant::draw:image")  # type: ignore[return-value]
 
@@ -2186,7 +2186,7 @@ class Element(MDBase):
     ) -> DrawImage | None:
         """Return the image matching the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
@@ -2196,7 +2196,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: DrawImage or None if not found
+        Returns: DrawImage or None if not found
         """
         # The frame is holding the name
         if name is not None:
@@ -2216,7 +2216,7 @@ class Element(MDBase):
     def get_named_ranges(self) -> list[NamedRange]:
         """Return all the tables named ranges.
 
-        Return: list of NamedRange
+        Returns: list of NamedRange
         """
         named_ranges = self.get_elements(
             "descendant::table:named-expressions/table:named-range"
@@ -2226,11 +2226,11 @@ class Element(MDBase):
     def get_named_range(self, name: str) -> NamedRange | None:
         """Return the named range of specified name, or None if not found.
 
-        Arguments:
+        Args:
 
             name -- str
 
-        Return: NamedRange
+        Returns: NamedRange
         """
         named_range = self.get_elements(
             f'descendant::table:named-expressions/table:named-range[@table:name="{name}"][1]'
@@ -2244,7 +2244,7 @@ class Element(MDBase):
         """Append the named range to the spreadsheet, replacing existing named
         range of same name if any.
 
-        Arguments:
+        Args:
 
             named_range --  NamedRange
         """
@@ -2265,7 +2265,7 @@ class Element(MDBase):
     def delete_named_range(self, name: str) -> None:
         """Delete the Named Range of specified name from the spreadsheet.
 
-        Arguments:
+        Args:
 
             name -- str
         """
@@ -2292,13 +2292,13 @@ class Element(MDBase):
     ) -> list[Note]:
         """Return all the notes that match the criteria.
 
-        Arguments:
+        Args:
 
             note_class -- 'footnote' or 'endnote'
 
             content -- str regex
 
-        Return: list of Note
+        Returns: list of Note
         """
         return self._filtered_elements(
             "descendant::text:note", note_class=note_class, content=content
@@ -2313,7 +2313,7 @@ class Element(MDBase):
     ) -> Note | None:
         """Return the note that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
@@ -2323,7 +2323,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: Note or None if not found
+        Returns: Note or None if not found
         """
         return self._filtered_element(
             "descendant::text:note",
@@ -2344,7 +2344,7 @@ class Element(MDBase):
     ) -> list[Annotation]:
         """Return all the annotations that match the criteria.
 
-        Arguments:
+        Args:
 
             creator -- str
 
@@ -2354,7 +2354,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: list of Annotation
+        Returns: list of Annotation
         """
         annotations: list[Annotation] = []
         for annotation in self._filtered_elements(
@@ -2383,7 +2383,7 @@ class Element(MDBase):
     ) -> Annotation | None:
         """Return the annotation that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
@@ -2397,7 +2397,7 @@ class Element(MDBase):
 
             name -- str
 
-        Return: Annotation or None if not found
+        Returns: Annotation or None if not found
         """
         if name is not None:
             return self._filtered_element(
@@ -2416,7 +2416,7 @@ class Element(MDBase):
     def get_annotation_ends(self) -> list[AnnotationEnd]:
         """Return all the annotation ends.
 
-        Return: list of AnnotationEnd
+        Returns: list of AnnotationEnd
         """
         return self._filtered_elements(
             "descendant::office:annotation-end",
@@ -2429,13 +2429,13 @@ class Element(MDBase):
     ) -> AnnotationEnd | None:
         """Return the annotation end that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
             name -- str
 
-        Return: AnnotationEnd or None if not found
+        Returns: AnnotationEnd or None if not found
         """
         return self._filtered_element(
             "descendant::office:annotation-end", position, office_name=name
@@ -2446,7 +2446,7 @@ class Element(MDBase):
     def get_office_names(self) -> list[str]:
         """Return all the used office:name tags values of the element.
 
-        Return: list of unique str
+        Returns: list of unique str
         """
         name_xpath_query = xpath_compile("//@office:name")
         response = name_xpath_query(self.__element)
@@ -2460,7 +2460,7 @@ class Element(MDBase):
         """Return the container for variable declarations. Created if not
         found.
 
-        Return: VarDecls
+        Returns: VarDecls
         """
         variable_decls = self.get_element("//text:variable-decls")
         if variable_decls is None:
@@ -2475,7 +2475,7 @@ class Element(MDBase):
     def get_variable_decl_list(self) -> list[VarDecls]:
         """Return all the variable declarations.
 
-        Return: list of VarDecls
+        Returns: list of VarDecls
         """
         return self._filtered_elements(
             "descendant::text:variable-decl",
@@ -2484,13 +2484,13 @@ class Element(MDBase):
     def get_variable_decl(self, name: str, position: int = 0) -> VarDecls | None:
         """Return the variable declaration for the given name.
 
-        Arguments:
+        Args:
 
             name -- str
 
             position -- int
 
-        return: VarDecls or none if not found
+        Returns: VarDecls or none if not found
         """
         return self._filtered_element(
             "descendant::text:variable-decl", position, text_name=name
@@ -2499,11 +2499,11 @@ class Element(MDBase):
     def get_variable_sets(self, name: str | None = None) -> list[VarSet]:
         """Return all the variable sets that match the criteria.
 
-        Arguments:
+        Args:
 
             name -- str
 
-        Return: list of VarSet
+        Returns: list of VarSet
         """
         return self._filtered_elements(
             "descendant::text:variable-set",
@@ -2513,13 +2513,13 @@ class Element(MDBase):
     def get_variable_set(self, name: str, position: int = -1) -> VarSet | None:
         """Return the variable set for the given name (last one by default).
 
-        Arguments:
+        Args:
 
             name -- str
 
             position -- int
 
-        Return: VarSet or None if not found
+        Returns: VarSet or None if not found
         """
         return self._filtered_element(
             "descendant::text:variable-set", position, text_name=name
@@ -2532,14 +2532,14 @@ class Element(MDBase):
     ) -> bool | str | int | float | Decimal | datetime | timedelta | None:
         """Return the last value of the given variable name.
 
-        Arguments:
+        Args:
 
             name -- str
 
             value_type -- 'boolean', 'currency', 'date', 'float',
                           'percentage', 'string', 'time' or automatic
 
-        Return: most appropriate Python type
+        Returns: most appropriate Python type
         """
         variable_set = self.get_variable_set(name)
         if not variable_set:
@@ -2552,7 +2552,7 @@ class Element(MDBase):
         """Return the container for user field declarations. Created if not
         found.
 
-        Return: UserFieldDecls
+        Returns: UserFieldDecls
         """
         user_field_decls = self.get_element("//text:user-field-decls")
         if user_field_decls is None:
@@ -2567,7 +2567,7 @@ class Element(MDBase):
     def get_user_field_decl_list(self) -> list[UserFieldDecl]:
         """Return all the user field declarations.
 
-        Return: list of UserFieldDecl
+        Returns: list of UserFieldDecl
         """
         return self._filtered_elements(
             "descendant::text:user-field-decl",
@@ -2576,7 +2576,7 @@ class Element(MDBase):
     def get_user_field_decl(self, name: str, position: int = 0) -> UserFieldDecl | None:
         """Return the user field declaration for the given name.
 
-        Return: UserFieldDecl or none if not found
+        Returns: UserFieldDecl or none if not found
         """
         return self._filtered_element(
             "descendant::text:user-field-decl", position, text_name=name
@@ -2587,14 +2587,14 @@ class Element(MDBase):
     ) -> bool | str | int | float | Decimal | datetime | timedelta | None:
         """Return the value of the given user field name.
 
-        Arguments:
+        Args:
 
             name -- str
 
             value_type -- 'boolean', 'currency', 'date', 'float',
                           'percentage', 'string', 'time' or automatic
 
-        Return: most appropriate Python type
+        Returns: most appropriate Python type
         """
         user_field_decl = self.get_user_field_decl(name)
         if user_field_decl is None:
@@ -2608,7 +2608,7 @@ class Element(MDBase):
     def get_user_defined_list(self) -> list[UserDefined]:
         """Return all the user defined field declarations.
 
-        Return: list of UserDefined
+        Returns: list of UserDefined
         """
         return self._filtered_elements(
             "descendant::text:user-defined",
@@ -2618,14 +2618,14 @@ class Element(MDBase):
     def user_defined_list(self) -> list[UserDefined]:
         """Return all the user defined field declarations.
 
-        Return: list of UserDefined
+        Returns: list of UserDefined
         """
         return self.get_user_defined_list()
 
     def get_user_defined(self, name: str, position: int = 0) -> UserDefined | None:
         """Return the user defined declaration for the given name.
 
-        return: UserDefined or none if not found
+        Returns: UserDefined or none if not found
         """
         return self._filtered_element(
             "descendant::text:user-defined", position, text_name=name
@@ -2636,14 +2636,14 @@ class Element(MDBase):
     ) -> bool | str | int | float | Decimal | datetime | timedelta | None:
         """Return the value of the given user defined field name.
 
-        Arguments:
+        Args:
 
             name -- str
 
             value_type -- 'boolean', 'date', 'float',
                           'string', 'time' or automatic
 
-        Return: most appropriate Python type
+        Returns: most appropriate Python type
         """
         user_defined = self.get_user_defined(name)
         if user_defined is None:
@@ -2659,13 +2659,13 @@ class Element(MDBase):
     ) -> list[DrawPage]:
         """Return all the draw pages that match the criteria.
 
-        Arguments:
+        Args:
 
             style -- str
 
             content -- str regex
 
-        Return: list of DrawPage
+        Returns: list of DrawPage
         """
         return self._filtered_elements(
             "descendant::draw:page", draw_style=style, content=content
@@ -2679,7 +2679,7 @@ class Element(MDBase):
     ) -> DrawPage | None:
         """Return the draw page that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
@@ -2687,7 +2687,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: DrawPage or None if not found
+        Returns: DrawPage or None if not found
         """
         return self._filtered_element(
             "descendant::draw:page", position, draw_name=name, content=content
@@ -2704,7 +2704,7 @@ class Element(MDBase):
     ) -> list[Link]:
         """Return all the links that match the criteria.
 
-        Arguments:
+        Args:
 
             name -- str
 
@@ -2714,7 +2714,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: list of Link
+        Returns: list of Link
         """
         return self._filtered_elements(
             "descendant::text:a",
@@ -2734,7 +2734,7 @@ class Element(MDBase):
     ) -> Link | None:
         """Return the link that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
@@ -2746,7 +2746,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: Link or None if not found
+        Returns: Link or None if not found
         """
         return self._filtered_element(
             "descendant::text:a",
@@ -2762,7 +2762,7 @@ class Element(MDBase):
     def get_bookmarks(self) -> list[Bookmark]:
         """Return all the bookmarks.
 
-        Return: list of Bookmark
+        Returns: list of Bookmark
         """
         return self._filtered_elements(
             "descendant::text:bookmark",
@@ -2775,13 +2775,13 @@ class Element(MDBase):
     ) -> Bookmark | None:
         """Return the bookmark that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
             name -- str
 
-        Return: Bookmark or None if not found
+        Returns: Bookmark or None if not found
         """
         return self._filtered_element(
             "descendant::text:bookmark", position, text_name=name
@@ -2790,7 +2790,7 @@ class Element(MDBase):
     def get_bookmark_starts(self) -> list[BookmarkStart]:
         """Return all the bookmark starts.
 
-        Return: list of BookmarkStart
+        Returns: list of BookmarkStart
         """
         return self._filtered_elements(
             "descendant::text:bookmark-start",
@@ -2803,13 +2803,13 @@ class Element(MDBase):
     ) -> BookmarkStart | None:
         """Return the bookmark start that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
             name -- str
 
-        Return: BookmarkStart or None if not found
+        Returns: BookmarkStart or None if not found
         """
         return self._filtered_element(
             "descendant::text:bookmark-start", position, text_name=name
@@ -2818,7 +2818,7 @@ class Element(MDBase):
     def get_bookmark_ends(self) -> list[BookmarkEnd]:
         """Return all the bookmark ends.
 
-        Return: list of BookmarkEnd
+        Returns: list of BookmarkEnd
         """
         return self._filtered_elements(
             "descendant::text:bookmark-end",
@@ -2831,13 +2831,13 @@ class Element(MDBase):
     ) -> BookmarkEnd | None:
         """Return the bookmark end that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
             name -- str
 
-        Return: BookmarkEnd or None if not found
+        Returns: BookmarkEnd or None if not found
         """
         return self._filtered_element(
             "descendant::text:bookmark-end", position, text_name=name
@@ -2850,7 +2850,7 @@ class Element(MDBase):
         text:reference-mark.
         Consider using : get_reference_marks()
 
-        Return: list of ReferenceMark
+        Returns: list of ReferenceMark
         """
         return self._filtered_elements(
             "descendant::text:reference-mark",
@@ -2865,13 +2865,13 @@ class Element(MDBase):
         tags text:reference-mark.
         Consider using : get_reference_mark()
 
-        Arguments:
+        Args:
 
             position -- int
 
             name -- str
 
-        Return: ReferenceMark or None if not found
+        Returns: ReferenceMark or None if not found
         """
         return self._filtered_element(
             "descendant::text:reference-mark", position, text_name=name
@@ -2882,7 +2882,7 @@ class Element(MDBase):
         text:reference-mark-start.
         Consider using : get_reference_marks()
 
-        Return: list of ReferenceMarkStart
+        Returns: list of ReferenceMarkStart
         """
         return self._filtered_elements(
             "descendant::text:reference-mark-start",
@@ -2897,13 +2897,13 @@ class Element(MDBase):
         only the tags text:reference-mark-start.
         Consider using : get_reference_mark()
 
-        Arguments:
+        Args:
 
             position -- int
 
             name -- str
 
-        Return: ReferenceMarkStart or None if not found
+        Returns: ReferenceMarkStart or None if not found
         """
         return self._filtered_element(
             "descendant::text:reference-mark-start", position, text_name=name
@@ -2914,7 +2914,7 @@ class Element(MDBase):
         text:reference-mark-end.
         Consider using : get_reference_marks()
 
-        Return: list of ReferenceMarkEnd
+        Returns: list of ReferenceMarkEnd
         """
         return self._filtered_elements(
             "descendant::text:reference-mark-end",
@@ -2929,13 +2929,13 @@ class Element(MDBase):
         the tags text:reference-mark-end.
         Consider using : get_reference_marks()
 
-        Arguments:
+        Args:
 
             position -- int
 
             name -- str
 
-        Return: ReferenceMarkEnd or None if not found
+        Returns: ReferenceMarkEnd or None if not found
         """
         return self._filtered_element(
             "descendant::text:reference-mark-end", position, text_name=name
@@ -2946,7 +2946,7 @@ class Element(MDBase):
         (text:reference-mark) or start of range reference (text:reference-mark-
         start).
 
-        Return: list of ReferenceMark or ReferenceMarkStart
+        Returns: list of ReferenceMark or ReferenceMarkStart
         """
         return self._filtered_elements(
             "descendant::text:reference-mark-start | descendant::text:reference-mark"
@@ -2961,13 +2961,13 @@ class Element(MDBase):
         position reference mark (text:reference-mark) or start of range
         reference (text:reference-mark-start).
 
-        Arguments:
+        Args:
 
             position -- int
 
             name -- str
 
-        Return: ReferenceMark or ReferenceMarkStart or None if not found
+        Returns: ReferenceMark or ReferenceMarkStart or None if not found
         """
         if name:
             request = (
@@ -2989,11 +2989,11 @@ class Element(MDBase):
         """Return all the references (text:reference-ref). If name is provided,
         returns the references of that name.
 
-        Arguments:
+        Args:
 
             name -- str or None
 
-        Return: list of Reference
+        Returns: list of Reference
         """
         if name is None:
             return self._filtered_elements(
@@ -3014,7 +3014,7 @@ class Element(MDBase):
     ) -> list[DrawGroup]:
         """Return all the draw groups that match the criteria.
 
-        Arguments:
+        Args:
 
             title -- str or None
 
@@ -3022,7 +3022,7 @@ class Element(MDBase):
 
             content -- str regex or None
 
-        Return: list of DrawGroup
+        Returns: list of DrawGroup
         """
         return self._filtered_elements(
             "descendant::draw:g",
@@ -3041,7 +3041,7 @@ class Element(MDBase):
     ) -> DrawGroup | None:
         """Return the  draw group that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
@@ -3053,7 +3053,7 @@ class Element(MDBase):
 
             content -- str regex or None
 
-        Return: DrawGroup or None if not found
+        Returns: DrawGroup or None if not found
         """
         return self._filtered_element(
             "descendant::draw:g",
@@ -3074,7 +3074,7 @@ class Element(MDBase):
     ) -> list[LineShape]:
         """Return all the draw lines that match the criteria.
 
-        Arguments:
+        Args:
 
             draw_style -- str
 
@@ -3082,7 +3082,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: list of LineShape
+        Returns: list of LineShape
         """
         return self._filtered_elements(
             "descendant::draw:line",
@@ -3099,7 +3099,7 @@ class Element(MDBase):
     ) -> LineShape | None:
         """Return the draw line that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
@@ -3107,7 +3107,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: LineShape or None if not found
+        Returns: LineShape or None if not found
         """
         return self._filtered_element(
             "descendant::draw:line", position, draw_id=id, content=content
@@ -3123,7 +3123,7 @@ class Element(MDBase):
     ) -> list[RectangleShape]:
         """Return all the draw rectangles that match the criteria.
 
-        Arguments:
+        Args:
 
             draw_style -- str
 
@@ -3131,7 +3131,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: list of RectangleShape
+        Returns: list of RectangleShape
         """
         return self._filtered_elements(
             "descendant::draw:rect",
@@ -3148,7 +3148,7 @@ class Element(MDBase):
     ) -> RectangleShape | None:
         """Return the draw rectangle that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
@@ -3156,7 +3156,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: RectangleShape or None if not found
+        Returns: RectangleShape or None if not found
         """
         return self._filtered_element(
             "descendant::draw:rect", position, draw_id=id, content=content
@@ -3172,7 +3172,7 @@ class Element(MDBase):
     ) -> list[EllipseShape]:
         """Return all the draw ellipses that match the criteria.
 
-        Arguments:
+        Args:
 
             draw_style -- str
 
@@ -3180,7 +3180,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: list of EllipseShape
+        Returns: list of EllipseShape
         """
         return self._filtered_elements(
             "descendant::draw:ellipse",
@@ -3197,7 +3197,7 @@ class Element(MDBase):
     ) -> EllipseShape | None:
         """Return the draw ellipse that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
@@ -3205,7 +3205,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: EllipseShape or None if not found
+        Returns: EllipseShape or None if not found
         """
         return self._filtered_element(
             "descendant::draw:ellipse", position, draw_id=id, content=content
@@ -3221,7 +3221,7 @@ class Element(MDBase):
     ) -> list[ConnectorShape]:
         """Return all the draw connectors that match the criteria.
 
-        Arguments:
+        Args:
 
             draw_style -- str
 
@@ -3229,7 +3229,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: list of ConnectorShape
+        Returns: list of ConnectorShape
         """
         return self._filtered_elements(
             "descendant::draw:connector",
@@ -3246,7 +3246,7 @@ class Element(MDBase):
     ) -> ConnectorShape | None:
         """Return the draw connector that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
@@ -3254,7 +3254,7 @@ class Element(MDBase):
 
             content -- str regex
 
-        Return: ConnectorShape or None if not found
+        Returns: ConnectorShape or None if not found
         """
         return self._filtered_element(
             "descendant::draw:connector", position, draw_id=id, content=content
@@ -3264,7 +3264,7 @@ class Element(MDBase):
         """Return a list of connectors which don't have any shape connected to
         them.
 
-        Return: list of ConnectorShape
+        Returns: list of ConnectorShape
         """
         connectors = []
         for connector in self.get_draw_connectors():
@@ -3279,7 +3279,7 @@ class Element(MDBase):
     def get_tracked_changes(self) -> TrackedChanges | None:
         """Return the tracked-changes part in the text body.
 
-        Return: TrackedChanges or None
+        Returns: TrackedChanges or None
         """
         return self.get_element("//text:tracked-changes")  # type: ignore[return-value]
 
@@ -3287,7 +3287,7 @@ class Element(MDBase):
     def tracked_changes(self) -> Element | None:
         """Return the tracked-changes part in the text body.
 
-        Return: Element or None
+        Returns: Element or None
         """
         return self.get_tracked_changes()
 
@@ -3305,7 +3305,7 @@ class Element(MDBase):
         """Return all the text changes of deletion kind: the tags text:change.
         Consider using : get_text_changes()
 
-        Return: list of TextChange
+        Returns: list of TextChange
         """
         return self._filtered_elements(
             "descendant::text:text:change",
@@ -3320,13 +3320,13 @@ class Element(MDBase):
         Search only for the tags text:change.
         Consider using : get_text_change()
 
-        Arguments:
+        Args:
 
             position -- int
 
             idx -- str
 
-        Return: TextChange or None if not found
+        Returns: TextChange or None if not found
         """
         return self._filtered_element(
             "descendant::text:change", position, change_id=idx
@@ -3337,7 +3337,7 @@ class Element(MDBase):
         text:change-start.
         Consider using : get_text_changes()
 
-        Return: list of TextChangeStart
+        Returns: list of TextChangeStart
         """
         return self._filtered_elements(
             "descendant::text:change-start",
@@ -3352,13 +3352,13 @@ class Element(MDBase):
         only the tags text:change-start.
         Consider using : get_text_change()
 
-        Arguments:
+        Args:
 
             position -- int
 
             idx -- str
 
-        Return: TextChangeStart or None if not found
+        Returns: TextChangeStart or None if not found
         """
         return self._filtered_element(
             "descendant::text:change-start", position, change_id=idx
@@ -3369,7 +3369,7 @@ class Element(MDBase):
         text:change-end.
         Consider using : get_text_changes()
 
-        Return: list of TextChangeEnd
+        Returns: list of TextChangeEnd
         """
         return self._filtered_elements(
             "descendant::text:change-end",
@@ -3384,13 +3384,13 @@ class Element(MDBase):
         the tags text:change-end.
         Consider using : get_text_change()
 
-        Arguments:
+        Args:
 
             position -- int
 
             idx -- str
 
-        Return: TextChangeEnd or None if not found
+        Returns: TextChangeEnd or None if not found
         """
         return self._filtered_element(
             "descendant::text:change-end", position, change_id=idx
@@ -3400,7 +3400,7 @@ class Element(MDBase):
         """Return all the text changes, either single deletion (text:change) or
         start of range of changes (text:change-start).
 
-        Return: list of TextChange or TextChangeStart
+        Returns: list of TextChange or TextChangeStart
         """
         request = "descendant::text:change-start | descendant::text:change"
         return self._filtered_elements(request)  # type: ignore[return-value]
@@ -3410,7 +3410,7 @@ class Element(MDBase):
         """Return all the text changes, either single deletion (text:change) or
         start of range of changes (text:change-start).
 
-        Return: list of Element
+        Returns: list of Element
         """
         return self.get_text_changes()
 
@@ -3425,13 +3425,13 @@ class Element(MDBase):
         is 0.
         idx : change-id of the element.
 
-        Arguments:
+        Args:
 
             position -- int
 
             idx -- str
 
-        Return: Element or None if not found
+        Returns: Element or None if not found
         """
         if idx:
             request = (
@@ -3448,7 +3448,7 @@ class Element(MDBase):
     def get_tocs(self) -> list[TOC]:
         """Return all the tables of contents.
 
-        Return: list of TOC
+        Returns: list of TOC
         """
         return self.get_elements("text:table-of-content")  # type: ignore[return-value]
 
@@ -3456,7 +3456,7 @@ class Element(MDBase):
     def tocs(self) -> list[TOC]:
         """Return all the tables of contents.
 
-        Return: list of TOC
+        Returns: list of TOC
         """
         return self.get_elements("text:table-of-content")  # type: ignore[return-value]
 
@@ -3467,13 +3467,13 @@ class Element(MDBase):
     ) -> TOC | None:
         """Return the table of contents that matches the criteria.
 
-        Arguments:
+        Args:
 
             position -- int
 
             content -- str regex
 
-        Return: TOC or None if not found
+        Returns: TOC or None if not found
         """
         return self._filtered_element(
             "text:table-of-content", position, content=content
@@ -3483,7 +3483,7 @@ class Element(MDBase):
     def toc(self) -> TOC | None:
         """Return the first table of contents.
 
-        Return: odf_toc or None if not found
+        Returns: odf_toc or None if not found
         """
         return self.get_toc()
 
@@ -3524,7 +3524,7 @@ class Element(MDBase):
         If the name is not the internal name but the name you gave in the
         desktop application, use display_name instead.
 
-        Arguments:
+        Args:
 
             family -- 'paragraph', 'text', 'graphic', 'table', 'list',
                       'number'
@@ -3533,7 +3533,7 @@ class Element(MDBase):
 
             display_name -- str
 
-        Return: Style or None if not found
+        Returns: Style or None if not found
         """
         if isinstance(name_or_element, Element):
             name = self.get_attribute("style:name")

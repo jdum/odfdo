@@ -33,7 +33,7 @@ class Manifest(XmlPart):
     def get_paths(self) -> list[Element | EText]:
         """Return the list of full paths in the manifest.
 
-        Return: list of str
+        Returns: list of str
         """
         xpath_query = "//manifest:file-entry/attribute::manifest:full-path"
         return self.xpath(xpath_query)
@@ -50,7 +50,7 @@ class Manifest(XmlPart):
     def get_path_medias(self) -> list[tuple]:
         """Return the list of (full_path, media_type) pairs in the manifest.
 
-        Return: list of str tuples
+        Returns: list of str tuples
         """
         xpath_query = "//manifest:file-entry"
         result = []
@@ -68,7 +68,7 @@ class Manifest(XmlPart):
     def get_media_type(self, full_path: str) -> str | None:
         """Get the media type of an existing path.
 
-        Return: str
+        Returns: str
         """
         xpath_query = (
             f'//manifest:file-entry[attribute::manifest:full-path="{full_path}"]'
@@ -82,7 +82,7 @@ class Manifest(XmlPart):
     def set_media_type(self, full_path: str, media_type: str) -> None:
         """Set the media type of an existing path.
 
-        Arguments:
+        Args:
 
             full_path -- str
 

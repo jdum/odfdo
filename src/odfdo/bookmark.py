@@ -36,7 +36,7 @@ class Bookmark(Element):
     def __init__(self, name: str = "", **kwargs: Any) -> None:
         """Bookmark class, "text:bookmark" tag.
 
-        Arguments:
+        Args:
 
             name -- str
         """
@@ -67,7 +67,7 @@ BookmarkStart._define_attribut_property()
 class BookmarkEnd(Element):
     """Bookmark end marker, "text:bookmark-end".
 
-    Arguments:
+    Args:
 
         name -- str
     """

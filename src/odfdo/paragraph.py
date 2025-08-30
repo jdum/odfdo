@@ -73,7 +73,7 @@ class Paragraph(MDParagraph, ParaFormattedTextMixin, ParaMixin, Element):
         If "formatted" is True (the default), the given text is appended with <CR>,
         <TAB> and multiple spaces replaced by ODF corresponding tags.
 
-        Arguments:
+        Args:
 
             text -- str, bytes or Element
 

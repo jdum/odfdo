@@ -66,7 +66,7 @@ class Cell(ElementTyped):
         currency. If cell type is "currency", the currency must be given.
         The cell can be repeated on the given number of columns.
 
-        Arguments:
+        Args:
 
             value -- bool, int, float, Decimal, date, datetime, str,
                      timedelta
@@ -379,7 +379,7 @@ class Cell(ElementTyped):
 
         For monetary values, provide the name of the currency.
 
-        Arguments:
+        Args:
 
             value -- Python type
 
@@ -407,7 +407,7 @@ class Cell(ElementTyped):
         """Get / set the type of the cell: boolean, float, date, string or
         time.
 
-        Return: str | None
+        Returns: str | None
         """
         return self.get_attribute_string("office:value-type")
 
@@ -419,7 +419,7 @@ class Cell(ElementTyped):
     def currency(self) -> str | None:
         """Get / set the currency used for monetary values.
 
-        Return: str | None
+        Returns: str | None
         """
         return self.get_attribute_string("office:currency")
 
@@ -445,7 +445,7 @@ class Cell(ElementTyped):
 
         Always None when using the table API.
 
-        Return: int or None
+        Returns: int or None
         """
         repeated = self.get_attribute("table:number-columns-repeated")
         if repeated is None:
@@ -473,7 +473,7 @@ class Cell(ElementTyped):
     def style(self) -> str | None:
         """Get / set the style of the cell itself.
 
-        Return: str | None
+        Returns: str | None
         """
         return self.get_attribute_string("table:style-name")
 
@@ -487,7 +487,7 @@ class Cell(ElementTyped):
 
         The formula is not interpreted in any way.
 
-        Return: str | None
+        Returns: str | None
         """
         return self.get_attribute_string("table:formula")
 
@@ -501,11 +501,11 @@ class Cell(ElementTyped):
 
         If aggressive is True, empty cells with style are considered empty.
 
-        Arguments:
+        Args:
 
             aggressive -- bool
 
-        Return: bool
+        Returns: bool
         """
         if (
             self.value is not None
@@ -533,11 +533,11 @@ class Cell(ElementTyped):
         attributes "table:number-columns-spanned" and
         "table:number-rows-spanned".
 
-        Arguments:
+        Args:
 
             covered -- bool
 
-        Return: True | False
+        Returns: True | False
         """
         if self.is_covered():
             return covered
@@ -555,7 +555,7 @@ class Cell(ElementTyped):
 
         If the cell is not spanned, return (0,0).
 
-        Return: tuple[int, int]
+        Returns: tuple[int, int]
         """
         columns = self.get_attribute_integer("table:number-columns-spanned") or 0
         rows = self.get_attribute_integer("table:number-rows-spanned") or 0

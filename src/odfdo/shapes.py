@@ -109,7 +109,7 @@ class LineShape(ShapeBase):
     ) -> None:
         """Create a line shape "draw:line".
 
-        Arguments:
+        Args:
 
             style -- str
 
@@ -162,7 +162,7 @@ class RectangleShape(ShapeBase):
     ) -> None:
         """Create a rectangle shape "draw:rect".
 
-        Arguments:
+        Args:
 
             style -- str
 
@@ -210,7 +210,7 @@ class EllipseShape(ShapeBase):
     ) -> None:
         """Create a ellipse shape "draw:ellipse".
 
-        Arguments:
+        Args:
 
             style -- str
 
@@ -269,7 +269,7 @@ class ConnectorShape(ShapeBase):
     ) -> None:
         """Create a Connector shape "draw:connector".
 
-        Arguments:
+        Args:
 
             style -- str
 

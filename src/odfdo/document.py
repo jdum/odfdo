@@ -289,7 +289,7 @@ class Document(MDDocument):
 
         The template argument is expected to be the path to a ODF template.
 
-        Arguments:
+        Args:
 
             template -- str or Path or file-like (io.BytesIO)
 
@@ -406,7 +406,7 @@ class Document(MDDocument):
     def get_type(self) -> str:
         """Get the ODF type (also called class) of this document.
 
-        Return: 'chart', 'database', 'formula', 'graphics',
+        Returns: 'chart', 'database', 'formula', 'graphics',
             'graphics-template', 'image', 'presentation',
             'presentation-template', 'spreadsheet', 'spreadsheet-template',
             'text', 'text-master', 'text-template' or 'text-web'
@@ -601,11 +601,11 @@ class Document(MDDocument):
         Return the full path to reference in the content. The internal name
         of the file in the Picture/ folder is gnerated by a hash function.
 
-        Arguments:
+        Args:
 
             path_or_file -- str or Path or file-like
 
-        Return: str (URI)
+        Returns: str (URI)
         """
         if not self.container:
             raise ValueError("Empty Container")
@@ -619,7 +619,7 @@ class Document(MDDocument):
     def clone(self) -> Document:
         """Return an exact copy of the document.
 
-        Return: Document
+        Returns: Document
         """
         clone = object.__new__(self.__class__)
         for name in self.__dict__:
@@ -665,7 +665,7 @@ class Document(MDDocument):
 
         Note: 'xml' packaging is an experimental work in progress.
 
-        Arguments:
+        Args:
 
             target -- str or file-like object
 
@@ -749,7 +749,7 @@ class Document(MDDocument):
         If the name is not the internal name but the name you gave in a
         desktop application, use display_name instead.
 
-        Arguments:
+        Args:
 
             family -- 'paragraph', 'text',  'graphic', 'table', 'list',
                       'number', 'page-layout', 'master-page', ...
@@ -758,7 +758,7 @@ class Document(MDDocument):
 
             display_name -- str
 
-        Return: Style or None if not found.
+        Returns: Style or None if not found.
         """
         # 1. content.xml
         element = self.content.get_style(
@@ -947,7 +947,7 @@ class Document(MDDocument):
         table-column, table-row, table-cell, table-page, chart, drawing-page,
         graphic, presentation, control and ruby.
 
-        Arguments:
+        Args:
 
             style -- Style or str
 
@@ -1014,11 +1014,11 @@ class Document(MDDocument):
         """Brute-force to find paragraphs, tables, etc. using the given style
         name (or all by default).
 
-        Arguments:
+        Args:
 
             name -- str
 
-        Return: list
+        Returns: list
         """
         # Header, footer, etc. have styles too
         return self.content.root.get_styled_elements(
@@ -1091,7 +1091,7 @@ class Document(MDDocument):
     def delete_styles(self) -> int:
         """Remove all style information from content and all styles.
 
-        Return: number of deleted styles
+        Returns: number of deleted styles
         """
         # First remove references to styles
         for element in self.get_styled_elements():
@@ -1271,7 +1271,7 @@ class Document(MDDocument):
     ) -> Style | None:
         """Return the Style instance the table.
 
-        Arguments:
+        Args:
 
             table -- name or index of the table
         """
@@ -1286,7 +1286,7 @@ class Document(MDDocument):
         Note: that method replaces the broken Table.displayd() method from previous
         odfdo versions.
 
-        Arguments:
+        Args:
 
             table -- name or index of the table
         """
@@ -1316,7 +1316,7 @@ class Document(MDDocument):
         Note: that method replaces the broken Table.displayd() method from previous
         odfdo versions.
 
-        Arguments:
+        Args:
 
             table -- name or index of the table
 
@@ -1346,7 +1346,7 @@ class Document(MDDocument):
 
         (Note: the Metadata value may differ).
 
-        Return: str
+        Returns: str
         """
         return self.styles.default_language
 
@@ -1356,7 +1356,7 @@ class Document(MDDocument):
 
         (Also available as "Document.language" property.)
 
-        Arguments:
+        Args:
 
             language -- str
 
@@ -1377,7 +1377,7 @@ class Document(MDDocument):
         """Get or set the default language of the document, both in styles and
         metadata.
 
-        Return: str
+        Returns: str
         """
         return self.get_language()
 

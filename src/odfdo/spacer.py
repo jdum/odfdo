@@ -47,7 +47,7 @@ class Spacer(MDSpacer, Element):
     def __init__(self, number: int | None = 1, **kwargs: Any) -> None:
         """Representation of several spaces, "text:s".
 
-        Arguments:
+        Args:
 
             number -- int
         """

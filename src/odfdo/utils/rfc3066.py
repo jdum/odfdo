@@ -29,7 +29,7 @@ def is_RFC3066(lang: str) -> bool:
     Check that "language" and "country" are two or three long ASCII strings
     representing a valid language and country according to RFC 3066.
 
-    Return: bool
+    Returns: bool
     """
 
     def test_part1(part1: str) -> bool:

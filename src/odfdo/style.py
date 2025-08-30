@@ -176,7 +176,7 @@ def make_table_cell_border_string(
 
     With default: "0.06pt solid #000000"
 
-    Arguments:
+    Args:
 
         thick -- str or float or int
 
@@ -221,7 +221,7 @@ def create_table_cell_style(
     the 4 sides padding can be specified by it's own string. Default padding is
     no padding.
 
-    Arguments:
+    Args:
 
         border -- str, style string for borders on four sides
 
@@ -394,7 +394,7 @@ class Style(Element):
         To set properties, pass them as keyword arguments. The area properties
         apply to is optional and defaults to the family.
 
-        Arguments:
+        Args:
 
             family -- 'paragraph', 'text', 'section', 'table', 'table-column',
                       'table-row', 'table-cell', 'table-page', 'chart',
@@ -597,11 +597,11 @@ class Style(Element):
         properties. Specify the area to get the text properties of a paragraph
         style for example.
 
-        Arguments:
+        Args:
 
             area -- str
 
-        Return: dict
+        Returns: dict
         """
         if area is None:
             area = self.family
@@ -646,7 +646,7 @@ class Style(Element):
          - "underline": bool
          - "strike": bool
 
-        Return: dict[str, str | bool]
+        Returns: dict[str, str | bool]
         """
         return self.get_text_properties()
 
@@ -662,7 +662,7 @@ class Style(Element):
          - "underline": bool
          - "strike": bool
 
-        Return: dict[str, str | bool]
+        Returns: dict[str, str | bool]
         """
         props = self.get_properties(area="text") or {}
         self._update_boolean_styles(props)  # type: ignore[arg-type]
@@ -683,7 +683,7 @@ class Style(Element):
         Instead of properties, you can pass a style with properties of the
         same area. These will be copied.
 
-        Arguments:
+        Args:
 
             properties -- dict
 
@@ -725,7 +725,7 @@ class Style(Element):
         argument (or both). Remove only from the given area, identical to the
         style family by default.
 
-        Arguments:
+        Args:
 
             properties -- list
 
@@ -769,7 +769,7 @@ class Style(Element):
         Though this method is defined on the base style class, it will raise
         an error if the style type is not compatible.
 
-        Arguments:
+        Args:
 
             color -- '#rrggbb'
 
@@ -860,7 +860,7 @@ class Style(Element):
         clone: Style | None = None,
     ) -> Style | None:
         """
-        Arguments:
+        Args:
 
             level -- int
 
@@ -882,7 +882,7 @@ class Style(Element):
 
             clone -- List Style
 
-        Return:
+        Returns:
             level_style created
         """
         if self.family != "list":
@@ -1025,7 +1025,7 @@ class Style(Element):
         If you only want to update the existing header, get it and use the
         API.
 
-        Arguments:
+        Args:
 
             text_or_element -- str or Element or a list of them
         """
@@ -1052,7 +1052,7 @@ class Style(Element):
         If you only want to update the existing footer, get it and use the
         API.
 
-        Arguments:
+        Args:
 
             text_or_element -- str or Element or a list of them
         """

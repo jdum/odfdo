@@ -218,7 +218,7 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
             Frame.text_frame()
 
 
-        Arguments:
+        Args:
 
             name -- str
 
@@ -290,7 +290,7 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
 
         The optionnal text will appear above the image.
 
-        Arguments:
+        Args:
 
             image -- DrawImage or str, DrawImage element or URL of the image
 
@@ -298,7 +298,7 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
 
             See Frame() initialization for the other arguments
 
-        Return: Frame
+        Returns: Frame
         """
         frame = cls(
             name=name,
@@ -342,7 +342,7 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
 
         The optionnal text will appear above the image.
 
-        Arguments:
+        Args:
 
             text_or_element -- str or Element, or list of them, text content
                                of the text box.
@@ -351,7 +351,7 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
 
             See Frame() initialization for the other arguments
 
-        Return: Frame
+        Returns: Frame
         """
         frame = cls(
             name=name,

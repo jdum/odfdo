@@ -45,13 +45,13 @@ class Body(Element):
         The method is also accessible via the alias
         get_sheets()
 
-        Arguments:
+        Args:
 
             style -- str
 
             content -- str regex
 
-        Return: list of Table
+        Returns: list of Table
         """
         return self._filtered_elements(  # type: ignore[return-value]
             "descendant::table:table",
@@ -67,7 +67,7 @@ class Body(Element):
 
         The property is also accessible via the alias sheets.
 
-        Return: list of Table
+        Returns: list of Table
         """
         return self.get_elements("descendant::table:table")  # type: ignore[return-value]
 
@@ -84,7 +84,7 @@ class Body(Element):
         The method is also accessible via the alias
         get_sheet()
 
-        Arguments:
+        Args:
 
             position -- int
 
@@ -92,7 +92,7 @@ class Body(Element):
 
             content -- str regex
 
-        Return: Table or None if not found
+        Returns: Table or None if not found
         """
         if name is None and content is None:
             result = self._filtered_element("descendant::table:table", position)

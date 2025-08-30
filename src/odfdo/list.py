@@ -53,7 +53,7 @@ class ListItem(MDListItem, Element):
         Create a list item element, optionaly passing at creation time a
         string or Element as content.
 
-        Arguments:
+        Args:
 
             text_or_element -- str or ODF Element
         """
@@ -92,7 +92,7 @@ class List(MDList, Element):
         To create more complex lists, first create an empty list, and fill it
         afterwards.
 
-        Arguments:
+        Args:
 
             list_content -- str or Element, or a list of str or Element
 
@@ -112,13 +112,13 @@ class List(MDList, Element):
     def get_items(self, content: str | None = None) -> list[Element]:
         """Return all the list items that match the criteria.
 
-        Arguments:
+        Args:
 
             style -- str
 
             content -- str regex
 
-        Return: list of Element
+        Returns: list of Element
         """
         return self._filtered_elements("text:list-item", content=content)
 
@@ -130,13 +130,13 @@ class List(MDList, Element):
         """Return the list item that matches the criteria. In nested lists,
         return the list item that really contains that content.
 
-        Arguments:
+        Args:
 
             position -- int
 
             content -- str regex
 
-        Return: Element or None if not found
+        Returns: Element or None if not found
         """
         # Custom implementation because of nested lists
         if content:

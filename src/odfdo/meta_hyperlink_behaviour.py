@@ -49,7 +49,7 @@ class MetaHyperlinkBehaviour(Element):
         The "meta:hyperlink-behaviour" element specifies the default behavior
         for hyperlinks in a document.
 
-        Arguments:
+        Args:
 
             target_frame_name -- str
 

@@ -111,7 +111,7 @@ def remove_tree(
     Elements whose parent is of class `safe` are not removed.
     To remove text and child elements, set keep_children to False.
 
-    Arguments:
+    Args:
 
         element -- Element, target of removal
 

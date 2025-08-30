@@ -26,11 +26,11 @@ from __future__ import annotations
 def oooc_to_ooow(formula: str) -> str:
     """Convert (proprietary) formula from calc format to writer format.
 
-    Arguments:
+    Args:
 
         formula -- str
 
-    Return: str
+    Returns: str
     """
     _prefix, formula = formula.split(":=", 1)
     # assert "oooc" in prefix

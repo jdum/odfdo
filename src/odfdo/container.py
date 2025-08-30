@@ -248,7 +248,7 @@ class Container:
     def __init__(self, path: Path | str | io.BytesIO | None = None) -> None:
         """Storage of the ODF document, as zip or other format.
 
-        Arguments:
+        Args:
 
         path -- path like, io.BytesIO or None
         """
@@ -753,7 +753,7 @@ class Container:
         Package the output document in the same format than current document,
         unless "packaging" is different.
 
-        Arguments:
+        Args:
 
             target -- str or file-like or Path
 

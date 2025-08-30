@@ -82,13 +82,13 @@ class Styles(XmlPart):
         """Return the list of styles in the Content part, optionally limited to
         the given family, optionaly limited to automatic styles.
 
-        Arguments:
+        Args:
 
             family -- str
 
             automatic -- bool
 
-        Return: list of Style
+        Returns: list of Style
         """
         result = []
         for context in self._get_style_contexts(family, automatic=automatic):
@@ -105,7 +105,7 @@ class Styles(XmlPart):
     def default_styles(self) -> list[Style]:
         """Return the list of default styles "style:default-styles".
 
-        Return: list of Style
+        Returns: list of Style
         """
         result: list[Style] = self.get_elements("//style:default-style")  # type: ignore[assignment]
 
@@ -164,7 +164,7 @@ class Styles(XmlPart):
         If the name is not the internal name but the name you gave in the
         desktop application, use display_name instead.
 
-        Arguments:
+        Args:
 
             family -- 'paragraph', 'text',  'graphic', 'table', 'list',
                       'number', 'page-layout', 'master-page'
@@ -173,7 +173,7 @@ class Styles(XmlPart):
 
             display_name -- str or None
 
-        Return: odf_style or None if not found
+        Returns: odf_style or None if not found
         """
         for context in self._get_style_contexts(family):
             if context is None:

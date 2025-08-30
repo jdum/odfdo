@@ -55,7 +55,7 @@ class RowGroup(Element):
 
         Row group bear style information applied to a series of rows.
 
-        Arguments:
+        Args:
 
             height -- int
 

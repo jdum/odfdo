@@ -154,7 +154,7 @@ def _by_regex_offset(method: Callable) -> Callable:
         """Insert the result of method(element, ...) at the place matching the
         regex OR the positional arguments offset and length.
 
-        Arguments:
+        Args:
 
             method -- wrapped method
 
@@ -397,7 +397,7 @@ class ParaMixin(Element):
         the annotation is created from the body, creator and optional date
         (current date by default).
 
-        Arguments:
+        Args:
 
             annotation_element -- Annotation or None
 
@@ -500,7 +500,7 @@ class ParaMixin(Element):
         If content/before or after (regex) returns a group of matching
         positions, the position value is the index of matching place to use.
 
-        Arguments:
+        Args:
 
             annotation_element -- Annotation (mandatory)
 
@@ -554,7 +554,7 @@ class ParaMixin(Element):
         Name is mandatory and shall be unique in the document for the preference
         mark range.
 
-        Arguments:
+        Args:
 
             name -- str
 
@@ -566,7 +566,7 @@ class ParaMixin(Element):
 
             position -- int or tuple of int
 
-        Return: the created ReferenceMark or ReferenceMarkStart
+        Returns: the created ReferenceMark or ReferenceMarkStart
         """
         # special case: content is an odf element (ie: a paragraph)
         if isinstance(content, Element):
@@ -634,7 +634,7 @@ class ParaMixin(Element):
         If content/before or after (regex) returns a group of matching
         positions, the position value is the index of matching place to use.
 
-        Arguments:
+        Args:
 
             reference_mark -- ReferenceMark or ReferenceMarkStart (mandatory)
 
@@ -680,7 +680,7 @@ class ParaMixin(Element):
           - the 'regex' match,
           - or the string of length 'length' starting at 'offset'.
 
-        Arguments:
+        Args:
 
             style -- str
 
@@ -716,7 +716,7 @@ class ParaMixin(Element):
     def remove_span(self, spans: Element | list[Element]) -> Element:
         """Return a copy of the element, the spans (not a clone) removed.
 
-        Arguments:
+        Args:
 
             spans -- Element or list of Element
         """
@@ -737,7 +737,7 @@ class ParaMixin(Element):
           - the 'regex' match,
           - or the string of length 'length' starting at 'offset'.
 
-        Arguments:
+        Args:
 
             url -- str
 
@@ -761,7 +761,7 @@ class ParaMixin(Element):
         """Return a copy of the element (not a clone), with the sub links
         removed.
 
-        Arguments:
+        Args:
 
             links -- Link or list of Link
         """
@@ -795,7 +795,7 @@ class ParaMixin(Element):
         If after is an ODF Element, the reference is inserted as first child of
         this element.
 
-        Arguments:
+        Args:
 
             name -- str
 
@@ -867,7 +867,7 @@ class ParaMixin(Element):
           paragraph.set_bookmark("bookmark", position=20, role="end")
 
 
-        Arguments:
+        Args:
 
             name -- str
 

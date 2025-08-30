@@ -32,7 +32,7 @@ class DcCreatorMixin:
 
         (Also available as "self.creator" property.)
 
-        Return: str (or None if inexistant)
+        Returns: str (or None if inexistant)
 
         Example::
 
@@ -49,7 +49,7 @@ class DcCreatorMixin:
 
         (Also available as "self.creator" property.)
 
-        Arguments:
+        Args:
 
             creator -- str
 

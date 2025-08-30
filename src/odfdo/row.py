@@ -63,7 +63,7 @@ class Row(Element):
 
         You don't generally have to create rows by hand, use the Table API.
 
-        Arguments:
+        Args:
 
             width -- int
 
@@ -155,7 +155,7 @@ class Row(Element):
         """Method Internal only. Set the numnber of times the row is repeated,
         or None to delete it. Without changing cache.
 
-        Arguments:
+        Args:
 
             repeated -- int
         """
@@ -171,7 +171,7 @@ class Row(Element):
 
         Always None when using the table API.
 
-        Return: int or None
+        Returns: int or None
         """
         repeated = self.get_attribute("table:number-rows-repeated")
         if repeated is None:
@@ -200,7 +200,7 @@ class Row(Element):
     def style(self) -> str | None:
         """Get /set the style of the row itself.
 
-        Return: str
+        Returns: str
         """
         return self.get_attribute_string("table:style-name")
 
@@ -213,7 +213,7 @@ class Row(Element):
         """Get the number of expected cells in the row, i.e. addition
         repetitions.
 
-        Return: int
+        Returns: int
         """
         return self._row_cache.width()
 
@@ -241,7 +241,7 @@ class Row(Element):
 
         Copies are returned, use set_cell() to push them back.
 
-            Arguments:
+            Args:
 
                 start -- int
 
@@ -282,7 +282,7 @@ class Row(Element):
         Filter by coordinates will retrieve the amount of cells defined by
         'coord', minus the other filters.
 
-        Arguments:
+        Args:
 
             coord -- str or tuple of int : coordinates
 
@@ -293,7 +293,7 @@ class Row(Element):
 
             style -- str
 
-        Return: list of Cell
+        Returns: list of Cell
         """
         # fixme : not clones ?
         if coord:
@@ -323,7 +323,7 @@ class Row(Element):
     def cells(self) -> list[Cell]:
         """Get the list of all cells.
 
-        Return: list of Cell
+        Returns: list of Cell
         """
         # fixme : not clones ?
         return list(self.iter_cells())
@@ -356,11 +356,11 @@ class Row(Element):
 
         A  copy is returned, use set_cell() to push it back.
 
-        Arguments:
+        Args:
 
             x -- int or str
 
-        Return: Cell | None
+        Returns: Cell | None
         """
         x = self._translate_x_from_any(x)
         cell = self._get_cell2(x, clone=clone)
@@ -403,7 +403,7 @@ class Row(Element):
         """Push the cell back in the row at position "x" starting from 0.
         Alphabetical positions like "D" are accepted.
 
-        Arguments:
+        Args:
 
             x -- int or str
 
@@ -441,7 +441,7 @@ class Row(Element):
     ) -> None:
         """Shortcut to set the value of the cell at position "x".
 
-        Arguments:
+        Args:
 
             x -- int or str
 
@@ -475,7 +475,7 @@ class Row(Element):
 
         Do not use when working on a table, use Table.insert_cell().
 
-        Arguments:
+        Args:
 
             x -- int or str
 
@@ -517,7 +517,7 @@ class Row(Element):
 
         Do not use when working on a table, use Table.append_cell().
 
-        Arguments:
+        Args:
 
             cell -- Cell
 
@@ -548,7 +548,7 @@ class Row(Element):
         Cells on the right will be shifted to the left. In a table, other
         rows remain unaffected.
 
-        Arguments:
+        Args:
 
             x -- int or str
         """
@@ -582,7 +582,7 @@ class Row(Element):
         coordinates with None for empty cells, except when using cell_type.
 
 
-        Arguments:
+        Args:
 
             coord -- str or tuple of int : coordinates in row
 
@@ -593,7 +593,7 @@ class Row(Element):
 
             get_type -- boolean
 
-        Return: list of Python types, or list of tuples.
+        Returns: list of Python types, or list of tuples.
         """
         if coord:
             x, z = self._translate_row_coordinates(coord)
@@ -630,7 +630,7 @@ class Row(Element):
         'string' when using this method, the length of the list is equal
         to the length of the row.
 
-        Return: list of Elements.
+        Returns: list of Elements.
         """
         return [cell.children for cell in self.iter_cells()]
 
@@ -643,7 +643,7 @@ class Row(Element):
         """Set the cells in the row, from the 'start' column. This method does
         not clear the row, use row.clear() before to start with an empty row.
 
-        Arguments:
+        Args:
 
             cells -- list of cells
 
@@ -679,7 +679,7 @@ class Row(Element):
         column vith values. This method does not clear the row, use row.clear()
         before to start with an empty row.
 
-        Arguments:
+        Args:
 
             values -- list of Python types
 
@@ -719,7 +719,7 @@ class Row(Element):
         has no value but can have style. If "aggressive" is True, style is
         ignored.
 
-        Arguments:
+        Args:
 
             aggressive -- bool
         """
@@ -733,7 +733,7 @@ class Row(Element):
     def _current_length(self) -> int:
         """Return the current estimated length of the row.
 
-        Return: int
+        Returns: int
         """
         idx_repeated_seq = self.elements_repeated_sequence(
             _xpath_cell, "table:number-columns-repeated"
@@ -747,7 +747,7 @@ class Row(Element):
         """Return the length of the row if the last repeated sequence is
         reduced to one.
 
-        Return: int
+        Returns: int
         """
         idx_repeated_seq = self.elements_repeated_sequence(
             _xpath_cell, "table:number-columns-repeated"
@@ -778,7 +778,7 @@ class Row(Element):
         """Change the repeated property of the last cell of the row to comply
         with the required max width.
 
-        Arguments:
+        Args:
 
             width -- int
         """
@@ -800,11 +800,11 @@ class Row(Element):
 
         If aggressive is True, empty cells with style are considered empty.
 
-        Arguments:
+        Args:
 
             aggressive -- bool
 
-        Return: bool
+        Returns: bool
         """
         return all(cell.is_empty(aggressive=aggressive) for cell in self._get_cells())
 

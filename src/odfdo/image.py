@@ -65,7 +65,7 @@ class DrawImage(Element):
 
         Initialisation of an DrawImage.
 
-        Arguments:
+        Args:
 
             url -- str
 
@@ -115,7 +115,7 @@ class DrawFillImage(DrawImage):
         The "draw:fill-image" element is usable within the following element:
         "office:styles"
 
-        Arguments:
+        Args:
 
             name -- str
 

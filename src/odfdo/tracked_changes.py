@@ -64,7 +64,7 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
     ) -> None:
         """Create informations of a change "office:change-info".
 
-        Arguments:
+        Args:
 
            creator -- str (or None)
 
@@ -80,11 +80,11 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
         text of different paragraphs is concatenated, else a list of strings,
         one per paragraph, is returned.
 
-        Arguments:
+        Args:
 
             joined -- boolean (default is True)
 
-        Return: str or list of str.
+        Returns: str or list of str.
         """
         content = self.paragraphs
         text = [para.get_formatted_text(simple=True) for para in content]
@@ -96,7 +96,7 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
         """Set the text content of the comments. If replace is True (default),
         the new text replace old comments, else it is added at the end.
 
-        Arguments:
+        Args:
 
             text -- str
 
@@ -129,7 +129,7 @@ class TextInsertion(Element):
         as_text: bool = False,
         no_header: bool = False,
     ) -> str | list[Element] | None:
-        """Return: None."""
+        """Returns: None."""
         if as_text:
             return ""
         return None
@@ -148,7 +148,7 @@ class TextInsertion(Element):
         If no_header is True: existing text:h are changed in text:p
         By default: returns a list of Element, cleaned and with headers
 
-        Arguments:
+        Args:
 
             as_text -- boolean
 
@@ -156,7 +156,7 @@ class TextInsertion(Element):
 
             no_header -- boolean
 
-        Return: list or Element or text
+        Returns: list or Element or text
         """
         current = self.parent  # text:changed-region
         if not isinstance(current, TextChangedRegion):
@@ -173,7 +173,7 @@ class TextInsertion(Element):
     def get_change_info(self) -> Element | None:
         """Get the ChangeInfo child of the element.
 
-        Return: ChangeInfo element.
+        Returns: ChangeInfo element.
         """
         return self.get_element("descendant::office:change-info")
 
@@ -190,7 +190,7 @@ class TextInsertion(Element):
         for date is current time and default for comments is no comment at all.
         The new change info element will replace any existant ChangeInfo.
 
-        Arguments:
+        Args:
 
              change_info -- ChangeInfo element (or None)
 
@@ -265,13 +265,13 @@ class TextDeletion(TextInsertion):
         If as_text is True: returns the text content.
         If no_header is True: existing Heading are changed in Paragraph
 
-        Arguments:
+        Args:
 
             as_text -- boolean
 
             no_header -- boolean
 
-        Return: Paragraph and Header list
+        Returns: Paragraph and Header list
         """
         children = self.children
         inner = [elem for elem in children if elem.tag != "office:change-info"]
@@ -299,7 +299,7 @@ class TextDeletion(TextInsertion):
         content that was deleted is expected, embeded in a Paragraph element or
         Header.
 
-        Arguments:
+        Args:
 
             paragraph_or_list -- Paragraph or Header element (or list)
         """
@@ -366,7 +366,7 @@ class TextChangedRegion(Element):
     def get_change_info(self) -> Element | None:
         """Shortcut to get the ChangeInfo element of the change element child.
 
-        Return: ChangeInfo element.
+        Returns: ChangeInfo element.
         """
         return self.get_element("descendant::office:change-info")
 
@@ -380,7 +380,7 @@ class TextChangedRegion(Element):
         """Shortcut to set the ChangeInfo element of the sub change element.
         See TextInsertion.set_change_info() for details.
 
-        Arguments:
+        Args:
 
              change_info -- ChangeInfo element (or None)
 
@@ -401,7 +401,7 @@ class TextChangedRegion(Element):
         """Get the change element child. It can be either: TextInsertion,
         TextDeletion, or TextFormatChange as an Element object.
 
-        Return: Element.
+        Returns: Element.
         """
         request = (
             "descendant::text:insertion "
@@ -425,7 +425,7 @@ class TextChangedRegion(Element):
     def get_id(self) -> str | None:
         """Get the "text:id" attribute.
 
-        Return: str
+        Returns: str
         """
         return self._get_text_id()
 
@@ -550,7 +550,7 @@ class TextChange(Element):
         """Shortcut to get the deleted informations stored in the TextDeletion
         stored in the tracked changes.
 
-        Return: Paragraph (or None)."
+        Returns: Paragraph (or None)."
         """
         changed = self.get_change_element(tracked_changes=tracked_changes)
         if not changed:
@@ -621,7 +621,7 @@ class TextChangeEnd(TextChange):
         If no_header is True: existing text:h are changed in text:p
         By default: returns a list of Element, cleaned and with headers
 
-        Arguments:
+        Args:
 
             as_text -- boolean
 
@@ -629,7 +629,7 @@ class TextChangeEnd(TextChange):
 
             no_header -- boolean
 
-        Return: list or Element or text
+        Returns: list or Element or text
         """
 
         # idx = self.get_id()
@@ -680,7 +680,7 @@ class TextChangeStart(TextChangeEnd):
 
         For TextChangeStart : delete also the end tag if exists.
 
-        Arguments:
+        Args:
 
             child -- Element
 

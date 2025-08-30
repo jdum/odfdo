@@ -270,7 +270,7 @@ class RowCache:
         """Get the number of expected cells in the row, i.e. addition
         repetitions.
 
-        Return: int
+        Returns: int
         """
         try:
             return self.cell_map[-1] + 1
@@ -409,7 +409,7 @@ class TableCache:
     def height(self) -> int:
         """Get the current height of the table.
 
-        Return: int
+        Returns: int
         """
         try:
             return self.row_map[-1] + 1
@@ -422,7 +422,7 @@ class TableCache:
         Rows may have different widths, use the Table API to ensure width
         consistency.
 
-        Return: int
+        Returns: int
         """
         try:
             return self.col_map[-1] + 1

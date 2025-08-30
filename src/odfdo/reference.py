@@ -112,7 +112,7 @@ class Reference(Element):
         If ref_format is 'text', the current text content of the reference_mark
         is retrieved.
 
-        Arguments:
+        Args:
 
             name -- str : name of the reference mark
 
@@ -137,7 +137,7 @@ class Reference(Element):
     def ref_format(self, ref_format: str) -> None:
         """Set the text:reference-format attribute.
 
-        Arguments:
+        Args:
 
             ref_format -- str
         """
@@ -183,7 +183,7 @@ class ReferenceMark(Element):
         represented by a single "text:reference-mark" element.
         Consider using the wrapper: odfdo.paragraph.set_reference_mark()
 
-        Arguments:
+        Args:
 
             name -- str
         """
@@ -207,7 +207,7 @@ class ReferenceMarkEnd(Element):
         Consider using the wrappers: odfdo.paragraph.set_reference_mark() and
         odfdo.paragraph.set_reference_mark_end()
 
-        Arguments:
+        Args:
 
             name -- str
         """
@@ -243,7 +243,7 @@ class ReferenceMarkStart(Element):
         reference.
         Consider using the wrapper: odfdo.paragraph.set_reference_mark()
 
-        Arguments:
+        Args:
 
             name -- str
         """
@@ -276,7 +276,7 @@ class ReferenceMarkStart(Element):
         headers and paragraphs. By default, the content is returned as an
         "office:text" odf element.
 
-        Arguments:
+        Args:
 
             no_header -- boolean (default to False), translate existing headers
                          tags "text:h" into paragraphs "text:p".
@@ -321,7 +321,7 @@ class ReferenceMarkStart(Element):
 
         For odf_reference_mark_start : delete the reference-end tag if exists.
 
-        Arguments:
+        Args:
 
             child -- Element
 

@@ -54,7 +54,7 @@ class DrawPage(Element):
     ) -> None:
         """ODF draw page for presentations and drawings, "draw:page".
 
-        Arguments:
+        Args:
 
             draw_id -- str
 

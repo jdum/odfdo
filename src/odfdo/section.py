@@ -45,7 +45,7 @@ class Section(Element):
     ) -> None:
         """Section of the text document, "text:section".
 
-        Arguments:
+        Args:
 
             style -- str
 

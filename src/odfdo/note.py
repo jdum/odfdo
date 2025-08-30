@@ -55,7 +55,7 @@ class Note(MDNote, Element):
     ) -> None:
         """A note (footnote or endnote), "text:note".
 
-        Arguments:
+        Args:
 
             note_class -- 'footnote' or 'endnote'
 

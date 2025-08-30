@@ -25,11 +25,11 @@ from .css3_colormap import CSS3_COLORMAP
 def hex2rgb(color: str) -> tuple[int, int, int]:
     """Convert "#RRGGBB" hexadecimal representation into (R, G, B) tuple.
 
-    Arguments:
+    Args:
 
         color -- str
 
-    Return: tuple
+    Returns: tuple
     """
     code = color[1:]
     if not (len(color) == 7 and color[0] == "#" and code.isalnum()):
@@ -43,11 +43,11 @@ def hex2rgb(color: str) -> tuple[int, int, int]:
 def rgb2hex(color: str | tuple[int, int, int]) -> str:
     """Convert color name or (R, G, B) tuple into "#RRGGBB" hexadecimal.
 
-    Arguments:
+    Args:
 
         color -- str or tuple
 
-    Return: str
+    Returns: str
 
     Examples::
 
@@ -82,11 +82,11 @@ def hexa_color(color: str | tuple[int, int, int] | None = None) -> str | None:
     Empty string is converted to black.
     None is converted to None.
 
-    Arguments:
+    Args:
 
         color -- str or tuple or None
 
-    Return: str or None
+    Returns: str or None
     """
     if color is None:
         return None

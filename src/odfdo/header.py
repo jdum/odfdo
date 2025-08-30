@@ -62,7 +62,7 @@ class Header(Paragraph, MDHeader):
         If "formatted" is True (the default), the given text is appended with <CR>,
         <TAB> and multiple spaces replaced by ODF corresponding tags.
 
-        Arguments:
+        Args:
 
             level -- int
 

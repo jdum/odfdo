@@ -50,11 +50,11 @@ class Content(XmlPart):
         """Return the list of styles in the Content part, optionally limited to
         the given family.
 
-        Arguments:
+        Args:
 
             family -- str or None
 
-        Return: list of Style
+        Returns: list of Style
         """
         result: list[Style] = []
         for context in self._get_style_contexts(family):
@@ -77,7 +77,7 @@ class Content(XmlPart):
         If the name is not the internal name but the name you gave in the
         desktop application, use display_name instead.
 
-        Arguments:
+        Args:
 
             family -- 'paragraph', 'text', 'graphic', 'table', 'list',
                       'number', ...
@@ -85,7 +85,7 @@ class Content(XmlPart):
 
             display_name -- str
 
-        Return: Style or None if not found
+        Returns: Style or None if not found
         """
         for context in self._get_style_contexts(family):
             if context is None:

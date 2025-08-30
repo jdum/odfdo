@@ -57,7 +57,7 @@ class Link(MDLink, ParaFormattedTextMixin, Element):
     ) -> None:
         """Representation of a link (URL), "text:a".
 
-        Arguments:
+        Args:
 
             url -- str
 

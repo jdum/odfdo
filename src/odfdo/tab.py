@@ -50,7 +50,7 @@ class Tab(MDTab, Element):
     def __init__(self, position: int | None = None, **kwargs: Any) -> None:
         """Representation of a tabulation, "text:tab".
 
-        Arguments:
+        Args:
 
             position -- int
         """

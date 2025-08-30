@@ -53,7 +53,7 @@ class MetaTemplate(Element):
         that was used to create a document. The URI is specified as an
         Xlink.
 
-        Arguments:
+        Args:
 
             date -- datetime or None
 

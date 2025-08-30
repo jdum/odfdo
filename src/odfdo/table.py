@@ -157,7 +157,7 @@ class Table(MDTable, Element):
         If you use both the table API and the XML API, you are on your own for
         ensuiring model integrity.
 
-        Arguments:
+        Args:
 
             name -- str
 
@@ -594,7 +594,7 @@ class Table(MDTable, Element):
     def height(self) -> int:
         """Get the current height of the table.
 
-        Return: int
+        Returns: int
         """
         return self._table_cache.height()
 
@@ -605,7 +605,7 @@ class Table(MDTable, Element):
         Rows may have different widths, use the Table API to ensure width
         consistency.
 
-        Return: int
+        Returns: int
         """
         # Columns are our reference for user expected width
         return self._table_cache.width()
@@ -614,7 +614,7 @@ class Table(MDTable, Element):
     def size(self) -> tuple[int, int]:
         """Shortcut to get the current width and height of the table.
 
-        Return: (int, int)
+        Returns: (int, int)
         """
         return self.width, self.height
 
@@ -682,7 +682,7 @@ class Table(MDTable, Element):
     def style(self) -> str | None:
         """Get / set the style of the table.
 
-        Return: str
+        Returns: str
         """
         return self.get_attribute_string("table:style-name")
 
@@ -722,7 +722,7 @@ class Table(MDTable, Element):
         If flat is True, the methods return a single list of all the values.
         By default, flat is False.
 
-        Arguments:
+        Args:
 
             coord -- str or tuple of int : coordinates of area
 
@@ -733,7 +733,7 @@ class Table(MDTable, Element):
 
             get_type -- boolean
 
-        Return: list of lists of Python types
+        Returns: list of lists of Python types
         """
         if coord:
             x, y, z, t = self._translate_table_coordinates(coord)
@@ -780,7 +780,7 @@ class Table(MDTable, Element):
 
 
 
-        Arguments:
+        Args:
 
             coord -- str or tuple of int : coordinates of area
 
@@ -791,7 +791,7 @@ class Table(MDTable, Element):
 
             get_type -- boolean
 
-        Return: iterator of lists
+        Returns: iterator of lists
         """
         if coord:
             x, y, z, t = self._translate_table_coordinates(coord)
@@ -841,7 +841,7 @@ class Table(MDTable, Element):
         items in each sublist as cells to be setted. None values in the list
         will create empty cells with no cell type (but eventually a style).
 
-        Arguments:
+        Args:
 
             coord -- tuple or str
 
@@ -1008,7 +1008,7 @@ class Table(MDTable, Element):
         coordinates. Beware, if area is not square, some cells mays be over
         written during the process.
 
-        Arguments:
+        Args:
 
             coord -- str or tuple of int : coordinates of area
 
@@ -1071,7 +1071,7 @@ class Table(MDTable, Element):
 
         If aggressive is True, empty cells with style are considered empty.
 
-        Arguments:
+        Args:
 
             aggressive -- bool
         """
@@ -1085,7 +1085,7 @@ class Table(MDTable, Element):
     def row_groups(self) -> list[RowGroup]:
         """Get the list of all RowGroup.
 
-        Return: list of RowGroup
+        Returns: list of RowGroup
         """
         return self.get_elements(_XP_ROW_GROUP)  # type: ignore[return-value]
 
@@ -1103,7 +1103,7 @@ class Table(MDTable, Element):
 
         Copies are returned, use set_row() to push them back.
 
-            Arguments:
+            Args:
 
                 start -- int
 
@@ -1138,7 +1138,7 @@ class Table(MDTable, Element):
 
         Filter by coordinates will parse the area defined by the coordinates.
 
-        Arguments:
+        Args:
 
             coord -- str or tuple of int : coordinates of rows
 
@@ -1146,7 +1146,7 @@ class Table(MDTable, Element):
 
             style -- str
 
-        Return: list of rows
+        Returns: list of rows
         """
         if coord:
             _x, y, _z, t = self._translate_table_coordinates(coord)
@@ -1168,7 +1168,7 @@ class Table(MDTable, Element):
     def rows(self) -> list[Row]:
         """Get the list of all rows.
 
-        Return: list of rows
+        Returns: list of rows
         """
         # fixme : not clones ?
         return list(self.iter_rows())
@@ -1214,11 +1214,11 @@ class Table(MDTable, Element):
 
         A copy is returned, use set_cell() to push it back.
 
-        Arguments:
+        Args:
 
             y -- int or str
 
-        Return: Row
+        Returns: Row
         """
         # fixme : keep repeat ? maybe an option to functions : "raw=False"
         y = self._translate_y_from_any(y)
@@ -1236,7 +1236,7 @@ class Table(MDTable, Element):
 
         Position start at 0. So cell A4 is on row 3.
 
-        Arguments:
+        Args:
 
             y -- int or str
 
@@ -1277,7 +1277,7 @@ class Table(MDTable, Element):
 
         If row is None, a new empty row is created.
 
-        Arguments:
+        Args:
 
             y -- int or str
 
@@ -1305,7 +1305,7 @@ class Table(MDTable, Element):
     def extend_rows(self, rows: list[Row] | None = None) -> None:
         """Append a list of rows at the end of the table.
 
-        Arguments:
+        Args:
 
             rows -- list of Row
         """
@@ -1336,7 +1336,7 @@ class Table(MDTable, Element):
         Note the columns are automatically created when the first row is
         inserted in an empty table. So better insert a filled row.
 
-        Arguments:
+        Args:
 
             row -- Row
 
@@ -1370,7 +1370,7 @@ class Table(MDTable, Element):
 
         Position start at 0. So cell A4 is on row 3.
 
-        Arguments:
+        Args:
 
             y -- int or str
         """
@@ -1399,7 +1399,7 @@ class Table(MDTable, Element):
 
         If get_type is True, returns a tuple (value, ODF type of value)
 
-        Arguments:
+        Args:
 
             y -- int, str
 
@@ -1410,7 +1410,7 @@ class Table(MDTable, Element):
 
             get_type -- boolean
 
-        Return: list of lists of Python types
+        Returns: list of lists of Python types
         """
         values = self.get_row(y, clone=False).get_values(
             cell_type=cell_type, complete=complete, get_type=get_type
@@ -1431,11 +1431,11 @@ class Table(MDTable, Element):
 
         Missing values replaced by None.
 
-        Arguments:
+        Args:
 
             y -- int, str
 
-        Return: list of lists of Elements
+        Returns: list of lists of Elements
         """
         values = self.get_row(y, clone=False).get_sub_elements()
         values.extend([None] * (self.width - len(values)))
@@ -1454,7 +1454,7 @@ class Table(MDTable, Element):
 
         Position start at 0. So cell A4 is on row 3.
 
-        Arguments:
+        Args:
 
             y -- int or str
 
@@ -1479,7 +1479,7 @@ class Table(MDTable, Element):
 
         Position start at 0. So cell A4 is on row 3.
 
-        Arguments:
+        Args:
 
             y -- int or str
 
@@ -1503,7 +1503,7 @@ class Table(MDTable, Element):
 
         If aggressive is True, empty cells with style are considered empty.
 
-        Arguments:
+        Args:
 
             y -- int or str
 
@@ -1535,7 +1535,7 @@ class Table(MDTable, Element):
         if cell_type, style and content are None, get_cells() will return
         the exact number of cells of the area, including empty cells.
 
-        Arguments:
+        Args:
 
             coordinates -- str or tuple of int : coordinates of area
 
@@ -1548,7 +1548,7 @@ class Table(MDTable, Element):
 
             flat -- boolean
 
-        Return: list of list of Cell
+        Returns: list of list of Cell
         """
         if coord:
             x, y, z, t = self._translate_table_coordinates(coord)
@@ -1581,7 +1581,7 @@ class Table(MDTable, Element):
     def cells(self) -> list:
         """Get all cells of the table.
 
-        Return: list of list of Cell
+        Returns: list of list of Cell
         """
         lcells: list[list[Cell]] = []
         for row in self.iter_rows():
@@ -1601,11 +1601,11 @@ class Table(MDTable, Element):
 
         A copy is returned, use ``set_cell`` to push it back.
 
-        Arguments:
+        Args:
 
             coord -- (int, int) or str
 
-        Return: Cell
+        Returns: Cell
         """
         x, y = self._translate_cell_coordinates(coord)
         if x is None:
@@ -1646,11 +1646,11 @@ class Table(MDTable, Element):
         human-readable position like "C4". If an Area is given, the upper
         left position is used as coord.
 
-        Arguments:
+        Args:
 
             coord -- (int, int) or str : coordinate
 
-        Return: Python type
+        Returns: Python type
         """
         x, y = self._translate_cell_coordinates(coord)
         if x is None:
@@ -1685,7 +1685,7 @@ class Table(MDTable, Element):
         They are either a 2-uplet of (x, y) starting from 0, or a
         human-readable position like "C4".
 
-        Arguments:
+        Args:
 
             coord -- (int, int) or str : coordinate
 
@@ -1744,7 +1744,7 @@ class Table(MDTable, Element):
         A list of lists is expected, with as many lists as rows to be set, and
         as many cell in each sublist as cells to be setted in the row.
 
-        Arguments:
+        Args:
 
             cells -- list of list of cells
 
@@ -1786,7 +1786,7 @@ class Table(MDTable, Element):
         They are either a 2-uplet of (x, y) starting from 0, or a
         human-readable position like "C4".
 
-        Arguments:
+        Args:
 
             coord -- (int, int) or str
 
@@ -1825,7 +1825,7 @@ class Table(MDTable, Element):
         DrawImage insertion depends on the document type, so the type must be
         provided or the table element must be already attached to a document.
 
-        Arguments:
+        Args:
 
             coord -- (int, int) or str
 
@@ -1890,7 +1890,7 @@ class Table(MDTable, Element):
 
         Cells on the right are shifted. Other rows remain untouched.
 
-        Arguments:
+        Args:
 
             coord -- (int, int) or str
 
@@ -1930,7 +1930,7 @@ class Table(MDTable, Element):
 
         Other rows remain untouched.
 
-        Arguments:
+        Args:
 
             y -- int or str
 
@@ -1961,7 +1961,7 @@ class Table(MDTable, Element):
 
         Use set_value() for erasing value.
 
-        Arguments:
+        Args:
 
             coord -- (int, int) or str
         """
@@ -1994,7 +1994,7 @@ class Table(MDTable, Element):
         expand repetitions by returning the same column as many times as
         necessary.
 
-            Arguments:
+            Args:
 
                 start -- int
 
@@ -2040,13 +2040,13 @@ class Table(MDTable, Element):
 
         Copies are returned, use set_column() to push them back.
 
-        Arguments:
+        Args:
 
             coord -- str or tuple of int : coordinates of columns
 
             style -- str
 
-        Return: list of columns
+        Returns: list of columns
         """
         if coord:
             x, _y, _z, t = self._translate_column_coordinates(coord)
@@ -2082,7 +2082,7 @@ class Table(MDTable, Element):
 
         Copies are returned, use set_column() to push them back.
 
-        Return: list of columns
+        Returns: list of columns
         """
         return list(self.iter_columns())
 
@@ -2096,11 +2096,11 @@ class Table(MDTable, Element):
 
         A copy is returned, use set_column() to push it back.
 
-        Arguments:
+        Args:
 
             x -- int or str
 
-        Return: Column
+        Returns: Column
         """
         x = self._translate_x_from_any(x)
         column = self._get_column2(x)
@@ -2121,7 +2121,7 @@ class Table(MDTable, Element):
         Position start at 0. So cell C4 is on column 2. Alphabetical position
         like "C" is accepted.
 
-        Arguments:
+        Args:
 
             x -- int or str
 
@@ -2159,7 +2159,7 @@ class Table(MDTable, Element):
         Position start at 0. So cell C4 is on column 2. Alphabetical position
         like "C" is accepted.
 
-        Arguments:
+        Args:
 
             x -- int or str
 
@@ -2200,7 +2200,7 @@ class Table(MDTable, Element):
         Position start at 0. So cell C4 is on column 2. Alphabetical position
         like "C" is accepted.
 
-        Arguments:
+        Args:
 
             column -- Column
 
@@ -2235,7 +2235,7 @@ class Table(MDTable, Element):
         Position start at 0. So cell C4 is on column 2. Alphabetical position
         like "C" is accepted.
 
-        Arguments:
+        Args:
 
             x -- int or str
         """
@@ -2269,7 +2269,7 @@ class Table(MDTable, Element):
 
         If complete is True, replace missing values by None.
 
-        Arguments:
+        Args:
 
             x -- int or str
 
@@ -2282,7 +2282,7 @@ class Table(MDTable, Element):
 
             complete -- boolean
 
-        Return: list of Cell
+        Returns: list of Cell
         """
         x = self._translate_x_from_any(x)
         if cell_type:
@@ -2335,7 +2335,7 @@ class Table(MDTable, Element):
 
         If get_type is True, returns a tuple (value, ODF type of value)
 
-        Arguments:
+        Args:
 
             x -- int or str
 
@@ -2346,7 +2346,7 @@ class Table(MDTable, Element):
 
             get_type -- boolean
 
-        Return: list of Python types
+        Returns: list of Python types
         """
         cells = self.get_column_cells(
             x, style=None, content=None, cell_type=cell_type, complete=complete
@@ -2380,7 +2380,7 @@ class Table(MDTable, Element):
 
         The list must have the same length than the table height.
 
-        Arguments:
+        Args:
 
             x -- int or str
 
@@ -2410,7 +2410,7 @@ class Table(MDTable, Element):
 
         The list must have the same length than the table height.
 
-        Arguments:
+        Args:
 
             x -- int or str
 
@@ -2438,7 +2438,7 @@ class Table(MDTable, Element):
 
         If aggressive is True, empty cells with style are considered empty.
 
-        Return: bool
+        Returns: bool
         """
         for cell in self.get_column_cells(x):
             if cell is None:
@@ -2458,7 +2458,7 @@ class Table(MDTable, Element):
         Beware : named ranges are stored at the body level, thus do not call
         this method on a cloned table.
 
-        Arguments:
+        Args:
 
             table_names -- str or list of str, names of tables
 
@@ -2487,7 +2487,7 @@ class Table(MDTable, Element):
         Beware : named ranges are stored at the body level, thus do not call
         this method on a cloned table.
 
-        Arguments:
+        Args:
 
             name -- str, name of the named range object
 
@@ -2509,7 +2509,7 @@ class Table(MDTable, Element):
         Beware : named ranges are stored at the body level, thus do not call
         this method on a cloned table.
 
-        Arguments:
+        Args:
 
             name -- str, name of the named range
 
@@ -2534,7 +2534,7 @@ class Table(MDTable, Element):
         Beware : named ranges are stored at the body level, thus do not call
         this method on a cloned table.
 
-        Arguments:
+        Args:
 
             name -- str
         """
@@ -2571,7 +2571,7 @@ class Table(MDTable, Element):
         be provided as an alpha numeric value like "A1:B2' or a tuple like
         (0, 0, 1, 1) or (0, 0).
 
-        Arguments:
+        Args:
 
             area -- str or tuple of int, cell or area coordinate
 
@@ -2666,7 +2666,7 @@ class Table(MDTable, Element):
         (0, 0, 1, 1) or (0, 0). If an area is provided, the upper left cell
         is used.
 
-        Arguments:
+        Args:
 
             area -- str or tuple of int, cell or area coordinate
         """
@@ -2716,7 +2716,7 @@ class Table(MDTable, Element):
         Save the CSV content to the path_or_file path, or return the content
         text if path_or_file is None.
 
-        Arguments:
+        Args:
 
             path_or_file -- str or Path or None
 
@@ -2758,7 +2758,7 @@ class Table(MDTable, Element):
         CSV format can be autodetected to a certain limit. Use **fmtparams to
         define cvs.reader parameters.
 
-        Arguments:
+        Args:
 
           contenr -- str, CSV content
 
@@ -2801,7 +2801,7 @@ def import_from_csv(
     CSV format can be autodetected to a certain limit. Use **fmtparams to
     define cvs.reader parameters.
 
-    Arguments:
+    Args:
 
       path_or_file -- str, Path or file-like
 

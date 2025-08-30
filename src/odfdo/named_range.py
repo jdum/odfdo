@@ -99,7 +99,7 @@ class NamedRange(Element):
         and '_', and must not be like a coordinate as 'A1'. 'table_name' must be
         a correct table name (no "'" or "/" in it).
 
-        Arguments:
+        Args:
 
              name -- str, name of the named range
 
@@ -142,7 +142,7 @@ class NamedRange(Element):
             - 'repeat-column'
             - 'repeat-row'
 
-        Arguments:
+        Args:
 
             usage -- None or str
         """
@@ -170,7 +170,7 @@ class NamedRange(Element):
         only alphanumerics characters and '_', and can not be of a cell
         coordinates form like 'AB12'.
 
-        Arguments:
+        Args:
 
             name -- str
         """
@@ -204,7 +204,7 @@ class NamedRange(Element):
     def set_table_name(self, name: str) -> None:
         """Set the name of the table of the Named Range. The name is mandatory.
 
-        Arguments:
+        Args:
 
             name -- str
         """
@@ -232,7 +232,7 @@ class NamedRange(Element):
         'A1') or an area ('A1:B2'). It can be provided as an alpha numeric
         value like "A1:B2' or a tuple like (0, 0, 1, 1) or (0, 0).
 
-        Arguments:
+        Args:
 
             crange -- str or tuple of int, cell or area coordinate
         """

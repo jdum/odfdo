@@ -54,7 +54,7 @@ class Column(Element):
 
         You don't generally have to create columns by hand, use the Table API.
 
-        Arguments:
+        Args:
 
             default_cell_style -- str or None
 
@@ -108,7 +108,7 @@ class Column(Element):
         """Internal only. Set the number of times the column is repeated, or
         None to delete it. Without changing cache.
 
-        Arguments:
+        Args:
 
             repeated -- int or None
         """
@@ -124,7 +124,7 @@ class Column(Element):
 
         Always None when using the table API.
 
-        Return: int or None
+        Returns: int or None
         """
         repeated = self.get_attribute("table:number-columns-repeated")
         if repeated is None:
@@ -151,7 +151,7 @@ class Column(Element):
     def style(self) -> str | None:
         """Get /set the style of the column itself.
 
-        Return: str or None
+        Returns: str or None
         """
         return self.get_attribute_string("table:style-name")
 

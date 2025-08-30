@@ -229,7 +229,7 @@ class TOC(MDToc, Element):
         text:name, text:protected, text:protection-key,
         text:protection-key-digest-algorithm, text:style-name and xml:id.
 
-        Arguments:
+        Args:
 
             title -- str
 
@@ -404,7 +404,7 @@ class TOC(MDToc, Element):
 
         For having a pretty TOC, let use_default_styles by default.
 
-        Arguments:
+        Args:
 
             document -- Document
 
@@ -474,7 +474,7 @@ class IndexTitleTemplate(Element):
     def __init__(self, style: str | None = None, **kwargs: Any) -> None:
         """Create template style for title "text:index-title-template".
 
-        Arguments:
+        Args:
 
             style -- str
         """
@@ -501,7 +501,7 @@ class TocEntryTemplate(Element):
         """Create template for entry of TOC "text:table-of-content-entry-
         template".
 
-        Arguments:
+        Args:
 
             style -- str
         """

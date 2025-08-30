@@ -46,7 +46,7 @@ class AnimPar(Element):
     ) -> None:
         """Create a container for SMIL presentation animations "anim:par".
 
-        Arguments:
+        Args:
 
             presentation_node_type -- default, on-click, with-previous,
                                       after-previous, timing-root, main-sequence
@@ -85,7 +85,7 @@ class AnimSeq(Element):
         Animations inside this block are executed after the slide
         has executed its initial transition.
 
-        Arguments:
+        Args:
 
             presentation_node_type -- default, on-click, with-previous,
                                       after-previous, timing-root, main-sequence
@@ -124,7 +124,7 @@ class AnimTransFilter(Element):
     ) -> None:
         """Create a transition between two frames "anim:transitionFilter".
 
-        Arguments:
+        Args:
 
           smil_dur -- str, duration
 
