@@ -212,8 +212,8 @@ def xpath_compile(path: str) -> XPath:
 
 _xpath_text = xpath_compile("//text()")  # descendant and self
 _xpath_text_descendant = xpath_compile("descendant::text()")
-_xpath_text_main = xpath_compile("//*[not (parent::office:annotation)]/text()")
-_xpath_text_main_descendant = xpath_compile(
+# _xpath_text_main = xpath_compile("//*[not (parent::office:annotation)]/text()")
+_xpath_text_descendant_no_annotation = xpath_compile(
     "descendant::text()[not (parent::office:annotation)]"
 )
 
@@ -548,7 +548,6 @@ class Element(MDBase):
         before: str | None = None,
         after: str | None = None,
         position: int = 0,
-        main_text: bool = False,
     ) -> None:
         """Insert an element before or after the characters in the text which
         match the regex before/after.
@@ -558,6 +557,8 @@ class Element(MDBase):
         we use only position that is the number of characters. If position is
         positive and before=after=None, we insert before the position
         character. But if position=-1, we insert after the last character.
+
+        Annotation text content is ignored.
 
 
         Arguments:
@@ -570,14 +571,8 @@ class Element(MDBase):
 
         position -- int
         """
-        # not implemented: if main_text is True, filter out the annotations texts in computation.
         current = self.__element
         xelement = element.__element
-
-        if main_text:
-            xpath_text = _xpath_text_main_descendant
-        else:
-            xpath_text = _xpath_text_descendant
 
         # 1) before xor after is not None
         if (before is not None) ^ (after is not None):
@@ -587,7 +582,7 @@ class Element(MDBase):
                 before,
                 after,
                 position,
-                xpath_text,
+                _xpath_text_descendant_no_annotation,
             )
         # 2) before=after=None => only with position
         elif before is None and after is None:
@@ -601,7 +596,7 @@ class Element(MDBase):
                 before,
                 after,
                 position,
-                xpath_text,
+                _xpath_text_descendant_no_annotation,
             )
         else:
             raise ValueError("bad combination of arguments")

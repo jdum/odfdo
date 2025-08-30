@@ -364,7 +364,7 @@ class ParaMixin(Element):
                 note_element.note_body = body
         note_element.check_validity()
         if isinstance(after, str):
-            self._insert(note_element, after=after, main_text=True)
+            self._insert(note_element, after=after)
         elif isinstance(after, Element):
             after.insert(note_element, FIRST_CHILD)
         else:
@@ -457,14 +457,10 @@ class ParaMixin(Element):
             and isinstance(position, int)
         ):
             # Start tag
-            self._insert(
-                annotation_element, before=content, position=position, main_text=True
-            )
+            self._insert(annotation_element, before=content, position=position)
             # End tag
             annotation_end = AnnotationEnd(annotation_element)
-            self._insert(
-                annotation_end, after=content, position=position, main_text=True
-            )
+            self._insert(annotation_end, after=content, position=position)
             return annotation_element
 
         # With "(int, int)" =>  automatically insert a "start" and an "end"
@@ -476,18 +472,10 @@ class ParaMixin(Element):
             and isinstance(position, tuple)
         ):
             # Start
-            self._insert(
-                annotation_element,
-                position=position[0],
-                main_text=True,
-            )
+            self._insert(annotation_element, position=position[0])
             # End
             annotation_end = AnnotationEnd(annotation_element)
-            self._insert(
-                annotation_end,
-                position=position[1],
-                main_text=True,
-            )
+            self._insert(annotation_end, position=position[1])
             return annotation_element
 
         # Without "content" nor "position"
@@ -495,13 +483,7 @@ class ParaMixin(Element):
             raise ValueError("Bad arguments")
 
         # Insert
-        self._insert(
-            annotation_element,
-            before=before,
-            after=after,
-            position=position,
-            main_text=True,
-        )
+        self._insert(annotation_element, before=before, after=after, position=position)
         return annotation_element
 
     def insert_annotation_end(
@@ -544,9 +526,7 @@ class ParaMixin(Element):
         end_tag = AnnotationEnd(annotation_element)
 
         # Insert
-        self._insert(
-            end_tag, before=before, after=after, position=position, main_text=True
-        )
+        self._insert(end_tag, before=before, after=after, position=position)
         return end_tag
 
     def set_reference_mark(
@@ -610,14 +590,10 @@ class ParaMixin(Element):
         ):
             # Start tag
             reference_start = ReferenceMarkStart(name)
-            self._insert(
-                reference_start, before=content, position=position, main_text=True
-            )
+            self._insert(reference_start, before=content, position=position)
             # End tag
             reference_end = ReferenceMarkEnd(name)
-            self._insert(
-                reference_end, after=content, position=position, main_text=True
-            )
+            self._insert(reference_end, after=content, position=position)
             return reference_start
 
         # With "(int, int)" =>  automatically insert a "start" and an "end"
@@ -629,10 +605,10 @@ class ParaMixin(Element):
         ):
             # Start
             reference_start = ReferenceMarkStart(name)
-            self._insert(reference_start, position=position[0], main_text=True)
+            self._insert(reference_start, position=position[0])
             # End
             reference_end = ReferenceMarkEnd(name)
-            self._insert(reference_end, position=position[1], main_text=True)
+            self._insert(reference_end, position=position[1])
             return reference_start
 
         # Without "content" nor "position"
@@ -641,13 +617,7 @@ class ParaMixin(Element):
 
         # Insert a positional reference mark
         reference = ReferenceMark(name)
-        self._insert(
-            reference,
-            before=before,
-            after=after,
-            position=position,
-            main_text=True,
-        )
+        self._insert(reference, before=before, after=after, position=position)
         return reference
 
     def set_reference_mark_end(
@@ -689,17 +659,11 @@ class ParaMixin(Element):
         end_tag = ReferenceMarkEnd(name)
 
         # Insert
-        self._insert(
-            end_tag, before=before, after=after, position=position, main_text=True
-        )
+        self._insert(end_tag, before=before, after=after, position=position)
         return end_tag
 
     def insert_variable(self, variable_element: Element, after: str | None) -> None:
-        self._insert(
-            variable_element,
-            after=after,
-            main_text=True,
-        )
+        self._insert(variable_element, after=after)
 
     @_by_regex_offset
     def set_span(
@@ -862,9 +826,7 @@ class ParaMixin(Element):
         if isinstance(after, Element):
             after.insert(reference, FIRST_CHILD)
         else:
-            self._insert(
-                reference, before=before, after=after, position=position, main_text=True
-            )
+            self._insert(reference, before=before, after=after, position=position)
 
     def set_bookmark(
         self,
@@ -931,20 +893,10 @@ class ParaMixin(Element):
         ):
             # Start
             start = BookmarkStart(name)
-            self._insert(
-                start,
-                before=content,
-                position=position,
-                main_text=True,
-            )
+            self._insert(start, before=content, position=position)
             # End
             end = BookmarkEnd(name)
-            self._insert(
-                end,
-                after=content,
-                position=position,
-                main_text=True,
-            )
+            self._insert(end, after=content, position=position)
             return start, end
 
         # With "(int, int)" =>  automatically insert a "start" and an "end"
@@ -958,18 +910,10 @@ class ParaMixin(Element):
         ):
             # Start
             start = BookmarkStart(name)
-            self._insert(
-                start,
-                position=position[0],
-                main_text=True,
-            )
+            self._insert(start, position=position[0])
             # End
             end = BookmarkEnd(name)
-            self._insert(
-                end,
-                position=position[1],
-                main_text=True,
-            )
+            self._insert(end, position=position[1])
             return start, end
 
         # Without "content" nor "position"
@@ -987,12 +931,6 @@ class ParaMixin(Element):
             raise ValueError("bad arguments")
 
         # Insert
-        self._insert(
-            bookmark,
-            before=before,
-            after=after,
-            position=position,
-            main_text=True,
-        )
+        self._insert(bookmark, before=before, after=after, position=position)
 
         return bookmark
