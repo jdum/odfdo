@@ -37,6 +37,7 @@ from odfdo.element import (
     _uri_to_prefix,
     _xpath_text_descendant,
     register_element_class,
+    xpath_compile,
 )
 from odfdo.paragraph import Paragraph
 from odfdo.xmlpart import XmlPart
@@ -209,6 +210,20 @@ def test__insert_find_text_bad():
             200,
             _xpath_text_descendant,
         )
+
+
+def test_elements_repeated_sequence_1():
+    para = Paragraph("aaa")
+    x = xpath_compile(".")
+    result = para.elements_repeated_sequence(x, "b")
+    assert result == [(0, 1)]
+
+
+def test_elements_repeated_sequence_2():
+    para = Paragraph("aaa")
+    x = xpath_compile("xxx")
+    result = para.elements_repeated_sequence(x, "b")
+    assert result == []
 
 
 def test_get_element_list(sample):

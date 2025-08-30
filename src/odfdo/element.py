@@ -642,12 +642,12 @@ class Element(MDBase):
         lxml_tag = _get_lxml_tag_or_name(name)
         element = self.__element
         sub_elements = xpath_instance(element)
-        if not isinstance(sub_elements, list):
+        if not isinstance(sub_elements, list):  # pragma: nocover
             raise TypeError("Bad XPath result.")
         result: list[tuple[int, int]] = []
         idx = -1
         for sub_element in sub_elements:
-            if not isinstance(sub_element, _Element):
+            if not isinstance(sub_element, _Element):  # pragma: nocover
                 continue
             idx += 1
             value = sub_element.get(lxml_tag)
@@ -656,7 +656,7 @@ class Element(MDBase):
                 continue
             try:
                 int_value = int(value)
-            except ValueError:
+            except ValueError:  # pragma: nocover
                 int_value = 1
             result.append((idx, max(int_value, 1)))
         return result
