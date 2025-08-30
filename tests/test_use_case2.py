@@ -170,11 +170,6 @@ def use_case1(destination_file, source_path):
     decl = body.get_variable_decls()
     decl.append(variable_decl)
 
-    text = "Set of spam."
-    paragraph = Paragraph(text, style="Standard")
-    body.append(paragraph)
-    paragraph._insert_between(variable_set, "Set", "spam.")
-
     text = "The value of spam is:"
     value = body.get_variable_set_value("spam")
     variable_get = VarGet("spam", value)
@@ -197,10 +192,8 @@ def use_case1(destination_file, source_path):
 
     text = "The value of pi5 is: "
     value = body.get_user_field_value("pi5")
-    user_field_get = UserFieldGet("pi5", value)
     paragraph = Paragraph(text, style="Standard")
     body.append(paragraph)
-    paragraph._insert_between(user_field_get, "The", "is:")
 
     # 6- Page number
     # --------------
@@ -285,7 +278,6 @@ def use_case1(destination_file, source_path):
 
     paragraph = Paragraph(text, style="Standard")
     body.append(paragraph)
-    paragraph._insert_between(VarFileName(), "The", "is:")
 
     # Save
     # ----
