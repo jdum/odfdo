@@ -25,6 +25,7 @@ from collections import namedtuple
 from collections.abc import Iterable
 
 import pytest
+from lxml.etree import Element, _Element
 
 from odfdo.const import ODF_CONTENT
 from odfdo.container import Container
@@ -33,8 +34,12 @@ from odfdo.element import (
     NEXT_SIBLING,
     PREV_SIBLING,
     Element,
+    EText,
+    _decode_qname,
+    _uri_to_prefix,
     register_element_class,
 )
+from odfdo.paragraph import Paragraph
 from odfdo.xmlpart import XmlPart
 
 SPECIAL_CHARS = 'using < & " characters'
@@ -83,9 +88,39 @@ def test_create_qname():
     assert element.serialize() == "<text:p/>"
 
 
+def test_decode_qname_bad():
+    with pytest.raises(ValueError):
+        _decode_qname("hip:hop")
+
+
+def test_uri_to_prefix_bad():
+    with pytest.raises(ValueError):
+        _uri_to_prefix("wrong_uri")
+
+
+def test_etext_parent_1():
+    element = Element.from_tag('<text:p style="aa"/>')
+    lst = element.xpath("//@style")
+    etext = lst[0]
+    assert isinstance(etext.parent, Paragraph)
+
+
+def test_etext_parent_2():
+    element = Element.from_tag('<text:p style="aa"/>')
+    lst = element.xpath("//@style")
+    etext = lst[0]
+    etext._EText__parent = None
+    assert etext.parent is None
+
+
 def test_bad_python_element():
     with pytest.raises(TypeError):
         Element("<text:p/>")
+
+
+def test_bad_element_from_tag():
+    with pytest.raises(TypeError):
+        Element(tag_or_elem=[])
 
 
 def test_get_element_list(sample):
