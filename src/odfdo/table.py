@@ -33,6 +33,7 @@ from itertools import zip_longest
 from pathlib import Path
 from textwrap import wrap
 from typing import TYPE_CHECKING, Any
+from warnings import warn
 
 from lxml.etree import XPath, _Element
 
@@ -1809,7 +1810,9 @@ class Table(MDTable, Element):
         image_frame: Frame,
         doc_type: str | None = None,
     ) -> None:
-        """Do all the magic to display an image in the cell at the given
+        """Deprecated, see related recipes to achieve the desired result.
+
+        Do all the magic to display an image in the cell at the given
         coordinates.
 
         They are either a 2-uplet of (x, y) starting from 0, or a
@@ -1829,6 +1832,7 @@ class Table(MDTable, Element):
 
             doc_type -- 'spreadsheet' or 'text'
         """
+        warn("Table.set_cell_image() is deprecated", DeprecationWarning, stacklevel=2)
         # Test document type
         if doc_type is None:
             body = self.document_body
