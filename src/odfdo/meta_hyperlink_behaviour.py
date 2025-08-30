@@ -27,7 +27,9 @@ from .element import Element, PropDef, register_element_class
 
 
 class MetaHyperlinkBehaviour(Element):
-    """Container for hyperlink-behaviour properties, "meta:hyperlink-behaviour"."""
+    """Container for hyperlink-behaviour properties, "meta:hyperlink-
+    behaviour".
+    """
 
     _tag = "meta:hyperlink-behaviour"
     _properties: tuple[PropDef, ...] = (
@@ -41,8 +43,8 @@ class MetaHyperlinkBehaviour(Element):
         show: str = "replace",
         **kwargs: Any,
     ) -> None:
-        """
-        Container for hyperlink-behaviour properties, "meta:hyperlink-behaviour".
+        """Container for hyperlink-behaviour properties, "meta:hyperlink-
+        behaviour".
 
         The "meta:hyperlink-behaviour" element specifies the default behavior
         for hyperlinks in a document.

@@ -34,8 +34,8 @@ from .mixin_md import MDNote
 class Note(MDNote, Element):
     """A note (footnote or endnote), "text:note".
 
-    Either a footnote or a endnote element with the given text,
-    optionally referencing it using the given note_id.
+    Either a footnote or a endnote element with the given text, optionally
+    referencing it using the given note_id.
     """
 
     _tag = "text:note"

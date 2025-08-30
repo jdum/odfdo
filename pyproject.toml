@@ -68,6 +68,7 @@ dev = [
     "mypy-extensions>=1.1.0",
     "typing-extensions>=4.14.1",
     "pytest-xdist>=3.8.0",
+    "docformatter>=1.7.7",
 ]
 
 [tool.uv]
@@ -194,3 +195,13 @@ skip_empty = true
 show_missing = false
 fail_under = 70
 exclude_also = ["if TYPE_CHECKING:"]
+
+[tool.docformatter]
+in-place = true
+exclude = ["tests", "recipes"]
+recursive = true
+wrap-summaries = 79
+wrap-descriptions = 79
+blank = false
+close-quotes-on-newline = true
+non-strict = true

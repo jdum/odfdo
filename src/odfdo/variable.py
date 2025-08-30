@@ -217,7 +217,7 @@ class VarDate(Element):
         date_adjust: timedelta | None = None,
         **kwargs: Any,
     ) -> None:
-        """create avariable for a date "text:date"."""
+        """Create avariable for a date "text:date"."""
         super().__init__(**kwargs)
         if self._do_init:
             if date:

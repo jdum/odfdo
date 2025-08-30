@@ -53,8 +53,8 @@ __all__ = [
 class Paragraph(MDParagraph, ParaFormattedTextMixin, ParaMixin, Element):
     """An ODF paragraph, "text:p".
 
-    The "text:p" element represents a paragraph, which is
-    the basic unit of text in an OpenDocument file.
+    The "text:p" element represents a paragraph, which is the basic unit of
+    text in an OpenDocument file.
     """
 
     _tag = "text:p"
@@ -67,9 +67,8 @@ class Paragraph(MDParagraph, ParaFormattedTextMixin, ParaMixin, Element):
         formatted: bool = True,
         **kwargs: Any,
     ):
-        """
-        Create a paragraph element "text:p" of the given style containing the
-        pptional given text.
+        """Create a paragraph element "text:p" of the given style containing
+        the pptional given text.
 
         If "formatted" is True (the default), the given text is appended with <CR>,
         <TAB> and multiple spaces replaced by ODF corresponding tags.

@@ -156,7 +156,7 @@ def _show_styles(element: Element, level: int = 0) -> str | None:
 
 
 def _get_part_path(path: str) -> str:
-    """Transition to real path of XML parts"""
+    """Transition to real path of XML parts."""
     return {
         "content": ODF_CONTENT,
         "meta": ODF_META,
@@ -182,7 +182,8 @@ def _get_part_class(
 def container_from_template(template: str | Path | io.BytesIO) -> Container:
     """Return a Container instance based on template argument.
 
-    Internal use only."""
+    Internal use only.
+    """
     template_container = Container()
     if isinstance(template, str) and template in ODF_TEMPLATES:
         template = ODF_TEMPLATES[template]
@@ -308,16 +309,18 @@ class Document(MDDocument):
 
     @path.setter
     def path(self, path_or_str: str | Path) -> None:
-        """Shortcut to Document.Container.path
+        """Shortcut to Document.Container.path.
 
-        Only accepting str or Path."""
+        Only accepting str or Path.
+        """
         if not self.container:
             return
         self.container.path = Path(path_or_str)
 
     def get_parts(self) -> list[str]:
         """Return available part names with path inside the archive, e.g.
-        ['content.xml', ..., 'Pictures/100000000000032000000258912EB1C3.jpg']
+        ['content.xml', ...,
+        'Pictures/100000000000032000000258912EB1C3.jpg']
         """
         if not self.container:
             raise ValueError("Empty Container")
@@ -326,7 +329,8 @@ class Document(MDDocument):
     @property
     def parts(self) -> list[str]:
         """Return available part names with path inside the archive, e.g.
-        ['content.xml', ..., 'Pictures/100000000000032000000258912EB1C3.jpg']
+        ['content.xml', ...,
+        'Pictures/100000000000032000000258912EB1C3.jpg']
         """
         return self.get_parts()
 
@@ -334,9 +338,9 @@ class Document(MDDocument):
         """Return the bytes of the given part. The path is relative to the
         archive, e.g. "Pictures/1003200258912EB1C3.jpg".
 
-        'content', 'meta', 'settings', 'styles' and 'manifest' are shortcuts
-        to the real path, e.g. content.xml, and return a dedicated object with
-        its own API.
+        'content', 'meta', 'settings', 'styles' and 'manifest' are shortcuts to
+        the real path, e.g. content.xml, and return a dedicated object with its
+        own API.
 
         path formated as URI, so always use '/' separator
         """
@@ -374,8 +378,10 @@ class Document(MDDocument):
         self.container.set_part(path, data)
 
     def del_part(self, path: str) -> None:
-        """Mark a part for deletion. The path is relative to the archive,
-        e.g. "Pictures/1003200258912EB1C3.jpg"
+        """Mark a part for deletion.
+
+        The path is relative to the archive, e.g.
+        "Pictures/1003200258912EB1C3.jpg"
         """
         if not self.container:
             raise ValueError("Empty Container")
@@ -413,8 +419,8 @@ class Document(MDDocument):
 
     @property
     def body(self) -> Body:
-        """Return the body element of the content part, where actual content
-        is stored.
+        """Return the body element of the content part, where actual content is
+        stored.
         """
         if self.__body is None:
             self.__body = self.content.body
@@ -422,8 +428,9 @@ class Document(MDDocument):
 
     @property
     def meta(self) -> Meta:
-        """Return the meta part (meta.xml) of the document, where meta data
-        are stored."""
+        """Return the meta part (meta.xml) of the document, where meta data are
+        stored.
+        """
         metadata = self.get_part(ODF_META)
         if metadata is None or not isinstance(metadata, Meta):
             raise ValueError("Empty Meta")
@@ -563,7 +570,8 @@ class Document(MDDocument):
     def get_formated_meta(self) -> str:
         """Return meta informations as text, with some formatting.
 
-        (Redirection to new implementation for compatibility.)"""
+        (Redirection to new implementation for compatibility.)
+        """
         return self.meta.as_text()
 
     def to_markdown(self) -> str:
@@ -650,10 +658,10 @@ class Document(MDDocument):
         backup: bool = False,
     ) -> None:
         """Save the document, at the same place it was opened or at the given
-        target path. Target can also be a file-like object. It can be saved
-        as a Zip file (default), flat XML format or as files in a folder
-        (for debugging purpose). XML parts can be pretty printed (the default
-        for 'folder' and 'xml' packaging).
+        target path. Target can also be a file-like object. It can be saved as
+        a Zip file (default), flat XML format or as files in a folder (for
+        debugging purpose). XML parts can be pretty printed (the default for
+        'folder' and 'xml' packaging).
 
         Note: 'xml' packaging is an experimental work in progress.
 
@@ -733,8 +741,8 @@ class Document(MDDocument):
         name_or_element: str | Style | None = None,
         display_name: str | None = None,
     ) -> Style | None:
-        """Return the style uniquely identified by the name/family pair. If
-        the argument is already a style object, it will return it.
+        """Return the style uniquely identified by the name/family pair. If the
+        argument is already a style object, it will return it.
 
         If the name is None, the default style is fetched.
 
@@ -1170,7 +1178,8 @@ class Document(MDDocument):
                 manifest.add_full_path(url, media_type)  # type: ignore
 
     def add_page_break_style(self) -> None:
-        """Ensure that the document contains the style required for a manual page break.
+        """Ensure that the document contains the style required for a manual
+        page break.
 
         Then a manual page break can be added to the document with:
             from paragraph import PageBreak
@@ -1213,8 +1222,9 @@ class Document(MDDocument):
     def get_cell_style_properties(
         self, table: str | int, coord: tuple | list | str
     ) -> dict[str, str]:
-        """Return the style properties of a table cell of a .ods document,
-        from the cell style or from the row style."""
+        """Return the style properties of a table cell of a .ods document, from
+        the cell style or from the row style.
+        """
 
         if not (sheet := self._get_table(table)):
             return {}
@@ -1247,10 +1257,11 @@ class Document(MDDocument):
         coord: tuple | list | str,
         default: str = "#ffffff",
     ) -> str:
-        """Return the background color of a table cell of a .ods document,
-        from the cell style, or from the row or column.
+        """Return the background color of a table cell of a .ods document, from
+        the cell style, or from the row or column.
 
-        If color is not defined, return default value."""
+        If color is not defined, return default value.
+        """
         found = self.get_cell_style_properties(table, coord).get("fo:background-color")
         return found or default
 
@@ -1299,8 +1310,8 @@ class Document(MDDocument):
             return name
 
     def set_table_displayed(self, table: str | int, displayed: bool) -> None:
-        """Set the table:display property of the style of the table, ie if
-        the table should be displayed in a graphical interface.
+        """Set the table:display property of the style of the table, ie if the
+        table should be displayed in a graphical interface.
 
         Note: that method replaces the broken Table.displayd() method from previous
         odfdo versions.
@@ -1340,8 +1351,8 @@ class Document(MDDocument):
         return self.styles.default_language
 
     def set_language(self, language: str) -> None:
-        """Set the default language of the document, both in
-        styles and metadata.
+        """Set the default language of the document, both in styles and
+        metadata.
 
         (Also available as "Document.language" property.)
 
@@ -1363,8 +1374,8 @@ class Document(MDDocument):
 
     @property
     def language(self) -> str | None:
-        """Get or set the default language of the document, both in
-        styles and metadata.
+        """Get or set the default language of the document, both in styles and
+        metadata.
 
         Return: str
         """

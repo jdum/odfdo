@@ -196,7 +196,7 @@ def pretty_indent(
     ending_level: int = 0,
     textual_parent: bool = False,
 ) -> _ElementTree | _Element:
-    """Return an indented _ElementTree"""
+    """Return an indented _ElementTree."""
     nb_child = len(elem)
     follow_level = level + 1
     tag = f"{elem.prefix}:{elem.tag.rpartition('}')[2]}"
@@ -363,7 +363,10 @@ class Container:
         return timestamp
 
     def _get_zip_part(self, name: str) -> bytes | None:
-        """Get bytes of a part from the Zip ODF file. No cache."""
+        """Get bytes of a part from the Zip ODF file.
+
+        No cache.
+        """
         if self.path is None:
             raise ValueError("Document path is not defined")
         try:
@@ -375,7 +378,10 @@ class Container:
             return None
 
     def _get_all_zip_part(self) -> None:
-        """Read all parts. No cache."""
+        """Read all parts.
+
+        No cache.
+        """
         if self.path is None:
             raise ValueError("Document path is not defined")
         try:

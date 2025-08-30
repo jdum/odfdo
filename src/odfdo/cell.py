@@ -113,8 +113,8 @@ class Cell(ElementTyped):
         self,
     ) -> str | _bool | _int | _float | Decimal | _date | _datetime | timedelta | None:
         """Set / get the value of the cell. The type is read from the
-        'office:value-type' attribute of the cell. When setting the value,
-        the type of the value will determine the new value_type of the cell.
+        'office:value-type' attribute of the cell. When setting the value, the
+        type of the value will determine the new value_type of the cell.
 
         Warning:
             - for date, datetime and timedelta, a default text value is generated.
@@ -404,8 +404,8 @@ class Cell(ElementTyped):
 
     @property
     def type(self) -> str | None:
-        """Get / set the type of the cell: boolean, float, date, string
-        or time.
+        """Get / set the type of the cell: boolean, float, date, string or
+        time.
 
         Return: str | None
         """
@@ -428,8 +428,10 @@ class Cell(ElementTyped):
         self.set_attribute("office:currency", currency)
 
     def _set_repeated(self, repeated: _int | None) -> None:
-        """Internal only. Set the numnber of times the cell is repeated, or
-        None to delete. Without changing cache.
+        """Internal only.
+
+        Set the numnber of times the cell is repeated, or None to delete.
+        Without changing cache.
         """
         if repeated is None or repeated < 2:
             with contextlib.suppress(KeyError):
@@ -494,8 +496,8 @@ class Cell(ElementTyped):
         self.set_attribute("table:formula", formula)
 
     def is_empty(self, aggressive: _bool = False) -> _bool:
-        """Return whether the cell has no value or the value evaluates
-        to False (empty string), and no style.
+        """Return whether the cell has no value or the value evaluates to False
+        (empty string), and no style.
 
         If aggressive is True, empty cells with style are considered empty.
 
@@ -548,8 +550,8 @@ class Cell(ElementTyped):
     _is_spanned = is_spanned  # compatibility
 
     def span_area(self) -> tuple[_int, _int]:
-        """Return the tuple (nb_columns, nb_rows) of the zone covered
-        by a spanned cell.
+        """Return the tuple (nb_columns, nb_rows) of the zone covered by a
+        spanned cell.
 
         If the cell is not spanned, return (0,0).
 

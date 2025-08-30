@@ -36,9 +36,10 @@ class RowGroup(Element):
 
     Partial implementation.
 
-    The "table:table-row-group" element groups adjacent table rows.
-    Every row group can contain header rows, and nested row groups.
-    A row group can be visible or hidden."""
+    The "table:table-row-group" element groups adjacent table rows. Every row
+    group can contain header rows, and nested row groups. A row group can be
+    visible or hidden.
+    """
 
     # TODO
     _tag = "table:table-row-group"
@@ -49,8 +50,8 @@ class RowGroup(Element):
         width: int | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a group of rows, "table:table-row-group", optionnaly
-        filled with "height" number of rows, of "width" cells each.
+        """Create a group of rows, "table:table-row-group", optionnaly filled
+        with "height" number of rows, of "width" cells each.
 
         Row group bear style information applied to a series of rows.
 

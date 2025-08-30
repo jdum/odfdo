@@ -47,8 +47,8 @@ class Content(XmlPart):
     # Public API
 
     def get_styles(self, family: str | None = None) -> list[Style]:
-        """Return the list of styles in the Content part, optionally limited
-        to the given family.
+        """Return the list of styles in the Content part, optionally limited to
+        the given family.
 
         Arguments:
 
@@ -69,8 +69,8 @@ class Content(XmlPart):
         name_or_element: str | Element | None = None,
         display_name: str | None = None,
     ) -> Style | None:
-        """Return the style uniquely identified by the name/family pair. If
-        the argument is already a style object, it will return it.
+        """Return the style uniquely identified by the name/family pair. If the
+        argument is already a style object, it will return it.
 
         If the name is None, the default style is fetched.
 

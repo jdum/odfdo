@@ -34,15 +34,14 @@ from .mixin_md import MDTab
 class Tab(MDTab, Element):
     """Representation of a tabulation, "text:tab".
 
-    This element represents the [UNICODE] tab character (HORIZONTAL
-    TABULATION, U+0009).
+    This element represents the [UNICODE] tab character (HORIZONTAL TABULATION,
+    U+0009).
 
-    The position attribute contains the number of the tab-stop to which
-    a tab character refers. The position 0 marks the start margin of a
-    paragraph. Note: The position attribute is only a hint to help non-layout
-    oriented consumers to determine the tab/tab-stop association. Layout
-    oriented consumers should determine the tab positions based on the style
-    information
+    The position attribute contains the number of the tab-stop to which a tab
+    character refers. The position 0 marks the start margin of a paragraph.
+    Note: The position attribute is only a hint to help non-layout oriented
+    consumers to determine the tab/tab-stop association. Layout oriented
+    consumers should determine the tab positions based on the style information
     """
 
     _tag = "text:tab"

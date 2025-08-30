@@ -31,7 +31,8 @@ pc: pica
 in: inch
 inch: inch
 ft: foot
-mi: mile"""
+mi: mile
+"""
 
 from __future__ import annotations
 

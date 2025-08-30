@@ -76,7 +76,8 @@ def rgb2hex(color: str | tuple[int, int, int]) -> str:
 
 
 def hexa_color(color: str | tuple[int, int, int] | None = None) -> str | None:
-    """Safe conversion from color tuple or string to hexadecimal representation.
+    """Safe conversion from color tuple or string to hexadecimal
+    representation.
 
     Empty string is converted to black.
     None is converted to None.

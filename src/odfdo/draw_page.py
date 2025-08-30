@@ -52,8 +52,7 @@ class DrawPage(Element):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """
-        ODF draw page for presentations and drawings, "draw:page".
+        """ODF draw page for presentations and drawings, "draw:page".
 
         Arguments:
 

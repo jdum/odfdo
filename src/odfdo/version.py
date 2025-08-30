@@ -18,8 +18,7 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Version number of the package.
-"""
+"""Version number of the package."""
 from __future__ import annotations
 
 try:

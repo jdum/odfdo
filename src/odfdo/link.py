@@ -55,8 +55,7 @@ class Link(MDLink, ParaFormattedTextMixin, Element):
         visited_style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """
-        Representation of a link (URL), "text:a".
+        """Representation of a link (URL), "text:a".
 
         Arguments:
 

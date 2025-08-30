@@ -32,7 +32,8 @@ if TYPE_CHECKING:
 
 
 class Reference(Element):
-    """A reference to a content marked by a reference mark, "text:reference-ref"."
+    """A reference to a content marked by a reference mark, "text:reference-
+    ref".".
 
     The odf_reference element ("text:reference-ref") represents a field that
     references a "text:reference-mark-start" or "text:reference-mark" element.
@@ -145,9 +146,11 @@ class Reference(Element):
         self.set_attribute("text:reference-format", ref_format)
 
     def update(self) -> None:
-        """Update the content of the reference text field. Currently only
-        'text' format is implemented. Other values, for example the 'page' text
-        field, may need to be refreshed through a visual ODF parser.
+        """Update the content of the reference text field.
+
+        Currently only 'text' format is implemented. Other values, for example
+        the 'page' text field, may need to be refreshed through a visual ODF
+        parser.
         """
         ref_format = self.ref_format
         if ref_format != "text":
@@ -213,7 +216,9 @@ class ReferenceMarkEnd(Element):
             self.name = name
 
     def referenced_text(self) -> str:
-        """Return the text between reference-mark-start and reference-mark-end."""
+        """Return the text between reference-mark-start and reference-mark-
+        end.
+        """
         name = self.name
         request = (
             f"//text()"
@@ -247,7 +252,9 @@ class ReferenceMarkStart(Element):
             self.name = name
 
     def referenced_text(self) -> str:
-        """Return the text between reference-mark-start and reference-mark-end."""
+        """Return the text between reference-mark-start and reference-mark-
+        end.
+        """
         name = self.name
         request = (
             f"//text()"
@@ -266,9 +273,8 @@ class ReferenceMarkStart(Element):
     ) -> Element | list | str | None:
         """Return the document content between the start and end tags of the
         reference. The content returned by this method can spread over several
-        headers and paragraphs.
-        By default, the content is returned as an "office:text" odf element.
-
+        headers and paragraphs. By default, the content is returned as an
+        "office:text" odf element.
 
         Arguments:
 
@@ -340,6 +346,7 @@ ReferenceMarkStart._define_attribut_property()
 def strip_references(element: Element) -> Element | list:
     """Remove all the 'text:reference-ref' tags of the element, keeping inner
     sub elements (for example the referenced value if format is 'text').
+
     Nota : using the .delete() on the reference mark will delete inner content.
     """
     to_strip = ("text:reference-ref",)
@@ -349,6 +356,7 @@ def strip_references(element: Element) -> Element | list:
 def remove_all_reference_marks(element: Element) -> Element | list:
     """Remove all the 'text:reference-mark', 'text:reference-mark-start', and
     'text:reference-mark-end' tags of the element, keeping inner sub elements.
+
     Nota : using the .delete() on the reference mark will delete inner content.
     """
     to_strip = (
@@ -367,6 +375,7 @@ def remove_reference_mark(
     """Remove the 'text:reference-mark', 'text:reference-mark-start', and
     'text:reference-mark-end' tags of the element, identified by name or
     position, keeping inner sub elements.
+
     Nota : using the .delete() on the reference mark will delete inner content.
     """
     start_ref = element.get_reference_mark(position=position, name=name)

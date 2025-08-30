@@ -18,8 +18,8 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
-"""Classes for ODF implementation of SMIL (Synchronized Multimedia
-Integration Language).
+"""Classes for ODF implementation of SMIL (Synchronized Multimedia Integration
+Language).
 """
 
 from __future__ import annotations
@@ -68,8 +68,8 @@ AnimPar._define_attribut_property()
 class AnimSeq(Element):
     """Container for SMIL Presentation Animations, "anim:seq".
 
-    Animations inside this block are executed after the slide
-    has executed its initial transition.
+    Animations inside this block are executed after the slide has executed its
+    initial transition.
     """
 
     _tag = "anim:seq"

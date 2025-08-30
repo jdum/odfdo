@@ -101,7 +101,9 @@ IndexTitle._define_attribut_property()
 
 
 class TabStopStyle(Element):
-    """Base style for a TOC entryBase style for a TOC entry, "style:tab-stop"."""
+    """Base style for a TOC entryBase style for a TOC entry, "style:tab-
+    stop".
+    """
 
     _tag = "style:tab-stop"
     _properties = (
@@ -129,7 +131,9 @@ class TabStopStyle(Element):
         style_type: str | None = None,
         **kwargs: Any,
     ):
-        """Create style for a TOC entryBase style for a TOC entry "style:tab-stop"."""
+        """Create style for a TOC entryBase style for a TOC entry "style:tab-
+        stop".
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if style_char:
@@ -494,7 +498,8 @@ class TocEntryTemplate(Element):
         outline_level: int | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create template for entry of TOC "text:table-of-content-entry-template".
+        """Create template for entry of TOC "text:table-of-content-entry-
+        template".
 
         Arguments:
 

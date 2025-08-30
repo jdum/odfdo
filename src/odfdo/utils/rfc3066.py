@@ -23,7 +23,8 @@ from string import ascii_letters, digits
 
 
 def is_RFC3066(lang: str) -> bool:
-    """Check that the argument is in the format "language-country" or "language".
+    """Check that the argument is in the format "language-country" or
+    "language".
 
     Check that "language" and "country" are two or three long ASCII strings
     representing a valid language and country according to RFC 3066.

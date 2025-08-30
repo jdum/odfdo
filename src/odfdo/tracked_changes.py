@@ -113,14 +113,13 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
 class TextInsertion(Element):
     """Informations on a text insertion, "text:insertion".
 
-    The TextInsertion "text:insertion" element contains the information
-    that identifies the person responsible for a change and the date of
-    that change. This information may also contain one or more "text:p"
-    Paragraph which contain a comment on the insertion. The
-    TextInsertion element's parent "text:changed-region" element has an
-    xml:id or text:id attribute, the value of which binds that parent
-    element to the text:change-id attribute on the "text:change-start"
-    and "text:change-end" elements.
+    The TextInsertion "text:insertion" element contains the information that
+    identifies the person responsible for a change and the date of that change.
+    This information may also contain one or more "text:p" Paragraph which
+    contain a comment on the insertion. The TextInsertion element's parent
+    "text:changed-region" element has an xml:id or text:id attribute, the value
+    of which binds that parent element to the text:change-id attribute on the
+    "text:change-start" and "text:change-end" elements.
     """
 
     _tag = "text:insertion"
@@ -185,11 +184,10 @@ class TextInsertion(Element):
         date: datetime | None = None,
         comments: Element | list[Element] | None = None,
     ) -> None:
-        """Set the ChangeInfo element for the change element. If change_info
-        is not provided, creator, date and comments will be used to build a
-        suitable change info element. Default for creator is 'Unknown',
-        default for date is current time and default for comments is no
-        comment at all.
+        """Set the ChangeInfo element for the change element. If change_info is
+        not provided, creator, date and comments will be used to build a
+        suitable change info element. Default for creator is 'Unknown', default
+        for date is current time and default for comments is no comment at all.
         The new change info element will replace any existant ChangeInfo.
 
         Arguments:
@@ -297,9 +295,9 @@ class TextDeletion(TextInsertion):
         return inner
 
     def set_deleted(self, paragraph_or_list: Element | list[Element]) -> None:
-        """Set the deleted informations stored in the TextDeletion. An
-        actual content that was deleted is expected, embeded in a Paragraph
-        element or Header.
+        """Set the deleted informations stored in the TextDeletion. An actual
+        content that was deleted is expected, embeded in a Paragraph element or
+        Header.
 
         Arguments:
 
@@ -366,8 +364,7 @@ class TextChangedRegion(Element):
     _tag = "text:changed-region"
 
     def get_change_info(self) -> Element | None:
-        """Shortcut to get the ChangeInfo element of the change
-        element child.
+        """Shortcut to get the ChangeInfo element of the change element child.
 
         Return: ChangeInfo element.
         """
@@ -441,15 +438,14 @@ class TextChangedRegion(Element):
 class TrackedChanges(MDZap, Element):
     """A tracked change, "text:tracked-changes".
 
-    The TrackedChanges "text:tracked-changes" element acts as a container
-    for TextChangedRegion elements that represent changes in a certain
-    scope of an OpenDocument document. This scope is the element in which
-    the TrackedChanges element occurs. Changes in this scope shall be
-    tracked by TextChangedRegion elements contained in the
-    TrackedChanges element in this scope. If a TrackedChanges
-    element is absent, there are no tracked changes in the corresponding
-    scope. In this case, all change mark elements in this scope shall be
-    ignored.
+    The TrackedChanges "text:tracked-changes" element acts as a container for
+    TextChangedRegion elements that represent changes in a certain scope of an
+    OpenDocument document. This scope is the element in which the
+    TrackedChanges element occurs. Changes in this scope shall be tracked by
+    TextChangedRegion elements contained in the TrackedChanges element in this
+    scope. If a TrackedChanges element is absent, there are no tracked changes
+    in the corresponding scope. In this case, all change mark elements in this
+    scope shall be ignored.
     """
 
     _tag = "text:tracked-changes"
@@ -499,8 +495,8 @@ class TrackedChanges(MDZap, Element):
 class TextChange(Element):
     """A text change position, "text:change".
 
-    The TextChange "text:change" element marks a position in an empty
-    region where text has been deleted.
+    The TextChange "text:change" element marks a position in an empty region
+    where text has been deleted.
     """
 
     _tag = "text:change"
@@ -551,8 +547,8 @@ class TextChange(Element):
         no_header: bool = False,
         clean: bool = True,
     ) -> Element | None:
-        """Shortcut to get the deleted informations stored in the
-        TextDeletion stored in the tracked changes.
+        """Shortcut to get the deleted informations stored in the TextDeletion
+        stored in the tracked changes.
 
         Return: Paragraph (or None)."
         """
@@ -585,9 +581,8 @@ class TextChange(Element):
 class TextChangeEnd(TextChange):
     """End of a changed region, "text:change-end".
 
-    The TextChangeEnd "text:change-end" element marks the end of a region
-    with content where text has been inserted or the format has been
-    changed.
+    The TextChangeEnd "text:change-end" element marks the end of a region with
+    content where text has been inserted or the format has been changed.
     """
 
     _tag = "text:change-end"
@@ -653,9 +648,8 @@ class TextChangeEnd(TextChange):
 class TextChangeStart(TextChangeEnd):
     """Start of a changed region, "text:change-start".
 
-    The TextChangeStart "text:change-start" element marks the start of a
-    region with content where text has been inserted or the format has
-    been changed.
+    The TextChangeStart "text:change-start" element marks the start of a region
+    with content where text has been inserted or the format has been changed.
     """
 
     _tag = "text:change-start"

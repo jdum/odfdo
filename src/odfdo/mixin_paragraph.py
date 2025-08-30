@@ -291,8 +291,8 @@ class ParaMixin(Element):
         return result
 
     def append_plain_text(self, text: str | bytes | None = "") -> None:
-        """Append plain text to the paragraph, replacing <CR>, <TAB>
-        and multiple spaces by ODF corresponding tags.
+        """Append plain text to the paragraph, replacing <CR>, <TAB> and
+        multiple spaces by ODF corresponding tags.
         """
         if text is None:
             stext = ""
@@ -540,9 +540,9 @@ class ParaMixin(Element):
         """Insert a reference mark, at the position defined by the regex
         (before, after, content) or by positionnal argument (position). If
         content is provided, the annotation covers the full range content regex
-        (instances of ReferenceMarkStart and ReferenceMarkEnd are
-        created). Else, an instance of ReferenceMark is positionned either
-        'before' or 'after' provided regex.
+        (instances of ReferenceMarkStart and ReferenceMarkEnd are created).
+        Else, an instance of ReferenceMark is positionned either 'before' or
+        'after' provided regex.
 
         If content is an ODF Element (ie: Paragraph, Span, ...), the full inner
         content is referenced (of the position just after if content is a single
@@ -703,8 +703,8 @@ class ParaMixin(Element):
     def remove_spans(self, keep_heading: bool = True) -> Element:
         """Return copy of the element, without span styles.
 
-        If keep_heading is True (default), the first level heading style is left
-        unchanged.
+        If keep_heading is True (default), the first level heading style is
+        left unchanged.
         """
         strip = ("text:span",)
         if keep_heading:
@@ -759,7 +759,7 @@ class ParaMixin(Element):
 
     def remove_link(self, links: Link | list[Link]) -> Element:
         """Return a copy of the element (not a clone), with the sub links
-           removed.
+        removed.
 
         Arguments:
 
@@ -777,12 +777,11 @@ class ParaMixin(Element):
         display: str | None = None,
     ) -> None:
         """Create and insert a reference to a content marked by a reference
-        mark. The Reference element ("text:reference-ref") represents a
-        field that references a "text:reference-mark-start" or
-        "text:reference-mark" element. Its "text:reference-format" attribute
-        specifies what is displayed from the referenced element. Default is
-        'page'. Actual content is not automatically updated except for the 'text'
-        format.
+        mark. The Reference element ("text:reference-ref") represents a field
+        that references a "text:reference-mark-start" or "text:reference-mark"
+        element. Its "text:reference-format" attribute specifies what is
+        displayed from the referenced element. Default is 'page'. Actual
+        content is not automatically updated except for the 'text' format.
 
         name is mandatory and should represent an existing reference mark of the
         document.
@@ -839,9 +838,9 @@ class ParaMixin(Element):
     ) -> Element | tuple[Element, Element]:
         """Insert a bookmark before or after the characters in the text which
         match the regex before/after. When the regex matches more of one part
-        of the text, position can be set to choose which part must be used.
-        If before and after are None, we use only position that is the number
-        of characters.
+        of the text, position can be set to choose which part must be used. If
+        before and after are None, we use only position that is the number of
+        characters.
 
         So, by default, this function inserts a bookmark before the first
         character of the content. Role can be None, "start" or "end", we

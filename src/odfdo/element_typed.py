@@ -181,7 +181,8 @@ class ElementTyped(Element):
     ) -> Any:
         """Return Python typed value.
 
-        Only for "with office:value-type" elements, not for meta fields."""
+        Only for "with office:value-type" elements, not for meta fields.
+        """
         if value_type == "string":
             return self._get_typed_value_string(try_get_text)
         method = getattr(self, f"_get_typed_value_{value_type}", None)

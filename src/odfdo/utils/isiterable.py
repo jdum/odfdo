@@ -27,7 +27,9 @@ from typing import Any
 
 
 def isiterable(instance: Any) -> bool:
-    """Return True if instance is iterable, but considering str and bytes as not iterable."""
+    """Return True if instance is iterable, but considering str and bytes as
+    not iterable.
+    """
     if isinstance(instance, (str, bytes)):
         return False
     return isinstance(instance, Iterable)

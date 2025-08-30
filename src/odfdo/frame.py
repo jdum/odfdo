@@ -50,8 +50,8 @@ def default_frame_position_style(
 
     Default arguments should be enough.
 
-    Use the returned Style as the frame style or build a new graphic style
-    with this style as the parent.
+    Use the returned Style as the frame style or build a new graphic style with
+    this style as the parent.
     """
     return Style(
         family="graphic",
@@ -90,7 +90,7 @@ class AnchorMix:
 
     @property
     def anchor_page(self) -> int | None:
-        """getter/setter for the number of the page when the anchor type is
+        """Getter/setter for the number of the page when the anchor type is
         'page'.
 
         type : int or None
@@ -111,8 +111,8 @@ class PosMix:
     Setting the position may require a specific style for actual display on
     some graphical rendering softwares.
 
-    Position is a (left, top) tuple with items including the unit,
-    e.g. ('10cm', '15cm').
+    Position is a (left, top) tuple with items including the unit, e.g.
+    ('10cm', '15cm').
     """
 
     @property
@@ -128,7 +128,7 @@ class PosMix:
 
 
 class ZMix:
-    """z-index position.
+    """Z-index position.
 
     z-index is an integer.
     """
@@ -149,8 +149,8 @@ class ZMix:
 class SizeMix:
     """Size of the frame.
 
-    Size is a (width, height) tuple with items including the unit,
-    e.g. ('10cm', '15cm').
+    Size is a (width, height) tuple with items including the unit, e.g.
+    ('10cm', '15cm').
     """
 
     @property
@@ -167,8 +167,8 @@ class SizeMix:
 class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
     """ODF Frame, "draw:frame".
 
-    Frames are not useful by themselves. Consider calling
-    Frame.image_frame() or Frame.text_frame directly.
+    Frames are not useful by themselves. Consider calling Frame.image_frame()
+    or Frame.text_frame directly.
     """
 
     _tag = "draw:frame"
@@ -200,8 +200,7 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
         presentation_style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """
-        ODF Frame, "draw:frame".
+        """ODF Frame, "draw:frame".
 
         Frames are not useful by themselves. Consider calling
         Frame.image_frame() or Frame.text_frame directly.
@@ -338,8 +337,8 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
         presentation_style: str | None = None,
         **kwargs: Any,
     ) -> Element:
-        """Create a ready-to-use text box, since text box must be embedded in
-        a frame.
+        """Create a ready-to-use text box, since text box must be embedded in a
+        frame.
 
         The optionnal text will appear above the image.
 

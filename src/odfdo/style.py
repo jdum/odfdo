@@ -593,9 +593,9 @@ class Style(Element):
 
     def get_properties(self, area: str | None = None) -> dict[str, str | dict] | None:
         """Get the mapping of all properties of this style. By default the
-        properties of the same family, e.g. a paragraph style and its
-        paragraph properties. Specify the area to get the text properties of
-        a paragraph style for example.
+        properties of the same family, e.g. a paragraph style and its paragraph
+        properties. Specify the area to get the text properties of a paragraph
+        style for example.
 
         Arguments:
 
@@ -675,10 +675,10 @@ class Style(Element):
         area: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Set the properties of the "area" type of this style. Properties
-        are given either as a dict or as named arguments (or both). The area
-        is identical to the style family by default. If the properties
-        element is missing, it is created.
+        """Set the properties of the "area" type of this style. Properties are
+        given either as a dict or as named arguments (or both). The area is
+        identical to the style family by default. If the properties element is
+        missing, it is created.
 
         Instead of properties, you can pass a style with properties of the
         same area. These will be copied.
@@ -721,9 +721,9 @@ class Style(Element):
         properties: list[str] | None = None,
         area: str | None = None,
     ) -> None:
-        """Delete the given properties, either by list argument or
-        positional argument (or both). Remove only from the given area,
-        identical to the style family by default.
+        """Delete the given properties, either by list argument or positional
+        argument (or both). Remove only from the given area, identical to the
+        style family by default.
 
         Arguments:
 
@@ -752,8 +752,8 @@ class Style(Element):
         opacity: str | None = None,
         filter: str | None = None,  # noqa: A002
     ) -> None:
-        """Set the background color of a text style, or the background color
-        or image of a paragraph style or page layout.
+        """Set the background color of a text style, or the background color or
+        image of a paragraph style or page layout.
 
         With no argument, remove any existing background.
 
@@ -1019,8 +1019,8 @@ class Style(Element):
         self,
         text_or_element: str | Element | list[Element | str],
     ) -> None:
-        """Create or replace the header by the given content. It can already
-        be a complete header.
+        """Create or replace the header by the given content. It can already be
+        a complete header.
 
         If you only want to update the existing header, get it and use the
         API.
@@ -1046,8 +1046,8 @@ class Style(Element):
         self,
         text_or_element: str | Element | list[Element | str],
     ) -> None:
-        """Create or replace the footer by the given content. It can already
-        be a complete footer.
+        """Create or replace the footer by the given content. It can already be
+        a complete footer.
 
         If you only want to update the existing footer, get it and use the
         API.

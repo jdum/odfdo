@@ -228,8 +228,8 @@ class NamedRange(Element):
         self,
         crange: str | tuple[int, int] | tuple[int, int, int, int] | list[int],
     ) -> None:
-        """Set the range of the named range. Range can be either one cell
-        (like 'A1') or an area ('A1:B2'). It can be provided as an alpha numeric
+        """Set the range of the named range. Range can be either one cell (like
+        'A1') or an area ('A1:B2'). It can be provided as an alpha numeric
         value like "A1:B2' or a tuple like (0, 0, 1, 1) or (0, 0).
 
         Arguments:
@@ -271,8 +271,9 @@ class NamedRange(Element):
         get_type: bool = False,
         flat: bool = False,
     ) -> list:
-        """Shortcut to retrieve the values of the cells of the named range. See
-        table.get_values() for the arguments description and return format.
+        """Shortcut to retrieve the values of the cells of the named range.
+
+        See table.get_values() for the arguments description and return format.
         """
         body = self.document_body
         if not body:
@@ -284,6 +285,7 @@ class NamedRange(Element):
 
     def get_value(self, get_type: bool = False) -> Any:
         """Shortcut to retrieve the value of the first cell of the named range.
+
         See table.get_value() for the arguments description and return format.
         """
         body = self.document_body
@@ -302,6 +304,7 @@ class NamedRange(Element):
         currency: str | None = None,
     ) -> None:
         """Shortcut to set the values of the cells of the named range.
+
         See table.set_values() for the arguments description.
         """
         body = self.document_body
@@ -326,6 +329,7 @@ class NamedRange(Element):
         style: str | None = None,
     ) -> None:
         """Shortcut to set the value of the first cell of the named range.
+
         See table.set_value() for the arguments description.
         """
         body = self.document_body

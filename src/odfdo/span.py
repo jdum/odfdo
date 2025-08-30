@@ -53,8 +53,8 @@ class Span(MDSpan, MDParagraph, ParaFormattedTextMixin, ParaMixin, Element):
         formatted: bool = True,
         **kwargs: Any,
     ) -> None:
-        """Create a span element "text:span" of the given style containing the optional
-        given text.
+        """Create a span element "text:span" of the given style containing the
+        optional given text.
 
         If "formatted" is True (the default), the given text is appended with <CR>,
         <TAB> and multiple spaces replaced by ODF corresponding tags.

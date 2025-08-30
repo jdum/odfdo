@@ -67,7 +67,7 @@ class Date:
 
     @staticmethod
     def encode(value: datetime | date) -> str:
-        """Return text formated as "2024-01-31" """
+        """Return text formated as "2024-01-31"."""
         if isinstance(value, datetime):
             return value.date().isoformat()
         # date instance
@@ -112,7 +112,9 @@ class DateTime:
 
 
 class Duration:
-    """Conversion between ODF duration (ISO8601 format) and Python timedelta."""
+    """Conversion between ODF duration (ISO8601 format) and Python
+    timedelta.
+    """
 
     @staticmethod
     def decode(data: str) -> timedelta:

@@ -680,7 +680,7 @@ class Table(MDTable, Element):
 
     @property
     def style(self) -> str | None:
-        """Get / set the style of the table
+        """Get / set the style of the table.
 
         Return: str
         """
@@ -826,8 +826,8 @@ class Table(MDTable, Element):
         cell_type: str | None = None,
         currency: str | None = None,
     ) -> None:
-        """Set the value of cells in the table, from the 'coord' position
-        with values.
+        """Set the value of cells in the table, from the 'coord' position with
+        values.
 
         'coord' is the coordinate of the upper left cell to be modified by
         values. If 'coord' is None, default to the position (0,0) ("A1").
@@ -883,8 +883,8 @@ class Table(MDTable, Element):
 
     def rstrip(self, aggressive: bool = False) -> None:
         """Remove *in-place* empty rows below and empty cells at the right of
-        the table. Cells are empty if they contain no value or it evaluates
-        to False, and no style.
+        the table. Cells are empty if they contain no value or it evaluates to
+        False, and no style.
 
         If aggressive is True, empty cells with style are removed too.
 
@@ -934,7 +934,9 @@ class Table(MDTable, Element):
 
     def optimize_width(self) -> None:
         """Remove *in-place* empty rows below and empty cells at the right of
-        the table. Keep repeated styles of empty cells but minimize row width.
+        the table.
+
+        Keep repeated styles of empty cells but minimize row width.
         """
         self._optimize_width_trim_rows()
         width = self._optimize_width_length()
@@ -1268,8 +1270,8 @@ class Table(MDTable, Element):
     def insert_row(
         self, y: str | int, row: Row | None = None, clone: bool = True
     ) -> Row:
-        """Insert the row before the given "y" position. If no row is given,
-        an empty one is created.
+        """Insert the row before the given "y" position. If no row is given, an
+        empty one is created.
 
         Position start at 0. So cell A4 is on row 3.
 
@@ -1326,8 +1328,8 @@ class Table(MDTable, Element):
         clone: bool = True,
         _repeated: int | None = None,
     ) -> Row:
-        """Append the row at the end of the table. If no row is given, an
-        empty one is created.
+        """Append the row at the end of the table. If no row is given, an empty
+        one is created.
 
         Position start at 0. So cell A4 is on row 3.
 
@@ -1472,8 +1474,8 @@ class Table(MDTable, Element):
         return self.set_row(y, row)  # needed if clones rows
 
     def set_row_cells(self, y: int | str, cells: list | None = None) -> Row:
-        """Shortcut to set *all* the cells of the row at the given
-        "y" position.
+        """Shortcut to set *all* the cells of the row at the given "y"
+        position.
 
         Position start at 0. So cell A4 is on row 3.
 
@@ -1494,8 +1496,8 @@ class Table(MDTable, Element):
         return self.set_row(y, row)  # needed if clones rows
 
     def is_row_empty(self, y: int | str, aggressive: bool = False) -> bool:
-        """Return wether every cell in the row at the given "y" position has
-        no value or the value evaluates to False (empty string), and no style.
+        """Return wether every cell in the row at the given "y" position has no
+        value or the value evaluates to False (empty string), and no style.
 
         Position start at 0. So cell A4 is on row 3.
 
@@ -1521,8 +1523,8 @@ class Table(MDTable, Element):
         content: str | None = None,
         flat: bool = False,
     ) -> list:
-        """Get the cells matching the criteria. If 'coord' is None,
-        parse the whole table, else parse the area defined by 'coord'.
+        """Get the cells matching the criteria. If 'coord' is None, parse the
+        whole table, else parse the area defined by 'coord'.
 
         Filter by  cell_type = "all"  will retrieve cells of any
         type, aka non empty cells.
@@ -1796,7 +1798,6 @@ class Table(MDTable, Element):
             currency -- three-letter str
 
             style -- str
-
         """
         self.set_cell(
             coord,
@@ -1881,8 +1882,8 @@ class Table(MDTable, Element):
         cell: Cell | None = None,
         clone: bool = True,
     ) -> Cell:
-        """Insert the given cell at the given coordinates. If no cell is
-        given, an empty one is created.
+        """Insert the given cell at the given coordinates. If no cell is given,
+        an empty one is created.
 
         Coordinates are either a 2-uplet of (x, y) starting from 0, or a
         human-readable position like "C4".
@@ -1989,8 +1990,8 @@ class Table(MDTable, Element):
         start: int | None = None,
         end: int | None = None,
     ) -> Iterator[Column]:
-        """Yield as many column elements as expected columns in the table,
-        i.e. expand repetitions by returning the same column as many times as
+        """Yield as many column elements as expected columns in the table, i.e.
+        expand repetitions by returning the same column as many times as
         necessary.
 
             Arguments:
@@ -2191,8 +2192,8 @@ class Table(MDTable, Element):
         column: Column | None = None,
         _repeated: int | None = None,
     ) -> Column:
-        """Append the column at the end of the table. If no column is given,
-        an empty one is created.
+        """Append the column at the end of the table. If no column is given, an
+        empty one is created.
 
         ODF columns don't contain cells, only style information.
 
@@ -2322,8 +2323,8 @@ class Table(MDTable, Element):
         complete: bool = True,
         get_type: bool = False,
     ) -> list[Any]:
-        """Shortcut to get the list of Python values for the cells at the
-        given position.
+        """Shortcut to get the list of Python values for the cells at the given
+        position.
 
         Position start at 0. So cell C4 is on column 2. Alphabetical position
         like "C" is accepted.
@@ -2751,8 +2752,8 @@ class Table(MDTable, Element):
         **fmtparams: Any,
     ) -> Table:
         """Import the CSV text content into a Table. If the path_or_file
-        parameter is a Path or a string, it is opened as a path. Else a
-        opened file-like is expected.
+        parameter is a Path or a string, it is opened as a path. Else a opened
+        file-like is expected.
 
         CSV format can be autodetected to a certain limit. Use **fmtparams to
         define cvs.reader parameters.
@@ -2793,8 +2794,8 @@ def import_from_csv(
     style: str | None = None,
     **fmtparams: Any,
 ) -> Table:
-    """Import the CSV file into a Table. If the path_or_file parameter is
-    a Path or a string, it is opened as a path. Else a opened file-like is
+    """Import the CSV file into a Table. If the path_or_file parameter is a
+    Path or a string, it is opened as a path. Else a opened file-like is
     expected.
 
     CSV format can be autodetected to a certain limit. Use **fmtparams to

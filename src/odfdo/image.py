@@ -18,8 +18,9 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""DrawImage class for "draw:image" tag and DrawFillImage for
-"draw:fill-image" tag."""
+"""DrawImage class for "draw:image" tag and DrawFillImage for "draw:fill-image"
+tag.
+"""
 
 from __future__ import annotations
 
@@ -29,12 +30,10 @@ from .element import Element, PropDef, register_element_class
 
 
 class DrawImage(Element):
-    """
-    An ODF image, "draw:image".
+    """An ODF image, "draw:image".
 
-    The "draw:image" element represents an image. An image can be
-    either a link to an external resource or most often embedded into
-    the document.
+    The "draw:image" element represents an image. An image can be either a link
+    to an external resource or most often embedded into the document.
     """
 
     _tag = "draw:image"
@@ -109,8 +108,7 @@ class DrawFillImage(DrawImage):
         width: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """
-        A link to a bitmap resource, "draw:fill-image".
+        """A link to a bitmap resource, "draw:fill-image".
 
         The "draw:fill-image" element specifies a link to a bitmap
         resource. Fill image are not available as automatic styles.

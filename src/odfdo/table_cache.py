@@ -59,7 +59,7 @@ def _insert_map_once(
     odf_idx: int,
     repeated: int,
 ) -> list[int]:
-    """Add an item (cell or row) to the map
+    """Add an item (cell or row) to the map.
 
         map  --  cache map
 
@@ -87,7 +87,7 @@ def _insert_map_once(
 
 
 def _erase_map_once(cache_map: list[int], odf_idx: int) -> list[int]:
-    """Remove an item (cell or row) from the map
+    """Remove an item (cell or row) from the map.
 
     map  --  cache map
 
@@ -155,8 +155,8 @@ def _set_item_in_vault(
     vault_scheme: XPath,
     clone: bool = True,
 ) -> tuple[list[int], Cell | Row | Column]:
-    """Set the item (cell, row) in its vault (row, table), updating the
-    cache map.
+    """Set the item (cell, row) in its vault (row, table), updating the cache
+    map.
     """
     repeated = item.repeated or 1
     target_idx = vault.index(current_item)

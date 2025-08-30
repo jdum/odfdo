@@ -809,8 +809,8 @@ class Element(MDBase):
         ]
 
     def get_element(self, xpath_query: str) -> Element | None:
-        """Returns the first element obtained from the XPath query applied
-        to the current element.
+        """Returns the first element obtained from the XPath query applied to
+        the current element.
 
         Return an Element or None.
         """
@@ -945,8 +945,8 @@ class Element(MDBase):
         self.__element.tail = text or ""
 
     def search(self, pattern: str) -> int | None:
-        """Return the first position of the pattern in the text content of
-        the element, or None if not found.
+        """Return the first position of the pattern in the text content of the
+        element, or None if not found.
 
         Python regular expression syntax applies.
 
@@ -962,8 +962,8 @@ class Element(MDBase):
         return match.start()
 
     def search_first(self, pattern: str) -> tuple[int, int] | None:
-        """Return the start and end position of the first occurence
-        of the regex pattern in the text content of the element.
+        """Return the start and end position of the first occurence of the
+        regex pattern in the text content of the element.
 
         Result is tuples of start and end position, or None.
         Python regular expression syntax applies.
@@ -980,8 +980,8 @@ class Element(MDBase):
         return match.start(), match.end()
 
     def search_all(self, pattern: str) -> list[tuple[int, int]]:
-        """Return all start and end positions of the regex pattern in
-        the text content of the element.
+        """Return all start and end positions of the regex pattern in the text
+        content of the element.
 
         Result is a list of tuples of start and end position of
         the matches.
@@ -999,8 +999,8 @@ class Element(MDBase):
         return results
 
     def text_at(self, start: int, end: int | None = None) -> str:
-        """Return the text (recursive) content of the element between
-        start and end position.
+        """Return the text (recursive) content of the element between start and
+        end position.
 
         If the end parameter is not set, return from start to the end
         of the recursive text.
@@ -1022,7 +1022,7 @@ class Element(MDBase):
             return self.text_recursive[start:end]
 
     def match(self, pattern: str) -> bool:
-        """return True if the pattern is found one or more times anywhere in
+        """Return True if the pattern is found one or more times anywhere in
         the text content of the element.
 
         Python regular expression syntax applies.
@@ -2482,7 +2482,7 @@ class Element(MDBase):
         )  # type: ignore[return-value]
 
     def get_variable_decl(self, name: str, position: int = 0) -> VarDecls | None:
-        """return the variable declaration for the given name.
+        """Return the variable declaration for the given name.
 
         Arguments:
 
@@ -2574,7 +2574,7 @@ class Element(MDBase):
         )  # type: ignore[return-value]
 
     def get_user_field_decl(self, name: str, position: int = 0) -> UserFieldDecl | None:
-        """return the user field declaration for the given name.
+        """Return the user field declaration for the given name.
 
         Return: UserFieldDecl or none if not found
         """
@@ -2623,7 +2623,7 @@ class Element(MDBase):
         return self.get_user_defined_list()
 
     def get_user_defined(self, name: str, position: int = 0) -> UserDefined | None:
-        """return the user defined declaration for the given name.
+        """Return the user defined declaration for the given name.
 
         return: UserDefined or none if not found
         """
@@ -2943,8 +2943,8 @@ class Element(MDBase):
 
     def get_reference_marks(self) -> list[ReferenceMark | ReferenceMarkStart]:
         """Return all the reference marks, either single position reference
-        (text:reference-mark) or start of range reference
-        (text:reference-mark-start).
+        (text:reference-mark) or start of range reference (text:reference-mark-
+        start).
 
         Return: list of ReferenceMark or ReferenceMarkStart
         """
@@ -2986,8 +2986,8 @@ class Element(MDBase):
         return self._filtered_element(request, position)  # type: ignore[return-value]
 
     def get_references(self, name: str | None = None) -> list[Reference]:
-        """Return all the references (text:reference-ref). If name is
-        provided, returns the references of that name.
+        """Return all the references (text:reference-ref). If name is provided,
+        returns the references of that name.
 
         Arguments:
 
@@ -3261,8 +3261,8 @@ class Element(MDBase):
         )  # type: ignore[return-value]
 
     def get_orphan_draw_connectors(self) -> list[ConnectorShape]:
-        """Return a list of connectors which don't have any shape connected
-        to them.
+        """Return a list of connectors which don't have any shape connected to
+        them.
 
         Return: list of ConnectorShape
         """
@@ -3397,8 +3397,8 @@ class Element(MDBase):
         )  # type: ignore[return-value]
 
     def get_text_changes(self) -> list[TextChange | TextChangeStart]:
-        """Return all the text changes, either single deletion
-        (text:change) or start of range of changes (text:change-start).
+        """Return all the text changes, either single deletion (text:change) or
+        start of range of changes (text:change-start).
 
         Return: list of TextChange or TextChangeStart
         """
@@ -3407,8 +3407,8 @@ class Element(MDBase):
 
     @property
     def text_changes(self) -> list[TextChange | TextChangeStart]:
-        """Return all the text changes, either single deletion
-        (text:change) or start of range of changes (text:change-start).
+        """Return all the text changes, either single deletion (text:change) or
+        start of range of changes (text:change-start).
 
         Return: list of Element
         """
@@ -3518,8 +3518,8 @@ class Element(MDBase):
         name_or_element: str | Element | None = None,
         display_name: str | None = None,
     ) -> Style | None:
-        """Return the style uniquely identified by the family/name pair. If
-        the argument is already a style object, it will return it.
+        """Return the style uniquely identified by the family/name pair. If the
+        argument is already a style object, it will return it.
 
         If the name is not the internal name but the name you gave in the
         desktop application, use display_name instead.

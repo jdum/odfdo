@@ -56,8 +56,8 @@ class Row(Element):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a Row, "table:table-row", optionally filled with
-        "width" number of cells.
+        """Create a Row, "table:table-row", optionally filled with "width"
+        number of cells.
 
         Rows contain cells, their number determine the number of columns.
 
@@ -152,8 +152,8 @@ class Row(Element):
         return cloned_row
 
     def _set_repeated(self, repeated: int | None) -> None:
-        """Method Internal only. Set the numnber of times the row is
-        repeated, or None to delete it. Without changing cache.
+        """Method Internal only. Set the numnber of times the row is repeated,
+        or None to delete it. Without changing cache.
 
         Arguments:
 
@@ -351,8 +351,8 @@ class Row(Element):
         return cell
 
     def get_cell(self, x: int, clone: bool = True) -> Cell | None:
-        """Get the cell at position "x" starting from 0. Alphabetical
-        positions like "D" are accepted.
+        """Get the cell at position "x" starting from 0. Alphabetical positions
+        like "D" are accepted.
 
         A  copy is returned, use set_cell() to push it back.
 
@@ -375,8 +375,8 @@ class Row(Element):
         x: int | str,
         get_type: bool = False,
     ) -> Any | tuple[Any, str]:
-        """Shortcut to get the value of the cell at position "x".
-        If get_type is True, returns the tuples (value, ODF type).
+        """Shortcut to get the value of the cell at position "x". If get_type
+        is True, returns the tuples (value, ODF type).
 
         If the cell is empty, returns None or (None, None)
 
@@ -468,8 +468,8 @@ class Row(Element):
         cell: Cell | None = None,
         clone: bool = True,
     ) -> Cell:
-        """Insert the given cell at position "x" starting from 0. If no cell
-        is given, an empty one is created.
+        """Insert the given cell at position "x" starting from 0. If no cell is
+        given, an empty one is created.
 
         Alphabetical positions like "D" are accepted.
 
@@ -640,9 +640,8 @@ class Row(Element):
         start: int | str = 0,
         clone: bool = True,
     ) -> None:
-        """Set the cells in the row, from the 'start' column.
-        This method does not clear the row, use row.clear() before to start
-        with an empty row.
+        """Set the cells in the row, from the 'start' column. This method does
+        not clear the row, use row.clear() before to start with an empty row.
 
         Arguments:
 
@@ -677,9 +676,8 @@ class Row(Element):
         currency: str | None = None,
     ) -> None:
         """Shortcut to set the value of cells in the row, from the 'start'
-        column vith values.
-        This method does not clear the row, use row.clear() before to start
-        with an empty row.
+        column vith values. This method does not clear the row, use row.clear()
+        before to start with an empty row.
 
         Arguments:
 
@@ -717,9 +715,9 @@ class Row(Element):
                 x += 1
 
     def rstrip(self, aggressive: bool = False) -> None:
-        """Remove *in-place* empty cells at the right of the row. An empty
-        cell has no value but can have style. If "aggressive" is True, style
-        is ignored.
+        """Remove *in-place* empty cells at the right of the row. An empty cell
+        has no value but can have style. If "aggressive" is True, style is
+        ignored.
 
         Arguments:
 
@@ -777,8 +775,8 @@ class Row(Element):
             return None
 
     def force_width(self, width: int) -> None:
-        """Change the repeated property of the last cell of the row
-        to comply with the required max width.
+        """Change the repeated property of the last cell of the row to comply
+        with the required max width.
 
         Arguments:
 

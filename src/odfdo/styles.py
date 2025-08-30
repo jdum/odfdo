@@ -79,8 +79,8 @@ class Styles(XmlPart):
         return [e for e in elems if isinstance(e, Element)]
 
     def get_styles(self, family: str = "", automatic: bool = False) -> list[Style]:
-        """Return the list of styles in the Content part, optionally limited
-        to the given family, optionaly limited to automatic styles.
+        """Return the list of styles in the Content part, optionally limited to
+        the given family, optionaly limited to automatic styles.
 
         Arguments:
 
@@ -156,8 +156,8 @@ class Styles(XmlPart):
         name_or_element: str | Style | None = None,
         display_name: str | None = None,
     ) -> Style | None:
-        """Return the style uniquely identified by the name/family pair. If
-        the argument is already a style object, it will return it.
+        """Return the style uniquely identified by the name/family pair. If the
+        argument is already a style object, it will return it.
 
         If the name is None, the default style is fetched.
 

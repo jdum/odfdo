@@ -193,8 +193,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return self.set_subject(subject)
 
     def get_language(self) -> str | None:
-        """Get the default language of the document BUT
-        only from the metadata, "dc:language".
+        """Get the default language of the document BUT only from the metadata,
+        "dc:language".
 
         Prefer the Document.get_language() function.
 
@@ -213,8 +213,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return element.text
 
     def set_language(self, language: str) -> None:
-        """Set the default language of the document BUT
-        only in the metadata, "dc:language".
+        """Set the default language of the document BUT only in the metadata,
+        "dc:language".
 
         To set globally the default language, prefer the
         Document.set_language() function.
@@ -242,8 +242,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     @property
     def language(self) -> str | None:
-        """Get or set the default language of the document BUT
-        only in the metadata, "dc:language".
+        """Get or set the default language of the document BUT only in the
+        metadata, "dc:language".
 
         To set globally the default language, prefer the
         Document.language property.
@@ -305,8 +305,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     @property
     def print_date(self) -> datetime | None:
-        """Get or set the date and time when a document when a document was last printed
-        <meta:print-date>
+        """Get or set the date and time when a document when a document was
+        last printed <meta:print-date>
 
         If provided datetime is None, use current time.
 
@@ -370,8 +370,9 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         self.body.append(autoreload)
 
     def get_hyperlink_behaviour(self) -> MetaHyperlinkBehaviour | None:
-        """Get the MetaHyperlinkBehaviour "meta:hyperlink-behaviour" element
-        or None."""
+        """Get the MetaHyperlinkBehaviour "meta:hyperlink-behaviour" element or
+        None.
+        """
         element: MetaHyperlinkBehaviour | None = self.get_element(  # type: ignore[assignment]
             "//meta:hyperlink-behaviour"
         )
@@ -379,8 +380,9 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     @property
     def hyperlink_behaviour(self) -> MetaHyperlinkBehaviour | None:
-        """Get the MetaHyperlinkBehaviour "meta:hyperlink-behaviour" element
-        or None."""
+        """Get the MetaHyperlinkBehaviour "meta:hyperlink-behaviour" element or
+        None.
+        """
         return self.get_hyperlink_behaviour()
 
     def set_hyperlink_behaviour(
@@ -389,7 +391,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         show: str = "replace",
     ) -> None:
         """Set the MetaHyperlinkBehaviour "meta:hyperlink-behaviour"
-        element."""
+        element.
+        """
         behaviour = MetaHyperlinkBehaviour(
             target_frame_name=target_frame_name, show=show
         )
@@ -436,8 +439,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     @property
     def initial_creator(self) -> str | None:
-        """Get or set the initial creator of a document
-        <meta:initial-creator>.
+        """Get or set the initial creator of a document <meta:initial-creator>.
 
         Return: str (or None if inexistant)
         """
@@ -481,8 +483,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return element.text
 
     def set_keywords(self, keywords: str) -> None:
-        """Set the keywords of the document. Although the name is plural, a
-        str string is required, so join your list first.
+        """Set the keywords of the document. Although the name is plural, a str
+        string is required, so join your list first.
 
         (Also available as "self.keyword" and "self.keywords" property.)
 
@@ -512,8 +514,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     keywords = keyword
 
     def get_editing_duration(self) -> timedelta | None:
-        """Get the time the document was edited, as reported by the
-        generator.
+        """Get the time the document was edited, as reported by the generator.
 
         (Also available as "self.editing_duration" property.)
 
@@ -544,8 +545,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     @property
     def editing_duration(self) -> timedelta | None:
-        """Get or set the total time spent editing a document
-        <meta:editing-duration>.
+        """Get or set the total time spent editing a document <meta:editing-
+        duration>.
 
         Return: timedelta (or None if inexistant)
         """
@@ -556,8 +557,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return self.set_editing_duration(duration)
 
     def get_editing_cycles(self) -> int | None:
-        """Get the number of times the document was edited, as reported by
-        the generator.
+        """Get the number of times the document was edited, as reported by the
+        generator.
 
         (Also available as "self.editing_cycles" property.)
 
@@ -661,8 +662,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         self.generator = generator
 
     def set_generator_default(self) -> None:
-        """Set the signature of the software that generated this document
-        to ourself.
+        """Set the signature of the software that generated this document to
+        ourself.
 
         Example::
 
@@ -735,8 +736,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     @property
     def statistic(self) -> dict[str, int] | None:
-        """Get or set the statistics about a document, "meta:document-statistic"
-        tag.
+        """Get or set the statistics about a document, "meta:document-
+        statistic" tag.
 
         Return: dict (or None if inexistant)
 
@@ -816,8 +817,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             self.set_user_defined_metadata(name=key, value=val)
 
     def get_user_defined_metadata_of_name(self, keyname: str) -> dict[str, Any] | None:
-        """Return the content of the user defined metadata of that name.
-        Return None if no name matchs or a dic of fields.
+        """Return the content of the user defined metadata of that name. Return
+        None if no name matchs or a dic of fields.
 
         Arguments:
 
@@ -1048,7 +1049,9 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         )
 
     def as_text(self) -> str:
-        """Return meta informations as text, with some formatting for printing."""
+        """Return meta informations as text, with some formatting for
+        printing.
+        """
         data = self._as_json_dict(full=False)
         result: list[str] = []
 
