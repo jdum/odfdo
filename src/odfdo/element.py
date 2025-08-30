@@ -663,13 +663,8 @@ class Element(MDBase):
         current = self.__element
         wrapper = element.__element
 
-        xpath_result = _xpath_text_descendant(current)
-        if not isinstance(xpath_result, list):
-            raise TypeError("Bad XPath result")
-
+        xpath_result: list[str] = _xpath_text_descendant(current)
         for text in xpath_result:
-            if not isinstance(text, str):
-                raise TypeError("Text not found or text not of type str")
             if from_ not in text:
                 continue
             from_index = text.index(from_)
