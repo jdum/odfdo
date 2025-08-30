@@ -313,7 +313,7 @@ class Element(MDBase):
             # If the tag key word exists, make a custom element
             self._do_init = True
             tag = kwargs.pop("tag", self._tag)
-            self.__element = self.make_etree_element(tag)
+            self.__element = self._make_etree_element(tag)
         else:
             # called with an existing lxml element, sould be a result of
             # from_tag() casting, do not execute the subclass __init__
@@ -340,7 +340,7 @@ class Element(MDBase):
         """
         if isinstance(tag_or_elem, str):
             # assume the argument is a prefix:name tag
-            elem = cls.make_etree_element(tag_or_elem)
+            elem = cls._make_etree_element(tag_or_elem)
         else:
             elem = tag_or_elem
         klass = _class_registry.get(elem.tag, cls)
@@ -364,7 +364,7 @@ class Element(MDBase):
         pass
 
     @staticmethod
-    def make_etree_element(tag: str) -> _Element:
+    def _make_etree_element(tag: str) -> _Element:
         if not isinstance(tag, str):
             raise TypeError(f"Tag is not str: {tag!r}")
         tag = tag.strip()
