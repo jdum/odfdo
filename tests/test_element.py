@@ -454,6 +454,13 @@ def test_insert_element_bad_position():
         element.insert(child, 999)
 
 
+def test_insert_element_bad_position_2():
+    element = Element.from_tag("text:p")
+    child = Element.from_tag("text:span")
+    with pytest.raises(ValueError):
+        element._insert(child, before="a", after="b")
+
+
 def test_children(sample):
     element = sample.anno
     children = element.children
