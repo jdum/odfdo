@@ -25,7 +25,6 @@ from collections import namedtuple
 from collections.abc import Iterable
 
 import pytest
-from lxml.etree import Element, _Element
 
 from odfdo.const import ODF_CONTENT
 from odfdo.container import Container
@@ -34,13 +33,16 @@ from odfdo.element import (
     NEXT_SIBLING,
     PREV_SIBLING,
     Element,
-    EText,
     _decode_qname,
     _uri_to_prefix,
+    _xpath_text_descendant,
     register_element_class,
 )
 from odfdo.paragraph import Paragraph
 from odfdo.xmlpart import XmlPart
+
+# from lxml.etree import Element as EtreeElement
+
 
 SPECIAL_CHARS = 'using < & " characters'
 
@@ -121,6 +123,92 @@ def test_bad_python_element():
 def test_bad_element_from_tag():
     with pytest.raises(TypeError):
         Element(tag_or_elem=[])
+
+
+def test_make_etree_element_bad_1():
+    element = Element.from_tag("<text:p/>")
+    with pytest.raises(TypeError):
+        element._make_etree_element([])
+
+
+def test_make_etree_element_bad_2():
+    element = Element.from_tag("<text:p/>")
+    with pytest.raises(ValueError):
+        element._make_etree_element(" ")
+
+
+def test_generic_attrib_getter_bad_1():
+    element = Element.from_tag("<text:p/>")
+    fct = element._generic_attrib_getter("atr", "fam")
+    assert fct(element) is None
+
+
+def test_generic_attrib_getter_bad_2():
+    element = Element.from_tag("<text:p/>")
+    element.family = "nope"
+    fct = element._generic_attrib_getter("atr", "fam")
+    assert fct(element) is None
+
+
+def test_generic_attrib_setter_bad_1():
+    element = Element.from_tag("<text:p/>")
+    fct = element._generic_attrib_setter("atr", "fam")
+    assert fct(element, "value") is None
+
+
+def test_generic_attrib_setter_bad_2():
+    element = Element.from_tag("<text:p/>")
+    element.family = "nope"
+    fct = element._generic_attrib_setter("atr", "fam")
+    assert fct(element, "value") is None
+
+
+def test_make_before_regex_bad():
+    element = Element.from_tag("<text:p/>")
+    with pytest.raises(ValueError):
+        element._make_before_regex(None, None)
+
+
+def test_search_negative_position_bad_1():
+    element = Element.from_tag("<text:p/>")
+    pattern = re.compile("abc")
+    with pytest.raises(ValueError):
+        element._search_negative_position([], pattern)
+
+
+def test_search_negative_position_bad_2():
+    element = Element.from_tag("<text:p>abc</text:p>")
+    pattern = re.compile("abc")
+    with pytest.raises(TypeError):
+        element._search_negative_position([element], pattern)
+
+
+def test_search_positive_position_bad_1():
+    element = Element.from_tag("<text:p/>")
+    pattern = re.compile("abc")
+    with pytest.raises(ValueError):
+        element._search_positive_position([], pattern, 0)
+
+
+def test_search_positive_position_bad_2():
+    element = Element.from_tag("<text:p>abc</text:p>")
+    pattern = re.compile("abc")
+    with pytest.raises(TypeError):
+        element._search_positive_position(["abc", element], pattern, 1)
+
+
+def test__insert_find_text_bad():
+    current = Element.from_tag("<text:p>abcde</text:p>")
+    element = Element.from_tag("<text:p>fghij</text:p>")
+    with pytest.raises(ValueError):
+        element._insert_find_text(
+            current._Element__element,
+            element._Element__element,
+            "x",
+            "y",
+            200,
+            _xpath_text_descendant,
+        )
 
 
 def test_get_element_list(sample):

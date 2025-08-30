@@ -460,7 +460,7 @@ class Element(MDBase):
         regex: re.Pattern,
     ) -> tuple[str, re.Match]:
         # Found the last text that matches the regex
-        text = None
+        text: Any = None
         for a_text in xpath_result:
             if regex.search(str(a_text)) is not None:
                 text = a_text
@@ -500,7 +500,7 @@ class Element(MDBase):
     ) -> tuple[int, str]:
         regex = self._make_before_regex(before, after)
         xpath_result = xpath_text(current)
-        if not isinstance(xpath_result, list):
+        if not isinstance(xpath_result, list):  # pragma: nocover
             raise TypeError("Bad XPath result")
         # position = -1
         if position < 0:
@@ -527,10 +527,10 @@ class Element(MDBase):
         # Find the text
         xpath_result = xpath_text(current)
         if not isinstance(xpath_result, list):
-            raise TypeError("Bad XPath result")
+            raise TypeError("Bad XPath result")  # pragma: nocover
         count = 0
         for text in xpath_result:
-            if not isinstance(text, str):
+            if not isinstance(text, str):  # pragma: nocover
                 continue
             found_nb = len(text)
             if found_nb + count >= position:
