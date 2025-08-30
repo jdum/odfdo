@@ -126,3 +126,21 @@ def test_insert_style(styles):
         'fo:color="#0000ff"/>'
         "</style:style>",
     )
+
+
+def test_bad_set_language(styles):
+    styles = styles.clone
+    with pytest.raises(TypeError):
+        styles.set_default_styles_language_country("wrong")
+
+
+def test_language(styles):
+    assert styles.default_language == "fr-FR"
+
+
+def test_language_no_default_style(styles):
+    styles = styles.clone
+    defaults = styles.get_elements("//style:default-style")
+    for elem in defaults:
+        elem.delete()
+    assert styles.default_language == ""
