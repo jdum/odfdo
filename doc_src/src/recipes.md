@@ -203,6 +203,42 @@ Minimal example of how to add a table to a text document.
     {% include "../../recipes/how_to_add_a_table_to_a_document.py" %}
     ```
 
+## Add an image to a table inside text document
+
+Insert a Table in a text document, then put an image in a Cell of the table.
+
+Possible sequence of operations:
+
+    - put image content in the Document,
+    - put the image internal URI in a Frame,
+    - put the Frame in a Paragraph,
+    - put the Paragraph in a Cell,
+    - put the Cell in a Table,
+    - and Finally put the Table in the Document,
+
+
+??? code "recipes/add_an_image_to_a_table_inside_text_document.py"
+    ```python
+    {% include "../../recipes/add_an_image_to_a_table_inside_text_document.py" %}
+    ```
+
+## Add an image to a table inside spreadsheet
+
+Put an image in a Cell of a table of a spreadsheet.
+
+Possible sequence of operations:
+
+    - put image content in the Document,
+    - put the image internal URI in a Frame,
+    - adapt the Frame parameters
+    - put the Frame in the Table
+
+
+??? code "recipes/add_an_image_to_a_table_inside_spreadsheet.py"
+    ```python
+    {% include "../../recipes/add_an_image_to_a_table_inside_spreadsheet.py" %}
+    ```
+
 ## Create a text document from plain text with layout
 
 Create a text document with custom styles. In this recipe, the styles

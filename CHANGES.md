@@ -1,5 +1,30 @@
 # Odfdo Release Notes
 
+## [3.16.4] - 2025-08-30
+
+-   Add new recipes `add_an_image_to_a_table_inside_text_document.py` and `add_an_image_to_a_table_inside_spreadsheet.py` to explain how to place an image in a table cell, either in a spreadsheet or in a text document.
+-   Add deprecation warning on buggy `Table.set_cell_image()` method (issue #58).
+-   Refactor and add tests for the `element` and `styles` module for better coverage and clarity.
+-   Include `lxml v6.0.1` in test suite.
+
+### Changed
+
+-   `Table.set_cell_image()` is deprecated.
+-   Rename internal method `Element.make_etree_element` to `_make_etree_element`.
+-   Refactor `Element._insert()` method.
+-   Improve some doc strings and apply `docformatter`.
+
+### Added
+
+-   Add recipe `add_an_image_to_a_table_inside_text_document.py`.
+-   Add recipe `aadd_an_image_to_a_table_inside_spreadsheet.py`.
+-   Add tests for `Styles`, `Element`.
+-   Include `lxml v6.0.1` in test suite.
+
+### Removed
+
+-   Remove unused `Element._insert_between()` method.
+
 ## [3.16.3] - 2025-08-16
 
 -   Small improvements to metadata handling such as loading metadata from dictionaries.
