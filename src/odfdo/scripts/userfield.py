@@ -23,8 +23,12 @@ import io
 import selectors
 import sys
 from argparse import ArgumentParser, Namespace, RawTextHelpFormatter
+from typing import TYPE_CHECKING
 
 from odfdo import Document, Element, __version__
+
+if TYPE_CHECKING:
+    from odfdo.user_field import UserFieldDecl
 
 PROG = "odfdo-userfield"
 STDIN_TIMEOUT = 0.5
@@ -176,7 +180,7 @@ def document_userfields(args: Namespace) -> None:
         raise ValueError("missing arguments")
 
 
-def _field_string(field: Element, args: Namespace) -> str:
+def _field_string(field: UserFieldDecl, args: Namespace) -> str:
     value, tpe = field.get_value(get_type=True)
     if args.repr:
         repr_value = repr(value)

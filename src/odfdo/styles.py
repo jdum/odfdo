@@ -78,7 +78,7 @@ class Styles(XmlPart):
             ]
         return [e for e in elems if isinstance(e, Element)]
 
-    def get_styles(self, family: str = "", automatic: bool = False) -> list[Element]:
+    def get_styles(self, family: str = "", automatic: bool = False) -> list[Style]:
         """Return the list of styles in the Content part, optionally limited
         to the given family, optionaly limited to automatic styles.
 
@@ -107,7 +107,8 @@ class Styles(XmlPart):
 
         Return: list of Style
         """
-        result: list[Style] = self.get_elements("//style:default-style")
+        result: list[Style] = self.get_elements("//style:default-style")  # type: ignore[assignment]
+
         return result
 
     def set_default_styles_language_country(self, value: str) -> None:
@@ -126,7 +127,7 @@ class Styles(XmlPart):
             s for s in self.default_styles if s.family in {"graphic", "paragraph"}
         ]
         for style in styles:
-            props = style.get_properties(area="text")
+            props = style.get_properties(area="text") or {}
             props["language"] = lang
             props["country"] = country
             style.set_properties(props, area="text")
@@ -138,7 +139,7 @@ class Styles(XmlPart):
         if not styles:
             return ""
         style = styles[0]
-        props = style.get_properties(area="text")
+        props = style.get_properties(area="text") or {}
         lang = str(props.get("fo:language", ""))
         country = str(props.get("fo:country", ""))
         if lang and country:

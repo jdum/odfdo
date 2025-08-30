@@ -69,7 +69,7 @@ class MetaAutoReload(Element):
 
     def __repr__(self) -> str:
         if self.delay:
-            delay = Duration.decode(self.delay)
+            delay = str(Duration.decode(self.delay))
         else:
             delay = ""
         return (

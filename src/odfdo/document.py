@@ -418,7 +418,7 @@ class Document(MDDocument):
         """
         if self.__body is None:
             self.__body = self.content.body
-        return self.__body
+        return self.__body  # type: ignore[return-value]
 
     @property
     def meta(self) -> Meta:
@@ -630,6 +630,8 @@ class Document(MDDocument):
 
     def _check_manifest_rdf(self) -> None:
         manifest = self.manifest
+        if not self.container:
+            return
         parts = self.container.parts
         if manifest.get_media_type(ODF_MANIFEST_RDF):
             if ODF_MANIFEST_RDF not in parts:
@@ -686,6 +688,8 @@ class Document(MDDocument):
                 if path in self.__xmlparts:
                     continue
                 cls = _get_part_class(path)
+                if cls is None:
+                    raise RuntimeError("Should never happen")
                 # XML part
                 self.__xmlparts[path] = part = cls(path, container)
                 container.set_part(path, part.pretty_serialize())
@@ -715,9 +719,8 @@ class Document(MDDocument):
         self,
         family: str | bytes = "",
         automatic: bool = False,
-    ) -> list[Style | Element]:
+    ) -> list[Style]:
         # compatibility with old versions:
-
         if isinstance(family, bytes):
             family = bytes_to_str(family)
         return self.content.get_styles(family=family) + self.styles.get_styles(
@@ -764,13 +767,15 @@ class Document(MDDocument):
 
     def get_parent_style(self, style: Style) -> Style | None:
         family = style.family
+        if family is None:
+            return None
         parent_style_name = style.parent_style
         if not parent_style_name:
             return None
         return self.get_style(family, parent_style_name)
 
     def get_list_style(self, style: Style) -> Style | None:
-        list_style_name = style.list_style_name
+        list_style_name = style.list_style_name  # type: ignore[attr-defined]
         if not list_style_name:
             return None
         return self.get_style("list", list_style_name)
@@ -1021,16 +1026,16 @@ class Document(MDDocument):
         infos = []
         for style in self.get_styles():
             try:
-                name = style.name  # type: ignore
+                name = style.name
             except AttributeError:
-                print("--------------")
+                print("Syle error:")
                 print(style.__class__)
                 print(style.serialize())
                 raise
             if style.__class__.__name__ == "DrawFillImage":
                 family = ""
             else:
-                family = str(style.family)  # type: ignore
+                family = str(style.family)
             parent = style.parent
             is_auto = parent and parent.tag == "office:automatic-styles"
             if (is_auto and automatic is False) or (not is_auto and common is False):
@@ -1045,7 +1050,7 @@ class Document(MDDocument):
                     "name": name or "",
                     "display_name": self._pseudo_style_attribute(style, "display_name")
                     or "",
-                    "properties": style.get_properties() if properties else None,  # type: ignore
+                    "properties": style.get_properties() if properties else None,
                 }
             )
         if not infos:
@@ -1096,7 +1101,7 @@ class Document(MDDocument):
         # Then remove supposedly orphaned styles
         deleted = 0
         for style in self.get_styles():
-            if style.name is None:  # type: ignore
+            if style.name is None:
                 # Don't delete default styles
                 continue
             # elif type(style) is odf_master_page:
@@ -1117,7 +1122,7 @@ class Document(MDDocument):
         for style in document.get_styles():
             tagname = style.tag
             family = style.family
-            stylename = style.name  # type: ignore
+            stylename = style.name
             container = style.parent
             container_name = container.tag  # type: ignore
             partname = container.parent.tag  # type: ignore
@@ -1137,10 +1142,12 @@ class Document(MDDocument):
             }:
                 raise NotImplementedError(container_name)
             dest = part.get_element(f"//{container_name}")
+            if not dest:
+                continue
             # Implemented style types
             # if tagname not in registered_styles:
             #    raise NotImplementedError(tagname)
-            duplicate = part.get_style(family, stylename)
+            duplicate = part.get_style(family, stylename)  # type: ignore[arg-type]
             if duplicate is not None:
                 duplicate.delete()
             dest.append(style)
@@ -1200,8 +1207,8 @@ class Document(MDDocument):
         if not isinstance(table, (int, str)):
             raise TypeError(f"Table parameter must be int or str: {table!r}")
         if isinstance(table, int):
-            return self.body.get_table(position=table)  # type: ignore
-        return self.body.get_table(name=table)  # type: ignore
+            return self.body.get_table(position=table)
+        return self.body.get_table(name=table)
 
     def get_cell_style_properties(
         self, table: str | int, coord: tuple | list | str
@@ -1307,14 +1314,14 @@ class Document(MDDocument):
         orig_style = self.get_table_style(table)
         if not orig_style:
             name = self._unique_style_name("ta")
-            orig_style = Element.from_tag(
+            orig_style = Element.from_tag(  # type:ignore[assignment]
                 f'<style:style style:name="{name}" style:family="table" '
                 'style:master-page-name="Default">'
                 '<style:table-properties table:display="true" '
                 'style:writing-mode="lr-tb"/></style:style>'
             )
             self.insert_style(orig_style, automatic=True)  # type:ignore
-        new_style = orig_style.clone
+        new_style = orig_style.clone  # type: ignore[union-attr]
         new_name = self._unique_style_name("ta")
         new_style.name = new_name  # type:ignore
         self.insert_style(new_style, automatic=True)  # type:ignore

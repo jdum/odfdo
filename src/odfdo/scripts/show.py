@@ -119,7 +119,7 @@ def spreadsheet_to_stdout(document: Document) -> None:
 def spreadsheet_to_csv(document: Document, output: Path) -> None:
     body = document.body
     for table in body.tables:
-        name = table.name
+        name = str(table.name)
         filename = clean_filename(name) + ".csv"
         print(filename)
         table.rstrip(aggressive=True)

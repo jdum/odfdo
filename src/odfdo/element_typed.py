@@ -213,7 +213,8 @@ class ElementTyped(Element):
     ) -> Any | tuple[Any, str]:
         """Return Python typed value.
 
-        Only for "with office:value-type" elements, not for meta fields."""
+        Only for "with office:value-type" elements, not for meta fields.
+        """
         value, actual_type = self._get_value_and_type(
             value_type=value_type, try_get_text=try_get_text
         )

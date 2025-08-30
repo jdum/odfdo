@@ -85,7 +85,8 @@ if TYPE_CHECKING:
         TextChangeStart,
         TrackedChanges,
     )
-    from .variable import UserDefined, UserFieldDecls, VarDecls, VarSet
+    from .user_field import UserDefined, UserFieldDecl, UserFieldDecls
+    from .variable import VarDecls, VarSet
 
 ODF_NAMESPACES = {
     "anim": "urn:oasis:names:tc:opendocument:xmlns:animation:1.0",
@@ -2563,21 +2564,19 @@ class Element(MDBase):
 
         return user_field_decls  # type: ignore[return-value]
 
-    def get_user_field_decl_list(self) -> list[UserFieldDecls]:
+    def get_user_field_decl_list(self) -> list[UserFieldDecl]:
         """Return all the user field declarations.
 
-        Return: list of UserFieldDecls
+        Return: list of UserFieldDecl
         """
         return self._filtered_elements(
             "descendant::text:user-field-decl",
         )  # type: ignore[return-value]
 
-    def get_user_field_decl(
-        self, name: str, position: int = 0
-    ) -> UserFieldDecls | None:
+    def get_user_field_decl(self, name: str, position: int = 0) -> UserFieldDecl | None:
         """return the user field declaration for the given name.
 
-        return: Element or none if not found
+        Return: UserFieldDecl or none if not found
         """
         return self._filtered_element(
             "descendant::text:user-field-decl", position, text_name=name
@@ -2600,8 +2599,8 @@ class Element(MDBase):
         user_field_decl = self.get_user_field_decl(name)
         if user_field_decl is None:
             return None
-        value = user_field_decl.get_value(value_type)  # type: ignore[attr-defined]
-        return value  # type: ignore[no-any-return]
+        value = user_field_decl.get_value(value_type)
+        return value  # type: ignore[return-value]
 
     # User defined fields
     # They are fields who should contain a copy of a user defined medtadata
@@ -3508,10 +3507,10 @@ class Element(MDBase):
                 tagname = f"({tagname}|style:default-style)"
         return tagname
 
-    def get_styles(self, family: str | None = None) -> list[Element]:
+    def get_styles(self, family: str | None = None) -> list[Style]:
         # Both common and default styles
         tagname = self._get_style_tagname(family)
-        return self._filtered_elements(tagname, family=family)
+        return self._filtered_elements(tagname, family=family)  # type: ignore[return-value]
 
     def get_style(
         self,
