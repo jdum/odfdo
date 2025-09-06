@@ -29,10 +29,13 @@ import contextlib
 from collections.abc import Iterable, Iterator
 from typing import TYPE_CHECKING, Any
 
-from lxml.etree import _Element
-
 from .cell import Cell
-from .element import Element, register_element_class, xpath_compile
+from .element import (
+    Element,
+    register_element_class,
+    xpath_compile,
+    xpath_return_elements,
+)
 from .table_cache import _XP_CELL_IDX, RowCache, TableCache
 from .utils import convert_coordinates, increment, translate_from_any
 
@@ -90,20 +93,18 @@ class Row(Element):
         return f"<{self.__class__.__name__} y={self.y}>"
 
     def get_elements(self, xpath_query: XPath | str) -> list[Element]:
-        element: _Element = self._Element__element  # type: ignore[attr-defined]
         if isinstance(xpath_query, str):
-            new_xpath_query = xpath_compile(xpath_query)
-            result = new_xpath_query(element)
+            elements = xpath_return_elements(
+                xpath_compile(xpath_query),
+                self._Element__element,  # type: ignore[attr-defined]
+            )
         else:
-            result = xpath_query(element)
-        if not isinstance(result, list):  # pragma: no cover
-            raise TypeError("Bad XPath result")
+            elements = xpath_return_elements(
+                xpath_query,
+                self._Element__element,  # type: ignore[attr-defined]
+            )
         cache = (self._table_cache, self._row_cache)
-        return [
-            Element.from_tag_for_clone(e, cache)
-            for e in result
-            if isinstance(e, _Element)
-        ]
+        return [Element.from_tag_for_clone(e, cache) for e in elements]
 
     def _copy_cache(self, cache: tuple) -> None:
         """Copy cache when cloning."""
