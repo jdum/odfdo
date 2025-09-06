@@ -35,12 +35,17 @@ from textwrap import wrap
 from typing import TYPE_CHECKING, Any
 from warnings import warn
 
-from lxml.etree import XPath, _Element
+from lxml.etree import XPath
 
 from .cell import Cell
 from .column import Column
 from .datatype import Boolean, Date, DateTime, Duration
-from .element import Element, register_element_class, xpath_compile
+from .element import (
+    Element,
+    register_element_class,
+    xpath_compile,
+    xpath_return_elements,
+)
 from .frame import Frame
 from .mixin_md import MDTable
 from .named_range import NamedRange, table_name_check
@@ -226,20 +231,18 @@ class Table(MDTable, Element):
         return out.getvalue()
 
     def get_elements(self, xpath_query: XPath | str) -> list[Element]:
-        element = self._Element__element  # type: ignore[attr-defined]
         if isinstance(xpath_query, str):
-            new_xpath_query = xpath_compile(xpath_query)
-            result = new_xpath_query(element)
+            elements = xpath_return_elements(
+                xpath_compile(xpath_query),
+                self._Element__element,  # type: ignore[attr-defined]
+            )
         else:
-            result = xpath_query(element)
-        if not isinstance(result, list):
-            raise TypeError("Bad XPath result")
+            elements = xpath_return_elements(
+                xpath_query,
+                self._Element__element,  # type: ignore[attr-defined]
+            )
         cache = (self._table_cache, None)
-        return [
-            Element.from_tag_for_clone(e, cache)
-            for e in result
-            if isinstance(e, _Element)
-        ]
+        return [Element.from_tag_for_clone(e, cache) for e in elements]
 
     def _copy_cache(self, cache: tuple | None) -> None:
         """Copy cache when cloning."""
