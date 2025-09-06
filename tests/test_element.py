@@ -448,6 +448,16 @@ def test_insert_element_next_sibling():
     assert root.serialize() == expected
 
 
+def test_insert_element_next_sibling_xpath_query():
+    root = Element.from_tag("<office:text><text:p/><text:p/></office:text>")
+    xpath_query = xpath_compile("//text:p")
+    element = root.get_elements(xpath_query)[0]
+    sibling = Element.from_tag("<text:h/>")
+    expected = "<office:text><text:p/><text:h/><text:p/></office:text>"
+    element.insert(sibling, NEXT_SIBLING)
+    assert root.serialize() == expected
+
+
 def test_insert_element_prev_sibling():
     root = Element.from_tag("<office:text><text:p/><text:p/></office:text>")
     element = root.get_elements("//text:p")[0]
@@ -484,6 +494,56 @@ def test_children(sample):
     assert child.tag == "dc:creator"
     child = children[-1]
     assert child.tag == "text:p"
+
+
+def test_get_element_idx():
+    root = Element.from_tag("<office:text><text:p/><text:p/></office:text>")
+    xpath_query = xpath_compile("//text:p")
+    element = root._get_element_idx(xpath_query, 1)
+    assert element.tag == "text:p"
+
+
+def test_get_element_idx_none():
+    root = Element.from_tag("<office:text><text:p/><text:p/></office:text>")
+    xpath_query = xpath_compile("//text:p")
+    element = root._get_element_idx(xpath_query, 42)
+    assert element is None
+
+
+def test_get_attribute_integer():
+    element = Element.from_tag('<text:s text:c="4" />')
+    result = element.get_attribute_integer("text:c")
+    assert result == 4
+
+
+def test_get_attribute_integer_bad():
+    element = Element.from_tag('<text:s text:c="oops" />')
+    result = element.get_attribute_integer("text:c")
+    assert result is None
+
+
+def test_get_attribute_integer_bad_2():
+    element = Element.from_tag("<text:s/>")
+    result = element.get_attribute_integer("text:c")
+    assert result is None
+
+
+def test_set_attribute_wrong_color():
+    element = Element.from_tag("<text:p/>")
+    with pytest.raises(TypeError):
+        element.set_attribute("dr3d:ambient-color", False)
+
+
+def test_get_attribute_integer_bad_3():
+    element = Element.from_tag("<text:s />")
+    result = element.get_attribute_integer("oops")
+    assert result is None
+
+
+def test_set_text_bad():
+    element = Element.from_tag("<text:p/>")
+    with pytest.raises(TypeError):
+        element.text = False
 
 
 def test_append_element():
@@ -621,6 +681,19 @@ def test_replace(span_styles):
     assert clone.serialize() != paragraph.serialize()
 
 
+def test_replace_bad(span_styles):
+    paragraph = span_styles.para
+    clone = paragraph.clone
+    with pytest.raises(Exception):  # noqa: B017
+        clone.replace([], "barbe")
+
+
+def test_replace_simple():
+    paragraph = Element.from_tag("<text:p>abc</text:p>")
+    count = paragraph.replace("abc", "xyz")
+    assert count == 1
+
+
 def test_across_span(span_styles):
     paragraph = span_styles.para
     count = paragraph.replace("moustache rouge")
@@ -643,3 +716,34 @@ def test_unregistered():
     element = Element.from_tag("office:dummy2")
     assert isinstance(element, Element)
     assert not isinstance(element, DummyElement)
+
+
+def test_is_bound():
+    paragraph = Element.from_tag("<text:p>abc</text:p>")
+    assert paragraph.is_bound
+
+
+def test_content_setter_empty():
+    element = Element.from_tag("<office:text><text:p>abc</text:p></office:text>")
+    element.text_content = None
+    assert element.serialize() == "<office:text><text:p></text:p></office:text>"
+
+
+def test_is_empty_1():
+    element = Element.from_tag("<text:span>abc</text:span>def")
+    assert element.is_empty() is False
+
+
+def test_is_empty_2():
+    element = Element.from_tag("<text:span>abc</text:span>")
+    assert element.is_empty() is False
+
+
+def test_is_empty_3():
+    element = Element.from_tag("<text:span></text:span>def")
+    assert element.is_empty() is False
+
+
+def test_is_empty_4():
+    element = Element.from_tag("<text:span></text:span>")
+    assert element.is_empty() is True

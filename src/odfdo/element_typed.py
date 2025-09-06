@@ -34,6 +34,16 @@ from .utils import bytes_to_str
 class ElementTyped(Element):
     """Subclass of Element for classes managing typed values."""
 
+    def _erase_text_content(self) -> None:
+        paragraphs = self.get_elements("text:p")
+        if not paragraphs:
+            # E.g., text:p in draw:text-box in draw:frame
+            paragraphs = self.get_elements("*/text:p")
+        if paragraphs:
+            paragraphs.pop(0)
+            for obsolete in paragraphs:
+                obsolete.delete()
+
     def set_value_and_type(
         self,
         value: Any,

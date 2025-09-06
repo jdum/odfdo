@@ -22,6 +22,7 @@ from datetime import date, timedelta
 
 import pytest
 
+from odfdo.element_typed import ElementTyped
 from odfdo.variable import VarSet
 
 
@@ -171,3 +172,23 @@ def test_et_get_value_float_bad():
     et.set_value_and_type(None, value_type="float")
     with pytest.raises(ValueError):
         et.get_value(value_type="float")
+
+
+def test_erase_text_content():
+    element = ElementTyped.from_tag("<office:value></office:value>")
+    element._erase_text_content()
+    assert element.serialize() == "<office:value/>"
+
+
+def test_erase_text_content_2():
+    element = ElementTyped.from_tag("<office:value><text:p>abc</text:p></office:value>")
+    element._erase_text_content()
+    assert element.serialize() == "<office:value><text:p>abc</text:p></office:value>"
+
+
+def test_erase_text_content_3():
+    element = ElementTyped.from_tag(
+        "<office:value><text:p>abc</text:p><text:p>xyz</text:p></office:value>"
+    )
+    element._erase_text_content()
+    assert element.serialize() == "<office:value><text:p>abc</text:p></office:value>"

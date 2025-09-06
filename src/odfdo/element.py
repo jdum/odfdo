@@ -954,7 +954,7 @@ class Element(MDBase):
             else:
                 new_text, number = cpattern.subn(new, str(text))
                 container = text.parent
-                if not container:
+                if not container:  # pragma: nocover
                     continue
                 if text.is_text():  # type: ignore
                     container.text = new_text
@@ -1055,16 +1055,6 @@ class Element(MDBase):
         if text is None:
             text = ""
         element.text = str(text)
-
-    def _erase_text_content(self) -> None:
-        paragraphs = self.get_elements("text:p")
-        if not paragraphs:
-            # E.g., text:p in draw:text-box in draw:frame
-            paragraphs = self.get_elements("*/text:p")
-        if paragraphs:
-            paragraphs.pop(0)
-            for obsolete in paragraphs:
-                obsolete.delete()
 
     def is_empty(self) -> bool:
         """Check if the element is empty : no text, no children, no tail.
