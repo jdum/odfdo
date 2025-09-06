@@ -28,6 +28,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from .element import Element, PropDef, register_element_class
+from .elements_between import elements_between
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
 from .mixin_md import MDTail
@@ -191,8 +192,8 @@ class Annotation(MDTail, Element, DcCreatorMixin, DcDateMixin):
                 return ""
             return None
         body: Body | Element = self.document_body or self.root
-        return body.get_between(
-            self, end, as_text=as_text, no_header=no_header, clean=clean
+        return elements_between(
+            body, self, end, as_text=as_text, no_header=no_header, clean=clean
         )
 
     def delete(self, child: Element | None = None, keep_tail: bool = True) -> None:

@@ -26,6 +26,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from .element import Element, PropDef, register_element_class
+from .elements_between import elements_between
 
 if TYPE_CHECKING:
     from .body import Body
@@ -301,8 +302,8 @@ class ReferenceMarkStart(Element):
         end = body.get_reference_mark_end(name=self.name)
         if end is None:
             raise ValueError("No reference-end found")
-        content_list = body.get_between(
-            self, end, as_text=False, no_header=no_header, clean=clean
+        content_list = elements_between(
+            body, self, end, as_text=False, no_header=no_header, clean=clean
         )
         if as_list:
             return content_list

@@ -30,6 +30,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from .element import FIRST_CHILD, LAST_CHILD, Element, register_element_class
+from .elements_between import elements_between
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
 from .mixin_md import MDZap
@@ -37,7 +38,6 @@ from .paragraph import Paragraph
 
 if TYPE_CHECKING:
     from .body import Body
-    from .element import Element
 
 
 class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
@@ -640,8 +640,8 @@ class TextChangeEnd(TextChange):
                 return ""
             return None
         body: Body | Element = self.document_body or self.root
-        return body.get_between(
-            start, end, as_text=as_text, no_header=no_header, clean=clean
+        return elements_between(
+            body, start, end, as_text=as_text, no_header=no_header, clean=clean
         )
 
 
