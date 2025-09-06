@@ -1,5 +1,35 @@
 # Odfdo Release Notes
 
+## [3.16.5] - 2025-09-6
+
+-   Add new recipe `define_margins_and_position_for_a_table_in_a_text_document.py` for positioning a table in a text document.
+-   Add two scripts `odfdo-from-csv` and `odfdo-to-csv` for import/export CSV files (minimal implementation based on Python CSV module).
+-   Refactor some internal functions and methods using `Xpath` and matching parts of ODF elements.
+
+### Changed
+
+-   Refactor internal method `Element.get_between` and move method to its own module.
+-   Refactor `table.py` to use `xpath_return_elements`.
+-   Refactor `row.py` to use `xpath_return_elements`.
+-   Refactor `element.py` (coding style, doc strings).
+-   Small refactoring of recipe `accessing_a_list_of_elements.py`.
+
+### Added
+
+-   Add scripts `odfdo-from-csv` and `odfdo-to-csv`.
+-   Add recipe `define_margins_and_position_for_a_table_in_a_text_document.py`.
+-   Add internal functions in `element.py` module: `xpath_return_elements` and `xpath_return_strings`.
+-   Add tests for class `Element`.
+-   Add module `elements_between.py`.
+
+### Fixed
+
+-   Fix `Table.from_csv()` arguments.
+
+### Removed
+
+-   Comment out unused xpath definition `_xpath_text_descendant`.
+
 ## [3.16.4] - 2025-08-30
 
 -   Add new recipes `add_an_image_to_a_table_inside_text_document.py` and `add_an_image_to_a_table_inside_spreadsheet.py` to explain how to place an image in a table cell, either in a spreadsheet or in a text document.
@@ -17,7 +47,7 @@
 ### Added
 
 -   Add recipe `add_an_image_to_a_table_inside_text_document.py`.
--   Add recipe `aadd_an_image_to_a_table_inside_spreadsheet.py`.
+-   Add recipe `add_an_image_to_a_table_inside_spreadsheet.py`.
 -   Add tests for `Styles`, `Element`.
 -   Include `lxml v6.0.1` in test suite.
 
@@ -118,8 +148,8 @@
 
 -   Add aliases for `Body.get_table`, `tables`, `get_table`: `get_sheets`, `sheets`, `get_sheet`.
 -   Add argument "keep_children" to `remove_tree()` utility function, add tests for `remove_tree()`.
--   Add method `how_to_remove_all_meta_data.py`.
--   Add recipe `Meta.strip()`.
+-   Add recipe `how_to_remove_all_meta_data.py`.
+-   Add method `Meta.strip()`.
 -   Add tests for module `odfdo.TOC`.
 -   Add test for `Column`.
 -   Add tests for module `odfdo.table_cache`.

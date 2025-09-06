@@ -101,7 +101,8 @@ A few scripts are provided with `odfdo`:
 -   `odfdo-styles`: command line interface tool to manipulate styles of ODF files.
 -   `odfdo-table-shrink`: shrink tables to optimize width and height.
 -   `odfdo-userfield`: show or set the user-field content in an ODF file.
-
+-   `odfdo-from-csv`: import a CSV file into a .ods file.
+-   `odfdo-to-csv`: export a .ods table to a CSV file.
 
 # tl;dr
 

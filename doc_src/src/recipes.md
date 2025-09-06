@@ -203,6 +203,22 @@ Minimal example of how to add a table to a text document.
     {% include "../../recipes/how_to_add_a_table_to_a_document.py" %}
     ```
 
+## Define margins and position for a table in a text document
+
+Example of configuration of table position in a text document.
+
+Contains methods for:
+
+- table size,
+- column width,
+- table, row, column and cell styles.
+
+
+??? code "recipes/define_margins_and_position_for_a_table_in_a_text_document.py"
+    ```python
+    {% include "../../recipes/define_margins_and_position_for_a_table_in_a_text_document.py" %}
+    ```
+
 ## Add an image to a table inside text document
 
 Insert a Table in a text document, then put an image in a Cell of the table.
