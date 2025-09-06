@@ -1080,7 +1080,7 @@ class Element(MDBase):
         """Insert an element relatively to ourself.
 
         Insert either using DOM vocabulary or by numeric position.
-        If text start is True, insert the element before any existing text.
+        If "start" is True, insert the element before any existing text.
 
         Position start at 0.
 
