@@ -208,7 +208,26 @@ def _family_style_tagname(family: str) -> str:
 
 @cache
 def xpath_compile(path: str) -> XPath:
+    """Return an XPath function compiled from a query in ODF namespace."""
     return XPath(path, namespaces=ODF_NAMESPACES, regexp=False)
+
+
+def xpath_return_elements(xpath: XPath, target: _Element) -> list[_Element]:
+    """Return the _Elements resulting from XPath query on target."""
+    elements = xpath(target)
+    if isinstance(elements, list):  # pragma: nocover
+        return [e for e in elements if isinstance(e, _Element)]
+    msg = f"Bad XPath result, list expected, got {elements!r}"
+    raise TypeError(msg)
+
+
+def xpath_return_strings(xpath: XPath, target: _Element) -> list[str]:
+    """Return the strings resulting from XPath query on target."""
+    elements = xpath(target)
+    if isinstance(elements, list):  # pragma: nocover
+        return [s for s in elements if isinstance(s, str)]
+    msg = f"Bad XPath result, list expected, got {elements!r}"
+    raise TypeError(msg)
 
 
 _xpath_text = xpath_compile("//text()")  # descendant and self
@@ -457,37 +476,32 @@ class Element(MDBase):
 
     @staticmethod
     def _search_negative_position(
-        xpath_result: list,
+        xpath_result: list[str],
         regex: re.Pattern,
     ) -> tuple[str, re.Match]:
         # Found the last text that matches the regex
-        text: Any = None
-        for a_text in xpath_result:
-            if regex.search(str(a_text)) is not None:
-                text = a_text
-        if text is None:
-            raise ValueError(f"Text not found: '{xpath_result}'")
-        if not isinstance(text, str):
-            raise TypeError(f"Text not found or text not of type str: '{text}'")
+        for text in xpath_result:
+            if regex.search(text) is not None:
+                break
+        else:
+            raise ValueError(f"Text not found: {xpath_result!r}")
         return text, list(regex.finditer(text))[-1]
 
     @staticmethod
     def _search_positive_position(
-        xpath_result: list,
+        xpath_result: list[str],
         regex: re.Pattern,
         position: int,
     ) -> tuple[str, re.Match]:
         # Found the last text that matches the regex
         count = 0
         for text in xpath_result:
-            found_nb = len(regex.findall(str(text)))
+            found_nb = len(regex.findall(text))
             if found_nb + count >= position + 1:
                 break
             count += found_nb
         else:
-            raise ValueError(f"Text not found: '{xpath_result}'")
-        if not isinstance(text, str):
-            raise TypeError(f"Text not found or text not of type str: '{text}'")
+            raise ValueError(f"Text not found: {xpath_result!r}")
         return text, list(regex.finditer(text))[position - count]
 
     def _insert_before_after(
@@ -500,9 +514,7 @@ class Element(MDBase):
         xpath_text: XPath,
     ) -> tuple[int, str]:
         regex = self._make_before_regex(before, after)
-        xpath_result = xpath_text(current)
-        if not isinstance(xpath_result, list):  # pragma: nocover
-            raise TypeError("Bad XPath result")
+        xpath_result = xpath_return_strings(xpath_text, current)
         # position = -1
         if position < 0:
             text, sre = self._search_negative_position(xpath_result, regex)
@@ -526,19 +538,15 @@ class Element(MDBase):
         xpath_text: XPath,
     ) -> tuple[int, str]:
         # Find the text
-        xpath_result = xpath_text(current)
-        if not isinstance(xpath_result, list):
-            raise TypeError("Bad XPath result")  # pragma: nocover
+        xpath_result = xpath_return_strings(xpath_text, current)
         count = 0
         for text in xpath_result:
-            if not isinstance(text, str):  # pragma: nocover
-                continue
             found_nb = len(text)
             if found_nb + count >= position:
                 break
             count += found_nb
         else:
-            raise ValueError("Text not found")
+            raise ValueError(f"Text not found: {xpath_result!r}")
         # We insert before the character
         pos = position - count
         return pos, text
@@ -640,15 +648,10 @@ class Element(MDBase):
     ) -> list[tuple[int, int]]:
         """Utility method for table module."""
         lxml_tag = _get_lxml_tag_or_name(name)
-        element = self.__element
-        sub_elements = xpath_instance(element)
-        if not isinstance(sub_elements, list):  # pragma: nocover
-            raise TypeError("Bad XPath result.")
+        sub_elements = xpath_return_elements(xpath_instance, self.__element)
         result: list[tuple[int, int]] = []
         idx = -1
         for sub_element in sub_elements:
-            if not isinstance(sub_element, _Element):  # pragma: nocover
-                continue
             idx += 1
             value = sub_element.get(lxml_tag)
             if value is None:
@@ -668,17 +671,10 @@ class Element(MDBase):
         Return list of Element.
         """
         if isinstance(xpath_query, str):
-            new_xpath_query = xpath_compile(xpath_query)
-            result = new_xpath_query(self.__element)
+            elements = xpath_return_elements(xpath_compile(xpath_query), self.__element)
         else:
-            result = xpath_query(self.__element)
-        if not isinstance(result, list):
-            raise TypeError("Bad XPath result")
-        return [
-            Element.from_tag_for_clone(e, None)
-            for e in result
-            if isinstance(e, _Element)
-        ]
+            elements = xpath_return_elements(xpath_query, self.__element)
+        return [Element.from_tag_for_clone(e, None) for e in elements]
 
     def get_element(self, xpath_query: str) -> Element | None:
         """Returns the first element obtained from the XPath query applied to
@@ -692,15 +688,15 @@ class Element(MDBase):
         return None
 
     def _get_element_idx(self, xpath_query: XPath | str, idx: int) -> Element | None:
-        element = self.__element
-        result = element.xpath(f"({xpath_query})[{idx + 1}]", namespaces=ODF_NAMESPACES)
+        result = self.__element.xpath(
+            f"({xpath_query})[{idx + 1}]", namespaces=ODF_NAMESPACES
+        )
         if result:
             return Element.from_tag(result[0])
         return None
 
     def _get_element_idx2(self, xpath_instance: XPath, idx: int) -> Element | None:
-        element = self.__element
-        result = xpath_instance(element, idx=idx + 1)
+        result = xpath_instance(self.__element, idx=idx + 1)
         if result:
             return Element.from_tag(result[0])
         return None
@@ -1573,9 +1569,8 @@ class Element(MDBase):
 
         Return list of Element or EText instances.
         """
-        element = self.__element
         xpath_instance = xpath_compile(xpath_query)
-        elements = xpath_instance(element)
+        elements = xpath_instance(self.__element)
         result: list[Element | EText] = []
         if hasattr(elements, "__iter__"):
             for obj in elements:
@@ -3167,10 +3162,11 @@ class Element(MDBase):
         """Return a list of ids that refers to a change region in the tracked
         changes list.
         """
-        # Insertion changes
-        xpath_query = "descendant::text:change-start/@text:change-id"
-        # Deletion changes
-        xpath_query += " | descendant::text:change/@text:change-id"
+        # Insertion changes or deletion changes
+        xpath_query = (
+            "descendant::text:change-start/@text:change-id "
+            "| descendant::text:change/@text:change-id"
+        )
         return self.xpath(xpath_query)
 
     def get_text_change_deletions(self) -> list[TextChange]:
