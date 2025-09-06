@@ -2770,10 +2770,10 @@ class Table(MDTable, Element):
         """
         data = content.splitlines(True)
         # Sniff the dialect
-        sample = "".join(data[:100])
+        sample = "".join(data[:2048])
         dialect = csv.Sniffer().sniff(sample)
         # Make the rows
-        reader = csv.reader(data, dialect, **fmtparams)
+        reader = csv.reader(data, dialect=dialect, **fmtparams)
         table = cls(name, style=style)
         encoding = fmtparams.get("encoding", "utf-8")
         for line in reader:
