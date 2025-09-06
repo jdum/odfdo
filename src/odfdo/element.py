@@ -1215,33 +1215,34 @@ class Element(MDBase):
 
     def get_between(
         self,
-        tag1: Element,
-        tag2: Element,
+        start: Element,
+        end: Element,
         as_text: bool = False,
         clean: bool = True,
         no_header: bool = True,
     ) -> list | str:
-        """Returns elements between tag1 and tag2, tag1 and tag2 shall
-        be unique and having an id attribute.
-        (WARN: buggy if tag1/tag2 defines a malformed odf xml.)
-        If as_text is True: returns the text content.
-        If clean is True: suppress unwanted tags (deletions marks, ...)
-        If no_header is True: existing text:h are changed in text:p
+        """Return elements between elements "start" and "end".
+
+        Elements "start" and "end" shall be unique and having an id attribute.
+        (Warning: buggy if they are malformed ODF XML.)
+        If "as_text" is True: return the text content.
+        If "clean" is True: suppress unwanted elements (deletions marks, ...)
+        If "no_header" is True: existing "text:h" are changed in "text:p".
         By default: returns a list of Element, cleaned and without headers.
 
         Implementation and standard retrictions:
-        Only text:h and text:p sould be 'cut' by an insert tag, so inner parts
+        Only "text:h" and "text:p" sould be 'cut' by an insert tag, so inner parts
         of insert tags are:
 
-            - any text:h, text:p or sub tag of these
+            - any "text:h", "text:p" or sub element of these
 
-            - some text, part of a parent text:h or text:p
+            - some text, part of a parent "text:h" or "text:p"
 
         Args:
 
-            tag1 -- Element
+            start -- Element
 
-            tag2 -- Element
+            end -- Element
 
             as_text -- boolean
 
@@ -1251,7 +1252,7 @@ class Element(MDBase):
 
         Returns: list of odf_paragraph or odf_header
         """
-        inner = self._get_between_base(tag1, tag2)
+        inner = self._get_between_base(start, end)
 
         if clean:
             clean_tags = (
