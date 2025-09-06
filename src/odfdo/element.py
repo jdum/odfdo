@@ -208,26 +208,36 @@ def _family_style_tagname(family: str) -> str:
 
 @cache
 def xpath_compile(path: str) -> XPath:
-    """Return an XPath function compiled from a query in ODF namespace."""
+    """(internal function) Return an XPath function compiled from a query in
+    ODF namespace.
+    """
     return XPath(path, namespaces=ODF_NAMESPACES, regexp=False)
 
 
 def xpath_return_elements(xpath: XPath, target: _Element) -> list[_Element]:
-    """Return the _Elements resulting from XPath query on target."""
+    """(internal function) Return the _Elements resulting from XPath query on
+    target.
+    """
     elements = xpath(target)
-    if isinstance(elements, list):  # pragma: nocover
+    try:
         return [e for e in elements if isinstance(e, _Element)]
-    msg = f"Bad XPath result, list expected, got {elements!r}"
-    raise TypeError(msg)
+    except TypeError as e:  # pragma: nocover
+        # cant happen
+        msg = f"Bad XPath result, list expected, got {elements!r}"
+        raise TypeError(msg) from e
 
 
 def xpath_return_strings(xpath: XPath, target: _Element) -> list[str]:
-    """Return the strings resulting from XPath query on target."""
+    """(internal function) Return the strings resulting from XPath query on
+    target.
+    """
     elements = xpath(target)
-    if isinstance(elements, list):  # pragma: nocover
+    try:
         return [s for s in elements if isinstance(s, str)]
-    msg = f"Bad XPath result, list expected, got {elements!r}"
-    raise TypeError(msg)
+    except TypeError as e:  # pragma: nocover
+        # cant happen
+        msg = f"Bad XPath result, list expected, got {elements!r}"
+        raise TypeError(msg) from e
 
 
 # _xpath_text = xpath_compile("//text()")  # descendant and self
@@ -241,8 +251,8 @@ _class_registry: dict[str, type[Element]] = {}
 
 
 def register_element_class(cls: type[Element]) -> None:
-    """Associate a qualified element name to a Python class that handles this
-    type of element.
+    """(internal function) Associate a qualified element name to a Python class
+    that handles this type of element.
 
     Getting the right Python class when loading an existing ODF document is
     then transparent. Unassociated elements will be handled by the base
@@ -257,8 +267,8 @@ def register_element_class(cls: type[Element]) -> None:
 
 
 def register_element_class_list(cls: type[Element], tag_list: Iterable[str]) -> None:
-    """Associate a qualified element name to a Python class that handles this
-    type of element.
+    """(internal function) Associate a qualified element name to a Python class
+    that handles this type of element.
 
     Getting the right Python class when loading an existing ODF document is
     then transparent. Unassociated elements will be handled by the base
