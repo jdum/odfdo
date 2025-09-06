@@ -13,7 +13,6 @@ These methods or properties return a list of elements:
 """
 
 # Expected result on stdout:
-# 96 get methods are available
 # number of headings: 29
 # number of images stored: 0
 # number of paragraphs: 175
@@ -46,7 +45,6 @@ def read_source_document() -> Document:
 def analysis(document: Document) -> dict[str, int]:
     """Returns some statistics about the document."""
     result: dict[str, int] = {
-        "methods": 0,
         "headings": 0,
         "images": 0,
         "paragraphs": 0,
@@ -61,11 +59,10 @@ def analysis(document: Document) -> dict[str, int]:
     # other elements we are looking for.
     body = document.body
 
-    # Accessing a list of elements
     # Should you need to access all elements of a kind, there are the
     # get_xxxs methods, where xxx can be paragraph, heading, list, table, ...
     # Methods without parameters are accessible through properties.
-    result["methods"] = " ".join(dir(body)).count("get_")
+
     # Some examples, that you can check against actual content of the odt file:
     # See how complex is our wikipedia documents:
     result["headings"] = len(body.headers)
@@ -91,7 +88,6 @@ def analysis(document: Document) -> dict[str, int]:
 
 def display_analysis(stats: dict[str, int]) -> None:
     """Print the stats on stdout."""
-    print(f"{stats['methods']} get methods are available")
     print(f"number of headings: {stats['headings']}")
     print(f"number of images stored: {stats['images']}")
     print(f"number of paragraphs: {stats['paragraphs']}")
@@ -114,7 +110,6 @@ def test_unit(stats: dict[str, int]) -> None:
     if "ODFDO_TESTING" not in os.environ:
         return
 
-    assert stats["methods"] == 98
     assert stats["headings"] == 29
     assert stats["images"] == 0
     assert stats["paragraphs"] == 175
