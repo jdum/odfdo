@@ -35,7 +35,7 @@ from odfdo.element import (
     Element,
     _decode_qname,
     _uri_to_prefix,
-    _xpath_text_descendant,
+    _xpath_text_descendant_no_annotation,
     register_element_class,
     xpath_compile,
 )
@@ -208,7 +208,7 @@ def test__insert_find_text_bad():
             "x",
             "y",
             200,
-            _xpath_text_descendant,
+            _xpath_text_descendant_no_annotation,
         )
 
 

@@ -230,8 +230,8 @@ def xpath_return_strings(xpath: XPath, target: _Element) -> list[str]:
     raise TypeError(msg)
 
 
-_xpath_text = xpath_compile("//text()")  # descendant and self
-_xpath_text_descendant = xpath_compile("descendant::text()")
+# _xpath_text = xpath_compile("//text()")  # descendant and self
+# _xpath_text_descendant = xpath_compile("descendant::text()")
 # _xpath_text_main = xpath_compile("//*[not (parent::office:annotation)]/text()")
 _xpath_text_descendant_no_annotation = xpath_compile(
     "descendant::text()[not (parent::office:annotation)]"
