@@ -47,6 +47,7 @@ odfdo-headers = 'odfdo.scripts.headers:main'
 odfdo-table-shrink = 'odfdo.scripts.table_shrink:main'
 odfdo-userfield = 'odfdo.scripts.userfield:main'
 odfdo-markdown = 'odfdo.scripts.to_markdown:main'
+odfdo-from-csv = 'odfdo.scripts.from_csv:main'
 
 [dependency-groups]
 doc = [
