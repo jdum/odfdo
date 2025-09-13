@@ -73,6 +73,11 @@ def test_get_image_by_name(sample_body):
     assert element.url == IMG_PATH
 
 
+def test_get_image_by_name_none(sample_body):
+    element = sample_body.get_image(name="nope")
+    assert element is None
+
+
 def test_get_image_by_position(sample_body):
     element = sample_body.get_image(position=0)
     assert element.url == IMG_PATH
