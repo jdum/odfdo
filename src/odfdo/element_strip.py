@@ -31,7 +31,8 @@ def strip_elements(
     element: Element,
     sub_elements: Element | Iterable[Element],
 ) -> Element | list[Element | str]:
-    """(internal) Remove the tags of provided elements, keeping inner childs and text.
+    """(internal) Remove the tags of provided elements, keeping inner childs
+    and text.
 
     Warning : no clone in sub_elements list.
 
@@ -57,8 +58,8 @@ def strip_tags(
     protect: Iterable[str] | None = None,
     default: str | None = "text:p",
 ) -> Element | list[Element | str]:
-    """(internal) Remove the tags listed in "strip", recursively, keeping inner childs
-    and text.
+    """(internal) Remove the tags listed in "strip", recursively, keeping inner
+    childs and text.
 
     Tags listed in "protect" stop the removal one level depth. If
     the first level element is stripped, "default" is used to embed the
