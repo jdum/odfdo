@@ -466,6 +466,38 @@ def test_insert_element_prev_sibling():
     assert root.serialize() == "<office:text><text:h/><text:p/><text:p/></office:text>"
 
 
+def test_insert_element_start_1():
+    root = Element.from_tag(
+        "<office:text><text:p>abc</text:p><text:p>def</text:p></office:text>"
+    )
+    element = root.get_elements("//text:p")[0]
+    item = Element.from_tag("<text:span>new</text:span>")
+    element.insert(item, start=True)
+    print(root.serialize())
+    assert root.serialize() == (
+        "<office:text>"
+        "<text:p><text:span>new</text:span>abc</text:p>"
+        "<text:p>def</text:p>"
+        "</office:text>"
+    )
+
+
+def test_insert_element_start_2():
+    root = Element.from_tag(
+        "<office:text><text:p>abc</text:p><text:p>def</text:p></office:text>"
+    )
+    element = root.get_elements("//text:p")[0]
+    item = Element.from_tag("<text:span>new</text:span>tail")
+    element.insert(item, start=True)
+    print(root.serialize())
+    assert root.serialize() == (
+        "<office:text>"
+        "<text:p><text:span>new</text:span>tailabc</text:p>"
+        "<text:p>def</text:p>"
+        "</office:text>"
+    )
+
+
 def test_insert_element_bad_element():
     element = Element.from_tag("text:p")
     with pytest.raises(AttributeError):
