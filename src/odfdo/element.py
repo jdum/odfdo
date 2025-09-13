@@ -1133,21 +1133,6 @@ class Element(MDBase):
             elements = [element.__element for element in odf_elements]
             current.extend(elements)
 
-    def _cut_text_tail(self) -> str:
-        removed = ""
-        current = self.__element
-        children = list(current.iterchildren())
-        if children:
-            # Append to tail of the last child
-            last_child = children[-1]
-            if last_child.tail:
-                removed = last_child.tail
-                last_child.tail = ""
-        else:
-            removed = current.text or ""
-            current.text = ""
-        return removed
-
     def __append(self, str_or_element: str | Element) -> None:
         """Insert element or text in the last position."""
 
