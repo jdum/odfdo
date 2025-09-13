@@ -29,13 +29,13 @@ from .element import Element
 def _get_successor(
     element: Element, target: Element
 ) -> tuple[Element | None, Element | None]:
-    next_u_element = element._Element__element.getnext()
+    next_u_element = element._Element__element.getnext()  # type: ignore[attr-defined]
     if next_u_element is not None:
         return Element.from_tag(next_u_element), target
     parent = element.parent
     if parent is None:
         return None, None
-    return _get_successor(parent, target.parent)
+    return _get_successor(parent, target.parent)  # type: ignore[arg-type]
 
 
 def _find_any_id(element: Element) -> tuple[str, str, str]:
@@ -134,7 +134,7 @@ def _get_between_base(
                     new_target.delete(child)
                 new_target.text = ""
                 new_target.tail = ""
-                target._Element__append(new_target)
+                target._Element__append(new_target)  # type: ignore[attr-defined]
                 target = new_target
                 current = current.children[0]
                 continue
@@ -157,12 +157,12 @@ def _get_between_base(
                     new_target.delete(child)
                 new_target.text = ""
                 new_target.tail = ""
-                target._Element__append(new_target)
+                target._Element__append(new_target)  # type: ignore[attr-defined]
                 target = new_target
                 current = current.children[0]
                 continue
             # collect
-            target._Element__append(current.clone)
+            target._Element__append(current.clone)  # type: ignore[attr-defined]
             current, target = _get_successor(current, target)  # type: ignore
             continue
     # Now resu should be the "parent" of inserted parts
@@ -201,11 +201,11 @@ def _no_header_inner_list(inner: list[Element]) -> list[Element]:
     for element in inner:
         if element.tag == "text:h":
             children = element.children
-            text = element._Element__element.text
+            text = element._Element__element.text  # type: ignore[attr-defined]
             para = Element.from_tag("text:p")
             para.text = text or ""
             for child in children:
-                para._Element__append(child)
+                para._Element__append(child)  # type: ignore[attr-defined]
             result.append(para)
         else:
             result.append(element)
