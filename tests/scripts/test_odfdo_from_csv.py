@@ -26,7 +26,7 @@ def run_params(params: list):
 
 def test_no_param():
     params = []
-    _out, err, exitcode = run_params(params)
+    _out, _err, exitcode = run_params(params)
     assert exitcode == 1
 
 
@@ -47,7 +47,7 @@ def test_no_file():
 def test_csv_1(samples):
     source = samples("text1.csv")
     params = ["-i", source]
-    out, err, exitcode = run_params(params)
+    out, _err, exitcode = run_params(params)
     assert exitcode == 0
     content = io.BytesIO(out)
     document = Document(content)

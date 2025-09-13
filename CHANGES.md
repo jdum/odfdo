@@ -1,5 +1,37 @@
 # Odfdo Release Notes
 
+## [3.16.6] - 2025-09-13
+
+-   `NamedRange` can now be used locally on a table, not only at a global document level, as required by ODF standard.
+-   Refactor of some functions and methods, including `Element.xpath()`, `Element.get_office_names()`.
+-   Fix style detection for `TabStopStyle`.
+-   Refactor and add tests for `Element`, `element_strip.py`, `Image`, `NamedRange`, `Annotation` for better coverage.
+
+### Changed
+
+-   Refactor `NamedRangeuse` using mixin class, allow NamedRange use in local table.
+-   Move `Element.strip_elements` and `strip_tags` from element module to their own module.
+-   Refactor `Element.xpath()`.
+-   Apply `mypy` to `elements_between.py`, `scripts/to_csv.py`.
+-   Refactor `Element.get_office_names()`.
+-   Enforce unicity of class declaration (internal).
+
+### Added
+
+-   Add tests for modules `element`, `element_strip`.
+-   Add tests for method `Element.xpath()`.
+-   Add tests for class `Image`, `NamedRange`, `Annotation`.
+
+### Fixed
+
+-   Make "named:expression" compliant with ODF standard.
+-   Fix style detection for `TabStopStyle`.
+
+### Removed
+
+-   Remove `element._add_text()` (move to embeded function).
+-   Remove unused internal `Element.__cut_text_tail()`.
+
 ## [3.16.5] - 2025-09-6
 
 -   Add new recipe `define_margins_and_position_for_a_table_in_a_text_document.py` for positioning a table in a text document.

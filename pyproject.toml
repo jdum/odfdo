@@ -1,6 +1,6 @@
 [project]
 name = "odfdo"
-version = "3.16.5"
+version = "3.16.6"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 readme = "README.md"
@@ -138,7 +138,7 @@ ignore = [
     # Class attribute `open` is shadowing a Python builtin
     "A003",
     # Use `X | Y` in `isinstance` call instead of `(X, Y)`
-    "UP038",
+    # "UP038",
     # Use `X | Y` for type annotations
     "UP007",
     # Avoid specifying long messages outside the exception class
