@@ -112,6 +112,8 @@ def to_csv(args: Namespace) -> None:
             raise ValueError(f"Table {args.table_name!r} not found")
     else:
         table = document.body.get_table()
+        if not table:
+            raise ValueError("No table found")
     if args.unix:
         dialect = "unix"
     else:
