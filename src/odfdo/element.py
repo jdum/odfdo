@@ -59,7 +59,6 @@ if TYPE_CHECKING:
     from .image import DrawImage
     from .link import Link
     from .list import List
-    from .named_range import NamedRange
     from .note import Note
     from .paragraph import Paragraph, Span
     from .reference import (
@@ -1716,75 +1715,6 @@ class Element(MDBase):
 
     # Named Range
 
-    def get_named_ranges(self) -> list[NamedRange]:
-        """Return all the tables named ranges.
-
-        Returns: list of NamedRange
-        """
-        named_ranges = self.get_elements(
-            "descendant::table:named-expressions/table:named-range"
-        )
-        return named_ranges  # type: ignore[return-value]
-
-    def get_named_range(self, name: str) -> NamedRange | None:
-        """Return the named range of specified name, or None if not found.
-
-        Args:
-
-            name -- str
-
-        Returns: NamedRange
-        """
-        named_range = self.get_elements(
-            f'descendant::table:named-expressions/table:named-range[@table:name="{name}"][1]'
-        )
-        if named_range:
-            return named_range[0]  # type: ignore[return-value]
-        else:
-            return None
-
-    def append_named_range(self, named_range: NamedRange) -> None:
-        """Append the named range to the spreadsheet, replacing existing named
-        range of same name if any.
-
-        Args:
-
-            named_range --  NamedRange
-        """
-        if self.tag != "office:spreadsheet":
-            raise ValueError(f"Element is no 'office:spreadsheet' : {self.tag}")
-        named_expressions = self.get_element("table:named-expressions")
-        if not named_expressions:
-            named_expressions = Element.from_tag("table:named-expressions")
-            self.__append(named_expressions)
-        # exists ?
-        current = named_expressions.get_element(
-            f'table:named-range[@table:name="{named_range.name}"][1]'
-        )
-        if current:
-            named_expressions.delete(current)
-        named_expressions.__append(named_range)
-
-    def delete_named_range(self, name: str) -> None:
-        """Delete the Named Range of specified name from the spreadsheet.
-
-        Args:
-
-            name -- str
-        """
-        if self.tag != "office:spreadsheet":
-            raise ValueError(f"Element is no 'office:spreadsheet' : {self.tag}")
-        named_range = self.get_named_range(name)
-        if not named_range:
-            return
-        named_range.delete()
-        named_expressions = self.get_element("table:named-expressions")
-        if not named_expressions:
-            return
-        element = named_expressions.__element
-        children = list(element.iterchildren())
-        if not children:
-            self.delete(named_expressions)
 
     # Notes
 

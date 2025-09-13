@@ -158,28 +158,15 @@ class NamedRange(Element):
             self.set_attribute("table:range-usable-as", usage)
             self.usage = usage
 
-    @property
-    def name(self) -> str | None:
-        """Get / set the name of the table."""
-        return self.get_attribute_string("table:name")
-
-    @name.setter
-    def name(self, name: str) -> None:
-        """Set the name of the Named Range. The name is mandatory, if a Named
-        Range of the same name exists, it will be replaced. Name must contains
-        only alphanumerics characters and '_', and can not be of a cell
-        coordinates form like 'AB12'.
-
-        Args:
-
-            name -- str
-        """
+    @staticmethod
+    def _check_nr_name(name: str) -> str:
         name = name.strip()
         if not name:
-            raise ValueError("Name required.")
+            raise ValueError("Named Range name can't be empty.")
         for x in name:
             if x in _forbidden_in_named_range():
-                raise ValueError(f"Character forbidden '{x}' ")
+                msg = f"Character forbidden in Named Range name: {x!r} "
+                raise ValueError(msg)
         step = ""
         for x in name:
             if x in string.ascii_letters and step in ("", "A"):
@@ -192,17 +179,41 @@ class NamedRange(Element):
                 step = ""
                 break
         if step == "A1":
-            raise ValueError("Name of the type 'ABC123' is not allowed.")
+            msg = f"Name of the type 'ABC123' is not allowed for Named Range: {name!r}"
+            raise ValueError(msg)
+        return name
+
+    @property
+    def name(self) -> str | None:
+        """Get / set the name of the Named Range.
+
+        The name is mandatory, if a Named Range of the same name exists, it will be replaced. Name must contains
+        only alphanumerics characters and '_', and can not be of a cell coordinates form like 'AB12'.
+
+        Args:
+
+            name -- str
+        """
+        return self.get_attribute_string("table:name")
+
+    @name.setter
+    def name(self, name: str) -> None:
+        """Get / set  the name of the Named Range."""
+        name = self._check_nr_name(name)
         with contextlib.suppress(Exception):
-            # we are not on an inserted in a document.
+            # we are not on an NR inserted in a document.
+            # We know the body should contains NR mixin if
+            # not exception.
             if body := self.document_body:
-                named_range = body.get_named_range(name)
+                named_range = body.get_named_range(name)  # type: ignore[attr-defined]
                 if named_range:
                     named_range.delete()
         self.set_attribute("table:name", name)
 
     def set_table_name(self, name: str) -> None:
-        """Set the name of the table of the Named Range. The name is mandatory.
+        """Set the name of the table of the Named Range.
+
+        The name is mandatory.
 
         Args:
 

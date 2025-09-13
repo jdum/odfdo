@@ -59,6 +59,7 @@ from .utils import (
     isiterable,
     translate_from_any,
 )
+from .body import BODY_NR_TAGS
 
 if TYPE_CHECKING:
     from .element import EText
@@ -2451,55 +2452,157 @@ class Table(MDTable, Element):
         return True
 
     # Named Range
+    def _local_named_ranges(self) -> list[NamedRange]:
+        """(internal) Return the list of local Name Ranges."""
+        named_ranges = self.get_elements(
+            "descendant::table:named-expressions/table:named-range"
+        )
+        return named_ranges  # type: ignore[return-value]
+
+    def _local_named_range(self, name: str) -> NamedRange | None:
+        """(internal) Return the local Name Range of the specified name."""
+        named_range = self.get_elements(
+            f'descendant::table:named-expressions/table:named-range[@table:name="{name}"][1]'
+        )
+        if named_range:
+            return named_range[0]  # type: ignore[return-value]
+        else:
+            return None
+
+    def _local_append_named_range(self, named_range: NamedRange) -> None:
+        """(internal) Append the named range to the current table."""
+        named_expressions = self.get_element("table:named-expressions")
+        if not named_expressions:
+            named_expressions = Element.from_tag("table:named-expressions")
+            self._Element__append(named_expressions)  # type: ignore[attr-defined]
+        # exists ?
+        current = named_expressions.get_element(
+            f'table:named-range[@table:name="{named_range.name}"][1]'
+        )
+        if current:
+            named_expressions.delete(current)
+        named_expressions._Element__append(named_range)  # type: ignore[attr-defined]
+
+    def _local_set_named_range(
+        self, name: str, crange: str | tuple | list, usage: str | None = None
+    ) -> None:
+        """(internal) Create a Named Range element and insert it in the current
+        table.
+        """
+        named_range = NamedRange(name, crange, self.name, usage)
+        self._local_append_named_range(named_range)
+
+    def _local_delete_named_range(self, name: str) -> None:
+        """(internal) Delete the Named Range of specified name."""
+        named_range = self._local_named_range(name)
+        if not named_range:
+            return
+        named_range.delete()
+        named_expressions = self.get_element("table:named-expressions")
+        if not named_expressions:
+            return
+        element = named_expressions._Element__element  # type: ignore[attr-defined]
+        children = list(element.iterchildren())
+        if not children:
+            self.delete(named_expressions)
 
     def get_named_ranges(
         self,
         table_name: str | list[str] | None = None,
+        global_scope: bool = True,
     ) -> list[NamedRange]:
-        """Returns the list of available Name Ranges of the spreadsheet. If
-        table_name is provided, limits the search to these tables.
-        Beware : named ranges are stored at the body level, thus do not call
-        this method on a cloned table.
+        """Return the list of Name Ranges.
+
+        If "global_scope" is True (default), search in the entire document, else limit search to the current Table. If "table_name" is provided, limits the search to these tables.
+
+        Named ranges can be local to the Table or global. Global named ranges are stored at the body level, thus do not call this method on a cloned table if you need to access to the global named ranges.
 
         Args:
 
             table_names -- str or list of str, names of tables
 
-        Return : list of table_range
+            global_scope -- bool, serch in entire document or in the current table.
+
+        Returns : list of NamedRange
         """
-        body = self.document_body
-        if not body:
-            return []
-        all_named_ranges = body.get_named_ranges()
+        if global_scope:
+            body = self.document_body
+            if not body or body.tag not in BODY_NR_TAGS:
+                return []
+            named_ranges = body.get_named_ranges()  # type: ignore[attr-defined]
+        else:
+            named_ranges = self._local_named_ranges()
         if not table_name:
-            return all_named_ranges
+            return named_ranges  # type: ignore[no-any-return]
         filter_ = []
         if isinstance(table_name, str):
             filter_.append(table_name)
         elif isiterable(table_name):
             filter_.extend(table_name)
         else:
-            raise ValueError(
-                f"table_name must be string or Iterable, not {type(table_name)}"
-            )
-        return [nr for nr in all_named_ranges if nr.table_name in filter_]
+            msg = f"table_name must be string or Iterable, not {type(table_name)!r}"
+            raise ValueError(msg)
+        return [nr for nr in named_ranges if nr.table_name in filter_]
 
-    def get_named_range(self, name: str) -> NamedRange | None:
-        """Returns the Name Ranges of the specified name. If
-        table_name is provided, limits the search to these tables.
-        Beware : named ranges are stored at the body level, thus do not call
-        this method on a cloned table.
+    def get_named_range(
+        self, name: str, global_scope: bool = True
+    ) -> NamedRange | None:
+        """Return the Name Range of the specified name.
+
+        If "global_scope" is True (default), search in the entire document, else limit search to the current Table.
+
+        Named ranges can be local to the Table or global. Global named ranges are stored at the body level, thus do not call this method on a cloned table if you need to access to the global named ranges.
 
         Args:
 
             name -- str, name of the named range object
 
-        Return : NamedRange or None
+            global_scope -- bool, serch in entire document or in the current table.
+
+        Returns : NamedRange or None
         """
-        body = self.document_body
-        if not body:
-            raise ValueError("Table is not inside a document")
-        return body.get_named_range(name)
+        if global_scope:
+            body = self.document_body
+            if not body:
+                raise ValueError("Table is not inside a document")
+            if body.tag not in BODY_NR_TAGS:
+                return None
+            nr: NamedRange | None = body.get_named_range(name)  # type: ignore[attr-defined]
+
+        else:
+            nr = self._local_named_range(name)
+        return nr
+
+    def append_named_range(
+        self, named_range: NamedRange, global_scope: bool = True
+    ) -> None:
+        """Append the named range to the document.
+
+        An existing named range of same name is replaced.
+
+        If "global_scope" is True (default), append in the document body, else to the current Table.
+
+        Named ranges can be local to the Table or global. Global named ranges are stored at the body level, thus do not call this method on a cloned table if you need to access to the global named ranges.
+
+        Args:
+
+            named_range --  NamedRange
+
+            global_scope -- bool, serch in entire document or in the current table.
+        """
+        if global_scope:
+            body = self.document_body
+            if not body:
+                raise ValueError("Table is not inside a document")
+            if body.tag not in BODY_NR_TAGS:
+                msg = (
+                    "Document must be of type Chart, Drawing, "
+                    "Presentation, Spreadsheet or Text"
+                )
+                raise TypeError(msg)
+            body.append_named_range(named_range)  # type: ignore[attr-defined]
+        else:
+            self._local_append_named_range(named_range)
 
     def set_named_range(
         self,
@@ -2507,10 +2610,15 @@ class Table(MDTable, Element):
         crange: str | tuple | list,
         table_name: str | None = None,
         usage: str | None = None,
+        global_scope: bool = True,
     ) -> None:
         """Create a Named Range element and insert it in the document.
-        Beware : named ranges are stored at the body level, thus do not call
-        this method on a cloned table.
+
+        An existing named range of same name is replaced.
+
+        If "global_scope" is True (default), insert in the document's body, else to the current Table. If "table_name" is None, use current table name.
+
+        Named ranges can be local to the Table or global. Global named ranges are stored at the body level, thus do not call this method on a cloned table if you need to access to the global named ranges.
 
         Args:
 
@@ -2518,36 +2626,65 @@ class Table(MDTable, Element):
 
             crange -- str or tuple of int, cell or area coordinate
 
-            table_name -- str, name of the table
+            table_name -- str or None, name of the table
 
-            uage -- None or 'print-range', 'filter', 'repeat-column', 'repeat-row'
+            usage -- None or 'print-range', 'filter', 'repeat-column', 'repeat-row'
+
+            global_scope -- bool, serch in entire document or in the current table.
         """
-        body = self.document_body
-        if not body:
-            raise ValueError("Table is not inside a document")
+        name = name.strip()
         if not name:
-            raise ValueError("Name required.")
-        if table_name is None:
-            table_name = self.name
-        named_range = NamedRange(name, crange, table_name, usage)
-        body.append_named_range(named_range)
+            raise ValueError("Name required")
+        if global_scope:
+            body = self.document_body
+            if not body:
+                raise ValueError("Table is not inside a document")
+            if body.tag not in BODY_NR_TAGS:
+                msg = (
+                    "Document must be of type Chart, Drawing, "
+                    "Presentation, Spreadsheet or Text"
+                )
+                raise TypeError(msg)
+            if not table_name:
+                table_name = self.name
+            body.set_named_range(  # type: ignore[attr-defined]
+                name=name,
+                crange=crange,
+                table_name=table_name,
+                usage=usage,
+            )
+        else:
+            self._local_set_named_range(name=name, crange=crange, usage=usage)
 
-    def delete_named_range(self, name: str) -> None:
-        """Delete the Named Range of specified name from the spreadsheet.
-        Beware : named ranges are stored at the body level, thus do not call
-        this method on a cloned table.
+    def delete_named_range(self, name: str, global_scope: bool = True) -> None:
+        """Delete the Named Range of specified name.
+
+        If "global_scope" is True (default), search in the entire document, else limit search to the current Table.
+
+        Named ranges can be local to the Table or global. Global named ranges are stored at the body level, thus do not call this method on a cloned table if you need to access to the global named ranges.
 
         Args:
 
             name -- str
+
+            global_scope -- bool, serch in entire document or in the current table.
         """
         name = name.strip()
         if not name:
-            raise ValueError("Name required.")
-        body = self.document_body
-        if not body:
-            raise ValueError("Table is not inside a document.")
-        body.delete_named_range(name)
+            raise ValueError("Name required")
+        if global_scope:
+            body = self.document_body
+            if not body:
+                raise ValueError("Table is not inside a document")
+            if body.tag not in BODY_NR_TAGS:
+                msg = (
+                    "Document must be of type Chart, Drawing, "
+                    "Presentation, Spreadsheet or Text"
+                )
+                raise TypeError(msg)
+            body.delete_named_range(name)  # type: ignore[attr-defined]
+        else:
+            self._local_delete_named_range(name)
 
     #
     # Cell span
@@ -2560,6 +2697,7 @@ class Table(MDTable, Element):
     ) -> bool:
         """Create a Cell Span : span the first cell of the area on several
         columns and/or rows.
+
         If merge is True, replace text of the cell by the concatenation of
         existing text in covered cells.
         Beware : if merge is True, old text is changed, if merge is False
@@ -2754,9 +2892,9 @@ class Table(MDTable, Element):
         style: str | None = None,
         **fmtparams: Any,
     ) -> Table:
-        """Import the CSV text content into a Table. If the path_or_file
-        parameter is a Path or a string, it is opened as a path. Else a opened
-        file-like is expected.
+        """Import the CSV text content into a Table.
+
+        If the path_or_file parameter is a Path or a string, it is opened as a path. Else a opened file-like is expected.
 
         CSV format can be autodetected to a certain limit. Use **fmtparams to
         define cvs.reader parameters.
@@ -2797,8 +2935,9 @@ def import_from_csv(
     style: str | None = None,
     **fmtparams: Any,
 ) -> Table:
-    """Import the CSV file into a Table. If the path_or_file parameter is a
-    Path or a string, it is opened as a path. Else a opened file-like is
+    """Import the CSV file into a Table.
+
+    If the path_or_file parameter is a Path or a string, it is opened as a path. Else a opened file-like is
     expected.
 
     CSV format can be autodetected to a certain limit. Use **fmtparams to
