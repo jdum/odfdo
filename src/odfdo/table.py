@@ -37,6 +37,7 @@ from warnings import warn
 
 from lxml.etree import XPath
 
+from .body import BODY_NR_TAGS
 from .cell import Cell
 from .column import Column
 from .datatype import Boolean, Date, DateTime, Duration
@@ -59,7 +60,6 @@ from .utils import (
     isiterable,
     translate_from_any,
 )
-from .body import BODY_NR_TAGS
 
 if TYPE_CHECKING:
     from .element import EText
