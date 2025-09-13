@@ -42,9 +42,6 @@ from odfdo.element import (
 from odfdo.paragraph import Paragraph
 from odfdo.xmlpart import XmlPart
 
-# from lxml.etree import Element as EtreeElement
-
-
 SPECIAL_CHARS = 'using < & " characters'
 
 Sample = namedtuple("Sample", ["container", "content", "para", "anno", "span"])
@@ -587,6 +584,12 @@ def test_append_element():
     element.append("oo2")
     expected = "<text:p>foo1<text:line-break/>foo2</text:p>"
     assert element.serialize() == expected
+
+
+def test_append_wrong_item():
+    element = Element.from_tag("text:p")
+    with pytest.raises(TypeError):
+        element._Element__append([])
 
 
 def test_search_paragraph(span_styles):
