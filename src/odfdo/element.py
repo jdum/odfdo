@@ -290,8 +290,10 @@ def register_element_class_list(cls: type[Element], tag_list: Iterable[str]) -> 
 def _register_element_class(cls: type[Element], qname: str) -> None:
     # Turn tag name into what lxml is expecting
     tag = _get_lxml_tag(qname)
-    if tag not in _class_registry:
-        _class_registry[tag] = cls
+    if tag in _class_registry:  # pragma: nocover
+        msg = f"Class with tag {qname!r} already seen: {_class_registry[tag]!r}"
+        raise RuntimeError(msg)
+    _class_registry[tag] = cls
 
 
 class EText(str):
