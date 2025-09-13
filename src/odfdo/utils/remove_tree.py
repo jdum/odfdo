@@ -119,7 +119,7 @@ def remove_tree(
 
         safe -- Element class, no remove if parent is safe
 
-        keep_inner- bool, keep inner text and element
+        keep_inner -- bool, keep inner text and element
     """
     if safe:
         safe_tag = safe().tag

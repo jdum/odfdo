@@ -35,6 +35,7 @@ from .element import (
     Element,
     EText,
 )
+from .element_strip import strip_elements, strip_tags
 from .line_break import LineBreak
 from .link import Link
 from .note import Note
@@ -711,7 +712,7 @@ class ParaMixin(Element):
             protect = ("text:h",)
         else:
             protect = None
-        return self.strip_tags(strip=strip, protect=protect)  # type: ignore [return-value]
+        return strip_tags(self, strip=strip, protect=protect)  # type: ignore [return-value]
 
     def remove_span(self, spans: Element | list[Element]) -> Element:
         """Return a copy of the element, the spans (not a clone) removed.
@@ -720,7 +721,7 @@ class ParaMixin(Element):
 
             spans -- Element or list of Element
         """
-        return self.strip_elements(spans)  # type: ignore [return-value]
+        return strip_elements(self, spans)  # type: ignore [return-value]
 
     @_by_regex_offset
     def set_link(
@@ -755,7 +756,7 @@ class ParaMixin(Element):
     def remove_links(self) -> Element:
         """Return a copy of the element, without links tags."""
         strip = (Link._tag,)
-        return self.strip_tags(strip=strip)  # type: ignore [return-value]
+        return strip_tags(self, strip=strip)  # type: ignore [return-value]
 
     def remove_link(self, links: Link | list[Link]) -> Element:
         """Return a copy of the element (not a clone), with the sub links
@@ -765,7 +766,7 @@ class ParaMixin(Element):
 
             links -- Link or list of Link
         """
-        return self.strip_elements(links)  # type: ignore [return-value]
+        return strip_elements(self, links)  # type: ignore [return-value]
 
     def insert_reference(
         self,

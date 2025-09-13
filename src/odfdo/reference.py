@@ -26,6 +26,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from .element import Element, PropDef, register_element_class
+from .element_strip import strip_elements, strip_tags
 from .elements_between import elements_between
 
 if TYPE_CHECKING:
@@ -351,7 +352,7 @@ def strip_references(element: Element) -> Element | list:
     Nota : using the .delete() on the reference mark will delete inner content.
     """
     to_strip = ("text:reference-ref",)
-    return element.strip_tags(to_strip)
+    return strip_tags(element, to_strip)
 
 
 def remove_all_reference_marks(element: Element) -> Element | list:
@@ -365,7 +366,7 @@ def remove_all_reference_marks(element: Element) -> Element | list:
         "text:reference-mark-start",
         "text:reference-mark-end",
     )
-    return element.strip_tags(to_strip)
+    return strip_tags(element, to_strip)
 
 
 def remove_reference_mark(
@@ -386,7 +387,7 @@ def remove_reference_mark(
         to_strip.append(start_ref)
     if end_ref:
         to_strip.append(end_ref)
-    element.strip_elements(to_strip)
+    strip_elements(element, to_strip)
 
 
 register_element_class(Reference)

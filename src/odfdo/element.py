@@ -26,7 +26,6 @@ from __future__ import annotations
 
 import contextlib
 import re
-import sys
 from collections.abc import Callable, Iterable
 from copy import deepcopy
 from datetime import datetime, timedelta
@@ -1202,129 +1201,6 @@ class Element(MDBase):
         """
         current = self.__element
         current.replace(old_element.__element, new_element.__element)
-
-    def strip_elements(
-        self,
-        sub_elements: Element | Iterable[Element],
-    ) -> Element | list[Element | str]:
-        """Remove the tags of provided elements, keeping inner childs and text.
-
-        Return : the striped element.
-
-        Warning : no clone in sub_elements list.
-
-        Args:
-
-            sub_elements -- Element or list of Element
-        """
-        if not sub_elements:
-            return self
-        if isinstance(sub_elements, Element):
-            sub_elements = (sub_elements,)
-        replacer = _get_lxml_tag("text:this-will-be-removed")
-        for element in sub_elements:
-            element.__element.tag = replacer
-        strip = ("text:this-will-be-removed",)
-        return self.strip_tags(strip=strip, default=None)
-
-    def strip_tags(
-        self,
-        strip: Iterable[str] | None = None,
-        protect: Iterable[str] | None = None,
-        default: str | None = "text:p",
-    ) -> Element | list[Element | str]:
-        """Remove the tags listed in strip, recursively, keeping inner childs
-        and text. Tags listed in protect stop the removal one level depth. If
-        the first level element is stripped, default is used to embed the
-        content in the default element. If default is None and first level is
-        striped, a list of text and children is returned. Return : the striped
-        element.
-
-        strip_tags should be used by on purpose methods (strip_span ...)
-        (Method name taken from lxml).
-
-        Args:
-
-            strip -- iterable list of str odf tags, or None
-
-            protect -- iterable list of str odf tags, or None
-
-            default -- str odf tag, or None
-
-        Returns:
-
-            Element, or list of Element or string.
-        """
-        if not strip:
-            return self
-        if not protect:
-            protect = ()
-        protected = False
-        result: Element | list[Element | str] = []
-        result, modified = Element._strip_tags(self, strip, protect, protected)
-        if modified and isinstance(result, list) and default:
-            new: Element = Element.from_tag(default)
-            for content in result:
-                if isinstance(content, Element):
-                    new.__append(content)
-                else:
-                    new.text = content
-            result = new
-        return result
-
-    @staticmethod
-    def _strip_tags(
-        element: Element,
-        strip: Iterable[str],
-        protect: Iterable[str],
-        protected: bool,
-    ) -> tuple[Element | list[Element | str], bool]:
-        """Sub method for strip_tags()."""
-        element_clone = element.clone
-        modified = False
-        children = []
-        if protect and element.tag in protect:
-            protect_below = True
-        else:
-            protect_below = False
-        for child in element_clone.children:
-            striped_child, is_modified = Element._strip_tags(
-                child, strip, protect, protect_below
-            )
-            if is_modified:
-                modified = True
-            if isinstance(striped_child, list):
-                children.extend(striped_child)
-            else:
-                children.append(striped_child)
-
-        text = element_clone.text
-        tail = element_clone.tail
-        if not protected and strip and element.tag in strip:
-            element_result: list[Element | str] = []
-            if text is not None:
-                element_result.append(text)
-            for child2 in children:
-                element_result.append(child2)
-            if tail is not None:
-                element_result.append(tail)
-            return (element_result, True)
-        else:
-            if not modified:
-                return (element, False)
-            element.clear()
-            try:
-                for key, value in element_clone.attributes.items():
-                    element.set_attribute(key, value)
-            except ValueError:
-                sys.stderr.write(f"strip_tags(): bad attribute in {element_clone}\n")
-            if text is not None:
-                element.__append(text)
-            for child3 in children:
-                element.__append(child3)
-            if tail is not None:
-                element.tail = tail
-            return (element, True)
 
     def xpath(self, xpath_query: str) -> list[Element | EText]:
         """Apply XPath query to the element and its subtree.
