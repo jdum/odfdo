@@ -1133,14 +1133,6 @@ class Element(MDBase):
             elements = [element.__element for element in odf_elements]
             current.extend(elements)
 
-    @staticmethod
-    def _add_text(text1: str | None, text2: str | None) -> str:
-        if text1 is None:
-            text1 = ""
-        if text2 is None:
-            text2 = ""
-        return _re_anyspace.sub(" ", text1 + text2)
-
     def _cut_text_tail(self) -> str:
         removed = ""
         current = self.__element
@@ -1158,6 +1150,10 @@ class Element(MDBase):
 
     def __append(self, str_or_element: str | Element) -> None:
         """Insert element or text in the last position."""
+
+        def _add_text(text1: str | None, text2: str | None) -> str:
+            return _re_anyspace.sub(" ", (text1 or "") + (text2 or ""))
+
         current = self.__element
         if isinstance(str_or_element, str):
             # Has children ?
@@ -1165,10 +1161,10 @@ class Element(MDBase):
             if children:
                 # Append to tail of the last child
                 last_child = children[-1]
-                last_child.tail = self._add_text(last_child.tail, str_or_element)
+                last_child.tail = _add_text(last_child.tail, str_or_element)
             else:
                 # Append to text of the element
-                current.text = self._add_text(current.text, str_or_element)
+                current.text = _add_text(current.text, str_or_element)
         elif isinstance(str_or_element, Element):
             current.append(str_or_element.__element)
         else:
