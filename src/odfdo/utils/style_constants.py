@@ -56,8 +56,9 @@ _FALSE_FAMILY_MAP = {
     "time": "number:time-style",
     "boolean": "number:boolean-style",
     "currency": "number:currency-style",
-    "tab-stop": "style:tab-stop",
 }
+# "tab-stop": "style:tab-stop", Defined in toc.py
+
 
 OTHER_STYLES = {
     "style:default-style",

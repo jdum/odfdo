@@ -25,7 +25,6 @@ import pytest
 
 from odfdo.document import Document
 from odfdo.element import Element
-from odfdo.style import Style
 from odfdo.toc import (
     TOC,
     IndexTitle,
@@ -84,7 +83,7 @@ def test_tab_stop_style_class():
 
 def test_tab_stop_style_class_from_tag():
     element = Element.from_tag("<style:tab-stop/>")
-    assert isinstance(element, Style)
+    assert isinstance(element, TabStopStyle)
 
 
 def test_tab_stop_style_argsg():
