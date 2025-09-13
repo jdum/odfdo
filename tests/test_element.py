@@ -40,6 +40,7 @@ from odfdo.element import (
     xpath_compile,
 )
 from odfdo.paragraph import Paragraph
+from odfdo.section import Section
 from odfdo.xmlpart import XmlPart
 
 SPECIAL_CHARS = 'using < & " characters'
@@ -794,3 +795,36 @@ def test_xpath_no_bool():
     element = Element.from_tag('<text:s text:c="1" />')
     result = element.xpath("boolean(//@text:c)")
     assert result == []
+
+
+def test_serialize():
+    element = Element.from_tag("<text:span>abc</text:span>")
+    assert element.serialize() == "<text:span>abc</text:span>"
+
+
+def test_serialize_with_ns():
+    element = Element.from_tag("<text:span>abc</text:span>")
+    assert element.serialize(with_ns=True) == (
+        "<text:span xmlns:text="
+        '"urn:oasis:names:tc:opendocument:xmlns:text:1.0">'
+        "abc</text:span>"
+    )
+
+
+def test_set_inner_text_exists():
+    element = Element.from_tag("<text:p>x <text:span>abc</text:span> y</text:p>")
+    element._set_inner_text("text:span", "new")
+    assert element.serialize() == "<text:p>x <text:span>new</text:span> y</text:p>"
+
+
+def test_set_inner_text_none():
+    element = Element.from_tag("<text:p>x y</text:p>")
+    element._set_inner_text("text:span", "new")
+    assert element.serialize() == "<text:p>x y<text:span>new</text:span></text:p>"
+
+
+def test_sections(sample):
+    content = sample.content
+    result = content.body.sections
+    assert len(result) == 2
+    assert isinstance(result[0], Section)
