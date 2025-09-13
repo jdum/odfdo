@@ -39,6 +39,7 @@ from odfdo.element import (
     register_element_class,
     xpath_compile,
 )
+from odfdo.named_range import NamedRange
 from odfdo.paragraph import Paragraph
 from odfdo.section import Section
 from odfdo.xmlpart import XmlPart
@@ -828,3 +829,21 @@ def test_sections(sample):
     result = content.body.sections
     assert len(result) == 2
     assert isinstance(result[0], Section)
+
+
+@pytest.mark.parametrize(
+    "tag",
+    [
+        "office:chart",
+        "office:drawing",
+        "office:presentation",
+        "office:spreadsheet",
+        "office:text",
+    ],
+)
+def test_append_named_range_in_class(tag):
+    nr = NamedRange("nr_name", "A1:C2", "table name é", usage="filter")
+    element = Element.from_tag(tag)
+    element.append_named_range(nr)
+    result = element.get_named_range(name="nr_name")
+    assert isinstance(result, NamedRange)
