@@ -782,3 +782,15 @@ def test_is_empty_3():
 def test_is_empty_4():
     element = Element.from_tag("<text:span></text:span>")
     assert element.is_empty() is True
+
+
+def test_xpath_str():
+    element = Element.from_tag('<text:s text:c="1" />')
+    result = element.xpath("//@text:c")
+    assert result == ["1"]
+
+
+def test_xpath_no_bool():
+    element = Element.from_tag('<text:s text:c="1" />')
+    result = element.xpath("boolean(//@text:c)")
+    assert result == []
