@@ -1715,7 +1715,6 @@ class Element(MDBase):
 
     # Named Range
 
-
     # Notes
 
     def get_notes(
@@ -1796,7 +1795,8 @@ class Element(MDBase):
             if creator is not None and creator != annotation.dc_creator:  # type: ignore[attr-defined]
                 continue
             date = annotation.date  # type: ignore[attr-defined]
-            if date is None:
+            # date never None: recreated if missing
+            if date is None:  # pragma: no cover
                 continue
             if start_date is not None and date < start_date:
                 continue

@@ -235,6 +235,80 @@ def test_insertget_long_delete():
     assert annotations_end == []
 
 
+def test_annotations_no_date_by_delete():
+    text = "It's like you're in a cave."
+    creator = "Plato"
+    annotation = Annotation(text, creator=creator)
+    # date automatically created, remove:
+    adate = annotation.get_element("//dc:date")
+    adate.delete()
+    assert annotation.serialize() == (
+        "<office:annotation "
+        'office:name="__Fieldmark__lpod_1">'
+        "<text:p>It's like you're in a cave.</text:p>"
+        "<dc:creator>Plato</dc:creator>"
+        "</office:annotation>"
+    )
+
+
+def test_annotations_no_date_get_annotations():
+    text = "It's like you're in a cave."
+    creator = "Plato"
+    annotation = Annotation(text, creator=creator)
+    # date automatically created, remove:
+    adate = annotation.get_element("//dc:date")
+    adate.delete()
+    paragraph = Paragraph("Un paragraphe")
+    paragraph.insert_annotation(annotation, after="para")
+    annotations = paragraph.get_annotations()
+    # date is created again
+    assert len(annotations) == 1
+
+
+def test_get_annotation_1():
+    text = "It's like you're in a cave."
+    creator = "Plato"
+    date = datetime(2025, 6, 7)
+    annotation = Annotation(text, creator=creator, date=date)
+    paragraph = Paragraph("Un paragraphe")
+    paragraph.insert_annotation(annotation, after="para")
+    annotation = paragraph.get_annotation()
+    assert annotation.creator == "Plato"
+
+
+def test_get_annotation_2_none_position():
+    text = "It's like you're in a cave."
+    creator = "Plato"
+    date = datetime(2025, 6, 7)
+    annotation = Annotation(text, creator=creator, date=date)
+    paragraph = Paragraph("Un paragraphe")
+    paragraph.insert_annotation(annotation, after="para")
+    annotation = paragraph.get_annotation(5)
+    assert annotation is None
+
+
+def test_get_annotation_3_creator():
+    text = "It's like you're in a cave."
+    creator = "Plato"
+    date = datetime(2025, 6, 7)
+    annotation = Annotation(text, creator=creator, date=date)
+    paragraph = Paragraph("Un paragraphe")
+    paragraph.insert_annotation(annotation, after="para")
+    annotation = paragraph.get_annotation(creator="Plato")
+    assert annotation.creator == "Plato"
+
+
+def test_get_annotation_4_none_creator():
+    text = "It's like you're in a cave."
+    creator = "Plato"
+    date = datetime(2025, 6, 7)
+    annotation = Annotation(text, creator=creator, date=date)
+    paragraph = Paragraph("Un paragraphe")
+    paragraph.insert_annotation(annotation, after="para")
+    annotation = paragraph.get_annotation(creator="Socrates")
+    assert annotation is None
+
+
 def test_annotation_check_valid_no_note_body_0():
     annotation = Element.from_tag("<office:annotation/>")
     with pytest.raises(ValueError):
