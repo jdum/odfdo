@@ -1208,16 +1208,14 @@ class Element(MDBase):
         Return list of Element or EText instances.
         """
         xpath_instance = xpath_compile(xpath_query)
-        elements = xpath_instance(self.__element)
+        x_elements = xpath_instance(self.__element)
         result: list[Element | EText] = []
-        if hasattr(elements, "__iter__"):
-            for obj in elements:
+        if isinstance(x_elements, list):
+            for obj in x_elements:
                 if isinstance(obj, (str, bytes)):
                     result.append(EText(obj))
-                elif isinstance(obj, _Element):
+                elif isinstance(obj, _Element):  # pragma: nocover
                     result.append(Element.from_tag(obj))
-                # else:
-                #     result.append(obj)
         return result
 
     def clear(self) -> None:
