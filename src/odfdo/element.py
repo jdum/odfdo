@@ -1882,10 +1882,8 @@ class Element(MDBase):
         Returns: list of unique str
         """
         name_xpath_query = xpath_compile("//@office:name")
-        response = name_xpath_query(self.__element)
-        if not isinstance(response, list):
-            return []
-        return list({str(name) for name in response if name})
+        strings = xpath_return_strings(name_xpath_query, self.__element)
+        return list({name for name in strings if name})
 
     # Variables
 
