@@ -218,7 +218,8 @@ class Styles(XmlPart):
             current.delete()
         self.root.append(office_master_styles)
 
-    def get_master_pages(self) -> list[StyleMasterPage]:
+    @property
+    def master_pages(self) -> list[StyleMasterPage]:
         master_styles = self.office_master_styles
         if master_styles is None:
             return []
@@ -229,7 +230,7 @@ class Styles(XmlPart):
         ]
 
     def get_master_page(self, position: int = 0) -> StyleMasterPage | None:
-        results = self.get_master_pages()
+        results = self.master_pages
         try:
             return results[position]
         except IndexError:
