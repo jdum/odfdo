@@ -77,11 +77,11 @@ def test_unit(document: Document) -> None:
     # only for test suite:
     if "ODFDO_TESTING" not in os.environ:
         return
-    from odfdo import Style
+    from odfdo import StyleMasterPage
 
     assert len([s for s in document.get_styles() if s.family == "master-page"]) >= 1
     page_style = document.get_style("master-page", "Standard")
-    assert isinstance(page_style, Style)
+    assert isinstance(page_style, StyleMasterPage)
     footer = page_style.get_page_footer()
     content = footer.serialize()
     assert "A first footer" in content
