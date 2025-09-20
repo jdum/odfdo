@@ -1,5 +1,24 @@
 # Odfdo Release Notes
 
+## [3.16.7] - 2025-09-20
+
+-   Refactor style classes to make it easier to manage page styles in the future.
+-   Add dedicated style classes and modules for Master Page and related style elements.
+
+### Changed
+
+-   Move method `Styles.get_master_pages()` to the property `Styles.master_pages`.
+-   Refactor style classes by using a `StyleBase` base class.
+-   Reorganize and rename many test files, adapt tests for styles to new style classes structure.
+-   Refactor recipe `add_a_custom_footer_to_a_text_document.py`.
+
+### Added
+
+-   Add Element methods `_get_attribute_bool_default()` and `_set_attribute_bool_default()`.
+-   Add classes `StyleBase`, `OfficeMasterStyles`, `StyleMasterPage`, `StyleHeader`, `StyleHeaderLeft`, `StyleFooter`, `StyleFooterLeft`.
+-   Add `master_page.py` and `style_base.py` modules.
+-   Add tests for new style classes (master pages related styles).
+
 ## [3.16.6] - 2025-09-13
 
 -   `NamedRange` can now be used locally on a table, not only at a global document level, as required by ODF standard.
@@ -9,7 +28,7 @@
 
 ### Changed
 
--   Refactor `NamedRangeuse` using mixin class, allow NamedRange use in local table.
+-   Refactor `NamedRange` using mixin class, allow NamedRange use in local table.
 -   Move `Element.strip_elements` and `strip_tags` from element module to their own module.
 -   Refactor `Element.xpath()`.
 -   Apply `mypy` to `elements_between.py`, `scripts/to_csv.py`.
