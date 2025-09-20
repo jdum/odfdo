@@ -27,6 +27,7 @@ import pytest
 
 from odfdo.const import ODF_STYLES
 from odfdo.document import Document
+from odfdo.master_page import StyleMasterPage
 from odfdo.style import Style
 from odfdo.styles import Styles
 
@@ -72,12 +73,12 @@ def test_get_styles_master_page(styles):
 def test_styles_get_master_pages(styles):
     style_list = styles.get_master_pages()
     assert len(style_list) == 1
-    assert isinstance(style_list[0], Style)
+    assert isinstance(style_list[0], StyleMasterPage)
 
 
 def test_styles_get_master_page(styles):
     style = styles.get_master_page(0)
-    assert isinstance(style, Style)
+    assert isinstance(style, StyleMasterPage)
 
 
 def test_styles_get_master_page_none(styles):
