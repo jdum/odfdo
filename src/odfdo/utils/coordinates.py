@@ -91,7 +91,7 @@ def convert_coordinates(
     """
     # By (1, 2) ?
     if isiterable(obj):
-        return tuple(obj)  # type:ignore
+        return tuple(obj)
     # Or by 'B3' notation ?
     if not isinstance(obj, str):
         raise TypeError(f'Bad coordinates type: "{type(obj)}"')

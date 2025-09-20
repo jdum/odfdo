@@ -31,9 +31,9 @@ from odfdo.master_page import (
     StyleHeaderLeft,
     StyleMasterPage,
 )
+from odfdo.paragraph import Paragraph
 from odfdo.style import Style
 from odfdo.styles import Styles
-from odfdo.paragraph import Paragraph
 
 
 @pytest.fixture
