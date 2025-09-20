@@ -75,7 +75,7 @@ if TYPE_CHECKING:
         LineShape,
         RectangleShape,
     )
-    from .style import Style
+    from .style_base import StyleBase
     from .toc import TOC
     from .tracked_changes import (
         TextChange,
@@ -201,7 +201,7 @@ def _family_style_tagname(family: str) -> str:
     try:
         return FAMILY_MAPPING[family]
     except KeyError as e:
-        raise ValueError(f"unknown family: {family}") from e
+        raise ValueError(f"Unknown family: {family!r}") from e
 
 
 @cache
@@ -2966,7 +2966,7 @@ class Element(MDBase):
                 tagname = f"({tagname}|style:default-style)"
         return tagname
 
-    def get_styles(self, family: str | None = None) -> list[Style]:
+    def get_styles(self, family: str | None = None) -> list[StyleBase]:
         # Both common and default styles
         tagname = self._get_style_tagname(family)
         return self._filtered_elements(tagname, family=family)  # type: ignore[return-value]
@@ -2976,7 +2976,7 @@ class Element(MDBase):
         family: str,
         name_or_element: str | Element | None = None,
         display_name: str | None = None,
-    ) -> Style | None:
+    ) -> StyleBase | None:
         """Return the style uniquely identified by the family/name pair. If the
         argument is already a style object, it will return it.
 

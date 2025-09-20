@@ -71,13 +71,15 @@ __all__ = [  # noqa: RUF022
     "MetaAutoReload",
     "MetaHyperlinkBehaviour",
     "MetaTemplate",
+    "Metadata",
     "NEXT_SIBLING",
     "NamedRange",
     "Note",
+    "OfficeMasterStyles",
     "PREV_SIBLING",
     "PageBreak",
-    "Paragraph",
     "ParaMixin",
+    "Paragraph",
     "Presentation",
     "RectangleShape",
     "Reference",
@@ -91,12 +93,16 @@ __all__ = [  # noqa: RUF022
     "Span",
     "Spreadsheet",
     "Style",
+    "StyleFooter",
+    "StyleFooterLeft",
+    "StyleHeader",
+    "StyleHeaderLeft",
+    "StyleMasterPage",
     "Styles",
     "TOC",
     "Tab",
     "TabStopStyle",
     "Table",
-    "Text",
     "Text",
     "TextChange",
     "TextChangeEnd",
@@ -149,7 +155,17 @@ __all__ = [  # noqa: RUF022
 
 
 from .annotation import Annotation, AnnotationEnd
-from .body import Body, Chart, Database, Drawing, Image, Presentation, Spreadsheet, Text
+from .body import (
+    Body,
+    Chart,
+    Database,
+    Drawing,
+    Image,
+    Metadata,
+    Presentation,
+    Spreadsheet,
+    Text,
+)
 from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
 from .cell import Cell
 from .column import Column
@@ -167,6 +183,13 @@ from .line_break import LineBreak
 from .link import Link
 from .list import List, ListItem
 from .manifest import Manifest
+from .master_page import (
+    StyleFooter,
+    StyleFooterLeft,
+    StyleHeader,
+    StyleHeaderLeft,
+    StyleMasterPage,
+)
 from .meta import Meta
 from .meta_auto_reload import MetaAutoReload
 from .meta_hyperlink_behaviour import MetaHyperlinkBehaviour
@@ -196,7 +219,7 @@ from .style import (
     default_time_style,
     make_table_cell_border_string,
 )
-from .styles import Styles
+from .styles import OfficeMasterStyles, Styles
 from .tab import Tab
 from .table import Table
 from .toc import (

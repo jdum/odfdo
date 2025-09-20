@@ -22,6 +22,8 @@
 
 from __future__ import annotations
 
+from .style_base import StyleBase
+
 __all__ = [  # noqa: RUF022
     "BackgroundImage",
     "CSS3_COLORMAP",
@@ -288,7 +290,7 @@ def create_table_cell_style(
     return cell_style
 
 
-class Style(Element):
+class Style(StyleBase):
     """Style class for many ODF tags, "style:style", "number:date-style",...
 
     Partial list:
@@ -298,7 +300,6 @@ class Style(Element):
     "number:percentage-style",
     "number:time-style",
     "style:font-face",
-    "style:master-page",
     "style:page-layout",
     "style:presentation-page-layout",
     "text:list-style",
@@ -308,8 +309,6 @@ class Style(Element):
     """
 
     _properties: tuple[PropDef, ...] = (
-        PropDef("page_layout", "style:page-layout-name", "master-page"),
-        PropDef("next_style", "style:next-style-name", "master-page"),
         PropDef("name", "style:name"),
         PropDef("parent_style", "style:parent-style-name"),
         PropDef("display_name", "style:display-name"),
@@ -317,8 +316,6 @@ class Style(Element):
         PropDef("font_family_generic", "style:font-family-generic"),
         PropDef("font_pitch", "style:font-pitch"),
         PropDef("text_style", "text:style-name"),
-        PropDef("master_page", "style:master-page-name", "paragraph"),
-        PropDef("master_page", "style:master-page-name", "paragraph"),
         PropDef("master_page", "style:master-page-name", "paragraph"),
         # style:tab-stop
         PropDef("style_type", "style:type"),
@@ -329,6 +326,23 @@ class Style(Element):
         PropDef("list_style_name", "style:list-style-name"),
         PropDef("style_num_format", "style:num-format"),
     )
+
+    def __new__(cls, *args: Any, **kwargs: Any) -> StyleBase:  # type: ignore[misc]
+        # print("new", args, kwargs)
+        # compatibily switch for StyleMasterPage
+        family = kwargs.get("family")
+        if family == "master-page":
+            del kwargs["family"]
+        elif family is None and args and args[0] == "master-page":
+            family = "master-page"
+            args = args[1:]
+        if family == "master-page":
+            from .master_page import StyleMasterPage
+
+            instance = StyleMasterPage(*args, **kwargs)
+            return instance
+        else:
+            return super().__new__(cls)
 
     def __init__(
         self,
@@ -345,9 +359,6 @@ class Style(Element):
         bold: bool = False,
         # For family 'paragraph'
         master_page: str | None = None,
-        # For family 'master-page'
-        page_layout: str | None = None,
-        next_style: str | None = None,
         # For family 'table-cell'
         data_style: str | None = None,  # unused
         border: str | None = None,
@@ -420,12 +431,6 @@ class Style(Element):
 
             master_page -- str
 
-        'master-page' Properties:
-
-            page_layout -- str
-
-            next_style -- str
-
         'table-cell' Properties:
 
             border, border_top, border_right, border_bottom, border_left -- str,
@@ -460,6 +465,8 @@ class Style(Element):
         tag_or_elem = kwargs.get("tag_or_elem")
         if tag_or_elem is None:
             family = to_str(family)
+            if family == "master-page":
+                raise TypeError("Use Style subclass: StyleMasterPage")
             if family not in FAMILY_MAPPING:
                 raise ValueError(f"Unknown family value: '{family}'")
             kwargs["tag"] = FAMILY_MAPPING[family]
@@ -479,12 +486,6 @@ class Style(Element):
             if family == "paragraph":
                 if master_page:
                     self.master_page = master_page
-            # Master Page
-            elif family == "master-page":
-                if page_layout:
-                    self.page_layout = page_layout
-                if next_style:
-                    self.next_style = next_style
             # Font face
             elif family == "font-face":
                 if not font_name:
@@ -586,16 +587,12 @@ class Style(Element):
             self.set_attribute("style:family", family)
 
     def __repr__(self) -> str:
-        return f"<Style family={self.family} name={self.name}>"
-
-    def __str__(self) -> str:
-        return repr(self)
+        return f"<{self.__class__.__name__} family={self.family} name={self.name}>"
 
     def get_properties(self, area: str | None = None) -> dict[str, str | dict] | None:
-        """Get the mapping of all properties of this style. By default the
-        properties of the same family, e.g. a paragraph style and its paragraph
-        properties. Specify the area to get the text properties of a paragraph
-        style for example.
+        """Get the mapping of all properties of this style.
+
+        By default the properties of the same family, e.g. a paragraph style and its paragraph properties. Specify the area to get the text properties of a paragraph style for example.
 
         Args:
 
@@ -675,13 +672,11 @@ class Style(Element):
         area: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Set the properties of the "area" type of this style. Properties are
-        given either as a dict or as named arguments (or both). The area is
-        identical to the style family by default. If the properties element is
-        missing, it is created.
+        """Set the properties of the "area" type of this style.
 
-        Instead of properties, you can pass a style with properties of the
-        same area. These will be copied.
+        Properties are given either as a dict or as named arguments (or both). The area is identical to the style family by default. If the properties element is missing, it is created.
+
+        Instead of properties, you can pass a style with properties of the same area. These will be copied.
 
         Args:
 
@@ -722,8 +717,9 @@ class Style(Element):
         area: str | None = None,
     ) -> None:
         """Delete the given properties, either by list argument or positional
-        argument (or both). Remove only from the given area, identical to the
-        style family by default.
+        argument (or both).
+
+        Remove only from the given area, identical to the style family by default.
 
         Args:
 
@@ -967,98 +963,6 @@ class Style(Element):
         if footer_style is not None:
             self.delete(footer_style)
         self.append(new_style)
-
-    # master-page only:
-
-    def _set_header_or_footer(
-        self,
-        text_or_element: str | Element | list[Element | str],
-        name: str = "header",
-        style: str = "Header",
-    ) -> None:
-        if name == "header":
-            header_or_footer = self.get_page_header()
-        else:
-            header_or_footer = self.get_page_footer()
-        if header_or_footer is None:
-            header_or_footer = Element.from_tag("style:" + name)
-            self.append(header_or_footer)
-        else:
-            header_or_footer.clear()
-        if (
-            isinstance(text_or_element, Element)
-            and text_or_element.tag == f"style:{name}"
-        ):
-            # Already a header or footer?
-            self.delete(header_or_footer)
-            self.append(text_or_element)
-            return
-        if isinstance(text_or_element, (Element, str)):
-            elem_list: list[Element | str] = [text_or_element]
-        else:
-            elem_list = text_or_element
-        for item in elem_list:
-            if isinstance(item, str):
-                paragraph = Element.from_tag("text:p")
-                paragraph.append_plain_text(item)  # type: ignore
-                paragraph.style = style  # type: ignore
-                header_or_footer.append(paragraph)
-            elif isinstance(item, Element):
-                header_or_footer.append(item)
-
-    def get_page_header(self) -> Element | None:
-        """Get the element that contains the header contents.
-
-        If None, no header was set.
-        """
-        if self.family != "master-page":
-            return None
-        return self.get_element("style:header")
-
-    def set_page_header(
-        self,
-        text_or_element: str | Element | list[Element | str],
-    ) -> None:
-        """Create or replace the header by the given content. It can already be
-        a complete header.
-
-        If you only want to update the existing header, get it and use the
-        API.
-
-        Args:
-
-            text_or_element -- str or Element or a list of them
-        """
-        if self.family != "master-page":
-            return None
-        self._set_header_or_footer(text_or_element)
-
-    def get_page_footer(self) -> Element | None:
-        """Get the element that contains the footer contents.
-
-        If None, no footer was set.
-        """
-        if self.family != "master-page":
-            return None
-        return self.get_element("style:footer")
-
-    def set_page_footer(
-        self,
-        text_or_element: str | Element | list[Element | str],
-    ) -> None:
-        """Create or replace the footer by the given content. It can already be
-        a complete footer.
-
-        If you only want to update the existing footer, get it and use the
-        API.
-
-        Args:
-
-            text_or_element -- str or Element or a list of them
-        """
-        if self.family != "master-page":
-            return None
-        self._set_header_or_footer(text_or_element, name="footer", style="Footer")
 
     # font-face only:
 

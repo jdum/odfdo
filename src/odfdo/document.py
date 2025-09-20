@@ -57,7 +57,6 @@ from .element import Element
 from .manifest import Manifest
 from .meta import Meta
 from .mixin_md import MDDocument
-from .style import Style
 from .styles import Styles
 from .table import Table
 from .utils import FAMILY_MAPPING, bytes_to_str, is_RFC3066
@@ -65,6 +64,7 @@ from .xmlpart import XmlPart
 
 if TYPE_CHECKING:
     from .body import Body
+    from .style_base import StyleBase
 
 AUTOMATIC_PREFIX = "odfdo_auto_"
 
@@ -727,7 +727,7 @@ class Document(MDDocument):
         self,
         family: str | bytes = "",
         automatic: bool = False,
-    ) -> list[Style]:
+    ) -> list[StyleBase]:
         # compatibility with old versions:
         if isinstance(family, bytes):
             family = bytes_to_str(family)
@@ -738,9 +738,9 @@ class Document(MDDocument):
     def get_style(
         self,
         family: str,
-        name_or_element: str | Style | None = None,
+        name_or_element: str | StyleBase | None = None,
         display_name: str | None = None,
-    ) -> Style | None:
+    ) -> StyleBase | None:
         """Return the style uniquely identified by the name/family pair. If the
         argument is already a style object, it will return it.
 
@@ -773,28 +773,30 @@ class Document(MDDocument):
             display_name=display_name,
         )
 
-    def get_parent_style(self, style: Style) -> Style | None:
+    def get_parent_style(self, style: StyleBase) -> StyleBase | None:
         family = style.family
         if family is None:
             return None
-        parent_style_name = style.parent_style
+        parent_style_name = style.parent_style  # type: ignore [attr-defined]
         if not parent_style_name:
             return None
         return self.get_style(family, parent_style_name)
 
-    def get_list_style(self, style: Style) -> Style | None:
+    def get_list_style(self, style: StyleBase) -> StyleBase | None:
         list_style_name = style.list_style_name  # type: ignore[attr-defined]
         if not list_style_name:
             return None
         return self.get_style("list", list_style_name)
 
     @staticmethod
-    def _pseudo_style_attribute(style_element: Style | Element, attribute: str) -> Any:
+    def _pseudo_style_attribute(
+        style_element: StyleBase | Element, attribute: str
+    ) -> Any:
         if hasattr(style_element, attribute):
             return getattr(style_element, attribute)
         return ""
 
-    def _set_automatic_name(self, style: Style, family: str) -> None:
+    def _set_automatic_name(self, style: StyleBase, family: str) -> None:
         """Generate a name for the new automatic style."""
         if not hasattr(style, "name"):
             # do nothing
@@ -825,7 +827,7 @@ class Document(MDDocument):
 
     def _insert_style_get_automatic_styles(
         self,
-        style: Style,
+        style: StyleBase,
         family: str,
         name: str,
     ) -> tuple[Any, Any]:
@@ -842,7 +844,7 @@ class Document(MDDocument):
 
     def _insert_style_get_default_styles(
         self,
-        style: Style,
+        style: StyleBase,
         family: str,
         name: str,
     ) -> tuple[Any, Any]:
@@ -902,7 +904,7 @@ class Document(MDDocument):
 
     def _insert_style_standard(
         self,
-        style: Style,
+        style: StyleBase,
         name: str,
         family: str,
         automatic: bool,
@@ -922,7 +924,7 @@ class Document(MDDocument):
 
     def insert_style(
         self,
-        style: Style | str,
+        style: StyleBase | str,
         name: str = "",
         automatic: bool = False,
         default: bool = False,
@@ -962,7 +964,7 @@ class Document(MDDocument):
 
         # if style is a str, assume it is the Style definition
         if isinstance(style, str):
-            style_element: Style = Element.from_tag(style)  # type: ignore
+            style_element: StyleBase = Element.from_tag(style)  # type: ignore
         else:
             style_element = style
         if not isinstance(style_element, Element):
@@ -1034,7 +1036,7 @@ class Document(MDDocument):
         infos = []
         for style in self.get_styles():
             try:
-                name = style.name
+                name = style.name  # type: ignore[attr-defined]
             except AttributeError:
                 print("Syle error:")
                 print(style.__class__)
@@ -1109,8 +1111,12 @@ class Document(MDDocument):
         # Then remove supposedly orphaned styles
         deleted = 0
         for style in self.get_styles():
-            if style.name is None:
+            try:
+                name = style.name  # type: ignore[attr-defined]
+            except AttributeError:
+                continue
                 # Don't delete default styles
+            if name is None:
                 continue
             # elif type(style) is odf_master_page:
             #    # Don't suppress header and footer, just styling was removed
@@ -1130,7 +1136,10 @@ class Document(MDDocument):
         for style in document.get_styles():
             tagname = style.tag
             family = style.family
-            stylename = style.name
+            try:
+                stylename = style.name  # type: ignore[attr-defined]
+            except AttributeError:
+                stylename = None
             container = style.parent
             container_name = container.tag  # type: ignore
             partname = container.parent.tag  # type: ignore
@@ -1268,7 +1277,7 @@ class Document(MDDocument):
     def get_table_style(
         self,
         table: str | int,
-    ) -> Style | None:
+    ) -> StyleBase | None:
         """Return the Style instance the table.
 
         Args:
@@ -1300,7 +1309,7 @@ class Document(MDDocument):
         return Boolean.decode(property_str)
 
     def _unique_style_name(self, base: str) -> str:
-        current = {style.name for style in self.get_styles()}
+        current = {style.name for style in self.get_styles() if hasattr(style, "name")}
         idx = 0
         while True:
             name = f"{base}_{idx}"

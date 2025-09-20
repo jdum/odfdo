@@ -23,10 +23,16 @@
 
 from __future__ import annotations
 
-from .element import Element
-from .style import Style
-from .utils import is_RFC3066, make_xpath_query
+from typing import TYPE_CHECKING
+
+from .element import Element, PropDef, register_element_class
+from .style_base import StyleBase
+from .utils import is_RFC3066
 from .xmlpart import XmlPart
+
+if TYPE_CHECKING:
+    from .master_page import StyleMasterPage
+
 
 CONTEXT_MAPPING = {
     "paragraph": ("//office:styles", "//office:automatic-styles"),
@@ -54,6 +60,21 @@ CONTEXT_MAPPING = {
 }
 
 
+class OfficeMasterStyles(Element):
+    """Container for master styles used in the document, "office:master-
+    styles".
+
+    A master style contains formatting and other content that is displayed with
+    document content when the style is used.
+
+    The "office:master-styles" element is usable within the following elements:
+    "office:document" and "office:document-styles".
+    """
+
+    _tag: str = "office:master-styles"
+    _properties: tuple[PropDef, ...] = ()
+
+
 class Styles(XmlPart):
     """Representation of the "styles.xml" part."""
 
@@ -78,8 +99,8 @@ class Styles(XmlPart):
             ]
         return [e for e in elems if isinstance(e, Element)]
 
-    def get_styles(self, family: str = "", automatic: bool = False) -> list[Style]:
-        """Return the list of styles in the Content part, optionally limited to
+    def get_styles(self, family: str = "", automatic: bool = False) -> list[StyleBase]:
+        """Return the list of styles in the Styles part, optionally limited to
         the given family, optionaly limited to automatic styles.
 
         Args:
@@ -102,12 +123,12 @@ class Styles(XmlPart):
         return result
 
     @property
-    def default_styles(self) -> list[Style]:
+    def default_styles(self) -> list[StyleBase]:
         """Return the list of default styles "style:default-styles".
 
         Returns: list of Style
         """
-        result: list[Style] = self.get_elements("//style:default-style")  # type: ignore[assignment]
+        result: list[StyleBase] = self.get_elements("//style:default-style")  # type: ignore[assignment]
 
         return result
 
@@ -153,20 +174,19 @@ class Styles(XmlPart):
     def get_style(
         self,
         family: str,
-        name_or_element: str | Style | None = None,
+        name_or_element: str | StyleBase | None = None,
         display_name: str | None = None,
-    ) -> Style | None:
-        """Return the style uniquely identified by the name/family pair. If the
-        argument is already a style object, it will return it.
+    ) -> StyleBase | None:
+        """Return the style uniquely identified by the name/family pair.
 
+        If the argument is already a style object, it will return it.
         If the name is None, the default style is fetched.
-
         If the name is not the internal name but the name you gave in the
         desktop application, use display_name instead.
 
         Args:
 
-            family -- 'paragraph', 'text',  'graphic', 'table', 'list',
+            family -- 'paragraph', 'text', 'graphic', 'table', 'list',
                       'number', 'page-layout', 'master-page'
 
             name_or_element -- str, odf_style or None
@@ -187,14 +207,33 @@ class Styles(XmlPart):
                 return style
         return None
 
-    def get_master_pages(self) -> list[Element]:
-        query = make_xpath_query("descendant::style:master-page")
-        elems = self.get_elements(query)
-        return [e for e in elems if isinstance(e, Element)]
+    @property
+    def office_master_styles(self) -> OfficeMasterStyles | None:
+        return self.get_element("//office:master-styles")  # type: ignore[return-value]
 
-    def get_master_page(self, position: int = 0) -> Element | None:
+    @office_master_styles.setter
+    def office_master_styles(self, office_master_styles: OfficeMasterStyles) -> None:
+        current = self.office_master_styles
+        if isinstance(current, OfficeMasterStyles):
+            current.delete()
+        self.root.append(office_master_styles)
+
+    def get_master_pages(self) -> list[StyleMasterPage]:
+        master_styles = self.office_master_styles
+        if master_styles is None:
+            return []
+        return [
+            e  # type: ignore[misc]
+            for e in master_styles.children
+            if isinstance(e, StyleBase) and e.tag == "style:master-page"
+        ]
+
+    def get_master_page(self, position: int = 0) -> StyleMasterPage | None:
         results = self.get_master_pages()
         try:
             return results[position]
         except IndexError:
             return None
+
+
+register_element_class(OfficeMasterStyles)
