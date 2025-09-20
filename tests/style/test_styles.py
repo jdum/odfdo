@@ -27,9 +27,10 @@ import pytest
 
 from odfdo.const import ODF_STYLES
 from odfdo.document import Document
+from odfdo.element import Element
 from odfdo.master_page import StyleMasterPage
 from odfdo.style import Style
-from odfdo.styles import Styles
+from odfdo.styles import OfficeMasterStyles, Styles
 
 
 @pytest.fixture
@@ -145,3 +146,37 @@ def test_language_no_default_style(styles):
     for elem in defaults:
         elem.delete()
     assert styles.default_language == ""
+
+
+def test_office_master_styles_create():
+    oms = OfficeMasterStyles()
+    assert oms.serialize() == "<office:master-styles/>"
+
+
+def test_office_master_styles_from_tag():
+    oms = Element.from_tag("<office:master-styles/>")
+    assert isinstance(oms, OfficeMasterStyles)
+
+
+def test_get_office_master_styles(styles):
+    oms = styles.office_master_styles
+    assert isinstance(oms, OfficeMasterStyles)
+    assert len(oms.children) == 1
+
+
+def test_set_office_master_styles(styles):
+    new_oms = OfficeMasterStyles()
+    styles.office_master_styles = new_oms
+    oms = styles.office_master_styles
+    assert isinstance(oms, OfficeMasterStyles)
+    assert len(oms.children) == 0
+
+
+def test_set_office_master_styles_no_eixts(styles):
+    current = styles.office_master_styles
+    current.delete()
+    new_oms = OfficeMasterStyles()
+    styles.office_master_styles = new_oms
+    oms = styles.office_master_styles
+    assert isinstance(oms, OfficeMasterStyles)
+    assert len(oms.children) == 0
