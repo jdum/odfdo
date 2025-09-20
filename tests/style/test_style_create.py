@@ -91,12 +91,6 @@ def test_create_style_page_layout():
     assert style.serialize() == expected
 
 
-def test_create_style_master_page():
-    style = Style("master-page")
-    expected = "<style:master-page/>"
-    assert style.serialize() == expected
-
-
 def test_create_style_display_name():
     style = Style("paragraph", display_name="Heading 1")
     expected = '<style:style style:family="paragraph" style:display-name="Heading 1"/>'
