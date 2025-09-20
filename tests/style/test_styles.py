@@ -72,7 +72,7 @@ def test_get_styles_master_page(styles):
 
 
 def test_styles_get_master_pages(styles):
-    style_list = styles.get_master_pages()
+    style_list = styles.master_pages
     assert len(style_list) == 1
     assert isinstance(style_list[0], StyleMasterPage)
 
@@ -172,7 +172,7 @@ def test_set_office_master_styles(styles):
     assert len(oms.children) == 0
 
 
-def test_set_office_master_styles_no_eixts(styles):
+def test_set_office_master_styles_no_exist(styles):
     current = styles.office_master_styles
     current.delete()
     new_oms = OfficeMasterStyles()
