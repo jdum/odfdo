@@ -33,7 +33,8 @@ def style() -> Iterable[Style]:
 
 def test_bad_family():
     style = Style("master-page")
-    pytest.raises(TypeError, style.set_background)
+    with pytest.raises(AttributeError):
+        _x = style.set_background
 
 
 def test_color(style):
