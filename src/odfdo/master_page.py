@@ -261,11 +261,11 @@ class StyleHeader(StyleBase):
 
     @property
     def display(self) -> bool:
-        return self.get_attribute_bool_default("style:display", True)
+        return self._get_attribute_bool_default("style:display", True)
 
     @display.setter
     def display(self, display: bool | str | None) -> None:
-        self.set_attribute_bool_default("style:display", display, True)
+        self._set_attribute_bool_default("style:display", display, True)
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}>"

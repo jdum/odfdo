@@ -750,7 +750,7 @@ class Element(MDBase):
             return None
         return str(value)
 
-    def get_attribute_bool_default(self, name: str, default: bool = True) -> bool:
+    def _get_attribute_bool_default(self, name: str, default: bool = True) -> bool:
         """Return boolean attribute, with default value."""
         element = self.__element
         lxml_tag = _get_lxml_tag_or_name(name)
@@ -759,7 +759,7 @@ class Element(MDBase):
             return default
         return Boolean.decode(value)
 
-    def set_attribute_bool_default(
+    def _set_attribute_bool_default(
         self, name: str, value: bool | str | None, default: bool = True
     ) -> None:
         """Set boolean attribute, with default value."""

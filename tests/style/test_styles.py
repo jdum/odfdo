@@ -187,3 +187,10 @@ def test_set_office_master_styles_no_exist(styles):
     oms = styles.office_master_styles
     assert isinstance(oms, OfficeMasterStyles)
     assert len(oms.children) == 0
+
+
+def test_set_office_master_styles_no_exist_master_pages(styles):
+    current = styles.office_master_styles
+    current.delete()
+    mp = styles.master_pages
+    assert mp == []
