@@ -750,6 +750,31 @@ class Element(MDBase):
             return None
         return str(value)
 
+    def get_attribute_bool_default(self, name: str, default: bool = True) -> bool:
+        """Return boolean attribute, with default value."""
+        element = self.__element
+        lxml_tag = _get_lxml_tag_or_name(name)
+        value = element.get(lxml_tag)
+        if value is None:
+            return default
+        return Boolean.decode(value)
+
+    def set_attribute_bool_default(
+        self, name: str, value: bool | str | None, default: bool = True
+    ) -> None:
+        """Set boolean attribute, with default value."""
+        element = self.__element
+        lxml_tag = _get_lxml_tag_or_name(name)
+        if value is None:
+            value = False
+        if isinstance(value, str):
+            value = value.lower() == "true"
+        if value == default:
+            with contextlib.suppress(KeyError):
+                del element.attrib[lxml_tag]
+            return
+        element.set(lxml_tag, Boolean.encode(value))
+
     def set_attribute(
         self, name: str, value: bool | str | tuple[int, int, int] | None
     ) -> None:
