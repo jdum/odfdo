@@ -87,6 +87,13 @@ def test_styles_get_master_page_none(styles):
     assert style is None
 
 
+def test_styles_get_master_pages_no_master_styles(styles):
+    elem = styles.get_element("//office:master-styles")
+    elem.delete()
+    style_list = styles.master_pages
+    assert len(style_list) == 0
+
+
 def test_get_style_automatic(styles):
     style = styles.get_style("page-layout", "Mpm1")
     assert style is not None

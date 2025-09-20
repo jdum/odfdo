@@ -337,3 +337,15 @@ def test_master_page_set_page_header_list_bad(styles):
     para2 = result.children[1]
     assert isinstance(para2, Paragraph)
     assert str(para2) == "paragraph 2\n"
+
+
+def test_master_page_set_page_footer_1(styles):
+    mp = styles.get_master_page(0)
+    pf = mp.get_page_footer()
+    assert pf is None
+    mp.set_page_footer("text footer")
+    result = mp.get_page_footer()
+    assert len(result.children) == 1
+    para = result.children[0]
+    assert isinstance(para, Paragraph)
+    assert str(para) == "text footer\n"
