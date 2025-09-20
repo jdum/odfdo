@@ -17,7 +17,12 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
+from collections.abc import Iterable
 
+import pytest
+
+from odfdo.const import ODF_STYLES
+from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.master_page import (
     StyleFooter,
@@ -27,6 +32,14 @@ from odfdo.master_page import (
     StyleMasterPage,
 )
 from odfdo.style import Style
+from odfdo.styles import Styles
+from odfdo.paragraph import Paragraph
+
+
+@pytest.fixture
+def styles(samples) -> Iterable[Styles]:
+    document = Document(samples("example.odt"))
+    yield document.get_part(ODF_STYLES)
 
 
 def test_create_style_master_page():
@@ -197,3 +210,130 @@ def test_create_style_footer_left_false():
 def test_footer_left_from_tag():
     style = Element.from_tag("<style:footer-left/>")
     assert isinstance(style, StyleFooterLeft)
+
+
+def test_read_master_page(styles):
+    mp = styles.get_master_page(0)
+    assert isinstance(mp, StyleMasterPage)
+
+
+def test_read_master_page_attr(styles):
+    mp = styles.get_master_page(0)
+    # <style:master-page style:name="Standard"
+    # style:page-layout-name="Mpm1"/>
+    assert mp.name == "Standard"
+    assert mp.display_name is None
+    assert mp.page_layout == "Mpm1"
+    assert mp.next_style is None
+    assert mp.draw_style_name is None
+
+
+def test_master_page_family(styles):
+    mp = styles.get_master_page(0)
+    assert mp.family == "master-page"
+
+
+def test_master_page_set_family(styles):
+    mp = styles.get_master_page(0)
+    mp.family = "oops"
+    assert mp.family == "master-page"
+
+
+def test_master_page_repr(styles):
+    mp = styles.get_master_page(0)
+    assert repr(mp) == "<StyleMasterPage family=master-page name=Standard>"
+
+
+def test_master_page_create_attr():
+    mp = StyleMasterPage(
+        name="Std2",
+        display_name="Standard 2",
+        page_layout="PL1",
+        next_style="Std3",
+        draw_style_name="dsn",
+    )
+    assert mp.serialize() == (
+        "<style:master-page "
+        'style:name="Std2" '
+        'style:display-name="Standard 2" '
+        'style:page-layout-name="PL1" '
+        'style:next-style-name="Std3" '
+        'draw:style-name="dsn"/>'
+    )
+
+
+def test_master_page_get_page_header(styles):
+    mp = styles.get_master_page(0)
+    ph = mp.get_page_header()
+    assert ph is None
+
+
+def test_master_page_get_page_footer(styles):
+    mp = styles.get_master_page(0)
+    pf = mp.get_page_footer()
+    assert pf is None
+
+
+def test_master_page_set_page_header_1(styles):
+    mp = styles.get_master_page(0)
+    ph = mp.get_page_header()
+    assert ph is None
+    mp.set_page_header("text header")
+    result = mp.get_page_header()
+    assert len(result.children) == 1
+    para = result.children[0]
+    assert isinstance(para, Paragraph)
+    assert str(para) == "text header\n"
+
+
+def test_master_page_set_page_header_2(styles):
+    mp = styles.get_master_page(0)
+    mp.set_page_header("text header")
+    mp.set_page_header("text header other")
+    result = mp.get_page_header()
+    assert len(result.children) == 1
+    para = result.children[0]
+    assert isinstance(para, Paragraph)
+    assert str(para) == "text header other\n"
+
+
+def test_master_page_set_page_header_page_header(styles):
+    ph = StyleHeader()
+    ph.append(Paragraph("some header"))
+    mp = styles.get_master_page(0)
+    mp.set_page_header(ph)
+    result = mp.get_page_header()
+    assert len(result.children) == 1
+    para = result.children[0]
+    assert isinstance(para, Paragraph)
+    assert str(para) == "some header\n"
+
+
+def test_master_page_set_page_header_list(styles):
+    p1 = Paragraph("paragraph 1")
+    p2 = Paragraph("paragraph 2")
+    mp = styles.get_master_page(0)
+    mp.set_page_header([p1, p2])
+    result = mp.get_page_header()
+    assert len(result.children) == 2
+    para1 = result.children[0]
+    assert isinstance(para1, Paragraph)
+    assert str(para1) == "paragraph 1\n"
+    para2 = result.children[1]
+    assert isinstance(para2, Paragraph)
+    assert str(para2) == "paragraph 2\n"
+
+
+def test_master_page_set_page_header_list_bad(styles):
+    p1 = Paragraph("paragraph 1")
+    p2 = Paragraph("paragraph 2")
+    mp = styles.get_master_page(0)
+    mp.set_page_header([p1, ["ignore"], p2])
+    result = mp.get_page_header()
+    assert len(result.children) == 2
+    para1 = result.children[0]
+    assert isinstance(para1, Paragraph)
+    assert str(para1) == "paragraph 1\n"
+    para2 = result.children[1]
+    assert isinstance(para2, Paragraph)
+    assert str(para2) == "paragraph 2\n"
