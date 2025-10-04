@@ -290,6 +290,40 @@ def create_table_cell_style(
     return cell_style
 
 
+def _check_new_master_page(*args: Any, **kwargs: Any) -> StyleBase | None:  # type: ignore[misc]
+    # compatibily switch for StyleMasterPage
+    family = kwargs.get("family")
+    if family == "master-page":
+        del kwargs["family"]
+    elif family is None and args and args[0] == "master-page":
+        family = "master-page"
+        args = args[1:]
+    if family == "master-page":
+        from .master_page import StyleMasterPage
+
+        instance = StyleMasterPage(*args, **kwargs)
+        return instance
+    else:
+        return None
+
+
+def _check_new_page_layout(*args: Any, **kwargs: Any) -> StyleBase | None:  # type: ignore[misc]
+    # compatibily switch for StylePageLayout
+    family = kwargs.get("family")
+    if family == "page-layout":
+        del kwargs["family"]
+    elif family is None and args and args[0] == "page-layout":
+        family = "page-layout"
+        args = args[1:]
+    if family == "page-layout":
+        from .page_layout import StylePageLayout
+
+        instance = StylePageLayout(*args, **kwargs)
+        return instance
+    else:
+        return None
+
+
 class Style(StyleBase):
     """Style class for many ODF tags, "style:style", "number:date-style",...
 
@@ -328,21 +362,13 @@ class Style(StyleBase):
     )
 
     def __new__(cls, *args: Any, **kwargs: Any) -> StyleBase:  # type: ignore[misc]
-        # print("new", args, kwargs)
-        # compatibily switch for StyleMasterPage
-        family = kwargs.get("family")
-        if family == "master-page":
-            del kwargs["family"]
-        elif family is None and args and args[0] == "master-page":
-            family = "master-page"
-            args = args[1:]
-        if family == "master-page":
-            from .master_page import StyleMasterPage
-
-            instance = StyleMasterPage(*args, **kwargs)
+        instance = _check_new_master_page(*args, **kwargs)
+        if instance is not None:
             return instance
-        else:
-            return super().__new__(cls)
+        # instance = _check_new_page_layout(*args, **kwargs)
+        # if instance is not None:
+        #     return instance
+        return super().__new__(cls)
 
     def __init__(
         self,
