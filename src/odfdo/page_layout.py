@@ -21,10 +21,18 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .element import Element, PropDef, register_element_class
 from .style_base import StyleBase
+from .style_utils import (
+    _expand_properties_dict,
+    _expand_properties_list,
+    _merge_dicts,
+)
+
+if TYPE_CHECKING:
+    from .style import BackgroundImage
 
 
 class StylePageLayout(StyleBase):
@@ -95,6 +103,240 @@ class StylePageLayout(StyleBase):
     @page_usage.setter
     def page_usage(self, page_usage: str | None) -> None:
         self._set_attribute_str_default("style:page-usage", page_usage, "all")
+
+    def get_properties(
+        self, area: str | None = "page-layout"
+    ) -> dict[str, str | dict] | None:
+        """Get the mapping of page-layout properties of StylePageLayout.
+
+        Args:
+
+            area -- str (unused, kept for compatibility)
+
+        Returns: dict
+        """
+        area = "page-layout"
+        element = self.get_element(f"style:{area}-properties")
+        if element is None:
+            return None
+        properties: dict[str, str | dict[str, Any]] = element.attributes  # type: ignore
+        # Nested properties are nested dictionaries
+        for child in element.children:
+            properties[child.tag] = child.attributes
+        return properties
+
+    @staticmethod
+    def _update_boolean_styles(props: dict[str, str | bool]) -> None:
+        strike = props.get("style:text-line-through-style", "")
+        if strike == "none":
+            strike = ""
+        underline = props.get("style:text-underline-style", "")
+        if underline == "none":
+            underline = ""
+        props.update(
+            {
+                "color": props.get("fo:color") or "",
+                "background_color": props.get("fo:background-color") or "",
+                "italic": props.get("fo:font-style", "") == "italic",
+                "bold": props.get("fo:font-weight", "") == "bold",
+                "fixed": props.get("style:font-pitch", "") == "fixed",
+                "underline": bool(underline),
+                "strike": bool(strike),
+            }
+        )
+
+    def get_list_style_properties(self) -> dict[str, str | bool]:
+        """Get text properties of style as a dict, with some enhanced values.
+
+        Enhanced values returned:
+         - "color": str
+         - "background_color": str
+         - "italic": bool
+         - "bold": bool
+         - "fixed": bool
+         - "underline": bool
+         - "strike": bool
+
+        Returns: dict[str, str | bool]
+        """
+        return self.get_text_properties()
+
+    def get_text_properties(self) -> dict[str, str | bool]:
+        """Get text properties of style as a dict, with some enhanced values.
+
+        Enhanced values returned:
+         - "color": str
+         - "background_color": str
+         - "italic": bool
+         - "bold": bool
+         - "fixed": bool
+         - "underline": bool
+         - "strike": bool
+
+        Returns: dict[str, str | bool]
+        """
+        props = self.get_properties(area="text") or {}
+        self._update_boolean_styles(props)  # type: ignore[arg-type]
+        return props  # type: ignore[return-value]
+
+    def set_properties(
+        self,
+        properties: dict[str, str | dict] | None = None,
+        style: StylePageLayout | None = None,
+        area: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Set the properties of the page-layout.
+
+        Properties are given either as a dict or as named arguments (or both). The area is identical to the style family by default. If the properties element is missing, it is created.
+
+        Instead of properties, you can pass a style with properties of a page-layout style. These will be copied.
+
+        Args:
+
+            properties -- dict
+
+            style -- StylePageLayout
+
+            area -- "page-layout"
+        """
+        if properties is None:
+            properties = {}
+        area = "page-layout"
+        element = self.get_element(f"style:{area}-properties")
+        if element is None:
+            element = Element.from_tag(f"style:{area}-properties")
+            self.append(element)
+        if properties or kwargs:
+            properties = _expand_properties_dict(_merge_dicts(properties, kwargs))
+        elif style is not None:
+            properties = style.get_properties()
+            if properties is None:
+                return
+        if properties is None:
+            return
+        for key, value in properties.items():
+            if value is None:
+                element.del_attribute(key)
+            elif isinstance(value, (str, bool, tuple)):
+                element.set_attribute(key, value)
+
+    def del_properties(
+        self,
+        properties: list[str] | None = None,
+        area: str | None = None,
+    ) -> None:
+        """Delete the given properties, either by list argument or positional
+        argument (or both).
+
+        Args:
+
+            properties -- list
+
+            area -- "page-layout"
+        """
+        if properties is None:
+            properties = []
+        area = "page-layout"
+        element = self.get_element(f"style:{area}-properties")
+        if element is None:
+            raise ValueError(
+                f"properties element is inexistent for: style:{area}-properties"
+            )
+        for key in _expand_properties_list(properties):
+            element.del_attribute(key)
+
+    def set_background(
+        self,
+        color: str | None = None,
+        url: str | None = None,
+        position: str | None = "center",
+        repeat: str | None = None,
+        opacity: str | None = None,
+        filter: str | None = None,  # noqa: A002
+    ) -> None:
+        """Set the background of page layout.
+
+        With no argument, remove any existing background.
+
+        The position is one or two of 'center', 'left', 'right', 'top' or
+        'bottom'.
+
+        The repeat is 'no-repeat', 'repeat' or 'stretch'.
+
+        The opacity is a percentage integer (not a string with the '%s' sign)
+
+        The filter is an application-specific filter name defined elsewhere.
+
+        Args:
+
+            color -- '#rrggbb'
+
+            url -- str
+
+            position -- str
+
+            repeat -- str
+
+            opacity -- int
+
+            filter -- str
+        """
+        family = "page-layout"
+        properties = self.get_element(f"style:{family}-properties")
+        bg_image: BackgroundImage | None = None
+        if properties is not None:
+            bg_image = properties.get_element("style:background-image")  # type:ignore
+        # Erasing
+        if color is None and url is None:
+            if properties is None:
+                return
+            properties.del_attribute("fo:background-color")
+            if bg_image is not None:
+                properties.delete(bg_image)
+            return
+        # Add the properties if necessary
+        if properties is None:
+            properties = Element.from_tag(f"style:{family}-properties")
+            self.append(properties)
+        # Add the color...
+        if color:
+            properties.set_attribute("fo:background-color", color)
+            if bg_image is not None:
+                properties.delete(bg_image)
+        # ... or the background
+        elif url:
+            properties.set_attribute("fo:background-color", "transparent")
+            if bg_image is None:
+                bg_image = Element.from_tag("style:background-image")  # type:ignore
+                properties.append(bg_image)  # type:ignore
+            bg_image.url = url  # type:ignore
+            if position:
+                bg_image.position = position  # type:ignore
+            if repeat:
+                bg_image.repeat = repeat  # type:ignore
+            if opacity:
+                bg_image.opacity = opacity  # type:ignore
+            if filter:
+                bg_image.filter = filter  # type:ignore
+
+    def get_header_style(self) -> StyleBase | None:
+        return self.get_element("style:header-style")  # type: ignore
+
+    def set_header_style(self, new_style: StyleBase) -> None:
+        header_style = self.get_header_style()
+        if header_style is not None:
+            self.delete(header_style)
+        self.append(new_style)
+
+    def get_footer_style(self) -> StyleBase | None:
+        return self.get_element("style:footer-style")  # type: ignore
+
+    def set_footer_style(self, new_style: StyleBase) -> None:
+        footer_style = self.get_footer_style()
+        if footer_style is not None:
+            self.delete(footer_style)
+        self.append(new_style)
 
 
 StylePageLayout._define_attribut_property()

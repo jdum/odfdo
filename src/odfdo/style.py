@@ -23,6 +23,11 @@
 from __future__ import annotations
 
 from .style_base import StyleBase
+from .style_utils import (
+    _expand_properties_dict,
+    _expand_properties_list,
+    _merge_dicts,
+)
 
 __all__ = [  # noqa: RUF022
     "BackgroundImage",
@@ -40,7 +45,6 @@ __all__ = [  # noqa: RUF022
     "make_table_cell_border_string",
     "rgb2hex",
 ]
-from copy import deepcopy
 from typing import Any
 
 from .const import ODF_PROPERTIES
@@ -64,81 +68,6 @@ from .utils import (
     to_str,
 )
 from .utils.css3_colormap import CSS3_COLORMAP
-
-# This mapping is not exhaustive, it only contains cases where replacing
-# '_' with '-' and adding the "fo:" prefix is not enough
-_PROPERTY_MAPPING = {  # text
-    "display": "text:display",
-    "family_generic": "style:font-family-generic",
-    "font": "style:font-name",
-    "outline": "style:text-outline",
-    "pitch": "style:font-pitch",
-    "size": "fo:font-size",
-    "style": "fo:font-style",
-    "underline": "style:text-underline-style",
-    "weight": "fo:font-weight",
-    # compliance with office suites
-    "font_family": "fo:font-family",
-    "font_style_name": "style:font-style-name",
-    # paragraph
-    "align-last": "fo:text-align-last",
-    "align": "fo:text-align",
-    "indent": "fo:text-indent",
-    "together": "fo:keep-together",
-    # frame position
-    "horizontal_pos": "style:horizontal-pos",
-    "horizontal_rel": "style:horizontal-rel",
-    "vertical_pos": "style:vertical-pos",
-    "vertical_rel": "style:vertical-rel",
-    # TODO 'page-break-before': 'fo:page-break-before',
-    # TODO 'page-break-after': 'fo:page-break-after',
-    "shadow": "fo:text-shadow",
-    # Graphic
-    "fill_color": "draw:fill-color",
-    "fill_image_height": "draw:fill-image-height",
-    "fill_image_width": "draw:fill-image-width",
-    "guide_distance": "draw:guide-distance",
-    "guide_overhang": "draw:guide-overhang",
-    "line_distance": "draw:line-distance",
-    "stroke": "draw:stroke",
-    "textarea_vertical_align": "draw:textarea-vertical-align",
-}
-
-
-def _map_key(key: str) -> str | None:
-    if key in ODF_PROPERTIES:
-        return key
-    key = _PROPERTY_MAPPING.get(key, key).replace("_", "-")
-    if ":" not in key:
-        key = f"fo:{key}"
-    if key in ODF_PROPERTIES:
-        return key
-    return None
-
-
-def _merge_dicts(dic_base: dict, *args: dict, **kwargs: Any) -> dict:
-    """Merge two or more dictionaries into a new dictionary object."""
-    new_dict = deepcopy(dic_base)
-    for dic in args:
-        new_dict.update(dic)
-    new_dict.update(kwargs)
-    return new_dict
-
-
-def _expand_properties_dict(properties: dict[str, str | dict]) -> dict[str, str | dict]:
-    expanded = {}
-    for key in sorted(properties.keys()):
-        prop_key = _map_key(key)
-        if prop_key and key != prop_key:
-            expanded[prop_key] = properties[key]
-            continue
-        if key not in expanded:
-            expanded[key] = properties[key]
-    return expanded
-
-
-def _expand_properties_list(properties: list[str]) -> list[str]:
-    return list(filter(None, (_map_key(key) for key in properties)))
 
 
 def _make_thick_string(thick: str | float | int | None) -> str:
@@ -290,38 +219,22 @@ def create_table_cell_style(
     return cell_style
 
 
-def _check_new_master_page(*args: Any, **kwargs: Any) -> StyleBase | None:  # type: ignore[misc]
-    # compatibily switch for StyleMasterPage
-    family = kwargs.get("family")
-    if family == "master-page":
-        del kwargs["family"]
-    elif family is None and args and args[0] == "master-page":
-        family = "master-page"
+def _new_master_page(*args: Any, **kwargs: Any) -> StyleBase:  # type: ignore[misc]
+    family = kwargs.pop("family", None)
+    if family is None:
         args = args[1:]
-    if family == "master-page":
-        from .master_page import StyleMasterPage
+    from .master_page import StyleMasterPage
 
-        instance = StyleMasterPage(*args, **kwargs)
-        return instance
-    else:
-        return None
+    return StyleMasterPage(*args, **kwargs)
 
 
-def _check_new_page_layout(*args: Any, **kwargs: Any) -> StyleBase | None:  # type: ignore[misc]
-    # compatibily switch for StylePageLayout
-    family = kwargs.get("family")
-    if family == "page-layout":
-        del kwargs["family"]
-    elif family is None and args and args[0] == "page-layout":
-        family = "page-layout"
+def _new_page_layout(*args: Any, **kwargs: Any) -> StyleBase:  # type: ignore[misc]
+    family = kwargs.pop("family", None)
+    if family is None:
         args = args[1:]
-    if family == "page-layout":
-        from .page_layout import StylePageLayout
+    from .page_layout import StylePageLayout
 
-        instance = StylePageLayout(*args, **kwargs)
-        return instance
-    else:
-        return None
+    return StylePageLayout(*args, **kwargs)
 
 
 class Style(StyleBase):
@@ -362,13 +275,15 @@ class Style(StyleBase):
     )
 
     def __new__(cls, *args: Any, **kwargs: Any) -> StyleBase:  # type: ignore[misc]
-        instance = _check_new_master_page(*args, **kwargs)
-        if instance is not None:
-            return instance
-        # instance = _check_new_page_layout(*args, **kwargs)
-        # if instance is not None:
-        #     return instance
-        return super().__new__(cls)
+        family = kwargs.get("family")
+        if family is None and args:
+            family = args[0]
+        if family == "master-page":
+            return _new_master_page(*args, **kwargs)
+        elif family == "page-layout":
+            return _new_page_layout(*args, **kwargs)
+        else:
+            return super().__new__(cls)
 
     def __init__(
         self,
@@ -491,10 +406,10 @@ class Style(StyleBase):
         tag_or_elem = kwargs.get("tag_or_elem")
         if tag_or_elem is None:
             family = to_str(family)
-            if family == "master-page":
-                raise TypeError("Use Style subclass: StyleMasterPage")
+            if family in {"master-page", "page-layout"}:
+                raise TypeError(f"Wrong initializer for: {family!r}")
             if family not in FAMILY_MAPPING:
-                raise ValueError(f"Unknown family value: '{family}'")
+                raise ValueError(f"Unknown family value: {family!r}")
             kwargs["tag"] = FAMILY_MAPPING[family]
         super().__init__(**kwargs)
         if self._do_init and family not in SUBCLASSED_STYLES:
@@ -961,34 +876,6 @@ class Style(StyleBase):
         if was_created:
             self.append(level_style)
         return level_style
-
-    # page-layout only:
-
-    def get_header_style(self) -> Element | None:
-        if self.family != "page-layout":
-            return None
-        return self.get_element("style:header-style")
-
-    def set_header_style(self, new_style: Style) -> None:
-        if self.family != "page-layout":
-            return
-        header_style = self.get_header_style()
-        if header_style is not None:
-            self.delete(header_style)
-        self.append(new_style)
-
-    def get_footer_style(self) -> Style | None:
-        if self.family != "page-layout":
-            return None
-        return self.get_element("style:footer-style")  # type: ignore
-
-    def set_footer_style(self, new_style: Style) -> None:
-        if self.family != "page-layout":
-            return
-        footer_style = self.get_footer_style()
-        if footer_style is not None:
-            self.delete(footer_style)
-        self.append(new_style)
 
     # font-face only:
 
