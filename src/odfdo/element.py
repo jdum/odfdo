@@ -775,6 +775,27 @@ class Element(MDBase):
             return
         element.set(lxml_tag, Boolean.encode(value))
 
+    def _get_attribute_str_default(self, name: str, default: str = "") -> str:
+        """Return string attribute, with default value."""
+        element = self.__element
+        lxml_tag = _get_lxml_tag_or_name(name)
+        value = element.get(lxml_tag)
+        if value is None:
+            return default
+        return str(value)
+
+    def _set_attribute_str_default(
+        self, name: str, value: str | None, default: str = ""
+    ) -> None:
+        """Set string attribute, with default value."""
+        element = self.__element
+        lxml_tag = _get_lxml_tag_or_name(name)
+        if value is None or value == default:
+            with contextlib.suppress(KeyError):
+                del element.attrib[lxml_tag]
+            return
+        element.set(lxml_tag, value)
+
     def set_attribute(
         self, name: str, value: bool | str | tuple[int, int, int] | None
     ) -> None:
