@@ -99,6 +99,7 @@ __all__ = [  # noqa: RUF022
     "StyleHeader",
     "StyleHeaderLeft",
     "StyleMasterPage",
+    "StylePageLayout",
     "Styles",
     "TOC",
     "Tab",
@@ -200,6 +201,7 @@ from .mixin_dc_date import DcDateMixin
 from .mixin_paragraph import ParaMixin
 from .named_range import NamedRange
 from .note import Note
+from .page_layout import StylePageLayout
 from .paragraph import PageBreak, Paragraph, Span
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
 from .row import Row
