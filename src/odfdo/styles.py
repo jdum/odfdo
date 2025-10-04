@@ -25,8 +25,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .element import Element, PropDef, register_element_class
+from .element import Element
 from .style_base import StyleBase
+from .style_containers import OfficeMasterStyles
 from .utils import is_RFC3066
 from .xmlpart import XmlPart
 
@@ -58,21 +59,6 @@ CONTEXT_MAPPING = {
     "section": ("//office:styles", "//office:automatic-styles"),
     "chart": ("//office:styles", "//office:automatic-styles"),
 }
-
-
-class OfficeMasterStyles(Element):
-    """Container for master styles used in the document, "office:master-
-    styles".
-
-    A master style contains formatting and other content that is displayed with
-    document content when the style is used.
-
-    The "office:master-styles" element is usable within the following elements:
-    "office:document" and "office:document-styles".
-    """
-
-    _tag: str = "office:master-styles"
-    _properties: tuple[PropDef, ...] = ()
 
 
 class Styles(XmlPart):
@@ -235,6 +221,3 @@ class Styles(XmlPart):
             return results[position]
         except IndexError:
             return None
-
-
-register_element_class(OfficeMasterStyles)

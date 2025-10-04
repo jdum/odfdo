@@ -219,7 +219,8 @@ from .style import (
     default_time_style,
     make_table_cell_border_string,
 )
-from .styles import OfficeMasterStyles, Styles
+from .style_containers import OfficeMasterStyles
+from .styles import Styles
 from .tab import Tab
 from .table import Table
 from .toc import (
