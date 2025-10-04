@@ -75,6 +75,7 @@ __all__ = [  # noqa: RUF022
     "NEXT_SIBLING",
     "NamedRange",
     "Note",
+    "OfficeAutomaticStyles",
     "OfficeMasterStyles",
     "PREV_SIBLING",
     "PageBreak",
@@ -219,7 +220,7 @@ from .style import (
     default_time_style,
     make_table_cell_border_string,
 )
-from .style_containers import OfficeMasterStyles
+from .style_containers import OfficeAutomaticStyles, OfficeMasterStyles
 from .styles import Styles
 from .tab import Tab
 from .table import Table
