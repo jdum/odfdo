@@ -27,7 +27,7 @@ from typing import TYPE_CHECKING
 
 from .element import Element
 from .style_base import StyleBase
-from .style_containers import OfficeMasterStyles
+from .style_containers import OfficeAutomaticStyles, OfficeMasterStyles
 from .utils import is_RFC3066
 from .xmlpart import XmlPart
 
@@ -221,3 +221,16 @@ class Styles(XmlPart):
             return results[position]
         except IndexError:
             return None
+
+    @property
+    def office_automatic_styles(self) -> OfficeAutomaticStyles | None:
+        return self.get_element("//office:automatic-styles")  # type: ignore[return-value]
+
+    @office_automatic_styles.setter
+    def office_automatic_styles(
+        self, office_automatic_styles: OfficeAutomaticStyles
+    ) -> None:
+        current = self.office_automatic_styles
+        if isinstance(current, OfficeAutomaticStyles):
+            current.delete()
+        self.root.append(office_automatic_styles)

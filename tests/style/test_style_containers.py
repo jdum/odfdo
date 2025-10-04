@@ -25,7 +25,8 @@ import pytest
 from odfdo.const import ODF_STYLES
 from odfdo.document import Document
 from odfdo.element import Element
-from odfdo.styles import OfficeMasterStyles, Styles
+from odfdo.style_containers import OfficeAutomaticStyles, OfficeMasterStyles
+from odfdo.styles import Styles
 
 
 @pytest.fixture
@@ -66,3 +67,37 @@ def test_set_office_master_styles_no_exist(styles):
     oms = styles.office_master_styles
     assert isinstance(oms, OfficeMasterStyles)
     assert len(oms.children) == 0
+
+
+def test_office_automatic_styles_create():
+    oms = OfficeAutomaticStyles()
+    assert oms.serialize() == "<office:automatic-styles/>"
+
+
+def test_office_automatic_styles_from_tag():
+    oms = Element.from_tag("<office:automatic-styles/>")
+    assert isinstance(oms, OfficeAutomaticStyles)
+
+
+def test_get_office_automatic_styles(styles):
+    oas = styles.office_automatic_styles
+    assert isinstance(oas, OfficeAutomaticStyles)
+    assert len(oas.children) == 1
+
+
+def test_set_office_automatic_styles(styles):
+    new_oas = OfficeAutomaticStyles()
+    styles.office_automatic_styles = new_oas
+    oas = styles.office_automatic_styles
+    assert isinstance(oas, OfficeAutomaticStyles)
+    assert len(oas.children) == 0
+
+
+def test_set_office_automatic_styles_no_exist(styles):
+    current = styles.office_automatic_styles
+    current.delete()
+    new_oas = OfficeAutomaticStyles()
+    styles.office_automatic_styles = new_oas
+    oas = styles.office_automatic_styles
+    assert isinstance(oas, OfficeAutomaticStyles)
+    assert len(oas.children) == 0
