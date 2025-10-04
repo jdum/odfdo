@@ -23,11 +23,15 @@ from .element import Element, PropDef, register_element_class
 
 
 class OfficeAutomaticStyles(Element):
-    """Container for automatic styles used in the document, "office:automatic-styles".
+    """Container for automatic styles used in the document, "office:automatic-
+    styles".
 
-    An automatic style is one contains formatting properties that are considered to be properties of the object to which the style is assigned.
+    An automatic style is one contains formatting properties that are
+    considered to be properties of the object to which the style is assigned.
 
-    The "office:automatic-styles" element is usable within the following elements: "office:document", "office:document-content" and "office:document-styles".
+    The "office:automatic-styles" element is usable within the following
+    elements: "office:document", "office:document-content" and
+    "office:document-styles".
 
     The "office:automatic-styles" element has no attributes.
     """

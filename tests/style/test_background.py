@@ -50,10 +50,19 @@ def test_color(style):
 
 def test_image(style):
     style.set_background(url="Pictures/toto")
+    # expected = (
+    #     '<style:style style:family="paragraph">'
+    #     "<style:paragraph-properties "
+    #     'fo:background-color="transparent">'
+    #     "<style:background-image "
+    #     'xlink:href="Pictures/toto" '
+    #     'style:position="center"/>'
+    #     "</style:paragraph-properties>"
+    #     "</style:style>"
+    # )
     expected = (
         '<style:style style:family="paragraph">'
-        "<style:paragraph-properties "
-        'fo:background-color="transparent">'
+        "<style:paragraph-properties>"
         "<style:background-image "
         'xlink:href="Pictures/toto" '
         'style:position="center"/>'
@@ -71,10 +80,22 @@ def test_image_full(style):
         opacity=50,
         filter="myfilter",
     )
+    # expected = (
+    #     '<style:style style:family="paragraph">'
+    #     "<style:paragraph-properties "
+    #     'fo:background-color="transparent">'
+    #     "<style:background-image "
+    #     'xlink:href="Pictures/toto" '
+    #     'style:position="top left" '
+    #     'style:repeat="no-repeat" '
+    #     'draw:opacity="50" '
+    #     'style:filter-name="myfilter"/>'
+    #     "</style:paragraph-properties>"
+    #     "</style:style>"
+    # )
     expected = (
         '<style:style style:family="paragraph">'
-        "<style:paragraph-properties "
-        'fo:background-color="transparent">'
+        "<style:paragraph-properties>"
         "<style:background-image "
         'xlink:href="Pictures/toto" '
         'style:position="top left" '

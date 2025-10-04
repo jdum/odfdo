@@ -27,6 +27,7 @@ from .style_utils import (
     _expand_properties_dict,
     _expand_properties_list,
     _merge_dicts,
+    _set_background,
 )
 
 __all__ = [  # noqa: RUF022
@@ -219,7 +220,7 @@ def create_table_cell_style(
     return cell_style
 
 
-def _new_master_page(*args: Any, **kwargs: Any) -> StyleBase:  # type: ignore[misc]
+def _new_master_page(*args: Any, **kwargs: Any) -> StyleBase:
     family = kwargs.pop("family", None)
     if family is None:
         args = args[1:]
@@ -228,7 +229,7 @@ def _new_master_page(*args: Any, **kwargs: Any) -> StyleBase:  # type: ignore[mi
     return StyleMasterPage(*args, **kwargs)
 
 
-def _new_page_layout(*args: Any, **kwargs: Any) -> StyleBase:  # type: ignore[misc]
+def _new_page_layout(*args: Any, **kwargs: Any) -> StyleBase:
     family = kwargs.pop("family", None)
     if family is None:
         args = args[1:]
@@ -609,7 +610,7 @@ class Style(StyleBase):
     def set_properties(
         self,
         properties: dict[str, str | dict] | None = None,
-        style: Style | None = None,
+        style: StyleBase | None = None,
         area: str | None = None,
         **kwargs: Any,
     ) -> None:
@@ -686,7 +687,7 @@ class Style(StyleBase):
         url: str | None = None,
         position: str | None = "center",
         repeat: str | None = None,
-        opacity: str | None = None,
+        opacity: str | int | None = None,
         filter: str | None = None,  # noqa: A002
     ) -> None:
         """Set the background color of a text style, or the background color or
@@ -694,12 +695,11 @@ class Style(StyleBase):
 
         With no argument, remove any existing background.
 
-        The position is one or two of 'center', 'left', 'right', 'top' or
-        'bottom'.
+        The values of the position attribute are "left", "center", "right", "top", "bottom", or two white space separated values, that may appear in any order. One of these values is one of: "left", "center" or "right". The other value is one of: "top", "center" or "bottom". The default value for this attribute is "center".
 
-        The repeat is 'no-repeat', 'repeat' or 'stretch'.
+        The repeat value is one of 'no-repeat', 'repeat' or 'stretch'.
 
-        The opacity is a percentage integer (not a string with the '%s' sign)
+        The opacity is a percentage integer (not a string with the '%' sign)
 
         The filter is an application-specific filter name defined elsewhere.
 
@@ -720,56 +720,7 @@ class Style(StyleBase):
 
             filter -- str
         """
-        family = self.family
-        if family not in {
-            "text",
-            "paragraph",
-            "page-layout",
-            "section",
-            "table",
-            "table-row",
-            "table-cell",
-            "graphic",
-        }:
-            raise TypeError("No background support for this family")
-        if url is not None and family == "text":
-            raise TypeError("No background image for text styles")
-        properties = self.get_element(f"style:{family}-properties")
-        bg_image: BackgroundImage | None = None
-        if properties is not None:
-            bg_image = properties.get_element("style:background-image")  # type:ignore
-        # Erasing
-        if color is None and url is None:
-            if properties is None:
-                return
-            properties.del_attribute("fo:background-color")
-            if bg_image is not None:
-                properties.delete(bg_image)
-            return
-        # Add the properties if necessary
-        if properties is None:
-            properties = Element.from_tag(f"style:{family}-properties")
-            self.append(properties)
-        # Add the color...
-        if color:
-            properties.set_attribute("fo:background-color", color)
-            if bg_image is not None:
-                properties.delete(bg_image)
-        # ... or the background
-        elif url:
-            properties.set_attribute("fo:background-color", "transparent")
-            if bg_image is None:
-                bg_image = Element.from_tag("style:background-image")  # type:ignore
-                properties.append(bg_image)  # type:ignore
-            bg_image.url = url  # type:ignore
-            if position:
-                bg_image.position = position  # type:ignore
-            if repeat:
-                bg_image.repeat = repeat  # type:ignore
-            if opacity:
-                bg_image.opacity = opacity  # type:ignore
-            if filter:
-                bg_image.filter = filter  # type:ignore
+        _set_background(self, color, url, position, repeat, opacity, filter)
 
     # list-style only:
 

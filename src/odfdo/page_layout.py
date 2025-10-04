@@ -29,14 +29,16 @@ from .style_utils import (
     _expand_properties_dict,
     _expand_properties_list,
     _merge_dicts,
+    _set_background,
 )
 
 if TYPE_CHECKING:
-    from .style import BackgroundImage
+    pass
 
 
 class StylePageLayout(StyleBase):
-    """The "style:page-layout" element represents the styles that specify the formatting properties of a page.
+    """The "style:page-layout" element represents the styles that specify the
+    formatting properties of a page.
 
     The "style:page-layout" element is usable within the following element:
     "office:automatic-styles".
@@ -182,7 +184,7 @@ class StylePageLayout(StyleBase):
     def set_properties(
         self,
         properties: dict[str, str | dict] | None = None,
-        style: StylePageLayout | None = None,
+        style: StyleBase | None = None,
         area: str | None = None,
         **kwargs: Any,
     ) -> None:
@@ -252,19 +254,18 @@ class StylePageLayout(StyleBase):
         url: str | None = None,
         position: str | None = "center",
         repeat: str | None = None,
-        opacity: str | None = None,
+        opacity: str | int | None = None,
         filter: str | None = None,  # noqa: A002
     ) -> None:
-        """Set the background of page layout.
+        """Set the background color of the page layout.
 
         With no argument, remove any existing background.
 
-        The position is one or two of 'center', 'left', 'right', 'top' or
-        'bottom'.
+        The values of the position attribute are "left", "center", "right", "top", "bottom", or two white space separated values, that may appear in any order. One of these values is one of: "left", "center" or "right". The other value is one of: "top", "center" or "bottom". The default value for this attribute is "center".
 
-        The repeat is 'no-repeat', 'repeat' or 'stretch'.
+        The repeat value is one of 'no-repeat', 'repeat' or 'stretch'.
 
-        The opacity is a percentage integer (not a string with the '%s' sign)
+        The opacity is a percentage integer (not a string with the '%' sign)
 
         The filter is an application-specific filter name defined elsewhere.
 
@@ -282,43 +283,7 @@ class StylePageLayout(StyleBase):
 
             filter -- str
         """
-        family = "page-layout"
-        properties = self.get_element(f"style:{family}-properties")
-        bg_image: BackgroundImage | None = None
-        if properties is not None:
-            bg_image = properties.get_element("style:background-image")  # type:ignore
-        # Erasing
-        if color is None and url is None:
-            if properties is None:
-                return
-            properties.del_attribute("fo:background-color")
-            if bg_image is not None:
-                properties.delete(bg_image)
-            return
-        # Add the properties if necessary
-        if properties is None:
-            properties = Element.from_tag(f"style:{family}-properties")
-            self.append(properties)
-        # Add the color...
-        if color:
-            properties.set_attribute("fo:background-color", color)
-            if bg_image is not None:
-                properties.delete(bg_image)
-        # ... or the background
-        elif url:
-            properties.set_attribute("fo:background-color", "transparent")
-            if bg_image is None:
-                bg_image = Element.from_tag("style:background-image")  # type:ignore
-                properties.append(bg_image)  # type:ignore
-            bg_image.url = url  # type:ignore
-            if position:
-                bg_image.position = position  # type:ignore
-            if repeat:
-                bg_image.repeat = repeat  # type:ignore
-            if opacity:
-                bg_image.opacity = opacity  # type:ignore
-            if filter:
-                bg_image.filter = filter  # type:ignore
+        _set_background(self, color, url, position, repeat, opacity, filter)
 
     def get_header_style(self) -> StyleBase | None:
         return self.get_element("style:header-style")  # type: ignore
