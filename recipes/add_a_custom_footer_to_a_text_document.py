@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Minimal example of setting a page footer using Style.set_page_footer().
+"""Minimal example of setting a page footer using StyleMasterPage.set_page_footer().
 
 Note: the created footer uses the current footer style, to change that
 footer style, use the method  set_footer_style() on the 'page-layout'
@@ -49,6 +49,15 @@ def make_document() -> Document:
     # named "Standard". If not found, search with something like:
     # print([s for s in document.get_styles() if s.family == "master-page"])
     page_style = document.get_style("master-page", "Standard")
+
+    # Another method is (if "Standard" is not the right name):
+    # master page are defined in Styles xml part:
+    styles = document.styles
+    master_pages = styles.master_pages
+    # maybe thre are several master pages (ie.: first pages, and remaining
+    # of document)
+    # let assume we wand the frist one.
+    page_style = master_pages[0]
 
     # The footer can be a Paragraph or a list of Paragraphs:
     first_line = Paragraph("\tA first footer line")
