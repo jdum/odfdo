@@ -21,7 +21,8 @@
 
 from __future__ import annotations
 
-from typing import Any
+import contextlib
+from typing import Any, ClassVar
 
 from .element import Element
 from .style_base import StyleBase
@@ -30,6 +31,23 @@ from .style_utils import _expand_properties_dict, _expand_properties_list, _merg
 
 class StyleProps(StyleBase):
     """Mixin for Style properties methods."""
+
+    AREAS: ClassVar[set[str]] = {
+        "chart",
+        "drawing-page",
+        "graphic",
+        "header-footer",
+        "list-level",
+        "page-layout",
+        "paragraph",
+        "ruby",
+        "section",
+        "table",
+        "table-cell",
+        "table-column",
+        "table-row",
+        "text",
+    }
 
     def get_properties(self, area: str | None = None) -> dict[str, str | dict] | None:
         """Get the mapping of all properties of this style.
@@ -44,6 +62,8 @@ class StyleProps(StyleBase):
         """
         if area is None:
             area = self.family
+        if area not in StyleProps.AREAS:
+            return None
         element = self.get_element(f"style:{area}-properties")
         if element is None:
             return None
@@ -131,10 +151,9 @@ class StyleProps(StyleBase):
         if properties is None:
             properties = {}
         if area is None:
-            if isinstance(self.family, bool):
-                area = None
-            else:
-                area = self.family
+            area = self.family
+        if area not in StyleProps.AREAS:
+            return None
         element = self.get_element(f"style:{area}-properties")
         if element is None:
             element = Element.from_tag(f"style:{area}-properties")
@@ -145,11 +164,10 @@ class StyleProps(StyleBase):
             properties = style.get_properties(area=area)
             if properties is None:
                 return
-        if properties is None:
-            return
         for key, value in properties.items():
             if value is None:
-                element.del_attribute(key)
+                with contextlib.suppress(KeyError):
+                    element.del_attribute(key)
             elif isinstance(value, (str, bool, tuple)):
                 element.set_attribute(key, value)
 
@@ -173,10 +191,13 @@ class StyleProps(StyleBase):
             properties = []
         if area is None:
             area = self.family
+        if area not in StyleProps.AREAS:
+            return None
         element = self.get_element(f"style:{area}-properties")
         if element is None:
             raise ValueError(
-                f"properties element is inexistent for: style:{area}-properties"
+                f"Properties element is inexistent for: style:{area}-properties"
             )
         for key in _expand_properties_list(properties):
-            element.del_attribute(key)
+            with contextlib.suppress(KeyError):
+                element.del_attribute(key)
