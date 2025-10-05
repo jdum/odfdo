@@ -75,6 +75,7 @@ if TYPE_CHECKING:
         LineShape,
         RectangleShape,
     )
+    from .style import Style
     from .style_base import StyleBase
     from .toc import TOC
     from .tracked_changes import (
@@ -814,10 +815,10 @@ class Element(MDBase):
             return
         element.set(lxml_tag, str(value))
 
-    def set_style_attribute(self, name: str, value: Element | str | None) -> None:
+    def set_style_attribute(self, name: str, value: Style | str | None) -> None:
         """Shortcut to accept a style object as a value."""
         if isinstance(value, Element):
-            value = str(value.name)  # type:ignore
+            value = str(value.name)
         return self.set_attribute(name, value)
 
     def del_attribute(self, name: str) -> None:

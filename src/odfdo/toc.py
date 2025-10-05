@@ -24,13 +24,16 @@ IndexTitleTemplate, TocEntryTemplate related classes.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .document import Document
 from .element import FIRST_CHILD, Element, PropDef, register_element_class
 from .mixin_md import MDToc
 from .paragraph import Paragraph
 from .style import Style
+
+if TYPE_CHECKING:
+    pass
 
 
 def _toc_entry_style_name(level: int) -> str:

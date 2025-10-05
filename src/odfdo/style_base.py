@@ -21,12 +21,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from .element import Element
-
-if TYPE_CHECKING:
-    from .style import Style
 
 
 class StyleBase(Element):
@@ -55,7 +52,7 @@ class StyleBase(Element):
     def set_properties(
         self,
         properties: dict[str, str | dict] | None = None,
-        style: Style | None = None,
+        style: StyleBase | None = None,
         area: str | None = None,
         **kwargs: Any,
     ) -> None:

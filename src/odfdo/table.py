@@ -63,6 +63,7 @@ from .utils import (
 
 if TYPE_CHECKING:
     from .element import EText
+    from .style import Style
 
 _XP_ROW = xpath_compile(
     "table:table-row|table:table-rows/table:table-row|"
@@ -691,7 +692,7 @@ class Table(MDTable, Element):
         return self.get_attribute_string("table:style-name")
 
     @style.setter
-    def style(self, style: str | Element) -> None:
+    def style(self, style: str | Style) -> None:
         self.set_style_attribute("table:style-name", style)
 
     def get_formatted_text(self, context: dict | None = None) -> str:

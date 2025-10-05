@@ -24,10 +24,14 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from odfdo.element import Element
 
-from .style import Style
 from .xmlpart import XmlPart
+
+if TYPE_CHECKING:
+    from .style_base import StyleBase
 
 
 class Content(XmlPart):
@@ -46,7 +50,7 @@ class Content(XmlPart):
 
     # Public API
 
-    def get_styles(self, family: str | None = None) -> list[Style]:
+    def get_styles(self, family: str | None = None) -> list[StyleBase]:
         """Return the list of styles in the Content part, optionally limited to
         the given family.
 
@@ -56,7 +60,7 @@ class Content(XmlPart):
 
         Returns: list of Style
         """
-        result: list[Style] = []
+        result: list[StyleBase] = []
         for context in self._get_style_contexts(family):
             if context is None:
                 continue
@@ -68,7 +72,7 @@ class Content(XmlPart):
         family: str,
         name_or_element: str | Element | None = None,
         display_name: str | None = None,
-    ) -> Style | None:
+    ) -> StyleBase | None:
         """Return the style uniquely identified by the name/family pair. If the
         argument is already a style object, it will return it.
 
@@ -90,7 +94,7 @@ class Content(XmlPart):
         for context in self._get_style_contexts(family):
             if context is None:
                 continue
-            style: Style | None = context.get_style(
+            style: StyleBase | None = context.get_style(
                 family,
                 name_or_element=name_or_element,
                 display_name=display_name,

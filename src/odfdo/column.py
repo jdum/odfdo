@@ -26,10 +26,12 @@
 from __future__ import annotations
 
 import contextlib
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .element import Element, register_element_class
-from .style import Style
+
+if TYPE_CHECKING:
+    from .style import Style
 
 
 class Column(Element):

@@ -42,6 +42,8 @@ from .utils import convert_coordinates, increment, translate_from_any
 if TYPE_CHECKING:
     from lxml.etree import XPath
 
+    from .style import Style
+
 
 _xpath_cell = xpath_compile("(table:table-cell|table:covered-table-cell)")
 
@@ -206,7 +208,7 @@ class Row(Element):
         return self.get_attribute_string("table:style-name")
 
     @style.setter
-    def style(self, style: str | Element) -> None:
+    def style(self, style: str | Style) -> None:
         self.set_style_attribute("table:style-name", style)
 
     @property

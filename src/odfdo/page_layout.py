@@ -25,10 +25,8 @@ from typing import TYPE_CHECKING, Any
 
 from .element import Element, PropDef, register_element_class
 from .style_base import StyleBase
+from .style_props import StyleProps
 from .style_utils import (
-    _expand_properties_dict,
-    _expand_properties_list,
-    _merge_dicts,
     _set_background,
 )
 
@@ -36,7 +34,7 @@ if TYPE_CHECKING:
     pass
 
 
-class StylePageLayout(StyleBase):
+class StylePageLayout(StyleProps):
     """The "style:page-layout" element represents the styles that specify the
     formatting properties of a page.
 
@@ -117,69 +115,7 @@ class StylePageLayout(StyleBase):
 
         Returns: dict
         """
-        area = "page-layout"
-        element = self.get_element(f"style:{area}-properties")
-        if element is None:
-            return None
-        properties: dict[str, str | dict[str, Any]] = element.attributes  # type: ignore
-        # Nested properties are nested dictionaries
-        for child in element.children:
-            properties[child.tag] = child.attributes
-        return properties
-
-    @staticmethod
-    def _update_boolean_styles(props: dict[str, str | bool]) -> None:
-        strike = props.get("style:text-line-through-style", "")
-        if strike == "none":
-            strike = ""
-        underline = props.get("style:text-underline-style", "")
-        if underline == "none":
-            underline = ""
-        props.update(
-            {
-                "color": props.get("fo:color") or "",
-                "background_color": props.get("fo:background-color") or "",
-                "italic": props.get("fo:font-style", "") == "italic",
-                "bold": props.get("fo:font-weight", "") == "bold",
-                "fixed": props.get("style:font-pitch", "") == "fixed",
-                "underline": bool(underline),
-                "strike": bool(strike),
-            }
-        )
-
-    def get_list_style_properties(self) -> dict[str, str | bool]:
-        """Get text properties of style as a dict, with some enhanced values.
-
-        Enhanced values returned:
-         - "color": str
-         - "background_color": str
-         - "italic": bool
-         - "bold": bool
-         - "fixed": bool
-         - "underline": bool
-         - "strike": bool
-
-        Returns: dict[str, str | bool]
-        """
-        return self.get_text_properties()
-
-    def get_text_properties(self) -> dict[str, str | bool]:
-        """Get text properties of style as a dict, with some enhanced values.
-
-        Enhanced values returned:
-         - "color": str
-         - "background_color": str
-         - "italic": bool
-         - "bold": bool
-         - "fixed": bool
-         - "underline": bool
-         - "strike": bool
-
-        Returns: dict[str, str | bool]
-        """
-        props = self.get_properties(area="text") or {}
-        self._update_boolean_styles(props)  # type: ignore[arg-type]
-        return props  # type: ignore[return-value]
+        return super().get_properties(area="page-layout")
 
     def set_properties(
         self,
@@ -202,26 +138,9 @@ class StylePageLayout(StyleBase):
 
             area -- "page-layout"
         """
-        if properties is None:
-            properties = {}
-        area = "page-layout"
-        element = self.get_element(f"style:{area}-properties")
-        if element is None:
-            element = Element.from_tag(f"style:{area}-properties")
-            self.append(element)
-        if properties or kwargs:
-            properties = _expand_properties_dict(_merge_dicts(properties, kwargs))
-        elif style is not None:
-            properties = style.get_properties()
-            if properties is None:
-                return
-        if properties is None:
-            return
-        for key, value in properties.items():
-            if value is None:
-                element.del_attribute(key)
-            elif isinstance(value, (str, bool, tuple)):
-                element.set_attribute(key, value)
+        return super().set_properties(
+            properties=properties, style=style, area="page-layout", **kwargs
+        )
 
     def del_properties(
         self,
@@ -237,16 +156,7 @@ class StylePageLayout(StyleBase):
 
             area -- "page-layout"
         """
-        if properties is None:
-            properties = []
-        area = "page-layout"
-        element = self.get_element(f"style:{area}-properties")
-        if element is None:
-            raise ValueError(
-                f"properties element is inexistent for: style:{area}-properties"
-            )
-        for key in _expand_properties_list(properties):
-            element.del_attribute(key)
+        return super().del_properties(properties=properties, area="page-layout")
 
     def set_background(
         self,

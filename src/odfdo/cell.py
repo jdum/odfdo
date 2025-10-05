@@ -31,7 +31,7 @@ from datetime import date as _date
 from datetime import datetime as _datetime
 from datetime import timedelta
 from decimal import ConversionSyntax, Decimal, InvalidOperation
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element, register_element_class_list
@@ -40,6 +40,8 @@ from .element_typed import ElementTyped
 _int = builtins.int
 _float = builtins.float
 _bool = builtins.bool
+if TYPE_CHECKING:
+    from .style import Style
 
 
 class Cell(ElementTyped):
@@ -478,7 +480,7 @@ class Cell(ElementTyped):
         return self.get_attribute_string("table:style-name")
 
     @style.setter
-    def style(self, style: str | Element) -> None:
+    def style(self, style: str | Style) -> None:
         self.set_style_attribute("table:style-name", style)
 
     @property
