@@ -49,6 +49,13 @@ class StyleProps(StyleBase):
         "text",
     }
 
+    def _check_area(self, area: str | None) -> str:
+        if area is None:
+            area = self.family
+        if area not in StyleProps.AREAS:
+            raise ValueError(f"Unexpected area value: {area!r}")
+        return area
+
     def get_properties(self, area: str | None = None) -> dict[str, str | dict] | None:
         """Get the mapping of all properties of this style.
 
@@ -60,9 +67,9 @@ class StyleProps(StyleBase):
 
         Returns: dict
         """
-        if area is None:
-            area = self.family
-        if area not in StyleProps.AREAS:
+        try:
+            area = self._check_area(area)
+        except ValueError:
             return None
         element = self.get_element(f"style:{area}-properties")
         if element is None:
@@ -148,12 +155,9 @@ class StyleProps(StyleBase):
 
             area -- 'paragraph', 'text'...
         """
+        area = self._check_area(area)
         if properties is None:
             properties = {}
-        if area is None:
-            area = self.family
-        if area not in StyleProps.AREAS:
-            return None
         element = self.get_element(f"style:{area}-properties")
         if element is None:
             element = Element.from_tag(f"style:{area}-properties")
@@ -187,16 +191,13 @@ class StyleProps(StyleBase):
 
             area -- str
         """
+        area = self._check_area(area)
         if properties is None:
             properties = []
-        if area is None:
-            area = self.family
-        if area not in StyleProps.AREAS:
-            return None
         element = self.get_element(f"style:{area}-properties")
         if element is None:
             raise ValueError(
-                f"Properties element is inexistent for: style:{area}-properties"
+                f"The Properties element is non-existent for: style:{area}-properties"
             )
         for key in _expand_properties_list(properties):
             with contextlib.suppress(KeyError):

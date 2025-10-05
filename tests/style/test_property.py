@@ -67,8 +67,7 @@ def test_get_style_properties_bad_element(samples):
 
 def test_get_style_properties_bad_area(style_element):
     style = style_element
-    properties = style.get_properties(area="toto")
-    assert properties is None
+    assert style.get_properties(area="toto") is None
 
 
 def test_set_style_properties(style_element):

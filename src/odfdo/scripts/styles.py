@@ -205,8 +205,7 @@ def style_tools(args: Namespace) -> None:
         target = args.output
         if target is None:
             msg = (
-                "Error: Will not delete in-place: "
-                "output file needed or '-' for stdout"
+                "Error: Will not delete in-place: output file needed or '-' for stdout"
             )
             print(msg, file=sys.stderr)
             raise SystemExit(1)
