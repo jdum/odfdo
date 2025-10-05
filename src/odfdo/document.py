@@ -26,6 +26,7 @@
 from __future__ import annotations
 
 import base64
+import contextlib
 import hashlib
 import io
 import posixpath
@@ -851,7 +852,8 @@ class Document(MDDocument):
         style_container = self.styles.get_element("office:styles")
         style.tag = "style:default-style"
         if name:
-            style.del_attribute("style:name")
+            with contextlib.suppress(KeyError):
+                style.del_attribute("style:name")
         existing = self.styles.get_style(family)
         return existing, style_container
 
@@ -1104,10 +1106,8 @@ class Document(MDDocument):
                 "table:style-name",
                 "style:page-layout-name",
             ):
-                try:
+                with contextlib.suppress(KeyError):
                     element.del_attribute(attribute)
-                except KeyError:
-                    continue
         # Then remove supposedly orphaned styles
         deleted = 0
         for style in self.get_styles():
