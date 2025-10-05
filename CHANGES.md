@@ -1,5 +1,37 @@
 # Odfdo Release Notes
 
+## [3.16.8] - 2025-10-5
+
+-   Add dedicated style classes and modules for container classes `OfficeMasterStyles`, `OfficeAutomaticStyles` and related style elements.
+-   Refactor style classes in several modules (utils, defaults, properties).
+-   Small refactoring of code.
+
+### Changed
+
+-   Relocate some internal style method in `style_utils.py`.
+-   Relocate default styles to module `style_defaults.py`
+-   Refactor `Style.set_background()` method to use new style classes and utils.
+-   Refactor some type hints to use new style classes.
+-   Small refactoring of `Document` to use `contextlib.suppress`.
+-   Refactor `Style` class to insure `StylePageLayout` instance creation is compatible with previous versions.
+-   Reorganize and rename test files, adapt tests for styles to new style classes structure.
+-   Refactor recipe `add_a_custom_footer_to_a_text_document.py`.
+
+### Added
+
+-   Add `style_containers.py` module.
+-   Add container class `OfficeMasterStyles`, `OfficeAutomaticStyles`.
+-   Add `page_layout.py` module.
+-   Add class `StylePageLayout`.
+-   Add Element methods `_get_attribute_str_default()` and `_set_attribute_str_default()`.
+-   Add modules `style_utils.py`, `style_props.py`, `style_defaults.py`.
+-   Add mixin class `StyleProps` for Style properties methods.
+-   Add tests for new style classes.
+
+### Fixed
+
+-   Fix method `Style.get_properties()` when a bad style area string is provided.
+
 ## [3.16.7] - 2025-09-20
 
 -   Refactor style classes to make it easier to manage page styles in the future.

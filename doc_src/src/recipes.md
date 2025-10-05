@@ -277,7 +277,7 @@ Steps:
 
 ## Add a custom footer to a text document
 
-Minimal example of setting a page footer using Style.set_page_footer().
+Minimal example of setting a page footer using StyleMasterPage.set_page_footer().
 
 Note: the created footer uses the current footer style, to change that
 footer style, use the method  set_footer_style() on the 'page-layout'
