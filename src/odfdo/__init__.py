@@ -214,15 +214,17 @@ from .style import (
     BackgroundImage,
     Style,
     create_table_cell_style,
+    make_table_cell_border_string,
+)
+from .style_containers import OfficeAutomaticStyles, OfficeMasterStyles
+from .style_defaults import (
     default_boolean_style,
     default_currency_style,
     default_date_style,
     default_number_style,
     default_percentage_style,
     default_time_style,
-    make_table_cell_border_string,
 )
-from .style_containers import OfficeAutomaticStyles, OfficeMasterStyles
 from .styles import Styles
 from .tab import Tab
 from .table import Table

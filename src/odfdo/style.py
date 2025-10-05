@@ -23,6 +23,14 @@
 from __future__ import annotations
 
 from .style_base import StyleBase
+from .style_defaults import (
+    default_boolean_style,
+    default_currency_style,
+    default_date_style,
+    default_number_style,
+    default_percentage_style,
+    default_time_style,
+)
 from .style_props import StyleProps
 from .style_utils import _set_background
 
@@ -751,83 +759,6 @@ class BackgroundImage(Style, DrawImage):
 
 
 BackgroundImage._define_attribut_property()
-
-
-# Some predefined styles
-
-
-def default_number_style() -> Element:
-    """Return a default number style with two decimals."""
-    return Element.from_tag(
-        """<number:number-style style:name="lpod-default-number-style">
-           <number:number number:decimal-places="2"
-            number:min-integer-digits="1"/>
-           </number:number-style>"""
-    )
-
-
-def default_percentage_style() -> Element:
-    """Return a default percentage style with two decimals."""
-    return Element.from_tag(
-        """<number:percentage-style
-            style:name="lpod-default-percentage-style">
-           <number:number number:decimal-places="2"
-            number:min-integer-digits="1"/>
-           <number:text>%</number:text>
-           </number:percentage-style>"""
-    )
-
-
-def default_time_style() -> Element:
-    """Return a default time style."""
-    return Element.from_tag(
-        """<number:time-style style:name="lpod-default-time-style">
-           <number:hours number:style="long"/>
-           <number:text>:</number:text>
-           <number:minutes number:style="long"/>
-           <number:text>:</number:text>
-           <number:seconds number:style="long"/>
-           </number:time-style>"""
-    )
-
-
-def default_date_style() -> Element:
-    """Return a default time style Y-M-D."""
-    return Element.from_tag(
-        """
-           <number:date-style style:name="lpod-default-date-style">
-           <number:year number:style="long"/>
-           <number:text>-</number:text>
-           <number:month number:style="long"/>
-           <number:text>-</number:text>
-           <number:day number:style="long"/>
-           </number:date-style>"""
-    )
-
-
-def default_boolean_style() -> Element:
-    """Return a default boolean style."""
-    return Element.from_tag(
-        """<number:boolean-style style:name="lpod-default-boolean-style">
-           <number:boolean/>
-           </number:boolean-style>"""
-    )
-
-
-def default_currency_style() -> Element:
-    """Return a default currency style (€)."""
-    return Element.from_tag(
-        """<number:currency-style style:name="lpod-default-currency-style">
-            <number:text>-</number:text>
-            <number:number number:decimal-places="2"
-             number:min-integer-digits="1"
-             number:grouping="true"/>
-            <number:text> </number:text>
-            <number:currency-symbol
-             number:language="fr"
-             number:country="FR">€</number:currency-symbol>
-           </number:currency-style>"""
-    )
 
 
 register_element_class(BackgroundImage)
