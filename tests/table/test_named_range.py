@@ -554,3 +554,15 @@ def test_body_change_name_table(table2):
     assert back_nr.end == (5, 3)
     assert back_nr.crange == (3, 2, 5, 3)
     assert back_nr.usage == "print-range"
+
+
+def test_body_set_named_range_bad_name(samples):
+    document = Document(samples("simple_table_named_range.ods"))
+    with pytest.raises(ValueError):
+        document.body.set_named_range("", "", "")
+
+
+def test_body_set_named_range_bad_table_name(samples):
+    document = Document(samples("simple_table_named_range.ods"))
+    with pytest.raises(ValueError):
+        document.body.set_named_range("name", "", "")
