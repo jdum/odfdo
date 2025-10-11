@@ -1,6 +1,6 @@
 [project]
 name = "odfdo"
-version = "3.16.8"
+version = "3.17.0"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 readme = "README.md"
@@ -14,17 +14,16 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Operating System :: OS Independent",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-requires-python = ">=3.9, <4"
+requires-python = ">=3.10, <4"
 dependencies = [
-    "lxml >=4.8.0, <5; python_version == '3.9'",
     "lxml >=4.8.0, <5.1.1; python_version == '3.10'",
     "lxml >=4.9.4, <7; python_version >= '3.11' and python_version < '3.13'",
     "lxml >=5.3.0, <7; python_version >= '3.13'",
@@ -61,23 +60,22 @@ doc = [
 dev = [
     "pillow>=11.3.0",
     "pytest>=8.4.0",
-    "tox>=4.30.3",
-    "ruff>=0.13.3",
+    "tox>=4.31.0",
+    "ruff>=0.14.0",
     "isort>=6.1.0",
     "coverage>=7.10.7",
     "pytest-cov>=6.2.1",
-    "mypy>=1.17.0",
+    "mypy>=1.18.2",
     "mypy-extensions>=1.1.0",
-    "typing-extensions>=4.14.1",
+    "typing-extensions>=4.15.0",
     "pytest-xdist>=3.8.0",
-    "docformatter>=1.7.7",
 ]
 
 [tool.uv]
 default-groups = ["doc", "dev"]
 
 [build-system]
-requires = ["uv_build>=0.8.6,<0.9.0"]
+requires = ["uv_build>=0.9.0,<0.10.0"]
 build-backend = "uv_build"
 
 [tool.isort]
@@ -89,7 +87,7 @@ exclude = [".venv"]
 line-length = 88
 indent-width = 4
 # Assume Python 3.9
-target-version = "py313"
+target-version = "py314"
 
 [tool.ruff.lint]
 # select = ["E4", "E7", "E9", "F", "B"]

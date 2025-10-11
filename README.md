@@ -18,6 +18,8 @@ OpenDocument Format (ODF, ISO/IEC 26300) library for Python
 -   Drawing and Presentation: Less advanced features, but allow work with elements in `.odg` and `.odp` files.
 -   Metadata: Read and write document metadata.
 
+
+
 Project:
 [https://github.com/jdum/odfdo](https://github.com/jdum/odfdo)
 
@@ -47,7 +49,7 @@ After installation from sources, you can check everything is working. The tests 
 
 ```bash
 uv sync --dev
-uv run pytest
+uv run pytest -n8
 ```
 
 To generate the documentation in the `./docs` directory:
@@ -57,8 +59,11 @@ uv sync --group doc
 uv run python doc_src/generate_doc.py
 ```
 
-A special effort has been made to limit the dependencies of this library: the only (non-development) dependency is `lxml`. Versions of `lxml` depend mainly on the version of Python used; see the `pyproject.toml` file for details.
+# Dependencies
 
+The project is tested on Python 3.10 to 3.14 (Linux, Mac, Windows). See previous releases for earlier versions of Python.
+
+A special effort has been made to limit the dependencies of this library: the only (non-development) dependency is `lxml`. The required versions of `lxml depend mainly on the version of Python used; see the `pyproject.toml` file for details. The project tries to keep up with `lxml` version updates regularly.
 
 # Usage Overview
 
@@ -79,7 +84,7 @@ doc.save("hello.odt")
 from odfdo import Document
 
 doc = Document('existing_spreadsheet.ods')
-sheet = doc.body.get_table(0)
+sheet = doc.body.get_sheet(0)
 
 print(f"Value of A1: {sheet.get_cell('A1').value}")
 sheet.set_value('B2', 'Updated Value')

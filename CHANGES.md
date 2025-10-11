@@ -1,10 +1,25 @@
 # Odfdo Release Notes
 
+## [3.17.0] - 2025-10-12
+
+-   Add Python 3.14 to the test suite, remove support for Python 3.9.
+-   Add some tests for `NamedRange`, `Row` and styles functions.
+
+### Changed
+
+-   Adapt configuration of `tox` and `github actions` for Python 3.14.
+-   Small refactor refactor of `NRMixin`.
+
+### Added
+
+-   Add tests for `NamedRange`, `Row`, `style_utils._map_key()` and `style_defaults`.
+
 ## [3.16.8] - 2025-10-5
 
 -   Add dedicated style classes and modules for container classes `OfficeMasterStyles`, `OfficeAutomaticStyles` and related style elements.
 -   Refactor style classes in several modules (utils, defaults, properties).
 -   Small refactoring of code.
+-   Latest version with support for Python 3.9.
 
 ### Changed
 
