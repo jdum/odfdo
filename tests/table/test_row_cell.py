@@ -578,6 +578,15 @@ def test_set_cells_many_start_far(row):
     assert row.width == 14
 
 
+def test_set_cells_many_start_far_no_clone(row):
+    cells = []
+    cell_values = [Cell(value=i * 10) for i in range(12)]
+    row.set_cells(cell_values, 0, clone=False)
+    assert row.get_values() == [i * 10 for i in range(12)]
+    # Test repetitions are synchronized
+    assert row.width == 12
+
+
 def test_set_cells_3_start_1_repeats(row):
     cells = [Cell(value=10, repeated=2)]
     row.set_cells(cells, 1)

@@ -165,7 +165,7 @@ def test_force_width_2():
     assert row.get_values() == [1, 2, 3]
 
 
-def test_force_width_3():
+def test_force_width_3_a():
     row = Row()
     row.set_value(0, 1)
     row.set_value(1, 2)
@@ -174,16 +174,81 @@ def test_force_width_3():
     row.append_cell(cell)
     cell = row.last_cell()
     assert cell.repeated == 4
+
+
+def test_force_width_3_b():
+    row = Row()
+    row.set_value(0, 1)
+    row.set_value(1, 2)
+    row.set_value(2, 3)
+    cell = Cell(repeated=4)
+    row.append_cell(cell)
+    cell = row.last_cell()
     assert row.get_values() == [1, 2, 3, None, None, None, None]
+
+
+def test_force_width_3_c():
+    row = Row()
+    row.set_value(0, 1)
+    row.set_value(1, 2)
+    row.set_value(2, 3)
+    cell = Cell(repeated=4)
+    row.append_cell(cell)
     cell = row.last_cell()
     assert cell is not None
     assert cell.is_empty(aggressive=True)
     assert cell.repeated == 4
+
+
+def test_force_width_3_d():
+    row = Row()
+    row.set_value(0, 1)
+    row.set_value(1, 2)
+    row.set_value(2, 3)
+    cell = Cell(repeated=4)
+    row.append_cell(cell)
+    cell = row.last_cell()
     assert row.width == 7
     assert row._current_length() == 7
     row.force_width(5)
     assert row.width == 5
     assert row.last_cell().repeated == 2
+
+
+def test_force_width_4():
+    row = Row()
+    row.set_value(0, 1)
+    row.set_value(1, 2)
+    row.set_value(2, 3)
+    cell = Cell(repeated=4)
+    row.append_cell(cell)
+    cell = row.last_cell()
+    assert cell is not None
+    assert cell.is_empty(aggressive=True)
+    assert cell.repeated is not None
+    delta = row._current_length() - 5
+    assert delta == 2
+    row.force_width(5)
+    assert row.width == 5
+    assert row.last_cell().repeated == 2
+
+
+def test_force_width_5():
+    row = Row()
+    row.set_value(0, 1)
+    row.set_value(1, 2)
+    row.set_value(2, 3)
+    cell = Cell(repeated=4)
+    row.append_cell(cell)
+    cell = row.last_cell()
+    assert cell is not None
+    assert cell.is_empty(aggressive=True)
+    assert cell.repeated is not None
+    delta = row._current_length() - 12
+    assert delta == -5
+    row.force_width(12)
+    assert row.width == 7
+    assert row.last_cell().repeated == 4
 
 
 def test_current_length_1():
