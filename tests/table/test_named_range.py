@@ -497,6 +497,14 @@ def test_body_table_delete_3(table2):
     assert nr.crange == (0, 1, 3, 7)
 
 
+def test_body_table_delete_none():
+    table = Table("table")
+    doc = Document("ods")
+    doc.body.clear()
+    doc.body.append(table)
+    assert table.delete_named_range("nothing") is None
+
+
 def test_body_table_get_value_1(table2):
     result = table2.get_named_range("nr_1").get_value()
     assert result == 1
