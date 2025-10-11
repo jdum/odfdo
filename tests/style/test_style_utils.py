@@ -31,6 +31,7 @@ from odfdo.style_utils import (
     _check_position,
     _check_repeat,
     _erase_background,
+    _map_key,
     _set_background,
     _set_background_color,
     _set_background_image,
@@ -213,3 +214,33 @@ def test_set_background_text_style(styles):
     style = Style("text", name="name", area="text")
     with pytest.raises(TypeError):
         _set_background(style, None, "http://example.com/aaa", None, None, None, None)
+
+
+def test_map_key_known():
+    key = "chart:angle-offset"
+    odf_key = _map_key(key)
+    assert odf_key == key
+
+
+def test_map_key_mapped_col():
+    key = "display"
+    odf_key = _map_key(key)
+    assert odf_key == "text:display"
+
+
+def test_map_key_mapped_no_mapped_no_col():
+    key = "db:apply-command"
+    odf_key = _map_key(key)
+    assert odf_key == key
+
+
+def test_map_key_mapped_no_mapped_no_col_not_known():
+    key = "ooops"
+    odf_key = _map_key(key)
+    assert odf_key is None
+
+
+def test_map_key_mapped_no_mapped_no_col_known():
+    key = "border-left"
+    odf_key = _map_key(key)
+    assert odf_key == "fo:border-left"
