@@ -130,7 +130,7 @@ Several recipes provide an example of manipulating styles, including: `change_pa
 
 # Related project
 
-I you work on `.ods` files (spreadsheet), you may be interested by these scripts using
+If you work on `.ods` files (spreadsheet), you may be interested by these scripts using
 this library to parse/generate `.ods` files:
 [https://github.com/jdum/odsgenerator](https://github.com/jdum/odsgenerator) and [https://github.com/jdum/odsparsator](https://github.com/jdum/odsparsator)
 
