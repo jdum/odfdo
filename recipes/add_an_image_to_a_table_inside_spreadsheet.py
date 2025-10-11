@@ -54,8 +54,6 @@ def generate_document(image_path: Path, cell_coord: str) -> Document:
     table = Table("SomeTable")
     body.append(table)
 
-    x, y = table._translate_cell_coordinates(cell_coord)
-
     # insert the image content in the document
     uri = document.add_file(image_path)
 

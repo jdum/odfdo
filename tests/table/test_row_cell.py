@@ -579,7 +579,6 @@ def test_set_cells_many_start_far(row):
 
 
 def test_set_cells_many_start_far_no_clone(row):
-    cells = []
     cell_values = [Cell(value=i * 10) for i in range(12)]
     row.set_cells(cell_values, 0, clone=False)
     assert row.get_values() == [i * 10 for i in range(12)]
