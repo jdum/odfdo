@@ -221,9 +221,7 @@ class NRMixin(Body):
             return
         named_range.delete()
         named_expressions = self.get_element("table:named-expressions")
-        if not named_expressions:
-            return
-        element = named_expressions._Element__element  # type: ignore[attr-defined]
+        element = named_expressions._Element__element  # type: ignore[union-attr]
         children = list(element.iterchildren())
         if not children:
             self.delete(named_expressions)
