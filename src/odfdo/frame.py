@@ -288,7 +288,7 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
         """Create a ready-to-use image, since image must be embedded in a
         frame.
 
-        The optionnal text will appear above the image.
+        The optional text will appear above the image.
 
         Args:
 
@@ -340,7 +340,7 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
         """Create a ready-to-use text box, since text box must be embedded in a
         frame.
 
-        The optionnal text will appear above the image.
+        The optional text will appear above the image.
 
         Args:
 

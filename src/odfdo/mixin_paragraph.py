@@ -383,9 +383,9 @@ class ParaMixin(Element):
         date: datetime | None = None,
     ) -> Annotation:
         """Insert an annotation, at the position defined by the regex (before,
-        after, content) or by positionnal argument (position). If content is
+        after, content) or by positional argument (position). If content is
         provided, the annotation covers the full content regex. Else, the
-        annotation is positionned either 'before' or 'after' provided regex.
+        annotation is positioned either 'before' or 'after' provided regex.
 
         If content is an odf element (ie: paragraph, span, ...), the full inner
         content is covered by the annotation (of the position just after if
@@ -539,10 +539,10 @@ class ParaMixin(Element):
         content: str | Element | None = None,
     ) -> Element:
         """Insert a reference mark, at the position defined by the regex
-        (before, after, content) or by positionnal argument (position). If
+        (before, after, content) or by positional argument (position). If
         content is provided, the annotation covers the full range content regex
         (instances of ReferenceMarkStart and ReferenceMarkEnd are created).
-        Else, an instance of ReferenceMark is positionned either 'before' or
+        Else, an instance of ReferenceMark is positioned either 'before' or
         'after' provided regex.
 
         If content is an ODF Element (ie: Paragraph, Span, ...), the full inner
@@ -790,7 +790,7 @@ class ParaMixin(Element):
         ref_format is the argument for format reference (default is 'page').
 
         The reference is inserted the position defined by the regex (before /
-        after), or by positionnal argument (position). If 'display' is provided,
+        after), or by positional argument (position). If 'display' is provided,
         it will be used as the text value for the reference.
 
         If after is an ODF Element, the reference is inserted as first child of

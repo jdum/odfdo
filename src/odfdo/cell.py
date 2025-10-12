@@ -432,7 +432,7 @@ class Cell(ElementTyped):
     def _set_repeated(self, repeated: _int | None) -> None:
         """Internal only.
 
-        Set the numnber of times the cell is repeated, or None to delete.
+        Set the number of times the cell is repeated, or None to delete.
         Without changing cache.
         """
         if repeated is None or repeated < 2:

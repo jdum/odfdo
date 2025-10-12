@@ -63,7 +63,7 @@ class DrawImage(Element):
         Warning: image elements must be stored in a frame "draw:frame",
         see Frame().
 
-        Initialisation of an DrawImage.
+        Initialization of an DrawImage.
 
         Args:
 

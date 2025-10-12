@@ -17,7 +17,7 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""ElmentTyped subclass of Element."""
+"""ElementTyped subclass of Element."""
 
 from __future__ import annotations
 

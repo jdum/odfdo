@@ -174,7 +174,7 @@ def _set_item_in_vault(
         current_item._set_repeated(repeated_before)
         target_idx += 1
     else:
-        # Replacing the first occurence
+        # Replacing the first occurrence
         vault.delete(current_item)
     # Insert new element
     if clone:

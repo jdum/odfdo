@@ -68,7 +68,7 @@ class Paragraph(MDParagraph, ParaFormattedTextMixin, ParaMixin, Element):
         **kwargs: Any,
     ):
         """Create a paragraph element "text:p" of the given style containing
-        the pptional given text.
+        the optional given text.
 
         If "formatted" is True (the default), the given text is appended with <CR>,
         <TAB> and multiple spaces replaced by ODF corresponding tags.

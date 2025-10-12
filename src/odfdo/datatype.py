@@ -67,7 +67,7 @@ class Date:
 
     @staticmethod
     def encode(value: datetime | date) -> str:
-        """Return text formated as "2024-01-31"."""
+        """Return text formatted as "2024-01-31"."""
         if isinstance(value, datetime):
             return value.date().isoformat()
         # date instance

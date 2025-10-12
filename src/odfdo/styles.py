@@ -87,7 +87,7 @@ class Styles(XmlPart):
 
     def get_styles(self, family: str = "", automatic: bool = False) -> list[StyleBase]:
         """Return the list of styles in the Styles part, optionally limited to
-        the given family, optionaly limited to automatic styles.
+        the given family, optionally limited to automatic styles.
 
         Args:
 

@@ -45,7 +45,7 @@ class Unit:
     """Utility for length units and conversion to pixels."""
 
     def __init__(self, value: str | float | int | Decimal, unit: str = "cm") -> None:
-        """Create a mesure instance with a value and a unit."""
+        """Create a measure instance with a value and a unit."""
         if isinstance(value, str):
             digits = []
             nondigits = []

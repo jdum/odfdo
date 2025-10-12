@@ -120,7 +120,7 @@ class Body(Element):
 class NRMixin(Body):
     """Mixin for Named Range access.
 
-    Used by the following classes: Chart, Drawing, Preentation, Spreadsheet, Text.
+    Used by the following classes: Chart, Drawing, Presentation, Spreadsheet, Text.
     """
 
     def get_named_ranges(self) -> list[NamedRange]:

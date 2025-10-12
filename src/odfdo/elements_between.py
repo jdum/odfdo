@@ -128,7 +128,7 @@ def _get_between_base(
                     current, target = _get_successor(current, target)  # type: ignore
                     state = 1
                     continue
-                # got T1 in chidren, need further analysis
+                # got T1 in children, need further analysis
                 new_target = current.clone
                 for child in new_target.children:
                     new_target.delete(child)
@@ -148,7 +148,7 @@ def _get_between_base(
                 if current.xpath(f"self::{path2}"):
                     # end of trip
                     break
-                # got T2 in chidren, need further analysis
+                # got T2 in children, need further analysis
                 further = True
             # further analysis needed :
             if further:
@@ -166,7 +166,7 @@ def _get_between_base(
             current, target = _get_successor(current, target)  # type: ignore
             continue
     # Now resu should be the "parent" of inserted parts
-    # - a text:h or text:p sigle item (simple case)
+    # - a text:h or text:p single item (simple case)
     # - a upper element, with some text:p, text:h in it => need to be
     #   stripped to have a list of text:p, text:h
     if result.tag in {"text:p", "text:h"}:
@@ -229,8 +229,8 @@ def elements_between(
     If "no_header" is True: existing "text:h" are changed in "text:p".
     By default: returns a list of Element, cleaned and without headers.
 
-    Implementation and standard retrictions:
-    Only "text:h" and "text:p" sould be 'cut' by an insert tag, so inner parts
+    Implementation and standard restrictions:
+    Only "text:h" and "text:p" should be 'cut' by an insert tag, so inner parts
     of insert tags are:
 
         - any "text:h", "text:p" or sub element of these

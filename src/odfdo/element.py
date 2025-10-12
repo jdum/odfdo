@@ -887,7 +887,7 @@ class Element(MDBase):
         return match.start()
 
     def search_first(self, pattern: str) -> tuple[int, int] | None:
-        """Return the start and end position of the first occurence of the
+        """Return the start and end position of the first occurrence of the
         regex pattern in the text content of the element.
 
         Result is tuples of start and end position, or None.
@@ -968,7 +968,7 @@ class Element(MDBase):
     ) -> int:
         """Replace the pattern with the given text, or delete if text is an
         empty string, and return the number of replacements. By default, only
-        return the number of occurences that would be replaced.
+        return the number of occurrences that would be replaced.
 
         It cannot replace patterns found across several element, like a word
         split into two consecutive spans.

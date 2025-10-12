@@ -35,7 +35,7 @@ class DcDateMixin:
 
         (Also available as "self.date" property.)
 
-        Returns: datetime (or None if inexistant)
+        Returns: datetime (or None if inexistent)
         """
         element = self.clone.get_element("//dc:date")
         if element is None:

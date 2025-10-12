@@ -73,7 +73,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.title" property.)
 
-        Returns: str (or None if inexistant)
+        Returns: str (or None if inexistent)
         """
         element = self.get_element("//dc:title")
         if element is None:
@@ -101,7 +101,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     def title(self) -> str | None:
         """Get or set the title of the document <dc:title>.
 
-        Returns: str (or None if inexistant)
+        Returns: str (or None if inexistent)
         """
         return self.get_title()
 
@@ -114,7 +114,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.description" property.)
 
-        Returns: str (or None if inexistant)
+        Returns: str (or None if inexistent)
         """
         element = self.get_element("//dc:description")
         if element is None:
@@ -145,7 +145,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     def description(self) -> str | None:
         """Get or set the description of a document <dc:description>.
 
-        Returns: str (or None if inexistant)
+        Returns: str (or None if inexistent)
         """
         return self.get_description()
 
@@ -158,7 +158,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.subject" property.)
 
-        Returns: str (or None if inexistant)
+        Returns: str (or None if inexistent)
         """
         element = self.get_element("//dc:subject")
         if element is None:
@@ -184,7 +184,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     def subject(self) -> str | None:
         """Get or set the subject of a document <dc:subject>.
 
-        Returns: str (or None if inexistant)
+        Returns: str (or None if inexistent)
         """
         return self.get_subject()
 
@@ -200,7 +200,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.language" property.)
 
-        Returns: str (or None if inexistant)
+        Returns: str (or None if inexistent)
 
         Example::
 
@@ -248,7 +248,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         To set globally the default language, prefer the
         Document.language property.
 
-        Returns: str (or None if inexistant)
+        Returns: str (or None if inexistent)
         """
         return self.get_language()
 
@@ -261,7 +261,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.creation_date" property.)
 
-        Returns: datetime (or None if inexistant)
+        Returns: datetime (or None if inexistent)
         """
         element = self.get_element("//meta:creation-date")
         if element is None:
@@ -295,7 +295,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         If provided datetime is None, use current time.
 
-        Returns: datetime (or None if inexistant)
+        Returns: datetime (or None if inexistent)
         """
         return self.get_creation_date()
 
@@ -310,7 +310,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         If provided datetime is None, use current time.
 
-        Returns: datetime (or None if inexistant)
+        Returns: datetime (or None if inexistent)
         """
         element = self.get_element("//meta:print-date")
         if element is None:
@@ -406,7 +406,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.initial_creator" property.)
 
-        Returns: str (or None if inexistant)
+        Returns: str (or None if inexistent)
 
         Example::
 
@@ -441,7 +441,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     def initial_creator(self) -> str | None:
         """Get or set the initial creator of a document <meta:initial-creator>.
 
-        Returns: str (or None if inexistant)
+        Returns: str (or None if inexistent)
         """
         return self.get_initial_creator()
 
@@ -454,7 +454,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Get or set the name of the last person who printed a document.
         <meta:printed-by>
 
-        Returns: str (or None if inexistant)
+        Returns: str (or None if inexistent)
         """
         element = self.get_element("//meta:printed-by")
         if element is None:
@@ -475,7 +475,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.keyword" and "self.keywords" property.)
 
-        Returns: str (or None if inexistant)
+        Returns: str (or None if inexistent)
         """
         element = self.get_element("//meta:keyword")
         if element is None:
@@ -503,7 +503,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Get or set some keyword(s) keyword pertaining to a document
         <dc:keyword>.
 
-        Returns: str (or None if inexistant)
+        Returns: str (or None if inexistent)
         """
         return self.get_keywords()
 
@@ -518,7 +518,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.editing_duration" property.)
 
-        Returns: timedelta (or None if inexistant)
+        Returns: timedelta (or None if inexistent)
         """
         element = self.get_element("//meta:editing-duration")
         if element is None:
@@ -548,7 +548,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Get or set the total time spent editing a document <meta:editing-
         duration>.
 
-        Returns: timedelta (or None if inexistant)
+        Returns: timedelta (or None if inexistent)
         """
         return self.get_editing_duration()
 
@@ -562,7 +562,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.editing_cycles" property.)
 
-        Returns: int (or None if inexistant)
+        Returns: int (or None if inexistent)
         """
         element = self.get_element("//meta:editing-cycles")
         if element is None:
@@ -597,7 +597,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         When a document is created, this value is set to 1. Each time
         a document is saved, the editing-cycles number is incremented by 1.
 
-        Returns: int (or None if inexistant)
+        Returns: int (or None if inexistent)
         """
         return self.get_editing_cycles()
 
@@ -610,7 +610,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Get or set the signature of the software that generated this
         document.
 
-        Returns: str (or None if inexistant)
+        Returns: str (or None if inexistent)
 
         Example::
 
@@ -637,7 +637,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.generator" property.)
 
-        Returns: str (or None if inexistant)
+        Returns: str (or None if inexistent)
 
         Example::
 
@@ -677,7 +677,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.statistic" property.)
 
-        Returns: dict (or None if inexistant)
+        Returns: dict (or None if inexistent)
 
         Example::
 
@@ -739,7 +739,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Get or set the statistics about a document, "meta:document-
         statistic" tag.
 
-        Returns: dict (or None if inexistant)
+        Returns: dict (or None if inexistent)
 
         Example::
 
@@ -818,7 +818,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     def get_user_defined_metadata_of_name(self, keyname: str) -> dict[str, Any] | None:
         """Return the content of the user defined metadata of that name. Return
-        None if no name matchs or a dic of fields.
+        None if no name matches or a dic of fields.
 
         Args:
 
@@ -900,7 +900,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     def _get_meta_value(
         self, element: Element, full: bool = False
     ) -> Any | tuple[Any, str, str]:
-        """get_value() deicated to the meta data part, for one meta element."""
+        """get_value() dedicated to the meta data part, for one meta element."""
         if full:
             return self._get_meta_value_full(element)
         else:
@@ -908,7 +908,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     @staticmethod
     def _get_meta_value_full(element: Element) -> tuple[Any, str, str]:
-        """get_value deicated to the meta data part, for one meta element."""
+        """get_value dedicated to the meta data part, for one meta element."""
         # name = element.get_attribute('meta:name')
         value_type = element.get_attribute_string("meta:value-type")
         if value_type is None:
@@ -944,7 +944,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         def _stats() -> dict[str, int]:
             doc_stats = self.statistic
             if doc_stats is None:
-                msg = "Document statitics not found"
+                msg = "Document statistics not found"
                 raise LookupError(msg)
             return {
                 key: doc_stats.get(key, 0)
@@ -1049,7 +1049,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         )
 
     def as_text(self) -> str:
-        """Return meta informations as text, with some formatting for
+        """Return meta information as text, with some formatting for
         printing.
         """
         data = self._as_json_dict(full=False)

@@ -41,10 +41,10 @@ if TYPE_CHECKING:
 
 
 class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
-    """Representation of informations of a change, "office:change-info".
+    """Representation of information of a change, "office:change-info".
 
     The "office:change-info" element represents who made a change and when.
-    It may also contain a comment (one or more Paragrah "text:p" elements)
+    It may also contain a comment (one or more Paragraph "text:p" elements)
     on the change.
 
     The comments available in the ChangeInfo are available through:
@@ -62,7 +62,7 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
         date: datetime | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create informations of a change "office:change-info".
+        """Create information of a change "office:change-info".
 
         Args:
 
@@ -111,7 +111,7 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
 
 
 class TextInsertion(Element):
-    """Informations on a text insertion, "text:insertion".
+    """Information on a text insertion, "text:insertion".
 
     The TextInsertion "text:insertion" element contains the information that
     identifies the person responsible for a change and the date of that change.
@@ -188,7 +188,7 @@ class TextInsertion(Element):
         not provided, creator, date and comments will be used to build a
         suitable change info element. Default for creator is 'Unknown', default
         for date is current time and default for comments is no comment at all.
-        The new change info element will replace any existant ChangeInfo.
+        The new change info element will replace any existent ChangeInfo.
 
         Args:
 
@@ -204,7 +204,7 @@ class TextInsertion(Element):
             new_change_info = ChangeInfo(creator, date)
             if comments is not None:
                 if isinstance(comments, Element):
-                    # single pararagraph comment
+                    # single paragraph comment
                     comments_list = [comments]
                 else:
                     comments_list = comments
@@ -226,7 +226,7 @@ class TextInsertion(Element):
 
 
 class TextDeletion(TextInsertion):
-    """Informations on a text deletion, "text:deletion".
+    """Information on a text deletion, "text:deletion".
 
     The TextDeletion "text:deletion" contains information that identifies
     the person responsible for a deletion and the date of that deletion.
@@ -261,7 +261,7 @@ class TextDeletion(TextInsertion):
         as_text: bool = False,
         no_header: bool = False,
     ) -> str | list[Element] | None:
-        """Get the deleted informations stored in the TextDeletion.
+        """Get the deleted information stored in the TextDeletion.
         If as_text is True: returns the text content.
         If no_header is True: existing Heading are changed in Paragraph
 
@@ -276,7 +276,7 @@ class TextDeletion(TextInsertion):
         children = self.children
         inner = [elem for elem in children if elem.tag != "office:change-info"]
         if no_header:  # crude replace t:h by t:p
-            print("noheader")
+            print("noheaders")
             new_inner = []
             for element in inner:
                 if element.tag == "text:h":
@@ -295,8 +295,8 @@ class TextDeletion(TextInsertion):
         return inner
 
     def set_deleted(self, paragraph_or_list: Element | list[Element]) -> None:
-        """Set the deleted informations stored in the TextDeletion. An actual
-        content that was deleted is expected, embeded in a Paragraph element or
+        """Set the deleted information stored in the TextDeletion. An actual
+        content that was deleted is expected, embedded in a Paragraph element or
         Header.
 
         Args:
@@ -384,7 +384,7 @@ class TextChangedRegion(Element):
 
              change_info -- ChangeInfo element (or None)
 
-             cretor -- str (or None)
+             creator -- str (or None)
 
              date -- datetime (or None)
 
@@ -547,7 +547,7 @@ class TextChange(Element):
         no_header: bool = False,
         clean: bool = True,
     ) -> Element | None:
-        """Shortcut to get the deleted informations stored in the TextDeletion
+        """Shortcut to get the deleted information stored in the TextDeletion
         stored in the tracked changes.
 
         Returns: Paragraph (or None)."

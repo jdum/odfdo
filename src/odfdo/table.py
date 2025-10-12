@@ -162,7 +162,7 @@ class Table(MDTable, Element):
         handling repetitions and the same number of cells for each row.
 
         If you use both the table API and the XML API, you are on your own for
-        ensuiring model integrity.
+        ensuring model integrity.
 
         Args:
 
@@ -256,7 +256,7 @@ class Table(MDTable, Element):
         self._table_cache = TableCache()
 
     def _translate_y_from_any(self, y: str | int) -> int:
-        # "3" (couting from 1) -> 2 (couting from 0)
+        # "3" (counting from 1) -> 2 (counting from 0)
         return translate_from_any(y, self.height, 1)
 
     def _translate_table_coordinates_list(
@@ -843,7 +843,7 @@ class Table(MDTable, Element):
         before setting values, use table.clear().
 
         A list of lists is expected, with as many lists as rows, and as many
-        items in each sublist as cells to be setted. None values in the list
+        items in each sublist as cells to be set. None values in the list
         will create empty cells with no cell type (but eventually a style).
 
         Args:
@@ -1234,7 +1234,7 @@ class Table(MDTable, Element):
         return row
 
     def set_row(self, y: int | str, row: Row | None = None, clone: bool = True) -> Row:
-        """Replace the row at the given position with the new one. Repetions of
+        """Replace the row at the given position with the new one. Repetitions of
         the old row will be adjusted.
 
         If row is None, a new empty row is created.
@@ -1601,7 +1601,7 @@ class Table(MDTable, Element):
     ) -> Cell:
         """Get the cell at the given coordinates.
 
-        They are either a 2-uplet of (x, y) starting from 0, or a
+        They are either a 2-tuple of (x, y) starting from 0, or a
         human-readable position like "C4".
 
         A copy is returned, use ``set_cell`` to push it back.
@@ -1647,7 +1647,7 @@ class Table(MDTable, Element):
 
         If get_type is True, returns the tuples (value, ODF type)
 
-        coord is either a 2-uplet of (x, y) starting from 0, or a
+        coord is either a 2-tuple of (x, y) starting from 0, or a
         human-readable position like "C4". If an Area is given, the upper
         left position is used as coord.
 
@@ -1687,7 +1687,7 @@ class Table(MDTable, Element):
     ) -> Cell:
         """Replace a cell of the table at the given coordinates.
 
-        They are either a 2-uplet of (x, y) starting from 0, or a
+        They are either a 2-tuple of (x, y) starting from 0, or a
         human-readable position like "C4".
 
         Args:
@@ -1747,7 +1747,7 @@ class Table(MDTable, Element):
         before setting cells, use table.clear().
 
         A list of lists is expected, with as many lists as rows to be set, and
-        as many cell in each sublist as cells to be setted in the row.
+        as many cell in each sublist as cells to be set in the row.
 
         Args:
 
@@ -1788,7 +1788,7 @@ class Table(MDTable, Element):
     ) -> None:
         """Set the Python value of the cell at the given coordinates.
 
-        They are either a 2-uplet of (x, y) starting from 0, or a
+        They are either a 2-tuple of (x, y) starting from 0, or a
         human-readable position like "C4".
 
         Args:
@@ -1821,7 +1821,7 @@ class Table(MDTable, Element):
         Do all the magic to display an image in the cell at the given
         coordinates.
 
-        They are either a 2-uplet of (x, y) starting from 0, or a
+        They are either a 2-tuple of (x, y) starting from 0, or a
         human-readable position like "C4".
 
         The frame element must contain the expected image position and
@@ -1890,7 +1890,7 @@ class Table(MDTable, Element):
         """Insert the given cell at the given coordinates. If no cell is given,
         an empty one is created.
 
-        Coordinates are either a 2-uplet of (x, y) starting from 0, or a
+        Coordinates are either a 2-tuple of (x, y) starting from 0, or a
         human-readable position like "C4".
 
         Cells on the right are shifted. Other rows remain untouched.
@@ -1961,7 +1961,7 @@ class Table(MDTable, Element):
         """Delete the cell at the given coordinates, so that next cells are
         shifted to the left.
 
-        Coordinates are either a 2-uplet of (x, y) starting from 0, or a
+        Coordinates are either a 2-tuple of (x, y) starting from 0, or a
         human-readable position like "C4".
 
         Use set_value() for erasing value.
@@ -2522,7 +2522,7 @@ class Table(MDTable, Element):
 
             table_names -- str or list of str, names of tables
 
-            global_scope -- bool, serch in entire document or in the current table.
+            global_scope -- bool, search in entire document or in the current table.
 
         Returns : list of NamedRange
         """
@@ -2558,7 +2558,7 @@ class Table(MDTable, Element):
 
             name -- str, name of the named range object
 
-            global_scope -- bool, serch in entire document or in the current table.
+            global_scope -- bool, search in entire document or in the current table.
 
         Returns : NamedRange or None
         """
@@ -2589,7 +2589,7 @@ class Table(MDTable, Element):
 
             named_range --  NamedRange
 
-            global_scope -- bool, serch in entire document or in the current table.
+            global_scope -- bool, search in entire document or in the current table.
         """
         if global_scope:
             body = self.document_body
@@ -2631,7 +2631,7 @@ class Table(MDTable, Element):
 
             usage -- None or 'print-range', 'filter', 'repeat-column', 'repeat-row'
 
-            global_scope -- bool, serch in entire document or in the current table.
+            global_scope -- bool, search in entire document or in the current table.
         """
         name = name.strip()
         if not name:
@@ -2668,7 +2668,7 @@ class Table(MDTable, Element):
 
             name -- str
 
-            global_scope -- bool, serch in entire document or in the current table.
+            global_scope -- bool, search in entire document or in the current table.
         """
         name = name.strip()
         if not name:
@@ -2702,7 +2702,7 @@ class Table(MDTable, Element):
         If merge is True, replace text of the cell by the concatenation of
         existing text in covered cells.
         Beware : if merge is True, old text is changed, if merge is False
-        (the default), old text in coverd cells is still present but not
+        (the default), old text in covered cells is still present but not
         displayed by most GUI.
 
         If the area defines only one cell, the set span will do nothing.
@@ -2800,7 +2800,7 @@ class Table(MDTable, Element):
         return True
 
     def del_span(self, area: str | tuple | list) -> bool:
-        """Delete a Cell Span. 'area' is the cell coordiante of the upper left
+        """Delete a Cell Span. 'area' is the cell coordinate of the upper left
         cell of the spanned area.
 
         Area can be either one cell (like 'A1') or an area ('A1:B2'). It can

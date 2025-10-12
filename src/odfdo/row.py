@@ -155,7 +155,7 @@ class Row(Element):
         return cloned_row
 
     def _set_repeated(self, repeated: int | None) -> None:
-        """Method Internal only. Set the numnber of times the row is repeated,
+        """Method Internal only. Set the number of times the row is repeated,
         or None to delete it. Without changing cache.
 
         Args:
@@ -679,7 +679,7 @@ class Row(Element):
         currency: str | None = None,
     ) -> None:
         """Shortcut to set the value of cells in the row, from the 'start'
-        column vith values. This method does not clear the row, use row.clear()
+        column with values. This method does not clear the row, use row.clear()
         before to start with an empty row.
 
         Args:

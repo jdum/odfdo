@@ -50,7 +50,7 @@ class ListItem(MDListItem, Element):
     ) -> None:
         """An item of a list, "text:list-item".
 
-        Create a list item element, optionaly passing at creation time a
+        Create a list item element, optionally passing at creation time a
         string or Element as content.
 
         Args:
@@ -85,7 +85,7 @@ class List(MDList, Element):
     ) -> None:
         """A list of elements, "text:list".
 
-        Create a list element, optionaly loading the list by a list of
+        Create a list element, optionally loading the list by a list of
         item (str or elements).
 
         The list_content argument is just a shortcut for the most common case.

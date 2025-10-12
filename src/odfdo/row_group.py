@@ -50,7 +50,7 @@ class RowGroup(Element):
         width: int | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a group of rows, "table:table-row-group", optionnaly filled
+        """Create a group of rows, "table:table-row-group", optionally filled
         with "height" number of rows, of "width" cells each.
 
         Row group bear style information applied to a series of rows.
