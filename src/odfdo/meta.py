@@ -66,6 +66,13 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Return the body of the "meta.xml" part."""
         return self._get_body()
 
+    @property
+    def odf_office_version(self) -> str:
+        """Return the "office:version" value of the document."""
+        odm = self.get_element("//office:document-meta")
+        # "office:version" sould be always present
+        return odm.get_attribute_string("office:version") or ""
+
     def get_title(self) -> str | None:
         """Get the title of the document.
 
