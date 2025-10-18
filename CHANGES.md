@@ -1,6 +1,26 @@
 # Odfdo Release Notes
 
-## [3.17.0] - 2025-10-12
+## [3.17.1] - 2025-10-18
+
+-   Add a new script `odfdo-meta-print`, which prints the document metadata.
+-   Fix many typos in docstrings and information strings (thanks to @metemaddar).
+-   Reintroduce support for Python 3.9, as some Linux distributions still use it.
+
+### Changed
+
+-   Adapt configuration of `tox` and `github actions` for Python 3.9 reintroduction.
+
+### Added
+
+-   Add property `Meta.odf_office_version`.
+-   Add script `odfdo-meta-print` and tests for it.
+-   Add optional message to `Meta.as_text()` when no user defined metadata fields.
+
+### Fixed
+
+-   Fix typos in `README.md`, docstrings and information strings (by @metemaddar).
+
+## [3.17.0] - 2025-10-11
 
 -   Add Python 3.14 to the test suite, remove support for Python 3.9.
 -   Add some tests for `NamedRange`, `Row` and styles functions.

@@ -27,7 +27,7 @@ def test_meta_print_no_param():
     out, _err, exitcode = run_params(params)
     assert exitcode == 1
     assert b"usage:" in out
-    assert b"Error: OSError" in out
+    assert b"Error:" in out
 
 
 def test_meta_print_no_file():
