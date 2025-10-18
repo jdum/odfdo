@@ -1048,7 +1048,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             indent=4,
         )
 
-    def as_text(self) -> str:
+    def as_text(self, no_user_defined_msg: str = "") -> str:
         """Return meta information as text, with some formatting for
         printing.
         """
@@ -1078,8 +1078,12 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         for name, value in statistic.items():
             result.append(f"  - {name[5:].replace('-', ' ').capitalize()}: {value}")
 
-        result.append("User defined metadata:")
         user_metadata = data.get("meta:user-defined", [])
+        if user_metadata:
+            msg = ""
+        else:
+            msg = f" {no_user_defined_msg}"
+        result.append(f"User defined metadata:{msg}")
         for item in user_metadata:
             result.append(f"  - {item['meta:name']}: {item['value']}")
 
