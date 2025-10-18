@@ -48,6 +48,7 @@ odfdo-userfield = 'odfdo.scripts.userfield:main'
 odfdo-markdown = 'odfdo.scripts.to_markdown:main'
 odfdo-from-csv = 'odfdo.scripts.from_csv:main'
 odfdo-to-csv = 'odfdo.scripts.to_csv:main'
+odfdo-meta-print = 'odfdo.scripts.meta_print:main'
 
 [dependency-groups]
 doc = [
