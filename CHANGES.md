@@ -1,5 +1,19 @@
 # Odfdo Release Notes
 
+## [3.17.2] - 2025-10-25
+
+-   Add a new script `odfdo-meta-update`, which allows you to update metadata from a JSON file.
+-   Refactor `odfdo-meta-print` and its test suite for better coverage.
+
+### Changed
+
+-   Small refactoring of script `meta_print.py`.
+-   Refactoring of tests for `meta_print.py`.
+
+### Added
+
+-   Add script `odfdo-meta-update` and tests for it.
+
 ## [3.17.1] - 2025-10-18
 
 -   Add a new script `odfdo-meta-print`, which prints the document metadata.

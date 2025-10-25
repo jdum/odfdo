@@ -1,6 +1,6 @@
 [project]
 name = "odfdo"
-version = "3.17.1"
+version = "3.17.2"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 readme = "README.md"
@@ -62,10 +62,11 @@ doc = [
     "mkdocs-include-markdown-plugin",
 ]
 dev = [
+    "iniconfig==2.1.0",# Python 3.9
     "pillow>=11.3.0",
     "pytest>=8.4.0",
-    "tox>=4.30.3",
-    "ruff>=0.14.1",
+    "tox==4.30.3",# Python 3.9
+    "ruff>=0.14.2",
     "isort>=6.1.0",
     "coverage>=7.10.7",
     "pytest-cov>=6.2.1",

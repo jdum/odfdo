@@ -109,6 +109,7 @@ A few scripts are provided with `odfdo`:
 -   `odfdo-from-csv`: import a CSV file into a .ods file.
 -   `odfdo-to-csv`: export a .ods table to a CSV file.
 -   `odfdo-meta-print`: print the metadata of an ODF file.
+-   `odfdo-meta-update`: update the metadata of an ODF file.
 
 # tl;dr
 
