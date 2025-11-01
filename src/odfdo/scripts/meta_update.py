@@ -19,16 +19,14 @@
 # https://github.com/lpod/lpod-python
 from __future__ import annotations
 
-import io
 import json
-import sys
 from argparse import ArgumentParser, Namespace, RawTextHelpFormatter
 from pathlib import Path
 from textwrap import dedent
 from typing import Any
 
 from odfdo import Document, __version__
-from odfdo.utils.script_utils import read_document
+from odfdo.utils.script_utils import read_document, save_document
 
 PROG = "odfdo-meta-update"
 
@@ -114,15 +112,6 @@ def main() -> None:
         print()
         print(f"Error: {e.__class__.__name__}, {e}")
         raise SystemExit(1)
-
-
-def save_document(document: Document, output_path: str | None) -> None:
-    if output_path:
-        return document.save(output_path)
-    with io.BytesIO() as content:
-        document.save(content)
-        content.seek(0)
-        sys.stdout.buffer.write(content.read())
 
 
 def update_meta_fields(args: Namespace) -> None:

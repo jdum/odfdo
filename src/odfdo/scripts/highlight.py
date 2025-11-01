@@ -19,13 +19,11 @@
 # https://github.com/lpod/lpod-python
 from __future__ import annotations
 
-import io
-import sys
 from argparse import ArgumentParser, Namespace
 from itertools import chain
 
 from odfdo import Document, Style, __version__
-from odfdo.utils.script_utils import read_document
+from odfdo.utils.script_utils import read_document, save_document
 
 PROG = "odfdo-highlight"
 
@@ -108,15 +106,6 @@ def error(message: str) -> str:
 def check_args(args: Namespace) -> None:
     if not any((args.italic, args.bold, args.color, args.background)):
         raise SystemExit(error("at least some style argument is required"))
-
-
-def save_document(document: Document, output_path: str | None) -> None:
-    if output_path:
-        return document.save(output_path)
-    with io.BytesIO() as content:
-        document.save(content)
-        content.seek(0)
-        sys.stdout.buffer.write(content.read())
 
 
 def make_style(document: Document, args: Namespace) -> str:

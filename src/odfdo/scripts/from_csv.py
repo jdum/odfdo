@@ -25,7 +25,7 @@ from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
 from odfdo import Document, Table, __version__
-from odfdo.utils.script_utils import detect_stdin_timeout
+from odfdo.utils.script_utils import detect_stdin_timeout, save_document
 
 PROG = "odfdo-from-csv"
 STDIN_TIMEOUT = 0.5
@@ -100,12 +100,7 @@ def from_csv(args: Namespace) -> None:
     )
     document.body.clear()
     document.body.append(table)
-    if args.output_file:
-        document.save(args.output_file)
-    else:
-        with io.BytesIO() as bytes_content:
-            document.save(bytes_content)
-            sys.stdout.buffer.write(bytes_content.getvalue())
+    save_document(document, args.output_file)
 
 
 def main() -> int:
