@@ -102,13 +102,21 @@ def configure_parser() -> ArgumentParser:
     return parser
 
 
-def main() -> None:
+def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
     parser = configure_parser()
-    args = parser.parse_args()
+    return parser.parse_args(cli_args)
+
+
+def main() -> None:
+    args: Namespace = parse_cli_args()
+    main_meta_update(args)
+
+
+def main_meta_update(args: Namespace) -> None:
     try:
         update_meta_fields(args)
     except Exception as e:
-        parser.print_help()
+        configure_parser().print_help()
         print()
         print(f"Error: {e.__class__.__name__}, {e}")
         raise SystemExit(1)
@@ -140,5 +148,5 @@ def load_json_metadata(document: Document, json_filename: str) -> None:
     document.meta.from_dict(metadata)
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     main()
