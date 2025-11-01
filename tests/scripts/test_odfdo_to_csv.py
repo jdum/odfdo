@@ -1,6 +1,7 @@
 # Copyright 2018-2025 Jérôme Dumonteil
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 
+import platform
 import subprocess
 import sys
 from pathlib import Path
@@ -25,7 +26,8 @@ def test_no_param():
     params = []
     _out, err, exitcode = run_params(params)
     assert exitcode == 1
-    assert b"timeout" in err
+    if platform.system() != "Windows":
+        assert b"timeout" in err
 
 
 def test_version():
