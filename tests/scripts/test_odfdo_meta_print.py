@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from odfdo.document import Document
 from odfdo.scripts import meta_print
 from odfdo.scripts.meta_print import main as main_script
 from odfdo.scripts.meta_print import main_meta_print, parse_cli_args
@@ -137,3 +138,22 @@ def test_meta_print_2_json_save(tmp_path, samples):
     assert "meta:table-count" in result
     assert "meta:generator" in result
     assert "meta:initial-creator" in result
+
+
+def test_meta_print_2_text_from_stdin(monkeypatch, capsys, samples):
+    mock_document = Document(samples(SOURCE))
+
+    def mock_read_document(input_path: str | None):
+        assert input_path is None
+        return mock_document
+
+    monkeypatch.setattr("odfdo.scripts.meta_print.read_document", mock_read_document)
+
+    params = parse_cli_args([])
+
+    main_meta_print(params)
+    captured = capsys.readouterr()
+
+    assert "Creation date:" in captured.out
+    assert "Statistic:" in captured.out
+    assert "Object count:" in captured.out
