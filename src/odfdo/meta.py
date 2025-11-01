@@ -71,7 +71,9 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Return the "office:version" value of the document."""
         odm = self.get_element("//office:document-meta")
         # "office:version" sould be always present
-        return odm.get_attribute_string("office:version") or ""
+        if odm:
+            return odm.get_attribute_string("office:version") or ""
+        return ""  # pragma: nocover
 
     def get_title(self) -> str | None:
         """Get the title of the document.
