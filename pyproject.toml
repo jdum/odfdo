@@ -201,7 +201,10 @@ source = ["odfdo"]
 skip_empty = true
 show_missing = false
 fail_under = 70
-exclude_also = ["if TYPE_CHECKING:"]
+exclude_also = [
+    "if TYPE_CHECKING:",
+    'if __name__ == "__main__":'
+]
 
 [tool.docformatter]
 in-place = true
