@@ -20,12 +20,12 @@
 from __future__ import annotations
 
 import io
-import selectors
 import sys
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
 from odfdo import Document, Table, __version__
+from odfdo.utils.script_utils import detect_stdin_timeout
 
 PROG = "odfdo-from-csv"
 STDIN_TIMEOUT = 0.5
@@ -80,22 +80,14 @@ def error(message: str) -> str:
     return f"\n{PROG}: {message}"
 
 
-def detect_stdin_timeout() -> None:
-    selector = selectors.DefaultSelector()
-    selector.register(sys.stdin, selectors.EVENT_READ)
-    something = selector.select(timeout=STDIN_TIMEOUT)
-    if not something:
-        raise SystemExit(error("Timeout reading from stdin"))
-    selector.close()
-
-
 def read_document(input_file: str | None) -> str:
     if input_file:
-        return Path(input_file).read_text()
-    detect_stdin_timeout()
-    content = io.BytesIO(sys.stdin.buffer.read())
-    csv_content = content.getvalue().decode()
-    content.close()
+        csv_content = Path(input_file).read_text()
+    else:  # prgma nocover
+        detect_stdin_timeout()
+        content = io.BytesIO(sys.stdin.buffer.read())
+        csv_content = content.getvalue().decode()
+        content.close()
     return csv_content
 
 

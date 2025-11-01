@@ -19,15 +19,13 @@
 # https://github.com/lpod/lpod-python
 from __future__ import annotations
 
-import io
-import selectors
 import sys
 from argparse import ArgumentParser, Namespace
 
-from odfdo import Document, __version__
+from odfdo import __version__
+from odfdo.utils.script_utils import read_document
 
 PROG = "odfdo-to-csv"
-STDIN_TIMEOUT = 0.5
 
 
 def configure_parser() -> ArgumentParser:
@@ -81,25 +79,6 @@ def configure_parser() -> ArgumentParser:
 
 def error(message: str) -> str:
     return f"\n{PROG}: {message}"
-
-
-def detect_stdin_timeout() -> None:
-    selector = selectors.DefaultSelector()
-    selector.register(sys.stdin, selectors.EVENT_READ)
-    something = selector.select(timeout=STDIN_TIMEOUT)
-    if not something:
-        raise SystemExit(error("timeout reading from stdin"))
-    selector.close()
-
-
-def read_document(input_file: str | None) -> Document:
-    if input_file:
-        return Document(input_file)
-    detect_stdin_timeout()
-    content = io.BytesIO(sys.stdin.buffer.read())
-    document = Document(content)
-    content.close()
-    return document
 
 
 def to_csv(args: Namespace) -> None:

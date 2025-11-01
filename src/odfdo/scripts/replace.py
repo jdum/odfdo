@@ -20,14 +20,13 @@
 from __future__ import annotations
 
 import io
-import selectors
 import sys
 from argparse import ArgumentParser
 
 from odfdo import Document, __version__
+from odfdo.utils.script_utils import read_document
 
 PROG = "odfdo-replace"
-STDIN_TIMEOUT = 0.5
 
 
 def configure_parser() -> ArgumentParser:
@@ -94,25 +93,6 @@ def main() -> None:
         print()
         print(f"Error: {e.__class__.__name__}, {e}")
         raise SystemExit(1) from None
-
-
-def detect_stdin_timeout() -> None:
-    selector = selectors.DefaultSelector()
-    selector.register(sys.stdin, selectors.EVENT_READ)
-    something = selector.select(timeout=STDIN_TIMEOUT)
-    if not something:
-        raise ValueError("Timeout reading from stdin")
-    selector.close()
-
-
-def read_document(input_path: str | None) -> Document:
-    if input_path:
-        return Document(input_path)
-    detect_stdin_timeout()
-    content = io.BytesIO(sys.stdin.buffer.read())
-    document = Document(content)
-    content.close()
-    return document
 
 
 def save_document(document: Document, output_path: str | None) -> None:

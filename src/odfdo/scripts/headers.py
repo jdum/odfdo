@@ -19,15 +19,12 @@
 # https://github.com/lpod/lpod-python
 from __future__ import annotations
 
-import io
-import selectors
-import sys
 from argparse import ArgumentParser, Namespace
 
 from odfdo import Document, Header, __version__
+from odfdo.utils.script_utils import read_document
 
 PROG = "odfdo-headers"
-STDIN_TIMEOUT = 0.5
 
 
 def configure_parser() -> ArgumentParser:
@@ -60,25 +57,6 @@ def configure_parser() -> ArgumentParser:
 
 def error(message: str) -> str:
     return f"{PROG}: error: {message}"
-
-
-def detect_stdin_timeout() -> None:
-    selector = selectors.DefaultSelector()
-    selector.register(sys.stdin, selectors.EVENT_READ)
-    something = selector.select(timeout=STDIN_TIMEOUT)
-    if not something:
-        raise SystemExit(error("timeout reading from stdin"))
-    selector.close()
-
-
-def read_document(input_path: str | None) -> Document:
-    if input_path:
-        return Document(input_path)
-    detect_stdin_timeout()
-    content = io.BytesIO(sys.stdin.buffer.read())
-    document = Document(content)
-    content.close()
-    return document
 
 
 def header_numbering(
