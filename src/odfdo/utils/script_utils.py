@@ -44,9 +44,10 @@ def detect_stdin_timeout() -> None:  # pragma: no cover
 
 def read_document(input_path: str | None) -> Document:
     if input_path:
-        return Document(input_path)
-    detect_stdin_timeout()  # pragma: no cover
-    content = io.BytesIO(sys.stdin.buffer.read())
-    document = Document(content)
-    content.close()
+        document = Document(input_path)
+    else:  # pragma: no cover
+        detect_stdin_timeout()
+        content = io.BytesIO(sys.stdin.buffer.read())
+        document = Document(content)
+        content.close()
     return document
