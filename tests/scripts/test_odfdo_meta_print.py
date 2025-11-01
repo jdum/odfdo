@@ -42,10 +42,9 @@ def test_meta_print_2_no_param_on_main_function(monkeypatch, capsys):
     with pytest.raises(SystemExit) as result:
         monkeypatch.setattr(sys, "argv", [])
         main_script()
+        assert result.type is SystemExit
+        assert result.value.code >= 1
     captured = capsys.readouterr()
-
-    assert result.type is SystemExit
-    assert result.value.code >= 1
 
     assert "usage" in captured.out
 
@@ -55,10 +54,9 @@ def test_meta_print_2_no_param(capsys):
 
     with pytest.raises(SystemExit) as result:
         main_meta_print(params)
+        assert result.type is SystemExit
+        assert result.value.code == 1
     captured = capsys.readouterr()
-
-    assert result.type is SystemExit
-    assert result.value.code == 1
 
     assert "usage" in captured.out
 
@@ -68,10 +66,9 @@ def test_meta_print_2_no_file(capsys):
 
     with pytest.raises(SystemExit) as result:
         main_meta_print(params)
+        assert result.type is SystemExit
+        assert result.value.code == 1
     captured = capsys.readouterr()
-
-    assert result.type is SystemExit
-    assert result.value.code == 1
 
     assert "usage" in captured.out
     assert "FileNotFoundError" in captured.out
