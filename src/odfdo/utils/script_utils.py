@@ -51,3 +51,12 @@ def read_document(input_path: str | None) -> Document:
         document = Document(content)
         content.close()
     return document
+
+
+def save_document(document: Document, output_path: str | None) -> None:
+    if output_path:
+        return document.save(output_path)
+    with io.BytesIO() as content:
+        document.save(content)
+        content.seek(0)
+        sys.stdout.buffer.write(content.read())
