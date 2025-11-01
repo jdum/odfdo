@@ -1,5 +1,19 @@
 # Odfdo Release Notes
 
+## [3.17.3] - 2025-11-1
+
+-   Refactor scripts and their tests to extend coverage.
+
+### Changed
+
+-   Use the `script_utils` functions `read_document()`, `save_document()` and `detect_stdin_timeout()` in all scripts.
+-   Refactor scripts `meta_print.py` and `meta_update.py`.
+-   Refactor tests for `meta_print.py` and `meta_update.py`.
+
+### Added
+
+-   Add `utils/script_utils.py` file.
+
 ## [3.17.2] - 2025-10-25
 
 -   Add a new script `odfdo-meta-update`, which allows you to update metadata from a JSON file.
