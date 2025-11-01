@@ -1,5 +1,6 @@
 # Copyright 2018-2025 Jérôme Dumonteil
 # Authors (odfdo project): jerome.dumonteil@gmail.com
+from __future__ import annotations
 
 import io
 import json
