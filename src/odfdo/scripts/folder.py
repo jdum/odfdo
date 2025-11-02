@@ -70,5 +70,5 @@ def convert_folder(path_str: str) -> None:
     document.save(packaging=out_packaging, pretty=True)
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     main()
