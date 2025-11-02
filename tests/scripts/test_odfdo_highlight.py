@@ -1,13 +1,18 @@
 # Copyright 2018-2025 Jérôme Dumonteil
 # Authors (odfdo project): jerome.dumonteil@gmail.com
+from __future__ import annotations
 
 import io
 import subprocess
 import sys
 from pathlib import Path
 
-from odfdo import Document
+import pytest
+
+from odfdo.document import Document
 from odfdo.scripts import highlight
+from odfdo.scripts.highlight import main as main_script
+from odfdo.scripts.highlight import main_highlight, parse_cli_args
 
 SCRIPT = Path(highlight.__file__)
 
@@ -23,7 +28,7 @@ def run_params(params: list):
     return out, err, proc.returncode
 
 
-def test_no_param():
+def test_highlight_no_param():
     params = []
     out, err, exitcode = run_params(params)
     print(out, err, exitcode)
@@ -33,45 +38,100 @@ def test_no_param():
     assert b"pattern" in err
 
 
-def test_no_style():
-    params = ["pattern"]
-    out, err, exitcode = run_params(params)
-    print(out, err, exitcode)
-    assert exitcode == 1
-    assert b"required" in err
-    assert b"style" in err
+# direct access to internal function
 
 
-def test_no_file():
-    params = ["-i", "none_file1", "-o", "none_file2", "-b", "pattern"]
-    out, err, exitcode = run_params(params)
-    assert exitcode == 1
-    assert b"sage:" in out
-    assert b"FileNotFoundError" in err
+def test_highlight_2_no_param_on_main_function(monkeypatch, capsys):
+    with pytest.raises(SystemExit) as result:
+        monkeypatch.setattr(sys, "argv", [])
+        main_script()
+        assert result.value.code >= 1
+    captured = capsys.readouterr()
+
+    assert "usage:" in captured.err
+    assert "required" in captured.err
+    assert "pattern" in captured.err
 
 
-def test_replace1(samples):
+def test_highlight_2_no_param(monkeypatch):
+    with pytest.raises(SystemExit) as result:
+        params = parse_cli_args([])
+        main_script(params)
+        assert result.value.code >= 1
+
+
+def test_highlight_2_some_param_on_main_function(monkeypatch, capsysbinary, samples):
     source = str(samples("base_text.odt"))
-    params = ["-i", source, "-b", "odfdo"]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+
+    monkeypatch.setattr(sys, "argv", ["odfdo-highlight", "-i", source, "-b", "odfdo"])
+    main_script()
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     display_name = " ".join(["odfdo", "highlight", "bold"])
     name = display_name.replace(" ", "_20_")
-    print(document.body.serialize())
     assert len(document.body.get_spans(style=name)) == 1
 
 
-def test_replace2(samples):
+def test_highlight_2_version(capsys):
+    with pytest.raises(SystemExit) as result:
+        parse_cli_args(["--version"])
+        assert result.value.code == 0
+    captured = capsys.readouterr()
+
+    assert "odfdo-highlight v3" in captured.out
+
+
+def test_highlight_2_help(capsys):
+    with pytest.raises(SystemExit) as result:
+        parse_cli_args(["--help"])
+        assert result.value.code == 0
+    captured = capsys.readouterr()
+
+    assert "Search and highlight" in captured.out
+
+
+def test_highlight_2_no_style():
+    params = parse_cli_args(["pattern"])
+
+    with pytest.raises(SystemExit) as result:
+        main_highlight(params)
+        assert result.value.code >= 1
+
+
+def test_highlight_2_no_file():
+    params = parse_cli_args(["-i", "none_file1", "-o", "none_file2", "-b", "pattern"])
+
+    with pytest.raises(FileNotFoundError) as result:
+        main_highlight(params)
+        assert result.value.code >= 1
+
+
+def test_highlight_2_replace1(capsysbinary, samples):
     source = str(samples("base_text.odt"))
-    params = ["-i", source, "-a", "-b", "This"]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source, "-b", "odfdo"])
+
+    main_highlight(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
+    document = Document(content)
+    content.close()
+    display_name = " ".join(["odfdo", "highlight", "bold"])
+    name = display_name.replace(" ", "_20_")
+    assert len(document.body.get_spans(style=name)) == 1
+
+
+def test_highlight_2_replace2(capsysbinary, samples):
+    source = str(samples("base_text.odt"))
+    params = parse_cli_args(["-i", source, "-a", "-b", "This"])
+
+    main_highlight(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     display_name = " ".join(["odfdo", "highlight", "italic", "bold"])
@@ -79,13 +139,14 @@ def test_replace2(samples):
     assert len(document.body.get_spans(style=name)) == 6
 
 
-def test_replace3(samples):
+def test_highlight_2_replace3(capsysbinary, samples):
     source = str(samples("base_text.odt"))
-    params = ["-i", source, "-c", "red", "paragraph"]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source, "-c", "red", "paragraph"])
+
+    main_highlight(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     display_name = " ".join(["odfdo", "highlight", "red"])
@@ -93,13 +154,14 @@ def test_replace3(samples):
     assert len(document.body.get_spans(style=name)) == 7
 
 
-def test_replace4(samples):
+def test_highlight_2_replace4(capsysbinary, samples):
     source = str(samples("base_text.odt"))
-    params = ["-i", source, "-c", "red", "-g", "yellow", "paragraph"]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source, "-c", "red", "-g", "yellow", "paragraph"])
+
+    main_highlight(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     display_name = " ".join(["odfdo", "highlight", "red", "yellow"])
@@ -107,17 +169,58 @@ def test_replace4(samples):
     assert len(document.body.get_spans(style=name)) == 7
 
 
-def test_help():
-    params = ["--help"]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    assert b"Search and highlight" in out
+def test_highlight_2_replace4_duplicate(capsysbinary, tmp_path, samples):
+    source = str(samples("base_text.odt"))
+    dest = tmp_path / "replaced.odt"
+    params = parse_cli_args(
+        [
+            "-i",
+            source,
+            "-c",
+            "red",
+            "-g",
+            "yellow",
+            "-o",
+            str(dest),
+            "paragraph",
+        ]
+    )
+
+    main_highlight(params)
+
+    params2 = parse_cli_args(
+        [
+            "-i",
+            str(dest),
+            "-c",
+            "red",
+            "-g",
+            "yellow",
+            "paragraph",
+        ]
+    )
+
+    main_highlight(params2)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
+    document = Document(content)
+    content.close()
+    display_name = " ".join(["odfdo", "highlight", "red", "yellow"])
+    name = display_name.replace(" ", "_20_")
+    assert len(document.body.get_spans(style=name)) == 14
 
 
-def test_version():
-    params = ["--version"]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    assert b"odfdo-highlight v3" in out
+def test_highlight_2_toc_replaced(capsysbinary, samples):
+    source = str(samples("toc_done.odt"))
+    params = parse_cli_args(["-i", source, "-c", "red", "-g", "yellow", "title"])
+
+    main_highlight(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
+    document = Document(content)
+    content.close()
+    display_name = " ".join(["odfdo", "highlight", "red", "yellow"])
+    name = display_name.replace(" ", "_20_")
+    assert len(document.body.get_spans(style=name)) == 12
