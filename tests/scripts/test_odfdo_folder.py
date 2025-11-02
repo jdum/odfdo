@@ -1,5 +1,6 @@
 # Copyright 2018-2025 Jérôme Dumonteil
 # Authors (odfdo project): jerome.dumonteil@gmail.com
+from __future__ import annotations
 
 import subprocess
 import sys
@@ -23,7 +24,7 @@ def run_params(params: list):
     return out, err, proc.returncode
 
 
-def test_no_param():
+def test_folder_no_param():
     params = []
     out, err, exitcode = run_params(params)
     print(out, err, exitcode)
@@ -32,7 +33,7 @@ def test_no_param():
     assert "usage" in err
 
 
-def test_no_file():
+def test_folder_no_file():
     params = ["none_file"]
     out, _err, exitcode = run_params(params)
     assert exitcode == 1
