@@ -20,7 +20,7 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 from __future__ import annotations
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from difflib import ndiff, unified_diff
 from os import stat
 from time import ctime
@@ -58,48 +58,55 @@ def configure_parser() -> ArgumentParser:
     return parser
 
 
-def main() -> None:
+def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
     parser = configure_parser()
-    args = parser.parse_args()
+    return parser.parse_args(cli_args)
 
+
+def main() -> None:
+    args: Namespace = parse_cli_args()
+    main_diff(args)
+
+
+def main_diff(args: Namespace) -> None:
     try:
-        print_diff(args.document1, args.document2, args.ndiff)
+        print_diff(args)
     except Exception as e:
-        parser.print_help()
+        configure_parser().print_help()
         print()
         print(f"Error: {e}")
         raise SystemExit(1) from None
 
 
-def print_diff(path0: str, path1: str, ndiff: bool) -> None:
+def print_diff(args: Namespace) -> None:
     # Open the 2 documents, diff only for ODT
-    doc0 = Document(path0)
-    doc1 = Document(path1)
-    if doc0.get_type() != "text" or doc1.get_type() != "text":
+    doc1 = Document(args.document1)
+    doc2 = Document(args.document2)
+    if doc1.get_type() != "text" or doc2.get_type() != "text":
         raise ValueError(f"{PROG} requires input documents of type text")
-    if ndiff:
-        print(make_ndiff(doc0, doc1))
+    if args.ndiff:
+        print(make_ndiff(doc1, doc2))
     else:
-        print(make_diff(doc0, doc1, path0, path1))
+        print(make_diff(doc1, doc2, args.document1, args.document2))
 
 
-def make_ndiff(doc0: Document, doc1: Document) -> str:
+def make_ndiff(doc1: Document, doc2: Document) -> str:
     # Convert in text before the diff
-    text0 = doc0.get_formatted_text(True).splitlines(True)
     text1 = doc1.get_formatted_text(True).splitlines(True)
+    text2 = doc2.get_formatted_text(True).splitlines(True)
     # Make the diff !
-    return "".join(ndiff(text0, text1, None, None))
+    return "".join(ndiff(text1, text2, None, None))
 
 
-def make_diff(doc0: Document, doc1: Document, path0: str, path1: str) -> str:
+def make_diff(doc1: Document, doc2: Document, path1: str, path2: str) -> str:
     # Convert in text before the diff
-    text0 = doc0.get_formatted_text(True).splitlines(True)
     text1 = doc1.get_formatted_text(True).splitlines(True)
+    text2 = doc2.get_formatted_text(True).splitlines(True)
     # Make the diff !
-    fromdate = ctime(stat(path0).st_mtime)
-    todate = ctime(stat(path1).st_mtime)
-    return "".join(unified_diff(text0, text1, path0, path1, fromdate, todate))
+    fromdate = ctime(stat(path1).st_mtime)
+    todate = ctime(stat(path2).st_mtime)
+    return "".join(unified_diff(text1, text2, path1, path2, fromdate, todate))
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     main()
