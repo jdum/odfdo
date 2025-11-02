@@ -86,6 +86,11 @@ def configure_parser() -> ArgumentParser:
     return parser
 
 
+def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    parser = configure_parser()
+    return parser.parse_args(cli_args)
+
+
 def clean_filename(name: str) -> str:
     allowed_characters = {".", "-", "@"}
     result = []
@@ -132,7 +137,7 @@ def print_format_error(doc_type: str) -> None:
 
 
 def check_target_directory(path: Path) -> None:
-    if path.exists():
+    if path.exists():  # pragma: no cover
         message = f'The path "{path}" exists, overwrite it? [y/n]'
         print(message, file=sys.stderr)
         line = sys.stdin.readline()
@@ -149,8 +154,8 @@ def show_output(
 ) -> None:
     output = Path(args.output)
     check_target_directory(output)
-    if output.exists():
-        rmtree(output)  # pragma: no cover
+    if output.exists():  # pragma: no cover
+        rmtree(output)
     output.mkdir(parents=True, exist_ok=True)
     (output / "meta.txt").write_text(doc.get_formated_meta())
     (output / "styles.txt").write_text(doc.show_styles())
@@ -187,16 +192,19 @@ def show(args: Namespace) -> None:
 
 
 def main() -> None:
-    parser = configure_parser()
-    args = parser.parse_args()
+    args: Namespace = parse_cli_args()
+    main_show(args)
+
+
+def main_show(args: Namespace) -> None:
     try:
         show(args)
     except Exception as e:
-        parser.print_help()
+        configure_parser().print_help()
         print()
         print(f"Error: {e.__class__.__name__}, {e}")
         raise SystemExit(1) from None
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     main()
