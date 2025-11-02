@@ -20,7 +20,7 @@
 # Authors: Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 from __future__ import annotations
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
 from odfdo import Document, __version__
@@ -45,14 +45,21 @@ def configure_parser() -> ArgumentParser:
     return parser
 
 
-def main() -> None:
+def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
     parser = configure_parser()
-    args = parser.parse_args()
+    return parser.parse_args(cli_args)
 
+
+def main() -> None:
+    args: Namespace = parse_cli_args()
+    main_convert_folder(args)
+
+
+def main_convert_folder(args: Namespace) -> None:
     try:
         convert_folder(args.file_or_folder)
     except Exception as e:
-        parser.print_help()
+        configure_parser().print_help()
         print()
         print(f"Error: {e}")
         raise SystemExit(1) from None
