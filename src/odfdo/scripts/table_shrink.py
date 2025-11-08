@@ -19,7 +19,7 @@
 # https://github.com/lpod/lpod-python
 from __future__ import annotations
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 
 from odfdo import __version__
 from odfdo.utils.script_utils import read_document, save_document
@@ -57,17 +57,24 @@ def configure_parser() -> ArgumentParser:
     return parser
 
 
-def main() -> None:
+def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
     parser = configure_parser()
-    args = parser.parse_args()
+    return parser.parse_args(cli_args)
 
+
+def main() -> None:
+    args: Namespace = parse_cli_args()
+    main_shrink(args)
+
+
+def main_shrink(args: Namespace) -> None:
     try:
         shrink_tables(
             args.input_file,
             args.output_file,
         )
     except Exception as e:
-        parser.print_help()
+        configure_parser().print_help()
         print()
         print(f"Error: {e.__class__.__name__}, {e}")
         raise SystemExit(1) from None
@@ -85,5 +92,5 @@ def shrink_tables(
     save_document(document, output_path)
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     main()
