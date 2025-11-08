@@ -77,8 +77,9 @@ def configure_parser() -> ArgumentParser:
     return parser
 
 
-def error(message: str) -> str:
-    return f"\n{PROG}: {message}"
+def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    parser = configure_parser()
+    return parser.parse_args(cli_args)
 
 
 def to_csv(args: Namespace) -> None:
@@ -91,28 +92,31 @@ def to_csv(args: Namespace) -> None:
             raise ValueError(f"Table {args.table_name!r} not found")
     else:
         table = document.body.get_table()
-        if not table:
+        if not table:  # pragma: no cover
             raise ValueError("No table found")
     if args.unix:
         dialect = "unix"
     else:
         dialect = "excel"
     content = table.to_csv(path_or_file=args.output_file, dialect=dialect)
-    if content is not None:
+    if content is not None:  # pragma: no cover
         sys.stdout.buffer.write(content.encode())
 
 
 def main() -> int:
-    parser = configure_parser()
-    args = parser.parse_args()
+    args: Namespace = parse_cli_args()
+    return main_to_csv(args)
+
+
+def main_to_csv(args: Namespace) -> int:
     try:
         to_csv(args)
     except Exception:
-        parser.print_help()
+        configure_parser().print_help()
         print()
         raise
     return 0
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     raise SystemExit(main())
