@@ -27,7 +27,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from .element import FIRST_CHILD, LAST_CHILD, Element, register_element_class
 from .elements_between import elements_between
@@ -170,12 +170,14 @@ class TextInsertion(Element):
             as_text=as_text, no_header=no_header, clean=clean
         )
 
-    def get_change_info(self) -> Element | None:
+    def get_change_info(self) -> ChangeInfo | None:
         """Get the ChangeInfo child of the element.
 
-        Returns: ChangeInfo element.
+        Returns: ChangeInfo element or None.
         """
-        return self.get_element("descendant::office:change-info")
+        return cast(
+            None | ChangeInfo, self.get_element("descendant::office:change-info")
+        )
 
     def set_change_info(
         self,
@@ -363,12 +365,14 @@ class TextChangedRegion(Element):
 
     _tag = "text:changed-region"
 
-    def get_change_info(self) -> Element | None:
+    def get_change_info(self) -> ChangeInfo | None:
         """Shortcut to get the ChangeInfo element of the change element child.
 
         Returns: ChangeInfo element.
         """
-        return self.get_element("descendant::office:change-info")
+        return cast(
+            None | ChangeInfo, self.get_element("descendant::office:change-info")
+        )
 
     def set_change_info(
         self,
