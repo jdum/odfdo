@@ -27,7 +27,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Union, cast
 
 from .element import FIRST_CHILD, LAST_CHILD, Element, register_element_class
 from .elements_between import elements_between
@@ -176,7 +176,7 @@ class TextInsertion(Element):
         Returns: ChangeInfo element or None.
         """
         return cast(
-            None | ChangeInfo, self.get_element("descendant::office:change-info")
+            Union[None, ChangeInfo], self.get_element("descendant::office:change-info")
         )
 
     def set_change_info(
@@ -371,7 +371,7 @@ class TextChangedRegion(Element):
         Returns: ChangeInfo element.
         """
         return cast(
-            None | ChangeInfo, self.get_element("descendant::office:change-info")
+            Union[None, ChangeInfo], self.get_element("descendant::office:change-info")
         )
 
     def set_change_info(

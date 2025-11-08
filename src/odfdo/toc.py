@@ -23,7 +23,7 @@ related classes."""
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Union, cast
 
 from .document import Document
 from .element import FIRST_CHILD, Element, PropDef, register_element_class
@@ -231,7 +231,7 @@ class TOC(MDToc, Element):
         return self.get_formatted_text()
 
     def get_formatted_text(self, context: dict | None = None) -> str:
-        index_body = cast(None | IndexBody, self.get_element(IndexBody._tag))
+        index_body = cast(Union[None, IndexBody], self.get_element(IndexBody._tag))
 
         if index_body is None:
             return ""
@@ -266,7 +266,7 @@ class TOC(MDToc, Element):
 
     @property
     def body(self) -> IndexBody | None:
-        return cast(None | IndexBody, self.get_element(IndexBody._tag))
+        return cast(Union[None, IndexBody], self.get_element(IndexBody._tag))
 
     @body.setter
     def body(self, body: Element | None = None) -> Element | None:
@@ -282,7 +282,9 @@ class TOC(MDToc, Element):
         index_body = self.body
         if index_body is None:
             return ""
-        index_title = cast(None | IndexTitle, index_body.get_element(IndexTitle._tag))
+        index_title = cast(
+            Union[None, IndexTitle], index_body.get_element(IndexTitle._tag)
+        )
         if index_title is None:
             return ""
         return index_title.text_content
@@ -297,7 +299,9 @@ class TOC(MDToc, Element):
         if index_body is None:
             self.body = None
             index_body = self.body
-        index_title = cast(None | IndexTitle, index_body.get_element(IndexTitle._tag))  # type: ignore
+        index_title = cast(
+            Union[None, IndexTitle], index_body.get_element(IndexTitle._tag)
+        )  # type: ignore
         if index_title is None:
             name = f"{self.name}_Head"
             index_title = IndexTitle(
@@ -364,7 +368,9 @@ class TOC(MDToc, Element):
         if index_body is None:
             title = None
         else:
-            title = cast(None | IndexTitle, index_body.get_element(IndexTitle._tag))
+            title = cast(
+                Union[None, IndexTitle], index_body.get_element(IndexTitle._tag)
+            )
 
         # Clean the old index-body
         self.body = None
