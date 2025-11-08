@@ -105,6 +105,7 @@ __all__ = [  # noqa: RUF022
     "Tab",
     "TabStopStyle",
     "Table",
+    "TableNamedExpressions",
     "Text",
     "TextChange",
     "TextChangeEnd",
@@ -198,6 +199,7 @@ from .meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from .meta_template import MetaTemplate
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
+from .mixin_named_range import TableNamedExpressions
 from .mixin_paragraph import ParaMixin
 from .named_range import NamedRange
 from .note import Note
