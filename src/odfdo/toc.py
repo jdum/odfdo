@@ -24,13 +24,14 @@ IndexTitleTemplate, TocEntryTemplate related classes.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from .document import Document
 from .element import FIRST_CHILD, Element, PropDef, register_element_class
 from .mixin_md import MDToc
 from .paragraph import Paragraph
 from .style import Style
+from .text_index import IndexBody, IndexTitle
 
 if TYPE_CHECKING:
     pass
@@ -39,68 +40,6 @@ if TYPE_CHECKING:
 def _toc_entry_style_name(level: int) -> str:
     """Return the style name of an entry of the TOC."""
     return f"odfto_toc_level_{level}"
-
-
-class IndexTitle(Element):
-    """The title of an index, "text:index-title".
-
-    The element has the following attributes:
-    text:name, text:protected, text:protection-key,
-    text:protection-key-digest-algorithm, text:style-name, xml:id.
-
-    The actual title is stored in a child element
-    """
-
-    _tag = "text:index-title"
-    _properties = (
-        PropDef("name", "text:name"),
-        PropDef("style", "text:style-name"),
-        PropDef("xml_id", "xml:id"),
-        PropDef("protected", "text:protected"),
-        PropDef("protection_key", "text:protection-key"),
-        PropDef(
-            "protection_key_digest_algorithm", "text:protection-key-digest-algorithm"
-        ),
-    )
-
-    def __init__(
-        self,
-        name: str | None = None,
-        style: str | None = None,
-        title_text: str | None = None,
-        title_text_style: str | None = None,
-        xml_id: str | None = None,
-        **kwargs: Any,
-    ) -> None:
-        """Create title of an index "text:index-title".
-
-        The element has the following attributes:
-        text:name, text:protected, text:protection-key,
-        text:protection-key-digest-algorithm, text:style-name, xml:id.
-
-        The actual title is stored in a child element
-        """
-        super().__init__(**kwargs)
-        if self._do_init:
-            if name:
-                self.name = name
-            if style:
-                self.style = style
-            if xml_id:
-                self.xml_id = xml_id
-            if title_text:
-                self.set_title_text(title_text, title_text_style)
-
-    def set_title_text(
-        self,
-        title_text: str,
-        title_text_style: str | None = None,
-    ) -> None:
-        title = Paragraph(title_text, style=title_text_style)
-        self.append(title)
-
-
-IndexTitle._define_attribut_property()
 
 
 class TabStopStyle(Element):
@@ -293,7 +232,7 @@ class TOC(MDToc, Element):
         return self.get_formatted_text()
 
     def get_formatted_text(self, context: dict | None = None) -> str:
-        index_body = self.get_element("text:index-body")
+        index_body = cast(None | IndexBody, self.get_element(IndexBody._tag))
 
         if index_body is None:
             return ""
@@ -327,8 +266,8 @@ class TOC(MDToc, Element):
         source.set_attribute("text:outline-level", str(level))
 
     @property
-    def body(self) -> Element | None:
-        return self.get_element("text:index-body")
+    def body(self) -> IndexBody | None:
+        return cast(None | IndexBody, self.get_element(IndexBody._tag))
 
     @body.setter
     def body(self, body: Element | None = None) -> Element | None:
@@ -344,7 +283,7 @@ class TOC(MDToc, Element):
         index_body = self.body
         if index_body is None:
             return ""
-        index_title = index_body.get_element(IndexTitle._tag)
+        index_title = cast(None | IndexTitle, index_body.get_element(IndexTitle._tag))
         if index_title is None:
             return ""
         return index_title.text_content
@@ -359,7 +298,7 @@ class TOC(MDToc, Element):
         if index_body is None:
             self.body = None
             index_body = self.body
-        index_title = index_body.get_element(IndexTitle._tag)  # type: ignore
+        index_title = cast(None | IndexTitle, index_body.get_element(IndexTitle._tag))  # type: ignore
         if index_title is None:
             name = f"{self.name}_Head"
             index_title = IndexTitle(
@@ -368,7 +307,7 @@ class TOC(MDToc, Element):
             index_body.append(index_title)  # type: ignore
         else:
             if style:
-                index_title.style = style  # type: ignore
+                index_title.style = style
             paragraph = index_title.get_paragraph()
             if paragraph is None:
                 paragraph = Paragraph()
@@ -424,9 +363,9 @@ class TOC(MDToc, Element):
         # Save the title
         index_body = self.body
         if index_body is None:
-            title = ""
+            title = None
         else:
-            title = index_body.get_element("text:index-title")  # type: ignore
+            title = cast(None | IndexTitle, index_body.get_element(IndexTitle._tag))
 
         # Clean the old index-body
         self.body = None
@@ -536,7 +475,6 @@ class TocEntryTemplate(Element):
 
 TocEntryTemplate._define_attribut_property()
 
-register_element_class(IndexTitle)
 register_element_class(IndexTitleTemplate)
 register_element_class(TocEntryTemplate)
 register_element_class(TabStopStyle)
