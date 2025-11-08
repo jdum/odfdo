@@ -1,13 +1,18 @@
 # Copyright 2018-2025 Jérôme Dumonteil
 # Authors (odfdo project): jerome.dumonteil@gmail.com
+from __future__ import annotations
 
 import io
 import subprocess
 import sys
 from pathlib import Path
 
-from odfdo import Document
+import pytest
+
+from odfdo.document import Document
 from odfdo.scripts import replace
+from odfdo.scripts.replace import main as main_script
+from odfdo.scripts.replace import main_replace, parse_cli_args
 
 SCRIPT = Path(replace.__file__)
 
@@ -23,7 +28,7 @@ def run_params(params: list):
     return out, err, proc.returncode
 
 
-def test_no_param():
+def test_replace_no_param():
     params = []
     _out, err, exitcode = run_params(params)
     assert exitcode == 2
@@ -31,45 +36,98 @@ def test_no_param():
     assert b"odfdo-replace: error: the following arguments are required" in err
 
 
-def test_no_file():
-    params = ["-i", "none_file1", "-o", "none_file2", "pattern", "replacement"]
-    out, _err, exitcode = run_params(params)
-    assert exitcode == 1
-    assert b"usage:" in out
-    assert b"FileNotFoundError" in out
+# direct access to internal function
 
 
-def test_replace1(samples):
+def test_replace_2_no_param_on_main_function(monkeypatch):
+    with pytest.raises(SystemExit) as result:
+        monkeypatch.setattr(sys, "argv", [])
+        main_script()
+        assert result.value.code >= 1
+
+
+def test_replace_2_no_param():
+    with pytest.raises(SystemExit) as result:
+        params = parse_cli_args([])
+        main_replace(params)
+        assert result.value.code >= 1
+
+
+def test_replace_2_version(capsys):
+    with pytest.raises(SystemExit) as result:
+        parse_cli_args(["--version"])
+        assert result.value.code == 0
+    captured = capsys.readouterr()
+
+    assert "odfdo-replace v3" in captured.out
+
+
+def test_replace_2_help(capsys):
+    with pytest.raises(SystemExit) as result:
+        parse_cli_args(["--help"])
+        assert result.value.code == 0
+    captured = capsys.readouterr()
+
+    assert "pattern replacement" in captured.out
+
+
+def test_replace_2_no_file():
+    params = parse_cli_args(
+        ["-i", "none_file1", "-o", "none_file2", "pattern", "replacement"]
+    )
+
+    with pytest.raises(SystemExit) as result:
+        main_replace(params)
+        assert result.value.code >= 1
+
+
+def test_replace_2_base_on_main_function(capsysbinary, monkeypatch, samples):
     source = str(samples("base_text.odt"))
-    params = ["-i", source, "odfdo", "FOO"]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    monkeypatch.setattr(sys, "argv", ["odfdo-replace", "-i", source, "odfdo", "FOO"])
+
+    main_script()
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.body.search("FOO") is not None
 
 
-def test_replace2(samples):
+def test_replace_2_base(capsysbinary, samples):
     source = str(samples("base_text.odt"))
-    params = ["-i", source, "not here", "FOO"]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source, "odfdo", "FOO"])
+
+    main_replace(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
+    document = Document(content)
+    content.close()
+    assert document.body.search("FOO") is not None
+
+
+def test_replace_2_not_here(capsysbinary, samples):
+    source = str(samples("base_text.odt"))
+    params = parse_cli_args(["-i", source, "not here", "FOO"])
+
+    main_replace(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.body.search("FOO") is None
 
 
-def test_replace3(samples):
+def test_replace_2_para(capsysbinary, samples):
     source = str(samples("base_text.odt"))
-    params = ["-i", source, "paragraph", "FOO"]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source, "paragraph", "FOO"])
+
+    main_replace(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.body.search("odfdo") is not None
@@ -77,13 +135,14 @@ def test_replace3(samples):
     assert document.body.search("paragraph") is None
 
 
-def test_replace_formatted_1(samples):
+def test_replace_2_formatted_1(capsysbinary, samples):
     source = str(samples("base_text.odt"))
-    params = ["-f", "-i", source, "paragraph", "FOO"]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-f", "-i", source, "paragraph", "FOO"])
+
+    main_replace(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.body.search("odfdo") is not None
@@ -91,13 +150,14 @@ def test_replace_formatted_1(samples):
     assert document.body.search("paragraph") is None
 
 
-def test_replace_formatted_2(samples):
+def test_replace_2_formatted_2(capsysbinary, samples):
     source = str(samples("base_text.odt"))
-    params = ["-i", source, "paragraph", "FOO\nBAR"]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source, "paragraph", "FOO\nBAR"])
+
+    main_replace(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert len(document.body.get_elements("//text:line-break")) == 0
@@ -107,13 +167,14 @@ def test_replace_formatted_2(samples):
     assert document.body.search("paragraph") is None
 
 
-def test_replace_formatted_3(samples):
+def test_replace_2_formatted_3(capsysbinary, samples):
     source = str(samples("base_text.odt"))
-    params = ["-f", "-i", source, "paragraph", "FOO\n\nBAR"]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-f", "-i", source, "paragraph", "FOO\n\nBAR"])
+
+    main_replace(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert len(document.body.get_elements("//text:line-break")) == 14
