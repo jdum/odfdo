@@ -73,6 +73,15 @@ def span_styles(samples) -> Iterable[Sample]:
     yield Sample(container=container, content=content, para=para, anno=anno, span=span)
 
 
+def test_element_init_completude_vs_registry():
+    import odfdo
+
+    all_imported = set(odfdo.__all__)
+    registry = odfdo.element._class_registry
+    for klass in registry.values():
+        assert klass.__name__ in all_imported
+
+
 def test_create_simple():
     data = "<p>Template Element</p>"
     element = Element.from_tag(data)
