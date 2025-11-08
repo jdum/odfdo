@@ -45,12 +45,9 @@ def configure_parser() -> ArgumentParser:
     return parser
 
 
-def error(message: str) -> str:
-    return f"\n{PROG}: {message}"
-
-
-class OdfdoTypeError(TypeError):
-    pass
+def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    parser = configure_parser()
+    return parser.parse_args(cli_args)
 
 
 def to_md(args: Namespace) -> None:
@@ -59,16 +56,19 @@ def to_md(args: Namespace) -> None:
 
 
 def main() -> int:
-    parser = configure_parser()
-    args = parser.parse_args()
+    args: Namespace = parse_cli_args()
+    return main_to_md(args)
+
+
+def main_to_md(args: Namespace) -> int:
     try:
         to_md(args)
     except Exception:
-        parser.print_help()
+        configure_parser().print_help()
         print()
         raise
     return 0
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     raise SystemExit(main())
