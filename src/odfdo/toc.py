@@ -18,9 +18,8 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""TOC class for "text:table-of-content" tag and IndexTitle, TabStopStyle,
-IndexTitleTemplate, TocEntryTemplate related classes.
-"""
+"""TOC class for "text:table-of-content" tag and TabStopStyle, TocEntryTemplate
+related classes."""
 
 from __future__ import annotations
 
@@ -31,7 +30,7 @@ from .element import FIRST_CHILD, Element, PropDef, register_element_class
 from .mixin_md import MDToc
 from .paragraph import Paragraph
 from .style import Style
-from .text_index import IndexBody, IndexTitle
+from .text_index import IndexBody, IndexTitle, IndexTitleTemplate
 
 if TYPE_CHECKING:
     pass
@@ -407,27 +406,6 @@ class TOC(MDToc, Element):
 TOC._define_attribut_property()
 
 
-class IndexTitleTemplate(Element):
-    """Template style for title, "text:index-title-template"."""
-
-    _tag = "text:index-title-template"
-    _properties = (PropDef("style", "text:style-name"),)
-
-    def __init__(self, style: str | None = None, **kwargs: Any) -> None:
-        """Create template style for title "text:index-title-template".
-
-        Args:
-
-            style -- str
-        """
-        super().__init__(**kwargs)
-        if self._do_init and style:
-            self.style = style
-
-
-IndexTitleTemplate._define_attribut_property()
-
-
 class TocEntryTemplate(Element):
     """Template for entry of TOC, "text:table-of-content-entry-template"."""
 
@@ -475,7 +453,6 @@ class TocEntryTemplate(Element):
 
 TocEntryTemplate._define_attribut_property()
 
-register_element_class(IndexTitleTemplate)
 register_element_class(TocEntryTemplate)
 register_element_class(TabStopStyle)
 register_element_class(TOC)

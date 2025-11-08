@@ -59,6 +59,7 @@ __all__ = [  # noqa: RUF022
     "Header",
     "HeaderRows",
     "Image",
+    "IndexBody",
     "IndexTitle",
     "IndexTitleTemplate",
     "LAST_CHILD",
@@ -231,10 +232,9 @@ from .style_defaults import (
 from .styles import Styles
 from .tab import Tab
 from .table import Table
+from .text_index import IndexBody, IndexTitle, IndexTitleTemplate
 from .toc import (
     TOC,
-    IndexTitle,
-    IndexTitleTemplate,
     TabStopStyle,
     TocEntryTemplate,
     default_toc_level_style,

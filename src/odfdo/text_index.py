@@ -98,5 +98,26 @@ class IndexTitle(Element):
 IndexTitle._define_attribut_property()
 
 
-register_element_class(IndexTitle)
+class IndexTitleTemplate(Element):
+    """Template style for title, "text:index-title-template"."""
+
+    _tag = "text:index-title-template"
+    _properties = (PropDef("style", "text:style-name"),)
+
+    def __init__(self, style: str | None = None, **kwargs: Any) -> None:
+        """Create template style for title "text:index-title-template".
+
+        Args:
+
+            style -- str
+        """
+        super().__init__(**kwargs)
+        if self._do_init and style:
+            self.style = style
+
+
+IndexTitleTemplate._define_attribut_property()
+
 register_element_class(IndexBody)
+register_element_class(IndexTitle)
+register_element_class(IndexTitleTemplate)
