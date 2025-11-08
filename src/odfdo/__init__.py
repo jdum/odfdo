@@ -48,6 +48,7 @@ __all__ = [  # noqa: RUF022
     "DrawGroup",
     "DrawImage",
     "DrawPage",
+    "DrawTextBox",
     "Drawing",
     "EText",
     "Element",
@@ -178,7 +179,7 @@ from .document import Document
 from .draw_page import DrawPage
 from .element import FIRST_CHILD, LAST_CHILD, NEXT_SIBLING, PREV_SIBLING, Element, EText
 from .element_typed import ElementTyped
-from .frame import Frame, default_frame_position_style
+from .frame import DrawTextBox, Frame, default_frame_position_style
 from .header import Header
 from .header_rows import HeaderRows
 from .image import DrawFillImage, DrawImage
