@@ -92,6 +92,11 @@ def configure_parser() -> ArgumentParser:
     return parser
 
 
+def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    parser = configure_parser()
+    return parser.parse_args(cli_args)
+
+
 def show_styles(
     document: Document,
     target: str | Path | None = None,
@@ -188,7 +193,7 @@ def merge_styles(
 
 
 def check_target_file(path: str) -> None:
-    if Path(path).exists():
+    if Path(path).exists():  # pragma: no cover
         message = f'The path "{path}" exists, overwrite it? [y/n]'
         print(message, file=sys.stderr)
         line = sys.stdin.readline()
@@ -231,17 +236,19 @@ def style_tools(args: Namespace) -> None:
 
 
 def main() -> None:
-    parser = configure_parser()
-    args = parser.parse_args()
+    args: Namespace = parse_cli_args()
+    main_styles(args)
 
+
+def main_styles(args: Namespace) -> None:
     try:
         style_tools(args)
     except Exception as e:
-        parser.print_help()
+        configure_parser().print_help()
         print()
         print(f"Error: {e.__class__.__name__}, {e}")
         raise SystemExit(1) from None
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     main()
