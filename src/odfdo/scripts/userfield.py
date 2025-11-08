@@ -126,13 +126,21 @@ def configure_parser() -> ArgumentParser:
     return parser
 
 
-def main() -> None:
+def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
     parser = configure_parser()
-    args = parser.parse_args()
+    return parser.parse_args(cli_args)
+
+
+def main() -> None:
+    args: Namespace = parse_cli_args()
+    main_userfields(args)
+
+
+def main_userfields(args: Namespace) -> None:
     try:
         document_userfields(args)
     except Exception as e:
-        parser.print_help()
+        configure_parser().print_help()
         print()
         print(f"Error: {e.__class__.__name__}, {e}")
         raise SystemExit(1) from None
@@ -190,5 +198,5 @@ def change_fields(document: Document, changes: list[list[str]]) -> None:
         _change_field(body, name_value[0], name_value[1])
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     main()
