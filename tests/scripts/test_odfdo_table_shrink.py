@@ -1,13 +1,18 @@
 # Copyright 2018-2025 Jérôme Dumonteil
 # Authors (odfdo project): jerome.dumonteil@gmail.com
+from __future__ import annotations
 
 import io
 import subprocess
 import sys
 from pathlib import Path
 
-from odfdo import Document
+import pytest
+
+from odfdo.document import Document
 from odfdo.scripts import table_shrink
+from odfdo.scripts.table_shrink import main as main_script
+from odfdo.scripts.table_shrink import main_shrink, parse_cli_args
 
 SCRIPT = Path(table_shrink.__file__)
 
@@ -23,54 +28,105 @@ def run_params(params: list):
     return out, err, proc.returncode
 
 
-def test_no_param():
+def test_shrink_no_param():
     params = []
     out, _err, exitcode = run_params(params)
     assert exitcode == 1
     assert b"usage: odfdo-table-shrink" in out
 
 
-def test_no_file():
-    params = ["-i", "none_file1", "-o", "none_file2"]
-    out, _err, exitcode = run_params(params)
-    assert exitcode == 1
-    assert b"usage:" in out
-    assert b"FileNotFoundError" in out
+# direct access to internal function
 
 
-def test_trim_1(samples):
+def test_shrink_2_no_param_on_main_function(monkeypatch):
+    with pytest.raises(SystemExit) as result:
+        monkeypatch.setattr(sys, "argv", [])
+        main_script()
+        assert result.value.code >= 1
+
+
+def test_shrink_2_no_param():
+    with pytest.raises(SystemExit) as result:
+        params = parse_cli_args([])
+        main_shrink(params)
+        assert result.value.code >= 1
+
+
+def test_shrink_2_version(capsys):
+    with pytest.raises(SystemExit) as result:
+        parse_cli_args(["--version"])
+        assert result.value.code == 0
+    captured = capsys.readouterr()
+
+    assert "odfdo-table-shrink v3" in captured.out
+
+
+def test_shrink_2_help(capsys):
+    with pytest.raises(SystemExit) as result:
+        parse_cli_args(["--help"])
+        assert result.value.code == 0
+    captured = capsys.readouterr()
+
+    assert "Shrink tables to optimize" in captured.out
+
+
+def test_shrink_2_no_file():
+    params = parse_cli_args(["-i", "none_file1", "-o", "none_file2"])
+    with pytest.raises(SystemExit) as result:
+        main_shrink(params)
+        assert result.value.code >= 1
+
+
+def test_shrink_2_base_on_main_function(capsysbinary, monkeypatch, samples):
     source = str(samples("test_col_cell_blue.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    monkeypatch.setattr(sys, "argv", ["odfdo-table-shrink", "-i", source])
+
+    main_script()
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     table = document.body.get_table(0)
     assert table.size == (3, 3)
 
 
-def test_trim_2(samples):
+def test_shrink_2_trim_1(capsysbinary, samples):
+    source = str(samples("test_col_cell_blue.ods"))
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
+    document = Document(content)
+    content.close()
+    table = document.body.get_table(0)
+    assert table.size == (3, 3)
+
+
+def test_shrink_2_trim_2(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     table = document.body.get_table(0)
     assert table.size == (7, 16)
 
 
-def test_trim_3(samples):
+def test_shrink_2_trim_3(capsysbinary, samples):
     source = str(samples("simple_table_named_range.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     table = document.body.get_table(0)
@@ -81,13 +137,14 @@ def test_trim_3(samples):
     assert table.size == (2, 2)
 
 
-def test_trim_4(samples):
+def test_shrink_2_trim_4(capsysbinary, samples):
     source = str(samples("simple_table.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     table = document.body.get_table(0)
@@ -98,13 +155,14 @@ def test_trim_4(samples):
     assert table.size == (2, 2)
 
 
-def test_trim_5(samples):
+def test_shrink_2_trim_5(capsysbinary, samples):
     source = str(samples("styled_table.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     table = document.body.get_table(0)
@@ -115,13 +173,14 @@ def test_trim_5(samples):
     assert table.size == (1, 1)
 
 
-def test_color_1_1(samples):
+def test_shrink_2_color_1_1(capsysbinary, samples):
     source = str(samples("test_col_cell_blue.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "a1") == "#2a6099"
@@ -131,13 +190,14 @@ def test_color_1_1(samples):
     assert document.get_cell_background_color(0, (1000, 0)) == "#ffffff"
 
 
-def test_color_1_2(samples):
+def test_shrink_2_color_1_2(capsysbinary, samples):
     source = str(samples("test_col_cell_blue.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "a2") == "#2a6099"
@@ -147,13 +207,14 @@ def test_color_1_2(samples):
     assert document.get_cell_background_color(0, (1000, 1)) == "#ffffff"
 
 
-def test_color_1_3(samples):
+def test_shrink_2_color_1_3(capsysbinary, samples):
     source = str(samples("test_col_cell_blue.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "a3") == "#2a6099"
@@ -163,13 +224,14 @@ def test_color_1_3(samples):
     assert document.get_cell_background_color(0, (1000, 2)) == "#ffffff"
 
 
-def test_color_2_1(samples):
+def test_shrink_2_color_2_1(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "a1") == "#ffffff"
@@ -180,13 +242,14 @@ def test_color_2_1(samples):
     assert document.get_cell_background_color(0, (1000, 0)) == "#ffffff"
 
 
-def test_color_2_2(samples):
+def test_shrink_2_color_2_2(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "a2") == "#ffffff"
@@ -196,25 +259,27 @@ def test_color_2_2(samples):
     assert document.get_cell_background_color(0, (1000, 1)) == "#ffffff"
 
 
-def test_color_2_5(samples):
+def test_shrink_2_color_2_5(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "f5") == "#e6e905"
 
 
-def test_color_2_6(samples):
+def test_shrink_2_color_2_6(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "a6") == "#3465a4"
@@ -225,25 +290,27 @@ def test_color_2_6(samples):
     assert document.get_cell_background_color(0, (1000, 5)) == "#ffffff"
 
 
-def test_color_2_7(samples):
+def test_shrink_2_color_2_7(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "f7") == "#e6e905"
 
 
-def test_color_2_8(samples):
+def test_shrink_2_color_2_8(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "a8") == "#b4c7dc"
@@ -257,25 +324,27 @@ def test_color_2_8(samples):
     assert document.get_cell_background_color(0, (1000, 5)) == "#ffffff"
 
 
-def test_color_2_9(samples):
+def test_shrink_2_color_2_9(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "f9") == "#e6e905"
 
 
-def test_color_2_10(samples):
+def test_shrink_2_color_2_10(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "a10") == "#ed4c05"
@@ -289,25 +358,27 @@ def test_color_2_10(samples):
     assert document.get_cell_background_color(0, (1000, 9)) == "#ffffff"
 
 
-def test_color_2_11(samples):
+def test_shrink_2_color_2_11(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "f11") == "#e6e905"
 
 
-def test_color_2_12(samples):
+def test_shrink_2_color_2_12(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "a12") == "#168253"
@@ -321,37 +392,40 @@ def test_color_2_12(samples):
     assert document.get_cell_background_color(0, (1000, 11)) == "#ffffff"
 
 
-def test_color_2_13(samples):
+def test_shrink_2_color_2_13(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "f13") == "#e6e905"
 
 
-def test_color_2_14(samples):
+def test_shrink_2_color_2_14(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "f14") == "#fff5ce"
 
 
-def test_color_2_15(samples):
+def test_shrink_2_color_2_15(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "a15") == "#55215b"
@@ -365,25 +439,36 @@ def test_color_2_15(samples):
     assert document.get_cell_background_color(0, (1000, 14)) == "#ffffff"
 
 
-def test_color_2_16(samples):
+def test_shrink_2_color_2_16(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "f16") == "#e6e905"
 
 
-def test_color_2_17(samples):
+def test_shrink_2_color_2_17(capsysbinary, samples):
     source = str(samples("test_col_cell.ods"))
-    params = ["-i", source]
-    out, err, exitcode = run_params(params)
-    print(err)
-    assert exitcode == 0
-    content = io.BytesIO(out)
+    params = parse_cli_args(["-i", source])
+
+    main_shrink(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
     document = Document(content)
     content.close()
     assert document.get_cell_background_color(0, "f17") == "#ffffff"
+
+
+def test_shrink_2_bad_type(samples):
+    source = str(samples("base_text.odt"))
+    params = parse_cli_args(["-i", source])
+
+    with pytest.raises(SystemExit) as result:
+        main_shrink(params)
+        assert result.value.code >= 1
