@@ -1,12 +1,17 @@
 # Copyright 2018-2025 Jérôme Dumonteil
 # Authors (odfdo project): jerome.dumonteil@gmail.com
+from __future__ import annotations
 
 import platform
 import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from odfdo.scripts import to_csv
+from odfdo.scripts.to_csv import main as main_script
+from odfdo.scripts.to_csv import main_to_csv, parse_cli_args
 
 SCRIPT = Path(to_csv.__file__)
 
@@ -22,7 +27,7 @@ def run_params(params: list):
     return out, err, proc.returncode
 
 
-def test_no_param():
+def test_to_csv_no_param():
     params = []
     _out, err, exitcode = run_params(params)
     assert exitcode == 1
@@ -30,65 +35,108 @@ def test_no_param():
         assert b"timeout" in err
 
 
-def test_version():
-    params = ["--version"]
-    out, _err, exitcode = run_params(params)
-    assert exitcode == 0
-    assert b"odfdo-to-csv v3" in out
+# direct access to internal function
 
 
-def test_no_file():
-    params = ["-i", "none_file"]
-    _out, err, exitcode = run_params(params)
-    assert exitcode == 1
-    assert b"FileNotFoundError" in err
+def test_to_csv_2_no_param_on_main_function(monkeypatch):
+    with pytest.raises(ValueError) as result:
+        monkeypatch.setattr(sys, "argv", [])
+        main_script()
+        assert result.value.code >= 1
 
 
-def test_to_csv_1(samples):
+def test_to_csv_2_no_param():
+    with pytest.raises(ValueError) as result:
+        params = parse_cli_args([])
+        main_to_csv(params)
+        assert result.value.code >= 1
+
+
+def test_to_csv_2_version(capsys):
+    with pytest.raises(SystemExit) as result:
+        parse_cli_args(["--version"])
+        assert result.value.code == 0
+    captured = capsys.readouterr()
+
+    assert "odfdo-to-csv v3" in captured.out
+
+
+def test_to_csv_2_help(capsys):
+    with pytest.raises(SystemExit) as result:
+        parse_cli_args(["--help"])
+        assert result.value.code == 0
+    captured = capsys.readouterr()
+
+    assert "table to a CSV" in captured.out
+
+
+def test_to_csv_2_no_file():
+    params = parse_cli_args(["-i", "none_file"])
+    with pytest.raises(FileNotFoundError) as result:
+        main_to_csv(params)
+        assert result.value.code >= 1
+
+
+def test_to_csv_2_1(capsys, samples):
     source = samples("simple_table.ods")
-    params = ["-i", source]
-    out, _err, exitcode = run_params(params)
-    assert exitcode == 0
-    assert out == (
-        b"1,1,1,2,3,3,3\r\n1,1,1,2,3,3,3\r\n1,1,1,2,3,3,3\r\n1,2,3,4,5,6,7\r\n"
+    params = parse_cli_args(["-i", str(source)])
+
+    main_to_csv(params)
+    captured = capsys.readouterr()
+
+    assert captured.out == (
+        "1,1,1,2,3,3,3\r\n1,1,1,2,3,3,3\r\n1,1,1,2,3,3,3\r\n1,2,3,4,5,6,7\r\n"
     )
 
 
-def test_to_csv_2(samples):
+def test_to_csv_2_2(capsys, samples):
     source = samples("simple_table.ods")
-    params = ["-u", "-i", source]
-    out, _err, exitcode = run_params(params)
-    assert exitcode == 0
-    print(repr(out))
-    assert out == (
-        b'"1","1","1","2","3","3","3"\n'
-        b'"1","1","1","2","3","3","3"\n'
-        b'"1","1","1","2","3","3","3"\n'
-        b'"1","2","3","4","5","6","7"\n'
+    params = parse_cli_args(["-u", "-i", str(source)])
+
+    main_to_csv(params)
+    captured = capsys.readouterr()
+
+    assert captured.out == (
+        '"1","1","1","2","3","3","3"\n'
+        '"1","1","1","2","3","3","3"\n'
+        '"1","1","1","2","3","3","3"\n'
+        '"1","2","3","4","5","6","7"\n'
     )
 
 
-def test_to_csv_3(samples):
+def test_to_csv_2_3(capsys, samples):
     source = samples("simple_table.ods")
-    params = ["-u", "-i", source, "-t", "Example2"]
-    out, _err, exitcode = run_params(params)
-    assert exitcode == 0
-    print(repr(out))
-    assert out == b'""\n'
+    params = parse_cli_args(["-u", "-i", str(source), "-t", "Example2"])
+
+    main_to_csv(params)
+    captured = capsys.readouterr()
+
+    assert captured.out == '""\n'
 
 
-def test_to_csv_4(samples):
+def test_to_csv_2_4(capsys, samples):
     source = samples("simple_table.ods")
-    params = ["-u", "-i", source, "-t", "Example3"]
-    out, _err, exitcode = run_params(params)
-    assert exitcode == 0
-    print(repr(out))
-    assert out == b'"A float","3.14"\n"A date","1975-05-07 00:00:00"\n'
+    params = parse_cli_args(["-u", "-i", str(source), "-t", "Example3"])
+
+    main_to_csv(params)
+    captured = capsys.readouterr()
+
+    assert captured.out == '"A float","3.14"\n"A date","1975-05-07 00:00:00"\n'
 
 
-def test_to_csv_raise(samples):
+def test_to_csv_2_raise(samples):
     source = samples("simple_table.ods")
-    params = ["-u", "-i", source, "-t", "oops"]
-    _out, err, exitcode = run_params(params)
-    assert exitcode == 1
-    assert b"ValueError" in err
+    params = parse_cli_args(["-u", "-i", str(source), "-t", "oops"])
+
+    with pytest.raises(ValueError) as result:
+        main_to_csv(params)
+        assert result.value.code >= 1
+
+
+def test_to_csv_2_raise_type(samples):
+    source = samples("base_text.odt")
+    params = parse_cli_args(["-u", "-i", str(source), "-t", "oops"])
+
+    with pytest.raises(TypeError) as result:
+        main_to_csv(params)
+        assert result.value.code >= 1
