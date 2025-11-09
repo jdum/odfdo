@@ -297,17 +297,17 @@ class TOC(MDToc, Element):
     ) -> None:
         index_body = self.body
         if index_body is None:
-            self.body = None
-            index_body = self.body
+            self.body = None  # this ceates a new index_body
+            index_body = cast(IndexBody, self.body)
         index_title = cast(
             Union[None, IndexTitle], index_body.get_element(IndexTitle._tag)
-        )  # type: ignore
+        )
         if index_title is None:
             name = f"{self.name}_Head"
             index_title = IndexTitle(
                 name=name, style=style, title_text=title, text_style=text_style
             )
-            index_body.append(index_title)  # type: ignore
+            index_body.append(index_title)
         else:
             if style:
                 index_title.style = style
@@ -373,12 +373,12 @@ class TOC(MDToc, Element):
             )
 
         # Clean the old index-body
-        self.body = None
-        index_body = self.body
+        self.body = None  # this ceates a new index_body
+        index_body = cast(IndexBody, self.body)
 
         # Restore the title
         if title and str(title):
-            index_body.insert(title, position=0)  # type: ignore
+            index_body.insert(title, position=0)
 
         # Insert default TOC style
         if use_default_styles:
@@ -406,7 +406,7 @@ class TOC(MDToc, Element):
             paragraph = Paragraph(f"{number_str} {header}")
             if use_default_styles:
                 paragraph.style = _toc_entry_style_name(level)
-            index_body.append(paragraph)  # type: ignore
+            index_body.append(paragraph)
 
 
 TOC._define_attribut_property()
