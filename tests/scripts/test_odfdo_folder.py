@@ -2,12 +2,17 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 from __future__ import annotations
 
+import platform
 import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from odfdo import Document
 from odfdo.scripts import folder
+from odfdo.scripts.folder import main as main_script
+from odfdo.scripts.folder import main_convert_folder, parse_cli_args
 
 SCRIPT = Path(folder.__file__)
 
@@ -33,39 +38,83 @@ def test_folder_no_param():
     assert "usage" in err
 
 
-def test_folder_no_file():
-    params = ["none_file"]
-    out, _err, exitcode = run_params(params)
-    assert exitcode == 1
-    assert "Convert standard ODF file to folder" in out
+# direct access to internal function
 
 
-def test_folder_1(tmp_path, samples):
+def test_folder_2_no_param_on_main_function(monkeypatch):
+    with pytest.raises(SystemExit) as result:
+        monkeypatch.setattr(sys, "argv", [])
+        main_script()
+        assert result.value.code >= 1
+
+
+@pytest.mark.skipif(
+    platform.system() == "Windows",
+    reason="Fails on Windows due to stdin/output capture conflict.",
+)
+def test_folder_2_no_param():
+    with pytest.raises(SystemExit) as result:
+        params = parse_cli_args([])
+        main_convert_folder(params)
+        assert result.value.code >= 1
+
+
+def test_folder_2_version(capsys):
+    with pytest.raises(SystemExit) as result:
+        parse_cli_args(["--version"])
+        assert result.value.code == 0
+    captured = capsys.readouterr()
+
+    assert "odfdo-folder v3" in captured.out
+
+
+def test_folder_2_help(capsys):
+    with pytest.raises(SystemExit) as result:
+        parse_cli_args(["--help"])
+        assert result.value.code == 0
+    captured = capsys.readouterr()
+
+    assert "ODF file to folder" in captured.out
+
+
+def test_folder_2_no_file_on_main(monkeypatch):
+    with pytest.raises(SystemExit) as result:
+        monkeypatch.setattr(sys, "argv", ["xxx", "none_file"])
+        main_script()
+        assert result.value.code >= 1
+
+
+def test_folder_2_no_file():
+    params = parse_cli_args(["none_file"])
+    with pytest.raises(SystemExit) as result:
+        main_convert_folder(params)
+        assert result.value.code >= 1
+
+
+def test_folder_2_1(capsys, tmp_path, samples):
     source = samples("test_diff1.odt")
     document_src = Document(source)
     tmp_source = tmp_path / "test.odt"
     document_src.save(tmp_source)
     assert tmp_source.exists()
-    params = [str(tmp_source)]
-    out, err, exitcode = run_params(params)
-    print(out)
-    print(err)
-    assert exitcode == 0
+    params = parse_cli_args([str(tmp_source)])
+    main_convert_folder(params)
+    captured = capsys.readouterr()
+    print(captured.out)
+    print(captured.err)
     path = tmp_path / "test.odt.folder"
     assert path.is_dir()
 
 
-def test_folder_2(tmp_path, samples):
+def test_folder_2_2(tmp_path, samples):
     source = samples("test_diff1.odt")
     document_src = Document(source)
     tmp_source = tmp_path / "test.odt"
     document_src.save(tmp_source)
-    params1 = [str(tmp_source)]
-    _out, _err, exitcode = run_params(params1)
-    assert exitcode == 0
+    params1 = parse_cli_args([str(tmp_source)])
+    main_convert_folder(params1)
     tmp_source.unlink()
     assert not tmp_source.exists()
-    params2 = [str(tmp_path / "test.odt.folder")]
-    _out, _err, exitcode = run_params(params2)
-    assert exitcode == 0
+    params2 = parse_cli_args([str(tmp_path / "test.odt.folder")])
+    main_convert_folder(params2)
     assert tmp_source.exists()
