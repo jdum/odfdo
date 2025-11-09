@@ -114,9 +114,7 @@ class Styles(XmlPart):
 
         Returns: list of Style
         """
-        result: list[StyleBase] = self.get_elements("//style:default-style")  # type: ignore[assignment]
-
-        return result
+        return cast(list[StyleBase], self.get_elements("//style:default-style"))
 
     def set_default_styles_language_country(self, value: str) -> None:
         """Set the default language in styles, in format "en-US"."""
