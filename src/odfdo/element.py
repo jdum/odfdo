@@ -1180,6 +1180,10 @@ class Element(MDBase):
             elements = [element.__element for element in odf_elements]
             current.extend(elements)
 
+    def _xml_append(self, element: Element) -> None:
+        """Append the XML _element to  self._element."""
+        self.__element.append(element.__element)
+
     def __append(self, str_or_element: str | Element) -> None:
         """Insert element or text in the last position."""
 
