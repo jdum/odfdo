@@ -65,6 +65,15 @@ def test_title_property(meta):
     assert clone.title == title
 
 
+def test_title_property_empty(meta):
+    clone = meta.clone
+    orig = clone.get_element("//dc:title")
+    orig.delete()
+    title = "Nouvel intitulé"
+    clone.title = title
+    assert clone.title == title
+
+
 def test_get_description(meta):
     description = meta.get_description()
     expected = "Comments\nCommentaires\n评论"
@@ -85,6 +94,15 @@ def test_description_property(meta):
     assert clone.description == description
 
 
+def test_description_property_empty(meta):
+    clone = meta.clone
+    orig = clone.get_element("//dc:description")
+    orig.delete()
+    description = "评论\nnCommentaires\nComments"
+    clone.description = description
+    assert clone.description == description
+
+
 def test_get_subject(meta):
     subject = meta.get_subject()
     expected = "Sujet de sa majesté"
@@ -100,6 +118,15 @@ def test_set_subject(meta):
 
 def test_subject_property(meta):
     clone = meta.clone
+    subject = "Θέμα"
+    clone.subject = subject
+    assert clone.subject == subject
+
+
+def test_subject_property_empty(meta):
+    clone = meta.clone
+    orig = clone.get_element("//dc:subject")
+    orig.delete()
     subject = "Θέμα"
     clone.subject = subject
     assert clone.subject == subject
