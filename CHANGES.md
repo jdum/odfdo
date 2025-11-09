@@ -1,5 +1,26 @@
 # Odfdo Release Notes
 
+## [3.17.4] - 2025-11-9
+
+-   Refactor all scripts and their tests to expand coverage.
+-   Refactor the `NRMixin` class, with a new module `mixin_named_range.py` for it.
+-   Refactor `tox.py` and separate the `IndexBody` and `IndexTitle` classes into their own module.
+-   Refactor modules for type hints.
+
+### Changed
+
+-   Refactor scripts and their test units: `diff.py`, `folder.py`, `from_csv.py`, `headers.py`, `highlight.py`, `show.py`, `replace.py`, `styles.py`, `table_shrink.py`, `to_csv.py`, `to_markdown.py`, `userfield.py`.
+-   Refactor `NRMixin` class.
+-   Refactor modules `body.py`, `toc.py`, `table.py`, `row.py`, `elements_between.py`, `element_strip.py`, `styles.py`, `page_layout.py`.
+
+### Added
+
+-   Add module `mixin_named_range.py` for `NRMixin` class.
+-   Add module `text_index.py` for classes `IndexBody`, `IndexBody`, `IndexTitle`.
+-   Add tests for imports `__all__` check.
+-   Add tests for script `folder.py`, `meta.py`.
+-   Add internal utils `Element._xml_append()` method and `Element._xml_element` property.
+
 ## [3.17.3] - 2025-11-1
 
 -   Refactor scripts and their tests to extend coverage.
