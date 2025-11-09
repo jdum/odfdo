@@ -1184,6 +1184,11 @@ class Element(MDBase):
         """Append the XML _element to  self._element."""
         self.__element.append(element.__element)
 
+    @property
+    def _xml_element(self) -> _Element:
+        """Return the underlying XML element."""
+        return self.__element
+
     def __append(self, str_or_element: str | Element) -> None:
         """Insert element or text in the last position."""
 
