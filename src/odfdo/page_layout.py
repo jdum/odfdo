@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from .element import Element, PropDef, register_element_class
 from .style_base import StyleBase
@@ -29,9 +29,6 @@ from .style_props import StyleProps
 from .style_utils import (
     _set_background,
 )
-
-if TYPE_CHECKING:
-    pass
 
 
 class StylePageLayout(StyleProps):
