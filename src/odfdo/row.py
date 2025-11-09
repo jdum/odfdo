@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import contextlib
 from collections.abc import Iterable, Iterator
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from .cell import Cell
 from .element import (
@@ -45,7 +45,7 @@ if TYPE_CHECKING:
     from .style import Style
 
 
-_xpath_cell = xpath_compile("(table:table-cell|table:covered-table-cell)")
+_XPATH_CELL = xpath_compile("(table:table-cell|table:covered-table-cell)")
 
 
 class Row(Element):
@@ -121,7 +121,7 @@ class Row(Element):
         self._row_cache = RowCache()
 
     def _get_cells(self) -> list[Cell]:
-        return self.get_elements(_xpath_cell)  # type: ignore[return-value]
+        return cast(list[Cell], self.get_elements(_XPATH_CELL))
 
     def _translate_row_coordinates(
         self,
@@ -140,7 +140,7 @@ class Row(Element):
 
     def _compute_row_cache(self) -> None:
         idx_repeated_seq = self.elements_repeated_sequence(
-            _xpath_cell, "table:number-columns-repeated"
+            _XPATH_CELL, "table:number-columns-repeated"
         )
         self._row_cache.make_cell_map(idx_repeated_seq)
 
@@ -739,7 +739,7 @@ class Row(Element):
         Returns: int
         """
         idx_repeated_seq = self.elements_repeated_sequence(
-            _xpath_cell, "table:number-columns-repeated"
+            _XPATH_CELL, "table:number-columns-repeated"
         )
         repeated = [item[1] for item in idx_repeated_seq]
         if repeated:
@@ -753,7 +753,7 @@ class Row(Element):
         Returns: int
         """
         idx_repeated_seq = self.elements_repeated_sequence(
-            _xpath_cell, "table:number-columns-repeated"
+            _XPATH_CELL, "table:number-columns-repeated"
         )
         repeated = [item[1] for item in idx_repeated_seq]
         if repeated:
