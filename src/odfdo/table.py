@@ -1093,10 +1093,10 @@ class Table(MDTable, Element):
 
         Returns: list of RowGroup
         """
-        return self.get_elements(_XP_ROW_GROUP)  # type: ignore[return-value]
+        return cast(list[RowGroup], self.get_elements(_XP_ROW_GROUP))
 
     def _get_rows(self) -> list[Row]:
-        return self.get_elements(_XP_ROW)  # type: ignore[return-value]
+        return cast(list[Row], self.get_elements(_XP_ROW))
 
     def iter_rows(
         self,
@@ -1989,7 +1989,7 @@ class Table(MDTable, Element):
     # Columns
 
     def _get_columns(self) -> list[Column]:
-        return self.get_elements(_XP_COLUMN)  # type: ignore[return-value]
+        return cast(list[Column], self.get_elements(_XP_COLUMN))
 
     def iter_columns(
         self,
@@ -2456,10 +2456,10 @@ class Table(MDTable, Element):
     # Named Range
     def _local_named_ranges(self) -> list[NamedRange]:
         """(internal) Return the list of local Name Ranges."""
-        named_ranges = self.get_elements(
-            "descendant::table:named-expressions/table:named-range"
+        return cast(
+            list[NamedRange],
+            self.get_elements("descendant::table:named-expressions/table:named-range"),
         )
-        return named_ranges  # type: ignore[return-value]
 
     def _local_named_range(self, name: str) -> NamedRange | None:
         """(internal) Return the local Name Range of the specified name."""
@@ -2467,7 +2467,7 @@ class Table(MDTable, Element):
             f'descendant::table:named-expressions/table:named-range[@table:name="{name}"][1]'
         )
         if named_range:
-            return named_range[0]  # type: ignore[return-value]
+            return cast(NamedRange, named_range[0])
         else:
             return None
 
