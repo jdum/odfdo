@@ -47,7 +47,7 @@ def strip_elements(
         sub_elements = (sub_elements,)
     replacer = _get_lxml_tag("text:this-will-be-removed")
     for elem in sub_elements:
-        elem._Element__element.tag = replacer  # type: ignore[attr-defined]
+        elem._xml_element.tag = replacer
     strip = ("text:this-will-be-removed",)
     return strip_tags(element, strip=strip, default=None)
 
