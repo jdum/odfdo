@@ -23,7 +23,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union, cast
 
 from .element import Element
 from .style_base import StyleBase
@@ -195,7 +195,9 @@ class Styles(XmlPart):
 
     @property
     def office_master_styles(self) -> OfficeMasterStyles | None:
-        return self.get_element("//office:master-styles")  # type: ignore[return-value]
+        return cast(
+            Union[None, OfficeMasterStyles], self.get_element("//office:master-styles")
+        )
 
     @office_master_styles.setter
     def office_master_styles(self, office_master_styles: OfficeMasterStyles) -> None:
@@ -224,7 +226,10 @@ class Styles(XmlPart):
 
     @property
     def office_automatic_styles(self) -> OfficeAutomaticStyles | None:
-        return self.get_element("//office:automatic-styles")  # type: ignore[return-value]
+        return cast(
+            Union[None, OfficeAutomaticStyles],
+            self.get_element("//office:automatic-styles"),
+        )
 
     @office_automatic_styles.setter
     def office_automatic_styles(
