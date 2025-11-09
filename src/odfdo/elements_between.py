@@ -29,7 +29,7 @@ from .element import Element
 def _get_successor(
     element: Element, target: Element
 ) -> tuple[Element | None, Element | None]:
-    next_u_element = element._Element__element.getnext()  # type: ignore[attr-defined]
+    next_u_element = element._xml_element.getnext()
     if next_u_element is not None:
         return Element.from_tag(next_u_element), target
     parent = element.parent
@@ -201,11 +201,11 @@ def _no_header_inner_list(inner: list[Element]) -> list[Element]:
     for element in inner:
         if element.tag == "text:h":
             children = element.children
-            text = element._Element__element.text  # type: ignore[attr-defined]
+            text = element._xml_element.text
             para = Element.from_tag("text:p")
             para.text = text or ""
             for child in children:
-                para._Element__append(child)  # type: ignore[attr-defined]
+                para._xml_append(child)
             result.append(para)
         else:
             result.append(element)
