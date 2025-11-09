@@ -98,12 +98,12 @@ class Row(Element):
         if isinstance(xpath_query, str):
             elements = xpath_return_elements(
                 xpath_compile(xpath_query),
-                self._Element__element,  # type: ignore[attr-defined]
+                self._xml_element,
             )
         else:
             elements = xpath_return_elements(
                 xpath_query,
-                self._Element__element,  # type: ignore[attr-defined]
+                self._xml_element,
             )
         cache = (self._table_cache, self._row_cache)
         return [Element.from_tag_for_clone(e, cache) for e in elements]
@@ -116,7 +116,7 @@ class Row(Element):
 
     def clear(self) -> None:
         """Remove text, children and attributes from the Row."""
-        self._Element__element.clear()  # type: ignore[attr-defined]
+        self._xml_element.clear()
         self._table_cache = TableCache()
         self._row_cache = RowCache()
 
