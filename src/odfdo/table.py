@@ -32,7 +32,7 @@ from io import StringIO
 from itertools import zip_longest
 from pathlib import Path
 from textwrap import wrap
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Union, cast
 from warnings import warn
 
 from lxml.etree import XPath
@@ -49,6 +49,7 @@ from .element import (
 )
 from .frame import Frame
 from .mixin_md import MDTable
+from .mixin_named_range import TableNamedExpressions
 from .named_range import NamedRange, table_name_check
 from .row import Row
 from .row_group import RowGroup
@@ -236,12 +237,12 @@ class Table(MDTable, Element):
         if isinstance(xpath_query, str):
             elements = xpath_return_elements(
                 xpath_compile(xpath_query),
-                self._Element__element,  # type: ignore[attr-defined]
+                self._xml_element,
             )
         else:
             elements = xpath_return_elements(
                 xpath_query,
-                self._Element__element,  # type: ignore[attr-defined]
+                self._xml_element,
             )
         cache = (self._table_cache, None)
         return [Element.from_tag_for_clone(e, cache) for e in elements]
@@ -252,7 +253,7 @@ class Table(MDTable, Element):
 
     def clear(self) -> None:
         """Remove text, children and attributes from the Row."""
-        self._Element__element.clear()  # type:ignore[attr-defined]
+        self._xml_element.clear()
         self._table_cache = TableCache()
 
     def _translate_y_from_any(self, y: str | int) -> int:
@@ -2472,17 +2473,20 @@ class Table(MDTable, Element):
 
     def _local_append_named_range(self, named_range: NamedRange) -> None:
         """(internal) Append the named range to the current table."""
-        named_expressions = self.get_element("table:named-expressions")
+        named_expressions = cast(
+            Union[None, TableNamedExpressions],
+            self.get_element(TableNamedExpressions._tag),
+        )
         if not named_expressions:
-            named_expressions = Element.from_tag("table:named-expressions")
-            self._Element__append(named_expressions)  # type: ignore[attr-defined]
+            named_expressions = TableNamedExpressions()
+            self._xml_append(named_expressions)
         # exists ?
         current = named_expressions.get_element(
             f'table:named-range[@table:name="{named_range.name}"][1]'
         )
         if current:
             named_expressions.delete(current)
-        named_expressions._Element__append(named_range)  # type: ignore[attr-defined]
+        named_expressions._xml_append(named_range)
 
     def _local_set_named_range(
         self, name: str, crange: str | tuple | list, usage: str | None = None
@@ -2499,12 +2503,13 @@ class Table(MDTable, Element):
         if not named_range:
             return
         named_range.delete()
-        named_expressions = self.get_element("table:named-expressions")
+        named_expressions = cast(
+            Union[None, TableNamedExpressions],
+            self.get_element(TableNamedExpressions._tag),
+        )
         if not named_expressions:
             return
-        element = named_expressions._Element__element  # type: ignore[attr-defined]
-        children = list(element.iterchildren())
-        if not children:
+        if named_expressions.is_empty():
             self.delete(named_expressions)
 
     def get_named_ranges(
