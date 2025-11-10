@@ -73,6 +73,7 @@ __all__ = [  # noqa: RUF022
     "MetaAutoReload",
     "MetaHyperlinkBehaviour",
     "MetaTemplate",
+    "MetaUserDefined",
     "Metadata",
     "NEXT_SIBLING",
     "NamedRange",
@@ -199,6 +200,7 @@ from .meta import Meta
 from .meta_auto_reload import MetaAutoReload
 from .meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from .meta_template import MetaTemplate
+from .meta_user_defined import MetaUserDefined
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
 from .mixin_named_range import TableNamedExpressions
