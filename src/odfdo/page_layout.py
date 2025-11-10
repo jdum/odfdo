@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast, Union
 
 from .element import Element, PropDef, register_element_class
 from .style_base import StyleBase
@@ -193,7 +193,7 @@ class StylePageLayout(StyleProps):
         _set_background(self, color, url, position, repeat, opacity, filter)
 
     def get_header_style(self) -> StyleBase | None:
-        return self.get_element("style:header-style")  # type: ignore
+        return cast(Union[None, StyleBase], self.get_element("style:header-style"))
 
     def set_header_style(self, new_style: StyleBase) -> None:
         header_style = self.get_header_style()
@@ -202,7 +202,7 @@ class StylePageLayout(StyleProps):
         self.append(new_style)
 
     def get_footer_style(self) -> StyleBase | None:
-        return self.get_element("style:footer-style")  # type: ignore
+        return cast(Union[None, StyleBase], self.get_element("style:footer-style"))
 
     def set_footer_style(self, new_style: StyleBase) -> None:
         footer_style = self.get_footer_style()
