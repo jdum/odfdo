@@ -20,6 +20,7 @@
 """Classes for styles containers."""
 
 from .element import Element, PropDef, register_element_class
+from .page_layout import StylePageLayout
 
 
 class OfficeAutomaticStyles(Element):
@@ -38,6 +39,11 @@ class OfficeAutomaticStyles(Element):
 
     _tag: str = "office:automatic-styles"
     _properties: tuple[PropDef, ...] = ()
+
+    @property
+    def page_layouts(self) -> list[StylePageLayout]:
+        """Return the list of StylePageLayout styles."""
+        return [e for e in self.children if isinstance(e, StylePageLayout)]
 
 
 class OfficeMasterStyles(Element):
