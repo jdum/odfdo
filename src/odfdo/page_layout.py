@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 
-from typing import Any, cast, Union
+from typing import Any, Union, cast
 
 from .element import Element, PropDef, register_element_class
 from .style_base import StyleBase
@@ -44,10 +44,7 @@ class StylePageLayout(StyleProps):
     # style:page-usage
 
     _tag: str = "style:page-layout"
-    _properties: tuple[PropDef, ...] = (
-        PropDef("name", "style:name"),
-        PropDef("page_usage", "style:page-usage"),
-    )
+    _properties: tuple[PropDef, ...] = (PropDef("name", "style:name"),)
 
     def __init__(
         self,
