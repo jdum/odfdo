@@ -29,13 +29,14 @@ from datetime import date as dtdate
 from datetime import datetime, timedelta
 from decimal import Decimal
 from operator import itemgetter
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
-from .datatype import Boolean, Date, DateTime, Duration
+from .datatype import DateTime, Duration
 from .element import Element
 from .meta_auto_reload import MetaAutoReload
 from .meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from .meta_template import MetaTemplate
+from .meta_user_defined import MetaUserDefined
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
 from .utils import is_RFC3066, to_str
@@ -768,54 +769,53 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     def statistic(self, statistic: dict[str, int]) -> None:
         return self.set_statistic(statistic)
 
-    def get_user_defined_metadata(self) -> dict[str, Any]:
+    def get_user_defined_metadata(
+        self,
+    ) -> dict[str, Decimal | datetime | dtdate | timedelta | bool | str]:
         """Get all additional user-defined metadata for a document.
 
         (Also available as "self.user_defined_metadata" property.)
 
         Return a dict of str/value mapping.
 
-        Value types can be: Decimal, date, time, boolean or str.
+        Value types can be: Decimal, datetime, date, timedelta, bool or str.
         """
-        result: dict[str, Any] = {}
-        for item in self.get_elements("//meta:user-defined"):
-            # Read the values
-            name = item.get_attribute_string("meta:name")
-            if name is None:
-                continue
-            value = self._get_meta_value(item)
-            result[name] = value
-        return result
-
-    def _user_defined_metadata_list(self) -> list[dict[str, Any]]:
-        user_defined: list[dict[str, Any]] = []
-        for item in self.get_elements("//meta:user-defined"):
-            # Read the values
-            name = item.get_attribute_string("meta:name")
-            if not name:
-                continue
-            value, value_type, _text = self._get_meta_value_full(item)
-            user_defined.append(
-                {"meta:name": name, "meta:value-type": value_type, "value": value}
+        return {
+            data.name: data.value
+            for data in cast(
+                list[MetaUserDefined], self.get_elements("//meta:user-defined")
             )
+        }
+
+    def _user_defined_metadata_list(
+        self,
+    ) -> list[dict[str, Decimal | datetime | dtdate | timedelta | bool | str]]:
+        user_defined = [
+            data.as_dict()
+            for data in cast(
+                list[MetaUserDefined], self.get_elements("//meta:user-defined")
+            )
+        ]
         return sorted(user_defined, key=itemgetter("meta:name"))
 
     def clear_user_defined_metadata(self) -> None:
         """Remove all user-defined metadata."""
         while True:
             element = self.get_element("//meta:user-defined")
-            if isinstance(element, Element):
+            if isinstance(element, MetaUserDefined):
                 element.delete()
                 continue
             break
 
     @property
-    def user_defined_metadata(self) -> dict[str, Any]:
+    def user_defined_metadata(
+        self,
+    ) -> dict[str, Decimal | datetime | dtdate | timedelta | bool | str]:
         """Get or set all additional user-defined metadata for a document.
 
         Return a dict of str/value mapping.
 
-        Value types can be: Decimal, date, time, boolean or str.
+        Value types can be: Decimal, datetime, date, timedelta, bool or str.
         """
         return self.get_user_defined_metadata()
 
@@ -824,6 +824,14 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         self.clear_user_defined_metadata()
         for key, val in metadata.items():
             self.set_user_defined_metadata(name=key, value=val)
+
+    def _user_defined_metadata_by_name(self, name: str) -> MetaUserDefined | None:
+        for item in cast(
+            list[MetaUserDefined], self.get_elements("//meta:user-defined")
+        ):
+            if item.name == name:
+                return item
+        return None
 
     def get_user_defined_metadata_of_name(self, keyname: str) -> dict[str, Any] | None:
         """Return the content of the user defined metadata of that name. Return
@@ -835,24 +843,24 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         Returns: a dict with keys "name", "value", "value_type", "text".
         """
-        result = {}
-        found = False
-        for item in self.get_elements("//meta:user-defined"):
-            # Read the values
-            name = item.get_attribute("meta:name")
-            if name == keyname:
-                found = True
-                break
-        if not found:
+        item = self._user_defined_metadata_by_name(keyname)
+        if item is None:
             return None
-        result["name"] = name
-        value, value_type, text = self._get_meta_value(item, full=True)
-        result["value"] = value
-        result["value_type"] = value_type
-        result["text"] = text
-        return result
+        return item.as_dict_full()
 
-    def set_user_defined_metadata(self, name: str, value: Any) -> None:
+    def set_user_defined_metadata(
+        self,
+        name: str,
+        value: bool
+        | int
+        | float
+        | Decimal
+        | datetime
+        | dtdate
+        | str
+        | timedelta
+        | None,
+    ) -> None:
         """Set a user defined metadata of that name and value.
 
         If value is None, any existing metadata of that name is deleted.
@@ -861,84 +869,33 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
             name -- string, name (meta:name content)
 
-            value -- Decimal, date, time, boolean, str, None for deletion.
+            value -- bool, int, float, Decimal, datetime, dtdate, str, timedelta or None for deletion.
         """
         if value is None:
-            return self.delete_user_defined_metadata_of_name(name)
-        if isinstance(value, bool):
-            value_type = "boolean"
-            value = "true" if value else "false"
-        elif isinstance(value, (int, float, Decimal)):
-            value_type = "float"
-            value = str(value)
-        elif isinstance(value, datetime):
-            value_type = "date"
-            value = str(DateTime.encode(value))
-        elif isinstance(value, dtdate):
-            value_type = "date"
-            value = str(Date.encode(value))
-        elif isinstance(value, str):
-            value_type = "string"
-        elif isinstance(value, timedelta):
-            value_type = "time"
-            value = str(Duration.encode(value))
-        else:
-            raise TypeError(f'unexpected type "{type(value)}" for value')
+            self.delete_user_defined_metadata_of_name(name)
+            return
+        value_type = MetaUserDefined._value_to_value_type(value)
         # Already the same element ?
-        for metadata in self.get_elements("//meta:user-defined"):
-            if metadata.get_attribute("meta:name") == name:
-                break
-        else:
-            metadata = Element.from_tag("meta:user-defined")
-            metadata.set_attribute("meta:name", name)
+        metadata = self._user_defined_metadata_by_name(name)
+        if metadata is None:
+            metadata = MetaUserDefined(name=name, value_type=value_type, value=value)
             self.body.append(metadata)
-        metadata.set_attribute("meta:value-type", value_type)
-        metadata.text = value
+        else:
+            metadata.value_type = value_type
+            metadata.value = value
 
     def delete_user_defined_metadata_of_name(self, name: str) -> None:
         """Delete the user-defined metadata of that name.
 
         Args:
 
-            name -- string, name (meta:name content)
+            name -- str, name of user-defined metadata (meta:name content)
         """
-        for metadata in self.get_elements("//meta:user-defined"):
-            if metadata.get_attribute("meta:name") == name:
-                metadata.delete()
-
-    def _get_meta_value(
-        self, element: Element, full: bool = False
-    ) -> Any | tuple[Any, str, str]:
-        """get_value() dedicated to the meta data part, for one meta element."""
-        if full:
-            return self._get_meta_value_full(element)
-        else:
-            return self._get_meta_value_full(element)[0]
-
-    @staticmethod
-    def _get_meta_value_full(element: Element) -> tuple[Any, str, str]:
-        """get_value dedicated to the meta data part, for one meta element."""
-        # name = element.get_attribute('meta:name')
-        value_type = element.get_attribute_string("meta:value-type")
-        if value_type is None:
-            value_type = "string"
-        text = element.text
-        # Interpretation
-        if value_type == "boolean":
-            return (Boolean.decode(text), value_type, text)
-        if value_type in ("float", "percentage", "currency"):
-            return (Decimal(text), value_type, text)
-        if value_type == "date":
-            if "T" in text:
-                return (DateTime.decode(text), value_type, text)
-            else:
-                return (Date.decode(text), value_type, text)
-        if value_type == "string":
-            return (text, value_type, text)
-        if value_type == "time":
-            return (Duration.decode(text), value_type, text)
-        # should never happen
-        raise TypeError(f"Unknown value type: '{value_type!r}'")  # pragma: nocover
+        while True:
+            metadata = self._user_defined_metadata_by_name(name)
+            if not metadata:
+                return
+            metadata.delete()
 
     def as_dict(self, full: bool = False) -> dict[str, Any]:
         """Return the metadata of the document as a Python dict.
@@ -1278,7 +1235,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
                     for v in current_dict.values()
                     if v["value"] is not None
                 }
-                self.user_defined_metadata = new_ud
+                self.user_defined_metadata = new_ud  # type: ignore[assignment]
 
     def strip(
         self,

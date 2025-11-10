@@ -29,6 +29,7 @@ from textwrap import dedent
 
 import pytest
 
+from odfdo import Meta
 from odfdo.body import Metadata
 from odfdo.const import ODF_META
 from odfdo.datatype import DateTime, Duration
@@ -40,7 +41,7 @@ from odfdo.meta_template import MetaTemplate
 
 
 @pytest.fixture
-def meta(samples) -> Iterable:
+def meta(samples) -> Iterable[Meta]:
     document = Document(samples("meta.odt"))
     yield document.get_part(ODF_META)
 
@@ -694,6 +695,7 @@ def test_get_user_defined_metadata_buggy_meta_name(meta):
         "Achevé à la date": datetime(2009, 7, 31),
         "Numéro du document": Decimal("3"),
         "Vérifié par": "Moi-même",
+        "": True,
     }
     assert metadata == expected
 
@@ -709,6 +711,11 @@ def test_user_defined_metadata_list_buggy_meta_name(meta):
     metadata_list = meta._user_defined_metadata_list()
     expected = [
         {
+            "meta:name": "",
+            "meta:value-type": "boolean",
+            "value": True,
+        },
+        {
             "meta:name": "Achevé à la date",
             "meta:value-type": "date",
             "value": datetime(2009, 7, 31, 0, 0),
@@ -718,7 +725,11 @@ def test_user_defined_metadata_list_buggy_meta_name(meta):
             "meta:value-type": "float",
             "value": Decimal("3"),
         },
-        {"meta:name": "Vérifié par", "meta:value-type": "string", "value": "Moi-même"},
+        {
+            "meta:name": "Vérifié par",
+            "meta:value-type": "string",
+            "value": "Moi-même",
+        },
     ]
     assert metadata_list == expected
 
@@ -727,7 +738,6 @@ def test_user_defined_metadata_list(meta):
     td = timedelta(hours=5)
     meta.set_user_defined_metadata("duration", td)
     metadata_list = meta._user_defined_metadata_list()
-    print(metadata_list)
     expected = [
         {
             "meta:name": "Achevé à la date",
@@ -971,7 +981,6 @@ def test_meta_export_dict_auto_reload_hyperlink_behaviour(meta):
             },
         ],
     }
-    print(exported)
     assert exported == expected
 
 
