@@ -43,6 +43,7 @@ from .column import Column
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import (
     Element,
+    EText,
     register_element_class,
     xpath_compile,
     xpath_return_elements,
@@ -63,7 +64,6 @@ from .utils import (
 )
 
 if TYPE_CHECKING:
-    from .element import EText
     from .style import Style
 
 _XP_ROW = xpath_compile(
@@ -637,15 +637,11 @@ class Table(MDTable, Element):
 
     @property
     def printable(self) -> bool:
-        printable = self.get_attribute("table:print")
-        # Default value
-        if printable is None:
-            return True
-        return bool(printable)
+        return self._get_attribute_bool_default("table:print", True)
 
     @printable.setter
     def printable(self, printable: bool) -> None:
-        self.set_attribute("table:print", printable)
+        self._set_attribute_bool_default("table:print", printable, True)
 
     @property
     def print_ranges(self) -> list[str]:
@@ -759,7 +755,7 @@ class Table(MDTable, Element):
 
         Filter by coordinates will parse the area defined by the coordinates.
 
-        cell_type, complete, grt_type : see get_values()
+        cell_type, complete, get_type : see get_values()
 
 
 
@@ -891,11 +887,9 @@ class Table(MDTable, Element):
         self._table_cache.clear_row_indexes()
         # Step 3: trim columns to match max_width
         columns = self._get_columns()
-        repeated_cols: list[EText] = self.xpath(  # type: ignore[assignment]
-            "table:table-column/@table:number-columns-repeated"
+        repeated_cols: list[EText] = cast(
+            list[EText], self.xpath("table:table-column/@table:number-columns-repeated")
         )
-        if not isinstance(repeated_cols, list):
-            raise TypeError
         unrepeated = len(columns) - len(repeated_cols)
         column_width = sum(int(r) for r in repeated_cols) + unrepeated
         diff = column_width - max_width

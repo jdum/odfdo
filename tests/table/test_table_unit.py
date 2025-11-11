@@ -19,12 +19,17 @@
 from __future__ import annotations
 
 import datetime
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
+from typing import cast
 
 import pytest
 
-# from odfdo import Element
+from odfdo.cell import Cell
+from odfdo.column import Column
 from odfdo.document import Document
+from odfdo.element import Element
+from odfdo.header import Header
+from odfdo.row import Row
 from odfdo.table import Table, _get_python_value
 
 # @pytest.fixture
@@ -41,7 +46,7 @@ def table(samples) -> Iterable[Table]:
     #   1	1	1	2	3	3	3
     #   1   2	3	4	5	6	7
     document = Document(samples("simple_table.ods"))
-    yield document.body.get_table(name="Example1")
+    yield cast(Table, document.body.get_table(name="Example1"))
 
 
 def test_get_python_value_bytes():
@@ -361,3 +366,573 @@ def test_translate_cell_coordinates_5(table):
 def test_translate_cell_coordinates_6(table):
     result = table._translate_cell_coordinates([-5, -5])
     assert result == (2, 3)
+
+
+def test_table_get_formatted_text_normal_1(table):
+    result = table._get_formatted_text_normal(None)
+    expected = (
+        "1\n1\n1\n2\n3\n3\n3\n\n"
+        "1\n1\n1\n2\n3\n3\n3\n\n"
+        "1\n1\n1\n2\n3\n3\n3\n\n"
+        "1\n2\n3\n4\n5\n6\n7\n\n"
+    )
+    assert result == expected
+
+
+def test_table_get_formatted_text_normal_2(table):
+    table.set_value((1, 1), None)
+    result = table._get_formatted_text_normal(None)
+    expected = (
+        "1\n1\n1\n2\n3\n3\n3\n\n"
+        "1\n\n1\n2\n3\n3\n3\n\n"
+        "1\n1\n1\n2\n3\n3\n3\n\n"
+        "1\n2\n3\n4\n5\n6\n7\n\n"
+    )
+    assert result == expected
+
+
+def test_table_get_formatted_text_normal_3(table):
+    table.set_value((1, 1), None)
+    cell = table.get_cell((1, 1))
+    item = Header(1, "test")
+    cell.append(item)
+    table.set_cell((1, 1), cell)
+    result = table._get_formatted_text_normal(None)
+    expected = (
+        "1\n1\n1\n2\n3\n3\n3\n\n"
+        "1\ntest\n1\n2\n3\n3\n3\n\n"
+        "1\n1\n1\n2\n3\n3\n3\n\n"
+        "1\n2\n3\n4\n5\n6\n7\n\n"
+    )
+    assert result == expected
+
+
+def test_table_get_formatted_text_rst_1(table):
+    ctx = {"no_img_level": 0}
+    result = table._get_formatted_text_rst(ctx)
+    expected = (
+        "\n"
+        "== == == == == == == \n"
+        "1  1  1  2  3  3  3  \n"
+        "1  1  1  2  3  3  3  \n"
+        "1  1  1  2  3  3  3  \n"
+        "1  2  3  4  5  6  7  \n"
+        "== == == == == == == \n\n"
+    )
+    assert result == expected
+
+
+def test_table_get_formatted_text_rst_2(table):
+    table.set_value((1, 1), None)
+    cell = table.get_cell((1, 1))
+    item = Header(1, "test")
+    cell.append(item)
+    table.set_cell((1, 1), cell)
+    ctx = {
+        "no_img_level": 0,
+        "rst_mode": True,
+    }
+    result = table._get_formatted_text_rst(ctx)
+    expected = (
+        "\n"
+        "== ========= == == == == == \n"
+        "1  1         1  2  3  3  3  \n"
+        "1  test      1  2  3  3  3  \n"
+        "   ####                     \n"
+        "1  1         1  2  3  3  3  \n"
+        "1  2         3  4  5  6  7  \n"
+        "== ========= == == == == == \n\n"
+    )
+    assert result == expected
+
+
+def test_table_get_formatted_text_rst_3(table):
+    table.set_value((1, 1), None)
+    cell = table.get_cell((1, 1))
+    item = Header(1, "test")
+    cell.append(item)
+    table.set_cell((1, 1), cell)
+    ctx = {
+        "no_img_level": 0,
+        "rst_mode": True,
+    }
+    table.set_value((1, 2), "")
+    result = table._get_formatted_text_rst(ctx)
+    expected = (
+        "\n== ========= == == == == == \n"
+        "1  1         1  2  3  3  3  \n"
+        "1  test      1  2  3  3  3  \n"
+        "   ####                     \n"
+        "1            1  2  3  3  3  \n"
+        "1  2         3  4  5  6  7  \n"
+        "== ========= == == == == == \n\n"
+    )
+    assert result == expected
+
+
+def test_table_get_formatted_text_rst_empty():
+    table = Table("empty")
+    ctx = {
+        "no_img_level": 0,
+        "rst_mode": True,
+    }
+    result = table._get_formatted_text_rst(ctx)
+    expected = ""
+    assert result == expected
+
+
+def test_table_get_formatted_text_rst_empty_2():
+    table = Table("empty", 1, 1)
+    ctx = {
+        "no_img_level": 0,
+        "rst_mode": True,
+    }
+    result = table._get_formatted_text_rst(ctx)
+    expected = ""
+    assert result == expected
+
+
+def test_table_printable_1(table):
+    result = table.printable
+    expected = False
+    assert result is expected
+
+
+def test_table_printable_2():
+    table = table = Table("empty", 1, 1)
+    result = table.printable
+    expected = True
+    assert result is expected
+
+
+def test_table_printable_3(table):
+    table.printable = True
+    result = table.printable
+    expected = True
+    assert result is expected
+
+
+def test_table_printable_4(table):
+    table.printable = False
+    result = table.printable
+    expected = False
+    assert result is expected
+
+
+def test_table_ranges_1(table):
+    result = table.print_ranges
+    expected = []
+    assert result == expected
+
+
+def test_table_ranges_2(table):
+    table.print_ranges = ["A1:B2", "A4:C4"]
+    result = table.print_ranges
+    expected = ["A1:B2", "A4:C4"]
+    assert result == expected
+
+
+def test_table_get_formatted_text_1(table):
+    result = table.get_formatted_text(None)
+    expected = (
+        "1\n1\n1\n2\n3\n3\n3\n\n"
+        "1\n1\n1\n2\n3\n3\n3\n\n"
+        "1\n1\n1\n2\n3\n3\n3\n\n"
+        "1\n2\n3\n4\n5\n6\n7\n\n"
+    )
+    assert result == expected
+
+
+def test_table_get_formatted_text_2(table):
+    ctx = {
+        "no_img_level": 0,
+        "rst_mode": True,
+    }
+    result = table.get_formatted_text(ctx)
+    expected = (
+        "\n"
+        "== == == == == == == \n"
+        "1  1  1  2  3  3  3  \n"
+        "1  1  1  2  3  3  3  \n"
+        "1  1  1  2  3  3  3  \n"
+        "1  2  3  4  5  6  7  \n"
+        "== == == == == == == \n\n"
+    )
+    assert result == expected
+
+
+def test_table_append_column(table):
+    col = Column()
+    table.append(col)
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3, None],
+        [1, 1, 1, 2, 3, 3, 3, None],
+        [1, 1, 1, 2, 3, 3, 3, None],
+        [1, 2, 3, 4, 5, 6, 7, None],
+    ]
+
+
+def test_table_append_row(table):
+    row = Row()
+    table.append(row)
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+        [None, None, None, None, None, None, None],
+    ]
+
+
+def test_table_append_somthing(table):
+    elem = Element.from_tag("text:p")
+    table.append(elem)
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_iter_values_1(table):
+    result = table.iter_values()
+    assert isinstance(result, Iterator)
+
+
+def test_table_iter_values_2(table):
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_iter_values_3(table):
+    coord = (2, 2, 3, 3)
+    result = list(table.iter_values(coord))
+    assert result == [
+        [1, 2],
+        [3, 4],
+    ]
+
+
+def test_table_iter_values_4(table):
+    table.set_value((2, 2), None)
+    coord = (2, 2, 3, 3)
+    result = list(table.iter_values(coord))
+    assert result == [
+        [None, 2],
+        [3, 4],
+    ]
+
+
+def test_table_iter_values_5(table):
+    row = Row()
+    row.set_values([10, 20, 30])
+    table.append(row)
+    result = list(table.iter_values(complete=True))
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+        [10, 20, 30, None, None, None, None],
+    ]
+
+
+def test_table_iter_values_6(table):
+    row = Row()
+    row.set_values([10, 20, 30])
+    table.append(row)
+    result = list(table.iter_values(complete=True, get_type=True))
+    assert result == [
+        [
+            (1, "float"),
+            (1, "float"),
+            (1, "float"),
+            (2, "float"),
+            (3, "float"),
+            (3, "float"),
+            (3, "float"),
+        ],
+        [
+            (1, "float"),
+            (1, "float"),
+            (1, "float"),
+            (2, "float"),
+            (3, "float"),
+            (3, "float"),
+            (3, "float"),
+        ],
+        [
+            (1, "float"),
+            (1, "float"),
+            (1, "float"),
+            (2, "float"),
+            (3, "float"),
+            (3, "float"),
+            (3, "float"),
+        ],
+        [
+            (1, "float"),
+            (2, "float"),
+            (3, "float"),
+            (4, "float"),
+            (5, "float"),
+            (6, "float"),
+            (7, "float"),
+        ],
+        [
+            (10, "float"),
+            (20, "float"),
+            (30, "float"),
+            (None, None),
+            (None, None),
+            (None, None),
+            (None, None),
+        ],
+    ]
+
+
+def test_table_iter_values_7(table):
+    row = Row()
+    row.set_values([10, 20, 30])
+    table.append(row)
+    result = list(table.iter_values(complete=False))
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+        [10, 20, 30],
+    ]
+
+
+def test_table_set_values_1(table):
+    table.set_values(values=[[10, 20, 30]], coord=(None, None))
+    result = list(table.iter_values())
+    assert result == [
+        [10, 20, 30, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_set_values_2(table):
+    table.rows[3].repeated = 4
+    table.set_values(values=[[], [10, 20, 30]], coord=(1, 2))
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 10, 20, 30, 5, 6, 7],
+        [1, 2, 3, 4, 5, 6, 7],
+        [1, 2, 3, 4, 5, 6, 7],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_rstrip_1(table):
+    table.rstrip()
+    result = list(table.iter_values(complete=True))
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_rstrip_2(table):
+    col = table.columns[6]
+    col.repeated = 4
+    table.set_column(6, col)
+    result = list(table.iter_values(complete=True))
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3, None, None, None],
+        [1, 1, 1, 2, 3, 3, 3, None, None, None],
+        [1, 1, 1, 2, 3, 3, 3, None, None, None],
+        [1, 2, 3, 4, 5, 6, 7, None, None, None],
+    ]
+
+
+def test_table_rstrip_3(table):
+    col = table.columns[6]
+    col.repeated = 4
+    table.set_column(6, col)
+    table.rstrip()
+    result = list(table.iter_values(complete=True))
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_rstrip_4(table):
+    col = table.columns[6]
+    col.repeated = 4
+    table.set_column(6, col)
+    row = Row()
+    row.set_values([10, 20, 30, 40, 50, 60, 70, 80, 90])
+    table.append(row)
+    result = list(table.iter_values(complete=True))
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3, None, None, None],
+        [1, 1, 1, 2, 3, 3, 3, None, None, None],
+        [1, 1, 1, 2, 3, 3, 3, None, None, None],
+        [1, 2, 3, 4, 5, 6, 7, None, None, None],
+        [10, 20, 30, 40, 50, 60, 70, 80, 90, None],
+    ]
+
+
+def test_table_rstrip_5():
+    table = Table("empty")
+    expected = table.serialize()
+    table.rstrip()
+    result = table.serialize()
+    assert result == expected
+
+
+def test_table_transpose_1(table):
+    coord = (None, None, None, None)
+    table.transpose(coord)
+    result = list(table.iter_values(complete=True))
+    assert result == [
+        [1, 1, 1, 1, None, None, None],
+        [1, 1, 1, 2, None, None, None],
+        [1, 1, 1, 3, None, None, None],
+        [2, 2, 2, 4, None, None, None],
+        [3, 3, 3, 5, None, None, None],
+        [3, 3, 3, 6, None, None, None],
+        [3, 3, 3, 7, None, None, None],
+    ]
+
+
+def test_table_is_empty(table):
+    assert not table.is_empty()
+
+
+def test_table_extend_rows_1(table):
+    row1 = Row()
+    row2 = Row()
+    row2.set_values([10, 20, 30, 40, 50])
+    table.extend_rows([row1, row2])
+    result = list(table.iter_values(complete=True))
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+        [None, None, None, None, None, None, None],
+        [10, 20, 30, 40, 50, None, None],
+    ]
+
+
+def test_table_extend_rows_2(table):
+    table.extend_rows([])
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_extend_rows_3(table):
+    table.extend_rows()
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_extend_rows_4(table):
+    row = Row()
+    row.set_values([10, 20, 30, 40, 50, 60, 70, 80, 90])
+    table.extend_rows([row])
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3, None, None],
+        [1, 1, 1, 2, 3, 3, 3, None, None],
+        [1, 1, 1, 2, 3, 3, 3, None, None],
+        [1, 2, 3, 4, 5, 6, 7, None, None],
+        [10, 20, 30, 40, 50, 60, 70, 80, 90],
+    ]
+
+
+def test_table_delete_row(table):
+    table.delete_row(99)
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_get_row_values_1(table):
+    result = table.get_row_values(1, get_type=True)
+    assert result == [
+        (1, "float"),
+        (1, "float"),
+        (1, "float"),
+        (2, "float"),
+        (3, "float"),
+        (3, "float"),
+        (3, "float"),
+    ]
+
+
+def test_table_get_row_values_2(table):
+    result = table.get_row_values(1, complete=False)
+    assert result == [1, 1, 1, 2, 3, 3, 3]
+
+
+def test_table_set_row_cells_1(table):
+    c1 = Cell(value=40)
+    c2 = Cell(value=50)
+    table.set_row_cells(2, [c1, c2])
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [40, 50, None, None, None, None, None],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_set_row_cells_2(table):
+    table.set_row_cells(2, [])
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [None, None, None, None, None, None, None],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_set_row_cells_3(table):
+    table.set_row_cells(2)
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [None, None, None, None, None, None, None],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
