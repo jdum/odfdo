@@ -80,12 +80,16 @@ _XP_ROW_GROUP = xpath_compile(
 )
 
 
-def _get_python_value(data: Any, encoding: str) -> Any:
+def _get_python_value(data: str | bytes | int | float | bool, encoding: str) -> Any:
     """Try and guess the most appropriate Python type to load the data, with
     regard to ODF types.
+
+    The data should come from a CSV analyzer.
     """
     if isinstance(data, bytes):
         data = data.decode(encoding)
+    if isinstance(data, (float, int, bool)):
+        return data
     # An int ?
     try:
         return int(data)
@@ -118,8 +122,7 @@ def _get_python_value(data: Any, encoding: str) -> Any:
         return Boolean.decode(data.lower())
     except ValueError:
         pass
-    # TODO Try some other types ?
-    # So a text
+    # So a string
     return data
 
 
