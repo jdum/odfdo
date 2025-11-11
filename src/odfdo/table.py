@@ -254,10 +254,6 @@ class Table(MDTable, Element):
         cache = (self._table_cache, None)
         return [Element.from_tag_for_clone(e, cache) for e in elements]
 
-    def _copy_cache(self, cache: tuple | None) -> None:
-        """Copy cache when cloning."""
-        self._table_cache = cache[0]  # type:ignore[index]
-
     def clear(self) -> None:
         """Remove text, children and attributes from the Row."""
         self._xml_element.clear()
@@ -1225,7 +1221,7 @@ class Table(MDTable, Element):
 
         Position start at 0. So cell A4 is on row 3.
 
-        A copy is returned, use set_cell() to push it back.
+        A copy is returned, use set_row() to push it back.
 
         Args:
 
