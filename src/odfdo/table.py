@@ -301,26 +301,13 @@ class Table(MDTable, Element):
         self,
         coord_str: str,
     ) -> tuple[int | None, ...]:
-        height = self.height
-        width = self.width
         coord = convert_coordinates(coord_str)
+        # resulting coord has never <0 value
         if len(coord) == 2:
             x, y = coord
-            if x and x < 0:
-                x = increment(x, width)
-            if y and y < 0:
-                y = increment(y, height)
             # extent to an area :
             return (x, y, x, y)
         x, y, z, t = coord
-        if x and x < 0:
-            x = increment(x, width)
-        if y and y < 0:
-            y = increment(y, height)
-        if z and z < 0:
-            z = increment(z, width)
-        if t and t < 0:
-            t = increment(t, height)
         return (x, y, z, t)
 
     def _translate_table_coordinates(
@@ -335,26 +322,13 @@ class Table(MDTable, Element):
         self,
         coord_str: str,
     ) -> tuple[int | None, ...]:
-        width = self.width
-        height = self.height
         coord = convert_coordinates(coord_str)
+        # resulting coord has never <0 value
         if len(coord) == 2:
             x, y = coord
-            if x and x < 0:
-                x = increment(x, width)
-            if y and y < 0:
-                y = increment(y, height)
             # extent to an area :
             return (x, y, x, y)
         x, y, z, t = coord
-        if x and x < 0:
-            x = increment(x, width)
-        if y and y < 0:
-            y = increment(y, height)
-        if z and z < 0:
-            z = increment(z, width)
-        if t and t < 0:
-            t = increment(t, height)
         return (x, y, z, t)
 
     def _translate_column_coordinates_list(

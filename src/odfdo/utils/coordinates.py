@@ -118,7 +118,7 @@ def convert_coordinates(
             # raise ValueError, 'coordinates "%s" malformed' % obj
             # maybe 'A:C' row coordinates
             line = None
-        if line and line <= 0:
+        if line and line < 0:
             raise ValueError(f"Coordinates {obj!r} malformed")
         coordinates.append(line)
     return tuple(coordinates)
