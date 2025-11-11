@@ -21,11 +21,11 @@ from __future__ import annotations
 import datetime
 
 # from collections.abc import Iterable
-# import pytest
+import pytest
+
 # from odfdo import Element
 # from odfdo.document import Document
-# from odfdo.table import Table, _get_python_value
-from odfdo.table import _get_python_value
+from odfdo.table import Table, _get_python_value
 
 # @pytest.fixture
 # def body(samples) -> Iterable[Element]:
@@ -110,3 +110,14 @@ def test_get_python_value_duration():
     expected = datetime.timedelta(hours=12, minutes=24, seconds=36)
     result = _get_python_value(value, "utf8")
     assert result == expected
+
+
+def test_table_protection_key():
+    table = Table("name", protected=True, protection_key="hash")
+    assert table.protected
+    assert table.protection_key == "hash"
+
+
+def test_table_protection_key_raise():
+    with pytest.raises(ValueError):
+        Table("name", protected=True)

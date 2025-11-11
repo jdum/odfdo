@@ -192,7 +192,11 @@ class Table(MDTable, Element):
             self.name = name or ""
             if protected:
                 self.protected = protected
-                self.set_protection_key = protection_key
+                if protection_key is None:
+                    raise ValueError(
+                        "a protection_key must be provided for protected tables"
+                    )
+                self.protection_key = protection_key
             if not printable:
                 self.printable = printable
             if print_ranges:
