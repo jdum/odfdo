@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Union, cast
+from typing import Any, ClassVar, Union, cast
 
 from .element import Element, PropDef, register_element_class
 from .style_base import StyleBase
@@ -45,6 +45,7 @@ class StylePageLayout(StyleProps):
 
     _tag: str = "style:page-layout"
     _properties: tuple[PropDef, ...] = (PropDef("name", "style:name"),)
+    PAGE_USAGE: ClassVar = {"all", "left", "right", "mirrored"}
 
     def __init__(
         self,
@@ -96,6 +97,8 @@ class StylePageLayout(StyleProps):
 
     @page_usage.setter
     def page_usage(self, page_usage: str | None) -> None:
+        if page_usage not in self.PAGE_USAGE:
+            page_usage = "all"
         self._set_attribute_str_default("style:page-usage", page_usage, "all")
 
     def get_properties(
@@ -123,6 +126,8 @@ class StylePageLayout(StyleProps):
         Properties are given either as a dict or as named arguments (or both). The area is identical to the style family by default. If the properties element is missing, it is created.
 
         Instead of properties, you can pass a style with properties of a page-layout style. These will be copied.
+
+        Nested properties (properties of children elements) are not set.
 
         Args:
 
