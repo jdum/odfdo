@@ -1,5 +1,36 @@
 # Odfdo Release Notes
 
+## [3.17.5] - 2025-11-15
+
+-   Refactor `table.py` and add tests.
+-   Refactor `meta.py` using a new class `MetaUserDefined`.
+-   Refactor `page_layout.py` and `StylePageLayout`, add property `OfficeAutomaticStyles.page_layouts`.
+
+### Changed
+
+-   Use `MetaUserDefined` in `meta.py`.
+-   Refactor `page_layout.py` for type hints.
+-   Refactor `StylePageLayout`, add allowed `page-usage` set.
+-   Refactor `Table`, add tests for `Table`.
+-   Refactor `Table._get_python_value()`.
+-   Refactor `Table()` for protection key attribute.
+-   Refactor `Table` coordinates methods.
+-   Refactor `Table.tanspose`, reorganize tests.
+
+### Added
+
+-   Add class `MetaUserDefined`.
+-   Add `test_meta_user_defined.py`.
+-   Add property `OfficeAutomaticStyles.page_layouts`.
+-   Add `test_style_page_layout.py`.
+-   Add `test_table_unit.py`, `test_table_rstrip.py`, `test_table_transpose.py`. 
+-   Add tests for `table.py` and `page_layout.py`.
+-   Add basic `jusfile`.
+
+### Fixed
+
+-   Fix return value of `StylePageLayout.page_usage`.
+
 ## [3.17.4] - 2025-11-9
 
 -   Refactor all scripts and their tests to expand coverage.
