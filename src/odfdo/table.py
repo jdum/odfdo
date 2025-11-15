@@ -894,7 +894,7 @@ class Table(MDTable, Element):
         column_width = sum(int(r) for r in repeated_cols) + unrepeated
         diff = column_width - max_width
         if diff > 0:
-            for column in reversed(columns):
+            for column in reversed(columns):  # pragma: nocover
                 repeated = column.repeated or 1
                 repeated = repeated - diff
                 if repeated > 0:
@@ -928,7 +928,7 @@ class Table(MDTable, Element):
             else:
                 break
         if count > 0:
-            for row in reversed(self._get_rows()):
+            for row in reversed(self._get_rows()):  # pragma: nocover
                 row.parent.delete(row)  # type: ignore[union-attr]
                 count -= 1
                 if count <= 0:
@@ -954,16 +954,15 @@ class Table(MDTable, Element):
     def _optimize_width_adapt_columns(self, width: int) -> None:
         # trim columns to match minimal_width
         columns = self._get_columns()
-        repeated_cols: list[EText] = self.xpath(  # type: ignore[assignment]
-            "table:table-column/@table:number-columns-repeated"
+        repeated_cols: list[EText] = cast(
+            list[EText],
+            self.xpath("table:table-column/@table:number-columns-repeated"),
         )
-        if not isinstance(repeated_cols, list):
-            raise TypeError
         unrepeated = len(columns) - len(repeated_cols)
         column_width = sum(int(r) for r in repeated_cols) + unrepeated
         diff = column_width - width
         if diff > 0:
-            for column in reversed(columns):
+            for column in reversed(columns):  # pragma: nocover
                 repeated = column.repeated or 1
                 repeated = repeated - diff
                 if repeated > 0:

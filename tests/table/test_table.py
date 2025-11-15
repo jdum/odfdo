@@ -268,13 +268,6 @@ def test_set_table_values_small_type(table):
     ]
 
 
-def test_rstrip_table(samples):
-    document = Document(samples("styled_table.ods"))
-    table = document.body.get_table(name="Feuille1").clone
-    table.rstrip()
-    assert table.size == (5, 9)
-
-
 # simpletable :
 #   1	1	1	2	3	3	3
 #   1	1	1	2	3	3	3

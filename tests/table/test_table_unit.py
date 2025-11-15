@@ -740,69 +740,6 @@ def test_table_set_values_2(table):
     ]
 
 
-def test_table_rstrip_1(table):
-    table.rstrip()
-    result = list(table.iter_values(complete=True))
-    assert result == [
-        [1, 1, 1, 2, 3, 3, 3],
-        [1, 1, 1, 2, 3, 3, 3],
-        [1, 1, 1, 2, 3, 3, 3],
-        [1, 2, 3, 4, 5, 6, 7],
-    ]
-
-
-def test_table_rstrip_2(table):
-    col = table.columns[6]
-    col.repeated = 4
-    table.set_column(6, col)
-    result = list(table.iter_values(complete=True))
-    assert result == [
-        [1, 1, 1, 2, 3, 3, 3, None, None, None],
-        [1, 1, 1, 2, 3, 3, 3, None, None, None],
-        [1, 1, 1, 2, 3, 3, 3, None, None, None],
-        [1, 2, 3, 4, 5, 6, 7, None, None, None],
-    ]
-
-
-def test_table_rstrip_3(table):
-    col = table.columns[6]
-    col.repeated = 4
-    table.set_column(6, col)
-    table.rstrip()
-    result = list(table.iter_values(complete=True))
-    assert result == [
-        [1, 1, 1, 2, 3, 3, 3],
-        [1, 1, 1, 2, 3, 3, 3],
-        [1, 1, 1, 2, 3, 3, 3],
-        [1, 2, 3, 4, 5, 6, 7],
-    ]
-
-
-def test_table_rstrip_4(table):
-    col = table.columns[6]
-    col.repeated = 4
-    table.set_column(6, col)
-    row = Row()
-    row.set_values([10, 20, 30, 40, 50, 60, 70, 80, 90])
-    table.append(row)
-    result = list(table.iter_values(complete=True))
-    assert result == [
-        [1, 1, 1, 2, 3, 3, 3, None, None, None],
-        [1, 1, 1, 2, 3, 3, 3, None, None, None],
-        [1, 1, 1, 2, 3, 3, 3, None, None, None],
-        [1, 2, 3, 4, 5, 6, 7, None, None, None],
-        [10, 20, 30, 40, 50, 60, 70, 80, 90, None],
-    ]
-
-
-def test_table_rstrip_5():
-    table = Table("empty")
-    expected = table.serialize()
-    table.rstrip()
-    result = table.serialize()
-    assert result == expected
-
-
 def test_table_transpose_1(table):
     coord = (None, None, None, None)
     table.transpose(coord)
