@@ -59,6 +59,15 @@ def test_table_empty_2():
     ]
 
 
+def test_table_empty_3():
+    table = Table("empty", 3, 2)
+    table.transpose((0, 0, 1, 1))
+    assert table.get_values() == [
+        [None, None, None],
+        [None, None, None],
+    ]
+
+
 # simpletable :
 #   1	1	1	2	3	3	3
 #   1	1	1	2	3	3	3

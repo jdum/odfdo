@@ -32,11 +32,6 @@ from odfdo.header import Header
 from odfdo.row import Row
 from odfdo.table import Table, _get_python_value
 
-# @pytest.fixture
-# def body(samples) -> Iterable[Element]:
-#     document = Document(samples("simple_table.ods"))
-#     yield document.body
-
 
 @pytest.fixture
 def table(samples) -> Iterable[Table]:
@@ -856,5 +851,229 @@ def test_table_set_row_cells_3(table):
         [1, 1, 1, 2, 3, 3, 3],
         [1, 1, 1, 2, 3, 3, 3],
         [None, None, None, None, None, None, None],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_insert_row_empty_1(table):
+    table.insert_row(0, row=None, clone=False)
+    result = list(table.iter_values())
+    assert result == [
+        [None, None, None, None, None, None, None],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_insert_row_empty_2(table):
+    table.insert_row(3, row=None, clone=False)
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [None, None, None, None, None, None, None],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_insert_row_empty_3(table):
+    table.insert_row(4, row=None, clone=False)
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+        [None, None, None, None, None, None, None],
+    ]
+
+
+def test_table_insert_row_empty_4(table):
+    table.insert_row(5, row=None, clone=False)
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+        [None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None],
+    ]
+
+
+def test_table_get_cell_raise_1(table):
+    with pytest.raises(ValueError):
+        table.get_cell((None, 0))
+
+
+def test_table_get_cell_raise_2(table):
+    with pytest.raises(ValueError):
+        table.get_cell((0, None))
+
+
+def test_table_get_value_raise_1(table):
+    with pytest.raises(ValueError):
+        table.get_value((None, 0))
+
+
+def test_table_get_value_raise_2(table):
+    with pytest.raises(ValueError):
+        table.get_value((0, None))
+
+
+def test_table_get_value_none_1(table):
+    result = table.get_value((0, 99), get_type=False)
+    assert result is None
+
+
+def test_table_get_value_none_2(table):
+    result = table.get_value((0, 99), get_type=True)
+    assert result == (None, None)
+
+
+def test_table_get_value_none_3(table):
+    result = table.get_value((99, 2), get_type=False)
+    assert result is None
+
+
+def test_table_get_value_none_4(table):
+    result = table.get_value((99, 2), get_type=True)
+    assert result == (None, None)
+
+
+def test_table_set_cell_raise_1(table):
+    with pytest.raises(ValueError):
+        table.set_cell((None, 0))
+
+
+def test_table_set_cell_raise_2(table):
+    with pytest.raises(ValueError):
+        table.set_cell((0, None))
+
+
+def test_table_insert_cell_raise_1(table):
+    with pytest.raises(ValueError):
+        table.insert_cell((None, 0))
+
+
+def test_table_insert_cell_raise_2(table):
+    with pytest.raises(ValueError):
+        table.insert_cell((0, None))
+
+
+def test_table_delete_cell_raise_1(table):
+    with pytest.raises(ValueError):
+        table.delete_cell((None, 0))
+
+
+def test_table_delete_cell_raise_2(table):
+    with pytest.raises(ValueError):
+        table.delete_cell((0, None))
+
+
+def test_table_set_cells_none_1(table):
+    table.set_cells([])
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_set_cells_none_2(table):
+    table.set_cells([], (None, 0))
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_set_cells_none_3(table):
+    table.set_cells([], (0, None))
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_set_cells_1(table):
+    r1 = [Cell(10), Cell(11), Cell(12)]
+    table.set_cells([r1], (1, 1))
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 10, 11, 12, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_set_cells_2(table):
+    r1 = [Cell(10), Cell(11), Cell(12)]
+    r3 = [Cell(30), Cell(31), Cell(32)]
+    table.set_cells([r1, None, r3], (1, 1))
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 10, 11, 12, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 30, 31, 32, 5, 6, 7],
+    ]
+
+
+def test_table_set_cells_3(table):
+    r1 = [Cell(10), Cell(11), Cell(12)]
+    table.set_cells([r1], (1, 8))
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+        [None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None],
+        [None, 10, 11, 12, None, None, None],
+    ]
+
+
+def test_table_set_cells_4(table):
+    r1 = [Cell(10), Cell(11), Cell(12)]
+    table.set_cells([r1], (1, 8))
+    r2 = [Cell(30), Cell(31), Cell(32)]
+    table.set_cells([r2], (1, 6))
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+        [None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None],
+        [None, 30, 31, 32, None, None, None],
+        [None, None, None, None, None, None, None],
+        [None, 10, 11, 12, None, None, None],
+    ]
+
+
+def test_table_delete_cell_big_y(table):
+    table.delete_cell((0, 99))
+    result = list(table.iter_values())
+    assert result == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
         [1, 2, 3, 4, 5, 6, 7],
     ]
