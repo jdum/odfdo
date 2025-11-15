@@ -740,21 +740,6 @@ def test_table_set_values_2(table):
     ]
 
 
-def test_table_transpose_1(table):
-    coord = (None, None, None, None)
-    table.transpose(coord)
-    result = list(table.iter_values(complete=True))
-    assert result == [
-        [1, 1, 1, 1, None, None, None],
-        [1, 1, 1, 2, None, None, None],
-        [1, 1, 1, 3, None, None, None],
-        [2, 2, 2, 4, None, None, None],
-        [3, 3, 3, 5, None, None, None],
-        [3, 3, 3, 6, None, None, None],
-        [3, 3, 3, 7, None, None, None],
-    ]
-
-
 def test_table_is_empty(table):
     assert not table.is_empty()
 

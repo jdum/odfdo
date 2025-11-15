@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import csv
 import os
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from io import StringIO
 from itertools import zip_longest
 from pathlib import Path
@@ -996,10 +996,7 @@ class Table(MDTable, Element):
                 data.append(row.cells)
             transposed_data = zip_longest(*data)
             self.clear()
-            # new_rows = []
             for row_cells in transposed_data:
-                if not isiterable(row_cells):
-                    row_cells = (row_cells,)
                 row = Row()
                 row.extend_cells(row_cells)
                 self.append_row(row, clone=False)
@@ -1032,13 +1029,10 @@ class Table(MDTable, Element):
                 nones = [[None] * w for i in range(h)]
                 self.set_values(nones, coord=(x, y, z, t))
             # put transposed
-            filtered_data: list[tuple[Cell]] = []
-            for row_cells in transposed_data:
-                if isinstance(row_cells, (list, tuple)):
-                    filtered_data.append(row_cells)
-                else:
-                    filtered_data.append((row_cells,))
-            self.set_cells(filtered_data, (x, y, x + h - 1, y + w - 1))
+            self.set_cells(
+                cast(Iterable[tuple[Cell]], transposed_data),
+                (x, y, x + h - 1, y + w - 1),
+            )
             self._compute_table_cache()
 
     def is_empty(self, aggressive: bool = False) -> bool:
@@ -1703,7 +1697,7 @@ class Table(MDTable, Element):
 
     def set_cells(
         self,
-        cells: list[list[Cell]] | list[tuple[Cell]],
+        cells: Iterable[list[Cell]] | Iterable[tuple[Cell]],
         coord: tuple | list | str | None = None,
         clone: bool = True,
     ) -> None:
