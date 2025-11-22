@@ -33,6 +33,7 @@ from datetime import timedelta
 from decimal import ConversionSyntax, Decimal, InvalidOperation
 from typing import TYPE_CHECKING, Any
 
+from .annotation import AnnotationMixin
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element, register_element_class_list
 from .element_typed import ElementTyped
@@ -45,7 +46,7 @@ if TYPE_CHECKING:
     from .style import Style
 
 
-class Cell(SectionMixin, ElementTyped):
+class Cell(SectionMixin, AnnotationMixin, ElementTyped):
     """A cell of a table, "table:table-cell" and "table:covered-table-cell"."""
 
     _tag = "table:table-cell"

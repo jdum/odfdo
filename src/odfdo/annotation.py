@@ -25,7 +25,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Union, cast
 
 from .element import Element, PropDef, register_element_class
 from .elements_between import elements_between
@@ -35,6 +35,139 @@ from .mixin_md import MDTail
 
 if TYPE_CHECKING:
     from .body import Body
+
+
+class AnnotationMixin(Element):
+    """Mixin class for classes containing Annotations.
+
+    Used by the following classes: "table:covered-table-cell",
+    "table:table-cell", "text:a", "text:h", "text:meta", "text:meta-field",
+    "text:p", "text:ruby-base", "text:span". And with "office:text" and
+    "office:spreadsheet" for compatibility with previous versions.
+    """
+
+    def get_annotations(
+        self,
+        creator: str | None = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+        content: str | None = None,
+    ) -> list[Annotation]:
+        """Return all the annotations that match the criteria.
+
+        Args:
+
+            creator -- str
+
+            start_date -- datetime instance
+
+            end_date --  datetime instance
+
+            content -- str regex
+
+        Returns: list of Annotation
+        """
+        annotations: list[Annotation] = []
+        for annotation in cast(
+            list[Annotation],
+            self._filtered_elements("descendant::office:annotation", content=content),
+        ):
+            if creator is not None and creator != annotation.dc_creator:
+                continue
+            date = annotation.date
+            # date never None: recreated if missing
+            if date is None:  # pragma: no cover
+                continue
+            if start_date is not None and date < start_date:
+                continue
+            if end_date is not None and date >= end_date:
+                continue
+            annotations.append(annotation)
+        return annotations
+
+    def get_annotation(
+        self,
+        position: int = 0,
+        creator: str | None = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+        content: str | None = None,
+        name: str | None = None,
+    ) -> Annotation | None:
+        """Return the annotation that matches the criteria.
+
+        Args:
+
+            position -- int
+
+            creator -- str
+
+            start_date -- datetime instance
+
+            end_date -- datetime instance
+
+            content -- str regex
+
+            name -- str
+
+        Returns: Annotation or None if not found
+        """
+        if name is not None:
+            return cast(
+                Union[None, Annotation],
+                self._filtered_element(
+                    "descendant::office:annotation", 0, office_name=name
+                ),
+            )
+        annotations: list[Annotation] = cast(
+            list[Annotation],
+            self.get_annotations(
+                creator=creator,
+                start_date=start_date,
+                end_date=end_date,
+                content=content,
+            ),
+        )
+        if not annotations:
+            return None
+        try:
+            return annotations[position]
+        except IndexError:
+            return None
+
+    def get_annotation_ends(self) -> list[AnnotationEnd]:
+        """Return all the annotation ends.
+
+        Returns: list of AnnotationEnd
+        """
+        return cast(
+            list[AnnotationEnd],
+            self._filtered_elements(
+                "descendant::office:annotation-end",
+            ),
+        )
+
+    def get_annotation_end(
+        self,
+        position: int = 0,
+        name: str | None = None,
+    ) -> AnnotationEnd | None:
+        """Return the annotation end that matches the criteria.
+
+        Args:
+
+            position -- int
+
+            name -- str
+
+        Returns: AnnotationEnd or None if not found
+        """
+        return cast(
+            Union[None, AnnotationEnd],
+            self._filtered_element(
+                "descendant::office:annotation-end", position, office_name=name
+            ),
+        )
 
 
 def get_unique_office_name(element: Element | None = None) -> str:
@@ -159,7 +292,9 @@ class Annotation(MDTail, Element, DcCreatorMixin, DcDateMixin):
         if parent is None:  # pragma: nocover
             raise ValueError("Can't find end tag: no parent available")
         body: Body | Element = self.document_body or parent
-        return body.get_annotation_end(name=name)
+        if hasattr(body, "get_annotation_end"):
+            return cast(Union[None, AnnotationEnd], body.get_annotation_end(name=name))
+        return None
 
     def get_annotated(
         self,
@@ -291,9 +426,11 @@ class AnnotationEnd(MDTail, Element):
         if parent is None:
             raise ValueError(
                 "Can't find start tag: no parent available"
-            )  # pragma:nocover
+            )  # pragma: nocover
         body: Body | Element = self.document_body or parent
-        return body.get_annotation(name=name)
+        if hasattr(body, "get_annotation"):  # pragma: nocover
+            return cast(Union[None, Annotation], body.get_annotation(name=name))
+        return None  # pragma: nocover
 
     @property
     def end(self) -> AnnotationEnd:

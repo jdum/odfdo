@@ -21,11 +21,12 @@
 
 from __future__ import annotations
 
+from .annotation import AnnotationMixin
 from .element import register_element_class
 from .note import NoteMixin
 
 
-class RubyBase(NoteMixin):
+class RubyBase(AnnotationMixin, NoteMixin):
     """Content the text that is to be annotated.
 
     It contains any paragraph element content, like text spans.

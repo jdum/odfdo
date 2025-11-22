@@ -50,7 +50,6 @@ from .utils import (
 )
 
 if TYPE_CHECKING:
-    from .annotation import Annotation, AnnotationEnd
     from .body import Body
     from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
     from .draw_page import DrawPage
@@ -1720,115 +1719,6 @@ class Element(MDBase):
             return frame.get_element("draw:image")  # type: ignore[return-value]
         return self._filtered_element(
             "descendant::draw:image", position, url=url, content=content
-        )  # type: ignore[return-value]
-
-    # Annotations
-
-    def get_annotations(
-        self,
-        creator: str | None = None,
-        start_date: datetime | None = None,
-        end_date: datetime | None = None,
-        content: str | None = None,
-    ) -> list[Annotation]:
-        """Return all the annotations that match the criteria.
-
-        Args:
-
-            creator -- str
-
-            start_date -- datetime instance
-
-            end_date --  datetime instance
-
-            content -- str regex
-
-        Returns: list of Annotation
-        """
-        annotations: list[Annotation] = []
-        for annotation in self._filtered_elements(
-            "descendant::office:annotation", content=content
-        ):
-            if creator is not None and creator != annotation.dc_creator:  # type: ignore[attr-defined]
-                continue
-            date = annotation.date  # type: ignore[attr-defined]
-            # date never None: recreated if missing
-            if date is None:  # pragma: no cover
-                continue
-            if start_date is not None and date < start_date:
-                continue
-            if end_date is not None and date >= end_date:
-                continue
-            annotations.append(annotation)  # type: ignore[arg-type]
-        return annotations
-
-    def get_annotation(
-        self,
-        position: int = 0,
-        creator: str | None = None,
-        start_date: datetime | None = None,
-        end_date: datetime | None = None,
-        content: str | None = None,
-        name: str | None = None,
-    ) -> Annotation | None:
-        """Return the annotation that matches the criteria.
-
-        Args:
-
-            position -- int
-
-            creator -- str
-
-            start_date -- datetime instance
-
-            end_date -- datetime instance
-
-            content -- str regex
-
-            name -- str
-
-        Returns: Annotation or None if not found
-        """
-        if name is not None:
-            return self._filtered_element(
-                "descendant::office:annotation", 0, office_name=name
-            )  # type: ignore[return-value]
-        annotations: list[Annotation] = self.get_annotations(
-            creator=creator, start_date=start_date, end_date=end_date, content=content
-        )
-        if not annotations:
-            return None
-        try:
-            return annotations[position]
-        except IndexError:
-            return None
-
-    def get_annotation_ends(self) -> list[AnnotationEnd]:
-        """Return all the annotation ends.
-
-        Returns: list of AnnotationEnd
-        """
-        return self._filtered_elements(
-            "descendant::office:annotation-end",
-        )  # type: ignore[return-value]
-
-    def get_annotation_end(
-        self,
-        position: int = 0,
-        name: str | None = None,
-    ) -> AnnotationEnd | None:
-        """Return the annotation end that matches the criteria.
-
-        Args:
-
-            position -- int
-
-            name -- str
-
-        Returns: AnnotationEnd or None if not found
-        """
-        return self._filtered_element(
-            "descendant::office:annotation-end", position, office_name=name
         )  # type: ignore[return-value]
 
     # office:names

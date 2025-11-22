@@ -27,7 +27,7 @@ from datetime import datetime
 from functools import wraps
 from typing import TYPE_CHECKING, Any
 
-from .annotation import Annotation, AnnotationEnd
+from .annotation import Annotation, AnnotationEnd, AnnotationMixin
 from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
 from .element import (
     FIRST_CHILD,
@@ -189,7 +189,7 @@ def _by_regex_offset(method: Callable) -> Callable:
     return wrapper
 
 
-class ParaMixin(Element):
+class ParaMixin(AnnotationMixin):
     """Mixin for Paragraph methods."""
 
     def _expand_spaces(self, added_string: str) -> list[Element | str]:
