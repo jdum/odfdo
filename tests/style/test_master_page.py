@@ -26,8 +26,10 @@ from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.master_page import (
     StyleFooter,
+    StyleFooterFirst,
     StyleFooterLeft,
     StyleHeader,
+    StyleHeaderFirst,
     StyleHeaderLeft,
     StyleMasterPage,
 )
@@ -210,6 +212,35 @@ def test_create_style_footer_left_false():
 def test_footer_left_from_tag():
     style = Element.from_tag("<style:footer-left/>")
     assert isinstance(style, StyleFooterLeft)
+
+
+def test_footer_first_create():
+    style = StyleFooterFirst()
+    expected = "<StyleFooterFirst>"
+    assert repr(style) == expected
+
+
+def test_footer_first_repr():
+    style = StyleFooterFirst()
+    expected = "<style:footer-first/>"
+    assert style.serialize() == expected
+
+
+def test_style_footer_first_display():
+    style = StyleFooterFirst()
+    assert style.display
+
+
+def test_create_style_footer_first_false():
+    style = StyleFooterFirst(display=False)
+    expected = '<style:footer-first style:display="false"/>'
+    assert style.serialize() == expected
+    assert not style.display
+
+
+def test_footer_first_from_tag():
+    style = Element.from_tag("<style:footer-first/>")
+    assert isinstance(style, StyleFooterFirst)
 
 
 def test_read_master_page(styles):
