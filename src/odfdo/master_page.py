@@ -295,6 +295,25 @@ class StyleHeaderLeft(StyleHeader, SectionMixin):
     _tag: str = "style:header-left"
 
 
+class StyleHeaderFirst(StyleHeader, SectionMixin):
+    """Content of a header for a first page, if different from the left/right
+    page in a "style:master-page" element, tag "style:header-first"
+
+    The term "first page" means the first page to which the page style is
+    applied, regardless of any numbering. If a different page style is
+    applied in between two applications of a page style that has the
+    "style:header-first" element, each of the applications of the page
+    style has its own first page.
+
+    The "style:display" attribute specifies whether the header is displayed or
+    not ("true" or "false"). The default value is "true".
+
+    New in ODFv1.3.
+    """
+
+    _tag: str = "style:header-first"
+
+
 class StyleFooterLeft(StyleHeader, SectionMixin):
     """Content of a left page footer in a StyleMasterPage, tag "style:footer-
     left".
@@ -310,7 +329,7 @@ class StyleFooterLeft(StyleHeader, SectionMixin):
 
 class StyleFooterFirst(StyleHeader, SectionMixin):
     """Content of a footer for a first page, if different from the left/right
-    page in a "style:master-page" element.
+    page in a "style:master-page" element, tag "style:footer-first".
 
     The term "first page" means the first page to which the page style is
     applied, regardless of any numbering. If a different page style is
@@ -330,5 +349,6 @@ register_element_class(StyleFooter)
 register_element_class(StyleFooterFirst)
 register_element_class(StyleFooterLeft)
 register_element_class(StyleHeader)
+register_element_class(StyleHeaderFirst)
 register_element_class(StyleHeaderLeft)
 register_element_class(StyleMasterPage)

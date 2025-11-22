@@ -110,6 +110,7 @@ __all__ = [  # noqa: RUF022
     "StyleFooterFirst",
     "StyleFooterLeft",
     "StyleHeader",
+    "StyleHeaderFirst",
     "StyleHeaderLeft",
     "StyleMasterPage",
     "StylePageLayout",
@@ -205,6 +206,7 @@ from .master_page import (
     StyleFooterFirst,
     StyleFooterLeft,
     StyleHeader,
+    StyleHeaderFirst,
     StyleHeaderLeft,
     StyleMasterPage,
 )
