@@ -22,9 +22,120 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Union, cast
 
 from .element import Element, PropDef, register_element_class
+
+
+class BookmarkMixin(Element):
+    """Mixin class for classes containing Bookmarks.
+
+    Used by the following classes: "text:a", "text:h", "text:meta", "text:meta-field",
+    "text:p", "text:ruby-base", "text:span". And with "office:text" for compatibility
+    with previous versions.
+    """
+
+    def get_bookmarks(self) -> list[Bookmark]:
+        """Return all the bookmarks.
+
+        Returns: list of Bookmark
+        """
+        return cast(
+            list[Bookmark],
+            self._filtered_elements(
+                "descendant::text:bookmark",
+            ),
+        )
+
+    def get_bookmark(
+        self,
+        position: int = 0,
+        name: str | None = None,
+    ) -> Bookmark | None:
+        """Return the bookmark that matches the criteria.
+
+        Args:
+
+            position -- int
+
+            name -- str
+
+        Returns: Bookmark or None if not found
+        """
+        return cast(
+            Union[None, Bookmark],
+            self._filtered_element(
+                "descendant::text:bookmark", position, text_name=name
+            ),
+        )
+
+    def get_bookmark_starts(self) -> list[BookmarkStart]:
+        """Return all the bookmark starts.
+
+        Returns: list of BookmarkStart
+        """
+        return cast(
+            list[BookmarkStart],
+            self._filtered_elements(
+                "descendant::text:bookmark-start",
+            ),
+        )
+
+    def get_bookmark_start(
+        self,
+        position: int = 0,
+        name: str | None = None,
+    ) -> BookmarkStart | None:
+        """Return the bookmark start that matches the criteria.
+
+        Args:
+
+            position -- int
+
+            name -- str
+
+        Returns: BookmarkStart or None if not found
+        """
+        return cast(
+            Union[None, BookmarkStart],
+            self._filtered_element(
+                "descendant::text:bookmark-start", position, text_name=name
+            ),
+        )
+
+    def get_bookmark_ends(self) -> list[BookmarkEnd]:
+        """Return all the bookmark ends.
+
+        Returns: list of BookmarkEnd
+        """
+        return cast(
+            list[BookmarkEnd],
+            self._filtered_elements(
+                "descendant::text:bookmark-end",
+            ),
+        )
+
+    def get_bookmark_end(
+        self,
+        position: int = 0,
+        name: str | None = None,
+    ) -> BookmarkEnd | None:
+        """Return the bookmark end that matches the criteria.
+
+        Args:
+
+            position -- int
+
+            name -- str
+
+        Returns: BookmarkEnd or None if not found
+        """
+        return cast(
+            Union[None, BookmarkEnd],
+            self._filtered_element(
+                "descendant::text:bookmark-end", position, text_name=name
+            ),
+        )
 
 
 class Bookmark(Element):

@@ -22,11 +22,12 @@
 from __future__ import annotations
 
 from .annotation import AnnotationMixin
+from .bookmark import BookmarkMixin
 from .element import register_element_class
 from .note import NoteMixin
 
 
-class RubyBase(AnnotationMixin, NoteMixin):
+class RubyBase(BookmarkMixin, AnnotationMixin, NoteMixin):
     """Content the text that is to be annotated.
 
     It contains any paragraph element content, like text spans.

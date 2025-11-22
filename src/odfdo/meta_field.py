@@ -22,11 +22,12 @@
 from __future__ import annotations
 
 from .annotation import AnnotationMixin
+from .bookmark import BookmarkMixin
 from .element import register_element_class
 from .note import NoteMixin
 
 
-class MetaField(AnnotationMixin, NoteMixin):
+class MetaField(BookmarkMixin, AnnotationMixin, NoteMixin):
     """Content from a metadata source.
 
     The mixed content of this element should be generated from the metadata
@@ -38,7 +39,7 @@ class MetaField(AnnotationMixin, NoteMixin):
     _tag = "text:meta-field"
 
 
-class TextMeta(AnnotationMixin, NoteMixin):
+class TextMeta(BookmarkMixin, AnnotationMixin, NoteMixin):
     """Represents portions of text that have in content metadata attached."""
 
     _tag = "text:meta"

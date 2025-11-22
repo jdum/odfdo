@@ -24,6 +24,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from .annotation import AnnotationMixin
+from .bookmark import BookmarkMixin
 from .element import Element, PropDef, register_element_class
 from .mixin_named_range import NRMixin
 from .note import NoteMixin
@@ -162,7 +163,7 @@ class Spreadsheet(AnnotationMixin, NRMixin, Body):
     _properties: tuple[PropDef, ...] = ()
 
 
-class Text(NRMixin, SectionMixin, AnnotationMixin, NoteMixin, Body):
+class Text(NRMixin, SectionMixin, BookmarkMixin, AnnotationMixin, NoteMixin, Body):
     """Root of the Text document content, "office:text"."""
 
     _tag: str = "office:text"

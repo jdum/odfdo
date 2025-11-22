@@ -51,7 +51,6 @@ from .utils import (
 
 if TYPE_CHECKING:
     from .body import Body
-    from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
     from .draw_page import DrawPage
     from .frame import Frame
     from .header import Header
@@ -2033,92 +2032,6 @@ class Element(MDBase):
             office_title=title,
             url=url,
             content=content,
-        )  # type: ignore[return-value]
-
-    # Bookmarks
-
-    def get_bookmarks(self) -> list[Bookmark]:
-        """Return all the bookmarks.
-
-        Returns: list of Bookmark
-        """
-        return self._filtered_elements(
-            "descendant::text:bookmark",
-        )  # type: ignore[return-value]
-
-    def get_bookmark(
-        self,
-        position: int = 0,
-        name: str | None = None,
-    ) -> Bookmark | None:
-        """Return the bookmark that matches the criteria.
-
-        Args:
-
-            position -- int
-
-            name -- str
-
-        Returns: Bookmark or None if not found
-        """
-        return self._filtered_element(
-            "descendant::text:bookmark", position, text_name=name
-        )  # type: ignore[return-value]
-
-    def get_bookmark_starts(self) -> list[BookmarkStart]:
-        """Return all the bookmark starts.
-
-        Returns: list of BookmarkStart
-        """
-        return self._filtered_elements(
-            "descendant::text:bookmark-start",
-        )  # type: ignore[return-value]
-
-    def get_bookmark_start(
-        self,
-        position: int = 0,
-        name: str | None = None,
-    ) -> BookmarkStart | None:
-        """Return the bookmark start that matches the criteria.
-
-        Args:
-
-            position -- int
-
-            name -- str
-
-        Returns: BookmarkStart or None if not found
-        """
-        return self._filtered_element(
-            "descendant::text:bookmark-start", position, text_name=name
-        )  # type: ignore[return-value]
-
-    def get_bookmark_ends(self) -> list[BookmarkEnd]:
-        """Return all the bookmark ends.
-
-        Returns: list of BookmarkEnd
-        """
-        return self._filtered_elements(
-            "descendant::text:bookmark-end",
-        )  # type: ignore[return-value]
-
-    def get_bookmark_end(
-        self,
-        position: int = 0,
-        name: str | None = None,
-    ) -> BookmarkEnd | None:
-        """Return the bookmark end that matches the criteria.
-
-        Args:
-
-            position -- int
-
-            name -- str
-
-        Returns: BookmarkEnd or None if not found
-        """
-        return self._filtered_element(
-            "descendant::text:bookmark-end", position, text_name=name
         )  # type: ignore[return-value]
 
     # Reference marks
