@@ -32,7 +32,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from functools import cache
 from re import search
-from typing import TYPE_CHECKING, Any, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple, cast
 
 from lxml.etree import Element as lxml_Element
 from lxml.etree import XPath, _Element, fromstring, tostring
@@ -1594,9 +1594,12 @@ class Element(MDBase):
 
         Returns: list of List
         """
-        return self._filtered_elements(
-            "descendant::text:list", text_style=style, content=content
-        )  # type: ignore[return-value]
+        return cast(
+            "list[List]",
+            self._filtered_elements(
+                "descendant::text:list", text_style=style, content=content
+            ),
+        )
 
     @property
     def lists(self) -> list[List]:
@@ -1604,7 +1607,7 @@ class Element(MDBase):
 
         Returns: list of List
         """
-        return self.get_elements("descendant::text:list")  # type: ignore[return-value]
+        return cast("list[List]", self.get_elements("descendant::text:list"))
 
     def get_list(
         self,

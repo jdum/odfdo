@@ -19,13 +19,13 @@
 # https://github.com/lpod/lpod-python
 # Authors: Romain Gauthier <romain@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
+from __future__ import annotations
 
 import re
 from collections import namedtuple
 from collections.abc import Iterable
 
 import pytest
-
 from odfdo.const import ODF_CONTENT
 from odfdo.container import Container
 from odfdo.element import (
@@ -39,6 +39,7 @@ from odfdo.element import (
     register_element_class,
     xpath_compile,
 )
+from odfdo.list import List
 from odfdo.named_range import NamedRange
 from odfdo.paragraph import Paragraph
 from odfdo.section import Section
@@ -373,6 +374,42 @@ def test_del_attribute_namespace(sample):
     element.set_attribute("text:style-name", "Note")
     element.del_attribute("text:style-name")
     assert element.get_attribute("text:style-name") is None
+
+
+def test_set_attribute_str_default_1():
+    element = Element.from_tag("text:p")
+    element._set_attribute_str_default("test", "value", "default_value")
+    assert element.serialize() == '<text:p test="value"/>'
+
+
+def test_set_attribute_str_default_2():
+    element = Element.from_tag("text:p")
+    element._set_attribute_str_default("test", "default_value", "default_value")
+    assert element.serialize() == "<text:p/>"
+
+
+def test_get_attribute_str_default_1():
+    element = Element.from_tag('<text:p test="value"/>')
+    result = element._get_attribute_str_default("test", "default_value")
+    assert result == "value"
+
+
+def test_get_attribute_str_default_2():
+    element = Element.from_tag("<text:p/>")
+    result = element._get_attribute_str_default("test", "default_value")
+    assert result == "default_value"
+
+
+def test_set_attr_transparent_1():
+    element = Element.from_tag("<text:p/>")
+    element.set_attribute("dr3d:ambient-color", "blue")
+    assert element.serialize() == '<text:p dr3d:ambient-color="#0000FF"/>'
+
+
+def test_set_attr_transparent_2():
+    element = Element.from_tag("<text:p/>")
+    element.set_attribute("dr3d:ambient-color", "transparent")
+    assert element.serialize() == '<text:p dr3d:ambient-color="transparent"/>'
 
 
 def test_get_text(sample):
@@ -833,6 +870,44 @@ def test_set_inner_text_none():
     assert element.serialize() == "<text:p>x y<text:span>new</text:span></text:p>"
 
 
+def test_get_inner_text_content():
+    element = Element.from_tag("<text:p>x y<text:span>content</text:span></text:p>")
+    result = element._get_inner_text("text:span")
+    assert result == "content"
+
+
+def test_get_inner_text_no_content():
+    element = Element.from_tag("<text:p>x y</text:p>")
+    result = element._get_inner_text("text:span")
+    assert result is None
+
+
+def test_svg_title_1():
+    element = Element.from_tag("<text:p>x</text:p>")
+    result = element.svg_title
+    assert result is None
+
+
+def test_svg_title_2():
+    element = Element.from_tag("<text:p>x</text:p>")
+    element.svg_title = "content"
+    result = element.svg_title
+    assert result == "content"
+
+
+def test_svg_description_1():
+    element = Element.from_tag("<text:p>x</text:p>")
+    result = element.svg_description
+    assert result is None
+
+
+def test_svg_description_2():
+    element = Element.from_tag("<text:p>x</text:p>")
+    element.svg_description = "content"
+    result = element.svg_description
+    assert result == "content"
+
+
 def test_sections(sample):
     content = sample.content
     result = content.body.sections
@@ -856,3 +931,48 @@ def test_append_named_range_in_class(tag):
     element.append_named_range(nr)
     result = element.get_named_range(name="nr_name")
     assert isinstance(result, NamedRange)
+
+
+def test_get_lists_1():
+    element = Element.from_tag("office:text")
+    result = element.get_lists()
+    assert result == []
+
+
+def test_get_lists_2():
+    element = Element.from_tag("office:text")
+    result = element.lists
+    assert result == []
+
+
+def test_get_lists_3():
+    element = Element.from_tag("office:text")
+    element.insert(List(["a", "b"]), position=0)
+    result = element.lists
+    assert len(result) == 1
+    assert isinstance(result[0], List)
+
+
+def test_get_lists_4():
+    element = Element.from_tag("office:text")
+    element.insert(List(["a", "b"]), position=0)
+    element.insert(List(["c"]), position=0)
+    result = element.lists
+    assert len(result) == 2
+    assert isinstance(result[0], List)
+
+
+def test_get_list_1():
+    element = Element.from_tag("office:text")
+    element.insert(List(["a", "b"]), position=0)
+    element.insert(List(["c"]), position=0)
+    result = element.get_list(content="c")
+    assert isinstance(result, List)
+
+
+def test_get_list_2():
+    element = Element.from_tag("office:text")
+    element.insert(List(["a", "b"]), position=0)
+    element.insert(List(["c"]), position=0)
+    result = element.get_list(content="z")
+    assert result is None
