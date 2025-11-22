@@ -94,6 +94,7 @@ __all__ = [  # noqa: RUF022
     "ReferenceMarkStart",
     "Row",
     "RowGroup",
+    "RubyBase",
     "Section",
     "Spacer",
     "Span",
@@ -215,6 +216,7 @@ from .paragraph import PageBreak, Paragraph, Span
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
 from .row import Row
 from .row_group import RowGroup
+from .ruby_base import RubyBase
 from .section import Section
 from .shapes import ConnectorShape, DrawGroup, EllipseShape, LineShape, RectangleShape
 from .smil import AnimPar, AnimSeq, AnimTransFilter
