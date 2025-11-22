@@ -20,7 +20,7 @@
 from __future__ import annotations
 
 from odfdo.element import Element
-from odfdo.meta_field import MetaField
+from odfdo.meta_field import MetaField, TextMeta
 
 
 def test_meta_field_class():
@@ -36,3 +36,18 @@ def test_meta_field_minimal_tag():
 def test_meta_field_repr():
     mf = MetaField()
     assert repr(mf) == "<MetaField tag=text:meta-field>"
+
+
+def test_text_meta_class():
+    tm = TextMeta()
+    assert isinstance(tm, TextMeta)
+
+
+def test_text_meta_minimal_tag():
+    tm = Element.from_tag("<text:meta/>")
+    assert isinstance(tm, TextMeta)
+
+
+def test_text_meta_repr():
+    tm = TextMeta()
+    assert repr(tm) == "<TextMeta tag=text:meta>"
