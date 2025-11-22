@@ -71,6 +71,7 @@ __all__ = [  # noqa: RUF022
     "Manifest",
     "Meta",
     "MetaAutoReload",
+    "MetaField",
     "MetaHyperlinkBehaviour",
     "MetaTemplate",
     "MetaUserDefined",
@@ -199,6 +200,7 @@ from .master_page import (
 )
 from .meta import Meta
 from .meta_auto_reload import MetaAutoReload
+from .meta_field import MetaField
 from .meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from .meta_template import MetaTemplate
 from .meta_user_defined import MetaUserDefined
