@@ -107,6 +107,7 @@ __all__ = [  # noqa: RUF022
     "Spreadsheet",
     "Style",
     "StyleFooter",
+    "StyleFooterFirst",
     "StyleFooterLeft",
     "StyleHeader",
     "StyleHeaderLeft",
@@ -201,6 +202,7 @@ from .list import List, ListItem
 from .manifest import Manifest
 from .master_page import (
     StyleFooter,
+    StyleFooterFirst,
     StyleFooterLeft,
     StyleHeader,
     StyleHeaderLeft,

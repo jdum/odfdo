@@ -308,9 +308,26 @@ class StyleFooterLeft(StyleHeader, SectionMixin):
     _tag: str = "style:footer-left"
 
 
+class StyleFooterFirst(StyleHeader, SectionMixin):
+    """Content of a footer for a first page, if different from the left/right
+    page in a "style:master-page" element.
+
+    The term "first page" means the first page to which the page style is
+    applied, regardless of any numbering. If a different page style is
+    applied in between two applications of the page style, that has the
+    "style:footer-first" element, each of the applications of the page style
+    has its own first page.
+
+    New in ODFv1.3.
+    """
+
+    _tag: str = "style:footer-first"
+
+
 StyleFooterLeft._define_attribut_property()
 
 register_element_class(StyleFooter)
+register_element_class(StyleFooterFirst)
 register_element_class(StyleFooterLeft)
 register_element_class(StyleHeader)
 register_element_class(StyleHeaderLeft)
