@@ -156,6 +156,35 @@ def test_header_left_from_tag():
     assert isinstance(style, StyleHeaderLeft)
 
 
+def test_style_header_first_create():
+    style = StyleHeaderFirst()
+    expected = "<style:header-first/>"
+    assert style.serialize() == expected
+
+
+def test_style_header_first_repr():
+    style = StyleHeaderFirst()
+    expected = "<StyleHeaderFirst>"
+    assert repr(style) == expected
+
+
+def test_style_header_first_display():
+    style = StyleHeaderFirst()
+    assert style.display
+
+
+def test_create_style_header_first_false():
+    style = StyleHeaderFirst(display=False)
+    expected = '<style:header-first style:display="false"/>'
+    assert style.serialize() == expected
+    assert not style.display
+
+
+def test_header_first_from_tag():
+    style = Element.from_tag("<style:header-first/>")
+    assert isinstance(style, StyleHeaderFirst)
+
+
 def test_create_style_footer():
     style = StyleFooter()
     expected = "<style:footer/>"
