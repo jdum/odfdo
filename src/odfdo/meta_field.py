@@ -17,7 +17,7 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""MetaField class for "text:meta-field" tag."""
+"""TextMeta and MetaField class for "text:meta" and "text:meta-field" tags."""
 
 from __future__ import annotations
 
@@ -36,4 +36,11 @@ class MetaField(Element):
     _tag = "text:meta-field"
 
 
+class TextMeta(Element):
+    """Represents portions of text that have in content metadata attached."""
+
+    _tag = "text:meta"
+
+
 register_element_class(MetaField)
+register_element_class(TextMeta)

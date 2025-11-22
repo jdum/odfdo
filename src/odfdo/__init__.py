@@ -120,6 +120,7 @@ __all__ = [  # noqa: RUF022
     "TextDeletion",
     "TextFormatChange",
     "TextInsertion",
+    "TextMeta",
     "TocEntryTemplate",
     "TrackedChanges",
     "UserDefined",
@@ -201,7 +202,7 @@ from .master_page import (
 )
 from .meta import Meta
 from .meta_auto_reload import MetaAutoReload
-from .meta_field import MetaField
+from .meta_field import MetaField, TextMeta
 from .meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from .meta_template import MetaTemplate
 from .meta_user_defined import MetaUserDefined
