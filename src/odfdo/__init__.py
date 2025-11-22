@@ -27,10 +27,12 @@ __all__ = [  # noqa: RUF022
     "AnimTransFilter",
     "Annotation",
     "AnnotationEnd",
+    "AnnotationMixin",
     "BackgroundImage",
     "Body",
     "Bookmark",
     "BookmarkEnd",
+    "BookmarkMixin",
     "BookmarkStart",
     "Cell",
     "ChangeInfo",
@@ -77,9 +79,11 @@ __all__ = [  # noqa: RUF022
     "MetaUserDefined",
     "Metadata",
     "NEXT_SIBLING",
+    "NRMixin",
     "NamedRange",
     "Note",
     "NoteBody",
+    "NoteMixin",
     "OfficeAutomaticStyles",
     "OfficeMasterStyles",
     "PREV_SIBLING",
@@ -92,10 +96,12 @@ __all__ = [  # noqa: RUF022
     "ReferenceMark",
     "ReferenceMarkEnd",
     "ReferenceMarkStart",
+    "ReferenceMixin",
     "Row",
     "RowGroup",
     "RubyBase",
     "Section",
+    "SectionMixin",
     "Spacer",
     "Span",
     "Spreadsheet",
@@ -164,7 +170,7 @@ __all__ = [  # noqa: RUF022
 ]
 
 
-from .annotation import Annotation, AnnotationEnd
+from .annotation import Annotation, AnnotationEnd, AnnotationMixin
 from .body import (
     Body,
     Chart,
@@ -176,7 +182,7 @@ from .body import (
     Spreadsheet,
     Text,
 )
-from .bookmark import Bookmark, BookmarkEnd, BookmarkStart
+from .bookmark import Bookmark, BookmarkEnd, BookmarkMixin, BookmarkStart
 from .cell import Cell
 from .column import Column
 from .container import Container
@@ -208,17 +214,23 @@ from .meta_template import MetaTemplate
 from .meta_user_defined import MetaUserDefined
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
-from .mixin_named_range import TableNamedExpressions
+from .mixin_named_range import NRMixin, TableNamedExpressions
 from .mixin_paragraph import ParaMixin
 from .named_range import NamedRange
-from .note import Note, NoteBody
+from .note import Note, NoteBody, NoteMixin
 from .page_layout import StylePageLayout
 from .paragraph import PageBreak, Paragraph, Span
-from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
+from .reference import (
+    Reference,
+    ReferenceMark,
+    ReferenceMarkEnd,
+    ReferenceMarkStart,
+    ReferenceMixin,
+)
 from .row import Row
 from .row_group import RowGroup
 from .ruby_base import RubyBase
-from .section import Section
+from .section import Section, SectionMixin
 from .shapes import ConnectorShape, DrawGroup, EllipseShape, LineShape, RectangleShape
 from .smil import AnimPar, AnimSeq, AnimTransFilter
 from .spacer import Spacer
