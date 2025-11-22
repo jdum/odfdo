@@ -26,6 +26,7 @@ from collections import namedtuple
 from collections.abc import Iterable
 
 import pytest
+
 from odfdo.const import ODF_CONTENT
 from odfdo.container import Container
 from odfdo.element import (

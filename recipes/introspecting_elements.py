@@ -58,7 +58,7 @@ def test_unit(result: dict[str, Any]) -> None:
         return
 
     assert result["tag"] == "text:p"
-    assert repr(result["parent"]) == "<Element tag=text:note-body>"
+    assert repr(result["parent"]) == "<NoteBody tag=text:note-body>"
     assert repr(result["children"]) == "[<Span tag=text:span>]"
 
 

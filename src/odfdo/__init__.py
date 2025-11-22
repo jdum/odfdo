@@ -78,6 +78,7 @@ __all__ = [  # noqa: RUF022
     "NEXT_SIBLING",
     "NamedRange",
     "Note",
+    "NoteBody",
     "OfficeAutomaticStyles",
     "OfficeMasterStyles",
     "PREV_SIBLING",
@@ -206,7 +207,7 @@ from .mixin_dc_date import DcDateMixin
 from .mixin_named_range import TableNamedExpressions
 from .mixin_paragraph import ParaMixin
 from .named_range import NamedRange
-from .note import Note
+from .note import Note, NoteBody
 from .page_layout import StylePageLayout
 from .paragraph import PageBreak, Paragraph, Span
 from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart

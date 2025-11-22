@@ -35,6 +35,7 @@ from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
 from .mixin_md import MDZap
 from .paragraph import Paragraph
+from .section import SectionMixin
 
 if TYPE_CHECKING:
     from .body import Body
@@ -227,7 +228,7 @@ class TextInsertion(Element):
             self.insert(new_change_info, xmlposition=FIRST_CHILD)
 
 
-class TextDeletion(TextInsertion):
+class TextDeletion(SectionMixin, TextInsertion):
     """Information on a text deletion, "text:deletion".
 
     The TextDeletion "text:deletion" contains information that identifies

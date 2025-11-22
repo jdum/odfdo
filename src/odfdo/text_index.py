@@ -25,9 +25,10 @@ from typing import Any
 
 from .element import Element, PropDef, register_element_class
 from .paragraph import Paragraph
+from .section import SectionMixin
 
 
-class IndexBody(Element):
+class IndexBody(SectionMixin):
     """The "text:index-body" element contains an index.
 
     The "text:index-body" element is used for all types of indexes. It contains the index content generated to form the index."""
@@ -36,7 +37,7 @@ class IndexBody(Element):
     _properties: tuple[PropDef, ...] = ()
 
 
-class IndexTitle(Element):
+class IndexTitle(SectionMixin):
     """The title of an index, "text:index-title".
 
     The element has the following attributes:

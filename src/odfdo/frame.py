@@ -31,6 +31,7 @@ from .element import Element, PropDef, register_element_class
 from .image import DrawImage
 from .mixin_md import MDDrawFrame, MDDrawTextBox
 from .paragraph import Paragraph
+from .section import SectionMixin
 from .style import Style
 from .unit import Unit
 
@@ -497,7 +498,7 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
 Frame._define_attribut_property()
 
 
-class DrawTextBox(MDDrawTextBox, Element):
+class DrawTextBox(MDDrawTextBox, SectionMixin):
     """ODF text box, "draw:text-box".
 
     Minimal class to facilitate internal iteration.

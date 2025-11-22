@@ -24,6 +24,7 @@ from __future__ import annotations
 from typing import Any
 
 from .element import Element, PropDef, register_element_class
+from .section import SectionMixin
 from .style_base import StyleBase
 
 
@@ -238,7 +239,7 @@ class StyleMasterPage(StyleBase):
 StyleMasterPage._define_attribut_property()
 
 
-class StyleHeader(StyleBase):
+class StyleHeader(SectionMixin, StyleBase):
     """Content of a header in a StyleMasterPage, tag "style:header".
 
     The "style:display" attribute specifies whether the header is displayed or
@@ -271,7 +272,7 @@ class StyleHeader(StyleBase):
         return f"<{self.__class__.__name__}>"
 
 
-class StyleFooter(StyleHeader):
+class StyleFooter(StyleHeader, SectionMixin):
     """Content of a footer in a StyleMasterPage, tag "style:footer".
 
     The "style:display" attribute specifies whether the footer is displayed or
@@ -281,7 +282,7 @@ class StyleFooter(StyleHeader):
     _tag: str = "style:footer"
 
 
-class StyleHeaderLeft(StyleHeader):
+class StyleHeaderLeft(StyleHeader, SectionMixin):
     """Content of a left page header in a StyleMasterPage, tag "style:header-
     left".
 
@@ -294,7 +295,7 @@ class StyleHeaderLeft(StyleHeader):
     _tag: str = "style:header-left"
 
 
-class StyleFooterLeft(StyleHeader):
+class StyleFooterLeft(StyleHeader, SectionMixin):
     """Content of a left page footer in a StyleMasterPage, tag "style:footer-
     left".
 

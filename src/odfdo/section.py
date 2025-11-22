@@ -23,12 +23,74 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Union, cast
 
 from .element import Element, PropDef, register_element_class
 
 
-class Section(Element):
+class SectionMixin(Element):
+    """Mixin class for classes containing Sections.
+
+    Used by the following classes:  "draw:text-box", "office:text", "style:footer",
+    "style:footer-left", "style:header", "style:header-left", "table:covered-table-cell",
+    "table:table-cell", "text:deletion", "text:index-body", "text:index-title",
+    "text:note-body" and "text:section".
+    """
+
+    def get_sections(
+        self,
+        style: str | None = None,
+        content: str | None = None,
+    ) -> list[Section]:
+        """Return all the sections that match the criteria.
+
+        Args:
+
+            style -- str
+
+            content -- str regex
+
+        Returns: list of Section
+        """
+        return cast(
+            list[Section],
+            self._filtered_elements("text:section", text_style=style, content=content),
+        )
+
+    @property
+    def sections(
+        self,
+    ) -> list[Section]:
+        """Return all the sections.
+
+        Returns: list of Section
+        """
+        return cast(list[Section], self.get_elements("text:section"))
+
+    def get_section(
+        self,
+        position: int = 0,
+        content: str | None = None,
+    ) -> Section | None:
+        """Return the section that matches the criteria.
+
+        Args:
+
+            position -- int
+
+            content -- str regex
+
+        Returns: Section or None if not found
+        """
+        return cast(
+            Union[None, Section],
+            self._filtered_element(
+                "descendant::text:section", position, content=content
+            ),
+        )
+
+
+class Section(SectionMixin):
     """Section of the text document, "text:section"."""
 
     _tag = "text:section"

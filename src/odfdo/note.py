@@ -29,6 +29,14 @@ from typing import Any, ClassVar
 from .annotation import Annotation, AnnotationEnd, get_unique_office_name  # noqa: F401
 from .element import Element, PropDef, register_element_class
 from .mixin_md import MDNote
+from .section import SectionMixin
+
+
+class NoteBody(SectionMixin):
+    """Container for the content of a note, "text:note-body"."""
+
+    _tag: str = "text:note-body"
+    _properties: tuple[PropDef, ...] = ()
 
 
 class Note(MDNote, Element):
@@ -131,3 +139,4 @@ class Note(MDNote, Element):
 Note._define_attribut_property()
 
 register_element_class(Note)
+register_element_class(NoteBody)

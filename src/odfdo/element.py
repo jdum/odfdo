@@ -67,7 +67,6 @@ if TYPE_CHECKING:
         ReferenceMarkEnd,
         ReferenceMarkStart,
     )
-    from .section import Section
     from .shapes import (
         ConnectorShape,
         DrawGroup,
@@ -1370,56 +1369,6 @@ class Element(MDBase):
     @svg_description.setter
     def svg_description(self, description: str) -> None:
         self._set_inner_text("svg:desc", description)
-
-    # Sections
-
-    def get_sections(
-        self,
-        style: str | None = None,
-        content: str | None = None,
-    ) -> list[Section]:
-        """Return all the sections that match the criteria.
-
-        Args:
-
-            style -- str
-
-            content -- str regex
-
-        Returns: list of Section
-        """
-        return self._filtered_elements(
-            "text:section", text_style=style, content=content
-        )  # type: ignore[return-value]
-
-    @property
-    def sections(
-        self,
-    ) -> list[Section]:
-        """Return all the sections.
-
-        Returns: list of Section
-        """
-        return self.get_elements("text:section")  # type: ignore[return-value]
-
-    def get_section(
-        self,
-        position: int = 0,
-        content: str | None = None,
-    ) -> Section | None:
-        """Return the section that matches the criteria.
-
-        Args:
-
-            position -- int
-
-            content -- str regex
-
-        Returns: Section or None if not found
-        """
-        return self._filtered_element(
-            "descendant::text:section", position, content=content
-        )  # type: ignore[return-value]
 
     # Paragraphs
 

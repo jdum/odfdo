@@ -36,6 +36,7 @@ from typing import TYPE_CHECKING, Any
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element, register_element_class_list
 from .element_typed import ElementTyped
+from .section import SectionMixin
 
 _int = builtins.int
 _float = builtins.float
@@ -44,7 +45,7 @@ if TYPE_CHECKING:
     from .style import Style
 
 
-class Cell(ElementTyped):
+class Cell(SectionMixin, ElementTyped):
     """A cell of a table, "table:table-cell" and "table:covered-table-cell"."""
 
     _tag = "table:table-cell"
