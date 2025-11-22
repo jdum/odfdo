@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING
 
 from .element import Element, PropDef, register_element_class
 from .mixin_named_range import NRMixin
+from .note import NoteMixin
 from .section import SectionMixin
 
 if TYPE_CHECKING:
@@ -160,7 +161,7 @@ class Spreadsheet(NRMixin, Body):
     _properties: tuple[PropDef, ...] = ()
 
 
-class Text(NRMixin, SectionMixin, Body):
+class Text(NRMixin, SectionMixin, NoteMixin, Body):
     """Root of the Text document content, "office:text"."""
 
     _tag: str = "office:text"

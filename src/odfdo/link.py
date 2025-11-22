@@ -28,9 +28,10 @@ from typing import Any
 from .element import Element, PropDef, register_element_class
 from .mixin_md import MDLink
 from .mixin_paragraph_formatted import ParaFormattedTextMixin
+from .note import NoteMixin
 
 
-class Link(MDLink, ParaFormattedTextMixin, Element):
+class Link(MDLink, ParaFormattedTextMixin, NoteMixin, Element):
     """Representation of a link (URL), "text:a"."""
 
     _tag = "text:a"

@@ -59,7 +59,6 @@ if TYPE_CHECKING:
     from .image import DrawImage
     from .link import Link
     from .list import List
-    from .note import Note
     from .paragraph import Paragraph, Span
     from .reference import (
         Reference,
@@ -1721,58 +1720,6 @@ class Element(MDBase):
             return frame.get_element("draw:image")  # type: ignore[return-value]
         return self._filtered_element(
             "descendant::draw:image", position, url=url, content=content
-        )  # type: ignore[return-value]
-
-    # Named Range
-
-    # Notes
-
-    def get_notes(
-        self,
-        note_class: str | None = None,
-        content: str | None = None,
-    ) -> list[Note]:
-        """Return all the notes that match the criteria.
-
-        Args:
-
-            note_class -- 'footnote' or 'endnote'
-
-            content -- str regex
-
-        Returns: list of Note
-        """
-        return self._filtered_elements(
-            "descendant::text:note", note_class=note_class, content=content
-        )  # type: ignore[return-value]
-
-    def get_note(
-        self,
-        position: int = 0,
-        note_id: str | None = None,
-        note_class: str | None = None,
-        content: str | None = None,
-    ) -> Note | None:
-        """Return the note that matches the criteria.
-
-        Args:
-
-            position -- int
-
-            note_id -- str
-
-            note_class -- 'footnote' or 'endnote'
-
-            content -- str regex
-
-        Returns: Note or None if not found
-        """
-        return self._filtered_element(
-            "descendant::text:note",
-            position,
-            text_id=note_id,
-            note_class=note_class,
-            content=content,
         )  # type: ignore[return-value]
 
     # Annotations

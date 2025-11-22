@@ -24,12 +24,75 @@
 
 from __future__ import annotations
 
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Union, cast
 
 from .annotation import Annotation, AnnotationEnd, get_unique_office_name  # noqa: F401
 from .element import Element, PropDef, register_element_class
 from .mixin_md import MDNote
 from .section import SectionMixin
+
+
+class NoteMixin(Element):
+    """Mixin class for classes containing Notes.
+
+    Used by the following classes: "text:a", "text:h", "text:meta", "text:meta-field",
+    "text:p", "text:ruby-base", "text:span". And with "office:text" for compatibility
+    with previous versions.
+    """
+
+    def get_notes(
+        self,
+        note_class: str | None = None,
+        content: str | None = None,
+    ) -> list[Note]:
+        """Return all the notes that match the criteria.
+
+        Args:
+
+            note_class -- 'footnote' or 'endnote'
+
+            content -- str regex
+
+        Returns: list of Note
+        """
+        return cast(
+            list[Note],
+            self._filtered_elements(
+                "descendant::text:note", note_class=note_class, content=content
+            ),
+        )
+
+    def get_note(
+        self,
+        position: int = 0,
+        note_id: str | None = None,
+        note_class: str | None = None,
+        content: str | None = None,
+    ) -> Note | None:
+        """Return the note that matches the criteria.
+
+        Args:
+
+            position -- int
+
+            note_id -- str
+
+            note_class -- 'footnote' or 'endnote'
+
+            content -- str regex
+
+        Returns: Note or None if not found
+        """
+        return cast(
+            Union[None, Note],
+            self._filtered_element(
+                "descendant::text:note",
+                position,
+                text_id=note_id,
+                note_class=note_class,
+                content=content,
+            ),
+        )
 
 
 class NoteBody(SectionMixin):

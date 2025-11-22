@@ -21,10 +21,11 @@
 
 from __future__ import annotations
 
-from .element import Element, register_element_class
+from .element import register_element_class
+from .note import NoteMixin
 
 
-class MetaField(Element):
+class MetaField(NoteMixin):
     """Content from a metadata source.
 
     The mixed content of this element should be generated from the metadata
@@ -36,7 +37,7 @@ class MetaField(Element):
     _tag = "text:meta-field"
 
 
-class TextMeta(Element):
+class TextMeta(NoteMixin):
     """Represents portions of text that have in content metadata attached."""
 
     _tag = "text:meta"

@@ -36,6 +36,7 @@ from .line_break import LineBreak
 from .mixin_md import MDParagraph
 from .mixin_paragraph import ParaMixin
 from .mixin_paragraph_formatted import ParaFormattedTextMixin
+from .note import NoteMixin
 from .spacer import Spacer
 from .span import Span
 from .tab import Tab
@@ -50,7 +51,7 @@ __all__ = [
 ]
 
 
-class Paragraph(MDParagraph, ParaFormattedTextMixin, ParaMixin, Element):
+class Paragraph(MDParagraph, ParaFormattedTextMixin, ParaMixin, NoteMixin, Element):
     """An ODF paragraph, "text:p".
 
     The "text:p" element represents a paragraph, which is the basic unit of

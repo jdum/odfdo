@@ -35,9 +35,10 @@ from .element import (
 from .mixin_md import MDParagraph, MDSpan
 from .mixin_paragraph import ParaMixin
 from .mixin_paragraph_formatted import ParaFormattedTextMixin
+from .note import NoteMixin
 
 
-class Span(MDSpan, MDParagraph, ParaFormattedTextMixin, ParaMixin, Element):
+class Span(MDSpan, MDParagraph, ParaFormattedTextMixin, ParaMixin, NoteMixin, Element):
     """A span tag (syled text in paragraph), "text:span"."""
 
     _tag = "text:span"
