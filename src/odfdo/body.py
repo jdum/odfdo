@@ -30,6 +30,7 @@ from .mixin_named_range import NRMixin
 from .note import NoteMixin
 from .reference import ReferenceMixin
 from .section import SectionMixin
+from .tracked_changes import TrackedChangesMixin
 
 if TYPE_CHECKING:
     from .table import Table
@@ -166,6 +167,7 @@ class Spreadsheet(AnnotationMixin, NRMixin, Body):
 
 class Text(
     NRMixin,
+    TrackedChangesMixin,
     SectionMixin,
     ReferenceMixin,
     BookmarkMixin,

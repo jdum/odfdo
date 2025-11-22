@@ -131,6 +131,7 @@ __all__ = [  # noqa: RUF022
     "TextMeta",
     "TocEntryTemplate",
     "TrackedChanges",
+    "TrackedChangesMixin",
     "UserDefined",
     "UserFieldDecl",
     "UserFieldDecls",
@@ -273,6 +274,7 @@ from .tracked_changes import (
     TextFormatChange,
     TextInsertion,
     TrackedChanges,
+    TrackedChangesMixin,
 )
 from .user_field import (
     UserDefined,

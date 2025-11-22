@@ -72,7 +72,6 @@ if TYPE_CHECKING:
         TextChange,
         TextChangeEnd,
         TextChangeStart,
-        TrackedChanges,
     )
     from .user_field import UserDefined, UserFieldDecl, UserFieldDecls
     from .variable import VarDecls, VarSet
@@ -2301,21 +2300,6 @@ class Element(MDBase):
         return connectors
 
     # Tracked changes and text change
-
-    def get_tracked_changes(self) -> TrackedChanges | None:
-        """Return the tracked-changes part in the text body.
-
-        Returns: TrackedChanges or None
-        """
-        return self.get_element("//text:tracked-changes")  # type: ignore[return-value]
-
-    @property
-    def tracked_changes(self) -> Element | None:
-        """Return the tracked-changes part in the text body.
-
-        Returns: Element or None
-        """
-        return self.get_tracked_changes()
 
     def get_changes_ids(self) -> list[Element | EText]:
         """Return a list of ids that refers to a change region in the tracked

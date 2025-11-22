@@ -26,6 +26,7 @@ from typing import Any
 from .element import Element, PropDef, register_element_class
 from .section import SectionMixin
 from .style_base import StyleBase
+from .tracked_changes import TrackedChangesMixin
 
 
 class StyleMasterPage(StyleBase):
@@ -239,7 +240,7 @@ class StyleMasterPage(StyleBase):
 StyleMasterPage._define_attribut_property()
 
 
-class StyleHeader(SectionMixin, StyleBase):
+class StyleHeader(TrackedChangesMixin, SectionMixin, StyleBase):
     """Content of a header in a StyleMasterPage, tag "style:header".
 
     The "style:display" attribute specifies whether the header is displayed or
@@ -272,7 +273,7 @@ class StyleHeader(SectionMixin, StyleBase):
         return f"<{self.__class__.__name__}>"
 
 
-class StyleFooter(StyleHeader, SectionMixin):
+class StyleFooter(StyleHeader):
     """Content of a footer in a StyleMasterPage, tag "style:footer".
 
     The "style:display" attribute specifies whether the footer is displayed or
@@ -282,7 +283,7 @@ class StyleFooter(StyleHeader, SectionMixin):
     _tag: str = "style:footer"
 
 
-class StyleHeaderLeft(StyleHeader, SectionMixin):
+class StyleHeaderLeft(StyleHeader):
     """Content of a left page header in a StyleMasterPage, tag "style:header-
     left".
 
@@ -295,7 +296,7 @@ class StyleHeaderLeft(StyleHeader, SectionMixin):
     _tag: str = "style:header-left"
 
 
-class StyleHeaderFirst(StyleHeader, SectionMixin):
+class StyleHeaderFirst(StyleHeader):
     """Content of a header for a first page, if different from the left/right
     page in a "style:master-page" element, tag "style:header-first"
 
@@ -314,7 +315,7 @@ class StyleHeaderFirst(StyleHeader, SectionMixin):
     _tag: str = "style:header-first"
 
 
-class StyleFooterLeft(StyleHeader, SectionMixin):
+class StyleFooterLeft(StyleHeader):
     """Content of a left page footer in a StyleMasterPage, tag "style:footer-
     left".
 
@@ -327,7 +328,7 @@ class StyleFooterLeft(StyleHeader, SectionMixin):
     _tag: str = "style:footer-left"
 
 
-class StyleFooterFirst(StyleHeader, SectionMixin):
+class StyleFooterFirst(StyleHeader):
     """Content of a footer for a first page, if different from the left/right
     page in a "style:master-page" element, tag "style:footer-first".
 

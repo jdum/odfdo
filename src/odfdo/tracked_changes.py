@@ -38,7 +38,33 @@ from .paragraph import Paragraph
 from .section import SectionMixin
 
 if TYPE_CHECKING:
-    from .body import Body
+    from .body import Body, Text
+
+
+class TrackedChangesMixin(Element):
+    """Mixin class for classes containing TrackedChanges.
+
+    Used by the following classes:  "office:text", "style:footer",
+    "style:footer-first", "style:footer-left", "style:header",
+    "style:header-first" and "style:header-left".
+    """
+
+    def get_tracked_changes(self) -> TrackedChanges | None:
+        """Return the tracked-changes part in the text body.
+
+        Returns: TrackedChanges or None
+        """
+        return cast(
+            Union[None, TrackedChanges], self.get_element("//text:tracked-changes")
+        )
+
+    @property
+    def tracked_changes(self) -> TrackedChanges | None:
+        """Return the tracked-changes part in the text body.
+
+        Returns: Element or None
+        """
+        return self.get_tracked_changes()
 
 
 class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
@@ -512,15 +538,15 @@ class TextChange(Element):
     def set_id(self, idx: str) -> None:
         self.set_attribute("text:change-id", idx)
 
-    def _get_tracked_changes(self) -> Element | None:
-        body = self.document_body
-        if not body:
-            raise ValueError
-        return body.get_tracked_changes()
+    def _get_tracked_changes(self) -> TrackedChanges | None:
+        body: Text | None = self.document_body  # type: ignore[assignment]
+        if body and body.tag == "office:text":
+            return body.get_tracked_changes()
+        raise ValueError
 
     def get_changed_region(
         self,
-        tracked_changes: Element | None = None,
+        tracked_changes: TrackedChanges | None = None,
     ) -> Element | None:
         if not tracked_changes:
             tracked_changes = self._get_tracked_changes()
@@ -529,7 +555,7 @@ class TextChange(Element):
 
     def get_change_info(
         self,
-        tracked_changes: Element | None = None,
+        tracked_changes: TrackedChanges | None = None,
     ) -> Element | None:
         changed_region = self.get_changed_region(tracked_changes=tracked_changes)
         if not changed_region:
@@ -538,7 +564,7 @@ class TextChange(Element):
 
     def get_change_element(
         self,
-        tracked_changes: Element | None = None,
+        tracked_changes: TrackedChanges | None = None,
     ) -> Element | None:
         changed_region = self.get_changed_region(tracked_changes=tracked_changes)
         if not changed_region:
@@ -547,7 +573,7 @@ class TextChange(Element):
 
     def get_deleted(
         self,
-        tracked_changes: Element | None = None,
+        tracked_changes: TrackedChanges | None = None,
         as_text: bool = False,
         no_header: bool = False,
         clean: bool = True,
