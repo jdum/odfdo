@@ -25,9 +25,10 @@ from .annotation import AnnotationMixin
 from .bookmark import BookmarkMixin
 from .element import register_element_class
 from .note import NoteMixin
+from .reference import ReferenceMixin
 
 
-class RubyBase(BookmarkMixin, AnnotationMixin, NoteMixin):
+class RubyBase(ReferenceMixin, BookmarkMixin, AnnotationMixin, NoteMixin):
     """Content the text that is to be annotated.
 
     It contains any paragraph element content, like text spans.

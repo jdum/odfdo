@@ -39,7 +39,13 @@ from .element_strip import strip_elements, strip_tags
 from .line_break import LineBreak
 from .link import Link
 from .note import Note
-from .reference import Reference, ReferenceMark, ReferenceMarkEnd, ReferenceMarkStart
+from .reference import (
+    Reference,
+    ReferenceMark,
+    ReferenceMarkEnd,
+    ReferenceMarkStart,
+    ReferenceMixin,
+)
 from .spacer import Spacer
 from .tab import Tab
 
@@ -189,7 +195,7 @@ def _by_regex_offset(method: Callable) -> Callable:
     return wrapper
 
 
-class ParaMixin(BookmarkMixin, AnnotationMixin):
+class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
     """Mixin for Paragraph methods."""
 
     def _expand_spaces(self, added_string: str) -> list[Element | str]:
@@ -817,7 +823,10 @@ class ParaMixin(BookmarkMixin, AnnotationMixin):
         if display is None and ref_format == "text":
             # get reference content
             body: Body | Element = self.document_body or self.root
-            mark = body.get_reference_mark(name=name)
+            if hasattr(body, "get_reference_mark"):
+                mark = body.get_reference_mark(name=name)
+            else:
+                mark = None
             if isinstance(mark, ReferenceMarkStart):
                 display = mark.referenced_text()
         if not display:

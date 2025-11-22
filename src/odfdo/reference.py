@@ -23,7 +23,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Union, cast
 
 from .element import Element, PropDef, register_element_class
 from .element_strip import strip_elements, strip_tags
@@ -31,6 +31,196 @@ from .elements_between import elements_between
 
 if TYPE_CHECKING:
     from .body import Body
+
+
+class ReferenceMixin(Element):
+    """Mixin class for classes containing References.
+
+    Used by the following classes: "text:a", "text:h", "text:meta", "text:meta-field",
+    "text:p", "text:ruby-base", "text:span". And with "office:text" for compatibility
+    with previous versions.
+    """
+
+    def get_reference_marks_single(self) -> list[ReferenceMark]:
+        """Return all the reference marks. Search only the tags
+        text:reference-mark.
+        Consider using : get_reference_marks()
+
+        Returns: list of ReferenceMark
+        """
+        return cast(
+            list[ReferenceMark],
+            self._filtered_elements(
+                "descendant::text:reference-mark",
+            ),
+        )
+
+    def get_reference_mark_single(
+        self,
+        position: int = 0,
+        name: str | None = None,
+    ) -> ReferenceMark | None:
+        """Return the reference mark that matches the criteria. Search only the
+        tags text:reference-mark.
+        Consider using : get_reference_mark()
+
+        Args:
+
+            position -- int
+
+            name -- str
+
+        Returns: ReferenceMark or None if not found
+        """
+        return cast(
+            Union[None, ReferenceMark],
+            self._filtered_element(
+                "descendant::text:reference-mark", position, text_name=name
+            ),
+        )
+
+    def get_reference_mark_starts(self) -> list[ReferenceMarkStart]:
+        """Return all the reference mark starts. Search only the tags
+        text:reference-mark-start.
+        Consider using : get_reference_marks()
+
+        Returns: list of ReferenceMarkStart
+        """
+        return cast(
+            list[ReferenceMarkStart],
+            self._filtered_elements(
+                "descendant::text:reference-mark-start",
+            ),
+        )
+
+    def get_reference_mark_start(
+        self,
+        position: int = 0,
+        name: str | None = None,
+    ) -> ReferenceMarkStart | None:
+        """Return the reference mark start that matches the criteria. Search
+        only the tags text:reference-mark-start.
+        Consider using : get_reference_mark()
+
+        Args:
+
+            position -- int
+
+            name -- str
+
+        Returns: ReferenceMarkStart or None if not found
+        """
+        return cast(
+            Union[None, ReferenceMarkStart],
+            self._filtered_element(
+                "descendant::text:reference-mark-start", position, text_name=name
+            ),
+        )
+
+    def get_reference_mark_ends(self) -> list[ReferenceMarkEnd]:
+        """Return all the reference mark ends. Search only the tags
+        text:reference-mark-end.
+        Consider using : get_reference_marks()
+
+        Returns: list of ReferenceMarkEnd
+        """
+        return cast(
+            list[ReferenceMarkEnd],
+            self._filtered_elements(
+                "descendant::text:reference-mark-end",
+            ),
+        )
+
+    def get_reference_mark_end(
+        self,
+        position: int = 0,
+        name: str | None = None,
+    ) -> ReferenceMarkEnd | None:
+        """Return the reference mark end that matches the criteria. Search only
+        the tags text:reference-mark-end.
+        Consider using : get_reference_marks()
+
+        Args:
+
+            position -- int
+
+            name -- str
+
+        Returns: ReferenceMarkEnd or None if not found
+        """
+        return cast(
+            Union[None, ReferenceMarkEnd],
+            self._filtered_element(
+                "descendant::text:reference-mark-end", position, text_name=name
+            ),
+        )
+
+    def get_reference_marks(self) -> list[ReferenceMark | ReferenceMarkStart]:
+        """Return all the reference marks, either single position reference
+        (text:reference-mark) or start of range reference (text:reference-mark-
+        start).
+
+        Returns: list of ReferenceMark or ReferenceMarkStart
+        """
+        return cast(
+            list[ReferenceMark | ReferenceMarkStart],
+            self._filtered_elements(
+                "descendant::text:reference-mark-start | descendant::text:reference-mark"
+            ),
+        )
+
+    def get_reference_mark(
+        self,
+        position: int = 0,
+        name: str | None = None,
+    ) -> ReferenceMark | ReferenceMarkStart | None:
+        """Return the reference mark that match the criteria. Either single
+        position reference mark (text:reference-mark) or start of range
+        reference (text:reference-mark-start).
+
+        Args:
+
+            position -- int
+
+            name -- str
+
+        Returns: ReferenceMark or ReferenceMarkStart or None if not found
+        """
+        if name:
+            request = (
+                f"descendant::text:reference-mark-start"
+                f'[@text:name="{name}"] '
+                f"| descendant::text:reference-mark"
+                f'[@text:name="{name}"]'
+            )
+            return self._filtered_element(
+                request,
+                position=0,
+            )  # type: ignore[return-value]
+        request = (
+            "descendant::text:reference-mark-start | descendant::text:reference-mark"
+        )
+        return cast(
+            Union[None, ReferenceMark, ReferenceMarkStart],
+            self._filtered_element(request, position),
+        )
+
+    def get_references(self, name: str | None = None) -> list[Reference]:
+        """Return all the references (text:reference-ref). If name is provided,
+        returns the references of that name.
+
+        Args:
+
+            name -- str or None
+
+        Returns: list of Reference
+        """
+        if name is None:
+            return self._filtered_elements(
+                "descendant::text:reference-ref",
+            )  # type: ignore[return-value]
+        request = f'descendant::text:reference-ref[@text:ref-name="{name}"]'
+        return cast(list[Reference], self._filtered_elements(request))
 
 
 class Reference(Element):
@@ -160,9 +350,10 @@ class Reference(Element):
             return None
         body: Body | Element = self.document_body or self.root
         name = self.name
-        reference = body.get_reference_mark(name=name)
-        if isinstance(reference, ReferenceMarkStart):
-            self.text = reference.referenced_text()
+        if hasattr(body, "get_reference_mark"):
+            reference = body.get_reference_mark(name=name)
+            if isinstance(reference, ReferenceMarkStart):
+                self.text = reference.referenced_text()
 
 
 Reference._define_attribut_property()
@@ -300,7 +491,10 @@ class ReferenceMarkStart(Element):
                 "Reference need some upper document part"
             )  # pragma: nocover
         body: Body | Element = self.document_body or self.parent
-        end = body.get_reference_mark_end(name=self.name)
+        if hasattr(body, "get_reference_mark_end"):
+            end = body.get_reference_mark_end(name=self.name)
+        else:
+            end = None
         if end is None:
             raise ValueError("No reference-end found")
         content_list = elements_between(
@@ -335,7 +529,10 @@ class ReferenceMarkStart(Element):
         if self.parent is None:
             raise ValueError("Can't delete the root element")  # pragma: nocover
         body: Body | Element = self.document_body or self.parent
-        ref_end = body.get_reference_mark_end(name=name)
+        if hasattr(body, "get_reference_mark_end"):
+            ref_end = body.get_reference_mark_end(name=name)
+        else:
+            ref_end = None
         if ref_end:  # pragma: nocover
             ref_end.delete()
         # act like normal delete
@@ -380,8 +577,14 @@ def remove_reference_mark(
 
     Nota : using the .delete() on the reference mark will delete inner content.
     """
-    start_ref = element.get_reference_mark(position=position, name=name)
-    end_ref = element.get_reference_mark_end(position=position, name=name)
+    if hasattr(element, "get_reference_mark"):
+        start_ref = element.get_reference_mark(position=position, name=name)
+    else:
+        start_ref = None
+    if hasattr(element, "get_reference_mark_end"):
+        end_ref = element.get_reference_mark_end(position=position, name=name)
+    else:
+        end_ref = None
     to_strip: list[ReferenceMark | ReferenceMarkStart | ReferenceMarkEnd] = []
     if start_ref:
         to_strip.append(start_ref)
