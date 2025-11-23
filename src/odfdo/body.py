@@ -28,6 +28,7 @@ from .bookmark import BookmarkMixin
 from .element import Element, PropDef, register_element_class
 from .mixin_named_range import NRMixin
 from .note import NoteMixin
+from .office_forms import OfficeFormsMixin
 from .reference import ReferenceMixin
 from .section import SectionMixin
 from .tracked_changes import TrackedChangesMixin
@@ -168,6 +169,7 @@ class Spreadsheet(AnnotationMixin, NRMixin, Body):
 class Text(
     NRMixin,
     TrackedChangesMixin,
+    OfficeFormsMixin,
     SectionMixin,
     ReferenceMixin,
     BookmarkMixin,

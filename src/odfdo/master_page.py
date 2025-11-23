@@ -24,12 +24,13 @@ from __future__ import annotations
 from typing import Any
 
 from .element import Element, PropDef, register_element_class
+from .office_forms import OfficeFormsMixin
 from .section import SectionMixin
 from .style_base import StyleBase
 from .tracked_changes import TrackedChangesMixin
 
 
-class StyleMasterPage(StyleBase):
+class StyleMasterPage(OfficeFormsMixin, StyleBase):
     """Container of headers and footers, "style:master-page".
 
     In text and spreadsheet documents, the "style:master-page" element contains

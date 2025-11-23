@@ -25,11 +25,12 @@ from __future__ import annotations
 from typing import Any
 
 from .element import Element, PropDef, register_element_class
+from .office_forms import OfficeFormsMixin
 from .shapes import registered_shapes
 from .smil import AnimPar, AnimTransFilter
 
 
-class DrawPage(Element):
+class DrawPage(OfficeFormsMixin, Element):
     """ODF draw page for presentations and drawings, "draw:page"."""
 
     _tag = "draw:page"

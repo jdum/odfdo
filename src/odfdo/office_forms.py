@@ -21,9 +21,30 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Union, cast
 
 from .element import Element, register_element_class
+
+
+class OfficeFormsMixin(Element):
+    """Mixin class for classes containing the OfficeForms container.
+
+    Used by the following classes: "draw:page", "office:text",
+    "presentation:notes", "style:master-page", "table:table".
+    """
+
+    def get_office_forms(self) -> OfficeForms | None:
+        """Return the OfficeForms if exists.
+
+        Returns: OfficeForms or None if not found
+        """
+        return cast(
+            Union[None, OfficeForms], self.get_element("descendant::office:forms")
+        )
+
+    @property
+    def office_forms(self) -> OfficeForms | None:
+        return self.get_office_forms()
 
 
 class OfficeForms(Element):

@@ -52,6 +52,7 @@ from .frame import Frame
 from .mixin_md import MDTable
 from .mixin_named_range import TableNamedExpressions
 from .named_range import NamedRange, table_name_check
+from .office_forms import OfficeFormsMixin
 from .row import Row
 from .row_group import RowGroup
 from .table_cache import _XP_COLUMN_IDX, _XP_ROW_IDX, TableCache
@@ -126,7 +127,7 @@ def _get_python_value(data: str | bytes | int | float | bool, encoding: str) -> 
     return data
 
 
-class Table(MDTable, Element):
+class Table(MDTable, OfficeFormsMixin, Element):
     """A table, in a spreadsheet or other document, "table:table"."""
 
     _tag = "table:table"
