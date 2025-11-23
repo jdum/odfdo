@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING
 from .annotation import AnnotationMixin
 from .bookmark import BookmarkMixin
 from .element import Element, PropDef, register_element_class
+from .form import FormMixin
 from .mixin_named_range import NRMixin
 from .note import NoteMixin
 from .office_forms import OfficeFormsMixin
@@ -168,6 +169,7 @@ class Spreadsheet(AnnotationMixin, NRMixin, Body):
 
 class Text(
     NRMixin,
+    FormMixin,
     TrackedChangesMixin,
     OfficeFormsMixin,
     SectionMixin,

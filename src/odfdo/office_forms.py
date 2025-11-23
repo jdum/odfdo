@@ -24,6 +24,7 @@ from __future__ import annotations
 from typing import Any, Union, cast
 
 from .element import Element, register_element_class
+from .form import FormMixin
 
 
 class OfficeFormsMixin(Element):
@@ -47,7 +48,7 @@ class OfficeFormsMixin(Element):
         return self.get_office_forms()
 
 
-class OfficeForms(Element):
+class OfficeForms(FormMixin):
     """Container for "form:form" or "xforms:model" elements, "office:forms"."""
 
     _tag = "office:forms"

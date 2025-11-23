@@ -48,6 +48,7 @@ from .element import (
     xpath_compile,
     xpath_return_elements,
 )
+from .form import FormMixin
 from .frame import Frame
 from .mixin_md import MDTable
 from .mixin_named_range import TableNamedExpressions
@@ -127,7 +128,7 @@ def _get_python_value(data: str | bytes | int | float | bool, encoding: str) -> 
     return data
 
 
-class Table(MDTable, OfficeFormsMixin, Element):
+class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     """A table, in a spreadsheet or other document, "table:table"."""
 
     _tag = "table:table"

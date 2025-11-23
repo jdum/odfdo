@@ -58,6 +58,7 @@ __all__ = [  # noqa: RUF022
     "EllipseShape",
     "FIRST_CHILD",
     "Form",
+    "FormMixin",
     "Frame",
     "Header",
     "HeaderRows",
@@ -198,7 +199,7 @@ from .document import Document
 from .draw_page import DrawPage
 from .element import FIRST_CHILD, LAST_CHILD, NEXT_SIBLING, PREV_SIBLING, Element, EText
 from .element_typed import ElementTyped
-from .form import Form
+from .form import Form, FormMixin
 from .frame import DrawTextBox, Frame, default_frame_position_style
 from .header import Header
 from .header_rows import HeaderRows

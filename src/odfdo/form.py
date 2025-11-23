@@ -21,12 +21,45 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 from .element import Element, PropDef, register_element_class
 
 
-class Form(Element):
+class FormMixin(Element):
+    """Mixin class for classes containing Form.
+
+    Used by the following classes: "form:form", "office:forms".
+    And also in "office:text", "table:table" for ease of use.
+    """
+
+    def get_forms(
+        self,
+        name: str | None = None,
+    ) -> list[Form]:
+        """Return all the Form that match the criteria.
+
+        Args:
+
+            name -- str
+
+        Returns: list of Form
+        """
+        return cast(
+            list[Form],
+            self._filtered_elements("descendant::form:form", form_name=name),
+        )
+
+    @property
+    def forms(self) -> list[Form]:
+        """Return all the Form elements..
+
+        Returns: list of Form
+        """
+        return cast(list[Form], self._filtered_elements("descendant::form:form"))
+
+
+class Form(FormMixin):
     """Specification a user-interface form and defines the contents and
     properties of the form, "form:form".
 

@@ -42,6 +42,7 @@ def make_xpath_query(
     text_name: str | None = None,
     change_id: str | None = None,
     office_name: str | None = None,
+    form_name: str | None = None,
     office_title: str | None = None,
     outline_level: str | int | None = None,
     level: str | int | None = None,
@@ -84,6 +85,8 @@ def make_xpath_query(
         attributes["text:change-id"] = change_id
     if office_name:
         attributes["office:name"] = office_name
+    if form_name:
+        attributes["form:name"] = form_name
     if office_title:
         attributes["office:title"] = office_title
     if outline_level:
