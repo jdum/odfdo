@@ -1,5 +1,26 @@
 # Odfdo Release Notes
 
+## [3.17.6] - 2025-11-23
+
+-   Refactor `Element`, moving some access methods to relevant mixin classes.
+-   Add new mixin classes `SectionMixin`, `NoteMixin`, `AnnotationMixin`, `BookmarkMixin`, `ReferenceMixin`, `TrackedChangesMixin` and some auxiliary classes to use the new mixins.
+-   Start working on the ODF standard form classes, adding new classes `OfficeForms`, `OfficeFormsMixin`, `Form`, `FormMixin`, `PresentationNotes`.
+
+### Changed
+
+-   Refactor `Element`.
+-   Refactor many classes to add inheritance from the new mixin classes.
+
+### Added
+
+-   Add tests for module `element.py`.
+-   Add classes `NoteBody`, `SectionMixin`.
+-   Add classses `NoteMixin`, `MetaField`, `RubyBase`, `TextMeta`.
+-   Add classes `AnnotationMixin`, `BookmarkMixin`, `ReferenceMixin`, `TrackedChangesMixin`.
+-   Add classses `StyleFooterFirst`, `StyleHeaderFirst`.
+-   Add classes `OfficeForms`, `OfficeFormsMixin`, `Form`, `FormMixin`, `PresentationNotes`.
+-   Add unit tests for the new classes.
+
 ## [3.17.5] - 2025-11-15
 
 -   Refactor `table.py` and add tests.
