@@ -50,7 +50,7 @@ class Form(Element):
 
     def __init__(
         self,
-        name: str = "Form",
+        name: str | None = "Form",
         command: str | None = None,
         datasource: str | None = None,
         apply_filter: bool | None = None,
@@ -96,6 +96,9 @@ class Form(Element):
                 self.control_implementation = control_implementation
             if target_frame is not None:
                 self.target_frame = target_frame
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} name={self.name}>"
 
 
 Form._define_attribut_property()
