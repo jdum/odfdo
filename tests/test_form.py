@@ -172,3 +172,28 @@ def test_form_set_form_element_target_frame(test_form):
 def test_form_set_no_name():
     form = Form(name=None)
     assert form.name is None
+
+
+def test_form_get_form_property_from_form(test_form):
+    forms = test_form.forms
+    assert forms == []
+
+
+def test_form_get_form_property_doc_body(document):
+    forms = document.body.forms
+    assert len(forms) == 1
+
+
+def test_form_get_form_property_doc_office_forms(document):
+    forms = document.body.office_forms.forms
+    assert len(forms) == 1
+
+
+def test_form_get_form_property_doc_office_forms_name_1(document):
+    forms = document.body.office_forms.get_forms(name="bad")
+    assert len(forms) == 0
+
+
+def test_form_get_form_property_doc_office_forms_name_2(document):
+    forms = document.body.office_forms.get_forms(name="Form")
+    assert len(forms) == 1
