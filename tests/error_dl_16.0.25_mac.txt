@@ -1,0 +1,153 @@
+/Users/jd/.deluminae/tmp/da_tmp/runprogram.command ; exit;
+Virtual environment activated automatically: /Users/jd/.venv
+(jd) jd@studio ~ % /Users/jd/.deluminae/tmp/da_tmp/runprogram.command ; exit;
+[7432] Failed to load Python shared library '/Applications/DeLuminae_Light/DL_common/tools/_internal/Python': dlopen: dlopen(/Applications/DeLuminae_Light/DL_common/tools/_internal/Python, 0x000A): tried: '/Applications/DeLuminae_Light/DL_common/tools/_internal/Python' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Applications/DeLuminae_Light/DL_common/tools/_internal/Python' (no such file), '/Applications/DeLuminae_Light/DL_common/tools/_internal/Python' (no such file)
+
+Saving session...
+...copying shared history...
+...saving history...truncating history files...
+...completed.
+
+
+
+
+=====================================================================================
+
+launching a python compiled program on mac, I got an error. The software cant read the files, but I see them, they exists. Maybe Filevault ? solution ? /Users/jd/.deluminae/tmp/da_tmp/runprogram.command ; exit;
+
+Virtual environment activated automatically: /Users/jd/.venv
+
+(jd) jd@studio ~ % /Users/jd/.deluminae/tmp/da_tmp/runprogram.command ; exit;
+
+[7432] Failed to load Python shared library '/Applications/DeLuminae_Light/DL_common/tools/_internal/Python': dlopen: dlopen(/Applications/DeLuminae_Light/DL_common/tools/_internal/Python, 0x000A): tried: '/Applications/DeLuminae_Light/DL_common/tools/_internal/Python' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Applications/DeLuminae_Light/DL_common/tools/_internal/Python' (no such file), '/Applications/DeLuminae_Light/DL_common/tools/_internal/Python' (no such file)
+
+
+
+Saving session...
+
+...copying shared history...
+
+...saving history...truncating history files...
+
+...completed.
+
+This error is unlikely to be related to FileVault, but it's a common issue when running Python applications that have been packaged or compiled on macOS.
+
+The error message: Failed to load Python shared library '/Applications/DeLuminae_Light/DL_common/tools/_internal/Python': dlopen: dlopen(/Applications/DeLuminae_Light/DL_common/tools/_internal/Python, 0x000A): tried: '/Applications/DeLuminae_Light/DL_common/tools/_internal/Python' (no such file)...
+
+Clearly indicates that the application's runtime linker (dlopen) cannot find the Python shared library it was compiled to look for at the specific path: /Applications/DeLuminae_Light/DL_common/tools/_internal/Python.
+
+Here are the most likely causes and solutions:
+
+🔍 Diagnosis & Solutions
+1. Code Signing and Hardening (The Most Likely Cause)
+When an application is bundled on macOS (especially with tools like PyInstaller, Nuitka, etc.), it needs to be properly signed and notarized to avoid security checks (like Gatekeeper) that can prevent it from accessing files within its own package.
+
+Cause: A recent change to the application's package structure or the way it was signed has broken the internal path references. macOS security features might be blocking the application from loading internal resources like the Python shared library.
+
+Solution:
+
+Re-download/Reinstall: If you are the end-user, try completely deleting the entire /Applications/DeLuminae_Light folder and reinstalling the software from a trusted source.
+
+Developer Action (Re-signing/Re-bundling): If you are the developer, you need to re-bundle and re-sign the application correctly. Tools like PyInstaller's onefile or onedir can sometimes require special flags (like --clean or ensuring the correct --distpath is used) or careful handling of the LC_RPATH to ensure the bundled executable looks for libraries relative to itself, not an absolute path like the one shown.
+
+2. Library Missing or Path Change
+The Python shared library might genuinely be missing from the expected location within the application bundle.
+
+Cause: The compilation/packaging process failed to include the necessary file named Python in the directory: /Applications/DeLuminae_Light/DL_common/tools/_internal/.
+
+Solution:
+
+Navigate to the directory /Applications/DeLuminae_Light/DL_common/tools/_internal/ and check if a file named Python exists there. If not, the application package is corrupted.
+
+You can verify the expected library path inside the compiled executable using the otool utility in your Terminal:
+
+Bash
+otool -L /Applications/DeLuminae_Light/DL_common/tools/_internal/runprogram.command # Or the main executable file
+This will show you exactly which libraries the executable is trying to link and where it's looking for them. The output will likely confirm the absolute path listed in your error.
+
+3. Gatekeeper Quarantining
+Sometimes, simply copying an application from a download can trigger Gatekeeper to put it in a "quarantined" state, which restricts its access to internal files.
+
+Solution: Try removing the quarantine attribute.
+
+Bash
+xattr -r -d com.apple.quarantine /Applications/DeLuminae_Light
+You may need to enter your admin password for this. Only do this if you trust the software.
+
+❌ Why it's not FileVault
+FileVault is a full-disk encryption system. If FileVault was the problem, the operating system wouldn't be able to access any files (including the main executable and the shell script) and you would get a general "file not found" or "permission denied" error, or the Mac wouldn't even boot.
+
+In your case, the OS successfully started the shell script, which then activated the virtual environment, and finally tried to run the compiled program. The program itself then failed because its internal linking logic couldn't find a specific internal component (_internal/Python). This is a linking/packaging error, not a disk access issue.
+
+I can search for common packaging issues with Python on macOS if you let me know which tool was used to compile the program (e.g., PyInstaller, Nuitka, cx_Freeze).
+
+===================================================================================
+
+That confirms the issue is almost certainly related to how PyInstaller handles dynamic linking on macOS, particularly with the Python shared library.The error you're seeing, Failed to load Python shared library... no such file, is the result of the executable attempting to load the Python interpreter from an incorrect or inaccessible location inside the bundled application.Here is a breakdown of the likely root causes and the steps you can take to fix this, starting with the most common PyInstaller solution for macOS.🛠️ PyInstaller Troubleshooting for macOSThe core problem is usually a combination of the build mode and security restrictions on the library search path (LC_RPATH) on newer macOS versions.1. Check Your Build Mode: --onedir vs. --onefileThe executable you're running, which is buried deep in a folder structure, suggests you might be using the default --onedir mode or running the executable from the wrong location in a --onefile build.ScenarioWhat to Check--onedir (The Default)Your final application is a folder in the dist/ directory (e.g., dist/DeLuminae_Light). The user must run the main executable inside this folder, or the main .app bundle if you created one. The error you see is common if files were moved out of this generated directory.--onefileYour final application is a single executable file in the dist/ directory. When you run it, it unpacks its contents, including the Python library, to a temporary location (/var/folders/.../T/PyInstaller/...). This mode tends to have fewer path-linking issues but can be slower to start.✅ Best Fix: If you are distributing a CLI tool, try using the --onefile mode.Bashpyinstaller --onefile your_script_name.py
+2. Ensure a Clean Build with Correct FlagsIt's crucial to use a clean Python environment and force PyInstaller to re-collect everything.Clean the Build: Always run pyinstaller with the --clean flag to remove old build files that might be referencing an incorrect path.Bashpyinstaller --clean your_script_name.py
+Try --windowed / --noconsole (If it's a GUI app): If your application has a GUI (like Tkinter, PyQt, etc.), using the --windowed (or --noconsole) flag on macOS tells PyInstaller to build a proper .app bundle structure, which often resolves linking issues.Bashpyinstaller --windowed your_script_name.py
+3. Verify the Python Interpreter Used in the BuildThe PyInstaller build process can sometimes be sensitive to how your Python interpreter was installed.Check the Build Environment: If you built the app using a Python interpreter installed via Homebrew or a system Python that does not have the Framework build option enabled, this error is likely.Recommendation: Use a Python installation from an official python.org installer or a tool like pyenv where you ensure the interpreter is built with the Framework option (though pyenv often handles this automatically). The use of a virtual environment (/Users/jd/.venv) is good, but the underlying Python installation is key.4. Post-Build File Verification (Advanced)If you are using the --onedir mode, you can manually inspect the compiled executable to see where it thinks the shared library is.Navigate to the directory containing the main executable (e.g., /Applications/DeLuminae_Light/DL_common/tools/_internal/).Run otool on the executable to see the linked libraries:Bashotool -L /Applications/DeLuminae_Light/DL_common/tools/_internal/Python
+(Replace the path with the actual executable name, which might not be Python.)The output will list the paths the executable uses for its dependencies. PyInstaller is supposed to set the relative paths (using @executable_path/) correctly, but if you see an absolute path, it confirms the linking is broken.💡 Quick Fix Summary (Try These First):Delete the build/ and dist/ folders.Run PyInstaller again, either with the --onefile flag or the --windowed flag.Bashpyinstaller --clean --onefile your_script.py
+# OR
+pyinstaller --clean --windowed your_script.py
+Do any of the original PyInstaller commands you ran contain the --onefile or --onedir flags?
+
+==========================================================================================
+
+🛑 What You Are Seeing
+When you run otool -L on a dynamic library (a .dylib or a library named just Python), the first path listed is often the "install name" or "ID" of the library itself. This is the path where other programs are expected to find it.
+
+Since the install name is an absolute path (/Applications/DeLuminae_Light/...), any other executable that links to it must find it at that exact absolute location.
+
+🔍 The Real Problem Confirmed
+The issue is confirmed to be a bad absolute path baked into the main program's executable.
+
+When you package with PyInstaller on macOS, the main bootloader executable (the one that starts the app) needs to be told where to look for this library. PyInstaller should set this path to a relative path using @loader_path or @rpath so it works anywhere you move the .app bundle.
+
+Since your error message shows the app looking for: /Applications/DeLuminae_Light/DL_common/tools/_internal/Python
+
+...it means the main executable has this absolute path hardcoded. This path is only correct if the entire bundled application package is always installed at /Applications/DeLuminae_Light. If you move the application, or if the bootloader loads it from a temporary location (which it often does), the link breaks.
+
+🔧 Solution: Re-bundling with Relative Paths
+The most reliable way to fix this is to rebuild your application, ensuring PyInstaller correctly sets the relative paths (rpaths).
+
+1. Use the Standard macOS App Bundle Structure (--windowed)
+This is the most effective solution, as PyInstaller is specifically designed to handle dynamic linking within the standard .app bundle structure.
+
+Delete the old build and dist directories to ensure a clean slate.
+
+Run the build command with the --windowed flag (even if your app isn't strictly a GUI application, this forces the .app structure):
+
+Bash
+
+pyinstaller --clean --onedir --windowed your_script.py
+PyInstaller will generate YourAppName.app in the dist folder. When a user runs this .app bundle, the macOS environment and PyInstaller's bootloader work together to correctly resolve the paths using the relative @rpath inside the bundle.
+
+2. Manual Patching with install_name_tool (Advanced)
+If you absolutely must keep the current build structure, you can try to patch the main bootloader executable to use an @rpath that points to the library.
+
+Identify the Executable: First, you need the path to the main executable, which is NOT the Python file, and NOT the .command file. It's likely named after your original script (e.g., runprogram or YourScript) and located near the .command file.
+
+Patch the Executable:
+
+Bash
+
+# 1. Define the path to the executable that FAILED to load 'Python'
+MAIN_EXECUTABLE_PATH="/Applications/DeLuminae_Light/DL_common/tools/_internal/runprogram" # ASSUME this is the executable
+
+# 2. Add an RPATH to tell the executable to look in the current directory for the 'Python' file
+install_name_tool -add_rpath "@loader_path" $MAIN_EXECUTABLE_PATH
+Explanation:
+
+@loader_path is a special macOS variable that resolves to the directory containing the executable that is currently running.
+
+By adding @loader_path as an RPATH, you are telling the executable: "When looking for the Python library, check the directory I am in first." Since the Python library is located in the same directory as the executable in your path, this should resolve the issue.
+
+3. Verify the New Path
+After re-bundling or patching, run otool -L on the main executable again. The output for the Python library should now show a relative path, like:
+
+@rpath/Python
+This confirms the executable will now look for the library relative to its location, fixing the portability issue.
+
+==========================================================================================

@@ -85,6 +85,7 @@ __all__ = [  # noqa: RUF022
     "NoteBody",
     "NoteMixin",
     "OfficeAutomaticStyles",
+    "OfficeForms",
     "OfficeMasterStyles",
     "PREV_SIBLING",
     "PageBreak",
@@ -223,6 +224,7 @@ from .mixin_named_range import NRMixin, TableNamedExpressions
 from .mixin_paragraph import ParaMixin
 from .named_range import NamedRange
 from .note import Note, NoteBody, NoteMixin
+from .office_forms import OfficeForms
 from .page_layout import StylePageLayout
 from .paragraph import PageBreak, Paragraph, Span
 from .reference import (
