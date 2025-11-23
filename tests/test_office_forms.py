@@ -20,8 +20,19 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+
+import pytest
+
 from odfdo import Element
+from odfdo.document import Document
 from odfdo.office_forms import OfficeForms
+
+
+@pytest.fixture
+def document(samples) -> Iterable[Document]:
+    document = Document(samples("forms.odt"))
+    yield document
 
 
 def test_office_forms_class():
@@ -64,3 +75,13 @@ def test_office_forms_automatic_focus_true():
     oform = OfficeForms()
     oform.automatic_focus = True
     assert oform.serialize() == '<office:forms form:automatic-focus="true"/>'
+
+
+def test_office_forms_get(document):
+    form = document.body.get_office_forms()
+    assert isinstance(form, OfficeForms)
+
+
+def test_office_forms_property(document):
+    form = document.body.office_forms
+    assert isinstance(form, OfficeForms)
