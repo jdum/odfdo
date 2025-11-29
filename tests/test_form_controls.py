@@ -210,6 +210,7 @@ def test_form_hidden_form_id_2():
 def form_grid() -> Iterable[FormGrid]:
     yield FormGrid(
         name="some name",
+        title="some title",
         control_implementation="some implem",
         disabled=False,
         printable=True,
@@ -241,6 +242,10 @@ def test_form_grid_repr():
 
 def test_form_grid_name(form_grid):
     assert form_grid.name == "some name"
+
+
+def test_form_grid_title(form_grid):
+    assert form_grid.title == "some title"
 
 
 def test_form_grid_control_implementation(form_grid):
@@ -360,6 +365,7 @@ def form_text() -> Iterable[FormText]:
         printable=True,
         tab_index=4,
         tab_stop=False,
+        max_length=12,
         xml_id="control1",
     )
 
@@ -490,6 +496,46 @@ def test_form_text_linked_cell(form_text):
 
 def test_form_text_readonly(form_text):
     assert form_text.readonly is False
+
+
+def test_form_text_max_length_1(form_text):
+    assert form_text.max_length == 12
+
+
+def test_form_text_max_length_2():
+    form = FormText(
+        name="some name",
+        value="some value",
+        control_implementation="some implem",
+        xml_id="control1",
+        form_id="control1",
+    )
+    assert form.max_length is None
+
+
+def test_form_text_max_length_3():
+    form = FormText(
+        name="some name",
+        value="some value",
+        control_implementation="some implem",
+        xml_id="control1",
+        form_id="control1",
+        max_length=15,
+    )
+    form.max_length = None
+    assert form.max_length is None
+
+
+def test_form_text_max_length_4():
+    form = FormText(
+        name="some name",
+        value="some value",
+        control_implementation="some implem",
+        xml_id="control1",
+        form_id="control1",
+    )
+    form.max_length = -4
+    assert form.max_length == 0
 
 
 #############################################################@
