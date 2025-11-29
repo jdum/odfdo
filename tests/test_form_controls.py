@@ -26,14 +26,16 @@ import pytest
 
 from odfdo import Element
 from odfdo.document import Document
-from odfdo.form import Form
-from odfdo.form_controls import FormHidden
+from odfdo.form_controls import FormGrid, FormHidden
 
 
 @pytest.fixture
 def document(samples) -> Iterable[Document]:
     document = Document(samples("forms.odt"))
     yield document
+
+
+#############################################################@
 
 
 @pytest.fixture
@@ -99,6 +101,96 @@ def test_form_hidden_xforms_bind():
 
 def test_form_hidden_form_id_2():
     form = FormHidden(
+        name="some name",
+        value="some value",
+        control_implementation="some implem",
+        xml_id="control1",
+        form_id="control1",
+    )
+    assert form.form_id == "control1"
+
+
+#############################################################@
+
+
+@pytest.fixture
+def form_grid() -> Iterable[FormGrid]:
+    yield FormGrid(
+        name="some name",
+        control_implementation="some implem",
+        disabled=False,
+        printable=True,
+        tab_index=4,
+        tab_stop=False,
+        xml_id="control1",
+    )
+
+
+def test_form_grid_class():
+    form = FormGrid()
+    assert isinstance(form, FormGrid)
+
+
+def test_form_grid_minimal_tag():
+    form = Element.from_tag("<form:grid/>")
+    assert isinstance(form, FormGrid)
+
+
+def test_form_grid_serialize():
+    form = FormGrid()
+    assert form.serialize() == "<form:grid/>"
+
+
+def test_form_grid_repr():
+    form = FormGrid()
+    assert repr(form) == "<FormGrid name=None xml_id=None>"
+
+
+def test_form_grid_name(form_grid):
+    assert form_grid.name == "some name"
+
+
+def test_form_grid_control_implementation(form_grid):
+    assert form_grid.control_implementation == "some implem"
+
+
+def test_form_grid_disabled(form_grid):
+    assert form_grid.disabled is False
+
+
+def test_form_grid_printable(form_grid):
+    assert form_grid.printable is True
+
+
+def test_form_grid_tab_index(form_grid):
+    assert form_grid.tab_index == "4"
+
+
+def test_form_grid_tab_stop(form_grid):
+    assert form_grid.tab_stop is False
+
+
+def test_form_grid_xml_id(form_grid):
+    assert form_grid.xml_id == "control1"
+
+
+def test_form_grid_form_id(form_grid):
+    assert form_grid.form_id == "control1"
+
+
+def test_form_grid_xforms_bind():
+    form = FormGrid(
+        name="some name",
+        value="some value",
+        control_implementation="some implem",
+        xml_id="control1",
+        xforms_bind="bind id",
+    )
+    assert form.xforms_bind == "bind id"
+
+
+def test_form_grid_form_id_2():
+    form = FormGrid(
         name="some name",
         value="some value",
         control_implementation="some implem",

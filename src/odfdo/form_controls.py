@@ -94,4 +94,96 @@ class FormHidden(Element):
 
 FormHidden._define_attribut_property()
 
+
+class FormGrid(Element):
+    """A control  a control that displays table data, "form:grid".
+
+    Each column in the grid is specified by a "form:column" element.
+    """
+
+    _tag = "form:grid"
+    _properties = (
+        PropDef("name", "form:name"),
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("title", "form:title"),
+        PropDef("disabled", "form:disabled"),
+        PropDef("printable", "form:printable"),
+        PropDef("tab_index", "form:tab-index"),
+        PropDef("tab_stop", "form:tab-stop"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        control_implementation: str | None = None,
+        title: str | None = None,
+        disabled: bool | None = None,
+        printable: bool | None = None,
+        tab_index: int | None = None,
+        tab_stop: bool | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormGrid, "form:grid".
+
+        The "form:grid" element is usable within the following element:
+        "form:form".
+
+         Args:
+
+             name -- str
+
+             control_implementation -- str
+
+             title -- str
+
+             disabled -- boolean
+
+             printable -- boolean
+
+             tab_index -- int
+
+             tab_stop -- boolean
+
+             xml_id -- str
+
+             xforms_bind -- str
+
+             form_id -- str
+        """
+        super().__init__(**kwargs)
+        if self._do_init:
+            if name is not None:
+                self.name = name
+            if control_implementation is not None:
+                self.control_implementation = control_implementation
+            if disabled is not None:
+                self.disabled = disabled
+            if printable is not None:
+                self.printable = printable
+            if tab_index is not None:
+                self.tab_index = tab_index
+            if tab_stop is not None:
+                self.tab_stop = tab_stop
+            if xml_id is not None:
+                self.xml_id = xml_id
+            if xforms_bind is not None:
+                self.xforms_bind = xforms_bind
+            if form_id is None:
+                self.form_id = self.xml_id
+            else:
+                self.form_id = form_id
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} name={self.name} xml_id={self.xml_id}>"
+
+
+FormGrid._define_attribut_property()
+
 register_element_class(FormHidden)
+register_element_class(FormGrid)
