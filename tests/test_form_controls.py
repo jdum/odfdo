@@ -26,7 +26,7 @@ import pytest
 
 from odfdo import Element
 from odfdo.document import Document
-from odfdo.form_controls import FormGrid, FormHidden
+from odfdo.form_controls import FormColumn, FormGrid, FormHidden
 
 
 @pytest.fixture
@@ -198,3 +198,52 @@ def test_form_grid_form_id_2():
         form_id="control1",
     )
     assert form.form_id == "control1"
+
+
+#############################################################@
+
+
+@pytest.fixture
+def form_column() -> Iterable[FormColumn]:
+    yield FormColumn(
+        name="some name",
+        control_implementation="some implem",
+        label="some label",
+        text_style_name="style name",
+    )
+
+
+def test_form_column_class():
+    form = FormColumn()
+    assert isinstance(form, FormColumn)
+
+
+def test_form_column_minimal_tag():
+    form = Element.from_tag("<form:column/>")
+    assert isinstance(form, FormColumn)
+
+
+def test_form_column_serialize():
+    form = FormColumn()
+    assert form.serialize() == "<form:column/>"
+
+
+def test_form_column_repr():
+    form = FormColumn()
+    assert repr(form) == "<FormColumn name=None>"
+
+
+def test_form_column_name(form_column):
+    assert form_column.name == "some name"
+
+
+def test_form_column_control_implementation(form_column):
+    assert form_column.control_implementation == "some implem"
+
+
+def test_form_column_label(form_column):
+    assert form_column.label == "some label"
+
+
+def test_form_column_text_style_name(form_column):
+    assert form_column.text_style_name == "style name"

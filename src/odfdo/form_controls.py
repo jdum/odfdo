@@ -185,5 +185,58 @@ class FormGrid(Element):
 
 FormGrid._define_attribut_property()
 
-register_element_class(FormHidden)
+
+class FormColumn(Element):
+    """A column in a form grid control, "form:column"."""
+
+    _tag = "form:column"
+    _properties = (
+        PropDef("name", "form:name"),
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("label", "form:label"),
+        PropDef("text_style_name", "xforms:text-style-name"),
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        control_implementation: str | None = None,
+        label: str | None = None,
+        text_style_name: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormColumn, "form:column".
+
+        The "form:column" element is usable within the following element:
+        "form:grid".
+
+         Args:
+
+             name -- str
+
+             control_implementation -- str
+
+             label -- str
+
+             text_style_name -- str
+        """
+        super().__init__(**kwargs)
+        if self._do_init:
+            if name is not None:
+                self.name = name
+            if control_implementation is not None:
+                self.control_implementation = control_implementation
+            if label is not None:
+                self.label = label
+            if text_style_name is not None:
+                self.text_style_name = text_style_name
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} name={self.name}>"
+
+
+FormColumn._define_attribut_property()
+
+register_element_class(FormColumn)
 register_element_class(FormGrid)
+register_element_class(FormHidden)
