@@ -731,6 +731,20 @@ class Element(MDBase):
         except ValueError:
             return None
 
+    def get_attribute_number(self, name: str) -> int | Decimal | None:
+        """Return the attribute as type Decimal or int, or None."""
+        element = self.__element
+        lxml_tag = _get_lxml_tag_or_name(name)
+        value = element.get(lxml_tag)
+        if value is None:
+            return None
+        value = Decimal(value)
+        # Return 3 instead of 3.0 if possible
+        with contextlib.suppress(ValueError):
+            if int(value) == value:
+                return int(value)
+        return value
+
     def get_attribute_string(self, name: str) -> str | None:
         """Return either the attribute as type str, or None."""
         element = self.__element
@@ -785,6 +799,30 @@ class Element(MDBase):
                 del element.attrib[lxml_tag]
             return
         element.set(lxml_tag, value)
+
+    def _get_attribute_int_default(self, name: str, default: int) -> int:
+        """Return int attribute, with default value."""
+        element = self.__element
+        lxml_tag = _get_lxml_tag_or_name(name)
+        value = element.get(lxml_tag)
+        if value is None:
+            return default
+        try:
+            return int(value)
+        except ValueError:
+            return default
+
+    def _set_attribute_int_default(
+        self, name: str, value: int | None, default: int
+    ) -> None:
+        """Set int attribute, with default value."""
+        element = self.__element
+        lxml_tag = _get_lxml_tag_or_name(name)
+        if value is None or value == default:
+            with contextlib.suppress(KeyError):
+                del element.attrib[lxml_tag]
+            return
+        element.set(lxml_tag, str(value))
 
     def set_attribute(
         self, name: str, value: bool | str | tuple[int, int, int] | None
