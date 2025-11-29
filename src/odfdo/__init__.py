@@ -59,6 +59,7 @@ __all__ = [  # noqa: RUF022
     "FIRST_CHILD",
     "Form",
     "FormColumn",
+    "FormFile",
     "FormGenericControl",
     "FormGrid",
     "FormHidden",
@@ -209,6 +210,7 @@ from .element_typed import ElementTyped
 from .form import Form, FormMixin
 from .form_controls import (
     FormColumn,
+    FormFile,
     FormGenericControl,
     FormGrid,
     FormHidden,

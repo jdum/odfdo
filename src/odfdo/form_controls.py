@@ -29,6 +29,58 @@ from typing import Any
 from .element import Element, PropDef, register_element_class
 
 
+class FormColumn(Element):
+    """A column in a form grid control, "form:column"."""
+
+    _tag = "form:column"
+    _properties: tuple[PropDef, ...] = (
+        PropDef("name", "form:name"),
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("label", "form:label"),
+        PropDef("text_style_name", "xforms:text-style-name"),
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        control_implementation: str | None = None,
+        label: str | None = None,
+        text_style_name: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormColumn, "form:column".
+
+        The "form:column" element is usable within the following element:
+        "form:grid".
+
+         Args:
+
+             name -- str
+
+             control_implementation -- str
+
+             label -- str
+
+             text_style_name -- str
+        """
+        super().__init__(**kwargs)
+        if self._do_init:
+            if name is not None:
+                self.name = name
+            if control_implementation is not None:
+                self.control_implementation = control_implementation
+            if label is not None:
+                self.label = label
+            if text_style_name is not None:
+                self.text_style_name = text_style_name
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} name={self.name}>"
+
+
+FormColumn._define_attribut_property()
+
+
 class FormGenericControl(Element):
     """An implementation-defined placeholder for a generic control, "form:generic-control".
 
@@ -408,7 +460,7 @@ class FormTextarea(FormText):
         PropDef("max_length", "form:max-length"),
         PropDef("xml_id", "xml:id"),
         PropDef("xforms_bind", "xforms:bind"),
-        PropDef("form_id", "form:id"),  # deprecated
+        PropDef("form_id", "form:id"),  # deprecated#
     )
 
     def __init__(
@@ -627,58 +679,127 @@ class FormPassword(FormGrid):
 FormPassword._define_attribut_property()
 
 
-class FormColumn(Element):
-    """A column in a form grid control, "form:column"."""
+class FormFile(FormGrid):
+    """A control for or selecting a file, "form:file"."""
 
-    _tag = "form:column"
+    _tag = "form:file"
     _properties: tuple[PropDef, ...] = (
         PropDef("name", "form:name"),
+        PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
-        PropDef("label", "form:label"),
-        PropDef("text_style_name", "xforms:text-style-name"),
+        PropDef("title", "form:title"),
+        PropDef("disabled", "form:disabled"),
+        PropDef("printable", "form:printable"),
+        PropDef("tab_index", "form:tab-index"),
+        PropDef("tab_stop", "form:tab-stop"),
+        PropDef("readonly", "form:readonly"),
+        PropDef("current_value", "form:current-value"),
+        PropDef("linked_cell", "form:linked-cell"),
+        PropDef("max_length", "form:max-length"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("form_id", "form:id"),  # deprecated
     )
 
     def __init__(
         self,
         name: str | None = None,
+        value: str | None = None,
         control_implementation: str | None = None,
-        label: str | None = None,
-        text_style_name: str | None = None,
+        title: str | None = None,
+        disabled: bool | None = None,
+        printable: bool | None = None,
+        tab_index: int | None = None,
+        tab_stop: bool | None = None,
+        readonly: bool | None = None,
+        current_value: str | None = None,
+        linked_cell: str | None = None,
+        max_length: int | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a FormColumn, "form:column".
+        """Create a FormFile, "form:file".
 
-        The "form:column" element is usable within the following element:
-        "form:grid".
+        The "form:file" element is usable within the following element:
+        "form:form".
 
          Args:
 
              name -- str
 
+             value -- str
+
              control_implementation -- str
 
-             label -- str
+             title -- str
 
-             text_style_name -- str
+             disabled -- boolean
+
+             printable -- boolean
+
+             tab_index -- int
+
+             tab_stop -- boolean
+
+             readonly -- boolean
+
+             current_value -- str
+
+             linked_cell -- str
+
+             max_length -- int
+
+             xml_id -- str
+
+             xforms_bind -- str
+
+             form_id -- str
         """
-        super().__init__(**kwargs)
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            title=title,
+            disabled=disabled,
+            printable=printable,
+            tab_index=tab_index,
+            tab_stop=tab_stop,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
         if self._do_init:
-            if name is not None:
-                self.name = name
-            if control_implementation is not None:
-                self.control_implementation = control_implementation
-            if label is not None:
-                self.label = label
-            if text_style_name is not None:
-                self.text_style_name = text_style_name
+            if value is not None:
+                self.value = value
+            if readonly is not None:
+                self.readonly = readonly
+            if current_value is not None:
+                self.current_value = current_value
+            if linked_cell is not None:
+                self.linked_cell = linked_cell
 
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} name={self.name}>"
+    def __str__(self) -> str:
+        if self.current_value is not None:
+            return self.current_value or ""
+        return self.value or ""
+
+    def as_dict(self) -> dict[str, str | None]:
+        return {
+            "tag": self.tag,
+            "name": self.name,
+            "xml_id": self.xml_id,
+            "value": self.value,
+            "current_value": self.current_value,
+            "str": str(self),
+        }
 
 
-FormColumn._define_attribut_property()
+FormFile._define_attribut_property()
 
 register_element_class(FormColumn)
+register_element_class(FormFile)
 register_element_class(FormGenericControl)
 register_element_class(FormGrid)
 register_element_class(FormHidden)
