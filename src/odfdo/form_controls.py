@@ -92,7 +92,7 @@ class FormGenericControl(Element):
 FormGenericControl._define_attribut_property()
 
 
-class FormHidden(Element):
+class FormHidden(FormGenericControl):
     """A control that does not have a visual representation, "form:hidden"."""
 
     _tag = "form:hidden"
@@ -134,31 +134,22 @@ class FormHidden(Element):
 
              form_id -- str
         """
-        super().__init__(**kwargs)
-        if self._do_init:
-            if name is not None:
-                self.name = name
-            if value is not None:
-                self.value = value
-            if control_implementation is not None:
-                self.control_implementation = control_implementation
-            if xml_id is not None:
-                self.xml_id = xml_id
-            if xforms_bind is not None:
-                self.xforms_bind = xforms_bind
-            if form_id is None:
-                self.form_id = self.xml_id
-            else:
-                self.form_id = form_id
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} name={self.name} xml_id={self.xml_id}>"
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+        if self._do_init and value is not None:
+            self.value = value
 
 
 FormHidden._define_attribut_property()
 
 
-class FormGrid(Element):
+class FormGrid(FormGenericControl):
     """A control  a control that displays table data, "form:grid".
 
     Each column in the grid is specified by a "form:column" element.
@@ -219,12 +210,15 @@ class FormGrid(Element):
 
              form_id -- str
         """
-        super().__init__(**kwargs)
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
         if self._do_init:
-            if name is not None:
-                self.name = name
-            if control_implementation is not None:
-                self.control_implementation = control_implementation
             if disabled is not None:
                 self.disabled = disabled
             if printable is not None:
@@ -233,17 +227,6 @@ class FormGrid(Element):
                 self.tab_index = tab_index
             if tab_stop is not None:
                 self.tab_stop = tab_stop
-            if xml_id is not None:
-                self.xml_id = xml_id
-            if xforms_bind is not None:
-                self.xforms_bind = xforms_bind
-            if form_id is None:
-                self.form_id = self.xml_id
-            else:
-                self.form_id = form_id
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} name={self.name} xml_id={self.xml_id}>"
 
 
 FormGrid._define_attribut_property()
