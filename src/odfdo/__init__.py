@@ -63,6 +63,8 @@ __all__ = [  # noqa: RUF022
     "FormGrid",
     "FormHidden",
     "FormMixin",
+    "FormText",
+    "FormTextarea",
     "Frame",
     "Header",
     "HeaderRows",
@@ -179,7 +181,6 @@ __all__ = [  # noqa: RUF022
     "make_table_cell_border_string",
     "remove_tree",
     "rgb2hex",
-    "FormText",
 ]
 
 
@@ -211,6 +212,7 @@ from .form_controls import (
     FormGrid,
     FormHidden,
     FormText,
+    FormTextarea,
 )
 from .frame import DrawTextBox, Frame, default_frame_position_style
 from .header import Header

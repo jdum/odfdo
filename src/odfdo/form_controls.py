@@ -359,6 +359,132 @@ class FormText(FormGrid):
 FormText._define_attribut_property()
 
 
+class FormTextarea(FormText):
+    """A control for displaying and inputting text on multiple lines,
+    "form:textarea".
+
+    The "form:textarea" element may be used with plain-text values
+    (specified by the form:current-value attribute) as well as with formatted
+    text (specified as paragraph content). If both a form:current-value
+    attribute and one or more "text:p" elements are present, it is
+    implementation-dependent which text is used.
+
+    The odfdo implementation returns str(self), fixme
+    """
+
+    _tag = "form:textarea"
+    _properties: tuple[PropDef, ...] = (
+        PropDef("name", "form:name"),
+        PropDef("value", "form:value"),
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("title", "form:title"),
+        PropDef("disabled", "form:disabled"),
+        PropDef("printable", "form:printable"),
+        PropDef("tab_index", "form:tab-index"),
+        PropDef("tab_stop", "form:tab-stop"),
+        PropDef("readonly", "form:readonly"),
+        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
+        PropDef("current_value", "form:current-value"),
+        PropDef("data_field", "form:data-field"),
+        PropDef("linked_cell", "form:linked-cell"),
+        PropDef("max_length", "form:max-length"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        value: str | None = None,
+        control_implementation: str | None = None,
+        title: str | None = None,
+        disabled: bool | None = None,
+        printable: bool | None = None,
+        tab_index: int | None = None,
+        tab_stop: bool | None = None,
+        readonly: bool | None = None,
+        convert_empty_to_null: bool | None = None,
+        current_value: str | None = None,
+        data_field: str | None = None,
+        linked_cell: str | None = None,
+        max_length: int | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormTextarea, "form:textarea".
+
+        The "form:textarea" element is usable within the following elements:
+        "form:column" and "form:form".
+
+         Args:
+
+             name -- str
+
+             value -- str
+
+             control_implementation -- str
+
+             title -- str
+
+             disabled -- boolean
+
+             printable -- boolean
+
+             tab_index -- int
+
+             tab_stop -- boolean
+
+             readonly -- boolean
+
+             convert_empty_to_null -- boolean
+
+             current_value -- str
+
+             data_field -- str
+
+             linked_cell -- str
+
+             max_length -- int
+
+             xml_id -- str
+
+             xforms_bind -- str
+
+             form_id -- str
+        """
+        super().__init__(
+            name=name,
+            value=value,
+            control_implementation=control_implementation,
+            title=title,
+            disabled=disabled,
+            printable=printable,
+            tab_index=tab_index,
+            tab_stop=tab_stop,
+            readonly=readonly,
+            convert_empty_to_null=convert_empty_to_null,
+            current_value=current_value,
+            data_field=data_field,
+            linked_cell=linked_cell,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+
+    @property
+    def content(self) -> str | None:
+        if self.current_value is not None:
+            return self.current_value
+        return self.value
+
+
+FormTextarea._define_attribut_property()
+
+
 class FormColumn(Element):
     """A column in a form grid control, "form:column"."""
 
@@ -415,3 +541,4 @@ register_element_class(FormGenericControl)
 register_element_class(FormGrid)
 register_element_class(FormHidden)
 register_element_class(FormText)
+register_element_class(FormTextarea)
