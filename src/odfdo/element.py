@@ -824,6 +824,23 @@ class Element(MDBase):
             return
         element.set(lxml_tag, str(value))
 
+    def _set_attribute_number_default(
+        self,
+        name: str,
+        value: Decimal | int | float | None,
+        default: Decimal | int | float | None,
+    ) -> None:
+        """Set number attribute (decimal, int or float) attribute, with
+        default value.
+        """
+        element = self.__element
+        lxml_tag = _get_lxml_tag_or_name(name)
+        if value is None or value == default:
+            with contextlib.suppress(KeyError):
+                del element.attrib[lxml_tag]
+            return
+        element.set(lxml_tag, str(value))
+
     def set_attribute(
         self, name: str, value: bool | str | tuple[int, int, int] | None
     ) -> None:
