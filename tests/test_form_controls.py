@@ -150,12 +150,20 @@ def test_form_hidden_name(form_hidden):
     assert form_hidden.name == "some name"
 
 
-def test_form_hidden_value(form_hidden):
-    assert form_hidden.value == "some value"
+def test_form_hidden_str(form_hidden):
+    assert str(form_hidden) == ""
 
 
-def test_form_hidden_content(form_hidden):
-    assert form_hidden.content == "some value"
+def test_form_hidden_as_dict(form_hidden):
+    expected = {
+        "tag": "form:hidden",
+        "name": "some name",
+        "xml_id": "control1",
+        "value": "some value",
+        "current_value": None,
+        "str": "",
+    }
+    assert form_hidden.as_dict() == expected
 
 
 def test_form_hidden_control_implementation(form_hidden):
@@ -435,8 +443,16 @@ def test_form_text_form_current_value(form_text):
     assert form_text.current_value == "final"
 
 
-def test_form_text_form_content(form_text):
-    assert form_text.content == "final"
+def test_form_text_form_as_dict(form_text):
+    expected = {
+        "tag": "form:text",
+        "name": "some name",
+        "xml_id": "control1",
+        "value": "initial",
+        "current_value": "final",
+        "str": "final",
+    }
+    assert form_text.as_dict() == expected
 
 
 def test_form_text_form_current_value_2(form_text):
@@ -444,9 +460,17 @@ def test_form_text_form_current_value_2(form_text):
     assert form_text.current_value is None
 
 
-def test_form_text_form_content_2(form_text):
+def test_form_text_form_as_dict2(form_text):
     form_text.current_value = None
-    assert form_text.content == "initial"
+    expected = {
+        "tag": "form:text",
+        "name": "some name",
+        "xml_id": "control1",
+        "value": "initial",
+        "current_value": None,
+        "str": "initial",
+    }
+    assert form_text.as_dict() == expected
 
 
 def test_form_text_convert_empty_to_null(form_text):
@@ -593,18 +617,22 @@ def test_form_textarea_form_current_value(form_textarea):
     assert form_textarea.current_value == "final"
 
 
-def test_form_textarea_form_content(form_textarea):
-    assert form_textarea.content == "final"
+def test_form_text_area_form_as_dict(form_textarea):
+    form_textarea.current_value = None
+    expected = {
+        "tag": "form:textarea",
+        "name": "some name",
+        "xml_id": "control1",
+        "value": "initial",
+        "current_value": None,
+        "str": "",
+    }
+    assert form_textarea.as_dict() == expected
 
 
 def test_form_textarea_form_current_value_2(form_textarea):
     form_textarea.current_value = None
     assert form_textarea.current_value is None
-
-
-def test_form_textarea_form_content_2(form_textarea):
-    form_textarea.current_value = None
-    assert form_textarea.content == "initial"
 
 
 def test_form_textarea_convert_empty_to_null(form_textarea):
@@ -631,8 +659,17 @@ def test_form_textarea_current_value2(form_textarea2):
     assert form_textarea2.current_value == "final2"
 
 
-def test_form_textarea_content2(form_textarea2):
-    assert form_textarea2.content == "final2"
+def test_form_text_area_form_as_dict2(form_textarea):
+    form_textarea.current_value = None
+    expected = {
+        "tag": "form:textarea",
+        "name": "some name",
+        "xml_id": "control1",
+        "value": "initial",
+        "current_value": None,
+        "str": "",
+    }
+    assert form_textarea.as_dict() == expected
 
 
 def test_form_textarea_str(form_textarea):
@@ -641,3 +678,15 @@ def test_form_textarea_str(form_textarea):
 
 def test_form_textarea_str2(form_textarea2):
     assert str(form_textarea2) == "First paragraph\nSecond paragraph\n"
+
+
+def test_form_text_area_form_as_dict3(form_textarea2):
+    expected = {
+        "tag": "form:textarea",
+        "name": "name2",
+        "xml_id": "control2",
+        "value": "initial2",
+        "current_value": "final2",
+        "str": "First paragraph\nSecond paragraph\n",
+    }
+    assert form_textarea2.as_dict() == expected

@@ -145,9 +145,18 @@ class FormHidden(FormGenericControl):
         if self._do_init and value is not None:
             self.value = value
 
-    @property
-    def content(self) -> str | None:
-        return self.value
+    def __str__(self) -> str:
+        return ""
+
+    def as_dict(self) -> dict[str, str | None]:
+        return {
+            "tag": self.tag,
+            "name": self.name,
+            "xml_id": self.xml_id,
+            "value": self.value,
+            "current_value": None,
+            "str": "",
+        }
 
 
 FormHidden._define_attribut_property()
@@ -349,11 +358,20 @@ class FormText(FormGrid):
             if linked_cell is not None:
                 self.linked_cell = linked_cell
 
-    @property
-    def content(self) -> str | None:
+    def __str__(self) -> str:
         if self.current_value is not None:
-            return self.current_value
-        return self.value
+            return self.current_value or ""
+        return self.value or ""
+
+    def as_dict(self) -> dict[str, str | None]:
+        return {
+            "tag": self.tag,
+            "name": self.name,
+            "xml_id": self.xml_id,
+            "value": self.value,
+            "current_value": self.current_value,
+            "str": str(self),
+        }
 
 
 FormText._define_attribut_property()
@@ -475,11 +493,18 @@ class FormTextarea(FormText):
             **kwargs,
         )
 
-    @property
-    def content(self) -> str | None:
-        if self.current_value is not None:
-            return self.current_value
-        return self.value
+    def __str__(self) -> str:
+        return self.inner_text
+
+    def as_dict(self) -> dict[str, str | None]:
+        return {
+            "tag": self.tag,
+            "name": self.name,
+            "xml_id": self.xml_id,
+            "value": self.value,
+            "current_value": self.current_value,
+            "str": str(self),
+        }
 
 
 FormTextarea._define_attribut_property()
