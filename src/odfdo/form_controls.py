@@ -798,8 +798,167 @@ class FormFile(FormGrid):
 
 FormFile._define_attribut_property()
 
+
+class FormFormattedText(FormText):
+    """A control for inputting text, which follows the format defined by a
+    data style that is assigned to the control's graphical shape.
+    """
+
+    _tag = "form:formatted-text"
+    _properties: tuple[PropDef, ...] = (
+        PropDef("name", "form:name"),
+        PropDef("value", "form:value"),
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("title", "form:title"),
+        PropDef("disabled", "form:disabled"),
+        PropDef("printable", "form:printable"),
+        PropDef("tab_index", "form:tab-index"),
+        PropDef("tab_stop", "form:tab-stop"),
+        PropDef("readonly", "form:readonly"),
+        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
+        PropDef("current_value", "form:current-value"),
+        PropDef("data_field", "form:data-field"),
+        PropDef("repeat", "form:repeat"),
+        PropDef("linked_cell", "form:linked-cell"),
+        PropDef("max_length", "form:max-length"),
+        PropDef("min_value", "form:min-value"),
+        PropDef("max_value", "form:max-value"),
+        PropDef("spin_button", "form:spin-button"),
+        PropDef("validation", "form:validation"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        value: str | None = None,
+        control_implementation: str | None = None,
+        title: str | None = None,
+        disabled: bool | None = None,
+        printable: bool | None = None,
+        tab_index: int | None = None,
+        tab_stop: bool | None = None,
+        readonly: bool | None = None,
+        convert_empty_to_null: bool | None = None,
+        current_value: str | None = None,
+        data_field: str | None = None,
+        repeat: bool | None = None,
+        delay_for_repeat: str | None = None,
+        linked_cell: str | None = None,
+        max_length: int | None = None,
+        min_value: str | None = None,
+        max_value: str | None = None,
+        spin_button: bool | None = None,
+        validation: bool | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormFormattedText, "form:formatted-text".
+
+        The "form:formatted-text" element is usable within the following elements:
+        "form:column" and "form:form".
+
+         Args:
+
+             name -- str
+
+             value -- str
+
+             control_implementation -- str
+
+             title -- str
+
+             disabled -- boolean
+
+             printable -- boolean
+
+             tab_index -- int
+
+             tab_stop -- boolean
+
+             readonly -- boolean
+
+             convert_empty_to_null -- boolean
+
+             current_value -- str
+
+             data_field -- str
+
+             repeat -- boolean
+
+             delay_for_repeat -- str, default to PT0.050S
+
+             linked_cell -- str
+
+             max_length -- int
+
+             min_value -- str
+
+             max_value -- str
+
+             spin_button -- boolean
+
+             validation -- boolean
+
+             xml_id -- str
+
+             xforms_bind -- str
+
+             form_id -- str
+        """
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            title=title,
+            value=value,
+            disabled=disabled,
+            printable=printable,
+            readonly=readonly,
+            convert_empty_to_null=convert_empty_to_null,
+            current_value=current_value,
+            data_field=data_field,
+            linked_cell=linked_cell,
+            tab_index=tab_index,
+            tab_stop=tab_stop,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+        if self._do_init:
+            if repeat is not None:
+                self.repeat = repeat
+            if delay_for_repeat is not None:
+                self.delay_for_repeat = delay_for_repeat
+            if min_value is not None:
+                self.min_value = min_value
+            if max_value is not None:
+                self.max_value = max_value
+            if spin_button is not None:
+                self.spin_button = spin_button
+            if validation is not None:
+                self.validation = validation
+
+    @property
+    def delay_for_repeat(self) -> str:
+        return self._get_attribute_str_default("form:delay-for-repeat", "PT0.050S")
+
+    @delay_for_repeat.setter
+    def delay_for_repeat(self, delay_for_repeat: str) -> None:
+        self._set_attribute_str_default(
+            "form:delay-for-repeat", delay_for_repeat, "PT0.050S"
+        )
+
+
+FormFormattedText._define_attribut_property()
+
 register_element_class(FormColumn)
 register_element_class(FormFile)
+register_element_class(FormFormattedText)
 register_element_class(FormGenericControl)
 register_element_class(FormGrid)
 register_element_class(FormHidden)
