@@ -510,6 +510,123 @@ class FormTextarea(FormText):
 FormTextarea._define_attribut_property()
 
 
+class FormPassword(FormGrid):
+    """A control that uses an echo character to hide password input by a user, "form:password"."""
+
+    _tag = "form:password"
+    _properties: tuple[PropDef, ...] = (
+        PropDef("name", "form:name"),
+        PropDef("value", "form:value"),
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("title", "form:title"),
+        PropDef("echo_char", "form:echo-char"),
+        PropDef("disabled", "form:disabled"),
+        PropDef("printable", "form:printable"),
+        PropDef("tab_index", "form:tab-index"),
+        PropDef("tab_stop", "form:tab-stop"),
+        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
+        PropDef("linked_cell", "form:linked-cell"),
+        PropDef("max_length", "form:max-length"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        value: str | None = None,
+        control_implementation: str | None = None,
+        title: str | None = None,
+        echo_char: str | None = "*",
+        disabled: bool | None = None,
+        printable: bool | None = None,
+        tab_index: int | None = None,
+        tab_stop: bool | None = None,
+        convert_empty_to_null: bool | None = None,
+        linked_cell: str | None = None,
+        max_length: int | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormPassword, "form:password".
+
+        The "form:password" element is usable within the following element:
+        "form:form".
+
+         Args:
+
+             name -- str
+
+             value -- str
+
+             control_implementation -- str
+
+             title -- str
+
+             echo_char -- str, default to "*"
+
+             disabled -- boolean
+
+             printable -- boolean
+
+             tab_index -- int
+
+             tab_stop -- boolean
+
+             convert_empty_to_null -- boolean
+
+             linked_cell -- str
+
+             max_length -- int
+
+             xml_id -- str
+
+             xforms_bind -- str
+
+             form_id -- str
+        """
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            title=title,
+            disabled=disabled,
+            printable=printable,
+            tab_index=tab_index,
+            tab_stop=tab_stop,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+        if self._do_init:
+            if value is not None:
+                self.value = value
+            self.echo_char = echo_char or "*"
+            if convert_empty_to_null is not None:
+                self.convert_empty_to_null = convert_empty_to_null
+            if linked_cell is not None:
+                self.linked_cell = linked_cell
+
+    def __str__(self) -> str:
+        return self.echo_char or ""
+
+    def as_dict(self) -> dict[str, str | None]:
+        return {
+            "tag": self.tag,
+            "name": self.name,
+            "xml_id": self.xml_id,
+            "value": self.value,
+            "current_value": None,
+            "str": str(self),
+        }
+
+
+FormPassword._define_attribut_property()
+
+
 class FormColumn(Element):
     """A column in a form grid control, "form:column"."""
 
@@ -565,5 +682,6 @@ register_element_class(FormColumn)
 register_element_class(FormGenericControl)
 register_element_class(FormGrid)
 register_element_class(FormHidden)
+register_element_class(FormPassword)
 register_element_class(FormText)
 register_element_class(FormTextarea)

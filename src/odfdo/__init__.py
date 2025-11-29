@@ -63,6 +63,7 @@ __all__ = [  # noqa: RUF022
     "FormGrid",
     "FormHidden",
     "FormMixin",
+    "FormPassword",
     "FormText",
     "FormTextarea",
     "Frame",
@@ -211,6 +212,7 @@ from .form_controls import (
     FormGenericControl,
     FormGrid,
     FormHidden,
+    FormPassword,
     FormText,
     FormTextarea,
 )
