@@ -24,7 +24,7 @@ the existing form contents in a document.)"""
 
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import Any
 
 from .element import Element, PropDef, register_element_class
 
@@ -44,7 +44,7 @@ class FormHidden(Element):
 
     def __init__(
         self,
-        name: str | None = "Form",
+        name: str | None = None,
         value: str | None = None,
         control_implementation: str | None = None,
         xml_id: str | None = None,
