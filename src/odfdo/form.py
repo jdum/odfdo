@@ -109,7 +109,7 @@ class Form(FormMixin):
 
             command_type -- str
 
-            control_implementation -- bool
+            control_implementation -- str
 
             target_frame -- str
         """
