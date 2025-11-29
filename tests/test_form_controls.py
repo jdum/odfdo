@@ -26,7 +26,13 @@ import pytest
 
 from odfdo import Element
 from odfdo.document import Document
-from odfdo.form_controls import FormColumn, FormGenericControl, FormGrid, FormHidden
+from odfdo.form_controls import (
+    FormColumn,
+    FormGenericControl,
+    FormGrid,
+    FormHidden,
+    FormText,
+)
 
 
 @pytest.fixture
@@ -144,6 +150,10 @@ def test_form_hidden_name(form_hidden):
 
 def test_form_hidden_value(form_hidden):
     assert form_hidden.value == "some value"
+
+
+def test_form_hidden_content(form_hidden):
+    assert form_hidden.content == "some value"
 
 
 def test_form_hidden_control_implementation(form_hidden):
@@ -317,3 +327,127 @@ def test_form_column_label(form_column):
 
 def test_form_column_text_style_name(form_column):
     assert form_column.text_style_name == "style name"
+
+
+#############################################################@
+
+
+@pytest.fixture
+def form_text() -> Iterable[FormText]:
+    yield FormText(
+        name="some name",
+        control_implementation="some implem",
+        value="initial",
+        current_value="final",
+        convert_empty_to_null=False,
+        data_field="",
+        linked_cell="",
+        readonly=False,
+        disabled=False,
+        printable=True,
+        tab_index=4,
+        tab_stop=False,
+        xml_id="control1",
+    )
+
+
+def test_form_text_class():
+    form = FormText()
+    assert isinstance(form, FormText)
+
+
+def test_form_text_minimal_tag():
+    form = Element.from_tag("<form:text/>")
+    assert isinstance(form, FormText)
+
+
+def test_form_text_serialize():
+    form = FormText()
+    assert form.serialize() == "<form:text/>"
+
+
+def test_form_text_repr():
+    form = FormText()
+    assert repr(form) == "<FormText name=None xml_id=None>"
+
+
+def test_form_text_name(form_text):
+    assert form_text.name == "some name"
+
+
+def test_form_text_control_implementation(form_text):
+    assert form_text.control_implementation == "some implem"
+
+
+def test_form_text_disabled(form_text):
+    assert form_text.disabled is False
+
+
+def test_form_text_printable(form_text):
+    assert form_text.printable is True
+
+
+def test_form_text_tab_index(form_text):
+    assert form_text.tab_index == "4"
+
+
+def test_form_text_tab_stop(form_text):
+    assert form_text.tab_stop is False
+
+
+def test_form_text_xml_id(form_text):
+    assert form_text.xml_id == "control1"
+
+
+def test_form_text_form_id(form_text):
+    assert form_text.form_id == "control1"
+
+
+def test_form_text_xforms_bind():
+    form = FormText(
+        name="some name",
+        value="some value",
+        control_implementation="some implem",
+        xml_id="control1",
+        xforms_bind="bind id",
+    )
+    assert form.xforms_bind == "bind id"
+
+
+def test_form_text_form_id_2():
+    form = FormText(
+        name="some name",
+        value="some value",
+        control_implementation="some implem",
+        xml_id="control1",
+        form_id="control1",
+    )
+    assert form.form_id == "control1"
+
+
+def test_form_text_form_value(form_text):
+    assert form_text.value == "initial"
+
+
+def test_form_text_form_current_value(form_text):
+    assert form_text.current_value == "final"
+
+
+def test_form_text_form_content(form_text):
+    assert form_text.content == "final"
+
+
+def test_form_text_convert_empty_to_null(form_text):
+    assert form_text.convert_empty_to_null is False
+
+
+def test_form_text_data_field(form_text):
+    assert form_text.data_field == ""
+
+
+def test_form_text_linked_cell(form_text):
+    assert form_text.linked_cell == ""
+
+
+def test_form_text_readonly(form_text):
+    assert form_text.readonly is False

@@ -36,7 +36,7 @@ class FormGenericControl(Element):
     """
 
     _tag = "form:generic-control"
-    _properties = (
+    _properties: tuple[PropDef, ...] = (
         PropDef("name", "form:name"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("xml_id", "xml:id"),
@@ -96,7 +96,7 @@ class FormHidden(FormGenericControl):
     """A control that does not have a visual representation, "form:hidden"."""
 
     _tag = "form:hidden"
-    _properties = (
+    _properties: tuple[PropDef, ...] = (
         PropDef("name", "form:name"),
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
@@ -145,6 +145,10 @@ class FormHidden(FormGenericControl):
         if self._do_init and value is not None:
             self.value = value
 
+    @property
+    def content(self) -> str | None:
+        return self.value
+
 
 FormHidden._define_attribut_property()
 
@@ -156,7 +160,7 @@ class FormGrid(FormGenericControl):
     """
 
     _tag = "form:grid"
-    _properties = (
+    _properties: tuple[PropDef, ...] = (
         PropDef("name", "form:name"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("title", "form:title"),
@@ -232,11 +236,134 @@ class FormGrid(FormGenericControl):
 FormGrid._define_attribut_property()
 
 
+class FormText(FormGrid):
+    """A control for displaying and inputting text on a single line, "form:text"."""
+
+    _tag = "form:text"
+    _properties: tuple[PropDef, ...] = (
+        PropDef("name", "form:name"),
+        PropDef("value", "form:value"),
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("title", "form:title"),
+        PropDef("disabled", "form:disabled"),
+        PropDef("printable", "form:printable"),
+        PropDef("tab_index", "form:tab-index"),
+        PropDef("tab_stop", "form:tab-stop"),
+        PropDef("readonly", "form:readonly"),
+        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
+        PropDef("current_value", "form:current-value"),
+        PropDef("data_field", "form:data-field"),
+        PropDef("linked_cell", "form:linked-cell"),
+        PropDef("max_length", "form:max-length"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        value: str | None = None,
+        control_implementation: str | None = None,
+        title: str | None = None,
+        disabled: bool | None = None,
+        printable: bool | None = None,
+        tab_index: int | None = None,
+        tab_stop: bool | None = None,
+        readonly: bool | None = None,
+        convert_empty_to_null: bool | None = None,
+        current_value: str | None = None,
+        data_field: str | None = None,
+        linked_cell: str | None = None,
+        max_length: int | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormText, "form:text".
+
+        The "form:text" element is usable within the following elements:
+        "form:column" and "form:form".
+
+         Args:
+
+             name -- str
+
+             value -- str
+
+             control_implementation -- str
+
+             title -- str
+
+             disabled -- boolean
+
+             printable -- boolean
+
+             tab_index -- int
+
+             tab_stop -- boolean
+
+             readonly -- boolean
+
+             convert_empty_to_null -- boolean
+
+             current_value -- str
+
+             data_field -- str
+
+             linked_cell -- str
+
+             max_length -- int
+
+             xml_id -- str
+
+             xforms_bind -- str
+
+             form_id -- str
+        """
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            title=title,
+            disabled=disabled,
+            printable=printable,
+            tab_index=tab_index,
+            tab_stop=tab_stop,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+        if self._do_init:
+            if value is not None:
+                self.value = value
+            if readonly is not None:
+                self.readonly = readonly
+            if convert_empty_to_null is not None:
+                self.convert_empty_to_null = convert_empty_to_null
+            if current_value is not None:
+                self.current_value = current_value
+            if data_field is not None:
+                self.data_field = data_field
+            if linked_cell is not None:
+                self.linked_cell = linked_cell
+
+    @property
+    def content(self) -> str | None:
+        if self.current_value is not None:
+            return self.current_value
+        return self.value
+
+
+FormText._define_attribut_property()
+
+
 class FormColumn(Element):
     """A column in a form grid control, "form:column"."""
 
     _tag = "form:column"
-    _properties = (
+    _properties: tuple[PropDef, ...] = (
         PropDef("name", "form:name"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("label", "form:label"),
@@ -287,3 +414,4 @@ register_element_class(FormColumn)
 register_element_class(FormGenericControl)
 register_element_class(FormGrid)
 register_element_class(FormHidden)
+register_element_class(FormText)
