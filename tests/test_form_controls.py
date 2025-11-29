@@ -256,7 +256,7 @@ def test_form_grid_printable(form_grid):
 
 
 def test_form_grid_tab_index(form_grid):
-    assert form_grid.tab_index == "4"
+    assert form_grid.tab_index == 4
 
 
 def test_form_grid_tab_stop(form_grid):
@@ -401,7 +401,7 @@ def test_form_text_printable(form_text):
 
 
 def test_form_text_tab_index(form_text):
-    assert form_text.tab_index == "4"
+    assert form_text.tab_index == 4
 
 
 def test_form_text_tab_stop(form_text):
@@ -575,7 +575,7 @@ def test_form_textarea_printable(form_textarea):
 
 
 def test_form_textarea_tab_index(form_textarea):
-    assert form_textarea.tab_index == "4"
+    assert form_textarea.tab_index == 4
 
 
 def test_form_textarea_tab_stop(form_textarea):
@@ -750,7 +750,7 @@ def test_form_password_printable(form_password):
 
 
 def test_form_password_tab_index(form_password):
-    assert form_password.tab_index == "4"
+    assert form_password.tab_index == 4
 
 
 def test_form_password_tab_stop(form_password):
@@ -937,7 +937,7 @@ def test_form_file_printable(form_file):
 
 
 def test_form_file_tab_index(form_file):
-    assert form_file.tab_index == "4"
+    assert form_file.tab_index == 4
 
 
 def test_form_file_tab_stop(form_file):
@@ -1096,7 +1096,7 @@ def test_form_formatted_text_printable(form_formatted_text):
 
 
 def test_form_formatted_text_tab_index(form_formatted_text):
-    assert form_formatted_text.tab_index == "4"
+    assert form_formatted_text.tab_index == 4
 
 
 def test_form_formatted_text_tab_stop(form_formatted_text):

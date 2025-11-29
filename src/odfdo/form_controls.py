@@ -227,7 +227,6 @@ class FormGrid(FormGenericControl):
         PropDef("title", "form:title"),
         PropDef("disabled", "form:disabled"),
         PropDef("printable", "form:printable"),
-        PropDef("tab_index", "form:tab-index"),
         PropDef("tab_stop", "form:tab-stop"),
         PropDef("xml_id", "xml:id"),
         PropDef("xforms_bind", "xforms:bind"),
@@ -284,14 +283,23 @@ class FormGrid(FormGenericControl):
             **kwargs,
         )
         if self._do_init:
+            if title is not None:
+                self.title = title
             if disabled is not None:
                 self.disabled = disabled
             if printable is not None:
                 self.printable = printable
-            if tab_index is not None:
-                self.tab_index = tab_index
+            self.tab_index = tab_index
             if tab_stop is not None:
                 self.tab_stop = tab_stop
+
+    @property
+    def tab_index(self) -> int | None:
+        return self._get_attribute_int_default("form:tab-index", 0)
+
+    @tab_index.setter
+    def tab_index(self, tab_index: int | None) -> None:
+        self._set_attribute_int_default("form:tab-index", tab_index, 0)
 
 
 FormGrid._define_attribut_property()
@@ -308,14 +316,12 @@ class FormText(FormGrid):
         PropDef("title", "form:title"),
         PropDef("disabled", "form:disabled"),
         PropDef("printable", "form:printable"),
-        PropDef("tab_index", "form:tab-index"),
         PropDef("tab_stop", "form:tab-stop"),
         PropDef("readonly", "form:readonly"),
         PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
         PropDef("current_value", "form:current-value"),
         PropDef("data_field", "form:data-field"),
         PropDef("linked_cell", "form:linked-cell"),
-        PropDef("max_length", "form:max-length"),
         PropDef("xml_id", "xml:id"),
         PropDef("xforms_bind", "xforms:bind"),
         PropDef("form_id", "form:id"),  # deprecated
@@ -409,11 +415,25 @@ class FormText(FormGrid):
                 self.data_field = data_field
             if linked_cell is not None:
                 self.linked_cell = linked_cell
+            if max_length is not None:
+                self.max_length = max_length
 
     def __str__(self) -> str:
         if self.current_value is not None:
             return self.current_value or ""
         return self.value or ""
+
+    @property
+    def max_length(self) -> int | None:
+        return self.get_attribute_integer("form:max-length")
+
+    @max_length.setter
+    def max_length(self, max_length: int | None) -> None:
+        if max_length is None:
+            self.del_attribute("form:max-length")
+        else:
+            max_length = max(max_length, 0)
+        self._set_attribute_str_default("form:max-length", str(max_length), "")
 
     def as_dict(self) -> dict[str, str | None]:
         return {
@@ -450,14 +470,12 @@ class FormTextarea(FormText):
         PropDef("title", "form:title"),
         PropDef("disabled", "form:disabled"),
         PropDef("printable", "form:printable"),
-        PropDef("tab_index", "form:tab-index"),
         PropDef("tab_stop", "form:tab-stop"),
         PropDef("readonly", "form:readonly"),
         PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
         PropDef("current_value", "form:current-value"),
         PropDef("data_field", "form:data-field"),
         PropDef("linked_cell", "form:linked-cell"),
-        PropDef("max_length", "form:max-length"),
         PropDef("xml_id", "xml:id"),
         PropDef("xforms_bind", "xforms:bind"),
         PropDef("form_id", "form:id"),  # deprecated#
@@ -539,6 +557,7 @@ class FormTextarea(FormText):
             current_value=current_value,
             data_field=data_field,
             linked_cell=linked_cell,
+            max_length=max_length,
             xml_id=xml_id,
             xforms_bind=xforms_bind,
             form_id=form_id,
@@ -574,11 +593,9 @@ class FormPassword(FormGrid):
         PropDef("echo_char", "form:echo-char"),
         PropDef("disabled", "form:disabled"),
         PropDef("printable", "form:printable"),
-        PropDef("tab_index", "form:tab-index"),
         PropDef("tab_stop", "form:tab-stop"),
         PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
         PropDef("linked_cell", "form:linked-cell"),
-        PropDef("max_length", "form:max-length"),
         PropDef("xml_id", "xml:id"),
         PropDef("xforms_bind", "xforms:bind"),
         PropDef("form_id", "form:id"),  # deprecated
@@ -648,6 +665,7 @@ class FormPassword(FormGrid):
             printable=printable,
             tab_index=tab_index,
             tab_stop=tab_stop,
+            max_length=max_length,
             xml_id=xml_id,
             xforms_bind=xforms_bind,
             form_id=form_id,
@@ -690,12 +708,10 @@ class FormFile(FormGrid):
         PropDef("title", "form:title"),
         PropDef("disabled", "form:disabled"),
         PropDef("printable", "form:printable"),
-        PropDef("tab_index", "form:tab-index"),
         PropDef("tab_stop", "form:tab-stop"),
         PropDef("readonly", "form:readonly"),
         PropDef("current_value", "form:current-value"),
         PropDef("linked_cell", "form:linked-cell"),
-        PropDef("max_length", "form:max-length"),
         PropDef("xml_id", "xml:id"),
         PropDef("xforms_bind", "xforms:bind"),
         PropDef("form_id", "form:id"),  # deprecated
@@ -765,6 +781,7 @@ class FormFile(FormGrid):
             printable=printable,
             tab_index=tab_index,
             tab_stop=tab_stop,
+            max_length=max_length,
             xml_id=xml_id,
             xforms_bind=xforms_bind,
             form_id=form_id,
@@ -812,7 +829,6 @@ class FormFormattedText(FormText):
         PropDef("title", "form:title"),
         PropDef("disabled", "form:disabled"),
         PropDef("printable", "form:printable"),
-        PropDef("tab_index", "form:tab-index"),
         PropDef("tab_stop", "form:tab-stop"),
         PropDef("readonly", "form:readonly"),
         PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
@@ -820,7 +836,6 @@ class FormFormattedText(FormText):
         PropDef("data_field", "form:data-field"),
         PropDef("repeat", "form:repeat"),
         PropDef("linked_cell", "form:linked-cell"),
-        PropDef("max_length", "form:max-length"),
         PropDef("min_value", "form:min-value"),
         PropDef("max_value", "form:max-value"),
         PropDef("spin_button", "form:spin-button"),
@@ -924,6 +939,7 @@ class FormFormattedText(FormText):
             linked_cell=linked_cell,
             tab_index=tab_index,
             tab_stop=tab_stop,
+            max_length=max_length,
             xml_id=xml_id,
             xforms_bind=xforms_bind,
             form_id=form_id,
