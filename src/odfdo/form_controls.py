@@ -29,6 +29,69 @@ from typing import Any
 from .element import Element, PropDef, register_element_class
 
 
+class FormGenericControl(Element):
+    """An implementation-defined placeholder for a generic control, "form:generic-control".
+
+    The generic control can contain any properties and any events.
+    """
+
+    _tag = "form:generic-control"
+    _properties = (
+        PropDef("name", "form:name"),
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        control_implementation: str | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormGenericControl, "form:generic-control".
+
+        The "form:generic-control" element is usable within the following element:
+        "form:form".
+
+         Args:
+
+             name -- str
+
+             control_implementation -- str
+
+             xml_id -- str
+
+             xforms_bind -- str
+
+             form_id -- str
+        """
+        super().__init__(**kwargs)
+        if self._do_init:
+            if name is not None:
+                self.name = name
+            if control_implementation is not None:
+                self.control_implementation = control_implementation
+            if xml_id is not None:
+                self.xml_id = xml_id
+            if xforms_bind is not None:
+                self.xforms_bind = xforms_bind
+            if form_id is None:
+                self.form_id = self.xml_id
+            else:
+                self.form_id = form_id
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} name={self.name} xml_id={self.xml_id}>"
+
+
+FormGenericControl._define_attribut_property()
+
+
 class FormHidden(Element):
     """A control that does not have a visual representation, "form:hidden"."""
 
@@ -238,5 +301,6 @@ class FormColumn(Element):
 FormColumn._define_attribut_property()
 
 register_element_class(FormColumn)
+register_element_class(FormGenericControl)
 register_element_class(FormGrid)
 register_element_class(FormHidden)
