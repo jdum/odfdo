@@ -1496,7 +1496,45 @@ class FormFixedText(FormGenericControl):
 FormFixedText._define_attribut_property()
 
 
-class FormCombobox(FormText):
+class FormSourceListMixin(Element):
+    LIST_SOURCE_TYPE: ClassVar[set[str]] = {
+        "table",
+        "query",
+        "sql",
+        "sql-pass-through",
+        "value-list",
+        "table-fields",
+    }
+
+    @property
+    def list_source_type(self) -> str | None:
+        return self.get_attribute_string("form:list-source-type")
+
+    @list_source_type.setter
+    def list_source_type(self, list_source_type: str | None) -> None:
+        if list_source_type is None:
+            self.del_attribute("form:list-source-type")
+            return
+        if list_source_type not in self.LIST_SOURCE_TYPE:
+            raise ValueError
+        self.set_attribute("form:list-source-type", list_source_type)
+
+
+class FormSizetMixin(Element):
+    @property
+    def size(self) -> int | None:
+        return self.get_attribute_integer("form:size")
+
+    @size.setter
+    def size(self, size: int | None) -> None:
+        if size is None:
+            self.del_attribute("form:size")
+        else:
+            size = max(size, 0)
+        self._set_attribute_str_default("form:size", str(size), "")
+
+
+class FormCombobox(FormSourceListMixin, FormSizetMixin, FormText):
     """A control which allows displaying and editing of text, and contains
     a list of possible values for that text, "form:combobox"."""
 
@@ -1522,15 +1560,6 @@ class FormCombobox(FormText):
         PropDef("xforms_bind", "xforms:bind"),
         PropDef("form_id", "form:id"),  # deprecated
     )
-
-    LIST_SOURCE_TYPE: ClassVar[set[str]] = {
-        "table",
-        "query",
-        "sql",
-        "sql-pass-through",
-        "value-list",
-        "table-fields",
-    }
 
     def __init__(
         self,
@@ -1588,7 +1617,7 @@ class FormCombobox(FormText):
 
              source_cell_range -- str
 
-             size -- int > 0
+             size -- int
 
              tab_index -- int
 
@@ -1646,31 +1675,6 @@ class FormCombobox(FormText):
             if size is not None:
                 self.size = size
 
-    @property
-    def list_source_type(self) -> str | None:
-        return self.get_attribute_string("form:list-source-type")
-
-    @list_source_type.setter
-    def list_source_type(self, list_source_type: str | None) -> None:
-        if list_source_type is None:
-            self.del_attribute("form:list-source-type")
-            return
-        if list_source_type not in self.LIST_SOURCE_TYPE:
-            raise ValueError
-        self.set_attribute("form:list-source-type", list_source_type)
-
-    @property
-    def size(self) -> int | None:
-        return self.get_attribute_integer("form:size")
-
-    @size.setter
-    def size(self, size: int | None) -> None:
-        if size is None:
-            self.del_attribute("form:size")
-        else:
-            size = max(size, 0)
-        self._set_attribute_str_default("form:size", str(size), "")
-
 
 FormCombobox._define_attribut_property()
 
@@ -1702,9 +1706,206 @@ class FormItem(Element):
 
 FormItem._define_attribut_property()
 
+
+class FormListbox(FormAsDictMixin, FormSourceListMixin, FormSizetMixin, FormGrid):
+    """An input control that allows a user to select one or more items from
+    a list, "form:listbox".
+
+    It is an alternative representation for a group of radio buttons."""
+
+    _tag = "form:listbox"
+    _properties: tuple[PropDef, ...] = (
+        PropDef("name", "form:name"),
+        PropDef("value", "form:value"),
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("title", "form:title"),
+        PropDef("disabled", "form:disabled"),
+        PropDef("printable", "form:printable"),
+        PropDef("auto_complete", "form:auto-complete"),
+        PropDef("dropdown", "form:dropdown"),
+        PropDef("bound_column", "form:bound-column"),
+        PropDef("multiple", "form:multiple"),
+        PropDef("list_source", "form:list-source"),
+        PropDef("source_cell_range", "form:source-cell-range"),
+        PropDef("tab_stop", "form:tab-stop"),
+        PropDef("readonly", "form:readonly"),
+        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
+        PropDef("current_value", "form:current-value"),
+        PropDef("data_field", "form:data-field"),
+        PropDef("linked_cell", "form:linked-cell"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("xforms_list_source", "form:xforms-list-source"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    LIST_LINKAGE_TYPE: ClassVar[set[str]] = {
+        "selection",
+        "selection-indices",
+    }
+
+    def __init__(
+        self,
+        name: str | None = None,
+        value: str | None = None,
+        control_implementation: str | None = None,
+        title: str | None = None,
+        disabled: bool | None = None,
+        printable: bool | None = None,
+        auto_complete: bool | None = None,
+        dropdown: bool | None = None,
+        bound_column: str | None = None,
+        list_linkage_type: str | None = None,
+        multiple: bool | None = None,
+        list_source: str | None = None,
+        list_source_type: str | None = None,
+        source_cell_range: str | None = None,
+        size: int | None = None,
+        tab_index: int | None = None,
+        tab_stop: bool | None = None,
+        readonly: bool | None = None,
+        convert_empty_to_null: bool | None = None,
+        current_value: str | None = None,
+        data_field: str | None = None,
+        linked_cell: str | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        xforms_list_source: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormListbox "form:listbox".
+
+        The "form:combobox" element is usable within the following elements:
+        "form:column" and "form:form".
+
+         Args:
+
+             name -- str
+
+             value -- str
+
+             control_implementation -- str
+
+             title -- str
+
+             disabled -- boolean
+
+             printable -- boolean
+
+             auto_complete -- boolean
+
+             dropdown -- boolean
+
+             bound_column -- str
+
+             list_linkage_type -- str
+
+             multiple -- boolean
+
+             list_source -- str
+
+             list_source_type -- str
+
+             source_cell_range -- str
+
+             size -- int
+
+             tab_index -- int
+
+             tab_stop -- boolean
+
+             readonly -- boolean
+
+             convert_empty_to_null -- boolean
+
+             current_value -- str
+
+             data_field -- str
+
+             linked_cell -- str
+
+             xml_id -- str
+
+             xforms_list_source -- str
+
+             xforms_bind -- str
+
+             form_id -- str
+        """
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            title=title,
+            disabled=disabled,
+            printable=printable,
+            tab_index=tab_index,
+            tab_stop=tab_stop,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+        if self._do_init:
+            if value is not None:
+                self.value = value
+            if readonly is not None:
+                self.readonly = readonly
+            if convert_empty_to_null is not None:
+                self.convert_empty_to_null = convert_empty_to_null
+            if current_value is not None:
+                self.current_value = current_value
+            if data_field is not None:
+                self.data_field = data_field
+            if linked_cell is not None:
+                self.linked_cell = linked_cell
+            if auto_complete is not None:
+                self.auto_complete = auto_complete
+            if dropdown is not None:
+                self.dropdown = dropdown
+            if bound_column is not None:
+                self.bound_column = bound_column
+            if list_linkage_type is not None:
+                self.list_linkage_type = list_linkage_type
+            if multiple is not None:
+                self.multiple = multiple
+            if list_source is not None:
+                self.list_source = list_source
+            if list_source_type is not None:
+                self.list_source_type = list_source_type
+            if source_cell_range is not None:
+                self.source_cell_range = source_cell_range
+            if size is not None:
+                self.size = size
+            if xforms_list_source is not None:
+                self.xforms_list_source = xforms_list_source
+
+    def __str__(self) -> str:
+        if self.current_value is not None:
+            return self.current_value or ""
+        return self.value or ""
+
+    @property
+    def list_linkage_type(self) -> str | None:
+        return self.get_attribute_string("form:list-linkage-type")
+
+    @list_linkage_type.setter
+    def list_linkage_type(self, list_linkage_type: str | None) -> None:
+        if list_linkage_type is None:
+            self.del_attribute("form:list-linkage-type")
+            return
+        if list_linkage_type not in self.LIST_LINKAGE_TYPE:
+            raise ValueError
+        self.set_attribute("form:list-linkage-type", list_linkage_type)
+
+
+FormListbox._define_attribut_property()
+
+
 register_element_class(FormItem)
 register_element_class(FormColumn)
 register_element_class(FormCombobox)
+register_element_class(FormListbox)
 register_element_class(FormDate)
 register_element_class(FormFile)
 register_element_class(FormFixedText)
@@ -1717,3 +1918,4 @@ register_element_class(FormPassword)
 register_element_class(FormText)
 register_element_class(FormTextarea)
 register_element_class(FormTime)
+register_element_class(FormSourceListMixin)
