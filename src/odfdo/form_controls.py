@@ -809,7 +809,8 @@ FormFile._define_attribut_property()
 
 class FormFormattedText(FormDelayRepeatMixin, FormText):
     """A control for inputting text, which follows the format defined by a
-    data style that is assigned to the control's graphical shape.
+    data style that is assigned to the control's graphical shape,
+    "form:formatted-text"
     """
 
     _tag = "form:formatted-text"
@@ -1126,7 +1127,7 @@ FormNumber._define_attribut_property()
 
 
 class FormDate(FormDelayRepeatMixin, FormText):
-    """A control control for inputting date data."""
+    """A control control for inputting date data, "form:date"."""
 
     _tag = "form:date"
     _properties: tuple[PropDef, ...] = (
@@ -1265,7 +1266,7 @@ FormDate._define_attribut_property()
 
 
 class FormTime(FormDelayRepeatMixin, FormText):
-    """A control control for inputting time data."""
+    """A control control for inputting time data, "form:time"."""
 
     _tag = "form:time"
     _properties: tuple[PropDef, ...] = (
@@ -1402,9 +1403,106 @@ class FormTime(FormDelayRepeatMixin, FormText):
 
 FormTime._define_attribut_property()
 
+
+class FormFixedText(FormGenericControl):
+    """A control which attaches additional information to controls, or
+    displays information, "form:fixed-text"
+
+    Only one label may be associated with a control.
+    """
+
+    _tag = "form:fixed-text"
+    _properties: tuple[PropDef, ...] = (
+        PropDef("name", "form:name"),
+        PropDef("label", "form:label"),
+        PropDef("title", "form:title"),
+        PropDef("form_for", "form:for"),
+        PropDef("multi_line", "form:multi-line"),
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("disabled", "xml:disabled"),
+        PropDef("printable", "xml:printable"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        label: str | None = None,
+        title: str | None = None,
+        form_for: str | None = None,
+        multi_line: bool | None = None,
+        control_implementation: str | None = None,
+        disabled: bool | None = None,
+        printable: bool | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormFixedText, "form:fixed-text".
+
+        The "form:fixed-text" element is usable within the following element:
+        "form:form".
+
+         Args:
+
+             name -- str
+
+             label -- str
+
+             title -- str
+
+             form_for -- str
+
+             multi_line -- boolean
+
+             control_implementation -- str
+
+             disabled -- boolean
+
+             printable -- boolean
+
+             xml_id -- str
+
+             xforms_bind -- str
+
+             form_id -- str
+        """
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+        if self._do_init:
+            if label is not None:
+                self.label = label
+            if title is not None:
+                self.title = title
+            if form_for is not None:
+                self.form_for = form_for
+            if multi_line is not None:
+                self.multi_line = multi_line
+            if disabled is not None:
+                self.disabled = disabled
+            if printable is not None:
+                self.printable = printable
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} name={self.name} xml_id={self.xml_id}>"
+
+
+FormFixedText._define_attribut_property()
+
+
 register_element_class(FormColumn)
 register_element_class(FormDate)
 register_element_class(FormFile)
+register_element_class(FormFixedText)
 register_element_class(FormFormattedText)
 register_element_class(FormGenericControl)
 register_element_class(FormGrid)

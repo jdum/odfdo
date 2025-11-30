@@ -31,6 +31,7 @@ from odfdo.form_controls import (
     FormColumn,
     FormDate,
     FormFile,
+    FormFixedText,
     FormFormattedText,
     FormGenericControl,
     FormGrid,
@@ -1847,3 +1848,97 @@ def test_form_time_max_value(form_time):
 
 def test_form_time_spin_button(form_time):
     assert form_time.spin_button is True
+
+
+#############################################################@
+
+
+@pytest.fixture
+def form_fixed_text() -> Iterable[FormFixedText]:
+    yield FormFixedText(
+        name="some name",
+        control_implementation="some implem",
+        label="some label",
+        title="some title",
+        form_for="some form",
+        multi_line=False,
+        disabled=False,
+        printable=True,
+        xml_id="control1",
+    )
+
+
+def test_form_fixed_text_class():
+    form = FormFixedText()
+    assert isinstance(form, FormFixedText)
+
+
+def test_form_fixed_text_minimal_tag():
+    form = Element.from_tag("<form:fixed-text/>")
+    assert isinstance(form, FormFixedText)
+
+
+def test_form_fixed_text_serialize():
+    form = FormFixedText()
+    assert form.serialize() == "<form:fixed-text/>"
+
+
+def test_form_fixed_text_repr():
+    form = FormFixedText()
+    assert repr(form) == "<FormFixedText name=None xml_id=None>"
+
+
+def test_form_fixed_text_name(form_fixed_text):
+    assert form_fixed_text.name == "some name"
+
+
+def test_form_fixed_text_label(form_fixed_text):
+    assert form_fixed_text.label == "some label"
+
+
+def test_form_fixed_text_title(form_fixed_text):
+    assert form_fixed_text.title == "some title"
+
+
+def test_form_fixed_text_form_for(form_fixed_text):
+    assert form_fixed_text.form_for == "some form"
+
+
+def test_form_fixed_text_control_implementation(form_fixed_text):
+    assert form_fixed_text.control_implementation == "some implem"
+
+
+def test_form_fixed_text_disabled(form_fixed_text):
+    assert form_fixed_text.disabled is False
+
+
+def test_form_fixed_text_printable(form_fixed_text):
+    assert form_fixed_text.printable is True
+
+
+def test_form_fixed_text_xml_id(form_fixed_text):
+    assert form_fixed_text.xml_id == "control1"
+
+
+def test_form_fixed_text_form_id(form_fixed_text):
+    assert form_fixed_text.form_id == "control1"
+
+
+def test_form_fixed_text_xforms_bind():
+    form = FormFixedText(
+        name="some name",
+        control_implementation="some implem",
+        xml_id="control1",
+        xforms_bind="bind id",
+    )
+    assert form.xforms_bind == "bind id"
+
+
+def test_form_fixed_text_form_id_2():
+    form = FormFixedText(
+        name="some name",
+        control_implementation="some implem",
+        xml_id="control1",
+        form_id="control1",
+    )
+    assert form.form_id == "control1"
