@@ -33,6 +33,7 @@ __all__ = [  # noqa: RUF022
     "Bookmark",
     "BookmarkEnd",
     "BookmarkMixin",
+    "FormTime",
     "BookmarkStart",
     "Cell",
     "ChangeInfo",
@@ -229,6 +230,7 @@ from .form_controls import (
     FormPassword,
     FormText,
     FormTextarea,
+    FormTime,
 )
 from .frame import DrawTextBox, Frame, default_frame_position_style
 from .header import Header
