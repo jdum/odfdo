@@ -37,6 +37,7 @@ from odfdo.form_controls import (
     FormGenericControl,
     FormGrid,
     FormHidden,
+    FormItem,
     FormNumber,
     FormPassword,
     FormText,
@@ -2220,3 +2221,31 @@ def test_form_combobox_size_4():
     )
     form.size = -4
     assert form.size == 0
+
+
+#############################################################@
+
+
+def test_form_item_class():
+    item = FormItem()
+    assert isinstance(item, FormItem)
+
+
+def test_form_item_minimal_tag():
+    item = Element.from_tag("<form:item/>")
+    assert isinstance(item, FormItem)
+
+
+def test_form_item_serialize():
+    item = FormItem(label="foo")
+    assert item.serialize() == '<form:item form:label="foo"/>'
+
+
+def test_form_item_repr():
+    item = FormCombobox()
+    assert repr(item) == "<FormCombobox name=None xml_id=None>"
+
+
+def test_form_item_label(form_combobox):
+    item = FormItem("foo")
+    assert item.label == "foo"

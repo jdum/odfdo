@@ -1674,6 +1674,35 @@ class FormCombobox(FormText):
 
 FormCombobox._define_attribut_property()
 
+
+class FormItem(Element):
+    """A list item for a FormCombobox control, "form:item"."""
+
+    _tag = "form:item"
+    _properties: tuple[PropDef, ...] = (PropDef("label", "form:label"),)
+
+    def __init__(
+        self,
+        label: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormItem, "form:item".
+
+        The "form:item" element is usable within the following element:
+        "form:combobox".
+
+        Args:
+
+            label -- str
+        """
+        super().__init__(**kwargs)
+        if self._do_init:
+            self.label = label or ""
+
+
+FormItem._define_attribut_property()
+
+register_element_class(FormItem)
 register_element_class(FormColumn)
 register_element_class(FormCombobox)
 register_element_class(FormDate)
