@@ -24,9 +24,62 @@ the existing form contents in a document.)"""
 
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import Any
 
 from .element import Element, PropDef, register_element_class
+
+
+class FormDelayRepeatMixin(Element):
+    """Mixin for the "form:delay-for-repeat" attribute.
+
+    (internal)"""
+
+    @property
+    def delay_for_repeat(self) -> str:
+        return self._get_attribute_str_default("form:delay-for-repeat", "PT0.050S")
+
+    @delay_for_repeat.setter
+    def delay_for_repeat(self, delay_for_repeat: str) -> None:
+        self._set_attribute_str_default(
+            "form:delay-for-repeat", delay_for_repeat, "PT0.050S"
+        )
+
+
+class FormMaxLengthMixin(Element):
+    """Mixin for the "form:max-length" attribute.
+
+    (internal)"""
+
+    @property
+    def max_length(self) -> int | None:
+        return self.get_attribute_integer("form:max-length")
+
+    @max_length.setter
+    def max_length(self, max_length: int | None) -> None:
+        if max_length is None:
+            self.del_attribute("form:max-length")
+        else:
+            max_length = max(max_length, 0)
+        self._set_attribute_str_default("form:max-length", str(max_length), "")
+
+
+class FormAsDictMixin:
+    """Mixin for the as_dict() method of Form Control classes.
+
+    (internal)"""
+
+    def as_dict(self) -> dict[str, str | Decimal | int | None]:
+        return {
+            "tag": self.tag,  # type: ignore[attr-defined]
+            "name": self.name,  # type: ignore[attr-defined]
+            "xml_id": self.xml_id,  # type: ignore[attr-defined]
+            "value": self.value,  # type: ignore[attr-defined]
+            "current_value": self.current_value
+            if hasattr(self, "current_value")
+            else None,
+            "str": str(self),
+        }
 
 
 class FormColumn(Element):
@@ -144,7 +197,7 @@ class FormGenericControl(Element):
 FormGenericControl._define_attribut_property()
 
 
-class FormHidden(FormGenericControl):
+class FormHidden(FormAsDictMixin, FormGenericControl):
     """A control that does not have a visual representation, "form:hidden"."""
 
     _tag = "form:hidden"
@@ -199,16 +252,6 @@ class FormHidden(FormGenericControl):
 
     def __str__(self) -> str:
         return ""
-
-    def as_dict(self) -> dict[str, str | None]:
-        return {
-            "tag": self.tag,
-            "name": self.name,
-            "xml_id": self.xml_id,
-            "value": self.value,
-            "current_value": None,
-            "str": "",
-        }
 
 
 FormHidden._define_attribut_property()
@@ -305,7 +348,7 @@ class FormGrid(FormGenericControl):
 FormGrid._define_attribut_property()
 
 
-class FormText(FormGrid):
+class FormText(FormAsDictMixin, FormMaxLengthMixin, FormGrid):
     """A control for displaying and inputting text on a single line, "form:text"."""
 
     _tag = "form:text"
@@ -422,28 +465,6 @@ class FormText(FormGrid):
         if self.current_value is not None:
             return self.current_value or ""
         return self.value or ""
-
-    @property
-    def max_length(self) -> int | None:
-        return self.get_attribute_integer("form:max-length")
-
-    @max_length.setter
-    def max_length(self, max_length: int | None) -> None:
-        if max_length is None:
-            self.del_attribute("form:max-length")
-        else:
-            max_length = max(max_length, 0)
-        self._set_attribute_str_default("form:max-length", str(max_length), "")
-
-    def as_dict(self) -> dict[str, str | None]:
-        return {
-            "tag": self.tag,
-            "name": self.name,
-            "xml_id": self.xml_id,
-            "value": self.value,
-            "current_value": self.current_value,
-            "str": str(self),
-        }
 
 
 FormText._define_attribut_property()
@@ -567,21 +588,11 @@ class FormTextarea(FormText):
     def __str__(self) -> str:
         return self.inner_text
 
-    def as_dict(self) -> dict[str, str | None]:
-        return {
-            "tag": self.tag,
-            "name": self.name,
-            "xml_id": self.xml_id,
-            "value": self.value,
-            "current_value": self.current_value,
-            "str": str(self),
-        }
-
 
 FormTextarea._define_attribut_property()
 
 
-class FormPassword(FormGrid):
+class FormPassword(FormAsDictMixin, FormGrid):
     """A control that uses an echo character to hide password input by a user, "form:password"."""
 
     _tag = "form:password"
@@ -683,21 +694,11 @@ class FormPassword(FormGrid):
     def __str__(self) -> str:
         return self.echo_char or ""
 
-    def as_dict(self) -> dict[str, str | None]:
-        return {
-            "tag": self.tag,
-            "name": self.name,
-            "xml_id": self.xml_id,
-            "value": self.value,
-            "current_value": None,
-            "str": str(self),
-        }
-
 
 FormPassword._define_attribut_property()
 
 
-class FormFile(FormGrid):
+class FormFile(FormAsDictMixin, FormGrid):
     """A control for or selecting a file, "form:file"."""
 
     _tag = "form:file"
@@ -802,21 +803,11 @@ class FormFile(FormGrid):
             return self.current_value or ""
         return self.value or ""
 
-    def as_dict(self) -> dict[str, str | None]:
-        return {
-            "tag": self.tag,
-            "name": self.name,
-            "xml_id": self.xml_id,
-            "value": self.value,
-            "current_value": self.current_value,
-            "str": str(self),
-        }
-
 
 FormFile._define_attribut_property()
 
 
-class FormFormattedText(FormText):
+class FormFormattedText(FormDelayRepeatMixin, FormText):
     """A control for inputting text, which follows the format defined by a
     data style that is assigned to the control's graphical shape.
     """
@@ -959,18 +950,179 @@ class FormFormattedText(FormText):
             if validation is not None:
                 self.validation = validation
 
-    @property
-    def delay_for_repeat(self) -> str:
-        return self._get_attribute_str_default("form:delay-for-repeat", "PT0.050S")
-
-    @delay_for_repeat.setter
-    def delay_for_repeat(self, delay_for_repeat: str) -> None:
-        self._set_attribute_str_default(
-            "form:delay-for-repeat", delay_for_repeat, "PT0.050S"
-        )
-
 
 FormFormattedText._define_attribut_property()
+
+
+class FormNumber(FormDelayRepeatMixin, FormAsDictMixin, FormMaxLengthMixin, FormGrid):
+    """A control which allows the user to enter a floating-point number, "form:number"."""
+
+    _tag = "form:number"
+    _properties: tuple[PropDef, ...] = (
+        PropDef("name", "form:name"),
+        PropDef("value", "form:value"),
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("title", "form:title"),
+        PropDef("disabled", "form:disabled"),
+        PropDef("printable", "form:printable"),
+        PropDef("tab_stop", "form:tab-stop"),
+        PropDef("readonly", "form:readonly"),
+        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
+        PropDef("data_field", "form:data-field"),
+        PropDef("repeat", "form:repeat"),
+        PropDef("linked_cell", "form:linked-cell"),
+        PropDef("spin_button", "form:spin-button"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        value: str | None = None,
+        control_implementation: str | None = None,
+        title: str | None = None,
+        disabled: bool | None = None,
+        printable: bool | None = None,
+        tab_index: int | None = None,
+        tab_stop: bool | None = None,
+        readonly: bool | None = None,
+        convert_empty_to_null: bool | None = None,
+        current_value: Decimal | int | float | None = None,
+        data_field: str | None = None,
+        repeat: bool | None = None,
+        delay_for_repeat: str | None = None,
+        linked_cell: str | None = None,
+        max_length: int | None = None,
+        min_value: Decimal | int | float | None = None,
+        max_value: Decimal | int | float | None = None,
+        spin_button: bool | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormNumber, "form:number".
+
+        The "form:number" element is usable within the following elements:
+        "form:column" and "form:form".
+
+         Args:
+
+             name -- str
+
+             value -- str
+
+             control_implementation -- str
+
+             title -- str
+
+             disabled -- boolean
+
+             printable -- boolean
+
+             tab_index -- int
+
+             tab_stop -- boolean
+
+             readonly -- boolean
+
+             convert_empty_to_null -- boolean
+
+             current_value -- Decimal | int | float
+
+             data_field -- str
+
+             repeat -- boolean
+
+             delay_for_repeat -- str, default to PT0.050S
+
+             linked_cell -- str
+
+             max_length -- int
+
+             min_value -- Decimal | int | float
+
+             max_value -- Decimal | int | float
+
+             spin_button -- boolean
+
+             xml_id -- str
+
+             xforms_bind -- str
+
+             form_id -- str
+        """
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            title=title,
+            disabled=disabled,
+            printable=printable,
+            tab_index=tab_index,
+            tab_stop=tab_stop,
+            max_length=max_length,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+        if self._do_init:
+            if value is not None:
+                self.value = value
+            if readonly is not None:
+                self.readonly = readonly
+            if convert_empty_to_null is not None:
+                self.convert_empty_to_null = convert_empty_to_null
+            if current_value is not None:
+                self.current_value = current_value
+            if data_field is not None:
+                self.data_field = data_field
+            if linked_cell is not None:
+                self.linked_cell = linked_cell
+            if repeat is not None:
+                self.repeat = repeat
+            if delay_for_repeat is not None:
+                self.delay_for_repeat = delay_for_repeat
+            if min_value is not None:
+                self.min_value = min_value
+            if max_value is not None:
+                self.max_value = max_value
+            if spin_button is not None:
+                self.spin_button = spin_button
+
+    @property
+    def current_value(self) -> Decimal | int | None:
+        return self.get_attribute_number("form:current-value")
+
+    @current_value.setter
+    def current_value(self, current_value: Decimal | int | float | None) -> None:
+        self._set_attribute_number_default("form:current-value", current_value, None)
+
+    @property
+    def min_value(self) -> Decimal | int | None:
+        return self.get_attribute_number("form:min-value")
+
+    @min_value.setter
+    def min_value(self, min_value: Decimal | int | float | None) -> None:
+        self._set_attribute_number_default("form:min-value", min_value, None)
+
+    @property
+    def max_value(self) -> Decimal | int | None:
+        return self.get_attribute_number("form:max-value")
+
+    @max_value.setter
+    def max_value(self, max_value: Decimal | int | float | None) -> None:
+        self._set_attribute_number_default("form:max-value", max_value, None)
+
+    def __str__(self) -> str:
+        if self.current_value is not None:
+            return str(self.current_value)
+        return self.value or ""
+
+
+FormNumber._define_attribut_property()
 
 register_element_class(FormColumn)
 register_element_class(FormFile)
@@ -978,6 +1130,7 @@ register_element_class(FormFormattedText)
 register_element_class(FormGenericControl)
 register_element_class(FormGrid)
 register_element_class(FormHidden)
+register_element_class(FormNumber)
 register_element_class(FormPassword)
 register_element_class(FormText)
 register_element_class(FormTextarea)
