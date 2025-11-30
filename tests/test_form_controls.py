@@ -40,6 +40,7 @@ from odfdo.form_controls import (
     FormItem,
     FormListbox,
     FormNumber,
+    FormOption,
     FormPassword,
     FormText,
     FormTextarea,
@@ -2243,11 +2244,11 @@ def test_form_item_serialize():
 
 
 def test_form_item_repr():
-    item = FormCombobox()
-    assert repr(item) == "<FormCombobox name=None xml_id=None>"
+    item = FormItem()
+    assert repr(item) == "<FormItem tag=form:item>"
 
 
-def test_form_item_label(form_combobox):
+def test_form_item_label():
     item = FormItem("foo")
     assert item.label == "foo"
 
@@ -2527,3 +2528,46 @@ def test_form_listbox_size_4():
     )
     form.size = -4
     assert form.size == 0
+
+
+#############################################################@
+
+
+def test_form_option_class():
+    item = FormOption()
+    assert isinstance(item, FormOption)
+
+
+def test_form_option_minimal_tag():
+    item = Element.from_tag("<form:option/>")
+    assert isinstance(item, FormOption)
+
+
+def test_form_option_serialize():
+    item = FormOption(label="foo")
+    assert item.serialize() == '<form:option form:label="foo"/>'
+
+
+def test_form_option_repr():
+    item = FormOption()
+    assert repr(item) == "<FormOption tag=form:option>"
+
+
+def test_form_option_label():
+    item = FormOption("foo")
+    assert item.label == "foo"
+
+
+def test_form_option_value():
+    item = FormOption(value="val")
+    assert item.value == "val"
+
+
+def test_form_option_selected():
+    item = FormOption(selected=True)
+    assert item.selected is True
+
+
+def test_form_option_current_selected():
+    item = FormOption(current_selected=True)
+    assert item.current_selected is True

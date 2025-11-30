@@ -1819,6 +1819,53 @@ class FormListbox(FormAsDictMixin, FormSourceListMixin, FormSizetMixin, FormGrid
 FormListbox._define_attribut_property()
 
 
+class FormOption(Element):
+    """A list item for a "form:option" control, "form:option"."""
+
+    _tag = "form:option"
+    _properties: tuple[PropDef, ...] = (
+        PropDef("label", "form:label"),
+        PropDef("value", "form:value"),
+        PropDef("selected", "form:selected"),
+        PropDef("current_selected", "form:current-selected"),
+    )
+
+    def __init__(
+        self,
+        label: str | None = None,
+        value: str | None = None,
+        selected: bool | None = None,
+        current_selected: bool | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormOption, "form:option".
+
+        The "form:option" element is usable within the following element:
+        "form:listbox".
+
+        Args:
+
+            label -- str
+
+            value -- str
+
+            selected -- boolean
+
+            current_selected -- boolean
+        """
+        super().__init__(**kwargs)
+        if self._do_init:
+            self.label = label or ""
+            if value is not None:
+                self.value = value
+            if selected is not None:
+                self.selected = selected
+            if current_selected is not None:
+                self.current_selected = current_selected
+
+
+FormOption._define_attribut_property()
+
 register_element_class(FormColumn)
 register_element_class(FormCombobox)
 register_element_class(FormDate)
@@ -1831,6 +1878,7 @@ register_element_class(FormHidden)
 register_element_class(FormItem)
 register_element_class(FormListbox)
 register_element_class(FormNumber)
+register_element_class(FormOption)
 register_element_class(FormPassword)
 register_element_class(FormText)
 register_element_class(FormTextarea)
