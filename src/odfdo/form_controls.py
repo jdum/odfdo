@@ -25,7 +25,7 @@ the existing form contents in a document.)"""
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Any
+from typing import Any, ClassVar
 
 from .element import Element, PropDef, register_element_class
 
@@ -1492,14 +1492,190 @@ class FormFixedText(FormGenericControl):
             if printable is not None:
                 self.printable = printable
 
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} name={self.name} xml_id={self.xml_id}>"
-
 
 FormFixedText._define_attribut_property()
 
 
+class FormCombobox(FormText):
+    """A control which allows displaying and editing of text, and contains
+    a list of possible values for that text, "form:combobox"."""
+
+    _tag = "form:combobox"
+    _properties: tuple[PropDef, ...] = (
+        PropDef("name", "form:name"),
+        PropDef("value", "form:value"),
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("title", "form:title"),
+        PropDef("disabled", "form:disabled"),
+        PropDef("printable", "form:printable"),
+        PropDef("auto_complete", "form:auto-complete"),
+        PropDef("dropdown", "form:dropdown"),
+        PropDef("list_source", "form:list-source"),
+        PropDef("source_cell_range", "form:source-cell-range"),
+        PropDef("tab_stop", "form:tab-stop"),
+        PropDef("readonly", "form:readonly"),
+        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
+        PropDef("current_value", "form:current-value"),
+        PropDef("data_field", "form:data-field"),
+        PropDef("linked_cell", "form:linked-cell"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    LIST_SOURCE_TYPE: ClassVar[set[str]] = {
+        "table",
+        "query",
+        "sql",
+        "sql-pass-through",
+        "value-list",
+        "table-fields",
+    }
+
+    def __init__(
+        self,
+        name: str | None = None,
+        value: str | None = None,
+        control_implementation: str | None = None,
+        title: str | None = None,
+        disabled: bool | None = None,
+        printable: bool | None = None,
+        auto_complete: bool | None = None,
+        dropdown: bool | None = None,
+        list_source: str | None = None,
+        list_source_type: str | None = None,
+        source_cell_range: str | None = None,
+        size: int | None = None,
+        tab_index: int | None = None,
+        tab_stop: bool | None = None,
+        readonly: bool | None = None,
+        convert_empty_to_null: bool | None = None,
+        current_value: str | None = None,
+        data_field: str | None = None,
+        linked_cell: str | None = None,
+        max_length: int | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormCombobox, "form:combobox".
+
+        The "form:combobox" element is usable within the following elements:
+        "form:column" and "form:form".
+
+         Args:
+
+             name -- str
+
+             value -- str
+
+             control_implementation -- str
+
+             title -- str
+
+             disabled -- boolean
+
+             printable -- boolean
+
+             auto_complete -- boolean
+
+             dropdown -- boolean
+
+             list_source -- str
+
+             list_source_type -- str
+
+             source_cell_range -- str
+
+             size -- int > 0
+
+             tab_index -- int
+
+             tab_stop -- boolean
+
+             readonly -- boolean
+
+             convert_empty_to_null -- boolean
+
+             current_value -- str
+
+             data_field -- str
+
+             linked_cell -- str
+
+             max_length -- int
+
+             xml_id -- str
+
+             xforms_bind -- str
+
+             form_id -- str
+        """
+        super().__init__(
+            name=name,
+            value=value,
+            control_implementation=control_implementation,
+            title=title,
+            disabled=disabled,
+            printable=printable,
+            tab_index=tab_index,
+            tab_stop=tab_stop,
+            readonly=readonly,
+            convert_empty_to_null=convert_empty_to_null,
+            current_value=current_value,
+            data_field=data_field,
+            linked_cell=linked_cell,
+            max_length=max_length,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+        if self._do_init:
+            if auto_complete is not None:
+                self.auto_complete = auto_complete
+            if dropdown is not None:
+                self.dropdown = dropdown
+            if list_source is not None:
+                self.list_source = list_source
+            if list_source_type is not None:
+                self.list_source_type = list_source_type
+            if source_cell_range is not None:
+                self.source_cell_range = source_cell_range
+            if size is not None:
+                self.size = size
+
+    @property
+    def list_source_type(self) -> str | None:
+        return self.get_attribute_string("form:list-source-type")
+
+    @list_source_type.setter
+    def list_source_type(self, list_source_type: str | None) -> None:
+        if list_source_type is None:
+            self.del_attribute("form:list-source-type")
+            return
+        if list_source_type not in self.LIST_SOURCE_TYPE:
+            raise ValueError
+        self.set_attribute("form:list-source-type", list_source_type)
+
+    @property
+    def size(self) -> int | None:
+        return self.get_attribute_integer("form:size")
+
+    @size.setter
+    def size(self, size: int | None) -> None:
+        if size is None:
+            self.del_attribute("form:size")
+        else:
+            size = max(size, 0)
+        self._set_attribute_str_default("form:size", str(size), "")
+
+
+FormCombobox._define_attribut_property()
+
 register_element_class(FormColumn)
+register_element_class(FormCombobox)
 register_element_class(FormDate)
 register_element_class(FormFile)
 register_element_class(FormFixedText)

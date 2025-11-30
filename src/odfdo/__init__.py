@@ -60,6 +60,7 @@ __all__ = [  # noqa: RUF022
     "Form",
     "FormAsDictMixin",
     "FormColumn",
+    "FormCombobox",
     "FormDate",
     "FormDelayRepeatMixin",
     "FormFile",
@@ -219,6 +220,7 @@ from .form import Form, FormMixin
 from .form_controls import (
     FormAsDictMixin,
     FormColumn,
+    FormCombobox,
     FormDate,
     FormDelayRepeatMixin,
     FormFile,
