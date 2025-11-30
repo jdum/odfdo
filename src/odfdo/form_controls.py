@@ -28,58 +28,13 @@ from decimal import Decimal
 from typing import Any, ClassVar
 
 from .element import Element, PropDef, register_element_class
-
-
-class FormDelayRepeatMixin(Element):
-    """Mixin for the "form:delay-for-repeat" attribute.
-
-    (internal)"""
-
-    @property
-    def delay_for_repeat(self) -> str:
-        return self._get_attribute_str_default("form:delay-for-repeat", "PT0.050S")
-
-    @delay_for_repeat.setter
-    def delay_for_repeat(self, delay_for_repeat: str) -> None:
-        self._set_attribute_str_default(
-            "form:delay-for-repeat", delay_for_repeat, "PT0.050S"
-        )
-
-
-class FormMaxLengthMixin(Element):
-    """Mixin for the "form:max-length" attribute.
-
-    (internal)"""
-
-    @property
-    def max_length(self) -> int | None:
-        return self.get_attribute_integer("form:max-length")
-
-    @max_length.setter
-    def max_length(self, max_length: int | None) -> None:
-        if max_length is None:
-            self.del_attribute("form:max-length")
-        else:
-            max_length = max(max_length, 0)
-        self._set_attribute_str_default("form:max-length", str(max_length), "")
-
-
-class FormAsDictMixin:
-    """Mixin for the as_dict() method of Form Control classes.
-
-    (internal)"""
-
-    def as_dict(self) -> dict[str, str | Decimal | int | None]:
-        return {
-            "tag": self.tag,  # type: ignore[attr-defined]
-            "name": self.name,  # type: ignore[attr-defined]
-            "xml_id": self.xml_id,  # type: ignore[attr-defined]
-            "value": self.value,  # type: ignore[attr-defined]
-            "current_value": self.current_value
-            if hasattr(self, "current_value")
-            else None,
-            "str": str(self),
-        }
+from .form_controls_mixins import (
+    FormAsDictMixin,
+    FormDelayRepeatMixin,
+    FormMaxLengthMixin,
+    FormSizetMixin,
+    FormSourceListMixin,
+)
 
 
 class FormColumn(Element):
@@ -1496,44 +1451,6 @@ class FormFixedText(FormGenericControl):
 FormFixedText._define_attribut_property()
 
 
-class FormSourceListMixin(Element):
-    LIST_SOURCE_TYPE: ClassVar[set[str]] = {
-        "table",
-        "query",
-        "sql",
-        "sql-pass-through",
-        "value-list",
-        "table-fields",
-    }
-
-    @property
-    def list_source_type(self) -> str | None:
-        return self.get_attribute_string("form:list-source-type")
-
-    @list_source_type.setter
-    def list_source_type(self, list_source_type: str | None) -> None:
-        if list_source_type is None:
-            self.del_attribute("form:list-source-type")
-            return
-        if list_source_type not in self.LIST_SOURCE_TYPE:
-            raise ValueError
-        self.set_attribute("form:list-source-type", list_source_type)
-
-
-class FormSizetMixin(Element):
-    @property
-    def size(self) -> int | None:
-        return self.get_attribute_integer("form:size")
-
-    @size.setter
-    def size(self, size: int | None) -> None:
-        if size is None:
-            self.del_attribute("form:size")
-        else:
-            size = max(size, 0)
-        self._set_attribute_str_default("form:size", str(size), "")
-
-
 class FormCombobox(FormSourceListMixin, FormSizetMixin, FormText):
     """A control which allows displaying and editing of text, and contains
     a list of possible values for that text, "form:combobox"."""
@@ -1902,10 +1819,8 @@ class FormListbox(FormAsDictMixin, FormSourceListMixin, FormSizetMixin, FormGrid
 FormListbox._define_attribut_property()
 
 
-register_element_class(FormItem)
 register_element_class(FormColumn)
 register_element_class(FormCombobox)
-register_element_class(FormListbox)
 register_element_class(FormDate)
 register_element_class(FormFile)
 register_element_class(FormFixedText)
@@ -1913,9 +1828,10 @@ register_element_class(FormFormattedText)
 register_element_class(FormGenericControl)
 register_element_class(FormGrid)
 register_element_class(FormHidden)
+register_element_class(FormItem)
+register_element_class(FormListbox)
 register_element_class(FormNumber)
 register_element_class(FormPassword)
 register_element_class(FormText)
 register_element_class(FormTextarea)
 register_element_class(FormTime)
-register_element_class(FormSourceListMixin)

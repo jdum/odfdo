@@ -222,11 +222,9 @@ from .element import FIRST_CHILD, LAST_CHILD, NEXT_SIBLING, PREV_SIBLING, Elemen
 from .element_typed import ElementTyped
 from .form import Form, FormMixin
 from .form_controls import (
-    FormAsDictMixin,
     FormColumn,
     FormCombobox,
     FormDate,
-    FormDelayRepeatMixin,
     FormFile,
     FormFixedText,
     FormFormattedText,
@@ -235,14 +233,18 @@ from .form_controls import (
     FormHidden,
     FormItem,
     FormListbox,
-    FormMaxLengthMixin,
     FormNumber,
     FormPassword,
-    FormSizetMixin,
-    FormSourceListMixin,
     FormText,
     FormTextarea,
     FormTime,
+)
+from .form_controls_mixins import (
+    FormAsDictMixin,
+    FormDelayRepeatMixin,
+    FormMaxLengthMixin,
+    FormSizetMixin,
+    FormSourceListMixin,
 )
 from .frame import DrawTextBox, Frame, default_frame_position_style
 from .header import Header
