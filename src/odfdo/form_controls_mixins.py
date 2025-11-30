@@ -38,7 +38,7 @@ class FormDelayRepeatMixin(Element):
         return self._get_attribute_str_default("form:delay-for-repeat", "PT0.050S")
 
     @delay_for_repeat.setter
-    def delay_for_repeat(self, delay_for_repeat: str) -> None:
+    def delay_for_repeat(self, delay_for_repeat: str | None) -> None:
         self._set_attribute_str_default(
             "form:delay-for-repeat", delay_for_repeat, "PT0.050S"
         )
@@ -116,3 +116,58 @@ class FormSizetMixin(Element):
         else:
             size = max(size, 0)
         self._set_attribute_str_default("form:size", str(size), "")
+
+
+class FormImagePositionMixin(Element):
+    """Mixin for the "form:image-position" attribute."""
+
+    IMAGE_POSITION: ClassVar[set[str]] = {"bottom", "center", "end", "start", "top"}
+
+    @property
+    def image_position(self) -> str | None:
+        return self._get_attribute_str_default("form:image-position", "center")
+
+    @image_position.setter
+    def image_position(self, image_position: str | None) -> None:
+        if image_position is None or image_position in self.IMAGE_POSITION:
+            self._set_attribute_str_default(
+                "form:image-position", image_position, "center"
+            )
+        else:
+            raise ValueError
+
+
+class FormImageAlignMixin(Element):
+    """Mixin for the "form:image-align" attribute."""
+
+    IMAGE_ALIGN: ClassVar[set[str]] = {"start", "center", "end"}
+
+    @property
+    def image_align(self) -> str | None:
+        return self._get_attribute_str_default("form:image-align", "center")
+
+    @image_align.setter
+    def image_align(self, image_align: str | None) -> None:
+        if image_align is None or image_align in self.IMAGE_ALIGN:
+            self._set_attribute_str_default("form:image-align", image_align, "center")
+        else:
+            raise ValueError
+
+
+class OfficeTargetFrameMixin(Element):
+    """Mixin for the "office:target-frame" attribute.
+
+    Usable with the following elements: "form:button", "form:form" and
+    "form:imag".
+    """
+
+    TARGET_FRAME: ClassVar[set[str]] = {"_blank", "_parent", "_self", "_top"}
+
+    @property
+    def target_frame(self) -> str | None:
+        return self._get_attribute_str_default("office:target-frame", "_blank")
+
+    @target_frame.setter
+    def target_frame(self, target_frame: str | None) -> None:
+        # target_frame can be any str (frame name)
+        self._set_attribute_str_default("office:target-frame", target_frame, "_blank")

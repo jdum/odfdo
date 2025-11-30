@@ -24,6 +24,7 @@ from __future__ import annotations
 from typing import Any, cast
 
 from .element import Element, PropDef, register_element_class
+from .form_controls_mixins import OfficeTargetFrameMixin
 
 
 class FormMixin(Element):
@@ -59,7 +60,7 @@ class FormMixin(Element):
         return cast(list[Form], self._filtered_elements("descendant::form:form"))
 
 
-class Form(FormMixin):
+class Form(FormMixin, OfficeTargetFrameMixin):
     """Specification a user-interface form and defines the contents and
     properties of the form, "form:form".
 
@@ -78,7 +79,6 @@ class Form(FormMixin):
         PropDef("apply_filter", "form:apply-filter"),
         PropDef("command_type", "form:command-type"),
         PropDef("control_implementation", "form:control-implementation"),
-        PropDef("target_frame", "office:target-frame"),
     )
 
     def __init__(

@@ -59,6 +59,7 @@ __all__ = [  # noqa: RUF022
     "FIRST_CHILD",
     "Form",
     "FormAsDictMixin",
+    "FormButton",
     "FormColumn",
     "FormCombobox",
     "FormDate",
@@ -69,6 +70,8 @@ __all__ = [  # noqa: RUF022
     "FormGenericControl",
     "FormGrid",
     "FormHidden",
+    "FormImageAlignMixin",
+    "FormImagePositionMixin",
     "FormItem",
     "FormListbox",
     "FormMaxLengthMixin",
@@ -112,6 +115,7 @@ __all__ = [  # noqa: RUF022
     "OfficeForms",
     "OfficeFormsMixin",
     "OfficeMasterStyles",
+    "OfficeTargetFrameMixin",
     "PREV_SIBLING",
     "PageBreak",
     "ParaMixin",
@@ -223,6 +227,7 @@ from .element import FIRST_CHILD, LAST_CHILD, NEXT_SIBLING, PREV_SIBLING, Elemen
 from .element_typed import ElementTyped
 from .form import Form, FormMixin
 from .form_controls import (
+    FormButton,
     FormColumn,
     FormCombobox,
     FormDate,
@@ -244,9 +249,12 @@ from .form_controls import (
 from .form_controls_mixins import (
     FormAsDictMixin,
     FormDelayRepeatMixin,
+    FormImageAlignMixin,
+    FormImagePositionMixin,
     FormMaxLengthMixin,
     FormSizetMixin,
     FormSourceListMixin,
+    OfficeTargetFrameMixin,
 )
 from .frame import DrawTextBox, Frame, default_frame_position_style
 from .header import Header

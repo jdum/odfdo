@@ -31,9 +31,12 @@ from .element import Element, PropDef, register_element_class
 from .form_controls_mixins import (
     FormAsDictMixin,
     FormDelayRepeatMixin,
+    FormImageAlignMixin,
+    FormImagePositionMixin,
     FormMaxLengthMixin,
     FormSizetMixin,
     FormSourceListMixin,
+    OfficeTargetFrameMixin,
 )
 
 
@@ -1866,6 +1869,182 @@ class FormOption(Element):
 
 FormOption._define_attribut_property()
 
+
+class FormButton(
+    OfficeTargetFrameMixin,
+    FormDelayRepeatMixin,
+    FormImageAlignMixin,
+    FormImagePositionMixin,
+    FormGrid,
+):
+    """A button control, "form:button"."""
+
+    _tag = "form:button"
+    _properties: tuple[PropDef, ...] = (
+        PropDef("name", "form:name"),
+        PropDef("default_button", "form:default-button"),
+        PropDef("repeat", "form:repeat"),
+        PropDef("disabled", "form:disabled"),
+        PropDef("focus_on_click", "form:focus-on-click"),
+        PropDef("image_data", "form:image-data"),
+        PropDef("label", "form:label"),
+        PropDef("toggle", "form:toggle"),
+        PropDef("value", "form:value"),
+        PropDef("href", "xlink:href"),
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("title", "form:title"),
+        PropDef("printable", "form:printable"),
+        PropDef("tab_stop", "form:tab-stop"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("xforms_submission", "form:xforms-submission"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    BUTTON_TYPES: ClassVar[set[str]] = {"submit", "reset", "push", "url"}
+
+    def __init__(
+        self,
+        name: str | None = None,
+        title: str | None = None,
+        label: str | None = None,
+        button_type: str | None = None,
+        default_button: bool | None = None,
+        control_implementation: str | None = None,
+        repeat: bool | None = None,
+        delay_for_repeat: str | None = None,
+        disabled: bool | None = None,
+        focus_on_click: bool | None = None,
+        image_align: str | None = None,
+        image_position: str | None = None,
+        image_data: str | None = None,
+        value: str | None = None,
+        toggle: bool | None = None,
+        target_frame: str | None = None,
+        href: str | None = None,
+        printable: bool | None = None,
+        tab_index: int | None = None,
+        tab_stop: bool | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        xforms_submission: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormButton "form:button".
+
+        The "form:combobox" element is usable within the following element:
+        "form:form".
+
+         Args:
+
+             name -- str
+
+             value -- str
+
+             control_implementation -- str
+
+             title -- str
+
+             disabled -- boolean
+
+             printable -- boolean
+
+             repeat -- boolean
+
+             delay_for_repeat -- str, default to PT0.050S
+
+             tab_index -- int
+
+             tab_stop -- boolean
+
+             button_type -- str
+
+             default_button -- boolean
+
+             focus_on_click -- boolean
+
+             image_align -- str
+
+             image_data -- str
+
+             image_position -- str
+
+             label -- str
+
+             toggle -- boolean
+
+             target_frame -- str
+
+             href -- str
+
+             xml_id -- str
+
+             xforms_submission -- str
+
+             xforms_bind -- str
+
+             form_id -- str
+        """
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            disabled=disabled,
+            printable=printable,
+            title=title,
+            tab_index=tab_index,
+            tab_stop=tab_stop,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+        if self._do_init:
+            if value is not None:
+                self.value = value
+            if button_type is not None:
+                self.button_type = button_type
+            if default_button is not None:
+                self.default_button = default_button
+            if repeat is not None:
+                self.repeat = repeat
+            if delay_for_repeat is not None:
+                self.delay_for_repeat = delay_for_repeat
+            if focus_on_click is not None:
+                self.focus_on_click = focus_on_click
+            if image_align is not None:
+                self.image_align = image_align
+            if image_data is not None:
+                self.image_data = image_data
+            if image_position is not None:
+                self.image_position = image_position
+            if label is not None:
+                self.label = label
+            if toggle is not None:
+                self.toggle = toggle
+            if xforms_submission is not None:
+                self.xforms_submission = xforms_submission
+            if target_frame is not None:
+                self.target_frame = target_frame
+            if href is not None:
+                self.href = href
+
+    @property
+    def button_type(self) -> str | None:
+        return self._get_attribute_str_default("form:button-type", "push")
+
+    @button_type.setter
+    def button_type(self, button_type: str | None) -> None:
+        if button_type is None or button_type in self.BUTTON_TYPES:
+            self._set_attribute_str_default("form:button-type", button_type, "push")
+        else:
+            raise ValueError
+
+
+FormButton._define_attribut_property()
+
+
+register_element_class(FormButton)
 register_element_class(FormColumn)
 register_element_class(FormCombobox)
 register_element_class(FormDate)
