@@ -17,6 +17,12 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
+"""Command-line script to import a CSV file into an ODS document.
+
+This script reads data from a CSV file (or standard input) and creates a new
+ODF spreadsheet (.ods) containing the data in a table.
+"""
+
 from __future__ import annotations
 
 import io

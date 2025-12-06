@@ -19,6 +19,12 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
+"""Command-line script to display the content of an ODF document.
+
+This script dumps the text content, styles, and metadata of an ODF file
+to the standard output or into a specified directory.
+"""
+
 from __future__ import annotations
 
 import sys
@@ -32,10 +38,10 @@ PROG = "odfdo-show"
 
 
 def configure_parser() -> ArgumentParser:
-    description = description = (
+    description = (
         "Dump text from an OpenDocument file to the standard "
         "output, optionally styles and meta (and the Pictures/* "
-        'in "-o <DIR>" mode)'
+        'in "-o <DIR>" mode'
     )
     parser = ArgumentParser(prog=PROG, description=description)
 

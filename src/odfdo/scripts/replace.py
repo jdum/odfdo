@@ -17,6 +17,12 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
+"""Command-line script to search and replace text in an ODF document.
+
+This script finds all occurrences of a given regular expression pattern in an
+ODF document and replaces them with a specified string.
+"""
+
 from __future__ import annotations
 
 from argparse import ArgumentParser, Namespace

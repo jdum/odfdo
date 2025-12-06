@@ -19,6 +19,12 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
+"""Command-line script to manipulate styles in an ODF document.
+
+This script provides functionalities to show, delete, and merge styles
+from one ODF document to another.
+"""
+
 from __future__ import annotations
 
 import sys

@@ -17,6 +17,13 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
+"""Command-line script to print the metadata of an ODF document.
+
+This script extracts and displays the metadata from an ODF file. It can output
+the metadata in a human-readable text format or as a JSON object for
+programmatic use.
+"""
+
 from __future__ import annotations
 
 from argparse import ArgumentParser, Namespace, RawTextHelpFormatter

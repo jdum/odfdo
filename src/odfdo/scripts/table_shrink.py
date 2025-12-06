@@ -17,6 +17,12 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
+"""Command-line script to shrink tables in an ODF spreadsheet.
+
+This script optimizes the width and height of all tables in a spreadsheet
+document by removing empty trailing rows and columns.
+"""
+
 from __future__ import annotations
 
 from argparse import ArgumentParser, Namespace

@@ -18,6 +18,12 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
+"""Command-line script to show the differences between two ODT files.
+
+This script compares the textual content of two ODT documents and displays
+the differences in either a standard unified diff format or an ndiff format.
+"""
+
 from __future__ import annotations
 
 from argparse import ArgumentParser, Namespace

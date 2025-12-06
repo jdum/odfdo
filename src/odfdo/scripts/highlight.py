@@ -17,6 +17,13 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
+"""Command-line script to highlight text in an ODF document.
+
+This script searches for a given regular expression pattern in an ODF text
+document and applies a style to the matching text. The style can include
+italic, bold, text color, and background color.
+"""
+
 from __future__ import annotations
 
 from argparse import ArgumentParser, Namespace

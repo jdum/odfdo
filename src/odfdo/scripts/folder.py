@@ -18,6 +18,13 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Jerome Dumonteil <jerome.dumonteil@itaapy.com>
+"""Command-line script to convert ODF files to/from a folder structure.
+
+This script allows for converting a standard ODF file (which is a zip archive)
+into a directory containing its component XML files and assets, and vice-versa.
+This is useful for version control and manual inspection of ODF documents.
+"""
+
 from __future__ import annotations
 
 from argparse import ArgumentParser, Namespace

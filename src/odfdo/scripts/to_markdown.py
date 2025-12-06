@@ -17,6 +17,12 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
+"""Command-line script to convert an ODF text document to Markdown.
+
+This script reads an ODF text document and prints its content to standard
+output in Markdown format.
+"""
+
 from __future__ import annotations
 
 from argparse import ArgumentParser, Namespace

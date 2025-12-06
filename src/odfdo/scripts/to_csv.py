@@ -17,6 +17,13 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
+"""Command-line script to export a table from an ODF spreadsheet to CSV.
+
+This script extracts a specified table (or the first table by default) from
+an ODS file and converts it to a CSV format, outputting to a file or
+standard output.
+"""
+
 from __future__ import annotations
 
 import sys

@@ -17,6 +17,12 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
+"""Command-line script to show or set user-defined fields in an ODF document.
+
+This script allows for inspecting the values of user-defined fields and
+updating them.
+"""
+
 from __future__ import annotations
 
 import sys

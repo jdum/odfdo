@@ -17,6 +17,13 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
+"""Command-line script to update the metadata of an ODF document.
+
+This script allows for updating the metadata of an ODF file in two ways:
+- From a JSON file: Merges the provided metadata with the existing one.
+- Stripping: Resets the metadata to a minimal set of values.
+"""
+
 from __future__ import annotations
 
 import json
