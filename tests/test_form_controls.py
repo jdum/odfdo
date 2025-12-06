@@ -223,9 +223,7 @@ def form_grid() -> Iterable[FormGrid]:
         title="some title",
         control_implementation="some implem",
         disabled=False,
-        printable=True,
         tab_index=4,
-        tab_stop=False,
         xml_id="control1",
     )
 
@@ -274,7 +272,12 @@ def test_form_grid_tab_index(form_grid):
     assert form_grid.tab_index == 4
 
 
-def test_form_grid_tab_stop(form_grid):
+def test_form_grid_tab_stop_1(form_grid):
+    assert form_grid.tab_stop is True
+
+
+def test_form_grid_tab_stop_2(form_grid):
+    form_grid.tab_stop = False
     assert form_grid.tab_stop is False
 
 
@@ -2262,17 +2265,12 @@ def form_listbox() -> Iterable[FormListbox]:
     yield FormListbox(
         name="some name",
         control_implementation="some implem",
-        value="initial",
-        current_value="final",
         title="some title",
-        convert_empty_to_null=False,
         data_field="",
         linked_cell="",
-        readonly=False,
         disabled=False,
         dropdown=True,
         printable=True,
-        auto_complete=True,
         bound_column="bound",
         list_linkage_type="selection",
         multiple=True,
@@ -2320,10 +2318,6 @@ def test_form_listbox_disabled(form_listbox):
 
 def test_form_listbox_printable(form_listbox):
     assert form_listbox.printable is True
-
-
-def test_form_listbox_auto_complete(form_listbox):
-    assert form_listbox.auto_complete is True
 
 
 def test_form_listbox_tab_index(form_listbox):
@@ -2407,7 +2401,6 @@ def test_form_listbox_source_cell_range(form_listbox):
 def test_form_listbox_xforms_bind():
     form = FormListbox(
         name="some name",
-        value="some value",
         control_implementation="some implem",
         xml_id="control1",
         xforms_bind="bind id",
@@ -2418,7 +2411,6 @@ def test_form_listbox_xforms_bind():
 def test_form_listbox_xforms_list_source():
     form = FormListbox(
         name="some name",
-        value="some value",
         control_implementation="some implem",
         xml_id="control1",
         xforms_list_source="source",
@@ -2429,54 +2421,11 @@ def test_form_listbox_xforms_list_source():
 def test_form_listbox_form_id_2():
     form = FormListbox(
         name="some name",
-        value="some value",
         control_implementation="some implem",
         xml_id="control1",
         form_id="control1",
     )
     assert form.form_id == "control1"
-
-
-def test_form_listbox_form_value(form_listbox):
-    assert form_listbox.value == "initial"
-
-
-def test_form_listbox_form_current_value(form_listbox):
-    assert form_listbox.current_value == "final"
-
-
-def test_form_listbox_form_as_dict(form_listbox):
-    expected = {
-        "tag": "form:listbox",
-        "name": "some name",
-        "xml_id": "control1",
-        "value": "initial",
-        "current_value": "final",
-        "str": "final",
-    }
-    assert form_listbox.as_dict() == expected
-
-
-def test_form_listbox_form_current_value_2(form_listbox):
-    form_listbox.current_value = None
-    assert form_listbox.current_value is None
-
-
-def test_form_listbox_form_as_dict2(form_listbox):
-    form_listbox.current_value = None
-    expected = {
-        "tag": "form:listbox",
-        "name": "some name",
-        "xml_id": "control1",
-        "value": "initial",
-        "current_value": None,
-        "str": "initial",
-    }
-    assert form_listbox.as_dict() == expected
-
-
-def test_form_listbox_convert_empty_to_null(form_listbox):
-    assert form_listbox.convert_empty_to_null is False
 
 
 def test_form_listbox_data_field(form_listbox):
@@ -2487,10 +2436,6 @@ def test_form_listbox_linked_cell(form_listbox):
     assert form_listbox.linked_cell == ""
 
 
-def test_form_listbox_readonly(form_listbox):
-    assert form_listbox.readonly is False
-
-
 def test_form_listbox_size_1(form_listbox):
     assert form_listbox.size == 7
 
@@ -2498,7 +2443,6 @@ def test_form_listbox_size_1(form_listbox):
 def test_form_listbox_size_2():
     form = FormListbox(
         name="some name",
-        value="some value",
         control_implementation="some implem",
         xml_id="control1",
         form_id="control1",
@@ -2509,7 +2453,6 @@ def test_form_listbox_size_2():
 def test_form_listbox_size_3():
     form = FormListbox(
         name="some name",
-        value="some value",
         control_implementation="some implem",
         xml_id="control1",
         form_id="control1",
@@ -2522,7 +2465,6 @@ def test_form_listbox_size_3():
 def test_form_listbox_size_4():
     form = FormListbox(
         name="some name",
-        value="some value",
         control_implementation="some implem",
         xml_id="control1",
         form_id="control1",

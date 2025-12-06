@@ -226,9 +226,9 @@ class FormGrid(FormGenericControl):
         PropDef("name", "form:name"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("title", "form:title"),
-        PropDef("disabled", "form:disabled"),
-        PropDef("printable", "form:printable"),
-        PropDef("tab_stop", "form:tab-stop"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDefBool("printable", "form:printable", True),
+        PropDefBool("tab_stop", "form:tab-stop", True),
         PropDef("xml_id", "xml:id"),
         PropDef("xforms_bind", "xforms:bind"),
         PropDef("form_id", "form:id"),  # deprecated
@@ -315,11 +315,11 @@ class FormText(FormAsDictMixin, FormMaxLengthMixin, FormGrid):
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("title", "form:title"),
-        PropDef("disabled", "form:disabled"),
-        PropDef("printable", "form:printable"),
-        PropDef("tab_stop", "form:tab-stop"),
-        PropDef("readonly", "form:readonly"),
-        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDefBool("printable", "form:printable", True),
+        PropDefBool("tab_stop", "form:tab-stop", True),
+        PropDefBool("readonly", "form:readonly", False),
+        PropDefBool("convert_empty_to_null", "form:convert-empty-to-null", False),
         PropDef("current_value", "form:current-value"),
         PropDef("data_field", "form:data-field"),
         PropDef("linked_cell", "form:linked-cell"),
@@ -447,11 +447,11 @@ class FormTextarea(FormText):
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("title", "form:title"),
-        PropDef("disabled", "form:disabled"),
-        PropDef("printable", "form:printable"),
-        PropDef("tab_stop", "form:tab-stop"),
-        PropDef("readonly", "form:readonly"),
-        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDefBool("printable", "form:printable", True),
+        PropDefBool("tab_stop", "form:tab-stop", True),
+        PropDefBool("readonly", "form:readonly", False),
+        PropDefBool("convert_empty_to_null", "form:convert-empty-to-null", False),
         PropDef("current_value", "form:current-value"),
         PropDef("data_field", "form:data-field"),
         PropDef("linked_cell", "form:linked-cell"),
@@ -560,10 +560,10 @@ class FormPassword(FormAsDictMixin, FormGrid):
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("title", "form:title"),
         PropDef("echo_char", "form:echo-char"),
-        PropDef("disabled", "form:disabled"),
-        PropDef("printable", "form:printable"),
-        PropDef("tab_stop", "form:tab-stop"),
-        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDefBool("printable", "form:printable", True),
+        PropDefBool("tab_stop", "form:tab-stop", True),
+        PropDefBool("convert_empty_to_null", "form:convert-empty-to-null", False),
         PropDef("linked_cell", "form:linked-cell"),
         PropDef("xml_id", "xml:id"),
         PropDef("xforms_bind", "xforms:bind"),
@@ -665,10 +665,10 @@ class FormFile(FormAsDictMixin, FormGrid):
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("title", "form:title"),
-        PropDef("disabled", "form:disabled"),
-        PropDef("printable", "form:printable"),
-        PropDef("tab_stop", "form:tab-stop"),
-        PropDef("readonly", "form:readonly"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDefBool("printable", "form:printable", True),
+        PropDefBool("tab_stop", "form:tab-stop", True),
+        PropDefBool("readonly", "form:readonly", False),
         PropDef("current_value", "form:current-value"),
         PropDef("linked_cell", "form:linked-cell"),
         PropDef("xml_id", "xml:id"),
@@ -777,19 +777,19 @@ class FormFormattedText(FormDelayRepeatMixin, FormText):
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("title", "form:title"),
-        PropDef("disabled", "form:disabled"),
-        PropDef("printable", "form:printable"),
-        PropDef("tab_stop", "form:tab-stop"),
-        PropDef("readonly", "form:readonly"),
-        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDefBool("printable", "form:printable", True),
+        PropDefBool("tab_stop", "form:tab-stop", True),
+        PropDefBool("readonly", "form:readonly", False),
+        PropDefBool("convert_empty_to_null", "form:convert-empty-to-null", False),
         PropDef("current_value", "form:current-value"),
         PropDef("data_field", "form:data-field"),
         PropDef("repeat", "form:repeat"),
         PropDef("linked_cell", "form:linked-cell"),
         PropDef("min_value", "form:min-value"),
         PropDef("max_value", "form:max-value"),
-        PropDef("spin_button", "form:spin-button"),
-        PropDef("validation", "form:validation"),
+        PropDefBool("spin_button", "form:spin-button", False),
+        PropDefBool("validation", "form:validation", False),
         PropDef("xml_id", "xml:id"),
         PropDef("xforms_bind", "xforms:bind"),
         PropDef("form_id", "form:id"),  # deprecated
@@ -922,15 +922,15 @@ class FormNumber(FormDelayRepeatMixin, FormAsDictMixin, FormMaxLengthMixin, Form
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("title", "form:title"),
-        PropDef("disabled", "form:disabled"),
-        PropDef("printable", "form:printable"),
-        PropDef("tab_stop", "form:tab-stop"),
-        PropDef("readonly", "form:readonly"),
-        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDefBool("printable", "form:printable", True),
+        PropDefBool("tab_stop", "form:tab-stop", True),
+        PropDefBool("readonly", "form:readonly", False),
+        PropDefBool("convert_empty_to_null", "form:convert-empty-to-null", False),
         PropDef("data_field", "form:data-field"),
         PropDef("repeat", "form:repeat"),
         PropDef("linked_cell", "form:linked-cell"),
-        PropDef("spin_button", "form:spin-button"),
+        PropDefBool("spin_button", "form:spin-button", False),
         PropDef("xml_id", "xml:id"),
         PropDef("xforms_bind", "xforms:bind"),
         PropDef("form_id", "form:id"),  # deprecated
@@ -1093,18 +1093,18 @@ class FormDate(FormDelayRepeatMixin, FormText):
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("title", "form:title"),
-        PropDef("disabled", "form:disabled"),
-        PropDef("printable", "form:printable"),
-        PropDef("tab_stop", "form:tab-stop"),
-        PropDef("readonly", "form:readonly"),
-        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDefBool("printable", "form:printable", True),
+        PropDefBool("tab_stop", "form:tab-stop", True),
+        PropDefBool("readonly", "form:readonly", False),
+        PropDefBool("convert_empty_to_null", "form:convert-empty-to-null", False),
         PropDef("current_value", "form:current-value"),
         PropDef("data_field", "form:data-field"),
         PropDef("repeat", "form:repeat"),
         PropDef("linked_cell", "form:linked-cell"),
         PropDef("min_value", "form:min-value"),
         PropDef("max_value", "form:max-value"),
-        PropDef("spin_button", "form:spin-button"),
+        PropDefBool("spin_button", "form:spin-button", False),
         PropDef("xml_id", "xml:id"),
         PropDef("xforms_bind", "xforms:bind"),
         PropDef("form_id", "form:id"),  # deprecated
@@ -1232,18 +1232,18 @@ class FormTime(FormDelayRepeatMixin, FormText):
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("title", "form:title"),
-        PropDef("disabled", "form:disabled"),
-        PropDef("printable", "form:printable"),
-        PropDef("tab_stop", "form:tab-stop"),
-        PropDef("readonly", "form:readonly"),
-        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDefBool("printable", "form:printable", True),
+        PropDefBool("tab_stop", "form:tab-stop", True),
+        PropDefBool("readonly", "form:readonly", False),
+        PropDefBool("convert_empty_to_null", "form:convert-empty-to-null", False),
         PropDef("current_value", "form:current-value"),
         PropDef("data_field", "form:data-field"),
         PropDef("repeat", "form:repeat"),
         PropDef("linked_cell", "form:linked-cell"),
         PropDef("min_value", "form:min-value"),
         PropDef("max_value", "form:max-value"),
-        PropDef("spin_button", "form:spin-button"),
+        PropDefBool("spin_button", "form:spin-button", False),
         PropDef("xml_id", "xml:id"),
         PropDef("xforms_bind", "xforms:bind"),
         PropDef("form_id", "form:id"),  # deprecated
@@ -1375,10 +1375,10 @@ class FormFixedText(FormGenericControl):
         PropDef("label", "form:label"),
         PropDef("title", "form:title"),
         PropDef("form_for", "form:for"),
-        PropDef("multi_line", "form:multi-line"),
+        PropDefBool("multi_line", "form:multi-line", False),
         PropDef("control_implementation", "form:control-implementation"),
-        PropDef("disabled", "xml:disabled"),
-        PropDef("printable", "xml:printable"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDefBool("printable", "form:printable", True),
         PropDef("xml_id", "xml:id"),
         PropDef("xforms_bind", "xforms:bind"),
         PropDef("form_id", "form:id"),  # deprecated
@@ -1464,15 +1464,15 @@ class FormCombobox(FormSourceListMixin, FormSizetMixin, FormText):
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("title", "form:title"),
-        PropDef("disabled", "form:disabled"),
-        PropDef("printable", "form:printable"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDefBool("printable", "form:printable", True),
         PropDef("auto_complete", "form:auto-complete"),
-        PropDef("dropdown", "form:dropdown"),
+        PropDefBool("dropdown", "form:dropdown", False),
         PropDef("list_source", "form:list-source"),
         PropDef("source_cell_range", "form:source-cell-range"),
-        PropDef("tab_stop", "form:tab-stop"),
-        PropDef("readonly", "form:readonly"),
-        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
+        PropDefBool("tab_stop", "form:tab-stop", True),
+        PropDefBool("readonly", "form:readonly", False),
+        PropDefBool("convert_empty_to_null", "form:convert-empty-to-null", False),
         PropDef("current_value", "form:current-value"),
         PropDef("data_field", "form:data-field"),
         PropDef("linked_cell", "form:linked-cell"),
@@ -1627,7 +1627,7 @@ class FormItem(Element):
 FormItem._define_attribut_property()
 
 
-class FormListbox(FormAsDictMixin, FormSourceListMixin, FormSizetMixin, FormGrid):
+class FormListbox(FormSourceListMixin, FormSizetMixin, FormGrid):
     """An input control that allows a user to select one or more items from
     a list, "form:listbox".
 
@@ -1636,21 +1636,16 @@ class FormListbox(FormAsDictMixin, FormSourceListMixin, FormSizetMixin, FormGrid
     _tag = "form:listbox"
     _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
-        PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("title", "form:title"),
-        PropDef("disabled", "form:disabled"),
-        PropDef("printable", "form:printable"),
-        PropDef("auto_complete", "form:auto-complete"),
-        PropDef("dropdown", "form:dropdown"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDefBool("printable", "form:printable", True),
+        PropDefBool("dropdown", "form:dropdown", False),
         PropDef("bound_column", "form:bound-column"),
-        PropDef("multiple", "form:multiple"),
+        PropDefBool("multiple", "form:multiple", False),
         PropDef("list_source", "form:list-source"),
         PropDef("source_cell_range", "form:source-cell-range"),
-        PropDef("tab_stop", "form:tab-stop"),
-        PropDef("readonly", "form:readonly"),
-        PropDef("convert_empty_to_null", "form:convert-empty-to-null"),
-        PropDef("current_value", "form:current-value"),
+        PropDefBool("tab_stop", "form:tab-stop", True),
         PropDef("data_field", "form:data-field"),
         PropDef("linked_cell", "form:linked-cell"),
         PropDef("xml_id", "xml:id"),
@@ -1667,12 +1662,10 @@ class FormListbox(FormAsDictMixin, FormSourceListMixin, FormSizetMixin, FormGrid
     def __init__(
         self,
         name: str | None = None,
-        value: str | None = None,
         control_implementation: str | None = None,
         title: str | None = None,
         disabled: bool | None = None,
         printable: bool | None = None,
-        auto_complete: bool | None = None,
         dropdown: bool | None = None,
         bound_column: str | None = None,
         list_linkage_type: str | None = None,
@@ -1683,9 +1676,6 @@ class FormListbox(FormAsDictMixin, FormSourceListMixin, FormSizetMixin, FormGrid
         size: int | None = None,
         tab_index: int | None = None,
         tab_stop: bool | None = None,
-        readonly: bool | None = None,
-        convert_empty_to_null: bool | None = None,
-        current_value: str | None = None,
         data_field: str | None = None,
         linked_cell: str | None = None,
         xml_id: str | None = None,
@@ -1703,8 +1693,6 @@ class FormListbox(FormAsDictMixin, FormSourceListMixin, FormSizetMixin, FormGrid
 
              name -- str
 
-             value -- str
-
              control_implementation -- str
 
              title -- str
@@ -1712,8 +1700,6 @@ class FormListbox(FormAsDictMixin, FormSourceListMixin, FormSizetMixin, FormGrid
              disabled -- boolean
 
              printable -- boolean
-
-             auto_complete -- boolean
 
              dropdown -- boolean
 
@@ -1734,12 +1720,6 @@ class FormListbox(FormAsDictMixin, FormSourceListMixin, FormSizetMixin, FormGrid
              tab_index -- int
 
              tab_stop -- boolean
-
-             readonly -- boolean
-
-             convert_empty_to_null -- boolean
-
-             current_value -- str
 
              data_field -- str
 
@@ -1767,20 +1747,10 @@ class FormListbox(FormAsDictMixin, FormSourceListMixin, FormSizetMixin, FormGrid
             **kwargs,
         )
         if self._do_init:
-            if value is not None:
-                self.value = value
-            if readonly is not None:
-                self.readonly = readonly
-            if convert_empty_to_null is not None:
-                self.convert_empty_to_null = convert_empty_to_null
-            if current_value is not None:
-                self.current_value = current_value
             if data_field is not None:
                 self.data_field = data_field
             if linked_cell is not None:
                 self.linked_cell = linked_cell
-            if auto_complete is not None:
-                self.auto_complete = auto_complete
             if dropdown is not None:
                 self.dropdown = dropdown
             if bound_column is not None:
@@ -1799,11 +1769,6 @@ class FormListbox(FormAsDictMixin, FormSourceListMixin, FormSizetMixin, FormGrid
                 self.size = size
             if xforms_list_source is not None:
                 self.xforms_list_source = xforms_list_source
-
-    def __str__(self) -> str:
-        if self.current_value is not None:
-            return self.current_value or ""
-        return self.value or ""
 
     @property
     def list_linkage_type(self) -> str | None:
@@ -1829,8 +1794,8 @@ class FormOption(Element):
     _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("label", "form:label"),
         PropDef("value", "form:value"),
-        PropDef("selected", "form:selected"),
-        PropDef("current_selected", "form:current-selected"),
+        PropDefBool("selected", "form:selected", False),
+        PropDefBool("current_selected", "form:current-selected", False),
     )
 
     def __init__(
@@ -1882,19 +1847,19 @@ class FormButton(
     _tag = "form:button"
     _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
-        PropDef("default_button", "form:default-button"),
+        PropDefBool("default_button", "form:default-button", False),
         PropDef("repeat", "form:repeat"),
-        PropDef("disabled", "form:disabled"),
+        PropDefBool("disabled", "form:disabled", False),
         PropDef("focus_on_click", "form:focus-on-click"),
         PropDef("image_data", "form:image-data"),
         PropDef("label", "form:label"),
-        PropDef("toggle", "form:toggle"),
+        PropDefBool("toggle", "form:toggle", False),
         PropDef("value", "form:value"),
         PropDef("href", "xlink:href"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("title", "form:title"),
-        PropDef("printable", "form:printable"),
-        PropDef("tab_stop", "form:tab-stop"),
+        PropDefBool("printable", "form:printable", True),
+        PropDefBool("tab_stop", "form:tab-stop", True),
         PropDef("xml_id", "xml:id"),
         PropDef("xforms_bind", "xforms:bind"),
         PropDef("xforms_submission", "form:xforms-submission"),
