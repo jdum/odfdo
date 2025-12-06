@@ -2297,11 +2297,156 @@ class FormCheckbox(FormImageAlignMixin, FormImagePositionMixin, FormGrid):
 FormCheckbox._define_attribut_property()
 
 
+class FormRadio(FormImageAlignMixin, FormImagePositionMixin, FormGrid):
+    """A control which acts like a check box except that when multiple radio
+    buttons belong to the same group they are mutually exclusive, "form:radio".
+
+    Radio buttons are defined to belong to the same group if they have the same
+    control name, as specified by their form:name attribute.
+
+    If a group of radio buttons is bound to one database field, and a user
+    selects any given button, the reference value of the selected radio button
+    is written into its database field.
+
+    Attributes:
+        control_implementation (str or None): The control implementation.
+        current_selected (bool): If True, the radio button is currently selected.
+        data_field (str or None): The data field used for storing the value.
+        disabled (bool): If True, the control is disabled.
+        id (str or None): The unique XML ID (form:id).
+        image_align (str or None): The alignment of the image.
+        image_position (str or None): The position of the image.
+        label (str or None): The label of the control.
+        linked_cell (str or None): The linked spreadsheet cell.
+        name (str or None): The name of the control.
+        printable (bool): If True, the control is printable.
+        selected (bool): If True, the radio button is selected by default.
+        tab_index (int or None): The tab order of the control.
+        tab_stop (bool): If True, the control is a tab stop.
+        title (str or None): The title or tooltip of the control.
+        value (str or None): The value of the control.
+        visual_effect (str or None): The visual effect of the control.
+        xforms_bind (str or None): The XForms bind expression.
+        xml_id (str or None): The unique XML ID.
+        form_id (str or None): The form ID (deprecated).
+    """
+
+    _tag = "form:radio"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDefBool("current_selected", "form:current-selected", False),
+        PropDef("data_field", "form:data-field"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDef("image_align", "form:image-align"),
+        PropDef("image_position", "form:image-position"),
+        PropDef("label", "form:label"),
+        PropDef("linked_cell", "form:linked-cell"),
+        PropDef("name", "form:name"),
+        PropDefBool("printable", "form:printable", True),
+        PropDefBool("selected", "form:selected", False),
+        PropDef("tab_index", "form:tab-index"),
+        PropDefBool("tab_stop", "form:tab-stop", True),
+        PropDef("title", "form:title"),
+        PropDef("value", "form:value"),
+        PropDef("visual_effect", "form:visual-effect"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        title: str | None = None,
+        value: str | None = None,
+        control_implementation: str | None = None,
+        current_selected: bool | None = None,
+        data_field: str | None = None,
+        disabled: bool | None = None,
+        image_align: str | None = None,
+        image_position: str | None = None,
+        label: str | None = None,
+        linked_cell: str | None = None,
+        printable: bool | None = None,
+        selected: bool | None = None,
+        tab_index: int | None = None,
+        tab_stop: bool | None = None,
+        visual_effect: str | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormRadio, "form:radio".
+
+        The "form:radio" element is usable within the following element:
+        "form:form".
+
+        Args:
+            name: The name of the control.
+            title: The title or tooltip of the control.
+            value: The value of the control.
+            control_implementation: The control implementation.
+            current_selected: If True, the radio button is currently selected.
+            data_field: The data field used for storing the value.
+            disabled: If True, the control is disabled.
+            image_align: The alignment of the image.
+            image_position: The position of the image.
+            label: The label of the control.
+            linked_cell: The linked spreadsheet cell.
+            printable: If True, the control is printable.
+            selected: If True, the radio button is selected by default.
+            tab_index: The tab order of the control.
+            tab_stop: If True, the control is a tab stop.
+            visual_effect: The visual effect of the control.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
+        """
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            disabled=disabled,
+            printable=printable,
+            title=title,
+            tab_index=tab_index,
+            tab_stop=tab_stop,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+        if self._do_init:
+            if current_selected is not None:
+                self.current_selected = current_selected
+            if data_field is not None:
+                self.data_field = data_field
+            if image_align is not None:
+                self.image_align = image_align
+            if image_position is not None:
+                self.image_position = image_position
+            if label is not None:
+                self.label = label
+            if linked_cell is not None:
+                self.linked_cell = linked_cell
+            if selected is not None:
+                self.selected = selected
+            if value is not None:
+                self.value = value
+            if visual_effect is not None:
+                self.visual_effect = visual_effect
+
+
+FormRadio._define_attribut_property()
+
+
+
 
 
 register_element_class(FormButton)
 register_element_class(FormImage)
 register_element_class(FormCheckbox)
+register_element_class(FormRadio)
 register_element_class(FormColumn)
 register_element_class(FormCombobox)
 register_element_class(FormDate)
