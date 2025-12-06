@@ -37,8 +37,16 @@ PROG = "odfdo-folder"
 
 
 def configure_parser() -> ArgumentParser:
-    description = "Convert standard ODF file to folder, and reverse."
-    parser = ArgumentParser(prog=PROG, description=description)
+    description = (
+        "Convert a standard ODF file (zip archive) to a folder "
+        "structure, or convert a folder structure back to an ODF file."
+    )
+    epilog = (
+        "This tool is useful for version control and manual inspection "
+        "of ODF documents, as it allows access to the component XML files "
+        "and assets within the ODF package."
+    )
+    parser = ArgumentParser(prog=PROG, description=description, epilog=epilog)
     parser.add_argument(
         "--version",
         action="version",

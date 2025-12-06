@@ -37,17 +37,20 @@ PROG = "odfdo-meta-print"
 
 
 def configure_parser() -> ArgumentParser:
-    description = dedent(
-        "Print the metadata of an ODF file.\n\n"
-        "By default, populated metadata is printed as text "
-        "(optional: with the ODF version and default style language).\n"
-        "With the -j option, export all metadata fields in JSON "
-        "format, including empty fields.\n"
+    description = "Extract and display the metadata from an ODF file."
+    epilog = dedent(
+        "By default, populated metadata fields are printed in a human-readable text format. "
+        "Use options to include the ODF version and default style language, "
+        "or to export all metadata fields (including empty ones) as a JSON object.\n\n"
+        "Examples:\n"
+        "  odfdo-meta-print -i document.odt\n"
+        "  odfdo-meta-print -i document.odt -v -l\n"
+        "  odfdo-meta-print -i document.odt -j > metadata.json"
     )
-
     parser = ArgumentParser(
         prog=PROG,
         description=description,
+        epilog=epilog,
         formatter_class=RawTextHelpFormatter,
     )
 

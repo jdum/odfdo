@@ -74,7 +74,7 @@ def test_to_md_2_help(capsys):
         assert result.value.code == 0
     captured = capsys.readouterr()
 
-    assert "document in markdown format" in captured.out
+    assert "document to Markdown" in captured.out
 
 
 def test_to_md_2_no_file():

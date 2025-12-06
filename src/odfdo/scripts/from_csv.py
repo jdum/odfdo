@@ -39,10 +39,15 @@ DEFAULT_NAME = "table"
 
 
 def configure_parser() -> ArgumentParser:
-    description = "Import a CSV file into a .ods file."
+    description = (
+        "Import data from a CSV file into a new ODS (OpenDocument Spreadsheet) file. "
+        "The script reads CSV data and populates a table in the ODS document."
+    )
     epilog = (
-        "CSV importer with minimal functionality based on "
-        "automatic format detection from the Python CSV module."
+        "The CSV format detection is handled automatically by the Python CSV module, "
+        "providing basic functionality for importing tabular data. "
+        "Input can be from a specified file or standard input. "
+        "Output can be to a specified file or standard output."
     )
     parser = ArgumentParser(prog=PROG, description=description, epilog=epilog)
     parser.add_argument(

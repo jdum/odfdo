@@ -39,9 +39,15 @@ PROG = "odfdo-styles"
 
 def configure_parser() -> ArgumentParser:
     description = (
-        "Command line interface script to manipulate styles of OpenDocument files."
+        "Manipulate styles within OpenDocument files: display, delete, or merge them."
     )
-    parser = ArgumentParser(prog=PROG, description=description)
+    epilog = (
+        "This tool offers fine-grained control over ODF document styles. "
+        "You can inspect automatic or common styles, view their properties, "
+        "delete styles (except default ones) to reduce document size, "
+        "or merge styles from another ODF file, replacing any with the same name."
+    )
+    parser = ArgumentParser(prog=PROG, description=description, epilog=epilog)
 
     parser.add_argument(
         "--version",

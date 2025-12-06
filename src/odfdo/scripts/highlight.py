@@ -36,8 +36,16 @@ PROG = "odfdo-highlight"
 
 
 def configure_parser() -> ArgumentParser:
-    description = "Search and highlight text in ODF file using regex pattern."
-    parser = ArgumentParser(prog=PROG, description=description)
+    description = (
+        "Search for a regular expression pattern in an ODF text document "
+        "and apply a highlighting style to the matching text. "
+        "The style can include italic, bold, text color, and background color."
+    )
+    epilog = (
+        "This tool is useful for visually emphasizing specific content "
+        "within your ODF documents based on search patterns."
+    )
+    parser = ArgumentParser(prog=PROG, description=description, epilog=epilog)
 
     parser.add_argument(
         "-i",

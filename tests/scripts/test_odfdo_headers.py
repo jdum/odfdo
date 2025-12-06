@@ -67,7 +67,7 @@ def test_headers_2_help(capsys):
         assert result.value.code == 0
     captured = capsys.readouterr()
 
-    assert "Print the headers" in captured.out
+    assert "Display the hierarchical headers" in captured.out
 
 
 def test_headers_2_no_file():

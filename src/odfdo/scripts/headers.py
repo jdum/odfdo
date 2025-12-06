@@ -34,8 +34,16 @@ PROG = "odfdo-headers"
 
 
 def configure_parser() -> ArgumentParser:
-    description = "Print the headers of the document."
-    parser = ArgumentParser(prog=PROG, description=description)
+    description = (
+        "Display the hierarchical headers (headings) of an ODF text document. "
+        "The headers are printed with their numbering and can be limited "
+        "by a specified depth."
+    )
+    epilog = (
+        "This tool is useful for quickly outlining the structure of a document "
+        "or verifying its logical organization."
+    )
+    parser = ArgumentParser(prog=PROG, description=description, epilog=epilog)
     parser.add_argument(
         "-d",
         "--depth",

@@ -36,8 +36,16 @@ PROG = "odfdo-to-csv"
 
 
 def configure_parser() -> ArgumentParser:
-    description = "Export a .ods table to a CSV file."
-    epilog = "Minimal-featured CSV exporter based on the Python CSV module."
+    description = (
+        "Export a table from an ODS (OpenDocument Spreadsheet) file to a CSV file. "
+        "The script extracts a specified table (or the first table by default) "
+        "and converts its content into CSV format."
+    )
+    epilog = (
+        "This tool provides a basic CSV exporter, leveraging the Python CSV module's "
+        "functionality. It can output to a file or standard output. "
+        "You can choose between 'excel' (default) or 'unix' CSV dialects."
+    )
     parser = ArgumentParser(prog=PROG, description=description, epilog=epilog)
     parser.add_argument(
         "--version",

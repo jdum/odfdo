@@ -39,18 +39,20 @@ PROG = "odfdo-userfield"
 
 
 def configure_parser() -> ArgumentParser:
-    description = "Show or set the user-field content in an ODF file."
+    description = "Inspect and modify user-defined fields within an ODF document."
     epilog = (
+        "This tool allows you to view the values of specific user fields, "
+        "list all available user fields, and update their values. "
+        "User fields are custom data points stored in the document's metadata.\n\n"
         "Examples:\n"
-        "    $ odfdo-userfield -i file.odt -f city\n"
-        "    Paris\n\n"
-        "    $ odfdo-userfield -i file.odt -ntf city phone\n"
-        "    city (string): Paris\n"
-        "    phone (string): 77 77 77 77 77\n\n"
-        "    $ odfdo-userfield -i file.odt -anr\n"
-        "    city: 'Paris'\n"
-        "    phone : '77 77 77 77 77'\n\n"
-        "    $ odfdo-userfield -i file.odt -o result.odt -s city Lyon -s phone '99 99'"
+        "  # Show the value of a specific user field named 'city'\n"
+        "  $ odfdo-userfield -i file.odt -f city\n\n"
+        "  # Show name, type, and value for fields 'city' and 'phone'\n"
+        "  $ odfdo-userfield -i file.odt -ntf city phone\n\n"
+        "  # Show all user fields with their name and value (repr format)\n"
+        "  $ odfdo-userfield -i file.odt -anr\n\n"
+        "  # Set the value of 'city' to 'Lyon' and 'phone' to '99 99', saving to result.odt\n"
+        "  $ odfdo-userfield -i file.odt -o result.odt -s city Lyon -s phone '99 99'"
     )
 
     parser = ArgumentParser(

@@ -39,11 +39,15 @@ PROG = "odfdo-show"
 
 def configure_parser() -> ArgumentParser:
     description = (
-        "Dump text from an OpenDocument file to the standard "
-        "output, optionally styles and meta (and the Pictures/* "
-        'in "-o <DIR>" mode'
+        "Display various parts of an ODF document, including text content, "
+        "styles, and metadata, to standard output or a specified directory."
     )
-    parser = ArgumentParser(prog=PROG, description=description)
+    epilog = (
+        "By default, the script dumps the main textual content. "
+        "Use options like -m (metadata), -s (styles), or -o (output directory) "
+        "to customize the output. When using -o, embedded pictures are also extracted."
+    )
+    parser = ArgumentParser(prog=PROG, description=description, epilog=epilog)
 
     parser.add_argument(
         "--version",

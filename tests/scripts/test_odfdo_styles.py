@@ -67,7 +67,7 @@ def test_styles_2_help(capsys):
         assert result.value.code == 0
     captured = capsys.readouterr()
 
-    assert "to manipulate styles" in captured.out
+    assert "Manipulate styles within" in captured.out
 
 
 def test_styles_2_no_file():

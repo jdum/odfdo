@@ -67,7 +67,7 @@ def test_show_2_help(capsys):
         assert result.value.code == 0
     captured = capsys.readouterr()
 
-    assert "Dump text from an OpenDocument" in captured.out
+    assert "Display various parts of" in captured.out
 
 
 def test_show_2_no_file():

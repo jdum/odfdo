@@ -34,8 +34,15 @@ PROG = "odfdo-markdown"
 
 
 def configure_parser() -> ArgumentParser:
-    description = "Export text document in markdown format to stdout."
-    parser = ArgumentParser(prog=PROG, description=description)
+    description = (
+        "Convert an ODF text document to Markdown format and print to standard output."
+    )
+    epilog = (
+        "This tool is useful for extracting the textual content of an ODF "
+        "document in a lightweight, human-readable, and version-control-friendly "
+        "format. It processes the document's main body content."
+    )
+    parser = ArgumentParser(prog=PROG, description=description, epilog=epilog)
     parser.add_argument(
         "--version",
         action="version",

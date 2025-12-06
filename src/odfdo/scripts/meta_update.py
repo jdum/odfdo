@@ -39,32 +39,36 @@ PROG = "odfdo-meta-update"
 
 
 def configure_parser() -> ArgumentParser:
-    description = dedent(
-        "Update the metadata of an ODF file.\n\n"
-        "With the -j argument: set the metadata from a JSON file "
-        "(use odfdo-meta-print -j to see the required JSON format).\n"
-        "The loaded metadata are merged with the existing metadata.\n"
-        "If the new value of a key is None:\n"
-        "  - meta:creation-date: use current time,\n"
-        "  - dc:date: use creation date,\n"
-        "  - meta:editing-duration: set to zero,\n"
-        "  - meta:editing-cycles: set to 1,\n"
-        "  - meta:generator: use odfdo generator string.\n"
-        "Other keys (not mandatory keys): remove key/value pair from metadata.\n"
-        "All user defined metadata are removed.\n\n"
-        "With the -s argument: strip metadata to their minimal content.\n"
-        "The new metadata values are:\n"
-        "  - meta:creation-date: use current time,\n"
-        "  - dc:date: use creation date,\n"
-        "  - meta:editing-duration: set to zero,\n"
-        "  - meta:editing-cycles: set to 1,\n"
-        "  - meta:generator: use odfdo generator string,\n"
-        "  - all meta:document-statistic values to 0."
+    description = (
+        "Update the metadata of an ODF file by merging from a JSON file "
+        "or stripping to minimal content."
+    )
+    epilog = dedent(
+        "Using the -j option: \n"
+        "  - Metadata fields are loaded from a JSON file (see 'odfdo-meta-print -j' for format).\n"
+        "  - Loaded metadata is merged with existing metadata.\n"
+        "  - Special handling for 'None' values:\n"
+        "      - 'meta:creation-date': sets to current time.\n"
+        "      - 'dc:date': sets to creation date.\n"
+        "      - 'meta:editing-duration': sets to zero.\n"
+        "      - 'meta:editing-cycles': sets to 1.\n"
+        "      - 'meta:generator': sets to 'odfdo' generator string.\n"
+        "  - Other keys with 'None' values are removed.\n"
+        "  - All user-defined metadata is removed.\n\n"
+        "Using the -s option (strip metadata):\n"
+        "  - Resets metadata to minimal content:\n"
+        "      - 'meta:creation-date': current time.\n"
+        "      - 'dc:date': creation date.\n"
+        "      - 'meta:editing-duration': zero.\n"
+        "      - 'meta:editing-cycles': 1.\n"
+        "      - 'meta:generator': 'odfdo' generator string.\n"
+        "      - All 'meta:document-statistic' values set to 0."
     )
 
     parser = ArgumentParser(
         prog=PROG,
         description=description,
+        epilog=epilog,
         formatter_class=RawTextHelpFormatter,
     )
 

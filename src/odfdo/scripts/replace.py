@@ -34,8 +34,16 @@ PROG = "odfdo-replace"
 
 
 def configure_parser() -> ArgumentParser:
-    description = "Search and replace text in ODF file using regex pattern."
-    parser = ArgumentParser(prog=PROG, description=description)
+    description = (
+        "Find and replace text in an ODF file using a regular expression pattern."
+    )
+    epilog = (
+        "This tool supports standard regular expressions for pattern matching. "
+        "Replacements can be made with or without preserving original formatting. "
+        "Input can be from a specified file or standard input. "
+        "Output can be to a specified file or standard output."
+    )
+    parser = ArgumentParser(prog=PROG, description=description, epilog=epilog)
 
     parser.add_argument(
         "--version",

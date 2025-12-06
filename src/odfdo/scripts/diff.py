@@ -37,8 +37,15 @@ PROG = "odfdo-diff"
 
 
 def configure_parser() -> ArgumentParser:
-    description = "Show a diff between two .odt files."
-    parser = ArgumentParser(prog=PROG, description=description)
+    description = (
+        "Show a diff between the textual content of two ODT files. "
+        "By default, the output is in the unified diff format."
+    )
+    epilog = (
+        "This tool is useful for comparing two versions of a document "
+        "and tracking changes in its textual content."
+    )
+    parser = ArgumentParser(prog=PROG, description=description, epilog=epilog)
     parser.add_argument(
         "-n",
         "--ndiff",

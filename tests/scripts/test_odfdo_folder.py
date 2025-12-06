@@ -74,7 +74,7 @@ def test_folder_2_help(capsys):
         assert result.value.code == 0
     captured = capsys.readouterr()
 
-    assert "ODF file to folder" in captured.out
+    assert "Convert a standard ODF file" in captured.out
 
 
 def test_folder_2_no_file_on_main(monkeypatch):

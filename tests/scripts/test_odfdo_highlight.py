@@ -90,7 +90,7 @@ def test_highlight_2_help(capsys):
         assert result.value.code == 0
     captured = capsys.readouterr()
 
-    assert "Search and highlight" in captured.out
+    assert "Search for a regular expression" in captured.out
 
 
 def test_highlight_2_no_style():

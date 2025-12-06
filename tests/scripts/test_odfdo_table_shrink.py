@@ -67,7 +67,7 @@ def test_shrink_2_help(capsys):
         assert result.value.code == 0
     captured = capsys.readouterr()
 
-    assert "Shrink tables to optimize" in captured.out
+    assert "Optimize the width" in captured.out
 
 
 def test_shrink_2_no_file():

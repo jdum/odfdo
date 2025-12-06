@@ -75,7 +75,7 @@ def test_to_csv_2_help(capsys):
         assert result.value.code == 0
     captured = capsys.readouterr()
 
-    assert "table to a CSV" in captured.out
+    assert "Export a table from" in captured.out
 
 
 def test_to_csv_2_no_file():
