@@ -31,7 +31,16 @@ from .paragraph import Paragraph
 
 
 class Header(Paragraph, MDHeader):
-    """A title, a specialized paragraph, "text:h"."""
+    """A title, a specialized paragraph, "text:h".
+
+    Attributes:
+        level (int): The outline level of the header. Level count begins at 1.
+        text (str or None): The content of the header.
+        restart_numbering (bool): If True, numbering restarts at this header level.
+        start_value (int or None): The value at which to start numbering.
+        suppress_numbering (bool): If True, no numbering for this header.
+        style (str or None): The style name of the header.
+    """
 
     _tag = "text:h"
     _properties = (
@@ -52,29 +61,20 @@ class Header(Paragraph, MDHeader):
         formatted: bool = True,
         **kwargs: Any,
     ) -> None:
-        """A title, a specialized paragraph, "text:h".
-
-        Create a header element of the given style and level, containing the
+        """Create a header element "text:h" of the given style and level, containing the
         optional given text.
-
-        Level count begins at 1.
 
         If "formatted" is True (the default), the given text is appended with <CR>,
         <TAB> and multiple spaces replaced by ODF corresponding tags.
 
         Args:
-
-            level -- int
-
-            text -- str
-
-            restart_numbering -- bool
-
-            start_value -- int
-
-            style -- str
-
-            formatted -- bool
+            level: The outline level of the header (starts at 1).
+            text: The initial text content of the header.
+            restart_numbering: If True, restart numbering at this level.
+            start_value: The value at which to start numbering.
+            suppress_numbering: If True, suppresses numbering for this header.
+            style: The style name for the header.
+            formatted: If True, replace special characters in `text` with ODF tags.
         """
         super().__init__(**kwargs)
         if self._do_init:
