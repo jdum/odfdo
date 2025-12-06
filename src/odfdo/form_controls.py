@@ -2440,6 +2440,93 @@ class FormRadio(FormImageAlignMixin, FormImagePositionMixin, FormGrid):
 FormRadio._define_attribut_property()
 
 
+class FormFrame(FormGenericControl):
+    """A frame in which controls may be visually arranged, "form:frame".
+
+    Attributes:
+        control_implementation (str or None): The control implementation.
+        disabled (bool): If True, the control is disabled.
+        form_for (str or None): The ID of the control this frame is for.
+        id (str or None): The unique XML ID (form:id).
+        label (str or None): The label of the control.
+        name (str or None): The name of the control.
+        printable (bool): If True, the control is printable.
+        title (str or None): The title or tooltip of the control.
+        xforms_bind (str or None): The XForms bind expression.
+        xml_id (str or None): The unique XML ID.
+        form_id (str or None): The form ID (deprecated).
+    """
+
+    _tag = "form:frame"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDef("form_for", "form:for"),
+        PropDef("label", "form:label"),
+        PropDef("name", "form:name"),
+        PropDefBool("printable", "form:printable", True),
+        PropDef("title", "form:title"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        title: str | None = None,
+        label: str | None = None,
+        form_for: str | None = None,
+        control_implementation: str | None = None,
+        disabled: bool | None = None,
+        printable: bool | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormFrame, "form:frame".
+
+        The "form:frame" element is usable within the following element:
+        "form:form".
+
+        Args:
+            name: The name of the control.
+            title: The title or tooltip of the control.
+            label: The label of the control.
+            form_for: The ID of the control this frame is for.
+            control_implementation: The control implementation.
+            disabled: If True, the control is disabled.
+            printable: If True, the control is printable.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
+        """
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+        if self._do_init:
+            if disabled is not None:
+                self.disabled = disabled
+            if form_for is not None:
+                self.form_for = form_for
+            if label is not None:
+                self.label = label
+            if printable is not None:
+                self.printable = printable
+            if title is not None:
+                self.title = title
+
+
+FormFrame._define_attribut_property()
+
+
+
 
 
 
@@ -2447,6 +2534,7 @@ register_element_class(FormButton)
 register_element_class(FormImage)
 register_element_class(FormCheckbox)
 register_element_class(FormRadio)
+register_element_class(FormFrame)
 register_element_class(FormColumn)
 register_element_class(FormCombobox)
 register_element_class(FormDate)
