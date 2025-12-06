@@ -2620,6 +2620,148 @@ class FormImageFrame(FormGenericControl):
 FormImageFrame._define_attribut_property()
 
 
+class FormValueRange(FormDelayRepeatMixin, FormGenericControl):
+    """A control which allows the user to select a value from a number range,
+    "form:value-range".
+
+    Attributes:
+        control_implementation (str or None): The control implementation.
+        delay_for_repeat (str or None): The delay for repeating the action.
+        disabled (bool): If True, the control is disabled.
+        id (str or None): The unique XML ID (form:id).
+        linked_cell (str or None): The linked spreadsheet cell.
+        max_value (str or None): The maximum value allowed.
+        min_value (str or None): The minimum value allowed.
+        name (str or None): The name of the control.
+        orientation (str or None): The orientation of the control.
+        page_step_size (str or None): The page step size.
+        printable (bool): If True, the control is printable.
+        repeat (bool): If True, the control repeats when a button is clicked.
+        step_size (str or None): The step size.
+        tab_index (int or None): The tab order of the control.
+        tab_stop (bool): If True, the control is a tab stop.
+        title (str or None): The title or tooltip of the control.
+        value (str or None): The value of the control.
+        xforms_bind (str or None): The XForms bind expression.
+        xml_id (str or None): The unique XML ID.
+        form_id (str or None): The form ID (deprecated).
+    """
+
+    _tag = "form:value-range"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("delay_for_repeat", "form:delay-for-repeat"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDef("linked_cell", "form:linked-cell"),
+        PropDef("max_value", "form:max-value"),
+        PropDef("min_value", "form:min-value"),
+        PropDef("name", "form:name"),
+        PropDef("orientation", "form:orientation"),
+        PropDef("page_step_size", "form:page-step-size"),
+        PropDefBool("printable", "form:printable", True),
+        PropDef("repeat", "form:repeat"),
+        PropDef("step_size", "form:step-size"),
+        PropDef("tab_index", "form:tab-index"),
+        PropDefBool("tab_stop", "form:tab-stop", True),
+        PropDef("title", "form:title"),
+        PropDef("value", "form:value"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        title: str | None = None,
+        value: str | None = None,
+        control_implementation: str | None = None,
+        delay_for_repeat: str | None = None,
+        disabled: bool | None = None,
+        linked_cell: str | None = None,
+        max_value: str | None = None,
+        min_value: str | None = None,
+        orientation: str | None = None,
+        page_step_size: str | None = None,
+        printable: bool | None = None,
+        repeat: bool | None = None,
+        step_size: str | None = None,
+        tab_index: int | None = None,
+        tab_stop: bool | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormValueRange, "form:value-range".
+
+        The "form:value-range" element is usable within the following element:
+        "form:form".
+
+        Args:
+            name: The name of the control.
+            title: The title or tooltip of the control.
+            value: The value of the control.
+            control_implementation: The control implementation.
+            delay_for_repeat: The delay for repeating the action.
+            disabled: If True, the control is disabled.
+            linked_cell: The linked spreadsheet cell.
+            max_value: The maximum value allowed.
+            min_value: The minimum value allowed.
+            orientation: The orientation of the control.
+            page_step_size: The page step size.
+            printable: If True, the control is printable.
+            repeat: If True, the control repeats when a button is clicked.
+            step_size: The step size.
+            tab_index: The tab order of the control.
+            tab_stop: If True, the control is a tab stop.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
+        """
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+        if self._do_init:
+            if delay_for_repeat is not None:
+                self.delay_for_repeat = delay_for_repeat
+            if disabled is not None:
+                self.disabled = disabled
+            if linked_cell is not None:
+                self.linked_cell = linked_cell
+            if max_value is not None:
+                self.max_value = max_value
+            if min_value is not None:
+                self.min_value = min_value
+            if orientation is not None:
+                self.orientation = orientation
+            if page_step_size is not None:
+                self.page_step_size = page_step_size
+            if printable is not None:
+                self.printable = printable
+            if repeat is not None:
+                self.repeat = repeat
+            if step_size is not None:
+                self.step_size = step_size
+            if tab_index is not None:
+                self.tab_index = tab_index
+            if tab_stop is not None:
+                self.tab_stop = tab_stop
+            if title is not None:
+                self.title = title
+            if value is not None:
+                self.value = value
+
+
+FormValueRange._define_attribut_property()
+
+
+
 
 
 
@@ -2631,6 +2773,7 @@ register_element_class(FormCheckbox)
 register_element_class(FormRadio)
 register_element_class(FormFrame)
 register_element_class(FormImageFrame)
+register_element_class(FormValueRange)
 register_element_class(FormColumn)
 register_element_class(FormCombobox)
 register_element_class(FormDate)
