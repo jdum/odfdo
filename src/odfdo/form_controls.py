@@ -2526,6 +2526,101 @@ class FormFrame(FormGenericControl):
 FormFrame._define_attribut_property()
 
 
+class FormImageFrame(FormGenericControl):
+    """A graphical control displaying an image, "form:image-frame".
+
+    The control displays an image, whose location is described in the control.
+
+    Attributes:
+        control_implementation (str or None): The control implementation.
+        data_field (str or None): The data field used for storing the value.
+        disabled (bool): If True, the control is disabled.
+        id (str or None): The unique XML ID (form:id).
+        image_data (str or None): The image data for the control.
+        name (str or None): The name of the control.
+        printable (bool): If True, the control is printable.
+        readonly (bool): If True, the control is read-only.
+        title (str or None): The title or tooltip of the control.
+        xforms_bind (str or None): The XForms bind expression.
+        xml_id (str or None): The unique XML ID.
+        form_id (str or None): The form ID (deprecated).
+    """
+
+    _tag = "form:image-frame"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("data_field", "form:data-field"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDef("image_data", "form:image-data"),
+        PropDef("name", "form:name"),
+        PropDefBool("printable", "form:printable", True),
+        PropDefBool("readonly", "form:readonly", False),
+        PropDef("title", "form:title"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        title: str | None = None,
+        control_implementation: str | None = None,
+        data_field: str | None = None,
+        disabled: bool | None = None,
+        image_data: str | None = None,
+        printable: bool | None = None,
+        readonly: bool | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormImageFrame, "form:image-frame".
+
+        The "form:image-frame" element is usable within the following element:
+        "form:form".
+
+        Args:
+            name: The name of the control.
+            title: The title or tooltip of the control.
+            control_implementation: The control implementation.
+            data_field: The data field used for storing the value.
+            disabled: If True, the control is disabled.
+            image_data: The image data for the control.
+            printable: If True, the control is printable.
+            readonly: If True, the control is read-only.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
+        """
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+        if self._do_init:
+            if data_field is not None:
+                self.data_field = data_field
+            if disabled is not None:
+                self.disabled = disabled
+            if image_data is not None:
+                self.image_data = image_data
+            if printable is not None:
+                self.printable = printable
+            if readonly is not None:
+                self.readonly = readonly
+            if title is not None:
+                self.title = title
+
+
+FormImageFrame._define_attribut_property()
+
+
+
 
 
 
@@ -2535,6 +2630,7 @@ register_element_class(FormImage)
 register_element_class(FormCheckbox)
 register_element_class(FormRadio)
 register_element_class(FormFrame)
+register_element_class(FormImageFrame)
 register_element_class(FormColumn)
 register_element_class(FormCombobox)
 register_element_class(FormDate)
