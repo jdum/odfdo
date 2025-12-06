@@ -2030,7 +2030,278 @@ class FormButton(
 FormButton._define_attribut_property()
 
 
+class FormImage(OfficeTargetFrameMixin, FormGrid):
+    """A graphical button control, "form:image".
+
+    Note: HTML 4.01 only allows the button type to be “submit” for an image
+    button. In OpenDocument, an image button can be of any type.
+
+    Attributes:
+        button_type (str or None): The type of the button.
+        control_implementation (str or None): The control implementation.
+        disabled (bool): If True, the control is disabled.
+        image_data (str or None): The image data for the button.
+        name (str or None): The name of the control.
+        printable (bool): If True, the control is printable.
+        tab_index (int or None): The tab order of the control.
+        tab_stop (bool): If True, the control is a tab stop.
+        title (str or None): The title or tooltip of the control.
+        value (str or None): The value of the control.
+        office_target_frame (str or None): The target frame for the URL.
+        xforms_bind (str or None): The XForms bind expression.
+        href (str or None): The URL to navigate to when the button is clicked.
+        xml_id (str or None): The unique XML ID.
+        form_id (str or None): The form ID (deprecated).
+    """
+
+    _tag = "form:image"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("button_type", "form:button-type"),
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDef("image_data", "form:image-data"),
+        PropDef("name", "form:name"),
+        PropDefBool("printable", "form:printable", True),
+        PropDef("tab_index", "form:tab-index"),
+        PropDefBool("tab_stop", "form:tab-stop", True),
+        PropDef("title", "form:title"),
+        PropDef("value", "form:value"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("href", "xlink:href"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        title: str | None = None,
+        value: str | None = None,
+        button_type: str | None = None,
+        control_implementation: str | None = None,
+        disabled: bool | None = None,
+        image_data: str | None = None,
+        target_frame: str | None = None,
+        href: str | None = None,
+        printable: bool | None = None,
+        tab_index: int | None = None,
+        tab_stop: bool | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormImage, "form:image".
+
+        The "form:image" element is usable within the following element:
+        "form:form".
+
+        Args:
+            name: The name of the control.
+            title: The title or tooltip of the control.
+            value: The value of the control.
+            button_type: The type of the button.
+            control_implementation: The control implementation.
+            disabled: If True, the control is disabled.
+            image_data: The image data for the button.
+            target_frame: The target frame for the URL.
+            href: The URL to navigate to when the button is clicked.
+            printable: If True, the control is printable.
+            tab_index: The tab order of the control.
+            tab_stop: If True, the control is a tab stop.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
+        """
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            disabled=disabled,
+            printable=printable,
+            title=title,
+            tab_index=tab_index,
+            tab_stop=tab_stop,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+        if self._do_init:
+            if value is not None:
+                self.value = value
+            if button_type is not None:
+                self.button_type = button_type
+            if image_data is not None:
+                self.image_data = image_data
+            if target_frame is not None:
+                self.target_frame = target_frame
+            if href is not None:
+                self.href = href
+
+    @property
+    def button_type(self) -> str | None:
+        return self._get_attribute_str_default("form:button-type", "push")
+
+    @button_type.setter
+    def button_type(self, button_type: str | None) -> None:
+        if button_type is None or button_type in FormButton.BUTTON_TYPES:
+            self._set_attribute_str_default("form:button-type", button_type, "push")
+        else:
+            raise ValueError
+
+
+FormImage._define_attribut_property()
+
+
+class FormCheckbox(FormImageAlignMixin, FormImagePositionMixin, FormGrid):
+    """An on/off control, "form:checkbox".
+
+    The control is on when the value of the form:current-state attribute
+    associated with the control element is checked.
+
+    Attributes:
+        control_implementation (str or None): The control implementation.
+        current_state (str or None): The current state of the checkbox.
+        data_field (str or None): The data field used for storing the value.
+        disabled (bool): If True, the control is disabled.
+        id (str or None): The unique XML ID (form:id).
+        image_align (str or None): The alignment of the image.
+        image_position (str or None): The position of the image.
+        is_tristate (bool): If True, the checkbox can have three states.
+        label (str or None): The label of the control.
+        linked_cell (str or None): The linked spreadsheet cell.
+        name (str or None): The name of the control.
+        printable (bool): If True, the control is printable.
+        state (str or None): The state of the checkbox.
+        tab_index (int or None): The tab order of the control.
+        tab_stop (bool): If True, the control is a tab stop.
+        title (str or None): The title or tooltip of the control.
+        value (str or None): The value of the control.
+        visual_effect (str or None): The visual effect of the control.
+        xforms_bind (str or None): The XForms bind expression.
+        xml_id (str or None): The unique XML ID.
+        form_id (str or None): The form ID (deprecated).
+    """
+
+    _tag = "form:checkbox"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("control_implementation", "form:control-implementation"),
+        PropDef("current_state", "form:current-state"),
+        PropDef("data_field", "form:data-field"),
+        PropDefBool("disabled", "form:disabled", False),
+        PropDef("image_align", "form:image-align"),
+        PropDef("image_position", "form:image-position"),
+        PropDefBool("is_tristate", "form:is-tristate", False),
+        PropDef("label", "form:label"),
+        PropDef("linked_cell", "form:linked-cell"),
+        PropDef("name", "form:name"),
+        PropDefBool("printable", "form:printable", True),
+        PropDef("state", "form:state"),
+        PropDef("tab_index", "form:tab-index"),
+        PropDefBool("tab_stop", "form:tab-stop", True),
+        PropDef("title", "form:title"),
+        PropDef("value", "form:value"),
+        PropDef("visual_effect", "form:visual-effect"),
+        PropDef("xforms_bind", "xforms:bind"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("form_id", "form:id"),  # deprecated
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        title: str | None = None,
+        value: str | None = None,
+        control_implementation: str | None = None,
+        current_state: str | None = None,
+        data_field: str | None = None,
+        disabled: bool | None = None,
+        image_align: str | None = None,
+        image_position: str | None = None,
+        is_tristate: bool | None = None,
+        label: str | None = None,
+        linked_cell: str | None = None,
+        printable: bool | None = None,
+        state: str | None = None,
+        tab_index: int | None = None,
+        tab_stop: bool | None = None,
+        visual_effect: str | None = None,
+        xml_id: str | None = None,
+        xforms_bind: str | None = None,
+        form_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a FormCheckbox, "form:checkbox".
+
+        The "form:checkbox" element is usable within the following elements:
+        "form:column" and "form:form".
+
+        Args:
+            name: The name of the control.
+            title: The title or tooltip of the control.
+            value: The value of the control.
+            control_implementation: The control implementation.
+            current_state: The current state of the checkbox.
+            data_field: The data field used for storing the value.
+            disabled: If True, the control is disabled.
+            image_align: The alignment of the image.
+            image_position: The position of the image.
+            is_tristate: If True, the checkbox can have three states.
+            label: The label of the control.
+            linked_cell: The linked spreadsheet cell.
+            printable: If True, the control is printable.
+            state: The state of the checkbox.
+            tab_index: The tab order of the control.
+            tab_stop: If True, the control is a tab stop.
+            visual_effect: The visual effect of the control.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
+        """
+        super().__init__(
+            name=name,
+            control_implementation=control_implementation,
+            disabled=disabled,
+            printable=printable,
+            title=title,
+            tab_index=tab_index,
+            tab_stop=tab_stop,
+            xml_id=xml_id,
+            xforms_bind=xforms_bind,
+            form_id=form_id,
+            **kwargs,
+        )
+        if self._do_init:
+            if current_state is not None:
+                self.current_state = current_state
+            if data_field is not None:
+                self.data_field = data_field
+            if image_align is not None:
+                self.image_align = image_align
+            if image_position is not None:
+                self.image_position = image_position
+            if is_tristate is not None:
+                self.is_tristate = is_tristate
+            if label is not None:
+                self.label = label
+            if linked_cell is not None:
+                self.linked_cell = linked_cell
+            if state is not None:
+                self.state = state
+            if value is not None:
+                self.value = value
+            if visual_effect is not None:
+                self.visual_effect = visual_effect
+
+
+FormCheckbox._define_attribut_property()
+
+
+
+
 register_element_class(FormButton)
+register_element_class(FormImage)
+register_element_class(FormCheckbox)
 register_element_class(FormColumn)
 register_element_class(FormCombobox)
 register_element_class(FormDate)
