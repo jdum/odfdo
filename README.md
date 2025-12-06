@@ -96,20 +96,20 @@ doc.save('modified_spreadsheet.ods')
 
 A few scripts are provided with `odfdo`:
 
--   `odfdo-diff`: show a _diff_ between two .odt document.
--   `odfdo-folder`: convert standard ODF file to folder and files, and reverse.
--   `odfdo-headers`: print the headers of an ODF file.
--   `odfdo-highlight`: highlight the text matching a pattern (regex) in an ODF file.
--   `odfdo-markdown`: export text document in Markdown format to stdout.
--   `odfdo-replace`: find a pattern (regex) in an ODF file and replace by some string.
--   `odfdo-show`: dump text from an ODF file to the standard output, and optionally styles and meta informations.
--   `odfdo-styles`: command line interface tool to manipulate styles of ODF files.
--   `odfdo-table-shrink`: shrink tables to optimize width and height.
--   `odfdo-userfield`: show or set the user-field content in an ODF file.
--   `odfdo-from-csv`: import a CSV file into a .ods file.
--   `odfdo-to-csv`: export a .ods table to a CSV file.
--   `odfdo-meta-print`: print the metadata of an ODF file.
--   `odfdo-meta-update`: update the metadata of an ODF file.
+-   `odfdo-diff`: show a _diff_ between the textual content of two ODT files.
+-   `odfdo-folder`: a standard ODF file (zip archive) to a folder structure, or convert a folder structure back to an ODF file.
+-   `odfdo-headers`: display the hierarchical headers (headings) of an ODF text document. The headers are printed with their numbering and can be limited by a specified depth.
+-   `odfdo-highlight`: search for a regular expression pattern in an ODF text document and apply a highlighting style to the matching text. The style can include italic, bold, text color, and background color.
+-   `odfdo-markdown`: convert an ODF text document to Markdown format and print to standard output.
+-   `odfdo-replace`: find and replace text in an ODF file using a regular expression pattern.
+-   `odfdo-show`: display various parts of an ODF document, including text content, styles, and metadata, to standard output or a specified directory.
+-   `odfdo-styles`: manipulate styles within OpenDocument files: display, delete, or merge them.
+-   `odfdo-table-shrink`: optimize the width and height of tables in an ODF spreadsheet by removing empty trailing rows and columns.
+-   `odfdo-userfield`: inspect and modify user-defined fields within an ODF document.
+-   `odfdo-from-csv`: import data from a CSV file into a new ODS (OpenDocument Spreadsheet) file. 
+-   `odfdo-to-csv`: export a table from an ODS (OpenDocument Spreadsheet) file to a CSV file.
+-   `odfdo-meta-print`: extract and display the metadata from an ODF file.
+-   `odfdo-meta-update`: update the metadata of an ODF file by merging from a JSON file or stripping to minimal content.
 
 # tl;dr
 
