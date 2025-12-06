@@ -47,7 +47,7 @@ class FormColumn(Element):
         name (str or None): The name of the column (form:name).
         control_implementation (str or None): The control implementation.
         label (str or None): The label of the column.
-        text_style_name (str or None): The text style name (xforms:text-style-name).
+        text_style_name (str or None): The text style name (form:text-style-name).
     """
 
     _tag = "form:column"
@@ -55,7 +55,7 @@ class FormColumn(Element):
         PropDef("name", "form:name"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("label", "form:label"),
-        PropDef("text_style_name", "xforms:text-style-name"),
+        PropDef("text_style_name", "form:text-style-name"),
     )
 
     def __init__(
