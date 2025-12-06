@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING
 
 from .annotation import AnnotationMixin
 from .bookmark import BookmarkMixin
-from .element import Element, PropDef, register_element_class
+from .element import Element, PropDef, PropDefBool, register_element_class
 from .form import FormMixin
 from .mixin_named_range import NRMixin
 from .note import NoteMixin
@@ -50,7 +50,7 @@ class Body(Element):
     """Root of the document content, "office:body"."""
 
     _tag: str = "office:body"
-    _properties: tuple[PropDef, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
     def get_tables(
         self,
@@ -129,42 +129,42 @@ class Chart(NRMixin, Body):
     """Root of the Chart document content, "office:chart"."""
 
     _tag: str = "office:chart"
-    _properties: tuple[PropDef, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
 class Database(Body):
     """Root of the Database document content, "office:database"."""
 
     _tag: str = "office:database"
-    _properties: tuple[PropDef, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
 class Drawing(NRMixin, Body):
     """Root of the Drawing document content, "office:drawing"."""
 
     _tag: str = "office:drawing"
-    _properties: tuple[PropDef, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
 class Image(Body):
     """Root of the Image document content, "office:image"."""
 
     _tag: str = "office:image"
-    _properties: tuple[PropDef, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
 class Presentation(NRMixin, Body):
     """Root of the Presentation document content, "office:presentation"."""
 
     _tag: str = "office:presentation"
-    _properties: tuple[PropDef, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
 class Spreadsheet(AnnotationMixin, NRMixin, Body):
     """Root of the Spreadsheet document content, "office:spreadsheet"."""
 
     _tag: str = "office:spreadsheet"
-    _properties: tuple[PropDef, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
 class Text(
@@ -182,14 +182,14 @@ class Text(
     """Root of the Text document content, "office:text"."""
 
     _tag: str = "office:text"
-    _properties: tuple[PropDef, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
 class Metadata(Body):
     """Root of the Meta document content, "office:meta"."""
 
     _tag: str = "office:meta"
-    _properties: tuple[PropDef, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
 register_element_class(Body)

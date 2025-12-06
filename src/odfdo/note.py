@@ -27,7 +27,7 @@ from __future__ import annotations
 from typing import Any, ClassVar, Union, cast
 
 from .annotation import Annotation, AnnotationEnd, get_unique_office_name  # noqa: F401
-from .element import Element, PropDef, register_element_class
+from .element import Element, PropDef, PropDefBool, register_element_class
 from .mixin_md import MDNote
 from .section import SectionMixin
 
@@ -99,7 +99,7 @@ class NoteBody(SectionMixin):
     """Container for the content of a note, "text:note-body"."""
 
     _tag: str = "text:note-body"
-    _properties: tuple[PropDef, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
 class Note(MDNote, Element):
@@ -110,7 +110,7 @@ class Note(MDNote, Element):
     """
 
     _tag = "text:note"
-    _properties = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("note_class", "text:note-class"),
         PropDef("note_id", "text:id"),
     )

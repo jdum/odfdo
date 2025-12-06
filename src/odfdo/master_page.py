@@ -23,7 +23,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .element import Element, PropDef, register_element_class
+from .element import Element, PropDef, PropDefBool, register_element_class
 from .office_forms import OfficeFormsMixin
 from .section import SectionMixin
 from .style_base import StyleBase
@@ -75,7 +75,7 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
     # style:page-layout-name
 
     _tag: str = "style:master-page"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "style:name"),
         PropDef("display_name", "style:display-name"),
         PropDef("page_layout", "style:page-layout-name", "master-page"),

@@ -23,7 +23,7 @@ from __future__ import annotations
 
 from typing import Any, ClassVar, Union, cast
 
-from .element import Element, PropDef, register_element_class
+from .element import Element, PropDef, PropDefBool, register_element_class
 from .style_base import StyleBase
 from .style_props import StyleProps
 from .style_utils import (
@@ -44,7 +44,7 @@ class StylePageLayout(StyleProps):
     # style:page-usage
 
     _tag: str = "style:page-layout"
-    _properties: tuple[PropDef, ...] = (PropDef("name", "style:name"),)
+    _properties: tuple[PropDef | PropDefBool, ...] = (PropDef("name", "style:name"),)
     PAGE_USAGE: ClassVar = {"all", "left", "right", "mirrored"}
 
     def __init__(

@@ -27,7 +27,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .element import Element, PropDef, register_element_class
+from .element import Element, PropDef, PropDefBool, register_element_class
 from .frame import AnchorMix, PosMix, SizeMix, ZMix
 
 
@@ -35,7 +35,7 @@ class ShapeBase(Element, SizeMix, PosMix):
     """Base class for shapes (internal)."""
 
     _tag = "draw:shape-odfdo-notodf"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("draw_id", "draw:id"),
         PropDef("layer", "draw:layer"),
         PropDef("width", "svg:width"),
@@ -90,7 +90,7 @@ class LineShape(ShapeBase):
     """A line shape, "draw:line"."""
 
     _tag = "draw:line"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("x1", "svg:x1"),
         PropDef("y1", "svg:y1"),
         PropDef("x2", "svg:x2"),
@@ -148,7 +148,7 @@ class RectangleShape(ShapeBase):
     """A rectangle shape, "draw:rect"."""
 
     _tag = "draw:rect"
-    _properties: tuple[PropDef, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
     def __init__(
         self,
@@ -196,7 +196,7 @@ class EllipseShape(ShapeBase):
     """An ellipse shape, "draw:ellipse"."""
 
     _tag = "draw:ellipse"
-    _properties: tuple[PropDef, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
     def __init__(
         self,
@@ -244,7 +244,7 @@ class ConnectorShape(ShapeBase):
     """A connector shape, "draw:connector"."""
 
     _tag = "draw:connector"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("start_shape", "draw:start-shape"),
         PropDef("end_shape", "draw:end-shape"),
         PropDef("start_glue_point", "draw:start-glue-point"),
@@ -343,7 +343,7 @@ class DrawGroup(Element, AnchorMix, ZMix, PosMix):
     """
 
     _tag = "draw:g"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("draw_id", "draw:id"),
         PropDef("caption_id", "draw:caption-id"),
         PropDef("draw_class_names", "draw:class-names"),

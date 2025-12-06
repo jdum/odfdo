@@ -144,6 +144,14 @@ class PropDef(NamedTuple):
     family: str = ""
 
 
+class PropDefBool(NamedTuple):
+    """Named tuple for boolean class properties (internal)."""
+
+    name: str
+    attr: str
+    default: bool = False
+
+
 def _decode_qname(qname: str) -> tuple[str | None, str]:
     """Turn a prefixed qualified name to a (uri, name) pair."""
     if ":" in qname:
@@ -322,7 +330,7 @@ class Element(MDBase):
     """Base class of all ODF classes, abstraction of the underlying XML."""
 
     _tag: str = ""
-    _properties: tuple[PropDef, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
     def __init__(self, **kwargs: Any) -> None:
         """Base class of all ODF classes, abstraction of the underlying XML."""
@@ -447,19 +455,45 @@ class Element(MDBase):
 
         return setter
 
+    @staticmethod
+    def _boolean_attrib_getter(prop: PropDefBool) -> Callable:
+        def getter(self: Element) -> bool:
+            return self._get_attribute_bool_default(prop.attr, prop.default)
+
+        return getter
+
+    @staticmethod
+    def _boolean_attrib_setter(prop: PropDefBool) -> Callable:
+        def setter(self: Element, value: bool) -> None:
+            self._set_attribute_bool_default(prop.attr, value, prop.default)
+
+        return setter
+
     @classmethod
     def _define_attribut_property(cls: type[Element]) -> None:
         for prop in cls._properties:
-            setattr(
-                cls,
-                prop.name,
-                property(
-                    cls._generic_attrib_getter(prop.attr, prop.family or None),
-                    cls._generic_attrib_setter(prop.attr, prop.family or None),
-                    None,
-                    f"Get/set the attribute {prop.attr}",
-                ),
-            )
+            if isinstance(prop, PropDef):
+                setattr(
+                    cls,
+                    prop.name,
+                    property(
+                        cls._generic_attrib_getter(prop.attr, prop.family or None),
+                        cls._generic_attrib_setter(prop.attr, prop.family or None),
+                        None,
+                        f"Get/set the attribute {prop.attr}",
+                    ),
+                )
+            else:
+                setattr(
+                    cls,
+                    prop.name,
+                    property(
+                        cls._boolean_attrib_getter(prop),
+                        cls._boolean_attrib_setter(prop),
+                        None,
+                        f"Get/set the attribute {prop.attr}",
+                    ),
+                )
 
     @staticmethod
     def _make_before_regex(

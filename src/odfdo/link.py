@@ -27,7 +27,7 @@ from typing import Any
 
 from .annotation import AnnotationMixin
 from .bookmark import BookmarkMixin
-from .element import Element, PropDef, register_element_class
+from .element import Element, PropDef, PropDefBool, register_element_class
 from .mixin_md import MDLink
 from .mixin_paragraph_formatted import ParaFormattedTextMixin
 from .note import NoteMixin
@@ -46,7 +46,7 @@ class Link(
     """Representation of a link (URL), "text:a"."""
 
     _tag = "text:a"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("url", "xlink:href"),
         PropDef("name", "office:name"),
         PropDef("title", "office:title"),

@@ -30,6 +30,7 @@ from typing import Any
 from .element import (
     Element,
     PropDef,
+    PropDefBool,
     register_element_class,
 )
 from .line_break import LineBreak
@@ -59,7 +60,9 @@ class Paragraph(MDParagraph, ParaFormattedTextMixin, ParaMixin, NoteMixin, Eleme
     """
 
     _tag = "text:p"
-    _properties: tuple[PropDef, ...] = (PropDef("style", "text:style-name"),)
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("style", "text:style-name"),
+    )
 
     def __init__(
         self,

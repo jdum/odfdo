@@ -23,7 +23,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .element import Element, PropDef, register_element_class
+from .element import Element, PropDef, PropDefBool, register_element_class
 
 
 class MetaHyperlinkBehaviour(Element):
@@ -32,7 +32,7 @@ class MetaHyperlinkBehaviour(Element):
     """
 
     _tag = "meta:hyperlink-behaviour"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("target_frame_name", "office:target-frame-name"),
         PropDef("show", "xlink:show"),
     )

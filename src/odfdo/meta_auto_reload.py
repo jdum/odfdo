@@ -25,14 +25,14 @@ from datetime import timedelta
 from typing import Any
 
 from .datatype import Duration
-from .element import Element, PropDef, register_element_class
+from .element import Element, PropDef, PropDefBool, register_element_class
 
 
 class MetaAutoReload(Element):
     """Container for auto-reload properties, "meta:auto-reload"."""
 
     _tag = "meta:auto-reload"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("delay", "meta:delay"),
         PropDef("actuate", "xlink:actuate"),
         PropDef("href", "xlink:href"),

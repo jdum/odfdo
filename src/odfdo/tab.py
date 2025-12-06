@@ -27,7 +27,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .element import Element, PropDef, register_element_class
+from .element import Element, PropDef, PropDefBool, register_element_class
 from .mixin_md import MDTab
 
 
@@ -45,7 +45,9 @@ class Tab(MDTab, Element):
     """
 
     _tag = "text:tab"
-    _properties: tuple[PropDef, ...] = (PropDef("position", "text:tab-ref"),)
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("position", "text:tab-ref"),
+    )
 
     def __init__(self, position: int | None = None, **kwargs: Any) -> None:
         """Representation of a tabulation, "text:tab".

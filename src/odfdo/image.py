@@ -26,7 +26,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .element import Element, PropDef, register_element_class
+from .element import Element, PropDef, PropDefBool, register_element_class
 
 
 class DrawImage(Element):
@@ -37,7 +37,7 @@ class DrawImage(Element):
     """
 
     _tag = "draw:image"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("url", "xlink:href"),
         PropDef("type", "xlink:type"),
         PropDef("show", "xlink:show"),
@@ -93,7 +93,7 @@ class DrawFillImage(DrawImage):
     """A link to a bitmap resource, "draw:fill-image"."""
 
     _tag = "draw:fill-image"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("display_name", "draw:display-name"),
         PropDef("name", "draw:name"),
         PropDef("height", "svg:height"),

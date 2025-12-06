@@ -27,7 +27,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .element import Element, PropDef, register_element_class
+from .element import Element, PropDef, PropDefBool, register_element_class
 from .mixin_md import MDSpacer
 
 
@@ -42,7 +42,7 @@ class Spacer(MDSpacer, Element):
     """
 
     _tag = "text:s"
-    _properties: tuple[PropDef, ...] = (PropDef("number", "text:c"),)
+    _properties: tuple[PropDef | PropDefBool, ...] = (PropDef("number", "text:c"),)
 
     def __init__(self, number: int | None = 1, **kwargs: Any) -> None:
         """Representation of several spaces, "text:s".

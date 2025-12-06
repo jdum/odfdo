@@ -22,6 +22,18 @@
 
 from __future__ import annotations
 
+from typing import Any
+
+from .const import ODF_PROPERTIES
+from .datatype import Boolean
+from .element import (
+    Element,
+    PropDef,
+    PropDefBool,
+    register_element_class,
+    register_element_class_list,
+)
+from .image import DrawImage
 from .style_base import StyleBase
 from .style_defaults import (
     default_boolean_style,
@@ -33,6 +45,18 @@ from .style_defaults import (
 )
 from .style_props import StyleProps
 from .style_utils import _set_background
+from .utils import (
+    FALSE_FAMILY_MAP_REVERSE,
+    FAMILY_MAPPING,
+    FAMILY_ODF_STD,
+    STYLES_TO_REGISTER,
+    SUBCLASSED_STYLES,
+    hex2rgb,
+    hexa_color,
+    rgb2hex,
+    to_str,
+)
+from .utils.css3_colormap import CSS3_COLORMAP
 
 __all__ = [  # noqa: RUF022
     "BackgroundImage",
@@ -50,29 +74,6 @@ __all__ = [  # noqa: RUF022
     "make_table_cell_border_string",
     "rgb2hex",
 ]
-from typing import Any
-
-from .const import ODF_PROPERTIES
-from .datatype import Boolean
-from .element import (
-    Element,
-    PropDef,
-    register_element_class,
-    register_element_class_list,
-)
-from .image import DrawImage
-from .utils import (
-    FALSE_FAMILY_MAP_REVERSE,
-    FAMILY_MAPPING,
-    FAMILY_ODF_STD,
-    STYLES_TO_REGISTER,
-    SUBCLASSED_STYLES,
-    hex2rgb,
-    hexa_color,
-    rgb2hex,
-    to_str,
-)
-from .utils.css3_colormap import CSS3_COLORMAP
 
 
 def _make_thick_string(thick: str | float | int | None) -> str:
@@ -260,7 +261,7 @@ class Style(StyleProps):
     ...
     """
 
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "style:name"),
         PropDef("parent_style", "style:parent-style-name"),
         PropDef("display_name", "style:display-name"),
@@ -709,7 +710,7 @@ class BackgroundImage(Style, DrawImage):
     """Style for a background image, "style:background-image"."""
 
     _tag = "style:background-image"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "style:name"),
         PropDef("display_name", "style:display-name"),
         PropDef("svg_font_family", "svg:font-family"),

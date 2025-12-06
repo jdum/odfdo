@@ -23,7 +23,7 @@ from __future__ import annotations
 
 from typing import Union, cast
 
-from .element import Element, PropDef, register_element_class
+from .element import Element, PropDef, PropDefBool, register_element_class
 from .named_range import NamedRange
 
 
@@ -40,7 +40,7 @@ class TableNamedExpressions(Element):
     """
 
     _tag: str = "table:named-expressions"
-    _properties: tuple[PropDef, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
 class NRMixin(Element):

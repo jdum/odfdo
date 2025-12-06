@@ -27,7 +27,7 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any, ClassVar
 
-from .element import Element, PropDef, register_element_class
+from .element import Element, PropDef, PropDefBool, register_element_class
 from .form_controls_mixins import (
     FormAsDictMixin,
     FormDelayRepeatMixin,
@@ -44,7 +44,7 @@ class FormColumn(Element):
     """A column in a form grid control, "form:column"."""
 
     _tag = "form:column"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("label", "form:label"),
@@ -99,7 +99,7 @@ class FormGenericControl(Element):
     """
 
     _tag = "form:generic-control"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("xml_id", "xml:id"),
@@ -159,7 +159,7 @@ class FormHidden(FormAsDictMixin, FormGenericControl):
     """A control that does not have a visual representation, "form:hidden"."""
 
     _tag = "form:hidden"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
@@ -222,7 +222,7 @@ class FormGrid(FormGenericControl):
     """
 
     _tag = "form:grid"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDef("title", "form:title"),
@@ -310,7 +310,7 @@ class FormText(FormAsDictMixin, FormMaxLengthMixin, FormGrid):
     """A control for displaying and inputting text on a single line, "form:text"."""
 
     _tag = "form:text"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
@@ -442,7 +442,7 @@ class FormTextarea(FormText):
     """
 
     _tag = "form:textarea"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
@@ -554,7 +554,7 @@ class FormPassword(FormAsDictMixin, FormGrid):
     """A control that uses an echo character to hide password input by a user, "form:password"."""
 
     _tag = "form:password"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
@@ -660,7 +660,7 @@ class FormFile(FormAsDictMixin, FormGrid):
     """A control for or selecting a file, "form:file"."""
 
     _tag = "form:file"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
@@ -772,7 +772,7 @@ class FormFormattedText(FormDelayRepeatMixin, FormText):
     """
 
     _tag = "form:formatted-text"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
@@ -917,7 +917,7 @@ class FormNumber(FormDelayRepeatMixin, FormAsDictMixin, FormMaxLengthMixin, Form
     """A control which allows the user to enter a floating-point number, "form:number"."""
 
     _tag = "form:number"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
@@ -1088,7 +1088,7 @@ class FormDate(FormDelayRepeatMixin, FormText):
     """A control control for inputting date data, "form:date"."""
 
     _tag = "form:date"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
@@ -1227,7 +1227,7 @@ class FormTime(FormDelayRepeatMixin, FormText):
     """A control control for inputting time data, "form:time"."""
 
     _tag = "form:time"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
@@ -1370,7 +1370,7 @@ class FormFixedText(FormGenericControl):
     """
 
     _tag = "form:fixed-text"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("label", "form:label"),
         PropDef("title", "form:title"),
@@ -1459,7 +1459,7 @@ class FormCombobox(FormSourceListMixin, FormSizetMixin, FormText):
     a list of possible values for that text, "form:combobox"."""
 
     _tag = "form:combobox"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
@@ -1603,7 +1603,7 @@ class FormItem(Element):
     """A list item for a FormCombobox control, "form:item"."""
 
     _tag = "form:item"
-    _properties: tuple[PropDef, ...] = (PropDef("label", "form:label"),)
+    _properties: tuple[PropDef | PropDefBool, ...] = (PropDef("label", "form:label"),)
 
     def __init__(
         self,
@@ -1634,7 +1634,7 @@ class FormListbox(FormAsDictMixin, FormSourceListMixin, FormSizetMixin, FormGrid
     It is an alternative representation for a group of radio buttons."""
 
     _tag = "form:listbox"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("value", "form:value"),
         PropDef("control_implementation", "form:control-implementation"),
@@ -1826,7 +1826,7 @@ class FormOption(Element):
     """A list item for a "form:option" control, "form:option"."""
 
     _tag = "form:option"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("label", "form:label"),
         PropDef("value", "form:value"),
         PropDef("selected", "form:selected"),
@@ -1880,7 +1880,7 @@ class FormButton(
     """A button control, "form:button"."""
 
     _tag = "form:button"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "form:name"),
         PropDef("default_button", "form:default-button"),
         PropDef("repeat", "form:repeat"),

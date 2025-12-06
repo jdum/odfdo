@@ -25,14 +25,14 @@ from datetime import datetime
 from typing import Any
 
 from .datatype import DateTime
-from .element import Element, PropDef, register_element_class
+from .element import Element, PropDef, PropDefBool, register_element_class
 
 
 class MetaTemplate(Element):
     """Container for the meta template properties, "meta:template"."""
 
     _tag = "meta:template"
-    _properties: tuple[PropDef, ...] = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("date", "meta:date"),
         PropDef("actuate", "xlink:actuate"),
         PropDef("href", "xlink:href"),

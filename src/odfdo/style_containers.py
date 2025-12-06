@@ -19,7 +19,7 @@
 # https://github.com/lpod/lpod-python
 """Classes for styles containers."""
 
-from .element import Element, PropDef, register_element_class
+from .element import Element, register_element_class
 from .page_layout import StylePageLayout
 
 
@@ -38,7 +38,6 @@ class OfficeAutomaticStyles(Element):
     """
 
     _tag: str = "office:automatic-styles"
-    _properties: tuple[PropDef, ...] = ()
 
     @property
     def page_layouts(self) -> list[StylePageLayout]:
@@ -60,7 +59,6 @@ class OfficeMasterStyles(Element):
     """
 
     _tag: str = "office:master-styles"
-    _properties: tuple[PropDef, ...] = ()
 
 
 register_element_class(OfficeAutomaticStyles)

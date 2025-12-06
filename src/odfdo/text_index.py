@@ -23,7 +23,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .element import Element, PropDef, register_element_class
+from .element import Element, PropDef, PropDefBool, register_element_class
 from .paragraph import Paragraph
 from .section import SectionMixin
 
@@ -34,7 +34,7 @@ class IndexBody(SectionMixin):
     The "text:index-body" element is used for all types of indexes. It contains the index content generated to form the index."""
 
     _tag: str = "text:index-body"
-    _properties: tuple[PropDef, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
 class IndexTitle(SectionMixin):
@@ -48,7 +48,7 @@ class IndexTitle(SectionMixin):
     """
 
     _tag = "text:index-title"
-    _properties = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "text:name"),
         PropDef("style", "text:style-name"),
         PropDef("xml_id", "xml:id"),
@@ -103,7 +103,9 @@ class IndexTitleTemplate(Element):
     """Template style for title, "text:index-title-template"."""
 
     _tag = "text:index-title-template"
-    _properties = (PropDef("style", "text:style-name"),)
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("style", "text:style-name"),
+    )
 
     def __init__(self, style: str | None = None, **kwargs: Any) -> None:
         """Create template style for title "text:index-title-template".
