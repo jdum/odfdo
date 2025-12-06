@@ -43,7 +43,17 @@ class Link(
     NoteMixin,
     Element,
 ):
-    """Representation of a link (URL), "text:a"."""
+    """Representation of a link (URL), "text:a".
+
+    Attributes:
+        url: target url (href)
+        name: name (html name)
+        title: title (hint)
+        text: link text
+        target_frame: '_self', '_blank', '_parent', '_top'
+        style: style name
+        visited_style: visited style name
+    """
 
     _tag = "text:a"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -67,23 +77,16 @@ class Link(
         visited_style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Representation of a link (URL), "text:a".
+        """Create a Link, "text:a"
 
         Args:
-
-            url -- str
-
-            name -- str
-
-            title -- str
-
-            text -- str
-
-            target_frame -- '_self', '_blank', '_parent', '_top'
-
-            style -- str
-
-            visited_style -- str
+            url: target url (href)
+            name: name (html name)
+            title: title (hint)
+            text: link text
+            target_frame: '_self', '_blank', '_parent', '_top'
+            style: style name
+            visited_style: visited style name
         """
         super().__init__(**kwargs)
         if self._do_init:
