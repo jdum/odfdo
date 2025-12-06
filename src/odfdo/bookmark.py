@@ -38,7 +38,8 @@ class BookmarkMixin(Element):
     def get_bookmarks(self) -> list[Bookmark]:
         """Return all the bookmarks.
 
-        Returns: list of Bookmark
+        Returns:
+            list[Bookmark]: All bookmarks in the element's subtree.
         """
         return cast(
             list[Bookmark],
@@ -55,12 +56,11 @@ class BookmarkMixin(Element):
         """Return the bookmark that matches the criteria.
 
         Args:
+            position: The index of the bookmark to retrieve (0-based).
+            name: The name attribute (text:name) of the bookmark to retrieve.
 
-            position -- int
-
-            name -- str
-
-        Returns: Bookmark or None if not found
+        Returns:
+            Bookmark or None: The found Bookmark or None if not found.
         """
         return cast(
             Union[None, Bookmark],
@@ -72,7 +72,8 @@ class BookmarkMixin(Element):
     def get_bookmark_starts(self) -> list[BookmarkStart]:
         """Return all the bookmark starts.
 
-        Returns: list of BookmarkStart
+        Returns:
+            list[BookmarkStart]: All bookmark start markers in the element's subtree.
         """
         return cast(
             list[BookmarkStart],
@@ -89,12 +90,11 @@ class BookmarkMixin(Element):
         """Return the bookmark start that matches the criteria.
 
         Args:
+            position: The index of the bookmark start to retrieve (0-based).
+            name: The name attribute (text:name) of the bookmark start to retrieve.
 
-            position -- int
-
-            name -- str
-
-        Returns: BookmarkStart or None if not found
+        Returns:
+            BookmarkStart or None: The found BookmarkStart or None if not found.
         """
         return cast(
             Union[None, BookmarkStart],
@@ -106,7 +106,8 @@ class BookmarkMixin(Element):
     def get_bookmark_ends(self) -> list[BookmarkEnd]:
         """Return all the bookmark ends.
 
-        Returns: list of BookmarkEnd
+        Returns:
+            list[BookmarkEnd]: All bookmark end markers in the element's subtree.
         """
         return cast(
             list[BookmarkEnd],
@@ -123,12 +124,11 @@ class BookmarkMixin(Element):
         """Return the bookmark end that matches the criteria.
 
         Args:
+            position: The index of the bookmark end to retrieve (0-based).
+            name: The name attribute (text:name) of the bookmark end to retrieve.
 
-            position -- int
-
-            name -- str
-
-        Returns: BookmarkEnd or None if not found
+        Returns:
+            BookmarkEnd or None: The found BookmarkEnd or None if not found.
         """
         return cast(
             Union[None, BookmarkEnd],
@@ -139,7 +139,11 @@ class BookmarkMixin(Element):
 
 
 class Bookmark(Element):
-    """Bookmark class, "text:bookmark" tag."""
+    """Bookmark class, "text:bookmark" tag.
+
+    Attributes:
+        name (str): The name of the bookmark (text:name attribute).
+    """
 
     _tag = "text:bookmark"
     _properties = (PropDef("name", "text:name"),)
@@ -148,8 +152,7 @@ class Bookmark(Element):
         """Bookmark class, "text:bookmark" tag.
 
         Args:
-
-            name -- str
+            name: The name of the bookmark.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -160,13 +163,21 @@ Bookmark._define_attribut_property()
 
 
 class BookmarkStart(Element):
-    """Bookmark start marker, "text:bookmark-start"."""
+    """Bookmark start marker, "text:bookmark-start".
+
+    Attributes:
+        name (str): The name of the bookmark range being started (text:name attribute).
+    """
 
     _tag = "text:bookmark-start"
     _properties = (PropDef("name", "text:name"),)
 
     def __init__(self, name: str = "", **kwargs: Any) -> None:
-        """Bookmark start marker, "text:bookmark-start"."""
+        """Bookmark start marker, "text:bookmark-start".
+
+        Args:
+            name: The name of the bookmark range being started.
+        """
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
@@ -178,15 +189,19 @@ BookmarkStart._define_attribut_property()
 class BookmarkEnd(Element):
     """Bookmark end marker, "text:bookmark-end".
 
-    Args:
-
-        name -- str
+    Attributes:
+        name (str): The name of the bookmark range being ended (text:name attribute).
     """
 
     _tag = "text:bookmark-end"
     _properties = (PropDef("name", "text:name"),)
 
     def __init__(self, name: str = "", **kwargs: Any) -> None:
+        """Bookmark end marker, "text:bookmark-end".
+
+        Args:
+            name: The name of the bookmark range being ended.
+        """
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
