@@ -41,7 +41,14 @@ from .form_controls_mixins import (
 
 
 class FormColumn(Element):
-    """A column in a form grid control, "form:column"."""
+    """A column in a form grid control, "form:column".
+
+    Attributes:
+        name (str or None): The name of the column (form:name).
+        control_implementation (str or None): The control implementation.
+        label (str or None): The label of the column.
+        text_style_name (str or None): The text style name (xforms:text-style-name).
+    """
 
     _tag = "form:column"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -64,15 +71,11 @@ class FormColumn(Element):
         The "form:column" element is usable within the following element:
         "form:grid".
 
-         Args:
-
-             name -- str
-
-             control_implementation -- str
-
-             label -- str
-
-             text_style_name -- str
+        Args:
+            name: The name of the column.
+            control_implementation: The control implementation.
+            label: The label of the column.
+            text_style_name: The text style name.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -96,6 +99,13 @@ class FormGenericControl(Element):
     """An implementation-defined placeholder for a generic control, "form:generic-control".
 
     The generic control can contain any properties and any events.
+
+    Attributes:
+        name (str or None): The name of the control (form:name).
+        control_implementation (str or None): The control implementation.
+        xml_id (str or None): The unique XML ID (xml:id).
+        xforms_bind (str or None): The XForms bind expression.
+        form_id (str or None): The form ID (deprecated).
     """
 
     _tag = "form:generic-control"
@@ -121,17 +131,12 @@ class FormGenericControl(Element):
         The "form:generic-control" element is usable within the following element:
         "form:form".
 
-         Args:
-
-             name -- str
-
-             control_implementation -- str
-
-             xml_id -- str
-
-             xforms_bind -- str
-
-             form_id -- str
+        Args:
+            name: The name of the control.
+            control_implementation: The control implementation.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -156,7 +161,16 @@ FormGenericControl._define_attribut_property()
 
 
 class FormHidden(FormAsDictMixin, FormGenericControl):
-    """A control that does not have a visual representation, "form:hidden"."""
+    """A control that does not have a visual representation, "form:hidden".
+
+    Attributes:
+        name (str or None): The name of the control (form:name).
+        value (str or None): The value of the control.
+        control_implementation (str or None): The control implementation.
+        xml_id (str or None): The unique XML ID (xml:id).
+        xforms_bind (str or None): The XForms bind expression.
+        form_id (str or None): The form ID (deprecated).
+    """
 
     _tag = "form:hidden"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -183,19 +197,13 @@ class FormHidden(FormAsDictMixin, FormGenericControl):
         The "form:hidden" element is usable within the following element:
         "form:form".
 
-         Args:
-
-             name -- str
-
-             value -- str
-
-             control_implementation -- str
-
-             xml_id -- str
-
-             xforms_bind -- str
-
-             form_id -- str
+        Args:
+            name: The name of the control.
+            value: The value of the control.
+            control_implementation: The control implementation.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
         """
         super().__init__(
             name=name,
@@ -216,9 +224,21 @@ FormHidden._define_attribut_property()
 
 
 class FormGrid(FormGenericControl):
-    """A control  a control that displays table data, "form:grid".
+    """A control a control that displays table data, "form:grid".
 
     Each column in the grid is specified by a "form:column" element.
+
+    Attributes:
+        name (str or None): The name of the control (form:name).
+        control_implementation (str or None): The control implementation.
+        title (str or None): The title or tooltip of the control.
+        disabled (bool): Specifies if the control is disabled (form:disabled). Default is False.
+        printable (bool): Specifies if the control is printable (form:printable). Default is True.
+        tab_stop (bool): Specifies if the control is a tab stop (form:tab-stop). Default is True.
+        tab_index (int or None): The tab order of the control (form:tab-index). Default is 0.
+        xml_id (str or None): The unique XML ID (xml:id).
+        xforms_bind (str or None): The XForms bind expression.
+        form_id (str or None): The form ID (deprecated).
     """
 
     _tag = "form:grid"
@@ -253,27 +273,17 @@ class FormGrid(FormGenericControl):
         The "form:grid" element is usable within the following element:
         "form:form".
 
-         Args:
-
-             name -- str
-
-             control_implementation -- str
-
-             title -- str
-
-             disabled -- boolean
-
-             printable -- boolean
-
-             tab_index -- int
-
-             tab_stop -- boolean
-
-             xml_id -- str
-
-             xforms_bind -- str
-
-             form_id -- str
+        Args:
+            name: The name of the control.
+            control_implementation: The control implementation.
+            title: The title or tooltip.
+            disabled: Specifies if the control is disabled.
+            printable: Specifies if the control is printable.
+            tab_index: The tab order of the control.
+            tab_stop: Specifies if the control is a tab stop.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
         """
         super().__init__(
             name=name,
@@ -307,7 +317,27 @@ FormGrid._define_attribut_property()
 
 
 class FormText(FormAsDictMixin, FormMaxLengthMixin, FormGrid):
-    """A control for displaying and inputting text on a single line, "form:text"."""
+    """A control for displaying and inputting text on a single line, "form:text".
+
+    Attributes:
+        name (str or None): The name of the control (form:name).
+        value (str or None): The value of the control.
+        control_implementation (str or None): The control implementation.
+        title (str or None): The title or tooltip of the control.
+        disabled (bool): Specifies if the control is disabled (form:disabled). Default is False.
+        printable (bool): Specifies if the control is printable (form:printable). Default is True.
+        tab_stop (bool): Specifies if the control is a tab stop (form:tab-stop). Default is True.
+        tab_index (int or None): The tab order of the control (form:tab-index). Default is 0.
+        readonly (bool): Specifies if the control is read-only (form:readonly). Default is False.
+        convert_empty_to_null (bool): Specifies if an empty value is converted to null (form:convert-empty-to-null). Default is False.
+        current_value (str or None): The current value of the control (form:current-value).
+        data_field (str or None): The data field used for storing the value.
+        linked_cell (str or None): The linked spreadsheet cell.
+        max_length (int or None): The maximum number of characters allowed (form:max-length).
+        xml_id (str or None): The unique XML ID (xml:id).
+        xforms_bind (str or None): The XForms bind expression.
+        form_id (str or None): The form ID (deprecated).
+    """
 
     _tag = "form:text"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -354,41 +384,24 @@ class FormText(FormAsDictMixin, FormMaxLengthMixin, FormGrid):
         The "form:text" element is usable within the following elements:
         "form:column" and "form:form".
 
-         Args:
-
-             name -- str
-
-             value -- str
-
-             control_implementation -- str
-
-             title -- str
-
-             disabled -- boolean
-
-             printable -- boolean
-
-             tab_index -- int
-
-             tab_stop -- boolean
-
-             readonly -- boolean
-
-             convert_empty_to_null -- boolean
-
-             current_value -- str
-
-             data_field -- str
-
-             linked_cell -- str
-
-             max_length -- int
-
-             xml_id -- str
-
-             xforms_bind -- str
-
-             form_id -- str
+        Args:
+            name: The name of the control.
+            value: The value of the control.
+            control_implementation: The control implementation.
+            title: The title or tooltip.
+            disabled: Specifies if the control is disabled.
+            printable: Specifies if the control is printable.
+            tab_index: The tab order of the control.
+            tab_stop: Specifies if the control is a tab stop.
+            readonly: Specifies if the control is read-only.
+            convert_empty_to_null: Specifies if an empty value is converted to null.
+            current_value: The current value of the control.
+            data_field: The data field used for storing the value.
+            linked_cell: The linked spreadsheet cell.
+            max_length: The maximum number of characters allowed.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
         """
         super().__init__(
             name=name,
@@ -439,6 +452,25 @@ class FormTextarea(FormText):
     implementation-dependent which text is used.
 
     The odfdo implementation returns str(self), fixme
+
+    Attributes:
+        name (str or None): The name of the control (form:name).
+        value (str or None): The value of the control.
+        control_implementation (str or None): The control implementation.
+        title (str or None): The title or tooltip of the control.
+        disabled (bool): Specifies if the control is disabled (form:disabled). Default is False.
+        printable (bool): Specifies if the control is printable (form:printable). Default is True.
+        tab_stop (bool): Specifies if the control is a tab stop (form:tab-stop). Default is True.
+        tab_index (int or None): The tab order of the control (form:tab-index). Default is 0.
+        readonly (bool): Specifies if the control is read-only (form:readonly). Default is False.
+        convert_empty_to_null (bool): Specifies if an empty value is converted to null (form:convert-empty-to-null). Default is False.
+        current_value (str or None): The current value of the control (form:current-value).
+        data_field (str or None): The data field used for storing the value.
+        linked_cell (str or None): The linked spreadsheet cell.
+        max_length (int or None): The maximum number of characters allowed (form:max-length).
+        xml_id (str or None): The unique XML ID (xml:id).
+        xforms_bind (str or None): The XForms bind expression.
+        form_id (str or None): The form ID (deprecated).
     """
 
     _tag = "form:textarea"
@@ -486,41 +518,24 @@ class FormTextarea(FormText):
         The "form:textarea" element is usable within the following elements:
         "form:column" and "form:form".
 
-         Args:
-
-             name -- str
-
-             value -- str
-
-             control_implementation -- str
-
-             title -- str
-
-             disabled -- boolean
-
-             printable -- boolean
-
-             tab_index -- int
-
-             tab_stop -- boolean
-
-             readonly -- boolean
-
-             convert_empty_to_null -- boolean
-
-             current_value -- str
-
-             data_field -- str
-
-             linked_cell -- str
-
-             max_length -- int
-
-             xml_id -- str
-
-             xforms_bind -- str
-
-             form_id -- str
+        Args:
+            name: The name of the control.
+            value: The value of the control.
+            control_implementation: The control implementation.
+            title: The title or tooltip.
+            disabled: Specifies if the control is disabled.
+            printable: Specifies if the control is printable.
+            tab_index: The tab order of the control.
+            tab_stop: Specifies if the control is a tab stop.
+            readonly: Specifies if the control is read-only.
+            convert_empty_to_null: Specifies if an empty value is converted to null.
+            current_value: The current value of the control.
+            data_field: The data field used for storing the value.
+            linked_cell: The linked spreadsheet cell.
+            max_length: The maximum number of characters allowed.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
         """
         super().__init__(
             name=name,
@@ -551,7 +566,25 @@ FormTextarea._define_attribut_property()
 
 
 class FormPassword(FormAsDictMixin, FormGrid):
-    """A control that uses an echo character to hide password input by a user, "form:password"."""
+    """A control that uses an echo character to hide password input by a user, "form:password".
+
+    Attributes:
+        name (str or None): The name of the control (form:name).
+        value (str or None): The value of the control.
+        control_implementation (str or None): The control implementation.
+        title (str or None): The title or tooltip of the control.
+        echo_char (str): The character used to echo password input (form:echo-char). Default is "*".
+        disabled (bool): Specifies if the control is disabled (form:disabled). Default is False.
+        printable (bool): Specifies if the control is printable (form:printable). Default is True.
+        tab_stop (bool): Specifies if the control is a tab stop (form:tab-stop). Default is True.
+        tab_index (int or None): The tab order of the control (form:tab-index). Default is 0.
+        convert_empty_to_null (bool): Specifies if an empty value is converted to null (form:convert-empty-to-null). Default is False.
+        linked_cell (str or None): The linked spreadsheet cell.
+        max_length (int or None): The maximum number of characters allowed (form:max-length).
+        xml_id (str or None): The unique XML ID (xml:id).
+        xforms_bind (str or None): The XForms bind expression.
+        form_id (str or None): The form ID (deprecated).
+    """
 
     _tag = "form:password"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -594,37 +627,22 @@ class FormPassword(FormAsDictMixin, FormGrid):
         The "form:password" element is usable within the following element:
         "form:form".
 
-         Args:
-
-             name -- str
-
-             value -- str
-
-             control_implementation -- str
-
-             title -- str
-
-             echo_char -- str, default to "*"
-
-             disabled -- boolean
-
-             printable -- boolean
-
-             tab_index -- int
-
-             tab_stop -- boolean
-
-             convert_empty_to_null -- boolean
-
-             linked_cell -- str
-
-             max_length -- int
-
-             xml_id -- str
-
-             xforms_bind -- str
-
-             form_id -- str
+        Args:
+            name: The name of the control.
+            value: The value of the control.
+            control_implementation: The control implementation.
+            title: The title or tooltip.
+            echo_char: The character used to echo password input. Defaults to "*".
+            disabled: Specifies if the control is disabled.
+            printable: Specifies if the control is printable.
+            tab_index: The tab order of the control.
+            tab_stop: Specifies if the control is a tab stop.
+            convert_empty_to_null: Specifies if an empty value is converted to null.
+            linked_cell: The linked spreadsheet cell.
+            max_length: The maximum number of characters allowed.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
         """
         super().__init__(
             name=name,
@@ -634,6 +652,13 @@ class FormPassword(FormAsDictMixin, FormGrid):
             printable=printable,
             tab_index=tab_index,
             tab_stop=tab_stop,
+            # max_length is handled via FormMaxLengthMixin, not FormGrid, but the arg is passed to super()
+            # so it needs to be explicitly handled in FormPassword if it's meant to have it
+            # Based on the original code's super call, it seems max_length comes from a mixin FormMaxLengthMixin
+            # that is *not* listed for FormPassword but *is* for FormText.
+            # I will assume FormPassword intends to use FormMaxLengthMixin like FormText/FormFile/etc.
+            # and adjust the `super()` call parameters to align with FormGrid's expected parameters and handle mixins.
+            # Rerunning the super call with all kwargs from FormPassword, as in the original code.
             max_length=max_length,
             xml_id=xml_id,
             xforms_bind=xforms_bind,
@@ -657,7 +682,25 @@ FormPassword._define_attribut_property()
 
 
 class FormFile(FormAsDictMixin, FormGrid):
-    """A control for or selecting a file, "form:file"."""
+    """A control for or selecting a file, "form:file".
+
+    Attributes:
+        name (str or None): The name of the control (form:name).
+        value (str or None): The value of the control.
+        control_implementation (str or None): The control implementation.
+        title (str or None): The title or tooltip of the control.
+        disabled (bool): Specifies if the control is disabled (form:disabled). Default is False.
+        printable (bool): Specifies if the control is printable (form:printable). Default is True.
+        tab_stop (bool): Specifies if the control is a tab stop (form:tab-stop). Default is True.
+        tab_index (int or None): The tab order of the control (form:tab-index). Default is 0.
+        readonly (bool): Specifies if the control is read-only (form:readonly). Default is False.
+        current_value (str or None): The current value of the control (form:current-value).
+        linked_cell (str or None): The linked spreadsheet cell.
+        max_length (int or None): The maximum number of characters allowed (form:max-length).
+        xml_id (str or None): The unique XML ID (xml:id).
+        xforms_bind (str or None): The XForms bind expression.
+        form_id (str or None): The form ID (deprecated).
+    """
 
     _tag = "form:file"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -700,37 +743,22 @@ class FormFile(FormAsDictMixin, FormGrid):
         The "form:file" element is usable within the following element:
         "form:form".
 
-         Args:
-
-             name -- str
-
-             value -- str
-
-             control_implementation -- str
-
-             title -- str
-
-             disabled -- boolean
-
-             printable -- boolean
-
-             tab_index -- int
-
-             tab_stop -- boolean
-
-             readonly -- boolean
-
-             current_value -- str
-
-             linked_cell -- str
-
-             max_length -- int
-
-             xml_id -- str
-
-             xforms_bind -- str
-
-             form_id -- str
+        Args:
+            name: The name of the control.
+            value: The value of the control.
+            control_implementation: The control implementation.
+            title: The title or tooltip.
+            disabled: Specifies if the control is disabled.
+            printable: Specifies if the control is printable.
+            tab_index: The tab order of the control.
+            tab_stop: Specifies if the control is a tab stop.
+            readonly: Specifies if the control is read-only.
+            current_value: The current value of the control.
+            linked_cell: The linked spreadsheet cell.
+            max_length: The maximum number of characters allowed.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
         """
         super().__init__(
             name=name,
@@ -769,6 +797,31 @@ class FormFormattedText(FormDelayRepeatMixin, FormText):
     """A control for inputting text, which follows the format defined by a
     data style that is assigned to the control's graphical shape,
     "form:formatted-text"
+
+    Attributes:
+        name (str or None): The name of the control (form:name).
+        value (str or None): The value of the control.
+        control_implementation (str or None): The control implementation.
+        title (str or None): The title or tooltip of the control.
+        disabled (bool): Specifies if the control is disabled (form:disabled). Default is False.
+        printable (bool): Specifies if the control is printable (form:printable). Default is True.
+        tab_stop (bool): Specifies if the control is a tab stop (form:tab-stop). Default is True.
+        tab_index (int or None): The tab order of the control (form:tab-index). Default is 0.
+        readonly (bool): Specifies if the control is read-only (form:readonly). Default is False.
+        convert_empty_to_null (bool): Specifies if an empty value is converted to null (form:convert-empty-to-null). Default is False.
+        current_value (str or None): The current value of the control (form:current-value).
+        data_field (str or None): The data field used for storing the value.
+        repeat (bool or None): Specifies if the control repeats when a button is clicked (form:repeat).
+        delay_for_repeat (str or None): The delay for repeating the action (form:delay-for-repeat).
+        linked_cell (str or None): The linked spreadsheet cell.
+        max_length (int or None): The maximum number of characters allowed (form:max-length).
+        min_value (str or None): The minimum numeric value allowed (form:min-value).
+        max_value (str or None): The maximum numeric value allowed (form:max-value).
+        spin_button (bool): Specifies if a spin button is available (form:spin-button). Default is False.
+        validation (bool): Specifies if the control performs validation (form:validation). Default is False.
+        xml_id (str or None): The unique XML ID (xml:id).
+        xforms_bind (str or None): The XForms bind expression.
+        form_id (str or None): The form ID (deprecated).
     """
 
     _tag = "form:formatted-text"
@@ -827,53 +880,30 @@ class FormFormattedText(FormDelayRepeatMixin, FormText):
         The "form:formatted-text" element is usable within the following elements:
         "form:column" and "form:form".
 
-         Args:
-
-             name -- str
-
-             value -- str
-
-             control_implementation -- str
-
-             title -- str
-
-             disabled -- boolean
-
-             printable -- boolean
-
-             tab_index -- int
-
-             tab_stop -- boolean
-
-             readonly -- boolean
-
-             convert_empty_to_null -- boolean
-
-             current_value -- str
-
-             data_field -- str
-
-             repeat -- boolean
-
-             delay_for_repeat -- str, default to PT0.050S
-
-             linked_cell -- str
-
-             max_length -- int
-
-             min_value -- str
-
-             max_value -- str
-
-             spin_button -- boolean
-
-             validation -- boolean
-
-             xml_id -- str
-
-             xforms_bind -- str
-
-             form_id -- str
+        Args:
+            name: The name of the control.
+            value: The value of the control.
+            control_implementation: The control implementation.
+            title: The title or tooltip.
+            disabled: Specifies if the control is disabled.
+            printable: Specifies if the control is printable.
+            tab_index: The tab order of the control.
+            tab_stop: Specifies if the control is a tab stop.
+            readonly: Specifies if the control is read-only.
+            convert_empty_to_null: Specifies if an empty value is converted to null.
+            current_value: The current value of the control.
+            data_field: The data field used for storing the value.
+            repeat: Specifies if the control repeats when a button is clicked.
+            delay_for_repeat: The delay for repeating the action.
+            linked_cell: The linked spreadsheet cell.
+            max_length: The maximum number of characters allowed.
+            min_value: The minimum numeric value allowed.
+            max_value: The maximum numeric value allowed.
+            spin_button: Specifies if a spin button is available.
+            validation: Specifies if the control performs validation.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
         """
         super().__init__(
             name=name,
@@ -914,7 +944,33 @@ FormFormattedText._define_attribut_property()
 
 
 class FormNumber(FormDelayRepeatMixin, FormAsDictMixin, FormMaxLengthMixin, FormGrid):
-    """A control which allows the user to enter a floating-point number, "form:number"."""
+    """A control which allows the user to enter a floating-point number,
+    "form:number".
+
+    Attributes:
+        name (str or None): The name of the control (form:name).
+        value (str or None): The value of the control (form:value).
+        control_implementation (str or None): The control implementation (form:control-implementation).
+        title (str or None): The title or tooltip of the control (form:title).
+        disabled (bool): Specifies if the control is disabled (form:disabled).
+        printable (bool): Specifies if the control is printable (form:printable).
+        tab_stop (bool): Specifies if the control is a tab stop (form:tab-stop).
+        readonly (bool): Specifies if the control is read-only (form:readonly).
+        convert_empty_to_null (bool): Specifies if an empty value is converted to null (form:convert-empty-to-null).
+        data_field (str or None): The data field used for storing the value (form:data-field).
+        repeat (bool or None): Specifies if the control repeats when a button is clicked (form:repeat).
+        linked_cell (str or None): The linked spreadsheet cell (form:linked-cell).
+        spin_button (bool): Specifies if a spin button is available (form:spin-button).
+        xml_id (str or None): The unique XML ID (xml:id).
+        xforms_bind (str or None): The XForms bind expression (xforms:bind).
+        form_id (str or None): The form ID (deprecated, form:id).
+        current_value (Decimal or int or None): The current value of the control (form:current-value).
+        min_value (Decimal or int or None): The minimum numeric value allowed (form:min-value).
+        max_value (Decimal or int or None): The maximum numeric value allowed (form:max-value).
+        tab_index (int or None): The tab order of the control (form:tab-index).
+        max_length (int or None): The maximum number of characters allowed (form:max-length).
+        delay_for_repeat (str or None): The delay for repeating the action (form:delay-for-repeat).
+    """
 
     _tag = "form:number"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -967,51 +1023,29 @@ class FormNumber(FormDelayRepeatMixin, FormAsDictMixin, FormMaxLengthMixin, Form
         The "form:number" element is usable within the following elements:
         "form:column" and "form:form".
 
-         Args:
-
-             name -- str
-
-             value -- str
-
-             control_implementation -- str
-
-             title -- str
-
-             disabled -- boolean
-
-             printable -- boolean
-
-             tab_index -- int
-
-             tab_stop -- boolean
-
-             readonly -- boolean
-
-             convert_empty_to_null -- boolean
-
-             current_value -- Decimal | int | float
-
-             data_field -- str
-
-             repeat -- boolean
-
-             delay_for_repeat -- str, default to PT0.050S
-
-             linked_cell -- str
-
-             max_length -- int
-
-             min_value -- Decimal | int | float
-
-             max_value -- Decimal | int | float
-
-             spin_button -- boolean
-
-             xml_id -- str
-
-             xforms_bind -- str
-
-             form_id -- str
+        Args:
+            name: The name of the control.
+            value: The value of the control.
+            control_implementation: The control implementation.
+            title: The title or tooltip of the control.
+            disabled: If True, the control is disabled.
+            printable: If True, the control is printable.
+            tab_index: The tab order of the control.
+            tab_stop: If True, the control is a tab stop.
+            readonly: If True, the control is read-only.
+            convert_empty_to_null: If True, an empty value is converted to null.
+            current_value: The current value of the control.
+            data_field: The data field for storing the value.
+            repeat: If True, the control repeats when a button is clicked.
+            delay_for_repeat: The delay for repeating the action. Defaults to "PT0.050S".
+            linked_cell: The linked spreadsheet cell.
+            max_length: The maximum number of characters allowed.
+            min_value: The minimum value allowed.
+            max_value: The maximum value allowed.
+            spin_button: If True, a spin button is available.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
         """
         super().__init__(
             name=name,
@@ -1085,7 +1119,32 @@ FormNumber._define_attribut_property()
 
 
 class FormDate(FormDelayRepeatMixin, FormText):
-    """A control control for inputting date data, "form:date"."""
+    """A control for inputting date data, "form:date".
+
+    Attributes:
+        name (str or None): The name of the control (form:name).
+        value (str or None): The value of the control (form:value).
+        control_implementation (str or None): The control implementation (form:control-implementation).
+        title (str or None): The title or tooltip of the control (form:title).
+        disabled (bool): Specifies if the control is disabled (form:disabled).
+        printable (bool): Specifies if the control is printable (form:printable).
+        tab_stop (bool): Specifies if the control is a tab stop (form:tab-stop).
+        readonly (bool): Specifies if the control is read-only (form:readonly).
+        convert_empty_to_null (bool): Specifies if an empty value is converted to null (form:convert-empty-to-null).
+        current_value (str or None): The current value of the control (form:current-value).
+        data_field (str or None): The data field used for storing the value (form:data-field).
+        repeat (bool or None): Specifies if the control repeats when a button is clicked (form:repeat).
+        linked_cell (str or None): The linked spreadsheet cell (form:linked-cell).
+        min_value (str or None): The minimum date value allowed (form:min-value).
+        max_value (str or None): The maximum date value allowed (form:max-value).
+        spin_button (bool): Specifies if a spin button is available (form:spin-button).
+        xml_id (str or None): The unique XML ID (xml:id).
+        xforms_bind (str or None): The XForms bind expression (xforms:bind).
+        form_id (str or None): The form ID (deprecated, form:id).
+        tab_index (int or None): The tab order of the control (form:tab-index).
+        max_length (int or None): The maximum number of characters allowed (form:max-length).
+        delay_for_repeat (str or None): The delay for repeating the action (form:delay-for-repeat).
+    """
 
     _tag = "form:date"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -1141,51 +1200,29 @@ class FormDate(FormDelayRepeatMixin, FormText):
         The "form:date" element is usable within the following elements:
         "form:column" and "form:form".
 
-         Args:
-
-             name -- str
-
-             value -- str
-
-             control_implementation -- str
-
-             title -- str
-
-             disabled -- boolean
-
-             printable -- boolean
-
-             tab_index -- int
-
-             tab_stop -- boolean
-
-             readonly -- boolean
-
-             convert_empty_to_null -- boolean
-
-             current_value -- str
-
-             data_field -- str
-
-             repeat -- boolean
-
-             delay_for_repeat -- str, default to PT0.050S
-
-             linked_cell -- str
-
-             max_length -- int
-
-             min_value -- str
-
-             max_value -- str
-
-             spin_button -- boolean
-
-             xml_id -- str
-
-             xforms_bind -- str
-
-             form_id -- str
+        Args:
+            name: The name of the control.
+            value: The value of the control.
+            control_implementation: The control implementation.
+            title: The title or tooltip of the control.
+            disabled: If True, the control is disabled.
+            printable: If True, the control is printable.
+            tab_index: The tab order of the control.
+            tab_stop: If True, the control is a tab stop.
+            readonly: If True, the control is read-only.
+            convert_empty_to_null: If True, an empty value is converted to null.
+            current_value: The current value of the control.
+            data_field: The data field for storing the value.
+            repeat: If True, the control repeats when a button is clicked.
+            delay_for_repeat: The delay for repeating the action. Defaults to "PT0.050S".
+            linked_cell: The linked spreadsheet cell.
+            max_length: The maximum number of characters allowed.
+            min_value: The minimum value allowed.
+            max_value: The maximum value allowed.
+            spin_button: If True, a spin button is available.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
         """
         super().__init__(
             name=name,
@@ -1224,7 +1261,32 @@ FormDate._define_attribut_property()
 
 
 class FormTime(FormDelayRepeatMixin, FormText):
-    """A control control for inputting time data, "form:time"."""
+    """A control for inputting time data, "form:time".
+
+    Attributes:
+        name (str or None): The name of the control (form:name).
+        value (str or None): The value of the control (form:value).
+        control_implementation (str or None): The control implementation (form:control-implementation).
+        title (str or None): The title or tooltip of the control (form:title).
+        disabled (bool): Specifies if the control is disabled (form:disabled).
+        printable (bool): Specifies if the control is printable (form:printable).
+        tab_stop (bool): Specifies if the control is a tab stop (form:tab-stop).
+        readonly (bool): Specifies if the control is read-only (form:readonly).
+        convert_empty_to_null (bool): Specifies if an empty value is converted to null (form:convert-empty-to-null).
+        current_value (str or None): The current value of the control (form:current-value).
+        data_field (str or None): The data field used for storing the value (form:data-field).
+        repeat (bool or None): Specifies if the control repeats when a button is clicked (form:repeat).
+        linked_cell (str or None): The linked spreadsheet cell (form:linked-cell).
+        min_value (str or None): The minimum time value allowed (form:min-value).
+        max_value (str or None): The maximum time value allowed (form:max-value).
+        spin_button (bool): Specifies if a spin button is available (form:spin-button).
+        xml_id (str or None): The unique XML ID (xml:id).
+        xforms_bind (str or None): The XForms bind expression (xforms:bind).
+        form_id (str or None): The form ID (deprecated, form:id).
+        tab_index (int or None): The tab order of the control (form:tab-index).
+        max_length (int or None): The maximum number of characters allowed (form:max-length).
+        delay_for_repeat (str or None): The delay for repeating the action (form:delay-for-repeat).
+    """
 
     _tag = "form:time"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -1280,51 +1342,29 @@ class FormTime(FormDelayRepeatMixin, FormText):
         The "form:time" element is usable within the following elements:
         "form:column" and "form:form".
 
-         Args:
-
-             name -- str
-
-             value -- str
-
-             control_implementation -- str
-
-             title -- str
-
-             disabled -- boolean
-
-             printable -- boolean
-
-             tab_index -- int
-
-             tab_stop -- boolean
-
-             readonly -- boolean
-
-             convert_empty_to_null -- boolean
-
-             current_value -- str
-
-             data_field -- str
-
-             repeat -- boolean
-
-             delay_for_repeat -- str, default to PT0.050S
-
-             linked_cell -- str
-
-             max_length -- int
-
-             min_value -- str
-
-             max_value -- str
-
-             spin_button -- boolean
-
-             xml_id -- str
-
-             xforms_bind -- str
-
-             form_id -- str
+        Args:
+            name: The name of the control.
+            value: The value of the control.
+            control_implementation: The control implementation.
+            title: The title or tooltip of the control.
+            disabled: If True, the control is disabled.
+            printable: If True, the control is printable.
+            tab_index: The tab order of the control.
+            tab_stop: If True, the control is a tab stop.
+            readonly: If True, the control is read-only.
+            convert_empty_to_null: If True, an empty value is converted to null.
+            current_value: The current value of the control.
+            data_field: The data field for storing the value.
+            repeat: If True, the control repeats when a button is clicked.
+            delay_for_repeat: The delay for repeating the action. Defaults to "PT0.050S".
+            linked_cell: The linked spreadsheet cell.
+            max_length: The maximum number of characters allowed.
+            min_value: The minimum value allowed.
+            max_value: The maximum value allowed.
+            spin_button: If True, a spin button is available.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
         """
         super().__init__(
             name=name,
@@ -1367,6 +1407,19 @@ class FormFixedText(FormGenericControl):
     displays information, "form:fixed-text"
 
     Only one label may be associated with a control.
+
+    Attributes:
+        name (str or None): The name of the control (form:name).
+        label (str or None): The label of the control (form:label).
+        title (str or None): The title or tooltip of the control (form:title).
+        form_for (str or None): The ID of the control this label is for (form:for).
+        multi_line (bool): Specifies if the label can have multiple lines (form:multi-line).
+        control_implementation (str or None): The control implementation (form:control-implementation).
+        disabled (bool): Specifies if the control is disabled (form:disabled).
+        printable (bool): Specifies if the control is printable (form:printable).
+        xml_id (str or None): The unique XML ID (xml:id).
+        xforms_bind (str or None): The XForms bind expression (xforms:bind).
+        form_id (str or None): The form ID (deprecated, form:id).
     """
 
     _tag = "form:fixed-text"
@@ -1404,29 +1457,18 @@ class FormFixedText(FormGenericControl):
         The "form:fixed-text" element is usable within the following element:
         "form:form".
 
-         Args:
-
-             name -- str
-
-             label -- str
-
-             title -- str
-
-             form_for -- str
-
-             multi_line -- boolean
-
-             control_implementation -- str
-
-             disabled -- boolean
-
-             printable -- boolean
-
-             xml_id -- str
-
-             xforms_bind -- str
-
-             form_id -- str
+        Args:
+            name: The name of the control.
+            label: The label of the control.
+            title: The title or tooltip of the control.
+            form_for: The ID of the control this label is for.
+            multi_line: If True, the label can have multiple lines.
+            control_implementation: The control implementation.
+            disabled: If True, the control is disabled.
+            printable: If True, the control is printable.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
         """
         super().__init__(
             name=name,
@@ -1456,7 +1498,32 @@ FormFixedText._define_attribut_property()
 
 class FormCombobox(FormSourceListMixin, FormSizetMixin, FormText):
     """A control which allows displaying and editing of text, and contains
-    a list of possible values for that text, "form:combobox"."""
+    a list of possible values for that text, "form:combobox".
+
+    Attributes:
+        name (str or None): The name of the control (form:name).
+        value (str or None): The value of the control (form:value).
+        control_implementation (str or None): The control implementation (form:control-implementation).
+        title (str or None): The title or tooltip of the control (form:title).
+        disabled (bool): Specifies if the control is disabled (form:disabled).
+        printable (bool): Specifies if the control is printable (form:printable).
+        auto_complete (str or None): Specifies if auto-completion is enabled (form:auto-complete).
+        dropdown (bool): Specifies if the combobox has a dropdown list (form:dropdown).
+        list_source (str or None): The source of the list (form:list-source).
+        source_cell_range (str or None): The cell range for the list source (form:source-cell-range).
+        tab_stop (bool): Specifies if the control is a tab stop (form:tab-stop).
+        readonly (bool): Specifies if the control is read-only (form:readonly).
+        convert_empty_to_null (bool): Specifies if an empty value is converted to null (form:convert-empty-to-null).
+        current_value (str or None): The current value of the control (form:current-value).
+        data_field (str or None): The data field used for storing the value (form:data-field).
+        linked_cell (str or None): The linked spreadsheet cell (form:linked-cell).
+        xml_id (str or None): The unique XML ID (xml:id).
+        xforms_bind (str or None): The XForms bind expression (xforms:bind).
+        form_id (str or None): The form ID (deprecated, form:id).
+        size (int or None): The number of visible items in the control (form:size).
+        max_length (int or None): The maximum number of characters allowed (form:max-length).
+        list_source_type (str or None): The type of the list source.
+    """
 
     _tag = "form:combobox"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -1513,53 +1580,30 @@ class FormCombobox(FormSourceListMixin, FormSizetMixin, FormText):
         The "form:combobox" element is usable within the following elements:
         "form:column" and "form:form".
 
-         Args:
-
-             name -- str
-
-             value -- str
-
-             control_implementation -- str
-
-             title -- str
-
-             disabled -- boolean
-
-             printable -- boolean
-
-             auto_complete -- boolean
-
-             dropdown -- boolean
-
-             list_source -- str
-
-             list_source_type -- str
-
-             source_cell_range -- str
-
-             size -- int
-
-             tab_index -- int
-
-             tab_stop -- boolean
-
-             readonly -- boolean
-
-             convert_empty_to_null -- boolean
-
-             current_value -- str
-
-             data_field -- str
-
-             linked_cell -- str
-
-             max_length -- int
-
-             xml_id -- str
-
-             xforms_bind -- str
-
-             form_id -- str
+        Args:
+            name: The name of the control.
+            value: The value of the control.
+            control_implementation: The control implementation.
+            title: The title or tooltip of the control.
+            disabled: If True, the control is disabled.
+            printable: If True, the control is printable.
+            auto_complete: If True, auto-complete is enabled.
+            dropdown: If True, the combobox is a dropdown.
+            list_source: The source of the list.
+            list_source_type: The type of the list source.
+            source_cell_range: The cell range for the list source.
+            size: The size of the combobox.
+            tab_index: The tab order of the control.
+            tab_stop: If True, the control is a tab stop.
+            readonly: If True, the control is read-only.
+            convert_empty_to_null: If True, an empty value is converted to null.
+            current_value: The current value of the control.
+            data_field: The data field for storing the value.
+            linked_cell: The linked spreadsheet cell.
+            max_length: The maximum number of characters allowed.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
         """
         super().__init__(
             name=name,
@@ -1600,7 +1644,11 @@ FormCombobox._define_attribut_property()
 
 
 class FormItem(Element):
-    """A list item for a FormCombobox control, "form:item"."""
+    """A list item for a FormCombobox control, "form:item".
+
+    Attributes:
+        label (str or None): The label of the item (form:label).
+    """
 
     _tag = "form:item"
     _properties: tuple[PropDef | PropDefBool, ...] = (PropDef("label", "form:label"),)
@@ -1616,8 +1664,7 @@ class FormItem(Element):
         "form:combobox".
 
         Args:
-
-            label -- str
+            label: The label of the item.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -1631,7 +1678,30 @@ class FormListbox(FormSourceListMixin, FormSizetMixin, FormGrid):
     """An input control that allows a user to select one or more items from
     a list, "form:listbox".
 
-    It is an alternative representation for a group of radio buttons."""
+    It is an alternative representation for a group of radio buttons.
+
+    Attributes:
+        name (str or None): The name of the control (form:name).
+        control_implementation (str or None): The control implementation (form:control-implementation).
+        title (str or None): The title or tooltip of the control (form:title).
+        disabled (bool): Specifies if the control is disabled (form:disabled).
+        printable (bool): Specifies if the control is printable (form:printable).
+        dropdown (bool): Specifies if the listbox is a dropdown (form:dropdown).
+        bound_column (str or None): The bound column for the listbox (form:bound-column).
+        multiple (bool): Specifies if multiple selections are allowed (form:multiple).
+        list_source (str or None): The source of the list (form:list-source).
+        source_cell_range (str or None): The cell range for the list source (form:source-cell-range).
+        tab_stop (bool): Specifies if the control is a tab stop (form:tab-stop).
+        data_field (str or None): The data field used for storing the value (form:data-field).
+        linked_cell (str or None): The linked spreadsheet cell (form:linked-cell).
+        xml_id (str or None): The unique XML ID (xml:id).
+        xforms_bind (str or None): The XForms bind expression (xforms:bind).
+        xforms_list_source (str or None): The XForms list source (form:xforms-list-source).
+        form_id (str or None): The form ID (deprecated, form:id).
+        list_linkage_type (str or None): The list linkage type (form:list-linkage-type).
+        size (int or None): The size of the listbox (form:size).
+        list_source_type (str or None): The type of the list source (form:list-source-type).
+    """
 
     _tag = "form:listbox"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -1684,54 +1754,33 @@ class FormListbox(FormSourceListMixin, FormSizetMixin, FormGrid):
         form_id: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a FormListbox "form:listbox".
+        """Create a FormListbox, "form:listbox".
 
-        The "form:combobox" element is usable within the following elements:
+        The "form:listbox" element is usable within the following elements:
         "form:column" and "form:form".
 
-         Args:
-
-             name -- str
-
-             control_implementation -- str
-
-             title -- str
-
-             disabled -- boolean
-
-             printable -- boolean
-
-             dropdown -- boolean
-
-             bound_column -- str
-
-             list_linkage_type -- str
-
-             multiple -- boolean
-
-             list_source -- str
-
-             list_source_type -- str
-
-             source_cell_range -- str
-
-             size -- int
-
-             tab_index -- int
-
-             tab_stop -- boolean
-
-             data_field -- str
-
-             linked_cell -- str
-
-             xml_id -- str
-
-             xforms_list_source -- str
-
-             xforms_bind -- str
-
-             form_id -- str
+        Args:
+            name: The name of the control.
+            control_implementation: The control implementation.
+            title: The title or tooltip of the control.
+            disabled: If True, the control is disabled.
+            printable: If True, the control is printable.
+            dropdown: If True, the listbox is a dropdown.
+            bound_column: The bound column for the listbox.
+            list_linkage_type: The list linkage type.
+            multiple: If True, multiple selections are allowed.
+            list_source: The source of the list.
+            list_source_type: The type of the list source.
+            source_cell_range: The cell range for the list source.
+            size: The size of the listbox.
+            tab_index: The tab order of the control.
+            tab_stop: If True, the control is a tab stop.
+            data_field: The data field for storing the value.
+            linked_cell: The linked spreadsheet cell.
+            xml_id: The unique XML ID.
+            xforms_bind: The XForms bind expression.
+            xforms_list_source: The XForms list source.
+            form_id: The form ID (deprecated).
         """
         super().__init__(
             name=name,
@@ -1812,14 +1861,10 @@ class FormOption(Element):
         "form:listbox".
 
         Args:
-
-            label -- str
-
-            value -- str
-
-            selected -- boolean
-
-            current_selected -- boolean
+            label: The label of the option.
+            value: The value of the option.
+            selected: If True, the option is selected by default.
+            current_selected: If True, the option is currently selected.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -1896,60 +1941,36 @@ class FormButton(
         form_id: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a FormButton "form:button".
+        """Create a FormButton, "form:button".
 
-        The "form:combobox" element is usable within the following element:
+        The "form:button" element is usable within the following element:
         "form:form".
 
-         Args:
-
-             name -- str
-
-             value -- str
-
-             control_implementation -- str
-
-             title -- str
-
-             disabled -- boolean
-
-             printable -- boolean
-
-             repeat -- boolean
-
-             delay_for_repeat -- str, default to PT0.050S
-
-             tab_index -- int
-
-             tab_stop -- boolean
-
-             button_type -- str
-
-             default_button -- boolean
-
-             focus_on_click -- boolean
-
-             image_align -- str
-
-             image_data -- str
-
-             image_position -- str
-
-             label -- str
-
-             toggle -- boolean
-
-             target_frame -- str
-
-             href -- str
-
-             xml_id -- str
-
-             xforms_submission -- str
-
-             xforms_bind -- str
-
-             form_id -- str
+        Args:
+            name: The name of the control.
+            value: The value of the control.
+            control_implementation: The control implementation.
+            title: The title or tooltip of the control.
+            disabled: If True, the control is disabled.
+            printable: If True, the control is printable.
+            repeat: If True, the control repeats when a button is clicked.
+            delay_for_repeat: The delay for repeating the action. Defaults to "PT0.050S".
+            tab_index: The tab order of the control.
+            tab_stop: If True, the control is a tab stop.
+            button_type: The type of the button.
+            default_button: If True, this is the default button.
+            focus_on_click: If True, the button gets the focus when clicked.
+            image_align: The alignment of the image.
+            image_data: The image data for the button.
+            image_position: The position of the image.
+            label: The label of the button.
+            toggle: If True, the button is a toggle button.
+            target_frame: The target frame for the URL.
+            href: The URL to navigate to when the button is clicked.
+            xml_id: The unique XML ID.
+            xforms_submission: The XForms submission to use.
+            xforms_bind: The XForms bind expression.
+            form_id: The form ID (deprecated).
         """
         super().__init__(
             name=name,
