@@ -20,6 +20,11 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
+"""XPath query generation utility for ODF documents.
+
+This module provides a helper function to dynamically construct XPath queries
+with various predicates for filtering ODF elements based on their attributes.
+"""
 from __future__ import annotations
 
 from .style_constants import FAMILY_ODF_STD
@@ -53,6 +58,44 @@ def make_xpath_query(
     position: int | None = None,
     **kwargs: str,
 ) -> str:
+    """Constructs an XPath query string with attribute-based predicates.
+
+    This function builds a complex XPath query by appending predicates for each
+    provided keyword argument. It simplifies the process of searching for
+    elements with specific attributes.
+
+    Args:
+        query_string (str): The base XPath query string (e.g., "descendant::text:p").
+        family (str, optional): The style family.
+        text_style (str, optional): The name of a text style.
+        draw_id (str, optional): The draw:id attribute.
+        draw_name (str, optional): The draw:name attribute.
+        draw_style (str, optional): The name of a draw style.
+        draw_text_style (str, optional): The name of a draw text style.
+        table_name (str, optional): The name of a table.
+        table_style (str, optional): The name of a table style.
+        style_name (str, optional): The name of a style.
+        display_name (str, optional): The display name of a style.
+        note_class (str, optional): The class of a note.
+        text_id (str, optional): The text:id attribute.
+        text_name (str, optional): The text:name attribute.
+        change_id (str, optional): The text:change-id attribute.
+        office_name (str, optional): The office:name attribute.
+        form_name (str, optional): The form:name attribute.
+        office_title (str, optional): The office:title attribute.
+        outline_level (str | int, optional): The text:outline-level.
+        level (str | int, optional): The text:level attribute.
+        page_layout (str, optional): The name of a page layout style.
+        master_page (str, optional): The name of a master page.
+        parent_style (str, optional): The name of a parent style.
+        presentation_class (str, optional): The presentation class.
+        position (int, optional): The 1-based index of the element to select
+            from the results. Negative values count from the end.
+        **kwargs (str): Additional attribute-value pairs to add as predicates.
+
+    Returns:
+        str: The fully constructed XPath query string.
+    """
     query = [query_string]
     attributes = kwargs
     if text_style:
