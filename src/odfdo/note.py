@@ -45,15 +45,14 @@ class NoteMixin(Element):
         note_class: str | None = None,
         content: str | None = None,
     ) -> list[Note]:
-        """Return all the notes that match the criteria.
+        """Retrieve all notes (`text:note`) that match the specified criteria.
 
         Args:
+            note_class (str | None): Filter by note class ("footnote" or "endnote").
+            content (str | None): A regular expression to match against the note's content.
 
-            note_class -- 'footnote' or 'endnote'
-
-            content -- str regex
-
-        Returns: list of Note
+        Returns:
+            list[Note]: A list of `Note` instances matching the criteria.
         """
         return cast(
             list[Note],
@@ -69,19 +68,17 @@ class NoteMixin(Element):
         note_class: str | None = None,
         content: str | None = None,
     ) -> Note | None:
-        """Return the note that matches the criteria.
+        """Retrieve a specific note (`text:note`) that matches the specified criteria.
 
         Args:
+            position (int): The index of the note to retrieve if multiple match
+                the other criteria. Defaults to 0.
+            note_id (str | None): The unique ID of the note.
+            note_class (str | None): Filter by note class ("footnote" or "endnote").
+            content (str | None): A regular expression to match against the note's content.
 
-            position -- int
-
-            note_id -- str
-
-            note_class -- 'footnote' or 'endnote'
-
-            content -- str regex
-
-        Returns: Note or None if not found
+        Returns:
+            Note | None: A `Note` instance matching the criteria, or `None` if not found.
         """
         return cast(
             Union[None, Note],
@@ -124,17 +121,15 @@ class Note(MDNote, Element):
         body: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """A note (footnote or endnote), "text:note".
+        """Initialize a Note element (footnote or endnote).
 
         Args:
-
-            note_class -- 'footnote' or 'endnote'
-
-            note_id -- str
-
-            citation -- str
-
-            body -- str or Element
+            note_class (str): The class of the note ("footnote" or "endnote").
+                Defaults to "footnote".
+            note_id (str | None): A unique ID for the note. If None, one is generated.
+            citation (str | None): The citation text for the note.
+            body (str | None): The content of the note body. Can be a string or an `Element`.
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -150,6 +145,11 @@ class Note(MDNote, Element):
 
     @property
     def citation(self) -> str:
+        """Get the text content of the note citation.
+
+        Returns:
+            str: The citation text, or an empty string if not found.
+        """
         note_citation = self.get_element("text:note-citation")
         if note_citation:
             return note_citation.text
@@ -157,12 +157,21 @@ class Note(MDNote, Element):
 
     @citation.setter
     def citation(self, text: str | None) -> None:
+        """Set the text content of the note citation.
+
+        Args:
+            text (str | None): The new citation text.
+        """
         note_citation = self.get_element("text:note-citation")
         if note_citation:
             note_citation.text = text
-
     @property
     def note_body(self) -> str:
+        """Get the text content of the note body.
+
+        Returns:
+            str: The content of the note body, or an empty string if not found.
+        """
         note_body = self.get_element("text:note-body")
         if note_body:
             return note_body.text_content
@@ -170,6 +179,12 @@ class Note(MDNote, Element):
 
     @note_body.setter
     def note_body(self, text_or_element: Element | str | None) -> None:
+        """Set the content of the note body.
+
+        Args:
+            text_or_element (Element | str | None): The new content for the note body.
+                Can be a string, an `Element`, or None to clear the content.
+        """
         note_body = self.get_element("text:note-body")
         if not note_body:
             return None
@@ -182,8 +197,15 @@ class Note(MDNote, Element):
             note_body.append(text_or_element)
         else:
             raise TypeError(f'Unexpected type for body: "{type(text_or_element)}"')
-
     def check_validity(self) -> None:
+        """Check the validity of the note's properties.
+
+        Ensures that `note_class` is valid, and that `note_id` and `citation`
+        are not empty.
+
+        Raises:
+            ValueError: If `note_class` is invalid, or if `note_id` or `citation` are empty.
+        """
         if not self.note_class or self.note_class not in self.NOTE_CLASS:
             raise ValueError('Note class must be "footnote" or "endnote"')
         if not self.note_id:
@@ -194,6 +216,13 @@ class Note(MDNote, Element):
             pass
 
     def __str__(self) -> str:
+        """Return a string representation of the note.
+
+        If a citation is present, it formats as "citation. body", otherwise just "body".
+
+        Returns:
+            str: The string representation of the note.
+        """
         if self.citation:
             return f"{self.citation}. {self.note_body}"
         return self.note_body
