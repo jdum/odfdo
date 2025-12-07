@@ -35,13 +35,10 @@ class Tab(MDTab, Element):
     """Representation of a tabulation, "text:tab".
 
     This element represents the [UNICODE] tab character (HORIZONTAL TABULATION,
-    U+0009).
-
-    The position attribute contains the number of the tab-stop to which a tab
-    character refers. The position 0 marks the start margin of a paragraph.
-    Note: The position attribute is only a hint to help non-layout oriented
-    consumers to determine the tab/tab-stop association. Layout oriented
-    consumers should determine the tab positions based on the style information
+    U+0009). The position attribute indicates the number of the tab-stop to
+    which a tab character refers, where position 0 marks the start margin of
+    a paragraph. Layout-oriented consumers should determine tab positions based
+    on style information.
     """
 
     _tag = "text:tab"
@@ -50,26 +47,36 @@ class Tab(MDTab, Element):
     )
 
     def __init__(self, position: int | None = None, **kwargs: Any) -> None:
-        """Representation of a tabulation, "text:tab".
+        """Create a tabulation element "text:tab".
 
         Args:
-
-            position -- int
+            position (int, optional): The position of the tab-stop. If provided,
+                must be a non-negative integer.
         """
         super().__init__(**kwargs)
         if self._do_init and position is not None and position >= 0:
             self.position = str(position)
 
     def __str__(self) -> str:
+        """Return the string representation of a tab character.
+
+        Returns:
+            str: The tab character ("\t").
+        """
         return "\t"
 
     @property
     def text(self) -> str:
-        """Return "\\t"."""
+        """Get the text content, which is always a tab character.
+
+        Returns:
+            str: The tab character ("\t").
+        """
         return "\t"
 
     @text.setter
     def text(self, text: str | None) -> None:
+        """Setting text for a tab is a no-op as it always represents a tab character."""
         pass
 
 
