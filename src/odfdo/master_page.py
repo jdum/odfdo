@@ -96,24 +96,19 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         draw_style_name: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a StyleMasterPage.
+        """Initialize a StyleMasterPage.
 
-        The name is not mandatory at this point but will become required when inserting in a document as a common style.
-        The display name is the name the user sees in an office application.
-
-        To set properties, pass them as keyword arguments.
+        The master page's `name` is not mandatory at creation but becomes
+        required when inserted into a document as a common style.
+        The `display_name` is the name visible to the user in office applications.
 
         Args:
-
-            name -- str
-
-            display_name -- str
-
-            page_layout -- str
-
-            next_style -- str
-
-            draw_style_name -- str
+            name (str | None): The internal name of the master page style.
+            display_name (str | None): The user-facing display name of the style.
+            page_layout (str | None): The name of the page layout style to use.
+            next_style (str | None): The name of the next master page style to apply.
+            draw_style_name (str | None): The name of the drawing style to apply.
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         self._family = "master-page"
         tag_or_elem = kwargs.get("tag_or_elem")
@@ -137,10 +132,15 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
 
     @property
     def family(self) -> str | None:
+        """Get the family of the style.
+
+        For `StyleMasterPage`, this is always "master-page".
+        """
         return self._family
 
     @family.setter
     def family(self, family: str | None) -> None:
+        """Setter for the family property (no-op as family is fixed)."""
         pass
 
     def __repr__(self) -> str:
@@ -152,6 +152,20 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         name: str = "header",
         style: str = "Header",
     ) -> None:
+        """Internal helper to set the content of a page header or footer.
+
+        This method replaces existing content or creates a new header/footer
+        element if one doesn't exist. It can accept raw text, an `Element`,
+        or a list of `Element`s or strings.
+
+        Args:
+            text_or_element (str | Element | list[Element | str]): The content
+                to set. Can be a string, an `Element`, or an iterable of strings
+                and/or `Element`s.
+            name (str): The name of the part to set ("header" or "footer").
+            style (str): The default style name to apply to new paragraphs
+                created from string content.
+        """
         if name == "header":
             header_or_footer = self.get_page_header()
         else:
@@ -183,9 +197,11 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
                 header_or_footer.append(item)
 
     def get_page_header(self) -> Element | None:
-        """Get the element that contains the header contents.
+        """Get the `style:header` element containing the header contents.
 
-        If None, no header was set.
+        Returns:
+            Element | None: The `style:header` element, or `None` if no header
+                content is defined for this master page.
         """
         return self.get_element("style:header")
 
@@ -193,22 +209,25 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         self,
         text_or_element: str | Element | list[Element | str],
     ) -> None:
-        """Create or replace the header by the given content. It can already be
-        a complete header.
+        """Set or replace the content of the page header.
 
-        If you only want to update the existing header, get it and use the
-        API.
+        This method uses `_set_header_or_footer` to update the header's content.
+        You can provide raw text, an `Element`, or a list of content to replace
+        the existing header. To modify the existing header without replacing it
+        entirely, retrieve it first using `get_page_header` and use its API.
 
         Args:
-
-            text_or_element -- str or Element or a list of them
+            text_or_element (str | Element | list[Element | str]): The new
+                content for the header.
         """
         self._set_header_or_footer(text_or_element)
 
     def get_page_footer(self) -> Element | None:
-        """Get the element that contains the footer contents.
+        """Get the `style:footer` element containing the footer contents.
 
-        If None, no footer was set.
+        Returns:
+            Element | None: The `style:footer` element, or `None` if no footer
+                content is defined for this master page.
         """
         return self.get_element("style:footer")
 
@@ -216,15 +235,16 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         self,
         text_or_element: str | Element | list[Element | str],
     ) -> None:
-        """Create or replace the footer by the given content. It can already be
-        a complete footer.
+        """Set or replace the content of the page footer.
 
-        If you only want to update the existing footer, get it and use the
-        API.
+        This method uses `_set_header_or_footer` to update the footer's content.
+        You can provide raw text, an `Element`, or a list of content to replace
+        the existing footer. To modify the existing footer without replacing it
+        entirely, retrieve it first using `get_page_footer` and use its API.
 
         Args:
-
-            text_or_element -- str or Element or a list of them
+            text_or_element (str | Element | list[Element | str]): The new
+                content for the footer.
         """
         self._set_header_or_footer(text_or_element, name="footer", style="Footer")
 
@@ -235,7 +255,7 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         family_generic: str | None = None,
         pitch: str = "variable",
     ) -> None:
-        """Not applicable to this class."""
+        """This method is not applicable to `StyleMasterPage` and does nothing."""
 
 
 StyleMasterPage._define_attribut_property()
@@ -256,18 +276,37 @@ class StyleHeader(TrackedChangesMixin, SectionMixin, StyleBase):
         # Every other property
         **kwargs: Any,
     ) -> None:
+        """Initialize a StyleHeader element.
+
+        Args:
+            display (str | bool | None): Specifies whether the header is displayed.
+                Can be "true", "false", or a boolean. Defaults to True.
+            **kwargs: Additional keyword arguments for the parent `Element` class.
+        """
         super().__init__(**kwargs)
         if self._do_init:
             kwargs.pop("tag", None)
             kwargs.pop("tag_or_elem", None)
             self.display = display
 
+
     @property
     def display(self) -> bool:
+        """Get the display status of the header.
+
+        Returns:
+            bool: True if the header is displayed, False otherwise.
+        """
         return self._get_attribute_bool_default("style:display", True)
 
     @display.setter
     def display(self, display: bool | str | None) -> None:
+        """Set the display status of the header.
+
+        Args:
+            display (bool | str | None): The display status. Can be a boolean,
+                or "true"/"false" string.
+        """
         self._set_attribute_bool_default("style:display", display, True)
 
     def __repr__(self) -> str:
