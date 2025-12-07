@@ -1,5 +1,28 @@
 # Odfdo Release Notes
 
+## [3.18.0] - 2025-12-07
+
+-   Major refactoring of docstrings for all modules to Google format.
+-   Major refactoring of Form classes and addition of many new Form-related classes.
+-   Added extensive tests for Form classes.
+-   Switchi GitHub repository's default branch from master to main.
+
+### Added
+
+-   Add many new Form-related classes: `FormValueRange`, `FormImageFrame`, `FormFrame`, `FormRadio`, `FormImage`, `FormCheckbox`, `FormButton`, `FormOption`, `FormListBox`, `FormItem`, `FormCombobox`, `FormFixedText`, `FormTime`, `FormDate`, `FormFormattedText`, `FormFile`, `FormPassword`, `FormTextarea`, `FormText`, `FormGenericControl`, `FormColumn`, `FormGrid`, `FormHidden`.
+-   Add many new mixin classes for Forms: `FormImageAlignMixin`, `FormImagePositionMixin`, `OfficeTargetFrameMixin`, `FormSizetMixin`, `FormSourceListMixin`, `FormControlAsDictMixin`, `FormDelayRepeatMixin`, `FormMaxLengthMixin`, `FormNumber`.
+-   Add extensive tests for new Form classes.
+-   Add module docstrings to all scripts in `odfdo/scripts`.
+
+### Changed
+
+-   Refactor all docstrings in the library to Google format.
+-   Major refactoring of `form_controls.py` and related modules.
+-   Refactor tests for forms.
+-   Improve descriptions and epilogs of all scripts.
+-   Reformat all source files using a consistent style.
+-   Update `README.md`.
+
 ## [3.17.6] - 2025-11-23
 
 -   Refactor `Element`, moving some access methods to relevant mixin classes.
