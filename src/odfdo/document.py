@@ -25,15 +25,12 @@
 
 from __future__ import annotations
 
-import base64
 import contextlib
-import hashlib
 import io
 import posixpath
 from contextlib import suppress
 from copy import deepcopy
 from importlib import resources as rso
-from mimetypes import guess_type
 from operator import itemgetter
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, BinaryIO
@@ -60,7 +57,7 @@ from .meta import Meta
 from .mixin_md import MDDocument
 from .styles import Styles
 from .table import Table
-from .utils import FAMILY_MAPPING, bytes_to_str, is_RFC3066
+from .utils import FAMILY_MAPPING, Blob, bytes_to_str, is_RFC3066
 from .xmlpart import XmlPart
 
 if TYPE_CHECKING:
@@ -70,79 +67,6 @@ if TYPE_CHECKING:
 AUTOMATIC_PREFIX = "odfdo_auto_"
 
 UNDERLINE_LVL = ["=", "-", ":", "`", "'", '"', "~", "^", "_", "*", "+"]
-
-
-class Blob:
-    """Management of binary large objects (BLOBs)."""
-
-    def __init__(self) -> None:
-        self.content: bytes = b""
-        self.name: str = ""
-        self.mime_type: str = ""
-
-    @classmethod
-    def from_path(cls, path: str | Path) -> Blob:
-        """Create a Blob from a file path.
-
-        The blob's name is generated from a hash of its content, and the
-        MIME type is guessed from the file extension.
-
-        Args:
-            path (str | Path): The path to the file.
-
-        Returns:
-            Blob: A new Blob instance containing the file's content.
-        """
-        blob = cls()
-        path = Path(path)
-        blob.content = path.read_bytes()
-        extension = path.suffix.lower()
-        footprint = hashlib.shake_256(blob.content).hexdigest(16)
-        blob.name = f"{footprint}{extension}"
-        mime_type, _encoding = guess_type(blob.name)
-        if mime_type:
-            blob.mime_type = mime_type
-        else:
-            blob.mime_type = "application/octet-stream"
-        return blob
-
-    @classmethod
-    def from_io(cls, file_like: BinaryIO) -> Blob:
-        """Create a Blob from a file-like object.
-
-        The blob's name is generated from a hash of its content. The MIME type
-        is set to a generic "application/octet-stream".
-
-        Args:
-            file_like (BinaryIO): A file-like object opened in binary mode.
-
-        Returns:
-            Blob: A new Blob instance containing the file's content.
-        """
-        blob = cls()
-        blob.content = file_like.read()
-        blob.name = hashlib.shake_256(blob.content).hexdigest(16)
-        blob.mime_type = "application/octet-stream"
-        return blob
-
-    @classmethod
-    def from_base64(cls, b64string: str | bytes, mime_type: str) -> Blob:
-        """Create a Blob from a base64 encoded string.
-
-        The blob's name is generated from a hash of its content.
-
-        Args:
-            b64string (str | bytes): The base64 encoded string.
-            mime_type (str): The MIME type of the decoded content.
-
-        Returns:
-            Blob: A new Blob instance containing the decoded content.
-        """
-        blob = cls()
-        blob.content = base64.standard_b64decode(b64string)
-        blob.name = hashlib.shake_256(blob.content).hexdigest(16)
-        blob.mime_type = mime_type
-        return blob
 
 
 def _underline_string(level: int, name: str) -> str:
@@ -257,10 +181,16 @@ def _get_part_class(
     }.get(name)
 
 
-def container_from_template(template: str | Path | io.BytesIO) -> Container:
-    """Return a Container instance based on template argument.
+def _container_from_template(template: str | Path | io.BytesIO) -> Container:
+    """Return a Container instance based on the provided template.
 
-    Internal use only.
+    Args:
+        template: The template to use. Can be a string representing a
+            predefined template name (e.g., "text"), a file path (str or Path)
+            to a custom template, or a file-like object (`io.BytesIO`).
+
+    Returns:
+        A new `Container` instance initialized from the template.
     """
     template_container = Container()
     if isinstance(template, str) and template in ODF_TEMPLATES:
@@ -320,8 +250,6 @@ class Document(MDDocument):
         templates, are not really empty. It may be useful to clear the newly
         created document: `document.body.clear()`, or adjust meta information
         like description or language: `document.language = 'fr-FR'`.
-
-
         """
         # Cache of XML parts
         self.__xmlparts: dict[str, XmlPart] = {}
@@ -346,7 +274,7 @@ class Document(MDDocument):
         if isinstance(target, str):
             if target in ODF_TEMPLATES:
                 # assuming a new document from templates
-                self.container = container_from_template(target)
+                self.container = _container_from_template(target)
                 return
             # let's assume we open a container on existing file
             self.container = Container(target)
@@ -379,32 +307,44 @@ class Document(MDDocument):
         Returns:
             Document: A new Document instance based on the template.
         """
-        container = container_from_template(template)
+        container = _container_from_template(template)
         return cls(container)
 
     # Public API
 
     @property
     def path(self) -> Path | None:
-        """Shortcut to Document.Container.path."""
+        """Get or set the path of the document's container.
+
+        When getting, it returns the `Path` object of the container, or `None`
+        if the container is not set.
+
+        When setting, it accepts a string or `Path` object to update the
+        container's path.
+
+        Returns:
+            The `Path` object of the container, or `None` if the container is not set.
+        """
         if not self.container:
             return None
         return self.container.path
 
     @path.setter
     def path(self, path_or_str: str | Path) -> None:
-        """Shortcut to Document.Container.path.
-
-        Only accepting str or Path.
-        """
         if not self.container:
             return
         self.container.path = Path(path_or_str)
 
     def get_parts(self) -> list[str]:
-        """Return available part names with path inside the archive, e.g.
-        ['content.xml', ...,
-        'Pictures/100000000000032000000258912EB1C3.jpg']
+        """Get the names of all available parts within the document's archive.
+
+        This is a helper method for the `parts` property.
+
+        Returns:
+            A list of strings, where each string is the path of a part.
+
+        Raises:
+            ValueError: If the document's container is empty.
         """
         if not self.container:
             raise ValueError("Empty Container")
@@ -412,9 +352,15 @@ class Document(MDDocument):
 
     @property
     def parts(self) -> list[str]:
-        """Return available part names with path inside the archive, e.g.
-        ['content.xml', ...,
-        'Pictures/100000000000032000000258912EB1C3.jpg']
+        """Get the names of all available parts within the document's archive.
+
+        The paths are relative to the archive root, e.g.,
+        'content.xml', 'Pictures/100000000000032000000258912EB1C3.jpg'.
+
+        This is a convenience property that calls `get_parts()`.
+
+        Returns:
+            A list of strings, where each string is the path of a part.
         """
         return self.get_parts()
 
@@ -444,10 +390,20 @@ class Document(MDDocument):
         return part
 
     def set_part(self, path: str, data: bytes) -> None:
-        """Set the bytes of the given part. The path is relative to the
-        archive, e.g. "Pictures/1003200258912EB1C3.jpg".
+        """Set the bytes of a given part within the document's archive.
 
-        path formatted as URI, so always use '/' separator
+        This method updates the content of an existing part or adds a new part
+        to the document.
+
+        Args:
+            path: The path of the part relative to the archive, e.g.,
+                "Pictures/image.jpg". Shortcuts like "content", "meta",
+                "settings", "styles", and "manifest" are also supported.
+                The path should use '/' as a separator.
+            data: The `bytes` object containing the content to set for the part.
+
+        Raises:
+            ValueError: If the document's container is empty.
         """
         if not self.container:
             raise ValueError("Empty Container")
@@ -462,10 +418,19 @@ class Document(MDDocument):
         self.container.set_part(path, data)
 
     def del_part(self, path: str) -> None:
-        """Mark a part for deletion.
+        """Mark a part for deletion from the document's archive.
 
-        The path is relative to the archive, e.g.
-        "Pictures/1003200258912EB1C3.jpg"
+        This method marks a specified part for deletion from the ODF document.
+        The actual deletion occurs when the document is saved.
+
+        Args:
+            path: The path of the part relative to the archive, e.g.,
+                "Pictures/1003200258912EB1C3.jpg". Shortcuts like "content"
+                are also supported.
+
+        Raises:
+            ValueError: If the document's container is empty, or if an attempt
+                is made to delete a mandatory part (e.g., "manifest.xml").
         """
         if not self.container:
             raise ValueError("Empty Container")
@@ -477,6 +442,19 @@ class Document(MDDocument):
 
     @property
     def mimetype(self) -> str:
+        """Get or set the MIME type of the document.
+
+        When getting, it returns the MIME type as a string (e.g.,
+        "application/vnd.oasis.opendocument.text").
+
+        When setting, it accepts a new MIME type as a string.
+
+        Returns:
+            The MIME type as a string.
+
+        Raises:
+            ValueError: If the document's container is empty.
+        """
         if not self.container:
             raise ValueError("Empty Container")
         return self.container.mimetype
@@ -503,8 +481,16 @@ class Document(MDDocument):
 
     @property
     def body(self) -> Body:
-        """Return the body element of the content part, where actual content is
-        stored.
+        """Get the body element of the content part.
+
+        The body element is where the actual content of the ODF document
+        (e.g., paragraphs, tables, images) is stored.
+
+        Returns:
+            The `Body` element of the document's content part.
+
+        Raises:
+            ValueError: If the content part is missing or the body element cannot be retrieved.
         """
         if self.__body is None:
             self.__body = self.content.body
@@ -512,8 +498,16 @@ class Document(MDDocument):
 
     @property
     def meta(self) -> Meta:
-        """Return the meta part (meta.xml) of the document, where meta data are
-        stored.
+        """Get the meta part (meta.xml) of the document.
+
+        The meta part stores metadata about the document, such as author,
+        creation date, and modification date.
+
+        Returns:
+            The `Meta` object representing the document's metadata.
+
+        Raises:
+            ValueError: If the metadata part is empty or cannot be retrieved as a `Meta` object.
         """
         metadata = self.get_part(ODF_META)
         if metadata is None or not isinstance(metadata, Meta):
@@ -522,7 +516,16 @@ class Document(MDDocument):
 
     @property
     def manifest(self) -> Manifest:
-        """Return the manifest part (manifest.xml) of the document."""
+        """Get the manifest part (manifest.xml) of the document.
+
+        The manifest lists all files within the ODF package and their MIME types.
+
+        Returns:
+            The `Manifest` object representing the document's manifest.
+
+        Raises:
+            ValueError: If the manifest part is empty or cannot be retrieved as a `Manifest` object.
+        """
         manifest = self.get_part(ODF_MANIFEST)
         if manifest is None or not isinstance(manifest, Manifest):
             raise ValueError("Empty Manifest")
@@ -670,6 +673,9 @@ class Document(MDDocument):
         """Return meta information as text, with some formatting.
 
         (Redirection to new implementation for compatibility.)
+
+        Returns:
+            A formatted string containing the document's metadata.
         """
         return self.meta.as_text()
 
@@ -705,16 +711,21 @@ class Document(MDDocument):
         return path
 
     def add_file(self, path_or_file: str | Path | BinaryIO) -> str:
-        """Insert a file from a path or a file-like object in the container.
+        """Insert a file from a path or a file-like object into the document's container.
 
-        Return the full path to reference in the content. The internal name
-        of the file in the Picture/ folder is generated by a hash function.
+        The internal name of the file in the "Pictures/" folder is generated
+        by a hash function. The method returns the full path (URI) that can be
+        used to reference the added file within the document's content.
 
         Args:
+            path_or_file: The path to the file (str or Path) or a file-like
+                object (`BinaryIO`) containing the file's content.
 
-            path_or_file -- str or Path or file-like
+        Returns:
+            The full path (URI) to reference the added file in the content.
 
-        Returns: str (URI)
+        Raises:
+            ValueError: If the document's container is empty.
         """
         if not self.container:
             raise ValueError("Empty Container")
@@ -726,9 +737,16 @@ class Document(MDDocument):
 
     @property
     def clone(self) -> Document:
-        """Return an exact copy of the document.
+        """Return an exact, deep copy of the document.
 
-        Returns: Document
+        All internal structures, including the container and its parts,
+        are duplicated.
+
+        Returns:
+            A new `Document` instance that is a deep copy of the original.
+
+        Raises:
+            ValueError: If the original document's container is empty.
         """
         clone = object.__new__(self.__class__)
         for name in self.__dict__:
@@ -766,23 +784,29 @@ class Document(MDDocument):
         pretty: bool | None = None,
         backup: bool = False,
     ) -> None:
-        """Save the document, at the same place it was opened or at the given
-        target path. Target can also be a file-like object. It can be saved as
-        a Zip file (default), flat XML format or as files in a folder (for
-        debugging purpose). XML parts can be pretty printed (the default for
-        'folder' and 'xml' packaging).
+        """Save the document to a target path or file-like object.
+
+        The document can be saved at its original location, or to a new path
+        or file-like object. It can be saved as a Zip file (default),
+        flat XML format, or as files in a folder (for debugging purposes).
+        XML parts can be pretty printed.
 
         Note: 'xml' packaging is an experimental work in progress.
 
         Args:
+            target: The destination to save the document to. Can be a string
+                path, a `Path` object, or a file-like object (`io.BytesIO`).
+                If `None`, the document is saved to its original path.
+            packaging: The packaging format: 'zip' (default), 'folder', or 'xml'.
+            pretty: If `True`, XML parts will be pretty-printed. If `None` (default),
+                it defaults to `True` for 'folder' and 'xml' packaging.
+            backup: If `True`, a backup of the existing file will be created
+                before saving.
 
-            target -- str or file-like object
-
-            packaging -- 'zip', 'folder', 'xml'
-
-            pretty -- bool | None
-
-            backup -- bool
+        Raises:
+            ValueError: If the document's container is empty or an unsupported
+                packaging type is specified.
+            RuntimeError: In unexpected scenarios during XML part handling.
         """
         if not self.container:
             raise ValueError("Empty Container")
@@ -818,6 +842,14 @@ class Document(MDDocument):
 
     @property
     def content(self) -> Content:
+        """Get the content part (content.xml) of the document.
+
+        Returns:
+            The `Content` object representing the document's content.
+
+        Raises:
+            ValueError: If the content part is empty or cannot be retrieved.
+        """
         content: Content | None = self.get_part(ODF_CONTENT)  # type:ignore
         if content is None:
             raise ValueError("Empty Content")
@@ -825,6 +857,14 @@ class Document(MDDocument):
 
     @property
     def styles(self) -> Styles:
+        """Get the styles part (styles.xml) of the document.
+
+        Returns:
+            The `Styles` object representing the document's styles.
+
+        Raises:
+            ValueError: If the styles part is empty or cannot be retrieved.
+        """
         styles: Styles | None = self.get_part(ODF_STYLES)  # type:ignore
         if styles is None:
             raise ValueError("Empty Styles")
@@ -837,6 +877,19 @@ class Document(MDDocument):
         family: str | bytes = "",
         automatic: bool = False,
     ) -> list[StyleBase]:
+        """Retrieve a list of styles from both content.xml and styles.xml.
+
+        This method allows filtering styles by family and can include automatic
+        styles in the search.
+
+        Args:
+            family: The style family to filter by (e.g., 'paragraph', 'text').
+                Can be a string or bytes.
+            automatic: If `True`, includes automatic styles from styles.xml.
+
+        Returns:
+            A list of `StyleBase` objects matching the criteria.
+        """
         # compatibility with old versions:
         if isinstance(family, bytes):
             family = bytes_to_str(family)
@@ -850,24 +903,23 @@ class Document(MDDocument):
         name_or_element: str | StyleBase | None = None,
         display_name: str | None = None,
     ) -> StyleBase | None:
-        """Return the style uniquely identified by the name/family pair. If the
-        argument is already a style object, it will return it.
+        """Return the style uniquely identified by its name and family.
 
-        If the name is None, the default style is fetched.
-
-        If the name is not the internal name but the name you gave in a
-        desktop application, use display_name instead.
+        If `name_or_element` is already a `StyleBase` object, it is returned directly.
+        If `name_or_element` is `None`, the default style for the given `family` is fetched.
+        If `display_name` is provided, it is used to search for styles by their
+        user-facing name (as seen in desktop applications), rather than their
+        internal `name`.
 
         Args:
+            family: The style family (e.g., 'paragraph', 'text', 'graphic',
+                'table', 'list', 'number', 'page-layout', 'master-page').
+            name_or_element: The internal name of the style (str), a `StyleBase`
+                object itself, or `None` to fetch the default style.
+            display_name: The user-facing display name of the style.
 
-            family -- 'paragraph', 'text',  'graphic', 'table', 'list',
-                      'number', 'page-layout', 'master-page', ...
-
-            name -- str or Element or None
-
-            display_name -- str
-
-        Returns: Style or None if not found.
+        Returns:
+            The matching `StyleBase` object, or `None` if no matching style is found.
         """
         # 1. content.xml
         element = self.content.get_style(
@@ -886,11 +938,11 @@ class Document(MDDocument):
         """Get the parent style of a given style.
 
         Args:
-            style (StyleBase): The style for which to find the parent.
+            style: The `StyleBase` object for which to find the parent.
 
         Returns:
-            StyleBase | None: The parent style object, or `None` if the style
-                has no parent or the parent style cannot be found.
+            The parent `StyleBase` object, or `None` if the style
+            has no parent or the parent style cannot be found.
         """
         family = style.family
         if family is None:
@@ -904,11 +956,11 @@ class Document(MDDocument):
         """Get the list style associated with a given style.
 
         Args:
-            style (StyleBase): The style from which to get the list style name.
+            style: The `StyleBase` object from which to get the list style name.
 
         Returns:
-            StyleBase | None: The list style object, or `None` if the style
-                has no associated list style or it cannot be found.
+            The list `StyleBase` object, or `None` if the style
+            has no associated list style or it cannot be found.
         """
         list_style_name = style.list_style_name  # type: ignore[attr-defined]
         if not list_style_name:
@@ -1057,20 +1109,12 @@ class Document(MDDocument):
         automatic: bool = False,
         default: bool = False,
     ) -> Any:
-        """Insert the given style object in the document, as required by the
-        style family and type.
+        """Insert the given style object into the document.
 
-        The style is expected to be a common style with a name. In case it
-        was created with no name, the given can be set on the fly.
-
-        If automatic is True, the style will be inserted as an automatic
-        style.
-
-        If default is True, the style will be inserted as a default style and
-        would replace any existing default style of the same family. Any name
-        or display name would be ignored.
-
-        Automatic and default arguments are mutually exclusive.
+        The style is inserted according to its family and type (common, automatic,
+        or default). If `style` is a string, it's assumed to be an XML style definition.
+        If `name` is not provided for a common style, it tries to use the style's
+        internal name.
 
         All styles can't be used as default styles. Default styles are
         allowed for the following families: paragraph, text, section, table,
@@ -1078,16 +1122,23 @@ class Document(MDDocument):
         graphic, presentation, control and ruby.
 
         Args:
+            style: The `StyleBase` object to insert, or a string representing an
+                XML style definition.
+            name: An optional name for the style. If empty, a unique name might be
+                generated or the style's inherent name used.
+            automatic: If `True`, the style is inserted as an automatic style.
+            default: If `True`, the style is inserted as a default style,
+                replacing any existing default style of the same family.
+                `name` and `display_name` are ignored in this case.
 
-            style -- Style or str
+        Returns:
+            The name of the inserted style (str).
 
-            name -- str
-
-            automatic -- bool
-
-            default -- bool
-
-        Return : style name -- str
+        Raises:
+            TypeError: If the provided `style` is not a `StyleBase` object or a string.
+            ValueError: If an invalid style is provided (e.g., unknown family).
+            AttributeError: If an invalid combination of `automatic` and `default`
+                arguments is provided (they are mutually exclusive).
         """
 
         # if style is a str, assume it is the Style definition
@@ -1141,14 +1192,16 @@ class Document(MDDocument):
         return self._pseudo_style_attribute(style_element, "name")
 
     def get_styled_elements(self, name: str = "") -> list[Element]:
-        """Brute-force to find paragraphs, tables, etc. using the given style
-        name (or all by default).
+        """Search for elements (paragraphs, tables, etc.) using a given style name.
+
+        This method performs a brute-force search across the document's content
+        and style parts.
 
         Args:
+            name: The style name to search for. If empty, all styled elements are returned.
 
-            name -- str
-
-        Returns: list
+        Returns:
+            A list of `Element` objects that are associated with the specified style.
         """
         # Header, footer, etc. have styles too
         return self.content.root.get_styled_elements(
@@ -1164,13 +1217,13 @@ class Document(MDDocument):
         """Provide a formatted string summary of styles in the document.
 
         Args:
-            automatic (bool): If `True`, include automatic styles in the output.
-            common (bool): If `True`, include common (non-automatic) styles.
-            properties (bool): If `True`, include the individual properties
+            automatic: If `True`, include automatic styles in the output.
+            common: If `True`, include common (non-automatic) styles.
+            properties: If `True`, include the individual properties
                 of each style in the output.
 
         Returns:
-            str: A human-readable summary of the document's styles.
+            A human-readable summary of the document's styles.
         """
         infos = []
         for style in self.get_styles():
@@ -1232,7 +1285,12 @@ class Document(MDDocument):
     def delete_styles(self) -> int:
         """Remove all style information from content and all styles.
 
-        Returns: number of deleted styles
+        First, it removes all references to styles from elements within the
+        document. Then, it deletes all supposedly orphaned styles. Default
+        styles are not deleted.
+
+        Returns:
+            The number of deleted styles.
         """
         # First remove references to styles
         for element in self.get_styled_elements():
@@ -1263,10 +1321,14 @@ class Document(MDDocument):
         return deleted
 
     def merge_styles_from(self, document: Document) -> None:
-        """Copy all the styles of a document into ourself.
+        """Copy all styles from another document into this document.
 
-        Styles with the same type and name will be replaced, so only unique
-        styles will be preserved.
+        Existing styles with the same type and name will be replaced.
+        Only unique styles will be preserved. This operation also copies
+        any images referenced by master page styles or fill images.
+
+        Args:
+            document: The source `Document` object from which to merge styles.
         """
         manifest = self.manifest
         document_manifest = document.manifest
@@ -1324,16 +1386,15 @@ class Document(MDDocument):
                 manifest.add_full_path(url, media_type)  # type: ignore
 
     def add_page_break_style(self) -> None:
-        """Ensure that the document contains the style required for a manual
-        page break.
+        """Ensure the document contains the style required for a manual page break.
 
-        Then a manual page break can be added to the document with:
-            from paragraph import PageBreak
-            ...
-            document.body.append(PageBreak())
+        This method adds or verifies the existence of a paragraph style named
+        "odfdopagebreak" with the property `fo:break-after="page"`.
+        Once this style is present, a manual page break can be added to the
+        document using `document.body.append(PageBreak())`.
 
-        Note: this style uses the property 'fo:break-after', another
-        possibility could be the property 'fo:break-before'
+        Note: This style uses the property 'fo:break-after'; another
+        possibility could be the property 'fo:break-before'.
         """
         if existing := self.get_style(  # noqa: SIM102
             family="paragraph",
@@ -1352,7 +1413,18 @@ class Document(MDDocument):
     def get_style_properties(
         self, family: str, name: str, area: str | None = None
     ) -> dict[str, str] | None:
-        """Return the properties of the required style as a dict."""
+        """Return the properties of the required style as a dictionary.
+
+        Args:
+            family: The style family (e.g., 'paragraph', 'text').
+            name: The name of the style.
+            area: An optional string specifying a sub-area of properties (e.g.,
+                'paragraph', 'text', 'table-cell').
+
+        Returns:
+            A dictionary of style properties (key-value pairs), or `None` if
+            the style is not found.
+        """
         style = self.get_style(family, name)
         if style is None:
             return None
@@ -1368,8 +1440,20 @@ class Document(MDDocument):
     def get_cell_style_properties(
         self, table: str | int, coord: tuple | list | str
     ) -> dict[str, str]:
-        """Return the style properties of a table cell of a .ods document, from
-        the cell style or from the row style.
+        """Return the style properties of a table cell in an ODS document.
+
+        Properties are retrieved from the cell's own style, or from its row's
+        style, or from its column's default cell style, in that order of
+        precedence.
+
+        Args:
+            table: The name (str) or index (int) of the table.
+            coord: The coordinates of the cell (e.g., "A1", (0, 0)).
+
+        Returns:
+            A dictionary of style properties (key-value pairs) for the cell.
+            Returns an empty dictionary if the table or cell is not found,
+            or if no styles are applicable.
         """
 
         if not (sheet := self._get_table(table)):
@@ -1403,10 +1487,19 @@ class Document(MDDocument):
         coord: tuple | list | str,
         default: str = "#ffffff",
     ) -> str:
-        """Return the background color of a table cell of a .ods document, from
-        the cell style, or from the row or column.
+        """Return the background color of a table cell in an ODS document.
 
-        If color is not defined, return default value.
+        The color is retrieved from the cell's style properties (cell, row, or column).
+        If no background color is explicitly defined, the `default` value is returned.
+
+        Args:
+            table: The name (str) or index (int) of the table.
+            coord: The coordinates of the cell (e.g., "A1", (0, 0)).
+            default: The default color to return if no background color is defined
+                (defaults to "#ffffff").
+
+        Returns:
+            The background color as a hexadecimal string (e.g., "#RRGGBB").
         """
         found = self.get_cell_style_properties(table, coord).get("fo:background-color")
         return found or default
@@ -1415,26 +1508,31 @@ class Document(MDDocument):
         self,
         table: str | int,
     ) -> StyleBase | None:
-        """Return the Style instance the table.
+        """Return the `StyleBase` instance associated with the table.
 
         Args:
+            table: The name (str) or index (int) of the table.
 
-            table -- name or index of the table
+        Returns:
+            The `StyleBase` object for the table, or `None` if the table
+            is not found or has no style.
         """
         if not (sheet := self._get_table(table)):
             return None
         return self.get_style("table", sheet.style)
 
     def get_table_displayed(self, table: str | int) -> bool:
-        """Return the table:display property of the style of the table, ie if
-        the table should be displayed in a graphical interface.
+        """Return the `table:display` property of the table's style.
 
-        Note: that method replaces the broken Table.displayd() method from previous
-        odfdo versions.
+        This property indicates whether the table should be displayed in a
+        graphical interface. This method replaces the broken `Table.displayd()`
+        method from previous `odfdo` versions.
 
         Args:
+            table: The name (str) or index (int) of the table.
 
-            table -- name or index of the table
+        Returns:
+            `True` if the table is set to be displayed, `False` otherwise.
         """
         style = self.get_table_style(table)
         if not style:
@@ -1446,6 +1544,18 @@ class Document(MDDocument):
         return Boolean.decode(property_str)
 
     def _unique_style_name(self, base: str) -> str:
+        """Generate a unique style name based on a given base string.
+
+        The generated name will be of the form "base_X", where X is an
+        incrementing integer that ensures the name is not already in use
+        within the document's styles.
+
+        Args:
+            base: The base string for generating the unique name.
+
+        Returns:
+            A unique style name string.
+        """
         current = {style.name for style in self.get_styles() if hasattr(style, "name")}
         idx = 0
         while True:
@@ -1456,17 +1566,16 @@ class Document(MDDocument):
             return name
 
     def set_table_displayed(self, table: str | int, displayed: bool) -> None:
-        """Set the table:display property of the style of the table, ie if the
-        table should be displayed in a graphical interface.
+        """Set the `table:display` property of the table's style.
 
-        Note: that method replaces the broken Table.displayd() method from previous
-        odfdo versions.
+        This controls whether the table should be displayed in a graphical
+        interface. If the table does not have an existing style, a new
+        automatic style is created for it. This method replaces the broken
+        `Table.displayd()` method from previous `odfdo` versions.
 
         Args:
-
-            table -- name or index of the table
-
-            displayed -- boolean flag
+            table: The name (str) or index (int) of the table.
+            displayed: A boolean flag; `True` to display the table, `False` to hide it.
         """
         orig_style = self.get_table_style(table)
         if not orig_style:
@@ -1488,27 +1597,24 @@ class Document(MDDocument):
         new_style.set_properties(properties)  # type: ignore
 
     def get_language(self) -> str:
-        """Get the default language of the document from default styles.
+        """Get the default language of the document from its styles.
 
-        (Note: the Metadata value may differ).
+        Note: The language value in the metadata might differ.
 
-        Returns: str
+        Returns:
+            The default language as a string (e.g., "en-US", "fr-FR").
         """
         return self.styles.default_language
 
     def set_language(self, language: str) -> None:
-        """Set the default language of the document, both in styles and
-        metadata.
-
-        (Also available as "Document.language" property.)
+        """Set the default language of the document, updating both styles and metadata.
 
         Args:
+            language: The language code as a string (e.g., "en-US", "fr-FR").
+                Must conform to RFC 3066.
 
-            language -- str
-
-        Example::
-
-            >>> document.set_language('fr-FR')
+        Raises:
+            TypeError: If the provided language code does not conform to RFC 3066.
         """
         language = str(language)
         if not is_RFC3066(language):
@@ -1520,10 +1626,16 @@ class Document(MDDocument):
 
     @property
     def language(self) -> str | None:
-        """Get or set the default language of the document, both in styles and
-        metadata.
+        """Get or set the default language of the document.
 
-        Returns: str
+        When getting, it returns the default language as a string (e.g., "en-US"),
+        or `None` if not set.
+
+        When setting, it accepts a language code as a string (e.g., "en-US", "fr-FR")
+        to update both the styles and metadata of the document.
+
+        Returns:
+            The default language as a string (e.g., "en-US"), or `None` if not set.
         """
         return self.get_language()
 

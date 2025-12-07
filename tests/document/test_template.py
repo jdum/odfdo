@@ -26,17 +26,17 @@
 import pytest
 
 from odfdo.const import ODF_EXTENSIONS
-from odfdo.document import container_from_template
+from odfdo.document import _container_from_template
 from odfdo.utils import to_bytes
 
 
 def test_bad_template():
     with pytest.raises(FileNotFoundError):
-        container_from_template("notexisting")
+        _container_from_template("notexisting")
 
 
 def test_text_template(tmp_path):
-    container = container_from_template("text")
+    container = _container_from_template("text")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["odt"])
@@ -44,7 +44,7 @@ def test_text_template(tmp_path):
 
 
 def test_spreadsheet_template(tmp_path):
-    container = container_from_template("spreadsheet")
+    container = _container_from_template("spreadsheet")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["ods"])
@@ -52,7 +52,7 @@ def test_spreadsheet_template(tmp_path):
 
 
 def test_presentation_template(tmp_path):
-    container = container_from_template("presentation")
+    container = _container_from_template("presentation")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["odp"])
@@ -60,7 +60,7 @@ def test_presentation_template(tmp_path):
 
 
 def test_drawing_template(tmp_path):
-    container = container_from_template("drawing")
+    container = _container_from_template("drawing")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["odg"])
@@ -69,21 +69,21 @@ def test_drawing_template(tmp_path):
 
 def test_bad_type():
     with pytest.raises(FileNotFoundError):
-        container_from_template("foobar")
+        _container_from_template("foobar")
 
 
 def test_bad_type2():
     with pytest.raises(TypeError):
-        container_from_template(object)
+        _container_from_template(object)
 
 
 def test_bad_type3():
     with pytest.raises(TypeError):
-        container_from_template(None)
+        _container_from_template(None)
 
 
 def test_text_type():
-    container = container_from_template("text")
+    container = _container_from_template("text")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["odt"])
@@ -91,7 +91,7 @@ def test_text_type():
 
 
 def test_spreadsheet_type():
-    container = container_from_template("spreadsheet")
+    container = _container_from_template("spreadsheet")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["ods"])
@@ -99,7 +99,7 @@ def test_spreadsheet_type():
 
 
 def test_presentation_type():
-    container = container_from_template("presentation")
+    container = _container_from_template("presentation")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["odp"])
@@ -107,7 +107,7 @@ def test_presentation_type():
 
 
 def test_drawing_type():
-    container = container_from_template("drawing")
+    container = _container_from_template("drawing")
     mimetype = container.get_part("mimetype")
     umimetype = container.mimetype
     assert mimetype == to_bytes(ODF_EXTENSIONS["odg"])
@@ -115,6 +115,6 @@ def test_drawing_type():
 
 
 def test_clone():
-    container = container_from_template("text")
+    container = _container_from_template("text")
     clone = container.clone
     assert clone.path is None

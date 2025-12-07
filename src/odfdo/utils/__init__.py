@@ -1,3 +1,4 @@
+from .blob import Blob
 from .color import hex2rgb, hexa_color, rgb2hex
 from .coordinates import (
     alpha_to_digit,
@@ -26,6 +27,7 @@ __all__ = [
     "FAMILY_ODF_STD",
     "STYLES_TO_REGISTER",
     "SUBCLASSED_STYLES",
+    "Blob",
     "alpha_to_digit",
     "bytes_to_str",
     "convert_coordinates",
