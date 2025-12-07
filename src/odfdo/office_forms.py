@@ -35,9 +35,10 @@ class OfficeFormsMixin(Element):
     """
 
     def get_office_forms(self) -> OfficeForms | None:
-        """Return the OfficeForms if exists.
+        """Retrieve the `office:forms` container within the element.
 
-        Returns: OfficeForms or None if not found
+        Returns:
+            OfficeForms | None: The `OfficeForms` instance if found, otherwise `None`.
         """
         return cast(
             Union[None, OfficeForms], self.get_element("descendant::office:forms")
@@ -45,6 +46,11 @@ class OfficeFormsMixin(Element):
 
     @property
     def office_forms(self) -> OfficeForms | None:
+        """Get the `office:forms` container within the element.
+
+        Returns:
+            OfficeForms | None: The `OfficeForms` instance if found, otherwise `None`.
+        """
         return self.get_office_forms()
 
 
@@ -57,30 +63,53 @@ class OfficeForms(FormMixin):
         self,
         **kwargs: Any,
     ) -> None:
-        """OfficeForms container for the document, "office:forms".
+        """Initialize the OfficeForms container.
 
-        The "office:forms" element is usable within the following elements:
-        "draw:page", "office:text", "presentation:notes", "style:master-page",
-        "table:table".
+        This element acts as a container for form definitions (`form:form`
+        or `xforms:model`). It is usable within elements like `draw:page`,
+        `office:text`, `presentation:notes`, `style:master-page`, and `table:table`.
+
+        Args:
+            **kwargs: Additional keyword arguments for the parent `FormMixin` class.
         """
         super().__init__(**kwargs)
 
     @property
     def apply_design_mode(self) -> bool:
+        """Get the `form:apply-design-mode` attribute.
+
+        Returns:
+            bool: True if design mode is applied, False otherwise. Defaults to True.
+        """
         return self._get_attribute_bool_default("form:apply-design-mode", True)
 
     @apply_design_mode.setter
     def apply_design_mode(self, apply_design_mode: bool) -> None:
+        """Set the `form:apply-design-mode` attribute.
+
+        Args:
+            apply_design_mode (bool): Whether to apply design mode.
+        """
         self._set_attribute_bool_default(
             "form:apply-design-mode", apply_design_mode, True
         )
 
     @property
     def automatic_focus(self) -> bool:
+        """Get the `form:automatic-focus` attribute.
+
+        Returns:
+            bool: True if automatic focus is enabled, False otherwise. Defaults to False.
+        """
         return self._get_attribute_bool_default("form:automatic-focus", False)
 
     @automatic_focus.setter
     def automatic_focus(self, automatic_focus: bool) -> None:
+        """Set the `form:automatic-focus` attribute.
+
+        Args:
+            automatic_focus (bool): Whether to enable automatic focus.
+        """
         self._set_attribute_bool_default("form:automatic-focus", automatic_focus, False)
 
 
