@@ -47,19 +47,16 @@ class MetaTemplate(Element):
         title: str = "",
         **kwargs: Any,
     ) -> None:
-        """Container for the meta template properties, "meta:template".
+        """Initialize a MetaTemplate element.
 
-        The <meta:template> element specifies a URI for the document template
-        that was used to create a document. The URI is specified as an
-        Xlink.
+        The `meta:template` element specifies a URI for the document template
+        that was used to create a document. The URI is specified as an XLink.
 
         Args:
-
-            date -- datetime or None
-
-            href -- str
-
-            title -- str
+            date (datetime | None): The date and time when the template was used.
+            href (str): The URI for the document template (XLink).
+            title (str): The title of the document template (XLink).
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
 
@@ -79,12 +76,25 @@ class MetaTemplate(Element):
         return f"({self.href})"
 
     def _set_date(self, date: datetime | None) -> None:
+        """Set the `meta:date` attribute from a `datetime` object.
+
+        Converts the `datetime` to an ODF date-time string. If `date` is
+        None, it defaults to the current UTC time.
+
+        Args:
+            date (datetime | None): The date and time to set.
+        """
         if date is None:
             date = datetime.now()
         self.date = DateTime.encode(date)
 
     def as_dict(self) -> dict[str, Any]:
-        """Return the MetaTemplate attributes as a Python dict."""
+        """Return the attributes of the template element as a Python dictionary.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the meta template
+                attributes, with keys like "meta:date", "xlink:href", etc.
+        """
         result: dict[str, Any] = {}
         if self.date:
             result["meta:date"] = DateTime.decode(self.date)
@@ -99,7 +109,12 @@ class MetaTemplate(Element):
         return result
 
     def from_dict(self, data: dict[str, Any]) -> None:
-        """Set all the MetaTemplate attributes from a Python dict."""
+        """Set the attributes of the template element from a Python dictionary.
+
+        Args:
+            data (dict[str, Any]): A dictionary containing the meta template
+                attributes (e.g., "meta:date", "xlink:href").
+        """
         self._set_date(data.get("meta:date"))
         self.actuate = data.get("xlink:actuate", "onRequest")
         self.href = data.get("xlink:href", "")
