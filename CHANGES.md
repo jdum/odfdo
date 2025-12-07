@@ -1,11 +1,26 @@
 # Odfdo Release Notes
 
+## [3.18.1] - 2025-12-07
+
+-   Updated missing docstrings in module `odfdo.document`.
+-   Minor refactoring in `odfdo.document`.
+
+### Added
+
+-   New `odfdo.utils.blob` module for managing binary large objects (BLOBs).
+
+### Changed
+
+-   
+-   Refactored `Blob` class from `odfdo.document` into the new `odfdo.utils.blob` module.
+-   Renamed private function `container_from_template()` to `_container_from_template()`.
+
 ## [3.18.0] - 2025-12-07
 
 -   Major refactoring of docstrings for all modules to Google format.
 -   Major refactoring of Form classes and addition of many new Form-related classes.
 -   Added extensive tests for Form classes.
--   Switchi GitHub repository's default branch from master to main.
+-   Switch GitHub repository's default branch from master to main.
 
 ### Added
 
