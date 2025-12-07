@@ -31,15 +31,21 @@ def strip_elements(
     element: Element,
     sub_elements: Element | Iterable[Element],
 ) -> Element | list[Element | str]:
-    """(internal) Remove the tags of provided elements, keeping inner children
-    and text.
+    """Remove the tags of specified sub-elements within a given element,
+    preserving their inner children and text content.
 
-    Warning : no clone in sub_elements list.
+    Warning: This function modifies the `sub_elements` in place and does not
+    create clones.
 
     Args:
-        sub_elements -- Element or list of Element
+        element (Element): The parent element from which tags will be stripped.
+        sub_elements (Element | Iterable[Element]): An element or a list of
+            elements whose tags should be stripped.
 
-    Returns : the striped element.
+    Returns:
+        Element | list[Element | str]: The modified element. If the top-level
+            element itself is stripped, it may return a list of its children
+            and text content.
     """
     if not sub_elements:
         return element
@@ -58,27 +64,27 @@ def strip_tags(
     protect: Iterable[str] | None = None,
     default: str | None = "text:p",
 ) -> Element | list[Element | str]:
-    """(internal) Remove the tags listed in "strip", recursively, keeping inner
-    children and text.
+    """Recursively remove a selection of tags from an element, preserving
+    their inner content (children and text).
 
-    Tags listed in "protect" stop the removal one level depth. If
-    the first level element is stripped, "default" is used to embed the
-    content in the default element. If "default" is None and first level is
-    striped, a list of text and children is returned.
-
-    strip_tags should be used by on purpose methods (strip_span ...)
-    (Method name taken from lxml).
+    This function is analogous to `lxml.etree.strip_tags`.
 
     Args:
-
-        strip -- iterable list of str odf tags, or None
-
-        protect -- iterable list of str odf tags, or None
-
-        default -- str odf tag, or None
+        element (Element): The element to strip tags from.
+        strip (Iterable[str] | None): A list of qualified ODF tag names
+            (e.g., "text:span") to remove. If `None`, no tags are stripped.
+        protect (Iterable[str] | None): A list of qualified ODF tag names
+            that should not be stripped. The protection applies to the
+            element itself but not its descendants.
+        default (str | None): If the top-level `element` is stripped, its
+            content (children and text) is wrapped in a new element with this
+            tag name. If `None`, a list of `Element` and `str` objects is
+            returned instead. Defaults to "text:p".
 
     Returns:
-        The striped element, an Element or list of Element or string.
+        Element | list[Element | str]: The modified element. If the top-level
+            `element` is stripped and `default` is `None`, a list of its
+            children and text content is returned.
     """
     if not strip:
         return element
@@ -104,7 +110,20 @@ def _strip_tags(
     protect: Iterable[str],
     protected: bool,
 ) -> tuple[Element | list[Element | str], bool]:
-    """Sub method for strip_tags()."""
+    """Internal recursive helper for `strip_tags`.
+
+    Args:
+        element (Element): The current element to process.
+        strip (Iterable[str]): Tags to be stripped.
+        protect (Iterable[str]): Tags to be protected.
+        protected (bool): A flag indicating if the current element is under a
+            protected parent.
+
+    Returns:
+        tuple[Element | list[Element | str], bool]: A tuple containing the
+            processed element or list of elements, and a boolean indicating
+            if any modification occurred.
+    """
     element_clone = element.clone
     modified = False
     children = []
