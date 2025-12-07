@@ -76,13 +76,23 @@ class Blob:
     """Management of binary large objects (BLOBs)."""
 
     def __init__(self) -> None:
-        """Management of binary large objects (BLOBs)."""
         self.content: bytes = b""
         self.name: str = ""
         self.mime_type: str = ""
 
     @classmethod
     def from_path(cls, path: str | Path) -> Blob:
+        """Create a Blob from a file path.
+
+        The blob's name is generated from a hash of its content, and the
+        MIME type is guessed from the file extension.
+
+        Args:
+            path (str | Path): The path to the file.
+
+        Returns:
+            Blob: A new Blob instance containing the file's content.
+        """
         blob = cls()
         path = Path(path)
         blob.content = path.read_bytes()
@@ -98,6 +108,17 @@ class Blob:
 
     @classmethod
     def from_io(cls, file_like: BinaryIO) -> Blob:
+        """Create a Blob from a file-like object.
+
+        The blob's name is generated from a hash of its content. The MIME type
+        is set to a generic "application/octet-stream".
+
+        Args:
+            file_like (BinaryIO): A file-like object opened in binary mode.
+
+        Returns:
+            Blob: A new Blob instance containing the file's content.
+        """
         blob = cls()
         blob.content = file_like.read()
         blob.name = hashlib.shake_256(blob.content).hexdigest(16)
@@ -106,6 +127,17 @@ class Blob:
 
     @classmethod
     def from_base64(cls, b64string: str | bytes, mime_type: str) -> Blob:
+        """Create a Blob from a base64 encoded string.
+
+        The blob's name is generated from a hash of its content.
+
+        Args:
+            b64string (str | bytes): The base64 encoded string.
+            mime_type (str): The MIME type of the decoded content.
+
+        Returns:
+            Blob: A new Blob instance containing the decoded content.
+        """
         blob = cls()
         blob.content = base64.standard_b64decode(b64string)
         blob.name = hashlib.shake_256(blob.content).hexdigest(16)
@@ -114,13 +146,38 @@ class Blob:
 
 
 def _underline_string(level: int, name: str) -> str:
-    """Underline string of the name."""
+    """Generate an underline string for a given name and level.
+
+    Uses a predefined set of characters for underlining, based on the `level`.
+    If the level is out of bounds, returns a newline.
+
+    Args:
+        level (int): The nesting level, which determines the underline character.
+        name (str): The string to be underlined. The length of this string
+            determines the length of the underline.
+
+    Returns:
+        str: The underline string, or a newline if the level is too high.
+    """
     if level >= len(UNDERLINE_LVL):
         return "\n"
     return UNDERLINE_LVL[level] * len(name)
 
 
 def _show_styles(element: Element, level: int = 0) -> str | None:
+    """Recursively generate a formatted string representation of a style element.
+
+    This function is used for creating a human-readable tree of styles,
+    including their attributes and children.
+
+    Args:
+        element (Element): The style element to represent.
+        level (int): The current nesting level for indentation and underlining.
+
+    Returns:
+        str | None: A formatted string representing the style element, or
+            `None` if the element is empty (no attributes or children).
+    """
     output: list[str] = []
     attributes = element.attributes
     children = element.children
@@ -157,7 +214,17 @@ def _show_styles(element: Element, level: int = 0) -> str | None:
 
 
 def _get_part_path(path: str) -> str:
-    """Transition to real path of XML parts."""
+    """Map a short name to the full path of a core ODF XML part.
+
+    For example, "content" is mapped to "content.xml". If the path is not
+    a recognized short name, it is returned unchanged.
+
+    Args:
+        path (str): The short name or full path of the part.
+
+    Returns:
+        str: The full path of the XML part.
+    """
     return {
         "content": ODF_CONTENT,
         "meta": ODF_META,
@@ -170,6 +237,16 @@ def _get_part_path(path: str) -> str:
 def _get_part_class(
     path: str,
 ) -> type[XmlPart] | None:
+    """Get the specialized class for a core ODF XML part.
+
+    Args:
+        path (str): The full path of the XML part (e.g., "content.xml").
+
+    Returns:
+        type[XmlPart] | None: The class corresponding to the part
+            (e.g., `Content` for "content.xml"), or `None` if the part
+            is not a recognized core XML part with a specialized class.
+    """
     name = Path(path).name
     return {
         ODF_CONTENT: Content,
@@ -214,33 +291,29 @@ class Document(MDDocument):
         self,
         target: str | bytes | Path | Container | io.BytesIO | None = "text",
     ) -> None:
-        """Abstraction of the ODF document.
+        """Initialize a Document.
 
-        To create a new Document, several possibilities:
+        This can either create a new document from a template or load an
+        existing one from a path, file-like object, or Container.
 
-            - Document() or Document("text") or Document("odt")
-                -> an "empty" document of type text
+        Args:
+            target (str | bytes | Path | Container | io.BytesIO | None):
+                The source to create or load the document from.
+                - If a string like "text", "spreadsheet", "presentation",
+                  "drawing", or their file extensions ("odt", "ods", "odp",
+                  "odg"), a new document is created from a default template.
+                  Note: These templates are not truly empty and may require
+                  clearing (e.g., `document.body.clear()`).
+                - If a path (str or Path) to an existing ODF file, the file
+                  is loaded.
+                - If a `Container` object, it is used directly.
+                - If a file-like object (`io.BytesIO`), the document is loaded
+                  from it.
+                - If `None`, an empty container is created.
+                - If `bytes`, the content is loaded as a string.
 
-            - Document("spreadsheet") or Document("ods")
-                -> an "empty" document of type spreadsheet
-
-            - Document("presentation") or Document("odp")
-                -> an "empty" document of type presentation
-
-            - Document("drawing") or Document("odg")
-                -> an "empty" document of type drawing
-
-            Meaning of “empty”: these documents are copies of the default
-            templates documents provided with this library, which, as templates,
-            are not really empty. It may be useful to clear the newly created
-            document: document.body.clear(), or adjust meta information like
-            description or default language: document.meta.language = 'fr-FR'
-
-        If the argument is not a known template type, or is a Path,
-        Document(file) will load the content of the ODF file.
-
-        To explicitly create a document from a custom template, use the
-        Document.new(path) method whose argument is the path to the template file.
+        To create a document from a custom template, use the `Document.new()`
+        classmethod instead.
         """
         # Cache of XML parts
         self.__xmlparts: dict[str, XmlPart] = {}
@@ -286,15 +359,17 @@ class Document(MDDocument):
 
     @classmethod
     def new(cls, template: str | Path | io.BytesIO = "text") -> Document:
-        """Create a Document from a template.
-
-        The template argument is expected to be the path to a ODF template.
+        """Create a new Document from a template.
 
         Args:
+            template (str | Path | io.BytesIO): The template to use.
+                - If a string like "text", "spreadsheet", etc., a default
+                  template is used.
+                - If a path to a custom template file, that template is used.
+                - If a file-like object, the template is read from it.
 
-            template -- str or Path or file-like (io.BytesIO)
-
-        Return : ODF document -- Document
+        Returns:
+            Document: A new Document instance based on the template.
         """
         container = container_from_template(template)
         return cls(container)
@@ -519,7 +594,22 @@ class Document(MDDocument):
                 result.append(f"({citation}) {body}\n")
 
     def get_formatted_text(self, rst_mode: bool = False) -> str:
-        """Return content as text, with some formatting."""
+        """Return a formatted string representation of the document's content.
+
+        For text-based documents, this includes handling of footnotes, annotations,
+        and image references. For spreadsheets, it returns a CSV representation.
+
+        Args:
+            rst_mode (bool): If True, formats the output in reStructuredText (RST)
+                syntax, especially for footnotes and annotations.
+
+        Returns:
+            str: The formatted text content of the document.
+
+        Raises:
+            NotImplementedError: If the document type is not supported for
+                formatted text extraction.
+        """
         # For the moment, only "type='text'"
         doc_type = self.get_type()
         if doc_type == "spreadsheet":
@@ -576,6 +666,16 @@ class Document(MDDocument):
         return self.meta.as_text()
 
     def to_markdown(self) -> str:
+        """Export the document content to Markdown format.
+
+        Currently, only text documents are supported.
+
+        Returns:
+            str: The Markdown representation of the document.
+
+        Raises:
+            NotImplementedError: If the document type is not 'text'.
+        """
         doc_type = self.get_type()
         if doc_type not in {
             "text",
@@ -775,6 +875,15 @@ class Document(MDDocument):
         )
 
     def get_parent_style(self, style: StyleBase) -> StyleBase | None:
+        """Get the parent style of a given style.
+
+        Args:
+            style (StyleBase): The style for which to find the parent.
+
+        Returns:
+            StyleBase | None: The parent style object, or `None` if the style
+                has no parent or the parent style cannot be found.
+        """
         family = style.family
         if family is None:
             return None
@@ -784,6 +893,15 @@ class Document(MDDocument):
         return self.get_style(family, parent_style_name)
 
     def get_list_style(self, style: StyleBase) -> StyleBase | None:
+        """Get the list style associated with a given style.
+
+        Args:
+            style (StyleBase): The style from which to get the list style name.
+
+        Returns:
+            StyleBase | None: The list style object, or `None` if the style
+                has no associated list style or it cannot be found.
+        """
         list_style_name = style.list_style_name  # type: ignore[attr-defined]
         if not list_style_name:
             return None
@@ -1035,6 +1153,17 @@ class Document(MDDocument):
         common: bool = True,
         properties: bool = False,
     ) -> str:
+        """Provide a formatted string summary of styles in the document.
+
+        Args:
+            automatic (bool): If `True`, include automatic styles in the output.
+            common (bool): If `True`, include common (non-automatic) styles.
+            properties (bool): If `True`, include the individual properties
+                of each style in the output.
+
+        Returns:
+            str: A human-readable summary of the document's styles.
+        """
         infos = []
         for style in self.get_styles():
             try:
