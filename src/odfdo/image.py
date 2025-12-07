@@ -54,28 +54,25 @@ class DrawImage(Element):
         filter_name: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """An ODF image, "draw:image".
+        """Initialize an ODF image (`draw:image`).
 
-        When image is embedded in the document, the url parameter is a
-        reference to the local document obtained by copying the source
-        image into the document, ie: url = document.add_file(image_path)
+        The `draw:image` element represents an image. It can be a link to an
+        external resource or, more commonly, embedded within the document.
 
-        Warning: image elements must be stored in a frame "draw:frame",
-        see Frame().
+        When an image is embedded, the `url` parameter should be a reference
+        to the local document, typically obtained by adding the image file
+        (e.g., `url = document.add_file(image_path)`).
 
-        Initialization of an DrawImage.
+        Warning: Image elements should generally be stored within a `draw:frame`
+        element (see `Frame` class).
 
         Args:
-
-            url -- str
-
-            type -- str
-
-            show -- str
-
-            actuate -- str
-
-            filter_name -- str
+            url (str): The URL or internal path of the image.
+            xlink_type (str): The XLink type, usually "simple".
+            show (str): How the image should be shown, usually "embed".
+            actuate (str): When the image should be loaded, usually "onLoad".
+            filter_name (str | None): An optional filter name to apply to the image.
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -108,22 +105,18 @@ class DrawFillImage(DrawImage):
         width: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """A link to a bitmap resource, "draw:fill-image".
+        """Initialize a DrawFillImage (`draw:fill-image`).
 
-        The "draw:fill-image" element specifies a link to a bitmap
-        resource. Fill image are not available as automatic styles.
-        The "draw:fill-image" element is usable within the following element:
-        "office:styles"
+        The `draw:fill-image` element specifies a link to a bitmap resource.
+        Fill images are not available as automatic styles and are typically
+        used within the `office:styles` element.
 
         Args:
-
-            name -- str
-
-            display_name -- str
-
-            height -- str
-
-            width -- str
+            name (str | None): The internal name of the fill image.
+            display_name (str | None): The display name of the fill image.
+            height (str | None): The height of the fill image (e.g., "10cm").
+            width (str | None): The width of the fill image (e.g., "15cm").
+            **kwargs: Additional keyword arguments for the parent `DrawImage` class.
         """
         super().__init__(**kwargs)
         if self._do_init:
