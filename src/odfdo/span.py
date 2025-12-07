@@ -46,7 +46,14 @@ class Span(
     NoteMixin,
     Element,
 ):
-    """A span tag (syled text in paragraph), "text:span"."""
+    """A span tag (styled text in paragraph), "text:span".
+
+    This element is used for inline text styling within a paragraph. It can
+    contain text content and is often associated with a text style.
+
+    Inherits from various mixins to provide markdown, paragraph, and note
+    functionalities.
+    """
 
     _tag = "text:span"
     _properties = (
@@ -68,12 +75,10 @@ class Span(
         <TAB> and multiple spaces replaced by ODF corresponding tags.
 
         Args:
-
-            text -- str
-
-            style -- str
-
-            formatted -- bool
+            text (str, optional): The text content for the span.
+            style (str, optional): The style name for the span.
+            formatted (bool): If True, special characters in `text` are
+                replaced by ODF corresponding tags. Defaults to True.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -87,6 +92,11 @@ class Span(
                 self.style = style
 
     def __str__(self) -> str:
+        """Return the inner text of the span.
+
+        Returns:
+            str: The text content within the span.
+        """
         return self.inner_text
 
 
