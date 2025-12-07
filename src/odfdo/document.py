@@ -314,6 +314,14 @@ class Document(MDDocument):
 
         To create a document from a custom template, use the `Document.new()`
         classmethod instead.
+
+        When creating an “empty” document: the document is a copy of the
+        default templates document provided with this library, which, as
+        templates, are not really empty. It may be useful to clear the newly
+        created document: `document.body.clear()`, or adjust meta information
+        like description or language: `document.language = 'fr-FR'`.
+
+
         """
         # Cache of XML parts
         self.__xmlparts: dict[str, XmlPart] = {}
