@@ -21,12 +21,31 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
+"""Coordinate translation utilities for ODF documents.
+
+This module provides functions for converting between different coordinate
+representations used in ODF tables, such as "A1" style, (row, column) tuples,
+and numeric indices.
+"""
 from __future__ import annotations
 
 from .isiterable import isiterable
 
 
 def translate_from_any(x: str | int, length: int, idx: int) -> int:
+    """Translate a coordinate from any format to a 0-based integer index.
+
+    Args:
+        x (str | int): The coordinate, which can be a 1-based integer or a string.
+        length (int): The length of the axis for handling negative indices.
+        idx (int): The index in the coordinate tuple to use (0 for x, 1 for y).
+
+    Returns:
+        int: The 0-based integer coordinate.
+
+    Raises:
+        TypeError: If the input value is not a string or integer.
+    """
     if isinstance(x, str):
         value_int = convert_coordinates(x)[idx]
         if value_int is None:
@@ -41,7 +60,19 @@ def translate_from_any(x: str | int, length: int, idx: int) -> int:
 
 
 def alpha_to_digit(alpha: str) -> int:
-    """Translates A to 0, B to 1, etc. So "AB" is value 27."""
+    """Translates a column name from alphabetic to a 0-based numeric index.
+
+    For example, "A" becomes 0, "B" becomes 1, and "AB" becomes 27.
+
+    Args:
+        alpha (str): The alphabetic column name.
+
+    Returns:
+        int: The 0-based numeric index of the column.
+
+    Raises:
+        ValueError: If the input string contains non-alphabetic characters.
+    """
     if isinstance(alpha, int):
         return alpha
     if not alpha.isalpha():
@@ -54,6 +85,19 @@ def alpha_to_digit(alpha: str) -> int:
 
 
 def digit_to_alpha(digit: int | str) -> str:
+    """Translates a 0-based column index to its alphabetic representation.
+
+    For example, 0 becomes "A", 1 becomes "B", and 27 becomes "AB".
+
+    Args:
+        digit (int | str): The 0-based numeric index of the column.
+
+    Returns:
+        str: The alphabetic representation of the column.
+
+    Raises:
+        TypeError: If the input is not an integer.
+    """
     if isinstance(digit, str) and digit.isalpha():
         return digit
     if not isinstance(digit, int):
@@ -67,6 +111,17 @@ def digit_to_alpha(digit: int | str) -> str:
 
 
 def increment(value: int, step: int) -> int:
+    """Adjusts a negative index to a positive one based on a step.
+
+    This is used to handle negative indexing in table coordinates.
+
+    Args:
+        value (int): The index value, which may be negative.
+        step (int): The total size of the dimension (e.g., table width or height).
+
+    Returns:
+        int: The adjusted, non-negative index.
+    """
     while value < 0:
         if step == 0:
             return 0
@@ -77,9 +132,21 @@ def increment(value: int, step: int) -> int:
 def convert_coordinates(
     obj: tuple | list | str,
 ) -> tuple[int | None, ...]:
-    """Translate any coordinates to tuple of integers.
+    """Translates various coordinate formats into a tuple of 0-based integers.
 
-    Returns: tuple of int or None
+    This function can handle formats like "A1", "A1:C3", or tuples like (0, 0).
+    A single cell coordinate is returned as a (column, row) tuple. An area is
+    returned as a (col1, row1, col2, row2) tuple.
+
+    Args:
+        obj (tuple | list | str): The coordinate representation to convert.
+
+    Returns:
+        tuple[int | None, ...]: A tuple of 0-based integer coordinates.
+
+    Raises:
+        TypeError: If the input object is of an unsupported type.
+        ValueError: If the coordinate string is malformed.
 
     Examples:
         >>> convert_coordinates("D3")
