@@ -62,29 +62,31 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Cell of a Table, "table:table-cell".
+        """Create a cell element.
 
-        Create a cell element containing the given value. The textual
-        representation is automatically formatted but can be provided. Cell
-        type can be deduced as well, unless the number is a percentage or
-        currency. If cell type is "currency", the currency must be given.
-        The cell can be repeated on the given number of columns.
+        A cell in a table, represented by "table:table-cell".
+        This constructor creates a cell element containing the given value.
+        The textual representation is automatically formatted but can be
+        provided explicitly. The cell type can be deduced automatically,
+        unless the number is a percentage or currency. If the cell type is
+        "currency", the currency must be specified. The cell can also be
+        repeated across a given number of columns.
 
         Args:
-
-            value -- bool, int, float, Decimal, date, datetime, str,
-                     timedelta
-
-            text -- str
-
-            cell_type -- 'boolean', 'currency', 'date', 'float', 'percentage',
-                         'string' or 'time'
-
-            currency -- three-letter str
-
-            repeated -- int
-
-            style -- str
+            value (any, optional): The Python value to set for the cell. Can be
+                a boolean, int, float, Decimal, date, datetime, str, or timedelta.
+            text (str, optional): The textual representation of the cell's
+                content. If not provided, it is generated from the value.
+            cell_type (str, optional): The explicit type of the cell. Valid
+                options include 'boolean', 'currency', 'date', 'float',
+                'percentage', 'string', or 'time'. If not provided, it's
+                guessed from the value.
+            currency (str, optional): A three-letter currency code (e.g., "EUR",
+                "USD") if the cell_type is 'currency'.
+            formula (str, optional): The formula for the cell.
+            repeated (int, optional): The number of times this cell should be
+                repeated across columns. Must be greater than 1.
+            style (str, optional): The name of the style to apply to the cell.
         """
         super().__init__(**kwargs)
         self.x: int | None = None
@@ -116,16 +118,24 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
     def value(
         self,
     ) -> str | _bool | _int | _float | Decimal | _date | _datetime | timedelta | None:
-        """Set / get the value of the cell. The type is read from the
-        'office:value-type' attribute of the cell. When setting the value, the
-        type of the value will determine the new value_type of the cell.
+        """Get or set the value of the cell.
+
+        When getting, the type is inferred from the 'office:value-type' attribute.
+        When setting, the type of the provided Python value determines the
+        'office:value-type' of the cell.
 
         Warning:
-            - for date, datetime and timedelta, a default text value is generated.
-            - for boolean type, the text value is either 'True' or 'False'.
-            - for numeric types, the return value is either Decimal or in, use
-              the float, decimal or int properties to force the type.
-            - Use the method Cell.set_value() to customize the text value.
+            *   For `date`, `datetime`, and `timedelta`, a default text value
+                is automatically generated.
+            *   For boolean types, the text value will be either 'True' or 'False'.
+            *   For numeric types, the return value is typically `Decimal` or `int`.
+                Use the `float`, `decimal`, or `int` properties to force a
+                specific return type.
+            *   To customize the text representation, use the `set_value()` method.
+
+        Returns:
+            Union[str, bool, int, float, Decimal, date, datetime, timedelta, None]:
+                The value of the cell in its appropriate Python type.
         """
         value_type = self.get_attribute_string("office:value-type")
         if value_type == "boolean":
@@ -192,6 +202,7 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def _bool_string(self) -> str:
+        """Return the boolean value as a string '0' or '1'."""
         value = self.get_attribute_string("office:boolean-value")
         if not isinstance(value, str):
             return "0"
@@ -199,7 +210,7 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def float(self) -> _float:
-        """Set / get the value of the cell as a float (or 0.0)."""
+        """Get or set the value of the cell as a float (or 0.0)."""
         for tag in ("office:value", "office:string-value"):
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
@@ -221,7 +232,7 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def decimal(self) -> Decimal:
-        """Set / get the value of the cell as a Decimal (or 0.0)."""
+        """Get or set the value of the cell as a Decimal (or 0.0)."""
         for tag in ("office:value", "office:string-value"):
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
@@ -243,7 +254,7 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def int(self) -> _int:
-        """Set / get the value of the cell as a integer (or 0)."""
+        """Get or set the value of the cell as an integer (or 0)."""
         for tag in ("office:value", "office:string-value"):
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
@@ -265,7 +276,7 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def string(self) -> str:
-        """Set / get the value of the cell as a string (or '')."""
+        """Get or set the value of the cell as a string (or '')."""
         value = self.get_attribute_string("office:string-value")
         if isinstance(value, str):
             return value
@@ -289,7 +300,7 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def bool(self) -> _bool:
-        """Set / get the value of the cell as a boolean."""
+        """Get or set the value of the cell as a boolean."""
         value = self.get_attribute_string("office:boolean-value")
         if isinstance(value, str):
             return value == "true"
@@ -311,7 +322,7 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def duration(self) -> timedelta:
-        """Set / get the value of the cell as a duration (Python timedelta)."""
+        """Get or set the value of the cell as a duration (Python timedelta)."""
         value = self.get_attribute("office:time-value")
         if isinstance(value, str):
             return Duration.decode(value)
@@ -327,7 +338,7 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def datetime(self) -> _datetime:
-        """Set / get the value of the cell as a datetime."""
+        """Get or set the value of the cell as a datetime."""
         value = self.get_attribute("office:date-value")
         if isinstance(value, str):
             return DateTime.decode(value)
@@ -343,7 +354,7 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def date(self) -> _date:
-        """Set / get the value of the cell as a date."""
+        """Get or set the value of the cell as a date."""
         value = self.get_attribute("office:date-value")
         if isinstance(value, str):
             return Date.decode(value).date()
@@ -376,23 +387,23 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
         currency: str | None = None,
         formula: str | None = None,
     ) -> None:
-        """Set the cell state from the Python value type.
+        """Set the cell state from a Python value.
 
-        Text is how the cell is displayed. Cell type is guessed,
-        unless provided.
-
-        For monetary values, provide the name of the currency.
+        The `text` parameter defines how the cell is displayed.
+        The cell type is guessed unless explicitly provided.
+        For monetary values, the name of the currency must be provided.
 
         Args:
-
-            value -- Python type
-
-            text -- str
-
-            cell_type -- 'boolean', 'float', 'date', 'string', 'time',
-                        'currency' or 'percentage'
-
-            currency -- str
+            value (Union[str, bytes, float, int, Decimal, bool, datetime, date, timedelta, None]):
+                The Python value to assign to the cell.
+            text (str, optional): The explicit textual representation of the
+                cell's content. If None, it is derived from the `value`.
+            cell_type (str, optional): The explicit type of the cell's value.
+                Can be 'boolean', 'float', 'date', 'string', 'time', 'currency',
+                or 'percentage'.
+            currency (str, optional): A string representing the currency, e.g.,
+                "EUR" or "USD", required if `cell_type` is 'currency'.
+            formula (str, optional): The formula to set for the cell.
         """
         self.clear()
         text = self.set_value_and_type(
@@ -408,10 +419,12 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def type(self) -> str | None:
-        """Get / set the type of the cell: boolean, float, date, string or
-        time.
+        """Get or set the type of the cell.
 
-        Returns: str | None
+        Valid types include 'boolean', 'float', 'date', 'string', or 'time'.
+
+        Returns:
+            str or None: The type of the cell's value.
         """
         return self.get_attribute_string("office:value-type")
 
@@ -421,9 +434,10 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def currency(self) -> str | None:
-        """Get / set the currency used for monetary values.
+        """Get or set the currency used for monetary values.
 
-        Returns: str | None
+        Returns:
+            str or None: The currency code (e.g., "EUR", "USD").
         """
         return self.get_attribute_string("office:currency")
 
@@ -432,10 +446,15 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
         self.set_attribute("office:currency", currency)
 
     def _set_repeated(self, repeated: _int | None) -> None:
-        """Internal only.
+        """Set the number of times the cell is repeated.
 
-        Set the number of times the cell is repeated, or None to delete.
-        Without changing cache.
+        Internal method that sets the 'table:number-columns-repeated' attribute,
+        or removes it if `repeated` is None or less than 2, without
+        triggering cache updates.
+
+        Args:
+            repeated (int, optional): The number of times the cell should be
+                repeated. If None or less than 2, the attribute is removed.
         """
         if repeated is None or repeated < 2:
             with contextlib.suppress(KeyError):
@@ -445,11 +464,12 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def repeated(self) -> _int | None:
-        """Get / set the number of times the cell is repeated.
+        """Get or set the number of times the cell is repeated across columns.
 
-        Always None when using the table API.
+        This property is typically None when using the higher-level table API.
 
-        Returns: int or None
+        Returns:
+            int or None: The number of repetitions, or None if not repeated.
         """
         repeated = self.get_attribute("table:number-columns-repeated")
         if repeated is None:
@@ -475,9 +495,10 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def style(self) -> str | None:
-        """Get / set the style of the cell itself.
+        """Get or set the style name of the cell.
 
-        Returns: str | None
+        Returns:
+            str or None: The name of the style applied to the cell.
         """
         return self.get_attribute_string("table:style-name")
 
@@ -487,11 +508,12 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def formula(self) -> str | None:
-        """Get / set the formula of the cell, or None if undefined.
+        """Get or set the formula of the cell.
 
-        The formula is not interpreted in any way.
+        The formula is stored as a string and is not interpreted by odfdo.
 
-        Returns: str | None
+        Returns:
+            str or None: The formula string, or None if no formula is defined.
         """
         return self.get_attribute_string("table:formula")
 
@@ -500,16 +522,17 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
         self.set_attribute("table:formula", formula)
 
     def is_empty(self, aggressive: _bool = False) -> _bool:
-        """Return whether the cell has no value or the value evaluates to False
-        (empty string), and no style.
+        """Check if the cell is empty.
 
-        If aggressive is True, empty cells with style are considered empty.
+        An empty cell has no value, no children, is not covered, and is not
+        spanned. By default, cells with a style are not considered empty.
 
         Args:
+            aggressive (bool, optional): If True, a cell with a style but no
+                content is also considered empty. Defaults to False.
 
-            aggressive -- bool
-
-        Returns: bool
+        Returns:
+            bool: True if the cell is empty, False otherwise.
         """
         if (
             self.value is not None
@@ -523,25 +546,28 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
         return True
 
     def is_covered(self) -> _bool:
-        """Return whether the cell is covered (tag table:covered-table-cell).
+        """Check if the cell is covered.
 
-        Returns: True | False
+        A covered cell is represented by the "table:covered-table-cell" tag.
+
+        Returns:
+            bool: True if the cell is covered, False otherwise.
         """
         return self.tag == "table:covered-table-cell"
 
     def is_spanned(self, covered: _bool = True) -> _bool:
-        """Return whether the cell is spanned over several cells.
+        """Check if the cell spans over multiple cells.
 
-        If covered is True (the default), covered cells are considered as
-        spanned, else only the top left cell. The top left contains the
-        attributes "table:number-columns-spanned" and
-        "table:number-rows-spanned".
+        A cell is considered spanned if it has 'table:number-columns-spanned'
+        or 'table:number-rows-spanned' attributes.
 
         Args:
+            covered (bool, optional): If True, covered cells (those with the
+                "table:covered-table-cell" tag) are also considered spanned.
+                Defaults to True.
 
-            covered -- bool
-
-        Returns: True | False
+        Returns:
+            bool: True if the cell is spanned, False otherwise.
         """
         if self.is_covered():
             return covered
@@ -554,12 +580,14 @@ class Cell(SectionMixin, AnnotationMixin, ElementTyped):
     _is_spanned = is_spanned  # compatibility
 
     def span_area(self) -> tuple[_int, _int]:
-        """Return the tuple (nb_columns, nb_rows) of the zone covered by a
-        spanned cell.
+        """Return the dimensions of the area spanned by the cell.
 
-        If the cell is not spanned, return (0,0).
+        Returns a tuple `(nb_columns, nb_rows)` indicating how many columns
+        and rows the cell spans. If the cell is not spanned, it returns `(0, 0)`.
 
-        Returns: tuple[int, int]
+        Returns:
+            tuple[int, int]: A tuple containing the number of spanned columns
+                and rows.
         """
         columns = self.get_attribute_integer("table:number-columns-spanned") or 0
         rows = self.get_attribute_integer("table:number-rows-spanned") or 0
