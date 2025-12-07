@@ -30,7 +30,12 @@ from .style_utils import _expand_properties_dict, _expand_properties_list, _merg
 
 
 class StyleProps(StyleBase):
-    """Mixin for Style properties methods."""
+    """Mixin for Style properties methods.
+
+    This class provides methods for getting, setting, and deleting properties
+    associated with various style areas within an ODF document. It leverages
+    `StyleBase` for fundamental style functionalities.
+    """
 
     AREAS: ClassVar[set[str]] = {
         "chart",
@@ -50,6 +55,17 @@ class StyleProps(StyleBase):
     }
 
     def _check_area(self, area: str | None) -> str:
+        """Validate the provided area or use the style's family as default.
+
+        Args:
+            area (str, optional): The area to check. If None, uses the style's family.
+
+        Returns:
+            str: The validated area.
+
+        Raises:
+            ValueError: If the area is not a recognized type.
+        """
         if area is None:
             area = self.family
         if area not in StyleProps.AREAS:
@@ -59,13 +75,16 @@ class StyleProps(StyleBase):
     def get_properties(self, area: str | None = None) -> dict[str, str | dict] | None:
         """Get the mapping of all properties of this style.
 
-        By default the properties of the same family, e.g. a paragraph style and its paragraph properties. Specify the area to get the text properties of a paragraph style for example.
+        By default, retrieves properties of the same family as the style (e.g.,
+        paragraph properties for a paragraph style). Specify the `area` to get
+        properties from a different area (e.g., text properties of a paragraph style).
 
         Args:
+            area (str, optional): The specific area of properties to retrieve
+                (e.g., 'text', 'paragraph').
 
-            area -- str
-
-        Returns: dict
+        Returns:
+            dict or None: A dictionary of properties, or None if no properties are found.
         """
         try:
             area = self._check_area(area)
@@ -82,6 +101,15 @@ class StyleProps(StyleBase):
 
     @staticmethod
     def _update_boolean_styles(props: dict[str, str | bool]) -> None:
+        """Update a dictionary of style properties with boolean values for common text attributes.
+
+        This static method adds or updates 'color', 'background_color', 'italic',
+        'bold', 'fixed', 'underline', and 'strike' keys in the provided `props`
+        dictionary based on existing OpenDocument style attributes.
+
+        Args:
+            props (dict): The dictionary of style properties to update.
+        """
         strike = props.get("style:text-line-through-style", "")
         if strike == "none":
             strike = ""
@@ -101,7 +129,7 @@ class StyleProps(StyleBase):
         )
 
     def get_list_style_properties(self) -> dict[str, str | bool]:
-        """Get text properties of style as a dict, with some enhanced values.
+        """Get list style properties as a dictionary with enhanced values.
 
         Enhanced values returned:
         - "color": str
@@ -112,12 +140,13 @@ class StyleProps(StyleBase):
         - "underline": bool
         - "strike": bool
 
-        Returns: dict[str, str | bool]
+        Returns:
+            dict[str, str | bool]: A dictionary containing list style properties.
         """
         return self.get_text_properties()
 
     def get_text_properties(self) -> dict[str, str | bool]:
-        """Get text properties of style as a dict, with some enhanced values.
+        """Get text properties of style as a dictionary with enhanced values.
 
         Enhanced values returned:
         - "color": str
@@ -128,7 +157,8 @@ class StyleProps(StyleBase):
         - "underline": bool
         - "strike": bool
 
-        Returns: dict[str, str | bool]
+        Returns:
+            dict[str, str | bool]: A dictionary containing text properties.
         """
         props = self.get_properties(area="text") or {}
         self._update_boolean_styles(props)  # type: ignore[arg-type]
@@ -141,19 +171,20 @@ class StyleProps(StyleBase):
         area: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Set the properties of the "area" type of this style.
+        """Set the properties of the specified `area` for this style.
 
-        Properties are given either as a dict or as named arguments (or both). The area is identical to the style family by default. If the properties element is missing, it is created.
-
-        Instead of properties, you can pass a style with properties of the same area. These will be copied.
+        Properties can be provided as a dictionary, by copying from another
+        `StyleBase` object, or as keyword arguments. If the properties element
+        for the given area is missing, it will be created. The `area` defaults
+        to the style's family.
 
         Args:
-
-            properties -- dict
-
-            style -- Style
-
-            area -- 'paragraph', 'text'...
+            properties (dict, optional): A dictionary of properties to set.
+            style (StyleBase, optional): Another StyleBase object from which
+                to copy properties.
+            area (str, optional): The specific area of properties to set
+                (e.g., 'paragraph', 'text').
+            **kwargs: Arbitrary keyword arguments representing properties to set.
         """
         area = self._check_area(area)
         if properties is None:
@@ -180,16 +211,18 @@ class StyleProps(StyleBase):
         properties: list[str] | None = None,
         area: str | None = None,
     ) -> None:
-        """Delete the given properties, either by list argument or positional
-        argument (or both).
+        """Delete the given properties from the specified `area`.
 
-        Remove only from the given area, identical to the style family by default.
+        Properties can be specified either as a list argument or as positional
+        arguments. Properties are removed only from the given area, which
+        defaults to the style's family.
 
         Args:
+            properties (list[str], optional): A list of property names to delete.
+            area (str, optional): The specific area from which to delete properties.
 
-            properties -- list
-
-            area -- str
+        Raises:
+            ValueError: If the properties element for the specified area does not exist.
         """
         area = self._check_area(area)
         if properties is None:
