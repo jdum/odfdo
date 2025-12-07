@@ -566,7 +566,7 @@ class FormTextarea(FormText):
 FormTextarea._define_attribut_property()
 
 
-class FormPassword(FormAsDictMixin, FormGrid):
+class FormPassword(FormAsDictMixin, FormMaxLengthMixin, FormGrid):
     """A control that uses an echo character to hide password input by a user, "form:password".
 
     Attributes:
