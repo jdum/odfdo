@@ -29,12 +29,25 @@ from .element import Element, PropDef, register_element_class
 
 
 class SectionMixin(Element):
-    """Mixin class for classes containing Sections.
+    """Mixin class for elements that can contain sections.
 
-    Used by the following classes:  "draw:text-box", "office:text", "style:footer",
-    "style:footer-left", "style:header", "style:header-left", "table:covered-table-cell",
-    "table:table-cell", "text:deletion", "text:index-body", "text:index-title",
-    "text:note-body" and "text:section".
+    This mixin provides methods to access and manipulate "text:section"
+    elements within a parent element.
+
+    Used by the following classes:
+        - "draw:text-box"
+        - "office:text"
+        - "style:footer"
+        - "style:footer-left"
+        - "style:header"
+        - "style:header-left"
+        - "table:covered-table-cell"
+        - "table:table-cell"
+        - "text:deletion"
+        - "text:index-body"
+        - "text:index-title"
+        - "text:note-body"
+        - "text:section"
     """
 
     def get_sections(
@@ -42,15 +55,14 @@ class SectionMixin(Element):
         style: str | None = None,
         content: str | None = None,
     ) -> list[Section]:
-        """Return all the sections that match the criteria.
+        """Return all sections that match the criteria.
 
         Args:
+            style (str, optional): The style name to filter by.
+            content (str, optional): A regex to match in the section content.
 
-            style -- str
-
-            content -- str regex
-
-        Returns: list of Section
+        Returns:
+            list[Section]: A list of matching Section elements.
         """
         return cast(
             list[Section],
@@ -61,9 +73,10 @@ class SectionMixin(Element):
     def sections(
         self,
     ) -> list[Section]:
-        """Return all the sections.
+        """Return all sections within the element.
 
-        Returns: list of Section
+        Returns:
+            list[Section]: A list of all Section elements.
         """
         return cast(list[Section], self.get_elements("text:section"))
 
@@ -75,12 +88,12 @@ class SectionMixin(Element):
         """Return the section that matches the criteria.
 
         Args:
+            position (int, optional): The index of the section to return.
+                Defaults to 0 (first section).
+            content (str, optional): A regex to match in the section content.
 
-            position -- int
-
-            content -- str regex
-
-        Returns: Section or None if not found
+        Returns:
+            Section or None: The matching Section element, or None if not found.
         """
         return cast(
             Union[None, Section],
@@ -91,7 +104,11 @@ class SectionMixin(Element):
 
 
 class Section(SectionMixin):
-    """Section of the text document, "text:section"."""
+    """Represents a section within a text document, "text:section".
+
+    A section is a container for document content, often used for
+    organization or to apply specific formatting or attributes.
+    """
 
     _tag = "text:section"
     _properties = (
@@ -105,13 +122,11 @@ class Section(SectionMixin):
         name: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Section of the text document, "text:section".
+        """Create a Section element.
 
         Args:
-
-            style -- str
-
-            name -- str
+            style (str, optional): The style name for the section.
+            name (str, optional): The name of the section.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -121,6 +136,14 @@ class Section(SectionMixin):
                 self.name = name
 
     def get_formatted_text(self, context: dict | None = None) -> str:
+        """Return the formatted text content of the section.
+
+        Args:
+            context (dict, optional): A dictionary of context variables.
+
+        Returns:
+            str: The formatted text content.
+        """
         result = [element.get_formatted_text(context) for element in self.children]
         result.append("\n")
         return "".join(result)
