@@ -25,6 +25,7 @@
 This module provides a helper function to determine if an object is iterable,
 with special handling for string and byte types.
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterable

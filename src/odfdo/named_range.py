@@ -177,6 +177,7 @@ class NamedRange(Element):
         else:
             self.set_attribute("table:range-usable-as", usage)
             self.usage = usage
+
     @staticmethod
     def _check_nr_name(name: str) -> str:
         """Validate a named range name.
@@ -216,6 +217,7 @@ class NamedRange(Element):
             msg = f"Name of the type 'ABC123' is not allowed for Named Range: {name!r}"
             raise ValueError(msg)
         return name
+
     @property
     def name(self) -> str | None:
         """Get the name of the named range.
@@ -373,6 +375,7 @@ class NamedRange(Element):
         if table is None:
             raise ValueError(f"Table not found: {self.table_name!r}")
         return table.get_values(self.crange, cell_type, complete, get_type, flat)
+
     def get_value(self, get_type: bool = False) -> Any:
         """Retrieve the value of the first cell of the named range.
 
@@ -431,6 +434,7 @@ class NamedRange(Element):
             cell_type=cell_type,
             currency=currency,
         )
+
     def set_value(
         self,
         value: Any,

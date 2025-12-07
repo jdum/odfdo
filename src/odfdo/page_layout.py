@@ -118,6 +118,7 @@ class StylePageLayout(StyleProps):
         if page_usage not in self.PAGE_USAGE:
             page_usage = "all"
         self._set_attribute_str_default("style:page-usage", page_usage, "all")
+
     def get_properties(
         self, area: str | None = "page-layout"
     ) -> dict[str, str | dict] | None:
@@ -196,6 +197,7 @@ class StylePageLayout(StyleProps):
             filter (str | None): An application-specific filter name for the background image.
         """
         _set_background(self, color, url, position, repeat, opacity, filter)
+
     def get_header_style(self) -> StyleBase | None:
         """Get the `style:header-style` element within the page layout.
 

@@ -37,7 +37,7 @@ class Manifest(XmlPart):
             list[str]: A list of strings, where each string is a full path.
         """
         xpath_query = "//manifest:file-entry/attribute::manifest:full-path"
-        return [str(e) for e in self.xpath(xpath_query)] # Explicitly cast EText to str
+        return [str(e) for e in self.xpath(xpath_query)]  # Explicitly cast EText to str
 
     def _file_entry(self, full_path: str) -> Element:
         """Internal helper to find a specific `manifest:file-entry` element.

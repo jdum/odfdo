@@ -25,6 +25,7 @@
 This module provides helper functions for converting spreadsheet formulas
 between different formats, such as from OpenOffice.org Calc to Writer.
 """
+
 from __future__ import annotations
 
 

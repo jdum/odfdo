@@ -27,6 +27,7 @@ This module provides functions for converting between different coordinate
 representations used in ODF tables, such as "A1" style, (row, column) tuples,
 and numeric indices.
 """
+
 from __future__ import annotations
 
 from .isiterable import isiterable

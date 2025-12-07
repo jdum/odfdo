@@ -136,6 +136,7 @@ class DateTime:
         Returns:
             datetime: A `datetime.datetime` object representing the decoded date-time.
         """
+
         def _decode_39_310(data1: str) -> datetime:  # pragma: nocover
             if data1.endswith("Z"):
                 data1 = data1[:-1] + "+00:00"

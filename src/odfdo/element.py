@@ -608,6 +608,7 @@ class Element(MDBase):
             Callable: A getter function that takes an Element instance and returns
                 the attribute's value as a string, boolean, or None.
         """
+
         def getter(self: Element) -> str | bool | None:
             try:
                 if family and self.family != family:  # type: ignore
@@ -635,6 +636,7 @@ class Element(MDBase):
             Callable: A setter function that takes an Element instance and the value
                 to set for the attribute.
         """
+
         def setter(self: Element, value: Any) -> None:
             try:
                 if family and self.family != family:  # type: ignore
@@ -656,6 +658,7 @@ class Element(MDBase):
             Callable: A getter function that takes an Element instance and returns
                 the boolean value of the attribute, or its default.
         """
+
         def getter(self: Element) -> bool:
             return self._get_attribute_bool_default(prop.attr, prop.default)
 
@@ -672,6 +675,7 @@ class Element(MDBase):
             Callable: A setter function that takes an Element instance and the boolean
                 value to set for the attribute.
         """
+
         def setter(self: Element, value: bool) -> None:
             self._set_attribute_bool_default(prop.attr, value, prop.default)
 
@@ -996,6 +1000,7 @@ class Element(MDBase):
                 int_value = 1
             result.append((idx, max(int_value, 1)))
         return result
+
     def get_elements(self, xpath_query: XPath | str) -> list[Element]:
         """Returns a list of elements obtained by applying an XPath query.
 

@@ -25,6 +25,7 @@
 This module provides simple helper functions for encoding strings to bytes
 (UTF-8) and decoding bytes to strings.
 """
+
 from __future__ import annotations
 
 from typing import Any

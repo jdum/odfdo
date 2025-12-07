@@ -26,6 +26,7 @@ This module defines constants and dictionaries that map style family names
 to their corresponding ODF tag names, as specified in the ODF 1.2 standard.
 It is used internally to manage and register different types of styles.
 """
+
 from __future__ import annotations
 
 # style:family as defined by ODF 1.2, e.g. xxx possibily for:

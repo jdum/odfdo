@@ -66,6 +66,7 @@ class MetaAutoReload(Element):
         if self._do_init:
             self._set_delay(delay)
             self.href = href
+
     def __repr__(self) -> str:
         if self.delay:
             delay = str(Duration.decode(self.delay))

@@ -23,6 +23,7 @@ This module provides helper functions to convert between different color
 representations commonly used in ODF files, such as hexadecimal, RGB tuples,
 and CSS color names.
 """
+
 from __future__ import annotations
 
 from .css3_colormap import CSS3_COLORMAP

@@ -289,7 +289,6 @@ class StyleHeader(TrackedChangesMixin, SectionMixin, StyleBase):
             kwargs.pop("tag_or_elem", None)
             self.display = display
 
-
     @property
     def display(self) -> bool:
         """Get the display status of the header.

@@ -23,6 +23,7 @@ This module provides a function to validate language tags according to the
 format defined in RFC 3066, which is commonly used for language identification
 in ODF documents.
 """
+
 from __future__ import annotations
 
 from string import ascii_letters, digits

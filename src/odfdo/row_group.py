@@ -65,6 +65,7 @@ class RowGroup(Element):
             for _i in range(height):
                 row = Row(width=width)
                 self.append(row)
+
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}>"
 

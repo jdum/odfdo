@@ -94,6 +94,7 @@ class Paragraph(MDParagraph, ParaFormattedTextMixin, ParaMixin, NoteMixin, Eleme
                     self.append_plain_text(self._unformatted(text_or_element))
             if style is not None:
                 self.style = style
+
     def __str__(self) -> str:
         """Return a string representation of the paragraph.
 

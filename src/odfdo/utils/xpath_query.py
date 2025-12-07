@@ -25,6 +25,7 @@
 This module provides a helper function to dynamically construct XPath queries
 with various predicates for filtering ODF elements based on their attributes.
 """
+
 from __future__ import annotations
 
 from .style_constants import FAMILY_ODF_STD

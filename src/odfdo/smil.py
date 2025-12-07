@@ -30,8 +30,7 @@ from .element import Element, PropDef, register_element_class
 
 
 class AnimPar(Element):
-    """Container for SMIL animations, "anim:par".
-    """
+    """Container for SMIL animations, "anim:par"."""
 
     _tag = "anim:par"
     _properties = (
@@ -100,8 +99,7 @@ AnimSeq._define_attribut_property()
 
 
 class AnimTransFilter(Element):
-    """Transition between two frames, "anim:transitionFilter".
-    """
+    """Transition between two frames, "anim:transitionFilter"."""
 
     _tag = "anim:transitionFilter"
     _properties = (

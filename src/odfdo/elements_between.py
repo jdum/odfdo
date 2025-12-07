@@ -127,7 +127,6 @@ def _common_ancestor(
     return ancestor
 
 
-
 def _get_between_base(
     element: Element,
     tag1: Element,

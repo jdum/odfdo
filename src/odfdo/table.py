@@ -218,6 +218,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
     def __str__(self) -> str:
         """Return a string representation of the table content in a CSV-like format."""
+
         def write_content(csv_writer: object) -> None:
             for values in self.iter_values():
                 line = []

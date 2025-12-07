@@ -165,6 +165,7 @@ class Note(MDNote, Element):
         note_citation = self.get_element("text:note-citation")
         if note_citation:
             note_citation.text = text
+
     @property
     def note_body(self) -> str:
         """Get the text content of the note body.
@@ -197,6 +198,7 @@ class Note(MDNote, Element):
             note_body.append(text_or_element)
         else:
             raise TypeError(f'Unexpected type for body: "{type(text_or_element)}"')
+
     def check_validity(self) -> None:
         """Check the validity of the note's properties.
 

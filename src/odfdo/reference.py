@@ -313,6 +313,7 @@ class Reference(Element):
         if self._do_init:
             self.name = name
             self.ref_format = ref_format
+
     @property
     def ref_format(self) -> str | None:
         """Get the `text:reference-format` of the reference.
@@ -335,6 +336,7 @@ class Reference(Element):
         if not ref_format or ref_format not in self.FORMAT_ALLOWED:
             ref_format = "page"
         self.set_attribute("text:reference-format", ref_format)
+
     def update(self) -> None:
         """Update the content of the reference text field.
 
@@ -383,6 +385,7 @@ class ReferenceMark(Element):
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
+
 
 ReferenceMark._define_attribut_property()
 
@@ -503,6 +506,7 @@ class ReferenceMarkStart(Element):
             return referenced.serialize()
         else:
             return referenced
+
     def delete(self, child: Element | None = None, keep_tail: bool = True) -> None:
         """Delete the element from the XML tree.
 

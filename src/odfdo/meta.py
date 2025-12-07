@@ -382,6 +382,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         if isinstance(current, MetaTemplate):
             current.delete()
         self.body.append(template)
+
     def get_auto_reload(self) -> MetaAutoReload | None:
         """Get the MetaAutoReload "meta:auto-reload" element or None."""
         element: MetaAutoReload | None = self.get_element("//meta:auto-reload")  # type: ignore[assignment]
@@ -408,6 +409,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         if isinstance(current, MetaAutoReload):
             current.delete()
         self.body.append(autoreload)
+
     def get_hyperlink_behaviour(self) -> MetaHyperlinkBehaviour | None:
         """Get the MetaHyperlinkBehaviour "meta:hyperlink-behaviour" element or
         None.
@@ -447,6 +449,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         if isinstance(current, MetaHyperlinkBehaviour):
             current.delete()
         self.body.append(behaviour)
+
     def get_initial_creator(self) -> str | None:
         """Get the first creator of the document.
 
@@ -1035,6 +1038,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         Returns:
             dict[str, Any]: A dictionary of metadata ready for JSON serialization.
         """
+
         def _convert(data: dict[str, Any]) -> None:
             for key, val in data.items():
                 if isinstance(val, datetime):
@@ -1153,6 +1157,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         ):
             new[key] = imported_stats.get(key, current_stats.get(key, 0))
         return new
+
     def from_dict(self, data: dict[str, Any]) -> None:
         """Set the metadata of the document from a Python dict.
 

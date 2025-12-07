@@ -188,7 +188,6 @@ def _by_regex_wrapper(
     return result
 
 
-
 def _by_regex_offset(method: Callable) -> Callable:
     """Decorator to enable element insertion by regex or offset.
 
@@ -203,6 +202,7 @@ def _by_regex_offset(method: Callable) -> Callable:
     Returns:
         Callable: The decorated wrapper function.
     """
+
     @wraps(method)
     def wrapper(element: Element, *args: Any, **kwargs: Any) -> list[Span | Link]:
         offset = kwargs.pop("offset", None)
