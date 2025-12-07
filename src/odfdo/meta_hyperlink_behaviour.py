@@ -43,17 +43,17 @@ class MetaHyperlinkBehaviour(Element):
         show: str = "replace",
         **kwargs: Any,
     ) -> None:
-        """Container for hyperlink-behaviour properties, "meta:hyperlink-
-        behaviour".
+        """Initialize a MetaHyperlinkBehaviour element.
 
-        The "meta:hyperlink-behaviour" element specifies the default behavior
+        The `meta:hyperlink-behaviour` element specifies the default behavior
         for hyperlinks in a document.
 
         Args:
-
-            target_frame_name -- str
-
-            show -- str
+            target_frame_name (str): The name of the target frame for the hyperlink.
+                Defaults to "_blank" (new window/tab).
+            show (str): Specifies how the target resource is presented.
+                Defaults to "replace".
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
 
@@ -71,14 +71,24 @@ class MetaHyperlinkBehaviour(Element):
         return f"({self.target_frame_name})"
 
     def as_dict(self) -> dict[str, Any]:
-        """Return the MetaHyperlinkBehaviour attributes as a Python dict."""
+        """Return the attributes of the hyperlink behavior element as a Python dictionary.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the hyperlink behavior
+                attributes, with keys like "office:target-frame-name" and "xlink:show".
+        """
         return {
             "office:target-frame-name": self.target_frame_name,
             "xlink:show": self.show,
         }
 
     def from_dict(self, data: dict[str, Any]) -> None:
-        """Set all the MetaHyperlinkBehaviour attributes from a Python dict."""
+        """Set the attributes of the hyperlink behavior element from a Python dictionary.
+
+        Args:
+            data (dict[str, Any]): A dictionary containing the hyperlink behavior
+                attributes (e.g., "office:target-frame-name", "xlink:show").
+        """
         self.target_frame_name = str(data.get("office:target-frame-name", ""))
         self.show = str(data.get("xlink:show", "replace"))
 
