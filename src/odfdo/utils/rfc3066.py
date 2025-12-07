@@ -17,19 +17,29 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
+"""Language tag validation utility based on RFC 3066.
+
+This module provides a function to validate language tags according to the
+format defined in RFC 3066, which is commonly used for language identification
+in ODF documents.
+"""
 from __future__ import annotations
 
 from string import ascii_letters, digits
 
 
 def is_RFC3066(lang: str) -> bool:
-    """Check that the argument is in the format "language-country" or
-    "language".
+    """Checks if a string conforms to the RFC 3066 language tag format.
 
-    Check that "language" and "country" are two or three long ASCII strings
-    representing a valid language and country according to RFC 3066.
+    Valid formats are "language" or "language-country", where "language" is a
+    2 or 3-letter ASCII string, and "country" (and other subtags) are
+    alphanumeric.
 
-    Returns: bool
+    Args:
+        lang (str): The language tag string to validate.
+
+    Returns:
+        bool: True if the tag is valid, False otherwise.
     """
 
     def test_part1(part1: str) -> bool:
