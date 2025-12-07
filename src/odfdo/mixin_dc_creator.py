@@ -28,16 +28,12 @@ class DcCreatorMixin:
     """Creator of the document, "dc:creator"."""
 
     def get_creator(self) -> str | None:
-        """Get the creator of the document.
+        """Get the name of the document creator.
 
-        (Also available as "self.creator" property.)
+        This corresponds to the `dc:creator` element.
 
-        Returns: str (or None if inexistent)
-
-        Example::
-
-            >>> document.meta.get_creator()
-            Unknown
+        Returns:
+            str | None: The creator's name, or `None` if not specified.
         """
         element = self.clone.get_element("//dc:creator")
         if element is None:
@@ -45,17 +41,12 @@ class DcCreatorMixin:
         return element.text  # type: ignore[no-any-return]
 
     def set_creator(self, creator: str) -> None:
-        """Set the creator of the document.
+        """Set the name of the document creator.
 
-        (Also available as "self.creator" property.)
+        This updates the `dc:creator` element.
 
         Args:
-
-            creator -- str
-
-        Example::
-
-            >>> document.meta.set_creator("Plato")
+            creator (str): The name of the creator to set.
         """
         element = self.get_element("//dc:creator")
         if element is None:
