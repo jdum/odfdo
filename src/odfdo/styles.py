@@ -62,11 +62,25 @@ CONTEXT_MAPPING = {
 
 
 class Styles(XmlPart):
-    """Representation of the "styles.xml" part."""
+    """Representation of the "styles.xml" part of an ODF document.
+
+    This class provides an interface to the styles defined in the "styles.xml"
+    part of an ODF document, which includes automatic styles, master styles,
+    and default styles.
+    """
 
     def _get_style_contexts(
         self, family: str, automatic: bool = False
     ) -> list[Element]:
+        """Get the XML contexts where styles are stored.
+
+        Args:
+            family (str): The style family to search for.
+            automatic (bool): Whether to only search in automatic styles.
+
+        Returns:
+            list[Element]: A list of XML elements that are contexts for styles.
+        """
         if automatic:
             elems = [self.get_element("//office:automatic-styles")]
         elif family:
@@ -86,16 +100,19 @@ class Styles(XmlPart):
         return [e for e in elems if isinstance(e, Element)]
 
     def get_styles(self, family: str = "", automatic: bool = False) -> list[StyleBase]:
-        """Return the list of styles in the Styles part, optionally limited to
-        the given family, optionally limited to automatic styles.
+        """Return the list of styles in the Styles part.
+
+        Optionally, the results can be limited to a specific family and/or
+        to automatic styles.
 
         Args:
+            family (str, optional): The style family to filter by (e.g.,
+                'paragraph', 'text').
+            automatic (bool, optional): If True, only automatic styles are
+                returned. Defaults to False.
 
-            family -- str
-
-            automatic -- bool
-
-        Returns: list of Style
+        Returns:
+            list[StyleBase]: A list of Style elements.
         """
         result = []
         for context in self._get_style_contexts(family, automatic=automatic):
@@ -110,14 +127,22 @@ class Styles(XmlPart):
 
     @property
     def default_styles(self) -> list[StyleBase]:
-        """Return the list of default styles "style:default-styles".
+        """Return the list of default styles ("style:default-style").
 
-        Returns: list of Style
+        Returns:
+            list[StyleBase]: A list of default Style elements.
         """
         return cast(list[StyleBase], self.get_elements("//style:default-style"))
 
     def set_default_styles_language_country(self, value: str) -> None:
-        """Set the default language in styles, in format "en-US"."""
+        """Set the default language and country in styles.
+
+        Args:
+            value (str): The language/country code in RFC3066 format (e.g., "en-US").
+
+        Raises:
+            TypeError: If the language code format is invalid.
+        """
         language = str(value)
         if not is_RFC3066(language):
             msg = 'Language must be "xx" lang or "xx-YY" lang-COUNTRY code (RFC3066)'
@@ -139,7 +164,7 @@ class Styles(XmlPart):
 
     @property
     def default_language(self) -> str:
-        """Get or set the default language from styles, in format "en-US"."""
+        """Get or set the default language from styles, in "en-US" format."""
         styles = [s for s in self.default_styles if s.family == "paragraph"]
         if not styles:
             return ""
@@ -161,23 +186,22 @@ class Styles(XmlPart):
         name_or_element: str | StyleBase | None = None,
         display_name: str | None = None,
     ) -> StyleBase | None:
-        """Return the style uniquely identified by the name/family pair.
+        """Return the style uniquely identified by its family and name.
 
-        If the argument is already a style object, it will return it.
-        If the name is None, the default style is fetched.
-        If the name is not the internal name but the name you gave in the
-        desktop application, use display_name instead.
+        If the `name_or_element` argument is already a Style object, it will be
+        returned. If `name_or_element` is None, the default style for the given
+        family is fetched. If the name provided is a display name, use the
+        `display_name` argument instead.
 
         Args:
+            family (str): The style family (e.g., 'paragraph', 'text', 'graphic').
+            name_or_element (str or StyleBase, optional): The internal name of the
+                style or a Style object itself.
+            display_name (str, optional): The display name of the style as seen in an
+                office application.
 
-            family -- 'paragraph', 'text', 'graphic', 'table', 'list',
-                      'number', 'page-layout', 'master-page'
-
-            name_or_element -- str, odf_style or None
-
-            display_name -- str or None
-
-        Returns: odf_style or None if not found
+        Returns:
+            StyleBase or None: The matching Style object, or None if not found.
         """
         for context in self._get_style_contexts(family):
             if context is None:
@@ -193,12 +217,25 @@ class Styles(XmlPart):
 
     @property
     def office_master_styles(self) -> OfficeMasterStyles | None:
+        """Get or set the "office:master-styles" element.
+
+        Returns:
+            OfficeMasterStyles or None: The "office:master-styles" element, or None if not found.
+        """
+        return cast(
+            Union[None, OfficeMasterStyles], self.get_element("//office:master-styles")
+        )
         return cast(
             Union[None, OfficeMasterStyles], self.get_element("//office:master-styles")
         )
 
     @office_master_styles.setter
     def office_master_styles(self, office_master_styles: OfficeMasterStyles) -> None:
+        """Set the "office:master-styles" element.
+
+        Args:
+            office_master_styles (OfficeMasterStyles): The "office:master-styles" element to set.
+        """
         current = self.office_master_styles
         if isinstance(current, OfficeMasterStyles):
             current.delete()
@@ -206,6 +243,11 @@ class Styles(XmlPart):
 
     @property
     def master_pages(self) -> list[StyleMasterPage]:
+        """Get the list of master pages.
+
+        Returns:
+            list[StyleMasterPage]: A list of StyleMasterPage elements.
+        """
         master_styles = self.office_master_styles
         if master_styles is None:
             return []
@@ -216,6 +258,15 @@ class Styles(XmlPart):
         ]
 
     def get_master_page(self, position: int = 0) -> StyleMasterPage | None:
+        """Get a master page by its position.
+
+        Args:
+            position (int): The position (index) of the master page. Defaults to 0.
+
+        Returns:
+            StyleMasterPage or None: The StyleMasterPage element at the given position,
+            or None if not found.
+        """
         results = self.master_pages
         try:
             return results[position]
@@ -224,6 +275,12 @@ class Styles(XmlPart):
 
     @property
     def office_automatic_styles(self) -> OfficeAutomaticStyles | None:
+        """Get or set the "office:automatic-styles" element.
+
+        Returns:
+            OfficeAutomaticStyles or None: The "office:automatic-styles" element,
+            or None if not found.
+        """
         return cast(
             Union[None, OfficeAutomaticStyles],
             self.get_element("//office:automatic-styles"),
@@ -233,6 +290,12 @@ class Styles(XmlPart):
     def office_automatic_styles(
         self, office_automatic_styles: OfficeAutomaticStyles
     ) -> None:
+        """Set the "office:automatic-styles" element.
+
+        Args:
+            office_automatic_styles (OfficeAutomaticStyles): The "office:automatic-styles"
+                element to set.
+        """
         current = self.office_automatic_styles
         if isinstance(current, OfficeAutomaticStyles):
             current.delete()
