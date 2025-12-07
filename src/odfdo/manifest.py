@@ -23,7 +23,7 @@
 
 from __future__ import annotations
 
-from .element import Element, EText
+from .element import Element
 from .xmlpart import XmlPart
 
 

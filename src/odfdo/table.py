@@ -659,7 +659,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         Returns:
             bool: True if the table is protected, False otherwise.
         """
-        return self.get_attribute("table:protected")
+        return cast(bool, self.get_attribute("table:protected"))
 
     @protected.setter
     def protected(self, protect: bool) -> None:
@@ -673,7 +673,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             str | None: The protection key (a hash value) as a string, or None
                 if not set.
         """
-        return self.get_attribute("table:protection-key")
+        return cast(Union[None, str], self.get_attribute("table:protection-key"))
 
     @protection_key.setter
     def protection_key(self, key: str) -> None:
@@ -700,7 +700,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             list[str]: A list of strings representing the print ranges
                 (e.g., ['A1:C5', 'E1:G5']).
         """
-        print_ranges = self.get_attribute("table:print-ranges")
+        print_ranges = cast(Union[None, str], self.get_attribute("table:print-ranges"))
         if print_ranges is None:
             return []
         return print_ranges.split()
