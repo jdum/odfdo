@@ -52,7 +52,9 @@ class TrackedChangesMixin(Element):
     def get_tracked_changes(self) -> TrackedChanges | None:
         """Return the tracked-changes part in the text body.
 
-        Returns: TrackedChanges or None
+        Returns:
+            TrackedChanges or None: The tracked changes element, or None if
+                not found.
         """
         return cast(
             Union[None, TrackedChanges], self.get_element("//text:tracked-changes")
@@ -60,25 +62,26 @@ class TrackedChangesMixin(Element):
 
     @property
     def tracked_changes(self) -> TrackedChanges | None:
-        """Return the tracked-changes part in the text body.
+        """The 'text:tracked-changes' element in the body.
 
-        Returns: Element or None
+        This property provides access to the main container for tracked
+        changes within the element's scope.
         """
         return self.get_tracked_changes()
 
 
 class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
-    """Representation of information of a change, "office:change-info".
+    """Information about a change, "office:change-info".
 
-    The "office:change-info" element represents who made a change and when.
-    It may also contain a comment (one or more Paragraph "text:p" elements)
-    on the change.
+    This element stores metadata about a change, including the author,
+    timestamp, and any associated comments.
 
-    The comments available in the ChangeInfo are available through:
+    Comments are stored as one or more "text:p" (Paragraph) elements and can
+    be accessed as Paragraph objects or as plain text.
 
-       - paragraphs property, get_paragraphs and get_paragraph methods for actual Paragraph.
-
-       - get_comments for a plain text version
+    Attributes:
+        creator (str): The name of the author who made the change.
+        date (datetime): The date and time when the change was made.
     """
 
     _tag = "office:change-info"
@@ -89,13 +92,13 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
         date: datetime | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create information of a change "office:change-info".
+        """Initializes the ChangeInfo element.
 
         Args:
-
-           creator -- str (or None)
-
-           date -- datetime (or None)
+            creator (str, optional): The name of the author of the change.
+                Defaults to "Unknown".
+            date (datetime, optional): The date and time of the change.
+                Defaults to the current time if not provided.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -103,15 +106,16 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
             self.date = date
 
     def get_comments(self, joined: bool = True) -> str | list[str]:
-        """Get text content of the comments. If joined is True (default), the
-        text of different paragraphs is concatenated, else a list of strings,
-        one per paragraph, is returned.
+        """Gets the text content of the comments.
 
         Args:
+            joined (bool): If True (the default), concatenates the text of
+                all comment paragraphs into a single string. If False,
+                returns a list of strings, one for each paragraph.
 
-            joined -- boolean (default is True)
-
-        Returns: str or list of str.
+        Returns:
+            str | list[str]: The comment text as a single string or a list
+                of strings.
         """
         content = self.paragraphs
         text = [para.get_formatted_text(simple=True) for para in content]
@@ -120,14 +124,13 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
         return text
 
     def set_comments(self, text: str = "", replace: bool = True) -> None:
-        """Set the text content of the comments. If replace is True (default),
-        the new text replace old comments, else it is added at the end.
+        """Sets the text content of the comments.
 
         Args:
-
-            text -- str
-
-            replace -- boolean
+            text (str): The new text for the comments.
+            replace (bool): If True (the default), the new text replaces any
+                existing comments. If False, it is appended as a new
+                paragraph.
         """
         if replace:
             for para in self.paragraphs:
@@ -138,15 +141,11 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
 
 
 class TextInsertion(Element):
-    """Information on a text insertion, "text:insertion".
+    """Represents a text insertion, "text:insertion".
 
-    The TextInsertion "text:insertion" element contains the information that
-    identifies the person responsible for a change and the date of that change.
-    This information may also contain one or more "text:p" Paragraph which
-    contain a comment on the insertion. The TextInsertion element's parent
-    "text:changed-region" element has an xml:id or text:id attribute, the value
-    of which binds that parent element to the text:change-id attribute on the
-    "text:change-start" and "text:change-end" elements.
+    This element contains metadata about an insertion, including the author,
+    date, and optional comments. It is linked to the actual inserted content
+    in the document body via its parent "text:changed-region".
     """
 
     _tag = "text:insertion"
@@ -156,7 +155,17 @@ class TextInsertion(Element):
         as_text: bool = False,
         no_header: bool = False,
     ) -> str | list[Element] | None:
-        """Returns: None."""
+        """Returns None, as this is a text insertion.
+
+        This method is for consistency with other change types.
+
+        Args:
+            as_text (bool): Ignored.
+            no_header (bool): Ignored.
+
+        Returns:
+            None | str: Always None for list return, empty string for text.
+        """
         if as_text:
             return ""
         return None
@@ -167,23 +176,23 @@ class TextInsertion(Element):
         no_header: bool = False,
         clean: bool = True,
     ) -> str | Element | list[Element] | None:
-        """Shortcut to text:change-start.get_inserted(). Return the content
-        between text:change-start and text:change-end.
+        """Gets the content that was inserted.
 
-        If as_text is True: returns the text content.
-        If no_header is True: existing Heading are changed in Paragraph
-        If no_header is True: existing text:h are changed in text:p
-        By default: returns a list of Element, cleaned and with headers
+        This is a shortcut to find the corresponding 'text:change-start' and
+        'text:change-end' tags and return the content between them.
 
         Args:
+            as_text (bool): If True, returns the content as a plain text
+                string.
+            no_header (bool): If True, converts any 'text:h' (heading)
+                elements to 'text:p' (paragraph) elements.
+            clean (bool): If True, filters out unwanted elements from the
+                result.
 
-            as_text -- boolean
-
-            clean -- boolean
-
-            no_header -- boolean
-
-        Returns: list or Element or text
+        Returns:
+            str | Element | list[Element] | None: The inserted content,
+                which can be a single element, a list of elements, a string,
+                or None if not found.
         """
         current = self.parent  # text:changed-region
         if not isinstance(current, TextChangedRegion):
@@ -198,9 +207,10 @@ class TextInsertion(Element):
         )
 
     def get_change_info(self) -> ChangeInfo | None:
-        """Get the ChangeInfo child of the element.
+        """Gets the 'office:change-info' child of this element.
 
-        Returns: ChangeInfo element or None.
+        Returns:
+            ChangeInfo | None: The ChangeInfo element, or None if not found.
         """
         return cast(
             Union[None, ChangeInfo], self.get_element("descendant::office:change-info")
@@ -213,21 +223,20 @@ class TextInsertion(Element):
         date: datetime | None = None,
         comments: Element | list[Element] | None = None,
     ) -> None:
-        """Set the ChangeInfo element for the change element. If change_info is
-        not provided, creator, date and comments will be used to build a
-        suitable change info element. Default for creator is 'Unknown', default
-        for date is current time and default for comments is no comment at all.
-        The new change info element will replace any existent ChangeInfo.
+        """Sets the 'office:change-info' for this insertion.
+
+        If `change_info` is not provided, a new one is created using the
+        other arguments. Any existing change info is replaced.
 
         Args:
-
-             change_info -- ChangeInfo element (or None)
-
-             cretor -- str (or None)
-
-             date -- datetime (or None)
-
-             comments -- Paragraph or list of Paragraph elements (or None)
+            change_info (Element, optional): An existing ChangeInfo element
+                to set.
+            creator (str, optional): The name of the author. Defaults to
+                'Unknown'.
+            date (datetime, optional): The date and time of the change.
+                Defaults to the current time.
+            comments (Element | list[Element], optional): A Paragraph or
+                list of Paragraphs to add as comments.
         """
         if change_info is None:
             new_change_info = ChangeInfo(creator, date)
@@ -255,32 +264,12 @@ class TextInsertion(Element):
 
 
 class TextDeletion(SectionMixin, TextInsertion):
-    """Information on a text deletion, "text:deletion".
+    """Represents a text deletion, "text:deletion".
 
-    The TextDeletion "text:deletion" contains information that identifies
-    the person responsible for a deletion and the date of that deletion.
-    This information may also contain one or more Paragraph which contains
-    a comment on the deletion. The TextDeletion element may also contain
-    content that was deleted while change tracking was enabled. The position
-    where the text was deleted is marked by a "text:change" element. Deleted
-    text is contained in a paragraph element. To reconstruct the original
-    text, the paragraph containing the deleted text is merged with its
-    surrounding paragraph or heading element. To reconstruct the text before
-    a deletion took place:
-      - If the change mark is inside a paragraph, insert the content that was
-      deleted, but remove all leading start tags up to and including the
-      first "text:p" element and all trailing end tags up to and including
-      the last "/text:p" or "/text:h" element. If the last trailing element
-      is a "/text:h", change the end tag "/text:p" following this insertion
-      to a "/text:h" element.
-      - If the change mark is inside a heading, insert the content that was
-      deleted, but remove all leading start tags up to and including the
-      first "text:h" element and all trailing end tags up to and including
-      the last "/text:h" or "/text:p" element. If the last trailing element
-      is a "/text:p", change the end tag "/text:h" following this insertion
-      to a "/text:p" element.
-      - Otherwise, copy the text content of the "text:deletion" element in
-      place of the change mark.
+    This element contains metadata about a deletion (author, date, comments)
+    and stores the actual content that was deleted. The position in the
+    document where the deletion occurred is marked by a "text:change"
+    element.
     """
 
     _tag = "text:deletion"
@@ -290,17 +279,18 @@ class TextDeletion(SectionMixin, TextInsertion):
         as_text: bool = False,
         no_header: bool = False,
     ) -> str | list[Element] | None:
-        """Get the deleted information stored in the TextDeletion.
-        If as_text is True: returns the text content.
-        If no_header is True: existing Heading are changed in Paragraph
+        """Gets the content that was deleted.
 
         Args:
+            as_text (bool): If True, returns the content as a plain text
+                string.
+            no_header (bool): If True, converts any 'text:h' (heading)
+                elements to 'text:p' (paragraph) elements.
 
-            as_text -- boolean
-
-            no_header -- boolean
-
-        Returns: Paragraph and Header list
+        Returns:
+            str | list[Element] | None: The deleted content, which is
+                typically a list of Paragraph or Header elements, a string,
+                or None.
         """
         children = self.children
         inner = [elem for elem in children if elem.tag != "office:change-info"]
@@ -324,13 +314,14 @@ class TextDeletion(SectionMixin, TextInsertion):
         return inner
 
     def set_deleted(self, paragraph_or_list: Element | list[Element]) -> None:
-        """Set the deleted information stored in the TextDeletion. An actual
-        content that was deleted is expected, embedded in a Paragraph element or
-        Header.
+        """Sets the content that was deleted.
+
+        This method replaces any existing deleted content within this element.
 
         Args:
-
-            paragraph_or_list -- Paragraph or Header element (or list)
+            paragraph_or_list (Element | list[Element]): A Paragraph,
+                Header, or a list of such elements representing the deleted
+                content.
         """
         for element in self.get_deleted():  # type: ignore
             self.delete(element)  # type: ignore
@@ -345,57 +336,63 @@ class TextDeletion(SectionMixin, TextInsertion):
         no_header: bool = False,
         clean: bool = True,
     ) -> str | Element | list[Element] | None:
-        """Return None."""
+        """Returns None, as this is a text deletion.
+
+        This method is for consistency with other change types.
+
+        Args:
+            as_text (bool): Ignored.
+            no_header (bool): Ignored.
+            clean (bool): Ignored.
+
+        Returns:
+            None | str: Always None for list return, empty string for text.
+        """
         if as_text:
             return ""
         return None
 
 
 class TextFormatChange(TextInsertion):
-    """A change in text formatting, "text:format-change".
+    """Represents a change in text formatting, "text:format-change".
 
-    The TextFormatChange "text:format-change" element represents any change
-    in formatting attributes. The region where the change took place is
-    marked by "text:change-start", "text:change-end" or "text:change"
+    This element marks a change in formatting attributes. The actual region
+    of the change is defined by "text:change-start" and "text:change-end"
     elements.
 
-    Note: This element does not contain formatting changes that have taken
-    place.
+    Note: This element itself does not contain the specific formatting
+    changes, only metadata about the change event.
     """
 
     _tag = "text:format-change"
 
 
 class TextChangedRegion(Element):
-    """A changed region of text, "text:changed-region".
+    """A container for a single tracked change, "text:changed-region".
 
-    Each TextChangedRegion "text:changed-region" element contains a single
-    element, one of TextInsertion, TextDeletion or TextFormatChange that
-    corresponds to a change being tracked within the scope of the
-    "text:tracked-changes" element that contains the "text:changed-region"
-    instance.
-    The xml:id attribute of the TextChangedRegion is referenced
-    from the "text:change", "text:change-start" and "text:change-end"
-    elements that identify where the change applies to markup in the scope of
-    the "text:tracked-changes" element.
+    This element links a change marker in the document body (like
+    "text:change-start") to the details of the change (like
+    "text:insertion" or "text:deletion"). It contains exactly one of:
+    TextInsertion, TextDeletion, or TextFormatChange.
 
-    Warning :
+    The 'xml:id' or 'text:id' of this element is referenced by the
+    corresponding change marker elements.
 
-    For this implementation, text:change should be referenced only
-    once in the scope, which is different from ODF 1.2 requirement:
-
-            " A "text:changed-region" can be referenced by more than one
-             change, but the corresponding referencing change mark elements
-             shall be of the same change type - insertion, format change or
-             deletion. "
+    Warning:
+        This implementation expects that a 'text:changed-region' is
+        referenced only once, which differs from the ODF 1.2 specification.
     """
 
     _tag = "text:changed-region"
 
     def get_change_info(self) -> ChangeInfo | None:
-        """Shortcut to get the ChangeInfo element of the change element child.
+        """Gets the ChangeInfo from the underlying change element.
 
-        Returns: ChangeInfo element.
+        This is a shortcut to access the 'office:change-info' of the
+        child (e.g., TextInsertion).
+
+        Returns:
+            ChangeInfo | None: The ChangeInfo element, or None if not found.
         """
         return cast(
             Union[None, ChangeInfo], self.get_element("descendant::office:change-info")
@@ -408,18 +405,17 @@ class TextChangedRegion(Element):
         date: datetime | None = None,
         comments: Element | list[Element] | None = None,
     ) -> None:
-        """Shortcut to set the ChangeInfo element of the sub change element.
-        See TextInsertion.set_change_info() for details.
+        """Sets the ChangeInfo on the underlying change element.
+
+        This is a shortcut to set the 'office:change-info' of the child
+        (e.g., TextInsertion). See `TextInsertion.set_change_info()` for
+        more details.
 
         Args:
-
-             change_info -- ChangeInfo element (or None)
-
-             creator -- str (or None)
-
-             date -- datetime (or None)
-
-             comments -- Paragraph or list of Paragraph elements (or None)
+            change_info (Element, optional): An existing ChangeInfo element.
+            creator (str, optional): The author's name.
+            date (datetime, optional): The date of the change.
+            comments (Element | list[Element], optional): Comments to add.
         """
         child = self.get_change_element()
         if not child:
@@ -429,10 +425,12 @@ class TextChangedRegion(Element):
         )
 
     def get_change_element(self) -> Element | None:
-        """Get the change element child. It can be either: TextInsertion,
-        TextDeletion, or TextFormatChange as an Element object.
+        """Gets the underlying change element.
 
-        Returns: Element.
+        This will be one of TextInsertion, TextDeletion, or TextFormatChange.
+
+        Returns:
+            Element | None: The change element, or None if not found.
         """
         request = (
             "descendant::text:insertion "
@@ -454,29 +452,32 @@ class TextChangedRegion(Element):
         self.set_attribute("xml:id", xml_id)
 
     def get_id(self) -> str | None:
-        """Get the "text:id" attribute.
+        """Gets the "text:id" attribute of the region.
 
-        Returns: str
+        Returns:
+            str | None: The ID of the changed region.
         """
         return self._get_text_id()
 
     def set_id(self, idx: str) -> None:
-        """Set both the "text:id" and "xml:id" attributes with same value."""
+        """Sets both the "text:id" and "xml:id" attributes to the same value.
+
+        Args:
+            idx (str): The ID to set.
+        """
         self._set_text_id(idx)
         self._set_xml_id(idx)
 
 
 class TrackedChanges(MDZap, Element):
-    """A tracked change, "text:tracked-changes".
+    """The main container for all tracked changes, "text:tracked-changes".
 
-    The TrackedChanges "text:tracked-changes" element acts as a container for
-    TextChangedRegion elements that represent changes in a certain scope of an
-    OpenDocument document. This scope is the element in which the
-    TrackedChanges element occurs. Changes in this scope shall be tracked by
-    TextChangedRegion elements contained in the TrackedChanges element in this
-    scope. If a TrackedChanges element is absent, there are no tracked changes
-    in the corresponding scope. In this case, all change mark elements in this
-    scope shall be ignored.
+    This element holds all the 'text:changed-region' elements that describe
+    the individual changes (insertions, deletions, format changes) within
+    its scope (e.g., the document body or a header).
+
+    If this element is absent, change tracking is considered disabled for that
+    scope, and any change markers should be ignored.
     """
 
     _tag = "text:tracked-changes"
@@ -488,6 +489,18 @@ class TrackedChanges(MDZap, Element):
         content: str | None = None,
         role: str | None = None,
     ) -> list[Element]:
+        """Gets a list of 'text:changed-region' elements matching criteria.
+
+        Args:
+            creator (str, optional): Filter by the author's name.
+            date (datetime, optional): Filter by the date of the change.
+            content (str, optional): Filter by a regex match in the content.
+            role (str, optional): Filter by the type of change ('insertion',
+                'deletion', 'format-change').
+
+        Returns:
+            list[Element]: A list of matching TextChangedRegion elements.
+        """
         changed_regions = self._filtered_elements(
             "text:changed-region",
             dc_creator=creator,
@@ -513,6 +526,19 @@ class TrackedChanges(MDZap, Element):
         date: datetime | None = None,
         content: str | None = None,
     ) -> Element | None:
+        """Gets a single 'text:changed-region' element by position or criteria.
+
+        Args:
+            position (int): The index of the region to retrieve.
+            text_id (str, optional): Get the region with this specific ID.
+            creator (str, optional): Filter by the author's name.
+            date (datetime, optional): Filter by the date of the change.
+            content (str, optional): Filter by a regex match in the content.
+
+        Returns:
+            Element | None: The matching TextChangedRegion element, or None
+                if not found.
+        """
         return self._filtered_element(
             "text:changed-region",
             position,
@@ -533,9 +559,19 @@ class TextChange(Element):
     _tag = "text:change"
 
     def get_id(self) -> str | None:
+        """Gets the ID of the change this marker refers to.
+
+        Returns:
+            str | None: The 'text:change-id' attribute value.
+        """
         return self.get_attribute_string("text:change-id")
 
     def set_id(self, idx: str) -> None:
+        """Sets the ID of the change this marker refers to.
+
+        Args:
+            idx (str): The ID to set as 'text:change-id'.
+        """
         self.set_attribute("text:change-id", idx)
 
     def _get_tracked_changes(self) -> TrackedChanges | None:
@@ -548,6 +584,17 @@ class TextChange(Element):
         self,
         tracked_changes: TrackedChanges | None = None,
     ) -> Element | None:
+        """Finds the 'text:changed-region' this marker is associated with.
+
+        Args:
+            tracked_changes (TrackedChanges, optional): The parent tracked
+                changes container to search in. If not provided, it is
+                inferred from the document.
+
+        Returns:
+            Element | None: The associated TextChangedRegion element, or
+                None if not found.
+        """
         if not tracked_changes:
             tracked_changes = self._get_tracked_changes()
         idx = self.get_id()
@@ -557,6 +604,15 @@ class TextChange(Element):
         self,
         tracked_changes: TrackedChanges | None = None,
     ) -> Element | None:
+        """Gets the 'office:change-info' for the change this marker refers to.
+
+        Args:
+            tracked_changes (TrackedChanges, optional): The parent tracked
+                changes container to search in.
+
+        Returns:
+            Element | None: The ChangeInfo element, or None if not found.
+        """
         changed_region = self.get_changed_region(tracked_changes=tracked_changes)
         if not changed_region:
             return None  # pragma: nocover
@@ -566,6 +622,17 @@ class TextChange(Element):
         self,
         tracked_changes: TrackedChanges | None = None,
     ) -> Element | None:
+        """Gets the underlying change element for this marker.
+
+        This will be one of TextInsertion, TextDeletion, or TextFormatChange.
+
+        Args:
+            tracked_changes (TrackedChanges, optional): The parent tracked
+                changes container to search in.
+
+        Returns:
+            Element | None: The change element, or None if not found.
+        """
         changed_region = self.get_changed_region(tracked_changes=tracked_changes)
         if not changed_region:
             return None  # pragma: nocover
@@ -578,10 +645,20 @@ class TextChange(Element):
         no_header: bool = False,
         clean: bool = True,
     ) -> Element | None:
-        """Shortcut to get the deleted information stored in the TextDeletion
-        stored in the tracked changes.
+        """Gets the deleted content associated with this change marker.
 
-        Returns: Paragraph (or None)."
+        This is a shortcut to find the related TextDeletion element and
+        retrieve its content.
+
+        Args:
+            tracked_changes (TrackedChanges, optional): The parent tracked
+                changes container.
+            as_text (bool): Return content as a plain text string.
+            no_header (bool): Convert headings to paragraphs.
+            clean (bool): Ignored.
+
+        Returns:
+            Element | None: The deleted content.
         """
         changed = self.get_change_element(tracked_changes=tracked_changes)
         if not changed:
@@ -597,15 +674,27 @@ class TextChange(Element):
         no_header: bool = False,
         clean: bool = True,
     ) -> str | Element | list[Element] | None:
-        """Return None."""
+        """Returns None, as 'text:change' marks a deletion point.
+
+        Returns:
+            None: Always returns None.
+        """
         return None
 
     def get_start(self) -> TextChangeStart | None:
-        """Return None."""
+        """Returns None, as this is a single-point marker.
+
+        Returns:
+            None: Always returns None.
+        """
         return None
 
     def get_end(self) -> TextChangeEnd | None:
-        """Return None."""
+        """Returns None, as this is a single-point marker.
+
+        Returns:
+            None: Always returns None.
+        """
         return None
 
 
@@ -619,7 +708,12 @@ class TextChangeEnd(TextChange):
     _tag = "text:change-end"
 
     def get_start(self) -> TextChangeStart | None:
-        """Return the corresponding annotation starting tag or None."""
+        """Gets the corresponding 'text:change-start' tag.
+
+        Returns:
+            TextChangeStart | None: The start marker with the same ID, or
+                None if not found.
+        """
         idx = self.get_id()
         parent = self.parent
         if parent is None:
@@ -630,11 +724,19 @@ class TextChangeEnd(TextChange):
         return body.get_text_change_start(idx=idx)
 
     def get_end(self) -> TextChangeEnd | None:
-        """Return self."""
+        """Returns self, as this is the end marker.
+
+        Returns:
+            TextChangeEnd: This element.
+        """
         return self
 
     def get_deleted(self, *args: Any, **kwargs: Any) -> Element | None:
-        """Return None."""
+        """Returns None, as this marks an insertion or format change.
+
+        Returns:
+            None: Always returns None.
+        """
         return None
 
     def get_inserted(
@@ -643,24 +745,18 @@ class TextChangeEnd(TextChange):
         no_header: bool = False,
         clean: bool = True,
     ) -> str | Element | list[Element] | None:
-        """Return the content between text:change-start and text:change-end.
-
-        If no content exists (deletion tag), returns None (or '' if text flag
-        is True).
-        If as_text is True: returns the text content.
-        If clean is True: suppress unwanted tags (deletions marks, ...)
-        If no_header is True: existing text:h are changed in text:p
-        By default: returns a list of Element, cleaned and with headers
+        """Gets the content between the start and end change markers.
 
         Args:
+            as_text (bool): If True, returns the content as a plain text
+                string.
+            no_header (bool): If True, converts any 'text:h' (heading)
+                elements to 'text:p' (paragraph) elements.
+            clean (bool): If True, filters out unwanted elements from the
+                result.
 
-            as_text -- boolean
-
-            clean -- boolean
-
-            no_header -- boolean
-
-        Returns: list or Element or text
+        Returns:
+            str | Element | list[Element] | None: The inserted content.
         """
 
         # idx = self.get_id()
@@ -686,11 +782,20 @@ class TextChangeStart(TextChangeEnd):
     _tag = "text:change-start"
 
     def get_start(self) -> TextChangeStart:
-        """Return self."""
+        """Returns self, as this is the start marker.
+
+        Returns:
+            TextChangeStart: This element.
+        """
         return self
 
     def get_end(self) -> TextChangeEnd:
-        """Return the corresponding change-end tag or None."""
+        """Gets the corresponding 'text:change-end' tag.
+
+        Returns:
+            TextChangeEnd | None: The end marker with the same ID, or
+                None if not found.
+        """
         idx = self.get_id()
         parent = self.parent
         if parent is None:
@@ -705,17 +810,16 @@ class TextChangeStart(TextChangeEnd):
         child: Element | None = None,
         keep_tail: bool = True,
     ) -> None:
-        """Delete the given element from the XML tree. If no element is given,
-        "self" is deleted. The XML library may allow to continue to use an
-        element now "orphan" as long as you have a reference to it.
+        """Deletes the element from the XML tree.
 
-        For TextChangeStart : delete also the end tag if exists.
+        For a TextChangeStart, this also deletes the corresponding
+        'text:change-end' tag if it exists.
 
         Args:
-
-            child -- Element
-
-            keep_tail -- boolean (default to True), True for most usages.
+            child (Element, optional): A specific child to delete. If None,
+                the element itself is deleted.
+            keep_tail (bool): If True, the text that follows the element
+                is preserved. Defaults to True.
         """
         if child is not None:  # act like normal delete
             return super().delete(child, keep_tail)  # pragma: nocover
