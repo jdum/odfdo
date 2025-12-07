@@ -71,19 +71,16 @@ class Paragraph(MDParagraph, ParaFormattedTextMixin, ParaMixin, NoteMixin, Eleme
         formatted: bool = True,
         **kwargs: Any,
     ):
-        """Create a paragraph element "text:p" of the given style containing
-        the optional given text.
-
-        If "formatted" is True (the default), the given text is appended with <CR>,
-        <TAB> and multiple spaces replaced by ODF corresponding tags.
+        """Initialize a Paragraph element (`text:p`).
 
         Args:
-
-            text -- str, bytes or Element
-
-            style -- str
-
-            formatted -- bool
+            text_or_element (str | bytes | Element | None): Initial content for the paragraph.
+                If a string/bytes, it's treated as plain text. If an `Element`, it's appended.
+            style (str | None): The name of the style to apply to the paragraph.
+            formatted (bool): If True (default), special characters (`\\n`, `\\t`, multiple spaces)
+                in `text_or_element` are converted to their ODF tag equivalents.
+                If False, only extra whitespace is removed.
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -97,8 +94,14 @@ class Paragraph(MDParagraph, ParaFormattedTextMixin, ParaMixin, NoteMixin, Eleme
                     self.append_plain_text(self._unformatted(text_or_element))
             if style is not None:
                 self.style = style
-
     def __str__(self) -> str:
+        """Return a string representation of the paragraph.
+
+        This returns the inner text of the paragraph followed by a newline character.
+
+        Returns:
+            str: The string representation of the paragraph.
+        """
         # '\n' at the end slightly breaks compatibility, but is clearly better
         return self.inner_text + "\n"
 
@@ -107,10 +110,13 @@ Paragraph._define_attribut_property()
 
 
 def PageBreak() -> Paragraph:
-    """Return an empty paragraph with a manual page break.
+    """Create an empty paragraph configured for a manual page break.
 
-    Using this function requires to register the page break style with:
-        document.add_page_break_style()
+    To properly render this page break, the document must have the
+    "odfdopagebreak" style registered using `document.add_page_break_style()`.
+
+    Returns:
+        Paragraph: An empty `Paragraph` element with the "odfdopagebreak" style.
     """
     return Paragraph("", style="odfdopagebreak")
 
