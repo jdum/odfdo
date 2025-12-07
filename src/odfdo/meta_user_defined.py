@@ -50,18 +50,18 @@ class MetaUserDefined(Element):
         | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a user-defined metadata of that name, value_type and value.
+        """Initialize a MetaUserDefined element.
 
-        See also simpler method: Meta.set_user_defined_metadata()
+        This element declares a user-defined metadata field.
 
         Args:
-
-            name -- str, name (meta:name content).
-
-            value_type - str,  one of: "boolean", "date", "float", "time", "string".
-
-            value -- Decimal, date, time, boolean, str.
-
+            name (str | None): The name of the user-defined metadata field
+                (corresponds to `meta:name` attribute).
+            value_type (str | None): The type of the value. Must be one of
+                "boolean", "date", "float", "time", "string".
+            value (int | float | Decimal | datetime | dtdate | timedelta | bool | str | None):
+                The actual value of the user-defined metadata.
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -71,26 +71,63 @@ class MetaUserDefined(Element):
 
     @property
     def name(self) -> str:
+        """Get the name of the user-defined metadata field.
+
+        Returns:
+            str: The value of the `meta:name` attribute.
+        """
         return self.get_attribute_string("meta:name") or ""
 
     @name.setter
     def name(self, name: str | None) -> None:
+        """Set the name of the user-defined metadata field.
+
+        Args:
+            name (str | None): The new name for the field.
+
+        Raises:
+            ValueError: If the provided name is empty.
+        """
         if not name:
             raise ValueError('"name" can not be empty')
         self._set_attribute_str_default("meta:name", name)
 
     @property
     def value_type(self) -> str:
+        """Get the type of the user-defined value.
+
+        Returns:
+            str: The value of the `meta:value-type` attribute, defaulting to "string".
+        """
         return self.get_attribute_string("meta:value-type") or "string"
 
     @value_type.setter
     def value_type(self, value_type: str | None) -> None:
+        """Set the type of the user-defined value.
+
+        Args:
+            value_type (str | None): The new value type. Must be one of
+                "boolean", "date", "float", "time", "string".
+
+        Raises:
+            ValueError: If an unknown `value_type` is provided.
+        """
         if value_type not in {"boolean", "date", "float", "time", "string"}:
             raise ValueError(f'Unknown "value_type": {value_type!r}')
         self._set_attribute_str_default("meta:value-type", value_type)
 
     @property
     def value(self) -> Decimal | datetime | dtdate | timedelta | bool | str:
+        """Get the Python-typed value of the user-defined metadata field.
+
+        The return type depends on the `meta:value-type` attribute.
+
+        Returns:
+            Decimal | datetime | dtdate | timedelta | bool | str: The converted value.
+
+        Raises:
+            TypeError: If the `meta:value-type` is unknown.
+        """
         value_type = self.get_attribute_string("meta:value-type")
         if value_type is None:
             value_type = "string"
@@ -124,6 +161,15 @@ class MetaUserDefined(Element):
         | str
         | None,
     ) -> None:
+        """Set the value of the user-defined metadata field.
+
+        The value is converted to a string based on the current `meta:value-type`
+        and stored as the element's text content.
+
+        Args:
+            value (int | float | Decimal | datetime | dtdate | timedelta | bool | str | None):
+                The value to set.
+        """
         value_type = self.get_attribute_string("meta:value-type")
         if value_type == "boolean":
             text: str = "true" if value else "false"
@@ -144,6 +190,18 @@ class MetaUserDefined(Element):
     def _value_to_value_type(
         value: bool | int | float | Decimal | datetime | dtdate | str | timedelta,
     ) -> str:
+        """Internal helper to infer the ODF value type from a Python value.
+
+        Args:
+            value (bool | int | float | Decimal | datetime | dtdate | str | timedelta):
+                The Python value.
+
+        Returns:
+            str: The inferred ODF value type ("boolean", "float", "date", "string", or "time").
+
+        Raises:
+            TypeError: If the type of the provided value is not supported.
+        """
         if isinstance(value, bool):
             return "boolean"
         elif isinstance(value, (int, float, Decimal)):
@@ -160,6 +218,12 @@ class MetaUserDefined(Element):
     def as_dict(
         self,
     ) -> dict[str, Decimal | datetime | dtdate | timedelta | bool | str]:
+        """Return the user-defined metadata as a dictionary.
+
+        Returns:
+            dict[str, Decimal | datetime | dtdate | timedelta | bool | str]:
+                A dictionary containing "meta:name", "meta:value-type", and "value".
+        """
         return {
             "meta:name": self.name,
             "meta:value-type": self.value_type,
@@ -169,6 +233,14 @@ class MetaUserDefined(Element):
     def as_dict_full(
         self,
     ) -> dict[str, Decimal | datetime | dtdate | timedelta | bool | str]:
+        """Return the user-defined metadata as a detailed dictionary.
+
+        This includes the name, value type, value, and raw text content.
+
+        Returns:
+            dict[str, Decimal | datetime | dtdate | timedelta | bool | str]:
+                A dictionary containing "name", "value_type", "value", and "text".
+        """
         return {
             "name": self.name,
             "value_type": self.value_type,
