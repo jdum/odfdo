@@ -27,26 +27,50 @@ from .element import Element
 
 
 class StyleBase(Element):
-    """Base class of all ODF style classes (internal)."""
+    """Base class of all ODF style classes (internal).
+
+    This class provides common functionalities for ODF styles, acting as
+    a foundational element for more specific style implementations.
+    """
 
     _tag: str = "style:_pseudo_style_base_"
 
     def __repr__(self) -> str:
+        """Return the representation of the style."""
         return f"<{self.__class__.__name__} family={self.family}>"
 
     def __str__(self) -> str:
+        """Return the string representation of the style."""
         return repr(self)
 
     @property
     def family(self) -> str | None:
+        """Get the style family.
+
+        Returns:
+            str or None: The style family as a string, or None if not set.
+        """
         return None
 
     @family.setter
     def family(self, _family: str | None) -> None:
+        """Set the style family.
+
+        Args:
+            _family (str or None): The style family to set.
+        """
         pass
 
     def get_properties(self, area: str | None = None) -> dict[str, str | dict] | None:
-        """Get the mapping of all properties of this style."""
+        """Get the mapping of all properties of this style.
+
+        Args:
+            area (str, optional): The specific area of properties to retrieve
+                (e.g., 'text', 'paragraph'). If None, all properties are returned.
+
+        Returns:
+            dict or None: A dictionary of properties, or None if no properties are found.
+        """
         return None
 
     def set_properties(
@@ -56,17 +80,35 @@ class StyleBase(Element):
         area: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Set the properties of the "area" type of this style."""
+        """Set the properties of the "area" type of this style.
+
+        This method allows setting style properties either from a dictionary,
+        another `StyleBase` object, or keyword arguments.
+
+        Args:
+            properties (dict, optional): A dictionary of properties to set.
+            style (StyleBase, optional): Another StyleBase object from which
+                to copy properties.
+            area (str, optional): The specific area of properties to set
+                (e.g., 'text', 'paragraph').
+            **kwargs: Arbitrary keyword arguments representing properties to set.
+        """
         pass
 
     def get_list_style_properties(self) -> dict[str, str | bool]:
-        """Get text properties of style as a dict, with some enhanced
-        values.
+        """Get list style properties as a dictionary.
+
+        Returns:
+            dict: A dictionary containing list style properties with some
+            enhanced values.
         """
         return {}
 
     def get_text_properties(self) -> dict[str, str | bool]:
-        """Get text properties of style as a dict, with some enhanced
-        values.
+        """Get text properties of style as a dictionary.
+
+        Returns:
+            dict: A dictionary containing text properties with some
+            enhanced values.
         """
         return {}
