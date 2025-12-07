@@ -53,11 +53,24 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     """Representation of the "meta.xml" part."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        """Create the Meta XML part."""
+        """Initialize the Meta XML part.
+
+        This represents the `meta.xml` file within an ODF document, containing
+        various document metadata.
+
+        Args:
+            *args: Positional arguments passed to the parent `XmlPart` constructor.
+            **kwargs: Keyword arguments passed to the parent `XmlPart` constructor.
+        """
         super().__init__(*args, **kwargs)
         self._generator_modified: bool = False
 
     def _get_body(self) -> Metadata:
+        """Internal method to get the root `office:meta` element.
+
+        Returns:
+            Metadata: The `office:meta` element.
+        """
         return self.get_element("//office:meta")  # type: ignore[return-value]
 
     get_meta_body = _get_body
@@ -354,13 +367,21 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         href: str = "",
         title: str = "",
     ) -> None:
-        """Set the MetaTemplate "meta:template" element."""
+        """Set or replace the `meta:template` element.
+
+        This specifies the document template used to create the current document.
+        Any existing `meta:template` element will be removed.
+
+        Args:
+            date (datetime | None): The date and time when the template was used.
+            href (str): The URI for the document template (XLink).
+            title (str): The title of the document template (XLink).
+        """
         template = MetaTemplate(date=date, href=href, title=title)
         current = self.template
         if isinstance(current, MetaTemplate):
             current.delete()
         self.body.append(template)
-
     def get_auto_reload(self) -> MetaAutoReload | None:
         """Get the MetaAutoReload "meta:auto-reload" element or None."""
         element: MetaAutoReload | None = self.get_element("//meta:auto-reload")  # type: ignore[assignment]
@@ -372,13 +393,21 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return self.get_auto_reload()
 
     def set_auto_reload(self, delay: timedelta, href: str = "") -> None:
-        """Set the MetaAutoReload "meta:auto-reload" element."""
+        """Set or replace the `meta:auto-reload` element.
+
+        This specifies whether a document is reloaded or replaced by another
+        document after a specified period of time. Any existing
+        `meta:auto-reload` element will be removed.
+
+        Args:
+            delay (timedelta): The time delay after which the document should auto-reload.
+            href (str): The URL or path to the document to reload or replace with.
+        """
         autoreload = MetaAutoReload(delay=delay, href=href)
         current = self.auto_reload
         if isinstance(current, MetaAutoReload):
             current.delete()
         self.body.append(autoreload)
-
     def get_hyperlink_behaviour(self) -> MetaHyperlinkBehaviour | None:
         """Get the MetaHyperlinkBehaviour "meta:hyperlink-behaviour" element or
         None.
@@ -400,8 +429,16 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         target_frame_name: str = "_blank",
         show: str = "replace",
     ) -> None:
-        """Set the MetaHyperlinkBehaviour "meta:hyperlink-behaviour"
-        element.
+        """Set or replace the `meta:hyperlink-behaviour` element.
+
+        This specifies the default behavior for hyperlinks in a document.
+        Any existing `meta:hyperlink-behaviour` element will be removed.
+
+        Args:
+            target_frame_name (str): The name of the target frame for the hyperlink.
+                Defaults to "_blank" (new window/tab).
+            show (str): Specifies how the target resource is presented.
+                Defaults to "replace".
         """
         behaviour = MetaHyperlinkBehaviour(
             target_frame_name=target_frame_name, show=show
@@ -410,7 +447,6 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         if isinstance(current, MetaHyperlinkBehaviour):
             current.delete()
         self.body.append(behaviour)
-
     def get_initial_creator(self) -> str | None:
         """Get the first creator of the document.
 
@@ -790,6 +826,12 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     def _user_defined_metadata_list(
         self,
     ) -> list[dict[str, Decimal | datetime | dtdate | timedelta | bool | str]]:
+        """Internal helper to retrieve all user-defined metadata as a sorted list of dictionaries.
+
+        Returns:
+            list[dict[str, Any]]: A sorted list of dictionaries, each
+                representing a user-defined metadata field.
+        """
         user_defined = [
             data.as_dict()
             for data in cast(
@@ -799,7 +841,10 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return sorted(user_defined, key=itemgetter("meta:name"))
 
     def clear_user_defined_metadata(self) -> None:
-        """Remove all user-defined metadata."""
+        """Remove all user-defined metadata fields from the document.
+
+        Iteratively deletes all `meta:user-defined` elements.
+        """
         while True:
             element = self.get_element("//meta:user-defined")
             if isinstance(element, MetaUserDefined):
@@ -826,6 +871,15 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             self.set_user_defined_metadata(name=key, value=val)
 
     def _user_defined_metadata_by_name(self, name: str) -> MetaUserDefined | None:
+        """Internal helper to find a specific user-defined metadata element by name.
+
+        Args:
+            name (str): The name of the user-defined metadata field to find.
+
+        Returns:
+            MetaUserDefined | None: The `MetaUserDefined` element if found,
+                otherwise `None`.
+        """
         for item in cast(
             list[MetaUserDefined], self.get_elements("//meta:user-defined")
         ):
@@ -885,11 +939,10 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             metadata.value = value
 
     def delete_user_defined_metadata_of_name(self, name: str) -> None:
-        """Delete the user-defined metadata of that name.
+        """Delete all user-defined metadata fields with a specific name.
 
         Args:
-
-            name -- str, name of user-defined metadata (meta:name content)
+            name (str): The name of the user-defined metadata field to delete.
         """
         while True:
             metadata = self._user_defined_metadata_by_name(name)
@@ -971,6 +1024,17 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return meta_data
 
     def _as_json_dict(self, full: bool = False) -> dict[str, Any]:
+        """Internal method to prepare metadata as a JSON-compatible dictionary.
+
+        This converts various Python types (datetime, timedelta, Decimal) into
+        their string representations suitable for JSON serialization.
+
+        Args:
+            full (bool): If True, exports all keys including those with no value assigned.
+
+        Returns:
+            dict[str, Any]: A dictionary of metadata ready for JSON serialization.
+        """
         def _convert(data: dict[str, Any]) -> None:
             for key, val in data.items():
                 if isinstance(val, datetime):
@@ -1060,6 +1124,19 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         current_stats: dict[str, int],
         imported_stats: dict[str, int] | None,
     ) -> dict[str, int]:
+        """Internal helper to merge and complete document statistics.
+
+        It takes current statistics and imported statistics, filling in missing
+        values with 0 and prioritizing imported values.
+
+        Args:
+            current_stats (dict[str, int]): The current document statistics.
+            imported_stats (dict[str, int] | None): The statistics to import,
+                or None.
+
+        Returns:
+            dict[str, int]: A merged dictionary of statistics.
+        """
         if imported_stats is None:
             imported_stats = {}
             current_stats = {}
@@ -1076,7 +1153,6 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         ):
             new[key] = imported_stats.get(key, current_stats.get(key, 0))
         return new
-
     def from_dict(self, data: dict[str, Any]) -> None:
         """Set the metadata of the document from a Python dict.
 
