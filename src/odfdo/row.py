@@ -49,7 +49,13 @@ _XPATH_CELL = xpath_compile("(table:table-cell|table:covered-table-cell)")
 
 
 class Row(Element):
-    """A row of a table, "table:table-row"."""
+    """A row of a table, "table:table-row".
+
+    Args:
+        width (int, optional): The number of cells to create in the row.
+        repeated (int, optional): The number of times the row is repeated.
+        style (str, optional): The style name for the row.
+    """
 
     _tag = "table:table-row"
     _append = Element.append
@@ -69,12 +75,9 @@ class Row(Element):
         You don't generally have to create rows by hand, use the Table API.
 
         Args:
-
-            width -- int
-
-            repeated -- int
-
-            style -- str
+            width (int, optional): The number of cells to create in the row.
+            repeated (int, optional): The number of times the row is repeated.
+            style (str, optional): The style name for the row.
         """
         super().__init__(**kwargs)
         self._table_cache = TableCache()
@@ -95,6 +98,14 @@ class Row(Element):
         return f"<{self.__class__.__name__} y={self.y}>"
 
     def get_elements(self, xpath_query: XPath | str) -> list[Element]:
+        """Get a list of elements matching the XPath query.
+
+        Args:
+            xpath_query (XPath | str): The XPath query.
+
+        Returns:
+            list[Element]: A list of matching elements.
+        """
         if isinstance(xpath_query, str):
             elements = xpath_return_elements(
                 xpath_compile(xpath_query),
@@ -109,7 +120,11 @@ class Row(Element):
         return [Element.from_tag_for_clone(e, cache) for e in elements]
 
     def _copy_cache(self, cache: tuple) -> None:
-        """Copy cache when cloning."""
+        """Copy cache when cloning.
+
+        Args:
+            cache (tuple): The cache to copy.
+        """
         self._table_cache = cache[0]
         if cache[1]:  # pragma: no cover
             self._row_cache = cache[1]
@@ -148,6 +163,7 @@ class Row(Element):
 
     @property
     def clone(self) -> Row:
+        """Return a copy of the row."""
         cloned_row: Row = Element.clone.fget(self)  # type: ignore[attr-defined]
         cloned_row.y = self.y
         cloned_row._table_cache = TableCache.copy(self._table_cache)
@@ -155,12 +171,12 @@ class Row(Element):
         return cloned_row
 
     def _set_repeated(self, repeated: int | None) -> None:
-        """Method Internal only. Set the number of times the row is repeated,
-        or None to delete it. Without changing cache.
+        """Set the number of times the row is repeated.
+
+        Internal use only. Without changing cache.
 
         Args:
-
-            repeated -- int
+            repeated (int, optional): The number of repetitions.
         """
         if repeated is None or repeated < 2:
             with contextlib.suppress(KeyError):
@@ -174,7 +190,8 @@ class Row(Element):
 
         Always None when using the table API.
 
-        Returns: int or None
+        Returns:
+            int or None: The number of repetitions.
         """
         repeated = self.get_attribute("table:number-rows-repeated")
         if repeated is None:
@@ -203,7 +220,8 @@ class Row(Element):
     def style(self) -> str | None:
         """Get /set the style of the row itself.
 
-        Returns: str
+        Returns:
+            str or None: The style name.
         """
         return self.get_attribute_string("table:style-name")
 
@@ -213,10 +231,10 @@ class Row(Element):
 
     @property
     def width(self) -> int:
-        """Get the number of expected cells in the row, i.e. addition
-        repetitions.
+        """Get the number of expected cells in the row, including repetitions.
 
-        Returns: int
+        Returns:
+            int: The width of the row.
         """
         return self._row_cache.width()
 
@@ -238,17 +256,17 @@ class Row(Element):
         start: int | None = None,
         end: int | None = None,
     ) -> Iterator[Cell]:
-        """Yield as many cell elements as expected cells in the row, i.e.
-        expand repetitions by returning the same cell as many times as
-        necessary.
+        """Yields cell elements, expanding repetitions.
 
-        Copies are returned, use set_cell() to push them back.
+        Copies are returned, so changes will not affect the document.
+        Use `set_cell` to apply changes.
 
-            Args:
+        Args:
+            start (int, optional): The starting index.
+            end (int, optional): The ending index.
 
-                start -- int
-
-                end -- int
+        Yields:
+            Iterator[Cell]: The cell elements.
         """
         if start is None:
             start = 0
@@ -286,17 +304,15 @@ class Row(Element):
         'coord', minus the other filters.
 
         Args:
+            coord (str or tuple, optional): The coordinates of the cells.
+            style (str, optional): The style name to filter by.
+            content (str, optional): A regex to match in the cell content.
+            cell_type (str, optional): The type of the cell. Can be 'boolean',
+                'float', 'date', 'string', 'time', 'currency', 'percentage'
+                or 'all'.
 
-            coord -- str or tuple of int : coordinates
-
-            cell_type -- 'boolean', 'float', 'date', 'string', 'time',
-                         'currency', 'percentage' or 'all'
-
-            content -- str regex
-
-            style -- str
-
-        Returns: list of Cell
+        Returns:
+            list[Cell]: A list of matching cells.
         """
         # fixme : not clones ?
         if coord:
@@ -326,7 +342,8 @@ class Row(Element):
     def cells(self) -> list[Cell]:
         """Get the list of all cells.
 
-        Returns: list of Cell
+        Returns:
+            list[Cell]: A list of all cells.
         """
         # fixme : not clones ?
         return list(self.iter_cells())
@@ -354,16 +371,18 @@ class Row(Element):
         return cell
 
     def get_cell(self, x: int, clone: bool = True) -> Cell | None:
-        """Get the cell at position "x" starting from 0. Alphabetical positions
-        like "D" are accepted.
+        """Get the cell at position "x". Alphabetical positions like "D" are
+        also accepted.
 
-        A  copy is returned, use set_cell() to push it back.
+        A copy is returned, so changes will not affect the document.
+        Use `set_cell` to apply changes.
 
         Args:
+            x (int or str): The column index or name.
+            clone (bool): Whether to return a copy of the cell.
 
-            x -- int or str
-
-        Returns: Cell | None
+        Returns:
+            Cell or None: The cell at the given position.
         """
         x = self._translate_x_from_any(x)
         cell = self._get_cell2(x, clone=clone)
@@ -378,12 +397,17 @@ class Row(Element):
         x: int | str,
         get_type: bool = False,
     ) -> Any | tuple[Any, str]:
-        """Shortcut to get the value of the cell at position "x". If get_type
-        is True, returns the tuples (value, ODF type).
+        """Shortcut to get the value of the cell at position "x".
 
-        If the cell is empty, returns None or (None, None)
+        If `get_type` is True, returns a tuple (value, ODF type).
+        If the cell is empty, returns None or (None, None).
 
-        See get_cell() and Cell.get_value().
+        Args:
+            x (int or str): The column index or name.
+            get_type (bool): Whether to return the ODF type of the value.
+
+        Returns:
+            The value of the cell, or a tuple (value, type).
         """
         if get_type:
             x = self._translate_x_from_any(x)
@@ -403,14 +427,17 @@ class Row(Element):
         cell: Cell | None = None,
         clone: bool = True,
     ) -> Cell:
-        """Push the cell back in the row at position "x" starting from 0.
-        Alphabetical positions like "D" are accepted.
+        """Set the cell at position "x". Alphabetical positions like "D" are
+        also accepted.
 
         Args:
+            x (int or str): The column index or name.
+            cell (Cell, optional): The cell to set. If None, an empty cell is
+                created.
+            clone (bool): Whether to clone the cell before setting it.
 
-            x -- int or str
-
-        returns the cell with x and y updated
+        Returns:
+            Cell: The cell that was set.
         """
         cell_back: Cell
         if cell is None:
@@ -445,19 +472,13 @@ class Row(Element):
         """Shortcut to set the value of the cell at position "x".
 
         Args:
-
-            x -- int or str
-
-            value -- Python type
-
-            cell_type -- 'boolean', 'currency', 'date', 'float', 'percentage',
-                     'string' or 'time'
-
-            currency -- three-letter str
-
-            style -- str
-
-        See get_cell() and Cell.get_value().
+            x (int or str): The column index or name.
+            value: The value to set.
+            style (str, optional): The style to apply to the cell.
+            cell_type (str, optional): The type of the cell. Can be 'boolean',
+                'currency', 'date', 'float', 'percentage', 'string' or 'time'.
+            currency (str, optional): The currency symbol if the type is
+                'currency'.
         """
         self.set_cell(
             x,
@@ -471,20 +492,20 @@ class Row(Element):
         cell: Cell | None = None,
         clone: bool = True,
     ) -> Cell:
-        """Insert the given cell at position "x" starting from 0. If no cell is
-        given, an empty one is created.
+        """Insert a cell at position "x". If no cell is given, an empty one is
+        created.
 
-        Alphabetical positions like "D" are accepted.
+        Alphabetical positions like "D" are also accepted.
 
         Do not use when working on a table, use Table.insert_cell().
 
         Args:
+            x (int or str): The column index or name.
+            cell (Cell, optional): The cell to insert.
+            clone (bool): Whether to clone the cell before inserting it.
 
-            x -- int or str
-
-            cell -- Cell
-
-        returns the cell with x and y updated
+        Returns:
+            Cell: The cell that was inserted.
         """
         cell_back: Cell
         if cell is None:
@@ -504,6 +525,11 @@ class Row(Element):
         return cell_back
 
     def extend_cells(self, cells: Iterable[Cell] | None = None) -> None:
+        """Extend the row with a list of cells.
+
+        Args:
+            cells (Iterable[Cell], optional): The cells to append.
+        """
         if cells is None:
             cells = []
         self.extend(cells)
@@ -515,18 +541,18 @@ class Row(Element):
         clone: bool = True,
         _repeated: int | None = None,
     ) -> Cell:
-        """Append the given cell at the end of the row. Repeated cells are
-        accepted. If no cell is given, an empty one is created.
+        """Append a cell at the end of the row. Repeated cells are accepted.
+        If no cell is given, an empty one is created.
 
         Do not use when working on a table, use Table.append_cell().
 
         Args:
+            cell (Cell, optional): The cell to append.
+            clone (bool): Whether to clone the cell before appending it.
+            _repeated (int, optional): The repeated value of the cell.
 
-            cell -- Cell
-
-            _repeated -- (optional), repeated value of the row
-
-        returns the cell with x and y updated
+        Returns:
+            Cell: The cell that was appended.
         """
         if cell is None:
             cell = Cell()
@@ -545,15 +571,14 @@ class Row(Element):
     append = append_cell  # type:ignore[assignment]
 
     def delete_cell(self, x: int | str) -> None:
-        """Delete the cell at the given position "x" starting from 0.
-        Alphabetical positions like "D" are accepted.
+        """Delete the cell at the given position "x". Alphabetical positions
+        like "D" are also accepted.
 
         Cells on the right will be shifted to the left. In a table, other
         rows remain unaffected.
 
         Args:
-
-            x -- int or str
+            x (int or str): The column index or name.
         """
         x = self._translate_x_from_any(x)
         if x >= self.width:
@@ -569,34 +594,28 @@ class Row(Element):
     ) -> list[Any | tuple[Any, Any]]:
         """Shortcut to get the cell values in this row.
 
-        Filter by cell_type, with cell_type 'all' will retrieve cells of any
-        type, aka non empty cells.
-        If cell_type is used and complete is True, missing values are
-        replaced by None.
-        If cell_type is None, complete is always True : with no cell type
-        queried, get_values() returns None for each empty cell, the length
-        of the list is equal to the length of the row (depending on
-        coordinates use).
-
-        If get_type is True, returns a tuple (value, ODF type of value), or
-        (None, None) for empty cells if complete is True.
-
-        Filter by coordinates will retrieve the amount of cells defined by
-        coordinates with None for empty cells, except when using cell_type.
-
+        - Filter by `cell_type`: with 'all' will retrieve cells of any type
+          (non-empty).
+        - If `cell_type` is used and `complete` is True, missing values are
+          replaced by None.
+        - If `cell_type` is None, `complete` is always True: `get_values()`
+          returns None for each empty cell, the length of the list is equal
+          to the length of the row (depending on coordinates use).
+        - If `get_type` is True, returns a tuple (value, ODF type of value),
+          or (None, None) for empty cells if `complete` is True.
+        - Filter by `coord` will retrieve the amount of cells defined by
+          coordinates with None for empty cells, except when using `cell_type`.
 
         Args:
+            coord (str or tuple, optional): Coordinates in the row.
+            cell_type (str, optional): Type of cell to filter by. Can be
+                'boolean', 'float', 'date', 'string', 'time', 'currency',
+                'percentage' or 'all'.
+            complete (bool): Whether to include empty cells as None.
+            get_type (bool): Whether to return the ODF type of the value.
 
-            coord -- str or tuple of int : coordinates in row
-
-            cell_type -- 'boolean', 'float', 'date', 'string', 'time',
-                         'currency', 'percentage' or 'all'
-
-            complete -- boolean
-
-            get_type -- boolean
-
-        Returns: list of Python types, or list of tuples.
+        Returns:
+            list: A list of values, or a list of (value, type) tuples.
         """
         if coord:
             x, z = self._translate_row_coordinates(coord)
@@ -633,7 +652,8 @@ class Row(Element):
         'string' when using this method, the length of the list is equal
         to the length of the row.
 
-        Returns: list of Elements.
+        Returns:
+            list[Element]: A list of elements.
         """
         return [cell.children for cell in self.iter_cells()]
 
@@ -647,10 +667,9 @@ class Row(Element):
         not clear the row, use row.clear() before to start with an empty row.
 
         Args:
-
-            cells -- list of cells
-
-            start -- int or str
+            cells (list[Cell] or tuple[Cell], optional): The cells to set.
+            start (int or str): The starting column index or name.
+            clone (bool): Whether to clone the cells before setting them.
         """
         if cells is None:
             cells = []
@@ -683,17 +702,14 @@ class Row(Element):
         before to start with an empty row.
 
         Args:
-
-            values -- list of Python types
-
-            start -- int or str
-
-            cell_type -- 'boolean', 'float', 'date', 'string', 'time',
-                         'currency' or 'percentage'
-
-            currency -- three-letter str
-
-            style -- cell style
+            values (list): A list of values to set.
+            start (int or str): The starting column index or name.
+            style (str, optional): The style to apply to the cells.
+            cell_type (str, optional): The type of the cells. Can be
+                'boolean', 'float', 'date', 'string', 'time', 'currency' or
+                'percentage'.
+            currency (str, optional): The currency symbol if the type is
+                'currency'.
         """
         # fixme : if values n, n+ are same, use repeat
         if start is None:
@@ -718,13 +734,13 @@ class Row(Element):
                 x += 1
 
     def rstrip(self, aggressive: bool = False) -> None:
-        """Remove *in-place* empty cells at the right of the row. An empty cell
-        has no value but can have style. If "aggressive" is True, style is
-        ignored.
+        """Remove empty cells at the right of the row, in-place.
+
+        An empty cell has no value but can have style. If `aggressive` is
+        True, style is ignored.
 
         Args:
-
-            aggressive -- bool
+            aggressive (bool): If True, ignores cell style.
         """
         for cell in reversed(self._get_cells()):
             if not cell.is_empty(aggressive=aggressive):
@@ -736,7 +752,8 @@ class Row(Element):
     def _current_length(self) -> int:
         """Return the current estimated length of the row.
 
-        Returns: int
+        Returns:
+            int: The length of the row.
         """
         idx_repeated_seq = self.elements_repeated_sequence(
             _XPATH_CELL, "table:number-columns-repeated"
@@ -750,7 +767,8 @@ class Row(Element):
         """Return the length of the row if the last repeated sequence is
         reduced to one.
 
-        Returns: int
+        Returns:
+            int: The minimized width of the row.
         """
         idx_repeated_seq = self.elements_repeated_sequence(
             _XPATH_CELL, "table:number-columns-repeated"
@@ -768,9 +786,10 @@ class Row(Element):
         return min_width
 
     def last_cell(self) -> Cell | None:
-        """Return the las cell of the row.
+        """Return the last cell of the row.
 
-        Return Cell | None
+        Returns:
+            Cell or None: The last cell, or None if the row is empty.
         """
         try:
             return self._get_cells()[-1]
@@ -782,8 +801,7 @@ class Row(Element):
         with the required max width.
 
         Args:
-
-            width -- int
+            width (int): The target width.
         """
         cell = self.last_cell()
         if cell is None or not cell.is_empty(aggressive=True):
@@ -798,16 +816,17 @@ class Row(Element):
             self._compute_row_cache()
 
     def is_empty(self, aggressive: bool = False) -> bool:
-        """Return whether every cell in the row has no value or the value
-        evaluates to False (empty string), and no style.
+        """Return whether every cell in the row is empty.
 
-        If aggressive is True, empty cells with style are considered empty.
+        An empty cell has no value (or the value evaluates to False) and no
+        style. If `aggressive` is True, empty cells with style are considered
+        empty.
 
         Args:
+            aggressive (bool): If True, ignores cell style.
 
-            aggressive -- bool
-
-        Returns: bool
+        Returns:
+            bool: True if the row is empty, False otherwise.
         """
         return all(cell.is_empty(aggressive=aggressive) for cell in self._get_cells())
 
