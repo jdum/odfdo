@@ -53,19 +53,19 @@ class DrawPage(OfficeFormsMixin, Element):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """ODF draw page for presentations and drawings, "draw:page".
+        """Initialize the DrawPage.
 
         Args:
-
-            draw_id -- str
-
-            name -- str
-
-            master_page -- str
-
-            presentation_page_layout -- str
-
-            style -- str
+            draw_id (str, optional): The ID of the draw page ('draw:id').
+            name (str, optional): The name of the draw page ('draw:name').
+            master_page (str, optional): The name of the master page to use
+                ('draw:master-page-name').
+            presentation_page_layout (str, optional): The name of the
+                presentation page layout to use
+                ('presentation:presentation-page-layout-name').
+            style (str, optional): The name of the style to apply to the page
+                ('draw:style-name').
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -81,6 +81,12 @@ class DrawPage(OfficeFormsMixin, Element):
                 self.style = style
 
     def get_transition(self) -> AnimPar | None:
+        """Get the animation transition element for the page.
+
+        Returns:
+            AnimPar | None: The animation transition element (`anim:par`),
+                or `None` if no transition is defined.
+        """
         return self.get_element("anim:par")  # type: ignore
 
     def set_transition(
@@ -90,6 +96,17 @@ class DrawPage(OfficeFormsMixin, Element):
         dur: str = "2s",
         node_type: str = "default",
     ) -> None:
+        """Set or replace the animation transition for the page.
+
+        This method creates a new animation transition (`anim:par` element)
+        and replaces any existing transition on the page.
+
+        Args:
+            smil_type (str): The SMIL type for the transition (e.g., "fade").
+            subtype (str | None): The SMIL subtype for the transition.
+            dur (str): The duration of the transition (e.g., "2s").
+            node_type (str): The presentation node type.
+        """
         # Create the new animation
         anim_page = AnimPar(presentation_node_type=node_type)
         anim_begin = AnimPar(smil_begin=f"{self.draw_id}.begin")
@@ -108,10 +125,30 @@ class DrawPage(OfficeFormsMixin, Element):
         self.append(anim_page)
 
     def get_shapes(self) -> list[Element]:
+        """Get all shape elements within the page.
+
+        This includes all registered shapes such as lines, rectangles,
+        ellipses, and connectors.
+
+        Returns:
+            list[Element]: A list of all shape elements found on the page.
+        """
         query = "(descendant::" + "|descendant::".join(registered_shapes) + ")"
         return self.get_elements(query)
 
     def get_formatted_text(self, context: dict | None = None) -> str:
+        """Return a formatted string representation of the page's content.
+
+        This method recursively formats the text of all child elements,
+        including presentation notes.
+
+        Args:
+            context (dict | None): A dictionary providing context for formatting,
+                such as footnote or annotation tracking.
+
+        Returns:
+            str: A formatted string of the page's textual content.
+        """
         result: list[str] = []
         for child in self.children:
             if child.tag == "presentation:notes":
