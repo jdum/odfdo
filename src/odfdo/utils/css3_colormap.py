@@ -17,7 +17,11 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""Colormat of CSS3."""
+"""A mapping of CSS3 color names to their corresponding RGB values.
+
+This dictionary provides a convenient lookup for converting standard CSS color
+names (e.g., 'red', 'blue', 'green') into their (R, G, B) integer tuples.
+"""
 
 CSS3_COLORMAP = {
     "indigo": (75, 0, 130),
