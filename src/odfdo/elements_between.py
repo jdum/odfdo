@@ -29,6 +29,21 @@ from .element import Element
 def _get_successor(
     element: Element, target: Element
 ) -> tuple[Element | None, Element | None]:
+    """Internal helper to find the logical successor of an element in the XML tree.
+
+    This function attempts to find the next sibling. If no next sibling exists,
+    it traverses up to the parent and tries to find the successor of the parent.
+
+    Args:
+        element (Element): The current element to find the successor for.
+        target (Element): The corresponding element in the target structure,
+            used to maintain context during recursion.
+
+    Returns:
+        tuple[Element | None, Element | None]: A tuple containing the successor
+            element and its corresponding target element, or (None, None) if no
+            successor is found.
+    """
     next_u_element = element._xml_element.getnext()
     if next_u_element is not None:
         return Element.from_tag(next_u_element), target
@@ -39,6 +54,20 @@ def _get_successor(
 
 
 def _find_any_id(element: Element) -> tuple[str, str, str]:
+    """Internal helper to find any ID attribute and its value for a given element.
+
+    It iterates through a predefined list of common ODF ID attributes.
+
+    Args:
+        element (Element): The element to search for an ID.
+
+    Returns:
+        tuple[str, str, str]: A tuple containing the element's tag, the name
+            of the found ID attribute, and its string value.
+
+    Raises:
+        ValueError: If no recognized ID attribute is found on the element.
+    """
     for attribute in (
         "text:id",
         "text:change-id",
@@ -62,6 +91,22 @@ def _common_ancestor(
     attr2: str,
     val2: str,
 ) -> Element | None:
+    """Internal helper to find the common ancestor of two elements in the XML tree.
+
+    The elements are identified by their tag, attribute, and value.
+
+    Args:
+        root (Element): The root element from which to start the search.
+        tag1 (str): The tag name of the first element.
+        attr1 (str): The attribute name of the first element.
+        val1 (str): The value of the attribute for the first element.
+        tag2 (str): The tag name of the second element.
+        attr2 (str): The attribute name of the second element.
+        val2 (str): The value of the attribute for the second element.
+
+    Returns:
+        Element | None: The common ancestor element, or `None` if not found.
+    """
     request1 = f'descendant::{tag1}[@{attr1}="{val1}"]'
     request2 = f'descendant::{tag2}[@{attr2}="{val2}"]'
     ancestor = root.xpath(request1)[0]
@@ -82,11 +127,29 @@ def _common_ancestor(
     return ancestor
 
 
+
 def _get_between_base(
     element: Element,
     tag1: Element,
     tag2: Element,
 ) -> list[Element]:
+    """Internal helper to extract elements between two specified markers (`tag1`, `tag2`).
+
+    This function finds the common ancestor of `tag1` and `tag2`, then traverses
+    the XML tree between them, collecting all elements.
+
+    Args:
+        element (Element): The starting element for the search (usually the document root).
+        tag1 (Element): The starting marker element.
+        tag2 (Element): The ending marker element.
+
+    Returns:
+        list[Element]: A list of elements found between `tag1` and `tag2`.
+
+    Raises:
+        RuntimeError: If no common ancestor is found, or if the traversal fails
+            to find an expected element.
+    """
     elem1_tag, elem1_attr, elem1_val = _find_any_id(tag1)
     elem2_tag, elem2_attr, elem2_val = _find_any_id(tag2)
     ancestor_result = _common_ancestor(
@@ -177,6 +240,16 @@ def _get_between_base(
 
 
 def _clean_inner_list(inner: list[Element]) -> list[Element]:
+    """Internal helper to clean a list of elements by removing unwanted tags.
+
+    Specifically targets tags related to tracked changes and reference marks.
+
+    Args:
+        inner (list[Element]): The list of elements to clean.
+
+    Returns:
+        list[Element]: A new list with unwanted elements removed or stripped.
+    """
     CLEAN_TAGS = (
         "text:change",
         "text:change-start",
@@ -197,6 +270,15 @@ def _clean_inner_list(inner: list[Element]) -> list[Element]:
 
 
 def _no_header_inner_list(inner: list[Element]) -> list[Element]:
+    """Internal helper to convert header elements (`text:h`) to paragraph elements (`text:p`).
+
+    Args:
+        inner (list[Element]): The list of elements to process.
+
+    Returns:
+        list[Element]: A new list where `text:h` elements are replaced by `text:p`
+            elements, preserving their content.
+    """
     result: list[Element] = []
     for element in inner:
         if element.tag == "text:h":
@@ -220,36 +302,29 @@ def elements_between(
     clean: bool = True,
     no_header: bool = True,
 ) -> list | str:
-    """(internal) Return elements between elements "start" and "end".
+    """Return elements located between two specified marker elements (`start` and `end`).
 
-    Elements "start" and "end" shall be unique and having an id attribute.
-    (Warning: buggy if they are malformed ODF XML.)
-    If "as_text" is True: return the text content.
-    If "clean" is True: suppress unwanted elements (deletions marks, ...)
-    If "no_header" is True: existing "text:h" are changed in "text:p".
-    By default: returns a list of Element, cleaned and without headers.
-
-    Implementation and standard restrictions:
-    Only "text:h" and "text:p" should be 'cut' by an insert tag, so inner parts
-    of insert tags are:
-
-        - any "text:h", "text:p" or sub element of these
-
-        - some text, part of a parent "text:h" or "text:p"
+    This function extracts a segment of the XML tree defined by the `start` and `end`
+    elements. These markers should be unique and possess an ID attribute.
 
     Args:
+        base (Element): The base element to search within (e.g., the document body).
+        start (Element): The starting marker element.
+        end (Element): The ending marker element.
+        as_text (bool): If True, returns the concatenated text content of the
+            elements. Otherwise, returns a list of `Element` objects.
+        clean (bool): If True, cleans the extracted elements by removing unwanted
+            tags (e.g., tracked changes marks).
+        no_header (bool): If True, converts any `text:h` (header) elements
+            within the extracted content to `text:p` (paragraph) elements.
 
-        start -- Element
+    Returns:
+        list[Element] | str: A list of `Element` objects between the markers,
+            or a string if `as_text` is True.
 
-        end -- Element
-
-        as_text -- boolean
-
-        clean -- boolean
-
-        no_header -- boolean
-
-    Returns: list of odf_paragraph or odf_header
+    Raises:
+        RuntimeError: If `start` or `end` elements are not found or if no
+            common ancestor can be determined (propagated from internal helpers).
     """
     inner = _get_between_base(base, start, end)
 
