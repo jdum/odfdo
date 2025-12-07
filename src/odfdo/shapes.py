@@ -32,7 +32,12 @@ from .frame import AnchorMix, PosMix, SizeMix, ZMix
 
 
 class ShapeBase(Element, SizeMix, PosMix):
-    """Base class for shapes (internal)."""
+    """Base class for all drawing shapes.
+
+    This class provides common properties and methods for various shapes
+    like lines, rectangles, ellipses, and connectors. It integrates sizing
+    and positioning functionalities through mixins.
+    """
 
     _tag = "draw:shape-odfdo-notodf"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -58,6 +63,17 @@ class ShapeBase(Element, SizeMix, PosMix):
         presentation_class: str | None = None,
         **kwargs: Any,
     ) -> None:
+        """Initialize a ShapeBase element.
+
+        Args:
+            style (str, optional): The style name for the shape.
+            text_style (str, optional): The text style name for the shape.
+            draw_id (str, optional): The unique ID for the drawing shape.
+            layer (str, optional): The drawing layer of the shape.
+            position (tuple, optional): The (x, y) coordinates for the shape's position.
+            size (tuple, optional): The (width, height) for the shape's size.
+            presentation_class (str, optional): The presentation class name.
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if style:
@@ -76,6 +92,14 @@ class ShapeBase(Element, SizeMix, PosMix):
                 self.presentation_class = presentation_class
 
     def get_formatted_text(self, context: dict | None = None) -> str:
+        """Return the formatted text content of the shape.
+
+        Args:
+            context (dict, optional): A dictionary of context variables.
+
+        Returns:
+            str: The formatted text content.
+        """
         result: list[str] = []
         for child in self.children:
             result.append(child.get_formatted_text(context))
@@ -87,7 +111,10 @@ ShapeBase._define_attribut_property()
 
 
 class LineShape(ShapeBase):
-    """A line shape, "draw:line"."""
+    """Represents a line shape, "draw:line".
+
+    This shape defines a straight line between two points.
+    """
 
     _tag = "draw:line"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -110,18 +137,12 @@ class LineShape(ShapeBase):
         """Create a line shape "draw:line".
 
         Args:
-
-            style -- str
-
-            text_style -- str
-
-            draw_id -- str
-
-            layer -- str
-
-            p1 -- (str, str)
-
-            p2 -- (str, str)
+            style (str, optional): The style name for the line.
+            text_style (str, optional): The text style name for the line.
+            draw_id (str, optional): The unique ID for the drawing shape.
+            layer (str, optional): The drawing layer of the line.
+            p1 (tuple, optional): The (x1, y1) coordinates of the starting point.
+            p2 (tuple, optional): The (x2, y2) coordinates of the ending point.
         """
         kwargs.update(
             {
@@ -145,7 +166,10 @@ LineShape._define_attribut_property()
 
 
 class RectangleShape(ShapeBase):
-    """A rectangle shape, "draw:rect"."""
+    """Represents a rectangle shape, "draw:rect".
+
+    This shape defines a rectangular area.
+    """
 
     _tag = "draw:rect"
     _properties: tuple[PropDef | PropDefBool, ...] = ()
@@ -163,18 +187,12 @@ class RectangleShape(ShapeBase):
         """Create a rectangle shape "draw:rect".
 
         Args:
-
-            style -- str
-
-            text_style -- str
-
-            draw_id -- str
-
-            layer -- str
-
-            position -- (str, str)
-
-            size -- (str, str)
+            style (str, optional): The style name for the rectangle.
+            text_style (str, optional): The text style name for the rectangle.
+            draw_id (str, optional): The unique ID for the drawing shape.
+            layer (str, optional): The drawing layer of the rectangle.
+            position (tuple, optional): The (x, y) coordinates for the rectangle's position.
+            size (tuple, optional): The (width, height) for the rectangle's size.
         """
         kwargs.update(
             {
@@ -193,7 +211,10 @@ RectangleShape._define_attribut_property()
 
 
 class EllipseShape(ShapeBase):
-    """An ellipse shape, "draw:ellipse"."""
+    """Represents an ellipse shape, "draw:ellipse".
+
+    This shape defines an elliptical or circular area.
+    """
 
     _tag = "draw:ellipse"
     _properties: tuple[PropDef | PropDefBool, ...] = ()
@@ -208,21 +229,15 @@ class EllipseShape(ShapeBase):
         size: tuple | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a ellipse shape "draw:ellipse".
+        """Create an ellipse shape "draw:ellipse".
 
         Args:
-
-            style -- str
-
-            text_style -- str
-
-            draw_id -- str
-
-            layer -- str
-
-            position -- (str, str)
-
-            size -- (str, str)
+            style (str, optional): The style name for the ellipse.
+            text_style (str, optional): The text style name for the ellipse.
+            draw_id (str, optional): The unique ID for the drawing shape.
+            layer (str, optional): The drawing layer of the ellipse.
+            position (tuple, optional): The (x, y) coordinates for the ellipse's position.
+            size (tuple, optional): The (width, height) for the ellipse's size.
         """
         kwargs.update(
             {
@@ -241,7 +256,10 @@ EllipseShape._define_attribut_property()
 
 
 class ConnectorShape(ShapeBase):
-    """A connector shape, "draw:connector"."""
+    """Represents a connector shape, "draw:connector".
+
+    A connector typically links two other shapes.
+    """
 
     _tag = "draw:connector"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -270,22 +288,16 @@ class ConnectorShape(ShapeBase):
         """Create a Connector shape "draw:connector".
 
         Args:
-
-            style -- str
-
-            text_style -- str
-
-            draw_id -- str
-
-            layer -- str
-
-            connected_shapes -- (shape, shape)
-
-            glue_points -- (point, point)
-
-            p1 -- (str, str)
-
-            p2 -- (str, str)
+            style (str, optional): The style name for the connector.
+            text_style (str, optional): The text style name for the connector.
+            draw_id (str, optional): The unique ID for the drawing shape.
+            layer (str, optional): The drawing layer of the connector.
+            connected_shapes (tuple, optional): A tuple of (start_shape, end_shape)
+                where each shape is an `Element` with a `draw_id`.
+            glue_points (tuple, optional): A tuple of (start_glue_point, end_glue_point)
+                specifying the glue points for connection.
+            p1 (tuple, optional): The (x1, y1) coordinates of the starting point.
+            p2 (tuple, optional): The (x2, y2) coordinates of the ending point.
         """
         kwargs.update(
             {
@@ -325,21 +337,6 @@ class DrawGroup(Element, AnchorMix, ZMix, PosMix):
     included drawing shapes are themselves contained within "draw:a"
     elements, then the xlink:href attributes of those "draw:a" elements
     act as the hyperlink information for the shapes they contain.
-
-    The "draw:g" element has the following attributes: draw:caption-id,
-    draw:class-names, draw:id, draw:name, draw:style-name, draw:z-index,
-    presentation:class-names, presentation:style-name, svg:y,
-    table:end-cell-address, table:end-x, table:end-y,
-    table:table-background, text:anchor-page-number, text:anchor-type,
-    and xml:id.
-
-    The "draw:g" element has the following child elements: "dr3d:scene",
-    "draw:a", "draw:caption", "draw:circle", "draw:connector",
-    "draw:control", "draw:custom-shape", "draw:ellipse", "draw:frame",
-    "draw:g", "draw:glue-point", "draw:line", "draw:measure",
-    "draw:page-thumbnail", "draw:path", "draw:polygon", "draw:polyline",
-    "draw:rect", "draw:regular-polygon", "office:event-listeners",
-    "svg:desc" and "svg:title".
     """
 
     _tag = "draw:g"
@@ -375,7 +372,18 @@ class DrawGroup(Element, AnchorMix, ZMix, PosMix):
         presentation_style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a group of drawing shapes "draw:g"."""
+        """Create a group of drawing shapes "draw:g".
+
+        Args:
+            name (str, optional): The name of the drawing group.
+            draw_id (str, optional): The unique ID for the drawing group.
+            style (str, optional): The style name for the drawing group.
+            position (tuple, optional): The (x, y) coordinates for the group's position.
+            z_index (int): The z-index of the group, controlling its stacking order.
+            anchor_type (str, optional): The anchor type of the group (e.g., 'paragraph', 'char').
+            anchor_page (int, optional): The page number to which the group is anchored.
+            presentation_style (str, optional): The presentation style name for the group.
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if z_index is not None:
