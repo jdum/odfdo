@@ -153,7 +153,21 @@ class PropDefBool(NamedTuple):
 
 
 def _decode_qname(qname: str) -> tuple[str | None, str]:
-    """Turn a prefixed qualified name to a (uri, name) pair."""
+    """Decode a prefixed qualified XML name into its URI and local name.
+
+    For example, "office:document" would be decoded to
+    ("urn:oasis:names:tc:opendocument:xmlns:office:1.0", "document").
+
+    Args:
+        qname (str): The qualified name (e.g., "prefix:localname" or "localname").
+
+    Returns:
+        tuple[str | None, str]: A tuple containing the namespace URI (or None if no prefix)
+            and the local name.
+
+    Raises:
+        ValueError: If the XML prefix is unknown.
+    """
     if ":" in qname:
         prefix, name = qname.split(":")
         try:
@@ -165,7 +179,17 @@ def _decode_qname(qname: str) -> tuple[str | None, str]:
 
 
 def _uri_to_prefix(uri: str) -> str:
-    """Find the prefix associated to the given URI."""
+    """Find the XML prefix associated with a given namespace URI.
+
+    Args:
+        uri (str): The namespace URI to look up.
+
+    Returns:
+        str: The corresponding XML prefix.
+
+    Raises:
+        ValueError: If the URI is not found in the known ODF namespaces.
+    """
     for key, value in ODF_NAMESPACES.items():
         if value == uri:
             return key
@@ -173,7 +197,14 @@ def _uri_to_prefix(uri: str) -> str:
 
 
 def _get_prefixed_name(tag: str) -> str:
-    """Replace lxml "{uri}name" syntax with "prefix:name" one."""
+    """Convert an lxml-style tag name (e.g., "{uri}name") to a prefixed name (e.g., "prefix:name").
+
+    Args:
+        tag (str): The tag name in lxml's "{uri}name" format.
+
+    Returns:
+        str: The tag name in "prefix:name" format.
+    """
     if "}" not in tag:
         return f":{tag}"
     uri, name = tag.split("}", 1)
@@ -182,13 +213,30 @@ def _get_prefixed_name(tag: str) -> str:
 
 
 def _get_lxml_tag(qname: str) -> str:
-    """Replace "prefix:name" syntax with lxml "{uri}name" one."""
+    """Convert a prefixed qualified name (e.g., "prefix:name") to an lxml-style tag name (e.g., "{uri}name").
+
+    Args:
+        qname (str): The qualified name in "prefix:name" format.
+
+    Returns:
+        str: The tag name in lxml's "{uri}name" format.
+    """
     uri, name = _decode_qname(qname)
     return f"{{{uri}}}{name}"
 
 
 def _get_lxml_tag_or_name(qname: str) -> str:
-    """Replace "prefix:name" syntax with lxml "{uri}name" one or "name"."""
+    """Convert a prefixed qualified name to an lxml-style tag name or just the local name.
+
+    If the qualified name has a prefix, it's converted to "{uri}name" format.
+    If it has no prefix, it returns just the local name.
+
+    Args:
+        qname (str): The qualified name (e.g., "prefix:localname" or "localname").
+
+    Returns:
+        str: The tag name in lxml's "{uri}name" format, or the local name if no prefix.
+    """
     uri, name = _decode_qname(qname)
     if uri is None:
         return name
@@ -196,6 +244,17 @@ def _get_lxml_tag_or_name(qname: str) -> str:
 
 
 def _family_style_tagname(family: str) -> str:
+    """Map a style family string to its corresponding ODF tag name.
+
+    Args:
+        family (str): The style family (e.g., "paragraph", "text").
+
+    Returns:
+        str: The ODF tag name associated with the style family.
+
+    Raises:
+        ValueError: If the provided family is unknown.
+    """
     try:
         return FAMILY_MAPPING[family]
     except KeyError as e:
@@ -204,15 +263,33 @@ def _family_style_tagname(family: str) -> str:
 
 @cache
 def xpath_compile(path: str) -> XPath:
-    """(internal function) Return an XPath function compiled from a query in
-    ODF namespace.
+    """Compile an XPath query string into an `lxml.etree.XPath` object.
+
+    This function pre-compiles XPath expressions for efficiency and
+    automatically includes ODF namespaces. It is cached to avoid recompiling
+    the same XPath query multiple times.
+
+    Args:
+        path (str): The XPath query string.
+
+    Returns:
+        XPath: A compiled `lxml.etree.XPath` object.
     """
     return XPath(path, namespaces=ODF_NAMESPACES, regexp=False)
 
 
 def xpath_return_elements(xpath: XPath, target: _Element) -> list[_Element]:
-    """(internal function) Return the _Elements resulting from XPath query on
-    target.
+    """Execute a compiled XPath query and return a list of matching lxml elements.
+
+    This function filters the raw XPath results to ensure only `lxml.etree._Element`
+    objects are returned.
+
+    Args:
+        xpath (XPath): A compiled `lxml.etree.XPath` object.
+        target (_Element): The lxml element on which to apply the XPath query.
+
+    Returns:
+        list[_Element]: A list of matching `lxml.etree._Element` objects.
     """
     elements = xpath(target)
     try:
@@ -224,8 +301,17 @@ def xpath_return_elements(xpath: XPath, target: _Element) -> list[_Element]:
 
 
 def xpath_return_strings(xpath: XPath, target: _Element) -> list[str]:
-    """(internal function) Return the strings resulting from XPath query on
-    target.
+    """Execute a compiled XPath query and return a list of matching strings.
+
+    This function filters the raw XPath results to ensure only string objects
+    are returned.
+
+    Args:
+        xpath (XPath): A compiled `lxml.etree.XPath` object.
+        target (_Element): The lxml element on which to apply the XPath query.
+
+    Returns:
+        list[str]: A list of matching string objects.
     """
     elements = xpath(target)
     try:
@@ -2592,18 +2678,17 @@ class Element(MDBase):
     @staticmethod
     def _get_style_tagname(family: str | None, is_default: bool = False) -> str:
         """Widely match possible tag names given the family (or not)."""
+        tagname: str
         if not family:
             tagname = "(style:default-style|*[@style:name]|draw:fill-image|draw:marker)"
         elif is_default:
             # Default style
             tagname = "style:default-style"
         else:
+            # This calls _family_style_tagname, which can raise ValueError
+            # If it does, the exception will propagate from here.
             tagname = _family_style_tagname(family)
-            # if famattr:
-            #    # Include family default style
-            #    tagname = '(%s|style:default-style)' % tagname
             if family in FAMILY_ODF_STD:
-                # Include family default style
                 tagname = f"({tagname}|style:default-style)"
         return tagname
 
