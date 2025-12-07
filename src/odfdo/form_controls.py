@@ -30,6 +30,7 @@ from typing import Any, ClassVar
 from .element import Element, PropDef, PropDefBool, register_element_class
 from .form_controls_mixins import (
     FormAsDictMixin,
+    FormButtonTypeMixin,
     FormDelayRepeatMixin,
     FormImageAlignMixin,
     FormImagePositionMixin,
@@ -652,13 +653,6 @@ class FormPassword(FormAsDictMixin, FormGrid):
             printable=printable,
             tab_index=tab_index,
             tab_stop=tab_stop,
-            # max_length is handled via FormMaxLengthMixin, not FormGrid, but the arg is passed to super()
-            # so it needs to be explicitly handled in FormPassword if it's meant to have it
-            # Based on the original code's super call, it seems max_length comes from a mixin FormMaxLengthMixin
-            # that is *not* listed for FormPassword but *is* for FormText.
-            # I will assume FormPassword intends to use FormMaxLengthMixin like FormText/FormFile/etc.
-            # and adjust the `super()` call parameters to align with FormGrid's expected parameters and handle mixins.
-            # Rerunning the super call with all kwargs from FormPassword, as in the original code.
             max_length=max_length,
             xml_id=xml_id,
             xforms_bind=xforms_bind,
@@ -673,6 +667,8 @@ class FormPassword(FormAsDictMixin, FormGrid):
                 self.convert_empty_to_null = convert_empty_to_null
             if linked_cell is not None:
                 self.linked_cell = linked_cell
+            if max_length is not None:
+                self.max_length = max_length
 
     def __str__(self) -> str:
         return self.echo_char or ""
@@ -681,7 +677,7 @@ class FormPassword(FormAsDictMixin, FormGrid):
 FormPassword._define_attribut_property()
 
 
-class FormFile(FormAsDictMixin, FormGrid):
+class FormFile(FormAsDictMixin, FormMaxLengthMixin, FormGrid):
     """A control for or selecting a file, "form:file".
 
     Attributes:
@@ -783,6 +779,8 @@ class FormFile(FormAsDictMixin, FormGrid):
                 self.current_value = current_value
             if linked_cell is not None:
                 self.linked_cell = linked_cell
+            if max_length is not None:
+                self.max_length = max_length
 
     def __str__(self) -> str:
         if self.current_value is not None:
@@ -1885,6 +1883,7 @@ class FormButton(
     FormDelayRepeatMixin,
     FormImageAlignMixin,
     FormImagePositionMixin,
+    FormButtonTypeMixin,
     FormGrid,
 ):
     """A button control, "form:button"."""
@@ -1910,8 +1909,6 @@ class FormButton(
         PropDef("xforms_submission", "form:xforms-submission"),
         PropDef("form_id", "form:id"),  # deprecated
     )
-
-    BUTTON_TYPES: ClassVar[set[str]] = {"submit", "reset", "push", "url"}
 
     def __init__(
         self,
@@ -2015,22 +2012,11 @@ class FormButton(
             if href is not None:
                 self.href = href
 
-    @property
-    def button_type(self) -> str | None:
-        return self._get_attribute_str_default("form:button-type", "push")
-
-    @button_type.setter
-    def button_type(self, button_type: str | None) -> None:
-        if button_type is None or button_type in self.BUTTON_TYPES:
-            self._set_attribute_str_default("form:button-type", button_type, "push")
-        else:
-            raise ValueError
-
 
 FormButton._define_attribut_property()
 
 
-class FormImage(OfficeTargetFrameMixin, FormGrid):
+class FormImage(OfficeTargetFrameMixin, FormButtonTypeMixin, FormGrid):
     """A graphical button control, "form:image".
 
     Note: HTML 4.01 only allows the button type to be “submit” for an image
@@ -2045,18 +2031,17 @@ class FormImage(OfficeTargetFrameMixin, FormGrid):
         printable (bool): If True, the control is printable.
         tab_index (int or None): The tab order of the control.
         tab_stop (bool): If True, the control is a tab stop.
-        title (str or None): The title or tooltip of the control.
-        value (str or None): The value of the control.
-        office_target_frame (str or None): The target frame for the URL.
-        xforms_bind (str or None): The XForms bind expression.
-        href (str or None): The URL to navigate to when the button is clicked.
-        xml_id (str or None): The unique XML ID.
-        form_id (str or None): The form ID (deprecated).
+        title (str): The title or tooltip of the control.
+        value (str): The value of the control.
+        target_frame (str): The target frame for the URL.
+        xforms_bind (str): The XForms bind expression.
+        href (str): The URL to navigate to when the button is clicked.
+        xml_id (str): The unique XML ID.
+        form_id (str): The form ID (deprecated).
     """
 
     _tag = "form:image"
     _properties: tuple[PropDef | PropDefBool, ...] = (
-        PropDef("button_type", "form:button-type"),
         PropDef("control_implementation", "form:control-implementation"),
         PropDefBool("disabled", "form:disabled", False),
         PropDef("image_data", "form:image-data"),
@@ -2137,17 +2122,6 @@ class FormImage(OfficeTargetFrameMixin, FormGrid):
                 self.target_frame = target_frame
             if href is not None:
                 self.href = href
-
-    @property
-    def button_type(self) -> str | None:
-        return self._get_attribute_str_default("form:button-type", "push")
-
-    @button_type.setter
-    def button_type(self, button_type: str | None) -> None:
-        if button_type is None or button_type in FormButton.BUTTON_TYPES:
-            self._set_attribute_str_default("form:button-type", button_type, "push")
-        else:
-            raise ValueError
 
 
 FormImage._define_attribut_property()
@@ -2620,7 +2594,7 @@ class FormImageFrame(FormGenericControl):
 FormImageFrame._define_attribut_property()
 
 
-class FormValueRange(FormDelayRepeatMixin, FormGenericControl):
+class FormValueRange(FormDelayRepeatMixin, FormGrid):
     """A control which allows the user to select a value from a number range,
     "form:value-range".
 
@@ -2661,7 +2635,6 @@ class FormValueRange(FormDelayRepeatMixin, FormGenericControl):
         PropDefBool("printable", "form:printable", True),
         PropDef("repeat", "form:repeat"),
         PropDef("step_size", "form:step-size"),
-        PropDef("tab_index", "form:tab-index"),
         PropDefBool("tab_stop", "form:tab-stop", True),
         PropDef("title", "form:title"),
         PropDef("value", "form:value"),
@@ -2721,7 +2694,12 @@ class FormValueRange(FormDelayRepeatMixin, FormGenericControl):
         """
         super().__init__(
             name=name,
+            title=title,
             control_implementation=control_implementation,
+            disabled=disabled,
+            printable=printable,
+            tab_index=tab_index,
+            tab_stop=tab_stop,
             xml_id=xml_id,
             xforms_bind=xforms_bind,
             form_id=form_id,
@@ -2730,8 +2708,6 @@ class FormValueRange(FormDelayRepeatMixin, FormGenericControl):
         if self._do_init:
             if delay_for_repeat is not None:
                 self.delay_for_repeat = delay_for_repeat
-            if disabled is not None:
-                self.disabled = disabled
             if linked_cell is not None:
                 self.linked_cell = linked_cell
             if max_value is not None:
@@ -2742,18 +2718,10 @@ class FormValueRange(FormDelayRepeatMixin, FormGenericControl):
                 self.orientation = orientation
             if page_step_size is not None:
                 self.page_step_size = page_step_size
-            if printable is not None:
-                self.printable = printable
             if repeat is not None:
                 self.repeat = repeat
             if step_size is not None:
                 self.step_size = step_size
-            if tab_index is not None:
-                self.tab_index = tab_index
-            if tab_stop is not None:
-                self.tab_stop = tab_stop
-            if title is not None:
-                self.title = title
             if value is not None:
                 self.value = value
 
@@ -2768,7 +2736,6 @@ FormValueRange._define_attribut_property()
 
 
 register_element_class(FormButton)
-register_element_class(FormImage)
 register_element_class(FormCheckbox)
 register_element_class(FormRadio)
 register_element_class(FormFrame)
@@ -2780,14 +2747,19 @@ register_element_class(FormDate)
 register_element_class(FormFile)
 register_element_class(FormFixedText)
 register_element_class(FormFormattedText)
+register_element_class(FormFrame)
 register_element_class(FormGenericControl)
 register_element_class(FormGrid)
 register_element_class(FormHidden)
+register_element_class(FormImage)
+register_element_class(FormImageFrame)
 register_element_class(FormItem)
 register_element_class(FormListbox)
 register_element_class(FormNumber)
 register_element_class(FormOption)
 register_element_class(FormPassword)
+register_element_class(FormRadio)
 register_element_class(FormText)
 register_element_class(FormTextarea)
 register_element_class(FormTime)
+register_element_class(FormValueRange)

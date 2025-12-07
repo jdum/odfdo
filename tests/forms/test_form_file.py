@@ -38,6 +38,7 @@ def form_file() -> Iterable[FormFile]:
         disabled=False,
         printable=True,
         readonly=False,
+        max_length=64,
         tab_index=4,
         tab_stop=False,
         xml_id="control1",
@@ -94,6 +95,10 @@ def test_form_file_xml_id(form_file):
 
 def test_form_file_form_id(form_file):
     assert form_file.form_id == "control1"
+
+
+def test_form_file_max_length(form_file):
+    assert form_file.max_length == 64
 
 
 def test_form_file_xforms_bind():

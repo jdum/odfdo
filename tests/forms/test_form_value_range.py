@@ -128,7 +128,7 @@ def test_form_value_range_step_size(form_value_range):
 
 
 def test_form_value_range_tab_index(form_value_range):
-    assert form_value_range.tab_index == "4"
+    assert form_value_range.tab_index == 4
 
 
 def test_form_value_range_tab_stop(form_value_range):

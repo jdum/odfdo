@@ -29,6 +29,7 @@ __all__ = [  # noqa: RUF022
     "AnnotationEnd",
     "AnnotationMixin",
     "BackgroundImage",
+    "FormButtonTypeMixin",
     "Body",
     "Bookmark",
     "BookmarkEnd",
@@ -264,6 +265,7 @@ from .form_controls import (
 )
 from .form_controls_mixins import (
     FormAsDictMixin,
+    FormButtonTypeMixin,
     FormDelayRepeatMixin,
     FormImageAlignMixin,
     FormImagePositionMixin,

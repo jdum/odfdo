@@ -35,10 +35,14 @@ def form_image() -> Iterable[FormImage]:
         control_implementation="some implem",
         disabled=False,
         printable=True,
+        value="some value",
         tab_index=4,
         tab_stop=False,
         xml_id="control1",
         image_data="data",
+        button_type="push",
+        target_frame="some target",
+        href="some url",
     )
 
 
@@ -86,12 +90,38 @@ def test_form_image_tab_stop(form_image):
     assert form_image.tab_stop is False
 
 
+def test_form_image_value(form_image):
+    assert form_image.value == "some value"
+
+
 def test_form_image_xml_id(form_image):
     assert form_image.xml_id == "control1"
 
 
 def test_form_image_form_id(form_image):
     assert form_image.form_id == "control1"
+
+
+def test_form_image_button_type_1(form_image):
+    assert form_image.button_type == "push"
+
+
+def test_form_image_button_type_2(form_image):
+    with pytest.raises(ValueError):
+        form_image.button_type = "bad"
+
+
+def test_form_image_button_type_3(form_image):
+    form_image.button_type = "reset"
+    assert form_image.button_type == "reset"
+
+
+def test_form_image_btarget_frame(form_image):
+    assert form_image.target_frame == "some target"
+
+
+def test_form_image_href(form_image):
+    assert form_image.href == "some url"
 
 
 def test_form_image_xforms_bind():

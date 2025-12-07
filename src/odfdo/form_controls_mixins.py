@@ -154,6 +154,23 @@ class FormImageAlignMixin(Element):
             raise ValueError
 
 
+class FormButtonTypeMixin(Element):
+    """Mixin for the "form:button-type" attribute."""
+
+    BUTTON_TYPES: ClassVar[set[str]] = {"submit", "reset", "push", "url"}
+
+    @property
+    def button_type(self) -> str | None:
+        return self._get_attribute_str_default("form:button-type", "push")
+
+    @button_type.setter
+    def button_type(self, button_type: str | None) -> None:
+        if button_type is None or button_type in self.BUTTON_TYPES:
+            self._set_attribute_str_default("form:button-type", button_type, "push")
+        else:
+            raise ValueError
+
+
 class OfficeTargetFrameMixin(Element):
     """Mixin for the "office:target-frame" attribute.
 

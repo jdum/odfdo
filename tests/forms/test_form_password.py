@@ -40,6 +40,7 @@ def form_password() -> Iterable[FormPassword]:
         tab_index=4,
         tab_stop=False,
         xml_id="control1",
+        max_length=64,
     )
 
 
@@ -93,6 +94,10 @@ def test_form_password_xml_id(form_password):
 
 def test_form_password_form_id(form_password):
     assert form_password.form_id == "control1"
+
+
+def test_form_password_max_length(form_password):
+    assert form_password.max_length == 64
 
 
 def test_form_password_xforms_bind():
