@@ -19,7 +19,11 @@
 # https://github.com/lpod/lpod-python
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
-"""XmlPart base class for XML parts."""
+"""Provides the XmlPart base class for handling XML parts within ODF documents.
+
+This module abstracts the interaction with XML content, allowing for easy
+access, manipulation, and serialization of specific XML parts of an ODF file.
+"""
 
 from __future__ import annotations
 
@@ -37,13 +41,25 @@ if TYPE_CHECKING:
 
 
 class XmlPart:
-    """Representation of an XML part.
+    """Represents an XML part within an ODF document.
 
-    Abstraction of the XML library behind.
+    This class provides an abstraction layer over the underlying XML library
+    (lxml), allowing for easier manipulation of XML content within ODF
+    parts (e.g., 'content.xml', 'styles.xml').
+
+    Attributes:
+        part_name (str): The name of the XML part (e.g., "content.xml").
+        container (Container): The ODF container associated with this XML part.
     """
 
     def __init__(self, part_name: str, container: Container) -> None:
-        """Representation of an XML part."""
+        """Initializes an XmlPart instance.
+
+        Args:
+            part_name (str): The name of the XML part (e.g., "content.xml").
+            container (Container): The ODF container (zip file) that holds
+                this XML part.
+        """
         self.part_name = part_name
         self.container = container
 
@@ -52,6 +68,14 @@ class XmlPart:
         self.__root: Element | None = None
 
     def _get_tree(self) -> _ElementTree:
+        """Loads and returns the XML tree for the part.
+
+        If the tree has not been loaded yet, it reads the part from the
+        container and parses it.
+
+        Returns:
+            _ElementTree: The parsed XML ElementTree object.
+        """
         if self.__tree is None:
             part = self.container.get_part(self.part_name)
             self.__tree = parse(BytesIO(part))  # type: ignore[arg-type]
@@ -64,12 +88,25 @@ class XmlPart:
 
     @property
     def root(self) -> Element:
+        """The root Element of this XML part.
+
+        When accessed for the first time, it loads and parses the XML part
+        into an Element object.
+        """
         if self.__root is None:
             tree = self._get_tree()
             self.__root = Element.from_tag(tree.getroot())
         return self.__root
 
     def _get_body(self) -> Body:
+        """Retrieves the document body ('office:body') from the root element.
+
+        Returns:
+            Body: The document body element.
+
+        Raises:
+            TypeError: If no 'office:body' element is found in the part.
+        """
         body = self.root.document_body
         if not isinstance(body, Element):
             raise TypeError(f"No body found in {self.part_name!r}")
@@ -77,11 +114,19 @@ class XmlPart:
 
     @property
     def body(self) -> Body:
-        """Get or set the document body : 'office:body'"""
+        """The document body element ('office:body').
+
+        This property provides access to the main content body of the XML part.
+        """
         return self._get_body()
 
     @body.setter
     def body(self, new_body: Element) -> None:
+        """Sets the document body with a new Element.
+
+        Args:
+            new_body (Element): The new 'office:body' element to set.
+        """
         body = self._get_body()
         tail = body.tail
         body.clear()
@@ -91,33 +136,61 @@ class XmlPart:
             body.tail = tail
 
     def get_elements(self, xpath_query: str) -> list[Element]:
-        """Returns the elements obtained from the XPath query applied to the
-        root of the XmlPart.
+        """Returns a list of elements matching the XPath query.
 
-        Return list of Element.
+        The XPath query is applied to the root of this XML part.
+
+        Args:
+            xpath_query (str): The XPath query string.
+
+        Returns:
+            list[Element]: A list of matching Element objects.
         """
         return self.root.get_elements(xpath_query)
 
     def get_element(self, xpath_query: str) -> Element | None:
-        """Returns the first element obtained from the XPath query applied to
-        the root of the XmlPart.
+        """Returns the first element matching the XPath query.
 
-        Return an Element or None.
+        The XPath query is applied to the root of this XML part.
+
+        Args:
+            xpath_query (str): The XPath query string.
+
+        Returns:
+            Element | None: The first matching Element object, or None if
+                no match is found.
         """
         return self.root.get_element(xpath_query)
 
     def delete_element(self, child: Element) -> None:
+        """Deletes a specified child element from the XML tree.
+
+        Args:
+            child (Element): The child element to delete.
+        """
         child.delete()
 
     def xpath(self, xpath_query: str) -> list[Element | EText]:
-        """Apply XPath query to the root of the part and its subtree.
+        """Applies an XPath query to the root of the XML part and its subtree.
 
-        Return list of Element or EText instances.
+        Args:
+            xpath_query (str): The XPath query string.
+
+        Returns:
+            list[Element | EText]: A list of Element or EText instances
+                matching the query.
         """
         return self.root.xpath(xpath_query)
 
     @property
     def clone(self) -> XmlPart:
+        """Creates a deep copy of the XmlPart instance.
+
+        The cloned part will have its own independent XML tree.
+
+        Returns:
+            XmlPart: A new XmlPart instance that is a clone of the original.
+        """
         clone = object.__new__(self.__class__)
         for name in self.__dict__:
             if name == "container":
@@ -131,6 +204,15 @@ class XmlPart:
         return clone
 
     def serialize(self, pretty: bool = False) -> bytes:
+        """Serializes the XML part to bytes.
+
+        Args:
+            pretty (bool): If True, the output XML will be pretty-printed.
+                Defaults to False.
+
+        Returns:
+            bytes: The XML content as bytes, including the XML declaration.
+        """
         if pretty:
             return self.pretty_serialize()
         xml_header = b'<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -139,6 +221,12 @@ class XmlPart:
         return xml_header + bytes_tree  # type: ignore[no-any-return]
 
     def pretty_serialize(self) -> bytes:
+        """Serializes the XML part to bytes with pretty-printing.
+
+        Returns:
+            bytes: The pretty-printed XML content as bytes, including the
+                XML declaration.
+        """
         xml_header = b'<?xml version="1.0" encoding="UTF-8"?>\n'
         bytes_tree = tostring(
             self.custom_pretty_tree(),
@@ -147,6 +235,13 @@ class XmlPart:
         return xml_header + bytes_tree  # type: ignore[no-any-return]
 
     def custom_pretty_tree(self) -> _ElementTree | _Element:
+        """Returns a pretty-printed version of the XML tree.
+
+        This method applies custom indentation for readability.
+
+        Returns:
+            _ElementTree | _Element: The pretty-printed XML tree or its root.
+        """
         tree = self._get_tree()
         root = tree.getroot()
         return pretty_indent(root)
