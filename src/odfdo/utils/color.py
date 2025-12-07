@@ -17,19 +17,28 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
+"""Color conversion utilities for ODF documents.
+
+This module provides helper functions to convert between different color
+representations commonly used in ODF files, such as hexadecimal, RGB tuples,
+and CSS color names.
+"""
 from __future__ import annotations
 
 from .css3_colormap import CSS3_COLORMAP
 
 
 def hex2rgb(color: str) -> tuple[int, int, int]:
-    """Convert "#RRGGBB" hexadecimal representation into (R, G, B) tuple.
+    """Convert a "#RRGGBB" hexadecimal color to an (R, G, B) tuple.
 
     Args:
+        color (str): The hexadecimal color string (e.g., "#FF0000").
 
-        color -- str
+    Returns:
+        tuple[int, int, int]: A tuple representing the RGB values.
 
-    Returns: tuple
+    Raises:
+        ValueError: If the input string is not a valid hexadecimal color.
     """
     code = color[1:]
     if not (len(color) == 7 and color[0] == "#" and code.isalnum()):
@@ -41,16 +50,21 @@ def hex2rgb(color: str) -> tuple[int, int, int]:
 
 
 def rgb2hex(color: str | tuple[int, int, int]) -> str:
-    """Convert color name or (R, G, B) tuple into "#RRGGBB" hexadecimal.
+    """Convert a color name or (R, G, B) tuple to a "#RRGGBB" hexadecimal string.
 
     Args:
+        color (str | tuple[int, int, int]): The color as a standard CSS color
+            name (e.g., "yellow") or an RGB tuple (e.g., (238, 130, 238)).
 
-        color -- str or tuple
+    Returns:
+        str: The hexadecimal representation of the color (e.g., "#FFFF00").
 
-    Returns: str
+    Raises:
+        KeyError: If the color name is unknown.
+        ValueError: If the color tuple is invalid.
+        TypeError: If the color argument is of an unsupported type.
 
-    Examples::
-
+    Examples:
         >>> rgb2hex('yellow')
         '#FFFF00'
         >>> rgb2hex((238, 130, 238))
@@ -76,17 +90,22 @@ def rgb2hex(color: str | tuple[int, int, int]) -> str:
 
 
 def hexa_color(color: str | tuple[int, int, int] | None = None) -> str | None:
-    """Safe conversion from color tuple or string to hexadecimal
-    representation.
+    """Safely convert a color from a tuple or string to its hexadecimal representation.
 
-    Empty string is converted to black.
-    None is converted to None.
+    - An empty string is converted to black ("#000000").
+    - None is returned as None.
+    - A color name is converted to its hex value.
+    - A hex value is returned as is.
 
     Args:
+        color (str | tuple[int, int, int] | None): The color representation to
+            convert. Can be a color name, an RGB tuple, a hex string, or None.
 
-        color -- str or tuple or None
+    Returns:
+        str | None: The hexadecimal color string, or None if the input was None.
 
-    Returns: str or None
+    Raises:
+        TypeError: If the color argument is of an unsupported type.
     """
     if color is None:
         return None
