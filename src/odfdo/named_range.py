@@ -41,6 +41,21 @@ _RE_TABLE_NAME = re.compile(r"^\'|[\n\\/\*\?:\][]|\'$")
 
 
 def table_name_check(name: Any) -> str:
+    """Validate a table name for use in ODF documents.
+
+    Ensures the name is a non-empty string and does not contain forbidden
+    characters like single quotes, slashes, asterisks, question marks, or brackets.
+
+    Args:
+        name (Any): The name to validate.
+
+    Returns:
+        str: The validated and stripped table name.
+
+    Raises:
+        TypeError: If `name` is not a string.
+        ValueError: If `name` is empty or contains forbidden characters.
+    """
     if not isinstance(name, str):
         raise TypeError("String required.")
     table_name: str = name.strip()
@@ -53,6 +68,14 @@ def table_name_check(name: Any) -> str:
 
 @cache
 def _forbidden_in_named_range() -> set[str]:
+    """Return a set of characters forbidden in named range names.
+
+    This set is computed once and cached. Forbidden characters include
+    most punctuation and symbols, excluding underscore.
+
+    Returns:
+        set[str]: A set of forbidden characters.
+    """
     return {
         char
         for char in string.printable
@@ -93,21 +116,21 @@ class NamedRange(Element):
         usage: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Named range of cells in a table, "table:named-range".
+        """Initialize a NamedRange element.
 
-        Create a Named Range element. 'name' must contains only letters, digits
-        and '_', and must not be like a coordinate as 'A1'. 'table_name' must be
-        a correct table name (no "'" or "/" in it).
+        A NamedRange element identifies a range of cells in a table by a name
+        and the table's name. The `name` must be alphanumeric with underscores,
+        and not formatted like a cell coordinate (e.g., "A1").
+        The `table_name` must be a valid table name (without single quotes or slashes).
 
         Args:
-
-             name -- str, name of the named range
-
-             crange -- str or tuple of int, cell or area coordinate
-
-             table_name -- str, name of the table
-
-             usage -- None or 'print-range', 'filter', 'repeat-column', 'repeat-row'
+            name (str | None): The name of the named range.
+            crange (str | tuple | list | None): The cell or area coordinate,
+                e.g., "A1", "A1:B2", (0, 0), or (0, 0, 1, 1).
+            table_name (str | None): The name of the table the range belongs to.
+            usage (str | None): The usage of the named range, one of
+                "print-range", "filter", "repeat-column", "repeat-row", or None.
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
         self.usage: str | None = None
@@ -134,17 +157,14 @@ class NamedRange(Element):
         self._set_range(crange)
 
     def set_usage(self, usage: str | None = None) -> None:
-        """Set the usage of the Named Range. Usage can be None (default) or one
-        of :
+        """Set the usage type for the named range.
 
-            - 'print-range'
-            - 'filter'
-            - 'repeat-column'
-            - 'repeat-row'
+        The usage specifies how the named range is intended to be used (e.g.,
+        for printing, filtering, or repeating columns/rows).
 
         Args:
-
-            usage -- None or str
+            usage (str | None): The usage type. Can be "print-range", "filter",
+                "repeat-column", "repeat-row", or None to clear the usage.
         """
         if usage is not None:
             usage = usage.strip().lower()
@@ -157,9 +177,23 @@ class NamedRange(Element):
         else:
             self.set_attribute("table:range-usable-as", usage)
             self.usage = usage
-
     @staticmethod
     def _check_nr_name(name: str) -> str:
+        """Validate a named range name.
+
+        Ensures the name is not empty, contains only alphanumeric characters and
+        underscores, and does not resemble a cell coordinate (e.g., "A1").
+
+        Args:
+            name (str): The name to validate.
+
+        Returns:
+            str: The validated name.
+
+        Raises:
+            ValueError: If the name is empty, contains forbidden characters,
+                or is formatted like a cell coordinate.
+        """
         name = name.strip()
         if not name:
             raise ValueError("Named Range name can't be empty.")
@@ -182,23 +216,28 @@ class NamedRange(Element):
             msg = f"Name of the type 'ABC123' is not allowed for Named Range: {name!r}"
             raise ValueError(msg)
         return name
-
     @property
     def name(self) -> str | None:
-        """Get / set the name of the Named Range.
+        """Get the name of the named range.
 
-        The name is mandatory, if a Named Range of the same name exists, it will be replaced. Name must contains
-        only alphanumerics characters and '_', and can not be of a cell coordinates form like 'AB12'.
+        The name is mandatory, must be alphanumeric with underscores, and cannot
+        be formatted like a cell coordinate (e.g., "A1").
 
-        Args:
-
-            name -- str
+        Returns:
+            str | None: The name of the named range.
         """
         return self.get_attribute_string("table:name")
 
     @name.setter
     def name(self, name: str) -> None:
-        """Get / set  the name of the Named Range."""
+        """Set the name of the named range.
+
+        If a named range with the same name already exists in the document, it
+        will be replaced.
+
+        Args:
+            name (str): The new name for the named range.
+        """
         name = self._check_nr_name(name)
         with contextlib.suppress(Exception):
             # we are not on an NR inserted in a document.
@@ -211,18 +250,28 @@ class NamedRange(Element):
         self.set_attribute("table:name", name)
 
     def set_table_name(self, name: str) -> None:
-        """Set the name of the table of the Named Range.
-
-        The name is mandatory.
+        """Set the name of the table associated with the named range.
 
         Args:
+            name (str): The name of the table.
 
-            name -- str
+        Raises:
+            TypeError: If `name` is not a string (propagated from `table_name_check`).
+            ValueError: If `name` is empty or contains forbidden characters (propagated from `table_name_check`).
         """
         self.table_name = table_name_check(name)
         self._update_attributes()
 
     def _set_range(self, coord: tuple | list | str) -> None:
+        """Internal helper to set the cell range coordinates.
+
+        Args:
+            coord (tuple | list | str): The cell or area coordinate,
+                e.g., "A1", "A1:B2", (0, 0), or (0, 0, 1, 1).
+
+        Raises:
+            ValueError: If the coordinate format is incorrect.
+        """
         digits = convert_coordinates(coord)
         if len(digits) == 4:
             x, y, z, t = digits
@@ -239,22 +288,34 @@ class NamedRange(Element):
         self,
         crange: str | tuple[int, int] | tuple[int, int, int, int] | list[int],
     ) -> None:
-        """Set the range of the named range. Range can be either one cell (like
-        'A1') or an area ('A1:B2'). It can be provided as an alpha numeric
-        value like "A1:B2' or a tuple like (0, 0, 1, 1) or (0, 0).
+        """Set the cell range for the named range.
+
+        The range can be specified as a single cell (e.g., "A1", (0, 0)) or
+        an area (e.g., "A1:B2", (0, 0, 1, 1)).
 
         Args:
+            crange (str | tuple[int, int] | tuple[int, int, int, int] | list[int]):
+                The cell or area coordinate.
 
-            crange -- str or tuple of int, cell or area coordinate
+        Raises:
+            ValueError: If the coordinate format is incorrect (propagated from `_set_range`).
         """
         self._set_range(crange)
         self._update_attributes()
 
     def _update_attributes(self) -> None:
+        """Update the `table:base-cell-address` and `table:cell-range-address`
+        attributes based on the current named range's properties.
+        """
         self.set_attribute("table:base-cell-address", self._make_base_cell_address())
         self.set_attribute("table:cell-range-address", self._make_cell_range_address())
 
     def _make_base_cell_address(self) -> str:
+        """Construct the `table:base-cell-address` string for the named range.
+
+        Returns:
+            str: The formatted base cell address (e.g., "$'Sheet Name'.A1").
+        """
         # assuming we got table_name and range
         if " " in self.table_name:
             name = f"'{self.table_name}'"
@@ -263,6 +324,11 @@ class NamedRange(Element):
         return f"${name}.${digit_to_alpha(self.start[0])}${self.start[1] + 1}"
 
     def _make_cell_range_address(self) -> str:
+        """Construct the `table:cell-range-address` string for the named range.
+
+        Returns:
+            str: The formatted cell range address (e.g., "$'Sheet Name'.A1:$'Sheet Name'.B2").
+        """
         # assuming we got table_name and range
         if " " in self.table_name:
             name = f"'{self.table_name}'"
@@ -282,9 +348,23 @@ class NamedRange(Element):
         get_type: bool = False,
         flat: bool = False,
     ) -> list:
-        """Shortcut to retrieve the values of the cells of the named range.
+        """Retrieve the values of all cells within the named range.
 
-        See table.get_values() for the arguments description and return format.
+        This is a shortcut to `Table.get_values()` method, applied to the
+        table and range defined by this named range.
+
+        Args:
+            cell_type (str | None): Filter cells by their type (e.g., "string", "float").
+            complete (bool): If True, returns a rectangular list, filling empty
+                cells with None. If False, returns only non-empty cells.
+            get_type (bool): If True, returns (value, type) tuples for each cell.
+            flat (bool): If True, returns a flat list of values.
+
+        Returns:
+            list: A list of cell values, formatted according to the arguments.
+
+        Raises:
+            ValueError: If the named range's table is not found or not inside a document.
         """
         body = self.document_body
         if not body:
@@ -293,11 +373,21 @@ class NamedRange(Element):
         if table is None:
             raise ValueError(f"Table not found: {self.table_name!r}")
         return table.get_values(self.crange, cell_type, complete, get_type, flat)
-
     def get_value(self, get_type: bool = False) -> Any:
-        """Shortcut to retrieve the value of the first cell of the named range.
+        """Retrieve the value of the first cell of the named range.
 
-        See table.get_value() for the arguments description and return format.
+        This is a shortcut to `Table.get_value()` method, applied to the
+        first cell defined by this named range.
+
+        Args:
+            get_type (bool): If True, returns a tuple of (value, type) for the cell.
+
+        Returns:
+            Any | tuple[Any, str]: The cell's value, or a tuple of (value, type)
+                if `get_type` is True.
+
+        Raises:
+            ValueError: If the named range's table is not found or not inside a document.
         """
         body = self.document_body
         if not body:
@@ -314,9 +404,19 @@ class NamedRange(Element):
         cell_type: str | None = None,
         currency: str | None = None,
     ) -> None:
-        """Shortcut to set the values of the cells of the named range.
+        """Set the values of a range of cells within the named range.
 
-        See table.set_values() for the arguments description.
+        This is a shortcut to `Table.set_values()` method, applied to the
+        table and range defined by this named range.
+
+        Args:
+            values (list): A list of lists representing the new values for the cells.
+            style (str | None): The style name to apply to the cells.
+            cell_type (str | None): The type to set for the cells (e.g., "string", "float").
+            currency (str | None): The currency symbol to use for "currency" type cells.
+
+        Raises:
+            ValueError: If the named range's table is not found or not inside a document.
         """
         body = self.document_body
         if not body:
@@ -331,7 +431,6 @@ class NamedRange(Element):
             cell_type=cell_type,
             currency=currency,
         )
-
     def set_value(
         self,
         value: Any,
@@ -339,9 +438,19 @@ class NamedRange(Element):
         currency: str | None = None,
         style: str | None = None,
     ) -> None:
-        """Shortcut to set the value of the first cell of the named range.
+        """Set the value of the first cell within the named range.
 
-        See table.set_value() for the arguments description.
+        This is a shortcut to `Table.set_value()` method, applied to the
+        first cell defined by this named range.
+
+        Args:
+            value (Any): The value to set for the cell.
+            cell_type (str | None): The type to set for the cell (e.g., "string", "float").
+            currency (str | None): The currency symbol to use for "currency" type cells.
+            style (str | None): The style name to apply to the cell.
+
+        Raises:
+            ValueError: If the named range's table is not found or not inside a document.
         """
         body = self.document_body
         if not body:
