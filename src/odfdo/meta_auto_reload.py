@@ -46,17 +46,17 @@ class MetaAutoReload(Element):
         href: str = "",
         **kwargs: Any,
     ) -> None:
-        """Container for auto-reload properties, "meta:auto-reload".
+        """Initialize a MetaAutoReload element.
 
-        The <meta:auto-reload> element specifies whether a document is
+        The `meta:auto-reload` element specifies whether a document is
         reloaded or replaced by another document after a specified period
         of time has elapsed.
 
         Args:
-
-            delay -- timedelta | None
-
-            href -- str
+            delay (timedelta | None): The time delay after which the document
+                should auto-reload.
+            href (str): The URL or path to the document to reload or replace with.
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
 
@@ -66,7 +66,6 @@ class MetaAutoReload(Element):
         if self._do_init:
             self._set_delay(delay)
             self.href = href
-
     def __repr__(self) -> str:
         if self.delay:
             delay = str(Duration.decode(self.delay))
@@ -80,12 +79,25 @@ class MetaAutoReload(Element):
         return f"({self.href})"
 
     def _set_delay(self, delay: timedelta | None) -> None:
+        """Set the `meta:delay` attribute from a `timedelta` object.
+
+        Converts the `timedelta` to an ODF duration string. If `delay` is
+        None, it defaults to `timedelta(0)`.
+
+        Args:
+            delay (timedelta | None): The delay duration.
+        """
         if delay is None:
             delay = timedelta(0)
         self.delay = Duration.encode(delay)
 
     def as_dict(self) -> dict[str, Any]:
-        """Return the MetaAutoReload attributes as a Python dict."""
+        """Return the attributes of the auto-reload element as a Python dictionary.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the meta auto-reload
+                attributes, with keys like "meta:delay", "xlink:href", etc.
+        """
         result: dict[str, Any] = {}
         if self.delay:
             result["meta:delay"] = Duration.decode(self.delay)
@@ -102,7 +114,12 @@ class MetaAutoReload(Element):
         return result
 
     def from_dict(self, data: dict[str, Any]) -> None:
-        """Set all the MetaAutoReload attributes from a Python dict."""
+        """Set the attributes of the auto-reload element from a Python dictionary.
+
+        Args:
+            data (dict[str, Any]): A dictionary containing the meta auto-reload
+                attributes (e.g., "meta:delay", "xlink:href").
+        """
         self._set_delay(data.get("meta:delay"))
         self.actuate = data.get("xlink:actuate", "onLoad")
         self.href = data.get("xlink:href", "")
