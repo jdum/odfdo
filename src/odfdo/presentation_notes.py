@@ -45,7 +45,14 @@ class PresentationNotes(OfficeFormsMixin, Element):
         self,
         **kwargs: Any,
     ) -> None:
-        """Create a PresentationNotes, "presentation:notes"."""
+        """Initialize a PresentationNotes element.
+
+        The `presentation:notes` element defines a notes page, typically
+        containing a preview of a drawing page and additional graphic shapes.
+
+        Args:
+            **kwargs: Additional keyword arguments for the parent `Element` class.
+        """
         super().__init__(**kwargs)
 
 
