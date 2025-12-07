@@ -66,6 +66,23 @@ def _by_offset_wrapper(
     *args: Any,
     **kwargs: Any,
 ) -> list[Span | Link]:
+    """Helper for inserting elements by character offset.
+
+    This function wraps a method that creates a new element (like Span or Link)
+    and inserts it into the XML tree at a specific character offset within
+    the text content of the `element`.
+
+    Args:
+        method (Callable): The function that creates the new element.
+        element (Element): The parent element whose text content is being modified.
+        offset (int): The character offset at which to perform the insertion.
+        *args: Positional arguments to pass to the wrapped method.
+        **kwargs: Keyword arguments to pass to the wrapped method,
+            including 'length' for the matched string length.
+
+    Returns:
+        list[Span | Link]: A list of the newly created elements.
+    """
     result: list[Span | Link] = []
     length = int(kwargs.get("length", 0))
     counted = 0
@@ -116,6 +133,22 @@ def _by_regex_wrapper(
     *args: Any,
     **kwargs: Any,
 ) -> list[Span | Link]:
+    """Helper for inserting elements by regular expression match.
+
+    This function wraps a method that creates a new element (like Span or Link)
+    and inserts it into the XML tree at positions matching a given regular
+    expression within the text content of the `element`.
+
+    Args:
+        method (Callable): The function that creates the new element.
+        element (Element): The parent element whose text content is being modified.
+        regex (str): The regular expression pattern to match.
+        *args: Positional arguments to pass to the wrapped method.
+        **kwargs: Keyword arguments to pass to the wrapped method.
+
+    Returns:
+        list[Span | Link]: A list of the newly created elements.
+    """
     result: list[Span | Link] = []
     if not regex:
         return result
@@ -155,24 +188,23 @@ def _by_regex_wrapper(
     return result
 
 
+
 def _by_regex_offset(method: Callable) -> Callable:
+    """Decorator to enable element insertion by regex or offset.
+
+    This decorator wraps a method that creates a new element. The wrapped method
+    will then accept either a `regex` pattern or an `offset` and `length` to
+    specify where the new element should be inserted within the text content.
+
+    Args:
+        method (Callable): The function that creates the new element. It will
+            receive `element`, `*args`, and `match_string` as keyword argument.
+
+    Returns:
+        Callable: The decorated wrapper function.
+    """
     @wraps(method)
     def wrapper(element: Element, *args: Any, **kwargs: Any) -> list[Span | Link]:
-        """Insert the result of method(element, ...) at the place matching the
-        regex OR the positional arguments offset and length.
-
-        Args:
-
-            method -- wrapped method
-
-            element -- self
-
-            regex -- str, regular expression
-
-            offset -- int
-
-            length -- int
-        """
         offset = kwargs.pop("offset", None)
         regex = kwargs.pop("regex", "")
         if offset is not None:
@@ -199,6 +231,17 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
     """Mixin for Paragraph methods."""
 
     def _expand_spaces(self, added_string: str) -> list[Element | str]:
+        """Expand spaces within the element's content.
+
+        This function processes text and `<text:s>` (space) elements,
+        merging consecutive text nodes and converting `<text:s>` into strings.
+
+        Args:
+            added_string (str): A string to append at the end of the expansion.
+
+        Returns:
+            list[Element | str]: A list of elements and strings with spaces expanded.
+        """
         result: list[Element | str] = []
 
         def _merge_text(txt: str) -> None:
@@ -221,6 +264,14 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         return result
 
     def _merge_spaces(self, content: list[Element | str]) -> list[Element | str]:
+        """Merge multiple consecutive spaces into `<text:s>` elements where appropriate.
+
+        Args:
+            content (list[Element | str]): A list of elements and strings to process.
+
+        Returns:
+            list[Element | str]: A new list with consecutive spaces merged into `<text:s>` elements.
+        """
         result: list[Element | str] = []
         for item in content:
             if isinstance(item, str):
@@ -231,6 +282,15 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
     @staticmethod
     def _sub_merge_spaces(text: str) -> list[Element | str]:
+        """Internal helper to merge spaces within a string into `Spacer` elements.
+
+        Args:
+            text (str): The string to process.
+
+        Returns:
+            list[Element | str]: A list of elements and strings, with spaces
+                converted into `Spacer` objects where appropriate.
+        """
         result: list[Element | str] = []
         content = [x for x in _re_spaces_split.split(text) if x]
 
@@ -271,6 +331,14 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         return result
 
     def _replace_tabs_lb(self, content: list[Element | str]) -> list[Element | str]:
+        """Replace tab and line break characters within a list of content with ODF elements.
+
+        Args:
+            content (list[Element | str]): A list of elements and strings to process.
+
+        Returns:
+            list[Element | str]: A new list with tabs and line breaks replaced by `Tab` and `LineBreak` elements.
+        """
         result: list[Element | str] = []
         for item in content:
             if isinstance(item, str):
@@ -281,6 +349,15 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
     @staticmethod
     def _sub_replace_tabs_lb(text: str) -> list[Element | str]:
+        """Internal helper to replace tab and line break characters in a string with ODF elements.
+
+        Args:
+            text (str): The string to process.
+
+        Returns:
+            list[Element | str]: A list of elements and strings, with tab and
+                line break characters replaced by `Tab` and `LineBreak` objects.
+        """
         if not text:
             return []
         blocs = _re_splitter.split(text)
@@ -298,8 +375,14 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         return result
 
     def append_plain_text(self, text: str | bytes | None = "") -> None:
-        """Append plain text to the paragraph, replacing <CR>, <TAB> and
-        multiple spaces by ODF corresponding tags.
+        """Append plain text to the paragraph, converting special characters to ODF tags.
+
+        This method processes the input `text`, replacing carriage returns, tabs,
+        and multiple spaces with their corresponding ODF tags (`<text:line-break>`,
+        `<text:tab>`, `<text:s>`). Existing content of the paragraph is cleared.
+
+        Args:
+            text (str | bytes | None): The plain text to append.
         """
         if text is None:
             stext = ""
@@ -318,6 +401,14 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
     @staticmethod
     def _unformatted(text: str | bytes | None) -> str:
+        """Remove extra whitespace and newlines, replacing them with single spaces.
+
+        Args:
+            text (str | bytes | None): The input text.
+
+        Returns:
+            str: The unformatted text.
+        """
         if not text:
             return ""
         if isinstance(text, bytes):
@@ -331,6 +422,15 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         str_or_element: str | bytes | Element,
         formatted: bool = True,
     ) -> None:
+        """Append a string or an element to the paragraph.
+
+        Args:
+            str_or_element (str | bytes | Element): The content to append.
+            formatted (bool): If True (default), special characters like
+                newlines, tabs, and multiple spaces in strings are converted
+                to their ODF tag equivalents. If False, the string content
+                is inserted unformatted (only extra whitespace is removed).
+        """
         if isinstance(str_or_element, Element):
             if str_or_element.tag in {"text:p", "text:h", "text:s"}:
                 # minimal compliancy or spacer summation
@@ -355,6 +455,21 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         citation: str | None = None,
         body: str | None = None,
     ) -> None:
+        """Insert a note (footnote or endnote) into the paragraph.
+
+        A new `Note` element can be created using the provided parameters,
+        or an existing `Note` element can be inserted.
+
+        Args:
+            note_element (Note | None): An existing `Note` element to insert.
+                If None, a new one is created.
+            after (str | Element | None): A regular expression (str) or an
+                `Element` after which to insert the note.
+            note_class (str): The class of the note ("footnote" or "endnote").
+            note_id (str | None): A unique ID for the note.
+            citation (str | None): The citation text for the note.
+            body (str | None): The content of the note body.
+        """
         if note_element is None:
             note_element = Note(
                 note_class=note_class, note_id=note_id, citation=citation, body=body
@@ -388,39 +503,39 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         creator: str | None = None,
         date: datetime | None = None,
     ) -> Annotation:
-        """Insert an annotation, at the position defined by the regex (before,
-        after, content) or by positional argument (position). If content is
-        provided, the annotation covers the full content regex. Else, the
-        annotation is positioned either 'before' or 'after' provided regex.
+        """Insert an annotation into the paragraph.
 
-        If content is an odf element (ie: paragraph, span, ...), the full inner
-        content is covered by the annotation (of the position just after if
-        content is a single empty tag).
+        The insertion point can be defined by a regular expression (`before`, `after`, `content`)
+        or by positional arguments (`position`).
 
-        If content/before or after exists (regex) and return a group of matching
-        positions, the position value is the index of matching place to use.
+        - If `content` is provided, the annotation will cover the entire content matching the regex.
+          If `content` is an `Element`, the annotation will cover its full inner content.
+          In this case, `AnnotationStart` and `AnnotationEnd` tags are automatically inserted.
+        - Otherwise, the annotation is positioned either `before` or `after` a regex match,
+          or at a specific `position`.
 
-        annotation_element can contain a previously created annotation, else
-        the annotation is created from the body, creator and optional date
-        (current date by default).
+        If `before`, `after`, or `content` are regular expressions that return multiple matches,
+        the `position` argument can be used to select which match to use.
 
         Args:
+            annotation_element (Annotation | None): An optional pre-existing `Annotation` element.
+                If None, a new `Annotation` is created using `body`, `creator`, and `date`.
+            before (str | None): A regular expression. The annotation is inserted before text matching this regex.
+            after (str | Element | None): A regular expression or an `Element`.
+                The annotation is inserted after text matching this regex or as the first child of the `Element`.
+            position (int | tuple): An integer for character offset, or a 2-tuple `(start, end)`
+                for a range. Used when `before`, `after`, and `content` are not specified.
+            content (str | Element | None): A regular expression or an `Element`. If provided,
+                the annotation spans the matching content.
+            body (str | None): The content of the annotation.
+            creator (str | None): The creator of the annotation.
+            date (datetime | None): The creation date of the annotation. Defaults to current date if None.
 
-            annotation_element -- Annotation or None
+        Returns:
+            Annotation: The inserted annotation element.
 
-            before -- str regular expression or None
-
-            after -- str regular expression or Element or None
-
-            content -- str regular expression or None, or Element
-
-            position -- int or tuple of int
-
-            body -- str or Element
-
-            creator -- str
-
-            date -- datetime
+        Raises:
+            ValueError: If an invalid combination of arguments is provided.
         """
 
         if annotation_element is None:
@@ -500,22 +615,27 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         after: str | None = None,
         position: int = 0,
     ) -> AnnotationEnd:
-        """Insert an annotation end tag for an existing annotation. If some end
-        tag already exists, replace it. Annotation end tag is set at the
-        position defined by the regex (before or after).
+        """Insert an annotation end tag for an existing annotation.
 
-        If content/before or after (regex) returns a group of matching
-        positions, the position value is the index of matching place to use.
+        If an end tag for the given `annotation_element` already exists, it is
+        replaced. The end tag is positioned based on a regex match (`before` or `after`)
+        or a numerical `position`.
 
         Args:
+            annotation_element (Annotation): The `Annotation` element for which
+                to create the end tag.
+            before (str | None): A regular expression. The end tag is inserted
+                before text matching this regex.
+            after (str | None): A regular expression. The end tag is inserted
+                after text matching this regex.
+            position (int): An integer character offset for insertion.
 
-            annotation_element -- Annotation (mandatory)
+        Returns:
+            AnnotationEnd: The inserted `AnnotationEnd` element.
 
-            before -- str regular expression or None
-
-            after -- str regular expression or None
-
-            position -- int
+        Raises:
+            ValueError: If `annotation_element` is None.
+            TypeError: If `annotation_element` is not an `Annotation` instance.
         """
 
         if annotation_element is None:
@@ -544,36 +664,32 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         position: int = 0,
         content: str | Element | None = None,
     ) -> Element:
-        """Insert a reference mark, at the position defined by the regex
-        (before, after, content) or by positional argument (position). If
-        content is provided, the annotation covers the full range content regex
-        (instances of ReferenceMarkStart and ReferenceMarkEnd are created).
-        Else, an instance of ReferenceMark is positioned either 'before' or
-        'after' provided regex.
+        """Insert a reference mark (`ReferenceMark`, `ReferenceMarkStart`, or `ReferenceMarkEnd`) into the paragraph.
 
-        If content is an ODF Element (ie: Paragraph, Span, ...), the full inner
-        content is referenced (of the position just after if content is a single
-        empty tag).
+        The insertion point can be defined by a regular expression (`before`, `after`, `content`)
+        or by positional arguments (`position`).
 
-        If content/before or after exists (regex) and return a group of matching
-        positions, the position value is the index of matching place to use.
+        - If `content` is provided (regex or `Element`), a pair of `ReferenceMarkStart`
+          and `ReferenceMarkEnd` tags are inserted to cover the specified content.
+        - Otherwise, a single `ReferenceMark` tag is positioned either `before` or `after`
+          a regex match, or at a specific `position`.
 
-        Name is mandatory and shall be unique in the document for the preference
-        mark range.
+        The `name` is mandatory and should be unique within the document for the reference mark.
 
         Args:
+            name (str): The name of the reference mark.
+            before (str | None): A regular expression. The mark is inserted before text matching this regex.
+            after (str | None): A regular expression. The mark is inserted after text matching this regex.
+            position (int | tuple): An integer for character offset, or a 2-tuple `(start, end)`
+                for a range.
+            content (str | Element | None): A regular expression or an `Element`. If provided,
+                the reference mark spans the matching content.
 
-            name -- str
+        Returns:
+            Element: The created `ReferenceMark` or `ReferenceMarkStart` element.
 
-            before -- str regular expression or None
-
-            after -- str regular expression or None,
-
-            content -- str regular expression or None, or Element
-
-            position -- int or tuple of int
-
-        Returns: the created ReferenceMark or ReferenceMarkStart
+        Raises:
+            ValueError: If an invalid combination of arguments is provided.
         """
         # special case: content is an odf element (ie: a paragraph)
         if isinstance(content, Element):
@@ -634,22 +750,26 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         after: str | None = None,
         position: int = 0,
     ) -> ReferenceMarkEnd:
-        """Insert/move a ReferenceMarkEnd for an existing reference mark. If
-        some end tag already exists, replace it. Reference tag is set at the
-        position defined by the regex (before or after).
+        """Insert or move a `ReferenceMarkEnd` for an existing reference mark.
 
-        If content/before or after (regex) returns a group of matching
-        positions, the position value is the index of matching place to use.
+        If an end tag for the given `reference_mark` already exists, it is
+        replaced. The end tag is positioned based on a regex match (`before` or `after`)
+        or a numerical `position`.
 
         Args:
+            reference_mark (Element): The `ReferenceMark` or `ReferenceMarkStart`
+                element for which to create the end tag.
+            before (str | None): A regular expression. The end tag is inserted
+                before text matching this regex.
+            after (str | None): A regular expression. The end tag is inserted
+                after text matching this regex.
+            position (int): An integer character offset for insertion.
 
-            reference_mark -- ReferenceMark or ReferenceMarkStart (mandatory)
+        Returns:
+            ReferenceMarkEnd: The inserted `ReferenceMarkEnd` element.
 
-            before -- str regular expression or None
-
-            after -- str regular expression or None
-
-            position -- int
+        Raises:
+            TypeError: If `reference_mark` is not a `ReferenceMark` or `ReferenceMarkStart` instance.
         """
         if not isinstance(reference_mark, (ReferenceMark, ReferenceMarkStart)):
             raise TypeError("Not a ReferenceMark or ReferenceMarkStart")
@@ -670,6 +790,12 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         return end_tag
 
     def insert_variable(self, variable_element: Element, after: str | None) -> None:
+        """Insert a variable element into the paragraph.
+
+        Args:
+            variable_element (Element): The variable element to insert.
+            after (str | None): A regular expression after which to insert the variable.
+        """
         self._insert(variable_element, after=after)
 
     @_by_regex_offset
@@ -681,26 +807,22 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         length: int = 0,
         **kwargs: Any,
     ) -> list[Span]:
-        """
-        Apply the given style  with a Span to text content matching either:
+        """Apply a text style to content within the paragraph using a `text:span` element.
 
-          - the 'regex' match,
-          - or the string of length 'length' starting at 'offset'.
+        The target content can be specified either by a regular expression (`regex`)
+        or by an `offset` and `length`.
 
         Args:
+            style (str): The name of the text style to apply.
+            regex (str | None): A regular expression to match the text content.
+            offset (int | None): The starting character offset in the paragraph's text content.
+            length (int): The length of the text content to apply the style to,
+                starting from `offset`.
 
-            style -- str
-
-            regex -- str regular expression, or None
-
-            offset -- int, or None
-
-            length -- int
-
-        Returns: list of generated Span instances.
+        Returns:
+            list[Span]: A list of generated `Span` instances, each representing
+                a styled portion of text.
         """
-        # span = Span(match, style=style)
-        # span.tail = tail
         span: Span = Element.from_tag("text:span")  # type: ignore[assignment]
         span.text = ""
         span.append_plain_text(kwargs["match_string"])
@@ -708,10 +830,15 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         return span  # type: ignore[return-value]
 
     def remove_spans(self, keep_heading: bool = True) -> Element:
-        """Return copy of the element, without span styles.
+        """Remove all `text:span` elements from a copy of the paragraph.
 
-        If keep_heading is True (default), the first level heading style is
-        left unchanged.
+        Args:
+            keep_heading (bool): If True, `text:h` (heading) elements are
+                protected from stripping. Defaults to True.
+
+        Returns:
+            Element: A new `Element` instance representing the paragraph
+                without `text:span` elements.
         """
         strip = ("text:span",)
         if keep_heading:
@@ -721,11 +848,14 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         return strip_tags(self, strip=strip, protect=protect)  # type: ignore [return-value]
 
     def remove_span(self, spans: Element | list[Element]) -> Element:
-        """Return a copy of the element, the spans (not a clone) removed.
+        """Remove specific `text:span` elements from a copy of the paragraph.
 
         Args:
+            spans (Element | list[Element]): The `Span` element(s) to remove.
 
-            spans -- Element or list of Element
+        Returns:
+            Element: A new `Element` instance representing the paragraph
+                with the specified `text:span` elements removed.
         """
         return strip_elements(self, spans)  # type: ignore [return-value]
 
@@ -738,39 +868,44 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         length: int = 0,
         **kwargs: Any,
     ) -> list[Link]:
-        """
-        Make a link to the provided url from text content matching either:
+        """Create a hyperlink from text content within the paragraph.
 
-          - the 'regex' match,
-          - or the string of length 'length' starting at 'offset'.
+        The text content can be identified either by a regular expression (`regex`)
+        or by an `offset` and `length`.
 
         Args:
+            url (str): The URL that the hyperlink points to.
+            regex (str | None): A regular expression to match the text content.
+            offset (int | None): The starting character offset in the paragraph's text content.
+            length (int): The length of the text content to convert into a link,
+                starting from `offset`.
 
-            url -- str
-
-            regex -- str regular expression, or None
-
-            offset -- int, or None
-
-            length -- int
-
-        Returns: list of generated Link instances.
+        Returns:
+            list[Link]: A list of generated `Link` instances, each representing
+                a hyperlink.
         """
 
         return Link(url, text=kwargs["match_string"])  # type: ignore[return-value]
 
     def remove_links(self) -> Element:
-        """Return a copy of the element, without links tags."""
+        """Remove all `text:a` (hyperlink) elements from a copy of the paragraph.
+
+        Returns:
+            Element: A new `Element` instance representing the paragraph
+                without hyperlink elements.
+        """
         strip = (Link._tag,)
         return strip_tags(self, strip=strip)  # type: ignore [return-value]
 
     def remove_link(self, links: Link | list[Link]) -> Element:
-        """Return a copy of the element (not a clone), with the sub links
-        removed.
+        """Remove specific `text:a` (hyperlink) elements from a copy of the paragraph.
 
         Args:
+            links (Link | list[Link]): The `Link` element(s) to remove.
 
-            links -- Link or list of Link
+        Returns:
+            Element: A new `Element` instance representing the paragraph
+                with the specified hyperlink elements removed.
         """
         return strip_elements(self, links)  # type: ignore [return-value]
 
@@ -846,50 +981,32 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         role: str | None = None,
         content: str | None = None,
     ) -> Element | tuple[Element, Element]:
-        """Insert a bookmark before or after the characters in the text which
-        match the regex before/after. When the regex matches more of one part
-        of the text, position can be set to choose which part must be used. If
-        before and after are None, we use only position that is the number of
-        characters.
+        """Insert a bookmark (`Bookmark`, `BookmarkStart`, or `BookmarkEnd`) into the paragraph.
 
-        So, by default, this function inserts a bookmark before the first
-        character of the content. Role can be None, "start" or "end", we
-        insert respectively a position bookmark a bookmark-start or a
-        bookmark-end.
+        The insertion point can be defined by a regular expression (`before`, `after`, `content`)
+        or by positional arguments (`position`).
 
-        If content is not None these 2 calls are equivalent:
-
-          paragraph.set_bookmark("bookmark", content="xyz")
-
-        and:
-
-          paragraph.set_bookmark("bookmark", before="xyz", role="start")
-          paragraph.set_bookmark("bookmark", after="xyz", role="end")
-
-
-        If position is a 2-tuple, these 2 calls are equivalent:
-
-          paragraph.set_bookmark("bookmark", position=(10, 20))
-
-        and:
-
-          paragraph.set_bookmark("bookmark", position=10, role="start")
-          paragraph.set_bookmark("bookmark", position=20, role="end")
-
+        - If `content` is provided, a pair of `BookmarkStart` and `BookmarkEnd`
+          tags are automatically inserted to span the content.
+        - If `position` is a 2-tuple `(start, end)`, `BookmarkStart` and `BookmarkEnd`
+          tags are inserted at the specified offsets.
+        - Otherwise, a single `Bookmark` (if `role` is None), `BookmarkStart` (if `role="start"`),
+          or `BookmarkEnd` (if `role="end"`) is inserted based on `before`, `after`, or `position`.
 
         Args:
+            name (str): The name of the bookmark.
+            before (str | None): A regular expression. The bookmark is inserted before text matching this regex.
+            after (str | None): A regular expression. The bookmark is inserted after text matching this regex.
+            position (int | tuple): An integer for a character offset, or a 2-tuple `(start, end)` for a range.
+            role (str | None): Specifies the type of bookmark to insert: "start", "end", or None for a regular bookmark.
+            content (str | None): A regular expression. If provided, the bookmark spans the matching content.
 
-            name -- str
+        Returns:
+            Element | tuple[Element, Element]: The created bookmark element(s).
+                Returns a tuple `(BookmarkStart, BookmarkEnd)` if `content` or a 2-tuple `position` is used.
 
-            before -- str regex
-
-            after -- str regex
-
-            position -- int or (int, int)
-
-            role -- None, "start" or "end"
-
-            content -- str regex
+        Raises:
+            ValueError: If an invalid combination of arguments is provided.
         """
         # With "content" => automatically insert a "start" and an "end"
         # bookmark
