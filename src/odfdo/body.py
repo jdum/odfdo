@@ -59,16 +59,14 @@ class Body(Element):
     ) -> list[Table]:
         """Return all the tables that match the criteria.
 
-        The method is also accessible via the alias
-        get_sheets()
+        The method is also accessible via the alias `get_sheets()`.
 
         Args:
+            style (str, optional): The style name of the tables to match.
+            content (str, optional): A regex pattern to match within the table content.
 
-            style -- str
-
-            content -- str regex
-
-        Returns: list of Table
+        Returns:
+            list[Table]: A list of matching Table elements.
         """
         return self._filtered_elements(  # type: ignore[return-value]
             "descendant::table:table",
@@ -82,9 +80,10 @@ class Body(Element):
     def tables(self) -> list[Table]:
         """Return all the tables.
 
-        The property is also accessible via the alias sheets.
+        The property is also accessible via the alias `sheets`.
 
-        Returns: list of Table
+        Returns:
+            list[Table]: A list of all Table elements.
         """
         return self.get_elements("descendant::table:table")  # type: ignore[return-value]
 
@@ -98,18 +97,16 @@ class Body(Element):
     ) -> Table | None:
         """Return the table that matches the criteria.
 
-        The method is also accessible via the alias
-        get_sheet()
+        The method is also accessible via the alias `get_sheet()`.
 
         Args:
+            position (int, optional): The 0-based index of the table to retrieve
+                among the matching tables. Defaults to 0.
+            name (str, optional): The name of the table to match.
+            content (str, optional): A regex pattern to match within the table content.
 
-            position -- int
-
-            name -- str
-
-            content -- str regex
-
-        Returns: Table or None if not found
+        Returns:
+            Table or None: The matching Table element, or None if not found.
         """
         if name is None and content is None:
             result = self._filtered_element("descendant::table:table", position)
