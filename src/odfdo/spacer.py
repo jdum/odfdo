@@ -34,22 +34,21 @@ from .mixin_md import MDSpacer
 class Spacer(MDSpacer, Element):
     """Representation of several spaces, "text:s".
 
-    This element shall be used to represent the second and all following “ “
-    (U+0020, SPACE) characters in a sequence of “ “ (U+0020, SPACE) characters.
-    Note: It is not an error if the character preceding the element is not a
-    white space character, but it is good practice to use this element only for
-    the second and all following SPACE characters in a sequence.
+    This element shall be used to represent the second and all following " "
+    (U+0020, SPACE) characters in a sequence of " " (U+0020, SPACE) characters.
+    It's good practice to use this element only for the second and all
+    following SPACE characters in a sequence, though it's not an error if
+    the preceding character is not a white space.
     """
 
     _tag = "text:s"
     _properties: tuple[PropDef | PropDefBool, ...] = (PropDef("number", "text:c"),)
 
     def __init__(self, number: int | None = 1, **kwargs: Any) -> None:
-        """Representation of several spaces, "text:s".
+        """Create a Spacer element, "text:s", representing several spaces.
 
         Args:
-
-            number -- int
+            number (int, optional): The number of spaces. Defaults to 1.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -59,21 +58,36 @@ class Spacer(MDSpacer, Element):
                 self.number = None
 
     def __str__(self) -> str:
+        """Return the string representation of the spacer (e.g., "   ")."""
         return self.text
 
     @property
     def text(self) -> str:
-        """Get / set the string (spaces)."""
+        """Get the string representation of the spacer.
+
+        Returns:
+            str: A string composed of spaces, e.g., "   ".
+        """
         return " " * self.length
 
     @text.setter
     def text(self, text: str | None) -> None:
+        """Set the string value of the spacer, which updates its length.
+
+        Args:
+            text (str or None): The string to set.
+        """
         if text is None:
             text = ""
         self.length = len(text)
 
     @property
     def length(self) -> int:
+        """Get the number of spaces represented by the spacer.
+
+        Returns:
+            int: The number of spaces.
+        """
         value = self._base_attrib_getter("text:c")
         if value is None:
             return 1  # minimum 1 space
@@ -81,6 +95,12 @@ class Spacer(MDSpacer, Element):
 
     @length.setter
     def length(self, value: int | None) -> None:
+        """Set the number of spaces represented by the spacer.
+
+        Args:
+            value (int or None): The number of spaces to set. If None or less
+                than 2, the `text:c` attribute is removed, defaulting to 1 space.
+        """
         if value is None or int(value) < 2:
             self._base_attrib_setter("text:c", None)
         else:
