@@ -20,6 +20,11 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
+"""Utility function to check for iterability.
+
+This module provides a helper function to determine if an object is iterable,
+with special handling for string and byte types.
+"""
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -27,8 +32,18 @@ from typing import Any
 
 
 def isiterable(instance: Any) -> bool:
-    """Return True if instance is iterable, but considering str and bytes as
-    not iterable.
+    """Checks if an object is iterable, excluding strings and bytes.
+
+    This function considers strings and bytes objects as non-iterable, which is
+    often the desired behavior when handling collections of items that might
+    also include simple text.
+
+    Args:
+        instance (Any): The object to check.
+
+    Returns:
+        bool: True if the object is iterable (and not a string/bytes),
+            False otherwise.
     """
     if isinstance(instance, (str, bytes)):
         return False
