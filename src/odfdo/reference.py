@@ -42,11 +42,12 @@ class ReferenceMixin(Element):
     """
 
     def get_reference_marks_single(self) -> list[ReferenceMark]:
-        """Return all the reference marks. Search only the tags
-        text:reference-mark.
-        Consider using : get_reference_marks()
+        """Get all single-point reference marks (`text:reference-mark`).
 
-        Returns: list of ReferenceMark
+        It is recommended to use `get_reference_marks()` for a more comprehensive search.
+
+        Returns:
+            list[ReferenceMark]: A list of `ReferenceMark` instances.
         """
         return cast(
             list[ReferenceMark],
@@ -60,17 +61,16 @@ class ReferenceMixin(Element):
         position: int = 0,
         name: str | None = None,
     ) -> ReferenceMark | None:
-        """Return the reference mark that matches the criteria. Search only the
-        tags text:reference-mark.
-        Consider using : get_reference_mark()
+        """Get a specific single-point reference mark (`text:reference-mark`).
+
+        It is recommended to use `get_reference_mark()` for a more comprehensive search.
 
         Args:
+            position (int): The index of the mark to retrieve. Defaults to 0.
+            name (str | None): The name of the reference mark.
 
-            position -- int
-
-            name -- str
-
-        Returns: ReferenceMark or None if not found
+        Returns:
+            ReferenceMark | None: The `ReferenceMark` instance if found, otherwise `None`.
         """
         return cast(
             Union[None, ReferenceMark],
@@ -80,11 +80,12 @@ class ReferenceMixin(Element):
         )
 
     def get_reference_mark_starts(self) -> list[ReferenceMarkStart]:
-        """Return all the reference mark starts. Search only the tags
-        text:reference-mark-start.
-        Consider using : get_reference_marks()
+        """Get all reference mark start tags (`text:reference-mark-start`).
 
-        Returns: list of ReferenceMarkStart
+        It is recommended to use `get_reference_marks()` for a more comprehensive search.
+
+        Returns:
+            list[ReferenceMarkStart]: A list of `ReferenceMarkStart` instances.
         """
         return cast(
             list[ReferenceMarkStart],
@@ -98,17 +99,16 @@ class ReferenceMixin(Element):
         position: int = 0,
         name: str | None = None,
     ) -> ReferenceMarkStart | None:
-        """Return the reference mark start that matches the criteria. Search
-        only the tags text:reference-mark-start.
-        Consider using : get_reference_mark()
+        """Get a specific reference mark start tag (`text:reference-mark-start`).
+
+        It is recommended to use `get_reference_mark()` for a more comprehensive search.
 
         Args:
+            position (int): The index of the mark to retrieve. Defaults to 0.
+            name (str | None): The name of the reference mark.
 
-            position -- int
-
-            name -- str
-
-        Returns: ReferenceMarkStart or None if not found
+        Returns:
+            ReferenceMarkStart | None: The `ReferenceMarkStart` instance if found, otherwise `None`.
         """
         return cast(
             Union[None, ReferenceMarkStart],
@@ -118,11 +118,12 @@ class ReferenceMixin(Element):
         )
 
     def get_reference_mark_ends(self) -> list[ReferenceMarkEnd]:
-        """Return all the reference mark ends. Search only the tags
-        text:reference-mark-end.
-        Consider using : get_reference_marks()
+        """Get all reference mark end tags (`text:reference-mark-end`).
 
-        Returns: list of ReferenceMarkEnd
+        It is recommended to use `get_reference_marks()` for a more comprehensive search.
+
+        Returns:
+            list[ReferenceMarkEnd]: A list of `ReferenceMarkEnd` instances.
         """
         return cast(
             list[ReferenceMarkEnd],
@@ -136,17 +137,16 @@ class ReferenceMixin(Element):
         position: int = 0,
         name: str | None = None,
     ) -> ReferenceMarkEnd | None:
-        """Return the reference mark end that matches the criteria. Search only
-        the tags text:reference-mark-end.
-        Consider using : get_reference_marks()
+        """Get a specific reference mark end tag (`text:reference-mark-end`).
+
+        It is recommended to use `get_reference_mark()` for a more comprehensive search.
 
         Args:
+            position (int): The index of the mark to retrieve. Defaults to 0.
+            name (str | None): The name of the reference mark.
 
-            position -- int
-
-            name -- str
-
-        Returns: ReferenceMarkEnd or None if not found
+        Returns:
+            ReferenceMarkEnd | None: The `ReferenceMarkEnd` instance if found, otherwise `None`.
         """
         return cast(
             Union[None, ReferenceMarkEnd],
@@ -156,11 +156,14 @@ class ReferenceMixin(Element):
         )
 
     def get_reference_marks(self) -> list[ReferenceMark | ReferenceMarkStart]:
-        """Return all the reference marks, either single position reference
-        (text:reference-mark) or start of range reference (text:reference-mark-
-        start).
+        """Get all reference marks.
 
-        Returns: list of ReferenceMark or ReferenceMarkStart
+        This includes both single-point marks (`text:reference-mark`) and the
+        start of ranged marks (`text:reference-mark-start`).
+
+        Returns:
+            list[ReferenceMark | ReferenceMarkStart]: A list of `ReferenceMark` and
+                `ReferenceMarkStart` instances.
         """
         return cast(
             list[ReferenceMark | ReferenceMarkStart],
@@ -174,17 +177,18 @@ class ReferenceMixin(Element):
         position: int = 0,
         name: str | None = None,
     ) -> ReferenceMark | ReferenceMarkStart | None:
-        """Return the reference mark that match the criteria. Either single
-        position reference mark (text:reference-mark) or start of range
-        reference (text:reference-mark-start).
+        """Get a specific reference mark by name or position.
+
+        This can be either a single-point mark (`text:reference-mark`) or the
+        start of a ranged mark (`text:reference-mark-start`).
 
         Args:
+            position (int): The index of the mark to retrieve if `name` is not provided.
+            name (str | None): The name of the reference mark.
 
-            position -- int
-
-            name -- str
-
-        Returns: ReferenceMark or ReferenceMarkStart or None if not found
+        Returns:
+            ReferenceMark | ReferenceMarkStart | None: The found reference mark element,
+                or `None` if not found.
         """
         if name:
             request = (
@@ -206,14 +210,13 @@ class ReferenceMixin(Element):
         )
 
     def get_references(self, name: str | None = None) -> list[Reference]:
-        """Return all the references (text:reference-ref). If name is provided,
-        returns the references of that name.
+        """Get all reference fields (`text:reference-ref`).
 
         Args:
+            name (str | None): If provided, filter references by their `text:ref-name`.
 
-            name -- str or None
-
-        Returns: list of Reference
+        Returns:
+            list[Reference]: A list of `Reference` instances.
         """
         if name is None:
             return self._filtered_elements(
@@ -291,35 +294,32 @@ class Reference(Element):
     )
 
     def __init__(self, name: str = "", ref_format: str = "", **kwargs: Any) -> None:
-        """Create a reference to a content marked by a reference mark
-        "text:reference-ref".
+        """Initialize a Reference element (`text:reference-ref`).
 
-        An actual reference mark with the provided name should exist.
+        A `Reference` represents a field that refers to a `ReferenceMark`
+        or `ReferenceMarkStart`. An existing reference mark with the provided
+        `name` is expected.
 
-        Consider using: odfdo.paragraph.insert_reference()
-
-        The text:ref-name attribute identifies a "text:reference-mark" or
-        "text:referencemark-start" element by the value of that element's
-        text:name attribute.
-        If ref_format is 'text', the current text content of the reference_mark
-        is retrieved.
+        Consider using the `odfdo.paragraph.insert_reference()` method for easier creation.
 
         Args:
-
-            name -- str : name of the reference mark
-
-            ref_format -- str : format of the field. Default is 'page', allowed
-                            values are 'chapter', 'direction', 'page', 'text',
-                            'caption', 'category-and-value', 'value', 'number',
-                            'number-all-superior', 'number-no-superior'.
+            name (str): The name of the reference mark to refer to.
+            ref_format (str): The format of the reference field, which determines
+                what is displayed (e.g., "page", "chapter", "text").
+                Defaults to "page".
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
             self.ref_format = ref_format
-
     @property
     def ref_format(self) -> str | None:
+        """Get the `text:reference-format` of the reference.
+
+        Returns:
+            str | None: The reference format string.
+        """
         reference = self.get_attribute("text:reference-format")
         if isinstance(reference, str):
             return reference
@@ -327,16 +327,14 @@ class Reference(Element):
 
     @ref_format.setter
     def ref_format(self, ref_format: str) -> None:
-        """Set the text:reference-format attribute.
+        """Set the `text:reference-format` attribute.
 
         Args:
-
-            ref_format -- str
+            ref_format (str): The new reference format. If invalid, defaults to "page".
         """
         if not ref_format or ref_format not in self.FORMAT_ALLOWED:
             ref_format = "page"
         self.set_attribute("text:reference-format", ref_format)
-
     def update(self) -> None:
         """Update the content of the reference text field.
 
@@ -370,20 +368,21 @@ class ReferenceMark(Element):
     _properties = (PropDef("name", "text:name"),)
 
     def __init__(self, name: str = "", **kwargs: Any) -> None:
-        """A point reference "text:reference-mark".
+        """Initialize a ReferenceMark element.
 
-        A point reference marks a position in text and is
-        represented by a single "text:reference-mark" element.
-        Consider using the wrapper: odfdo.paragraph.set_reference_mark()
+        A point reference marks a position in text and is represented by
+        a single `text:reference-mark` element.
+
+        Consider using the `odfdo.paragraph.set_reference_mark()` method
+        for easier creation.
 
         Args:
-
-            name -- str
+            name (str): The name of the reference mark.
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
-
 
 ReferenceMark._define_attribut_property()
 
@@ -395,14 +394,15 @@ class ReferenceMarkEnd(Element):
     _properties = (PropDef("name", "text:name"),)
 
     def __init__(self, name: str = "", **kwargs: Any) -> None:
-        """The "text:reference-mark-end" element represent the end of a range
-        reference.
-        Consider using the wrappers: odfdo.paragraph.set_reference_mark() and
-        odfdo.paragraph.set_reference_mark_end()
+        """Initialize a ReferenceMarkEnd element.
+
+        Represents the end of a range reference. It's recommended to use the
+        helper methods `odfdo.paragraph.set_reference_mark()` or
+        `odfdo.paragraph.set_reference_mark_end()` for creation.
 
         Args:
-
-            name -- str
+            name (str): The name of the reference mark this element ends.
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -432,13 +432,14 @@ class ReferenceMarkStart(Element):
     _properties = (PropDef("name", "text:name"),)
 
     def __init__(self, name: str = "", **kwargs: Any) -> None:
-        """The "text:reference-mark-start" element represent the start of a range
-        reference.
-        Consider using the wrapper: odfdo.paragraph.set_reference_mark()
+        """Initialize a ReferenceMarkStart element.
+
+        Represents the start of a range reference. It's recommended to use the
+        helper method `odfdo.paragraph.set_reference_mark()` for creation.
 
         Args:
-
-            name -- str
+            name (str): The name of the reference mark this element starts.
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -464,27 +465,20 @@ class ReferenceMarkStart(Element):
         as_xml: bool = False,
         as_list: bool = False,
     ) -> Element | list | str | None:
-        """Return the document content between the start and end tags of the
-        reference. The content returned by this method can spread over several
-        headers and paragraphs. By default, the content is returned as an
-        "office:text" odf element.
+        """Get the content between the start and end tags of the reference mark.
+
+        This method can return the content in various formats (as a single `Element`,
+        a list of `Element`s, or an XML string).
 
         Args:
+            no_header (bool): If True, converts `text:h` elements to `text:p` elements.
+            clean (bool): If True, removes unwanted tags like tracked changes marks.
+            as_xml (bool): If True, returns the content as a serialized XML string.
+            as_list (bool): If True, returns the content as a list of `Element` objects
+                instead of being wrapped in an `office:text` element.
 
-            no_header -- boolean (default to False), translate existing headers
-                         tags "text:h" into paragraphs "text:p".
-
-            clean -- boolean (default to True), suppress unwanted tags. Striped
-                     tags are : 'text:change', 'text:change-start',
-                     'text:change-end', 'text:reference-mark',
-                     'text:reference-mark-start', 'text:reference-mark-end'.
-
-            as_xml -- boolean (default to False), format the returned content as
-                      a XML string (serialization).
-
-            as_list -- boolean (default to False), do not embed the returned
-                       content in a "office:text'" element, instead simply
-                       return a raw list of odf elements.
+        Returns:
+            Element | list | str | None: The referenced content in the specified format.
         """
         if self.parent is None:
             raise ValueError(
@@ -509,19 +503,18 @@ class ReferenceMarkStart(Element):
             return referenced.serialize()
         else:
             return referenced
-
     def delete(self, child: Element | None = None, keep_tail: bool = True) -> None:
-        """Delete the given element from the XML tree. If no element is given,
-        "self" is deleted. The XML library may allow to continue to use an
-        element now "orphan" as long as you have a reference to it.
+        """Delete the element from the XML tree.
 
-        For odf_reference_mark_start : delete the reference-end tag if exists.
+        If `child` is provided, it deletes a child element. If no `child` is
+        given, "self" is deleted, along with its corresponding `ReferenceMarkEnd`
+        tag if it exists.
 
         Args:
-
-            child -- Element
-
-            keep_tail -- boolean (default to True), True for most usages.
+            child (Element | None): The child element to delete. If `None`,
+                the current element (`self`) is deleted.
+            keep_tail (bool): If True, the `tail` text of the deleted element
+                is preserved.
         """
         if child is not None:  # act like normal delete
             return super().delete(child, keep_tail)  # pragma: nocover
@@ -543,20 +536,39 @@ ReferenceMarkStart._define_attribut_property()
 
 
 def strip_references(element: Element) -> Element | list:
-    """Remove all the 'text:reference-ref' tags of the element, keeping inner
-    sub elements (for example the referenced value if format is 'text').
+    """Remove all `text:reference-ref` tags from an element.
 
-    Nota : using the .delete() on the reference mark will delete inner content.
+    This function keeps the inner content of the stripped tags.
+
+    Note: Using the `.delete()` method on a reference mark directly will
+    also delete its inner content.
+
+    Args:
+        element (Element): The element from which to strip reference tags.
+
+    Returns:
+        Element | list: The element with reference tags removed, or a list
+            of elements if the top-level element itself is stripped.
     """
     to_strip = ("text:reference-ref",)
     return strip_tags(element, to_strip)
 
 
 def remove_all_reference_marks(element: Element) -> Element | list:
-    """Remove all the 'text:reference-mark', 'text:reference-mark-start', and
-    'text:reference-mark-end' tags of the element, keeping inner sub elements.
+    """Remove all reference mark tags from an element.
 
-    Nota : using the .delete() on the reference mark will delete inner content.
+    This includes `text:reference-mark`, `text:reference-mark-start`, and
+    `text:reference-mark-end`. The inner content of the tags is preserved.
+
+    Note: Using the `.delete()` method on a reference mark directly will
+    also delete its inner content.
+
+    Args:
+        element (Element): The element from which to remove reference marks.
+
+    Returns:
+        Element | list: The element with reference marks removed, or a list
+            of elements if the top-level element itself is stripped.
     """
     to_strip = (
         "text:reference-mark",
@@ -571,11 +583,18 @@ def remove_reference_mark(
     position: int = 0,
     name: str | None = None,
 ) -> None:
-    """Remove the 'text:reference-mark', 'text:reference-mark-start', and
-    'text:reference-mark-end' tags of the element, identified by name or
-    position, keeping inner sub elements.
+    """Remove a specific reference mark from an element by name or position.
 
-    Nota : using the .delete() on the reference mark will delete inner content.
+    This removes `text:reference-mark`, `text:reference-mark-start`, and
+    `text:reference-mark-end` tags, while keeping their inner content.
+
+    Note: Using the `.delete()` method on a reference mark directly will
+    also delete its inner content.
+
+    Args:
+        element (Element): The element from which to remove the reference mark.
+        position (int): The index of the mark to remove if `name` is not provided.
+        name (str | None): The name of the reference mark to remove.
     """
     if hasattr(element, "get_reference_mark"):
         start_ref = element.get_reference_mark(position=position, name=name)
