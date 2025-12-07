@@ -50,11 +50,10 @@ class NRMixin(Element):
     """
 
     def get_named_ranges(self) -> list[NamedRange]:
-        """Return the list of Name Ranges of the document.
+        """Retrieve all named ranges (`NamedRange` objects) global to the document.
 
-        Named ranges global to the document.
-
-        Returns: list of NamedRange
+        Returns:
+            list[NamedRange]: A list of `NamedRange` instances found in the document.
         """
         return cast(
             list[NamedRange],
@@ -62,15 +61,13 @@ class NRMixin(Element):
         )
 
     def get_named_range(self, name: str) -> NamedRange | None:
-        """Return the Name Range of the specified name.
-
-        Named ranges global to the document.
+        """Retrieve a specific named range global to the document by its name.
 
         Args:
+            name (str): The name of the named range to retrieve.
 
-            name -- str
-
-        Returns: NamedRange or None
+        Returns:
+            NamedRange | None: The `NamedRange` instance if found, otherwise `None`.
         """
         named_range = cast(
             list[NamedRange],
@@ -84,15 +81,12 @@ class NRMixin(Element):
             return None
 
     def append_named_range(self, named_range: NamedRange) -> None:
-        """Append the named range to the document.
+        """Append a `NamedRange` object to the document.
 
-        An existing named range of same name is replaced.
-
-        Named ranges global to the document.
+        If a named range with the same name already exists, it will be replaced.
 
         Args:
-
-            named_range --  NamedRange
+            named_range (NamedRange): The `NamedRange` object to append.
         """
         named_expressions = cast(
             Union[None, TableNamedExpressions],
@@ -121,19 +115,23 @@ class NRMixin(Element):
         table_name: str,
         usage: str | None = None,
     ) -> None:
-        """Create a Named Range element and insert it in the document.
+        """Create or update a named range in the document.
 
-        An existing named range of same name is replaced.
+        A `NamedRange` element is created with the given parameters and inserted
+        into the document. If a named range with the same name already exists,
+        it will be replaced.
 
         Args:
+            name (str): The name of the named range.
+            crange (str | tuple | list): The cell or cell range coordinate
+                (e.g., "Sheet1.A1", "Sheet1.A1:B2", or a tuple/list of integers
+                representing coordinates).
+            table_name (str): The name of the table to which the named range refers.
+            usage (str | None): Optional usage type (e.g., "print-range", "filter",
+                "repeat-column", "repeat-row").
 
-            name -- str, name of the named range
-
-            crange -- str or tuple of int, cell or area coordinate
-
-            table_name -- str, name of the table
-
-            usage -- None or 'print-range', 'filter', 'repeat-column', 'repeat-row'
+        Raises:
+            ValueError: If `name` or `table_name` is empty.
         """
         name = name.strip()
         if not name:
@@ -145,13 +143,10 @@ class NRMixin(Element):
         self.append_named_range(named_range)
 
     def delete_named_range(self, name: str) -> None:
-        """Delete the Named Range of specified name from the document.
-
-        Named ranges global to the document.
+        """Delete a named range from the document by its name.
 
         Args:
-
-            name -- str
+            name (str): The name of the named range to delete.
         """
         named_range = self.get_named_range(name)
         if not named_range:
