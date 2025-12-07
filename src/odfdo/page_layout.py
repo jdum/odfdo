@@ -53,19 +53,16 @@ class StylePageLayout(StyleProps):
         page_usage: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a StylePageLayout.
+        """Initialize a StylePageLayout element.
 
-        The name is not mandatory at this point but will become required when inserting in a document as a automatic style.
-
-        The page_usage attribute specifies the type of pages that a page master should generate. Allowed values are: "all" (default), "left", "mirrored", "right".
-
-        To set properties, pass them as keyword arguments.
+        The `name` is not mandatory at creation but becomes required when
+        inserting into a document as an automatic style.
 
         Args:
-
-            name -- str
-
-            page_usage -- str
+            name (str | None): The name of the page layout style.
+            page_usage (str | None): The type of pages the layout applies to.
+                Allowed values are "all" (default), "left", "mirrored", "right".
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         self._family = "page-layout"
         tag_or_elem = kwargs.get("tag_or_elem")
@@ -82,10 +79,18 @@ class StylePageLayout(StyleProps):
 
     @property
     def family(self) -> str | None:
+        """Get the family of the style.
+
+        For `StylePageLayout`, this is always "page-layout".
+
+        Returns:
+            str | None: The family name.
+        """
         return self._family
 
     @family.setter
     def family(self, family: str | None) -> None:
+        """Setter for the family property (no-op as family is fixed)."""
         pass
 
     def __repr__(self) -> str:
@@ -93,24 +98,37 @@ class StylePageLayout(StyleProps):
 
     @property
     def page_usage(self) -> str:
+        """Get the `style:page-usage` attribute.
+
+        Specifies the type of pages that a page master should generate.
+
+        Returns:
+            str: The page usage type. Defaults to "all".
+        """
         return self._get_attribute_str_default("style:page-usage", "all")
 
     @page_usage.setter
     def page_usage(self, page_usage: str | None) -> None:
+        """Set the `style:page-usage` attribute.
+
+        Args:
+            page_usage (str | None): The page usage type. Allowed values are
+                "all", "left", "right", "mirrored". Invalid values default to "all".
+        """
         if page_usage not in self.PAGE_USAGE:
             page_usage = "all"
         self._set_attribute_str_default("style:page-usage", page_usage, "all")
-
     def get_properties(
         self, area: str | None = "page-layout"
     ) -> dict[str, str | dict] | None:
-        """Get the mapping of page-layout properties of StylePageLayout.
+        """Retrieve the page-layout properties of the `StylePageLayout`.
 
         Args:
+            area (str | None): The area for which to retrieve properties.
+                (Parameter is kept for compatibility but internally fixed to "page-layout").
 
-            area -- str (unused, kept for compatibility)
-
-        Returns: dict
+        Returns:
+            dict[str, str | dict] | None: A dictionary mapping property names to their values.
         """
         return super().get_properties(area="page-layout")
 
@@ -121,21 +139,17 @@ class StylePageLayout(StyleProps):
         area: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Set the properties of the page-layout.
+        """Set the properties for the page-layout.
 
-        Properties are given either as a dict or as named arguments (or both). The area is identical to the style family by default. If the properties element is missing, it is created.
-
-        Instead of properties, you can pass a style with properties of a page-layout style. These will be copied.
-
-        Nested properties (properties of children elements) are not set.
+        Properties can be provided either as a dictionary, as a `StyleBase` object,
+        or as keyword arguments. The `area` is internally fixed to "page-layout".
 
         Args:
-
-            properties -- dict
-
-            style -- StylePageLayout
-
-            area -- "page-layout"
+            properties (dict[str, str | dict] | None): A dictionary of properties to set.
+            style (StyleBase | None): A `StyleBase` object from which to copy properties.
+            area (str | None): The area for which to set properties.
+                (Parameter is kept for compatibility but internally fixed to "page-layout").
+            **kwargs: Additional keyword arguments for properties to set.
         """
         return super().set_properties(
             properties=properties, style=style, area="page-layout", **kwargs
@@ -146,14 +160,12 @@ class StylePageLayout(StyleProps):
         properties: list[str] | None = None,
         area: str | None = None,
     ) -> None:
-        """Delete the given properties, either by list argument or positional
-        argument (or both).
+        """Delete specific properties from the page-layout.
 
         Args:
-
-            properties -- list
-
-            area -- "page-layout"
+            properties (list[str] | None): A list of property names to delete.
+            area (str | None): The area from which to delete properties.
+                (Parameter is kept for compatibility but internally fixed to "page-layout").
         """
         return super().del_properties(properties=properties, area="page-layout")
 
@@ -166,47 +178,59 @@ class StylePageLayout(StyleProps):
         opacity: str | int | None = None,
         filter: str | None = None,  # noqa: A002
     ) -> None:
-        """Set the background color of the page layout.
+        """Set the background properties for the page layout.
 
-        With no argument, remove any existing background.
-
-        The values of the position attribute are "left", "center", "right", "top", "bottom", or two white space separated values, that may appear in any order. One of these values is one of: "left", "center" or "right". The other value is one of: "top", "center" or "bottom". The default value for this attribute is "center".
-
-        The repeat value is one of 'no-repeat', 'repeat' or 'stretch'.
-
-        The opacity is a percentage integer (not a string with the '%' sign)
-
-        The filter is an application-specific filter name defined elsewhere.
+        This can configure a background color or an image. If no arguments are
+        provided, any existing background is removed.
 
         Args:
-
-            color -- '#rrggbb'
-
-            url -- str
-
-            position -- str
-
-            repeat -- str
-
-            opacity -- int
-
-            filter -- str
+            color (str | None): The background color in '#RRGGBB' format.
+            url (str | None): The URL of a background image.
+            position (str | None): The position of the background image. Can be
+                "left", "center", "right", "top", "bottom", or a combination
+                of two (e.g., "top center"). Defaults to "center".
+            repeat (str | None): How the background image repeats. Can be
+                "no-repeat", "repeat", or "stretch".
+            opacity (str | int | None): The opacity of the background image as
+                a percentage integer (0-100).
+            filter (str | None): An application-specific filter name for the background image.
         """
         _set_background(self, color, url, position, repeat, opacity, filter)
-
     def get_header_style(self) -> StyleBase | None:
+        """Get the `style:header-style` element within the page layout.
+
+        Returns:
+            StyleBase | None: The `StyleBase` instance representing the header
+                style, or `None` if no header style is defined.
+        """
         return cast(Union[None, StyleBase], self.get_element("style:header-style"))
 
     def set_header_style(self, new_style: StyleBase) -> None:
+        """Set or replace the `style:header-style` element within the page layout.
+
+        Args:
+            new_style (StyleBase): The new header style to set.
+        """
         header_style = self.get_header_style()
         if header_style is not None:
             self.delete(header_style)
         self.append(new_style)
 
     def get_footer_style(self) -> StyleBase | None:
+        """Get the `style:footer-style` element within the page layout.
+
+        Returns:
+            StyleBase | None: The `StyleBase` instance representing the footer
+                style, or `None` if no footer style is defined.
+        """
         return cast(Union[None, StyleBase], self.get_element("style:footer-style"))
 
     def set_footer_style(self, new_style: StyleBase) -> None:
+        """Set or replace the `style:footer-style` element within the page layout.
+
+        Args:
+            new_style (StyleBase): The new footer style to set.
+        """
         footer_style = self.get_footer_style()
         if footer_style is not None:
             self.delete(footer_style)
