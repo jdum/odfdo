@@ -24,38 +24,35 @@ from .page_layout import StylePageLayout
 
 
 class OfficeAutomaticStyles(Element):
-    """Container for automatic styles used in the document, "office:automatic-
-    styles".
+    """Container for automatic styles used in the document, "office:automatic-styles".
 
-    An automatic style is one contains formatting properties that are
-    considered to be properties of the object to which the style is assigned.
+    An automatic style contains formatting properties that are considered to
+    be properties of the object to which the style is assigned.
 
-    The "office:automatic-styles" element is usable within the following
-    elements: "office:document", "office:document-content" and
-    "office:document-styles".
-
-    The "office:automatic-styles" element has no attributes.
+    This element is usable within "office:document", "office:document-content",
+    and "office:document-styles" elements, and has no attributes.
     """
 
     _tag: str = "office:automatic-styles"
 
     @property
     def page_layouts(self) -> list[StylePageLayout]:
-        """Return the list of StylePageLayout styles."""
+        """Return the list of StylePageLayout styles.
+
+        Returns:
+            list[StylePageLayout]: A list of StylePageLayout elements.
+        """
         return [e for e in self.children if isinstance(e, StylePageLayout)]
 
 
 class OfficeMasterStyles(Element):
-    """Container for master styles used in the document, "office:master-
-    styles".
+    """Container for master styles used in the document, "office:master-styles".
 
     A master style contains formatting and other content that is displayed with
     document content when the style is used.
 
-    The "office:master-styles" element is usable within the following elements:
-    "office:document" and "office:document-styles".
-
-    The "office:master-styles" element has no attributes.
+    This element is usable within "office:document" and "office:document-styles"
+    elements, and has no attributes.
     """
 
     _tag: str = "office:master-styles"
