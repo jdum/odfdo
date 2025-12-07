@@ -29,11 +29,18 @@ from .reference import ReferenceMixin
 
 
 class RubyBase(ReferenceMixin, BookmarkMixin, AnnotationMixin, NoteMixin):
-    """Content the text that is to be annotated.
+    """Represents the base text for a ruby annotation, "text:ruby-base".
 
-    It contains any paragraph element content, like text spans.
-    The element's text:style-name attribute references a ruby
-    style that specifies formatting attributes of the ruby.
+    This element contains the text content that is to be annotated. It can
+    include any paragraph element content, such as text spans. The
+    `text:style-name` attribute of this element references a ruby style
+    that defines the formatting attributes for the ruby annotation.
+
+    Inherits from:
+        - :class:`~odfdo.annotation.AnnotationMixin`
+        - :class:`~odfdo.bookmark.BookmarkMixin`
+        - :class:`~odfdo.note.NoteMixin`
+        - :class:`~odfdo.reference.ReferenceMixin`
     """
 
     _tag = "text:ruby-base"
