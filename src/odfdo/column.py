@@ -48,21 +48,24 @@ class Column(Element):
     ) -> None:
         """A Column of a table, "table:table-column".
 
-        Create a column group element of the optionally given style. Cell
-        style can be set for the whole column. If the properties apply to
-        several columns, give the number of repeated columns.
+        This constructor creates a column element with an optional style.
+        The default cell style can be set for the entire column. If the
+        properties apply to multiple columns, the number of repeated columns
+        can be specified.
 
-        Columns don't contain cells, just style information.
+        Columns do not contain cells themselves, but only styling information.
 
-        You don't generally have to create columns by hand, use the Table API.
+        Note:
+            It is generally not necessary to create columns by hand; the
+            higher-level Table API should be used instead.
 
         Args:
-
-            default_cell_style -- str or None
-
-            repeated -- int or None
-
-            style -- str or None
+            default_cell_style (str or None, optional): The name of the
+                default style to apply to cells in this column.
+            repeated (int or None, optional): The number of times this column
+                should be repeated. Must be greater than 1.
+            style (str or None, optional): The name of the style to apply to
+                the column itself.
         """
         super().__init__(**kwargs)
         self.x: int | None = None
@@ -79,27 +82,39 @@ class Column(Element):
 
     @property
     def clone(self) -> Column:
+        """Return a clone of the column."""
         clone: Column = Element.clone.fget(self)  # type: ignore[attr-defined]
         clone.x = self.x
         return clone
 
     def get_default_cell_style(self) -> str | None:
-        """Get or set the default cell style for column.
+        """Get the default cell style for the column.
 
-        (See also self.default_cell_style property.)
+        (See also the `default_cell_style` property.)
+
+        Returns:
+            str or None: The name of the default cell style, or None if not set.
         """
         return self.get_attribute_string("table:default-cell-style-name")
 
     def set_default_cell_style(self, style: Style | str | None) -> None:
-        """Get or set the default cell style for column.
+        """Set the default cell style for the column.
 
-        (See also self.default_cell_style property.)
+        (See also the `default_cell_style` property.)
+
+        Args:
+            style (Style, str, or None): The style to apply. Can be a Style
+                object, the name of a style, or None to remove the style.
         """
         self.set_style_attribute("table:default-cell-style-name", style)
 
     @property
     def default_cell_style(self) -> str | None:
-        """Get or set the default cell style for column."""
+        """Get or set the default cell style for the column.
+
+        Returns:
+            str or None: The name of the default cell style, or None if not set.
+        """
         return self.get_attribute_string("table:default-cell-style-name")
 
     @default_cell_style.setter
@@ -107,12 +122,15 @@ class Column(Element):
         self.set_style_attribute("table:default-cell-style-name", style)
 
     def _set_repeated(self, repeated: int | None) -> None:
-        """Internal only. Set the number of times the column is repeated, or
-        None to delete it. Without changing cache.
+        """Set the number of times the column is repeated.
+
+        This is an internal method that sets the 'table:number-columns-repeated'
+        attribute without triggering cache updates. Use None to remove the
+        attribute.
 
         Args:
-
-            repeated -- int or None
+            repeated (int, optional): The number of times the column should be
+                repeated. If None or less than 2, the attribute is removed.
         """
         if repeated is None or repeated < 2:
             with contextlib.suppress(KeyError):
@@ -122,11 +140,12 @@ class Column(Element):
 
     @property
     def repeated(self) -> int | None:
-        """Get /set the number of times the column is repeated.
+        """Get or set the number of times the column is repeated.
 
-        Always None when using the table API.
+        This property is typically None when using the higher-level table API.
 
-        Returns: int or None
+        Returns:
+            int or None: The number of repetitions, or None if not repeated.
         """
         repeated = self.get_attribute("table:number-columns-repeated")
         if repeated is None:
@@ -151,9 +170,10 @@ class Column(Element):
 
     @property
     def style(self) -> str | None:
-        """Get /set the style of the column itself.
+        """Get or set the style of the column itself.
 
-        Returns: str or None
+        Returns:
+            str or None: The name of the style applied to the column.
         """
         return self.get_attribute_string("table:style-name")
 
