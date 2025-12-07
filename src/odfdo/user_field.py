@@ -19,7 +19,12 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""User fields classes."""
+"""Classes related to user-defined fields in ODF documents.
+
+This module provides classes for managing user field declarations and their
+instances within the document content, such as 'text:user-field-decls',
+'text:user-field-decl', 'text:user-field-get', and 'text:user-defined'.
+"""
 
 from __future__ import annotations
 
@@ -31,13 +36,24 @@ from .element_typed import ElementTyped
 
 
 class UserFieldDecls(Element):
-    """Container of user fields declarations, "text:user-field-decls"."""
+    """A container for user field declarations, "text:user-field-decls".
+
+    This element groups all the 'text:user-field-decl' elements in the
+    document's meta information.
+    """
 
     _tag = "text:user-field-decls"
 
 
 class UserFieldDecl(ElementTyped):
-    """Declaration of a user field, "text:user-field-decl"."""
+    """A declaration of a user field, "text:user-field-decl".
+
+    This element, typically found within 'text:user-field-decls', defines a
+    user-defined field, its name, type, and current value.
+
+    Attributes:
+        name (str): The unique name of the user field.
+    """
 
     _tag = "text:user-field-decl"
     _properties = (PropDef("name", "text:name"),)
@@ -49,7 +65,14 @@ class UserFieldDecl(ElementTyped):
         value_type: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a user field "text:user-field-decl"."""
+        """Initializes the UserFieldDecl element.
+
+        Args:
+            name (str, optional): The name of the user field.
+            value (Any, optional): The initial value of the field.
+            value_type (str, optional): The ODF value type (e.g., 'string',
+                'float'). If not provided, it is inferred from the `value`.
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if name:
@@ -57,6 +80,14 @@ class UserFieldDecl(ElementTyped):
             self.set_value_and_type(value=value, value_type=value_type)
 
     def set_value(self, value: Any) -> None:
+        """Sets the value of the user field declaration.
+
+        This method updates the value and value type of the declaration,
+        preserving its name.
+
+        Args:
+            value (Any): The new value for the field.
+        """
         name = self.get_attribute("text:name")
         self.clear()
         self.set_value_and_type(value=value)
@@ -67,7 +98,16 @@ UserFieldDecl._define_attribut_property()
 
 
 class UserFieldGet(ElementTyped):
-    """Representation of user field getter, "text:user-field-get"."""
+    """A getter for a user field value, "text:user-field-get".
+
+    This element displays the current value of a user-defined field at a
+    specific position in the document content.
+
+    Attributes:
+        name (str): The name of the user field to display.
+        style (str, optional): The data style to apply for formatting the
+            displayed value.
+    """
 
     _tag = "text:user-field-get"
     _properties = (
@@ -84,7 +124,16 @@ class UserFieldGet(ElementTyped):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a user field getter "text:user-field-get"."""
+        """Initializes the UserFieldGet element.
+
+        Args:
+            name (str, optional): The name of the user field to get.
+            value (Any, optional): An initial value to display.
+            value_type (str, optional): The ODF value type.
+            text (str, optional): The textual representation to display. If
+                not provided, it's generated from `value`.
+            style (str, optional): The data style name for formatting.
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if name:
@@ -102,7 +151,11 @@ UserFieldGet._define_attribut_property()
 
 
 class UserFieldInput(UserFieldGet):
-    """Representation of user field input, "text:user-field-input"."""
+    """An input field for a user-defined field, "text:user-field-input".
+
+    This element allows the user to interactively modify the value of a
+    user-defined field within the document.
+    """
 
     _tag = "text:user-field-input"
 
@@ -111,7 +164,17 @@ UserFieldInput._define_attribut_property()
 
 
 class UserDefined(ElementTyped):
-    """A user defined field, "text:user-defined"."""
+    """A user-defined field instance, "text:user-defined".
+
+    This element is similar to 'text:user-field-get' but is often used in
+    contexts like headers or footers. It can be initialized directly with
+    a value or can pull its value from a corresponding user-defined metadata
+    field in the document's meta section.
+
+    Attributes:
+        name (str): The name of the user field.
+        style (str, optional): The data style to apply for formatting.
+    """
 
     _tag = "text:user-defined"
     _properties = (
@@ -129,24 +192,20 @@ class UserDefined(ElementTyped):
         from_document: Document | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a user defined field "text:user-defined".
+        """Initializes the UserDefined element.
 
-        If the current document is provided, try to extract
-        the content of the meta user defined field of same name.
+        If a document is provided via `from_document`, the element will be
+        populated with the value of the meta user-defined field of the same
+        name from that document.
 
         Args:
-
-            name -- str, name of the user defined field
-
-            value -- python typed value, value of the field
-
-            value_type -- str, office:value-type known type
-
-            text -- str
-
-            style -- str
-
-            from_document -- ODF document
+            name (str): The name of the user-defined field.
+            value (Any, optional): The value of the field.
+            value_type (str, optional): The ODF value type (e.g., 'string').
+            text (str, optional): The textual representation of the value.
+            style (str, optional): The data style name for formatting.
+            from_document (Document, optional): A document from which to load
+                the field's value from the meta section.
         """
         super().__init__(**kwargs)
         if self._do_init:
