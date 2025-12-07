@@ -2729,18 +2729,8 @@ class FormValueRange(FormDelayRepeatMixin, FormGrid):
 FormValueRange._define_attribut_property()
 
 
-
-
-
-
-
-
 register_element_class(FormButton)
 register_element_class(FormCheckbox)
-register_element_class(FormRadio)
-register_element_class(FormFrame)
-register_element_class(FormImageFrame)
-register_element_class(FormValueRange)
 register_element_class(FormColumn)
 register_element_class(FormCombobox)
 register_element_class(FormDate)
