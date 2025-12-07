@@ -28,9 +28,10 @@ from typing import Any
 from .const import ODF_PROPERTIES
 from .element import Element
 
-# This mapping is not exhaustive, it only contains cases where replacing
-# '_' with '-' and adding the "fo:" prefix is not enough
-_PROPERTY_MAPPING = {  # text
+_PROPERTY_MAPPING = {
+    # This mapping is not exhaustive, it only contains cases where replacing
+    # '_' with '-' and adding the "fo:" prefix is not enough
+    # text
     "display": "text:display",
     "family_generic": "style:font-family-generic",
     "font": "style:font-name",
@@ -69,6 +70,20 @@ _PROPERTY_MAPPING = {  # text
 
 
 def _map_key(key: str) -> str | None:
+    """Map a simplified property key to its full ODF attribute name.
+
+    This function translates common or simplified property names (e.g., 'size',
+    'font_family') into their corresponding ODF attribute names (e.g.,
+    'fo:font-size', 'fo:font-family'). It also handles cases where simply
+    replacing underscores with hyphens and adding an "fo:" prefix is
+    insufficient.
+
+    Args:
+        key (str): The simplified property key.
+
+    Returns:
+        str or None: The full ODF attribute name, or None if no mapping is found.
+    """
     if key in ODF_PROPERTIES:
         return key
     key = _PROPERTY_MAPPING.get(key, key).replace("_", "-")
@@ -80,7 +95,16 @@ def _map_key(key: str) -> str | None:
 
 
 def _merge_dicts(dic_base: dict, *args: dict, **kwargs: Any) -> dict:
-    """Merge two or more dictionaries into a new dictionary object."""
+    """Merge two or more dictionaries into a new dictionary object.
+
+    Args:
+        dic_base (dict): The base dictionary.
+        *args (dict): Additional dictionaries to merge.
+        **kwargs: Keyword arguments to merge.
+
+    Returns:
+        dict: A new dictionary containing the merged content.
+    """
     new_dict = deepcopy(dic_base)
     for dic in args:
         new_dict.update(dic)
@@ -89,6 +113,14 @@ def _merge_dicts(dic_base: dict, *args: dict, **kwargs: Any) -> dict:
 
 
 def _expand_properties_dict(properties: dict[str, str | dict]) -> dict[str, str | dict]:
+    """Expand a dictionary of properties by mapping keys to their full ODF attribute names.
+
+    Args:
+        properties (dict): A dictionary of properties with potentially simplified keys.
+
+    Returns:
+        dict: A new dictionary with keys mapped to full ODF attribute names.
+    """
     expanded = {}
     for key in sorted(properties.keys()):
         prop_key = _map_key(key)
@@ -101,10 +133,26 @@ def _expand_properties_dict(properties: dict[str, str | dict]) -> dict[str, str 
 
 
 def _expand_properties_list(properties: list[str]) -> list[str]:
+    """Expand a list of property keys by mapping them to their full ODF attribute names.
+
+    Args:
+        properties (list): A list of property keys with potentially simplified names.
+
+    Returns:
+        list: A new list with keys mapped to full ODF attribute names.
+    """
     return list(filter(None, (_map_key(key) for key in properties)))
 
 
 def _check_background_support(family: str) -> None:
+    """Check if the given style family supports background properties.
+
+    Args:
+        family (str): The style family to check.
+
+    Raises:
+        TypeError: If the family does not support background properties.
+    """
     if family not in {
         "text",
         "paragraph",
@@ -119,6 +167,15 @@ def _check_background_support(family: str) -> None:
 
 
 def _check_position(position: str | None) -> None:
+    """Validate a background position string.
+
+    Args:
+        position (str, optional): The background position string.
+
+    Raises:
+        ValueError: If the position string is not well-formatted or contains
+            unknown keywords.
+    """
     if not position:
         return
     parts = position.split()
@@ -130,6 +187,15 @@ def _check_position(position: str | None) -> None:
 
 
 def _check_repeat(repeat: str | None) -> None:
+    """Validate a background repeat string.
+
+    Args:
+        repeat (str, optional): The background repeat string.
+
+    Raises:
+        ValueError: If the repeat string is not well-formatted or contains
+            unknown keywords.
+    """
     if not repeat:
         return
     parts = repeat.split()
@@ -141,6 +207,14 @@ def _check_repeat(repeat: str | None) -> None:
 
 
 def _check_opacity(opacity: str | int | None) -> None:
+    """Validate an opacity value.
+
+    Args:
+        opacity (str or int, optional): The opacity value (0-100).
+
+    Raises:
+        ValueError: If the opacity value is outside the valid range (0-100).
+    """
     if not opacity:
         return
     value = int(opacity)
@@ -149,6 +223,11 @@ def _check_opacity(opacity: str | int | None) -> None:
 
 
 def _erase_background(element: Element) -> None:
+    """Erase background properties (color and image) from the given element.
+
+    Args:
+        element (Element): The element from which to erase background properties.
+    """
     family = element.family  # type: ignore[attr-defined]
     properties = element.get_element(f"style:{family}-properties")
     if properties is None:
@@ -161,6 +240,14 @@ def _erase_background(element: Element) -> None:
 
 
 def _set_background_color(element: Element, color: str) -> None:
+    """Set the background color for the given element.
+
+    If a background image exists, it will be removed.
+
+    Args:
+        element (Element): The element to set the background color for.
+        color (str): The color string (e.g., "#RRGGBB" or "red").
+    """
     family = element.family  # type: ignore[attr-defined]
     properties = element.get_element(f"style:{family}-properties")
     if properties is None:
@@ -180,6 +267,18 @@ def _set_background_image(
     opacity: str | int | None,
     filter: str | None,  # noqa: A002
 ) -> None:
+    """Set the background image for the given element.
+
+    If a background color exists, it will be removed.
+
+    Args:
+        element (Element): The element to set the background image for.
+        url (str, optional): The URL of the image.
+        position (str, optional): The position of the background image.
+        repeat (str, optional): How the background image is repeated.
+        opacity (str or int, optional): The opacity of the background image (0-100).
+        filter (str, optional): A filter to apply to the image.
+    """
     _check_position(position)
     _check_repeat(repeat)
     _check_opacity(opacity)
@@ -215,8 +314,24 @@ def _set_background(
     opacity: str | int | None,
     filter: str | None,  # noqa: A002
 ) -> None:
-    """(internal) Set the background color of a text style, or the background
-    color or image of a paragraph style or page layout.
+    """Set the background properties (color or image) for an element.
+
+    This function handles setting either a background color or a background image,
+    depending on the provided arguments. It validates background-related properties
+    and ensures that conflicting properties (e.g., both color and image) are
+    handled correctly.
+
+    Args:
+        element (Element): The element to set the background for.
+        color (str, optional): The background color string.
+        url (str, optional): The URL of the background image.
+        position (str, optional): The position of the background image.
+        repeat (str, optional): How the background image is repeated.
+        opacity (str or int, optional): The opacity of the background (0-100).
+        filter (str, optional): A filter to apply to the background image.
+
+    Raises:
+        TypeError: If a background image is specified for a text style.
     """
     family = element.family  # type: ignore[attr-defined]
     _check_background_support(family)
