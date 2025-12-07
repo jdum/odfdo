@@ -29,22 +29,29 @@ from .section import SectionMixin
 
 
 class IndexBody(SectionMixin):
-    """The "text:index-body" element contains an index.
+    """Represents the "text:index-body" element, which contains the content of an index.
 
-    The "text:index-body" element is used for all types of indexes. It contains the index content generated to form the index."""
+    This element is used for all types of indexes within an ODF document and
+    holds the generated index content.
+    """
 
     _tag: str = "text:index-body"
     _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
 class IndexTitle(SectionMixin):
-    """The title of an index, "text:index-title".
+    """Represents the title of an index, "text:index-title".
 
-    The element has the following attributes:
-    text:name, text:protected, text:protection-key,
-    text:protection-key-digest-algorithm, text:style-name, xml:id.
+    This element contains the title for an index, and its properties define
+    how the title is displayed and protected.
 
-    The actual title is stored in a child element
+    Attributes:
+        name (str): The name of the index title.
+        style (str): The style name applied to the index title.
+        xml_id (str): A unique XML identifier.
+        protected (bool): Indicates if the index title is protected.
+        protection_key (str): The protection key if the title is protected.
+        protection_key_digest_algorithm (str): The algorithm used for the protection key.
     """
 
     _tag = "text:index-title"
@@ -68,13 +75,15 @@ class IndexTitle(SectionMixin):
         xml_id: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create title of an index "text:index-title".
+        """Create an IndexTitle element.
 
-        The element has the following attributes:
-        text:name, text:protected, text:protection-key,
-        text:protection-key-digest-algorithm, text:style-name, xml:id.
-
-        The actual title is stored in a child element
+        Args:
+            name (str, optional): The name of the index title.
+            style (str, optional): The style name for the index title.
+            title_text (str, optional): The actual text content of the title.
+            title_text_style (str, optional): The style name for the title text.
+            xml_id (str, optional): A unique XML identifier for the title.
+            **kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -92,6 +101,12 @@ class IndexTitle(SectionMixin):
         title_text: str,
         title_text_style: str | None = None,
     ) -> None:
+        """Set the actual text content of the index title.
+
+        Args:
+            title_text (str): The text content to set for the title.
+            title_text_style (str, optional): The style name for the title text.
+        """
         title = Paragraph(title_text, style=title_text_style)
         self.append(title)
 
@@ -100,7 +115,10 @@ IndexTitle._define_attribut_property()
 
 
 class IndexTitleTemplate(Element):
-    """Template style for title, "text:index-title-template"."""
+    """Represents a template style for an index title, "text:index-title-template".
+
+    This element defines the styling for index titles within an ODF document.
+    """
 
     _tag = "text:index-title-template"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -108,11 +126,11 @@ class IndexTitleTemplate(Element):
     )
 
     def __init__(self, style: str | None = None, **kwargs: Any) -> None:
-        """Create template style for title "text:index-title-template".
+        """Create an IndexTitleTemplate element.
 
         Args:
-
-            style -- str
+            style (str, optional): The style name for the template.
+            **kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init and style:
