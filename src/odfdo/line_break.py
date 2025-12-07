@@ -37,7 +37,11 @@ class LineBreak(MDLineBreak, Element):
     _tag = "text:line-break"
 
     def __init__(self, **kwargs: Any) -> None:
-        """Representation of a line break, "text:line-break"."""
+        """Initialize the LineBreak element.
+
+        Args:
+            **kwargs: Additional keyword arguments for the parent `Element` class.
+        """
         super().__init__(**kwargs)
 
     def __str__(self) -> str:
@@ -45,7 +49,11 @@ class LineBreak(MDLineBreak, Element):
 
     @property
     def text(self) -> str:
-        """Get / set the string (line break)."""
+        """Get the textual representation of the line break.
+
+        Returns:
+            str: Always returns a newline character ("\\n").
+        """
         return "\n"
 
     @text.setter
