@@ -29,6 +29,7 @@ __all__ = [  # noqa: RUF022
     "AnnotationEnd",
     "AnnotationMixin",
     "BackgroundImage",
+    "FormButtonTypeMixin",
     "Body",
     "Bookmark",
     "BookmarkEnd",
