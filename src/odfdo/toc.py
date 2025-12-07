@@ -37,13 +37,37 @@ if TYPE_CHECKING:
 
 
 def _toc_entry_style_name(level: int) -> str:
-    """Return the style name of an entry of the TOC."""
+    """Return the style name of an entry of the TOC.
+
+    Args:
+        level (int): The outline level of the TOC entry.
+
+    Returns:
+        str: The generated style name.
+    """
     return f"odfto_toc_level_{level}"
 
 
 class TabStopStyle(Element):
-    """Base style for a TOC entryBase style for a TOC entry, "style:tab-
-    stop".
+    """Style for a tab-stop in a TOC entry, represented by "style:tab-stop".
+
+    This class defines the visual properties of tab stops, such as their
+    position, alignment, and leader style.
+
+    Attributes:
+        style_char (str, optional): The character used for the tab stop.
+        leader_color (str, optional): The color of the leader line.
+        leader_style (str, optional): The style of the leader line (e.g.,
+            'dotted', 'solid').
+        leader_text (str, optional): The text to use as a leader.
+        leader_text_style (str, optional): The style of the leader text.
+        leader_type (str, optional): The type of leader (e.g., 'none',
+            'solid').
+        leader_width (str, optional): The width of the leader line.
+        style_position (str, optional): The position of the tab stop (e.g.,
+            '1.25cm').
+        style_type (str, optional): The alignment type of the tab stop
+            (e.g., 'left', 'right').
     """
 
     _tag = "style:tab-stop"
@@ -72,8 +96,18 @@ class TabStopStyle(Element):
         style_type: str | None = None,
         **kwargs: Any,
     ):
-        """Create style for a TOC entryBase style for a TOC entry "style:tab-
-        stop".
+        """Initializes a TabStopStyle element.
+
+        Args:
+            style_char (str, optional): The character for the tab stop.
+            leader_color (str, optional): Color of the leader line.
+            leader_style (str, optional): Style of the leader line.
+            leader_text (str, optional): Text to use as a leader.
+            leader_text_style (str, optional): Style of the leader text.
+            leader_type (str, optional): Type of leader.
+            leader_width (str, optional): Width of the leader line.
+            style_position (str, optional): Position of the tab stop.
+            style_type (str, optional): Alignment type of the tab stop.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -103,7 +137,14 @@ TabStopStyle._define_attribut_property()
 
 
 def default_toc_level_style(level: int) -> Style:
-    """Generate an automatic default style for the given TOC level."""
+    """Generate an automatic default style for the given TOC level.
+
+    Args:
+        level (int): The outline level for which to create the style.
+
+    Returns:
+        Style: The generated style for the TOC level.
+    """
     tab_stop = TabStopStyle(style_type="right", leader_style="dotted", leader_text=".")
     position = 17.5 - (0.5 * level)
     tab_stop.style_position = f"{position}cm"
@@ -132,6 +173,15 @@ class TOC(MDToc, Element):
       - Table of contents index marks.
 
       - Paragraphs formatted with specified paragraph styles.
+
+    Attributes:
+        name (str): The name of the table of contents.
+        style (str, optional): The style name for the TOC.
+        xml_id (str, optional): The XML ID of the TOC.
+        protected (bool): Whether the TOC is protected from manual changes.
+        protection_key (str, optional): The key for protection.
+        protection_key_digest_algorithm (str, optional): The algorithm for
+            the protection key digest.
     """
 
     _tag = "text:table-of-content"
@@ -157,7 +207,7 @@ class TOC(MDToc, Element):
         entry_style: str = "Contents_20_%d",
         **kwargs: Any,
     ) -> None:
-        """Create a table of content "text:table-of-content".
+        """Initializes a TOC (Table of Contents) element.
 
         Default parameters are what most people use: protected from manual
         modifications and not limited in title levels.
@@ -166,25 +216,18 @@ class TOC(MDToc, Element):
         given. Provide one in case of a conflict with other TOCs in the same
         document.
 
-        The "text:table-of-content" element has the following attributes:
-        text:name, text:protected, text:protection-key,
-        text:protection-key-digest-algorithm, text:style-name and xml:id.
-
         Args:
-
-            title -- str
-
-            name -- str
-
-            protected -- bool
-
-            outline_level -- int
-
-            style -- str
-
-            title_style -- str
-
-            entry_style -- str
+            title (str): The title of the TOC (e.g., "Table of Contents").
+            name (str, optional): The name of the TOC element. If not
+                provided, it's generated from the title.
+            protected (bool): If True, the TOC is protected from manual
+                modifications.
+            outline_level (int): The maximum outline level to include in the
+                TOC. 0 means all levels.
+            style (str, optional): The style name for the TOC container.
+            title_style (str): The style for the TOC's main title.
+            entry_style (str): A format string for the style of each TOC
+                entry (e.g., "Contents_20_%d").
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -211,6 +254,20 @@ class TOC(MDToc, Element):
         title_style: str,
         entry_style: str,
     ) -> Element:
+        """Create the 'text:table-of-content-source' element for a TOC.
+
+        This element defines the structure and appearance of the TOC.
+
+        Args:
+            title (str): The title of the TOC.
+            outline_level (int): The maximum outline level to include.
+            title_style (str): The style for the TOC's title.
+            entry_style (str): The format string for entry styles.
+
+        Returns:
+            Element: The newly created 'text:table-of-content-source'
+                element.
+        """
         toc_source = Element.from_tag("text:table-of-content-source")
         toc_source.set_attribute("text:outline-level", str(outline_level))
         if title:
@@ -231,6 +288,16 @@ class TOC(MDToc, Element):
         return self.get_formatted_text()
 
     def get_formatted_text(self, context: dict | None = None) -> str:
+        """Returns the formatted text content of the TOC.
+
+        Args:
+            context (dict, optional): A context dictionary for formatting.
+                If 'rst_mode' is True, it returns a reStructuredText
+                'contents' directive.
+
+        Returns:
+            str: The formatted text of the TOC.
+        """
         index_body = cast(Union[None, IndexBody], self.get_element(IndexBody._tag))
 
         if index_body is None:
@@ -251,6 +318,11 @@ class TOC(MDToc, Element):
 
     @property
     def outline_level(self) -> int | None:
+        """The outline level of the TOC.
+
+        This property controls the maximum heading level that will be included
+        in the table of contents. A value of 0 means all levels are included.
+        """
         source = self.get_element("text:table-of-content-source")
         if source is None:
             return None
@@ -266,6 +338,11 @@ class TOC(MDToc, Element):
 
     @property
     def body(self) -> IndexBody | None:
+        """The body of the TOC ('text:index-body').
+
+        This property provides access to the 'text:index-body' element, which
+        contains the actual entries of the table of contents.
+        """
         return cast(Union[None, IndexBody], self.get_element(IndexBody._tag))
 
     @body.setter
@@ -279,6 +356,11 @@ class TOC(MDToc, Element):
         return body
 
     def get_title(self) -> str:
+        """Returns the title of the TOC.
+
+        Returns:
+            str: The title of the TOC.
+        """
         index_body = self.body
         if index_body is None:
             return ""
@@ -295,6 +377,13 @@ class TOC(MDToc, Element):
         style: str | None = None,
         text_style: str | None = None,
     ) -> None:
+        """Sets the title of the TOC.
+
+        Args:
+            title (str): The new title for the TOC.
+            style (str, optional): The style for the index title element.
+            text_style (str, optional): The style for the title's paragraph.
+        """
         index_body = self.body
         if index_body is None:
             self.body = None  # this ceates a new index_body
@@ -321,7 +410,16 @@ class TOC(MDToc, Element):
 
     @staticmethod
     def _header_numbering(level_indexes: dict[int, int], level: int) -> str:
-        """Return the header hierarchical number (like "1.2.3.")."""
+        """Return the header hierarchical number (like "1.2.3.").
+
+        Args:
+            level_indexes (dict[int, int]): A dictionary to track numbering
+                at each level.
+            level (int): The current header level.
+
+        Returns:
+            str: The hierarchical number string.
+        """
         numbers: list[int] = []
         # before header level
         for idx in range(1, level):
@@ -342,18 +440,24 @@ class TOC(MDToc, Element):
         document: Document | None = None,
         use_default_styles: bool = True,
     ) -> None:
-        """Fill the TOC with the titles found in the document. A TOC is not
-        contextual so it will catch all titles before and after its insertion.
-        If the TOC is not attached to a document, attach it beforehand or
-        provide one as argument.
+        """Fill the TOC with titles from the document.
 
-        For having a pretty TOC, let use_default_styles by default.
+        This method populates the table of contents by scanning the document
+        for headers. It is not contextual and will include all titles from
+        the document, regardless of their position relative to the TOC.
+
+        If the TOC is not yet part of a document, you must provide one as an
+        argument.
+
+        For a well-formatted TOC, it's recommended to leave
+        `use_default_styles` as True.
 
         Args:
-
-            document -- Document
-
-            use_default_styles -- bool
+            document (Document, optional): The document to scan for titles.
+                If not provided, the TOC must already be attached to a
+                document.
+            use_default_styles (bool): If True, applies default styles to the
+                TOC entries.
         """
         # Find the body
         if document is not None:
@@ -413,7 +517,15 @@ TOC._define_attribut_property()
 
 
 class TocEntryTemplate(Element):
-    """Template for entry of TOC, "text:table-of-content-entry-template"."""
+    """Template for a TOC entry, "text:table-of-content-entry-template".
+
+    This element defines the structure for each entry in the table of
+    contents, specifying what information is displayed (e.g., chapter number,
+    text, page number) and how it is styled.
+
+    Attributes:
+        style (str, optional): The style name for the entry.
+    """
 
     _tag = "text:table-of-content-entry-template"
     _properties = (PropDef("style", "text:style-name"),)
@@ -424,12 +536,12 @@ class TocEntryTemplate(Element):
         outline_level: int | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create template for entry of TOC "text:table-of-content-entry-
-        template".
+        """Initializes a TocEntryTemplate element.
 
         Args:
-
-            style -- str
+            style (str, optional): The style name for the TOC entry.
+            outline_level (int, optional): The outline level this template
+                applies to.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -440,6 +552,7 @@ class TocEntryTemplate(Element):
 
     @property
     def outline_level(self) -> int | None:
+        """The outline level this template applies to."""
         return self.get_attribute_integer("text:outline-level")
 
     @outline_level.setter
@@ -447,6 +560,12 @@ class TocEntryTemplate(Element):
         self.set_attribute("text:outline-level", str(level))
 
     def complete_defaults(self) -> None:
+        """Populates the template with default entry elements.
+
+        This method adds standard elements to the template, such as placeholders
+        for chapter number, entry text, and page number, providing a default
+        structure for a TOC entry.
+        """
         self.append(Element.from_tag("text:index-entry-chapter"))
         self.append(Element.from_tag("text:index-entry-text"))
         self.append(Element.from_tag("text:index-entry-text"))
