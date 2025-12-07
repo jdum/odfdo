@@ -50,23 +50,21 @@ class RowGroup(Element):
         width: int | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a group of rows, "table:table-row-group", optionally filled
-        with "height" number of rows, of "width" cells each.
+        """Initialize a RowGroup element (`table:table-row-group`).
 
-        Row group bear style information applied to a series of rows.
+        This element can be optionally pre-filled with a specified number
+        of rows and cells.
 
         Args:
-
-            height -- int
-
-            width -- int
+            height (int | None): The number of rows to create within the group.
+            width (int | None): The number of cells to create in each new row.
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
         if self._do_init and height is not None:
             for _i in range(height):
                 row = Row(width=width)
                 self.append(row)
-
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}>"
 
