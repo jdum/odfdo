@@ -48,14 +48,15 @@ class ListItem(MDListItem, Element):
         text_or_element: str | Element | None = None,
         **kwargs: Any,
     ) -> None:
-        """An item of a list, "text:list-item".
+        """Initialize the ListItem.
 
-        Create a list item element, optionally passing at creation time a
-        string or Element as content.
+        A `ListItem` can be initialized with text content or another element.
 
         Args:
-
-            text_or_element -- str or ODF Element
+            text_or_element (str | Element | None, optional): The initial
+                content of the list item. If a string, a paragraph containing
+                the text is created. If an element, it is appended as a child.
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -83,20 +84,17 @@ class List(MDList, Element):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """A list of elements, "text:list".
+        """Initialize the List.
 
-        Create a list element, optionally loading the list by a list of
-        item (str or elements).
-
-        The list_content argument is just a shortcut for the most common case.
-        To create more complex lists, first create an empty list, and fill it
-        afterwards.
+        A `List` can be initialized with content, which can be a single item
+        (string or element) or an iterable of items.
 
         Args:
-
-            list_content -- str or Element, or a list of str or Element
-
-            style -- str
+            list_content (str | Element | Iterable[str | Element] | None, optional):
+                The initial content of the list. Each item is wrapped in a
+                `ListItem`.
+            style (str, optional): The name of the style to apply to the list.
+            **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -110,15 +108,16 @@ class List(MDList, Element):
                 self.style = style
 
     def get_items(self, content: str | None = None) -> list[Element]:
-        """Return all the list items that match the criteria.
+        """Get all list items (`ListItem`) within the list.
+
+        Optionally filters items by their textual content.
 
         Args:
+            content (str, optional): A regular expression to match against
+                the text content of the items.
 
-            style -- str
-
-            content -- str regex
-
-        Returns: list of Element
+        Returns:
+            list[Element]: A list of `ListItem` elements that match the criteria.
         """
         return self._filtered_elements("text:list-item", content=content)
 
@@ -127,16 +126,20 @@ class List(MDList, Element):
         position: int = 0,
         content: str | None = None,
     ) -> Element | None:
-        """Return the list item that matches the criteria. In nested lists,
-        return the list item that really contains that content.
+        """Get a single list item from the list.
+
+        Can retrieve an item by its position or by matching its text content.
+        In nested lists, it returns the `ListItem` that directly contains
+        the matched content.
 
         Args:
+            position (int): The index of the item to retrieve. Defaults to 0.
+            content (str, optional): A regular expression to match against
+                the text content of the items. If provided, `position` is
+                ignored.
 
-            position -- int
-
-            content -- str regex
-
-        Returns: Element or None if not found
+        Returns:
+            Element | None: The matching `ListItem` element, or `None` if not found.
         """
         # Custom implementation because of nested lists
         if content:
@@ -152,6 +155,16 @@ class List(MDList, Element):
         self,
         text_or_element: str | Element | Iterable[str | Element],
     ) -> None:
+        """Set the header of the list.
+
+        This method replaces any existing header paragraphs (`text:p`) with
+        the provided content.
+
+        Args:
+            text_or_element (str | Element | Iterable[str | Element]): The
+                content for the list header. Can be a single string or element,
+                or an iterable of strings and/or elements.
+        """
         if isinstance(text_or_element, (str, Element)):
             actual_list: list[str | Element] | tuple = [text_or_element]
         elif isinstance(text_or_element, (list, tuple)):
@@ -173,6 +186,23 @@ class List(MDList, Element):
         before: Element | None = None,
         after: Element | None = None,
     ) -> None:
+        """Insert a new item into the list.
+
+        The item can be inserted at a specific `position`, or `before` or
+        `after` an existing element.
+
+        Args:
+            item (ListItem | str | Element | None): The item to insert.
+                If not a `ListItem`, it will be wrapped in one.
+            position (int, optional): The index at which to insert the item.
+            before (Element, optional): An existing element to insert the item
+                before.
+            after (Element, optional): An existing element to insert the item
+                after.
+
+        Raises:
+            ValueError: If no position (`position`, `before`, or `after`) is specified.
+        """
         if not isinstance(item, ListItem):
             item = ListItem(item)
         if before is not None:
@@ -188,11 +218,29 @@ class List(MDList, Element):
         self,
         item: ListItem | str | Element | None,
     ) -> None:
+        """Append a new item to the end of the list.
+
+        Args:
+            item (ListItem | str | Element | None): The item to append.
+                If not a `ListItem`, it will be wrapped in one.
+        """
         if not isinstance(item, ListItem):
             item = ListItem(item)
         self.append(item)
 
     def get_formatted_text(self, context: dict | None = None) -> str:
+        """Return a formatted string representation of the list.
+
+        Each list item is prefixed with "- " and indented.
+
+        Args:
+            context (dict, optional): A dictionary providing context for
+                formatting. If `rst_mode` is True in the context, additional
+                newlines are added for reStructuredText compatibility.
+
+        Returns:
+            str: The formatted text content of the list.
+        """
         if context is None:
             context = {
                 "document": None,
