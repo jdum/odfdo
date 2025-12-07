@@ -20,18 +20,18 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 """Unit class for conversion between ODF units and Python types.
 
-Currently only distance -> pixel.
+Currently, this module primarily supports distance conversions to pixels.
 
-mm: millimeter
-cm: centimeter
-m: meter
-km: kilometer
-pt: point
-pc: pica
-in: inch
-inch: inch
-ft: foot
-mi: mile
+Supported units:
+- mm: millimeter
+- cm: centimeter
+- m: meter
+- km: kilometer
+- pt: point
+- pc: pica
+- in: inch
+- ft: foot
+- mi: mile
 """
 
 from __future__ import annotations
@@ -42,10 +42,29 @@ from functools import total_ordering
 
 @total_ordering
 class Unit:
-    """Utility for length units and conversion to pixels."""
+    """Represents a measurement with a value and a unit for length.
+
+    Provides utilities for parsing, comparing, and converting length units,
+    especially for conversion to pixels.
+
+    Attributes:
+        value (Decimal): The numerical value of the measurement.
+        unit (str): The unit of the measurement (e.g., 'cm', 'in').
+    """
 
     def __init__(self, value: str | float | int | Decimal, unit: str = "cm") -> None:
-        """Create a measure instance with a value and a unit."""
+        """Initializes a Unit instance.
+
+        The constructor can parse a string containing both a value and a unit
+        (e.g., "10.5cm") or accept a numerical value and a unit separately.
+
+        Args:
+            value (str | float | int | Decimal): The value of the measurement.
+                If a string, it can include the unit.
+            unit (str): The unit of measurement (e.g., 'cm', 'in', 'pt').
+                Defaults to 'cm'. This is ignored if the unit is present in
+                the `value` string.
+        """
         if isinstance(value, str):
             digits = []
             nondigits = []
@@ -69,6 +88,15 @@ class Unit:
         return f"{object.__repr__(self)} {self}"
 
     def _check_other(self, other: Unit) -> None:
+        """Checks if the 'other' object is a compatible Unit for comparison.
+
+        Args:
+            other (Unit): The other Unit instance to compare against.
+
+        Raises:
+            TypeError: If 'other' is not a Unit instance.
+            NotImplementedError: If the units are different.
+        """
         if not isinstance(other, Unit):
             raise TypeError(f"Can only compare Unit: {other!r}")
         if self.unit != other.unit:
@@ -85,7 +113,23 @@ class Unit:
         return self.value == other.value
 
     def convert(self, unit: str, dpi: int | Decimal | float = 72) -> Unit:
-        """Convert from inch or cm to pixel."""
+        """Converts the current unit to another unit.
+
+        Currently, only conversion to pixels ('px') is supported from various
+        length units.
+
+        Args:
+            unit (str): The target unit to convert to. Must be 'px'.
+            dpi (int | Decimal | float): The dots per inch resolution to use
+                for pixel conversion. Defaults to 72.
+
+        Returns:
+            Unit: A new Unit instance representing the converted value.
+
+        Raises:
+            NotImplementedError: If conversion to the target `unit` or from
+                the instance's current unit is not supported.
+        """
         if unit == "px":
             if self.unit == "in" or self.unit == "inch":
                 return Unit(int(self.value * int(dpi)), "px")
