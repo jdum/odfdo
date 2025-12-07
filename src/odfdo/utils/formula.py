@@ -20,17 +20,25 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
+"""Formula conversion utilities for ODF documents.
+
+This module provides helper functions for converting spreadsheet formulas
+between different formats, such as from OpenOffice.org Calc to Writer.
+"""
 from __future__ import annotations
 
 
 def oooc_to_ooow(formula: str) -> str:
-    """Convert (proprietary) formula from calc format to writer format.
+    """Converts an OpenOffice.org Calc formula to a Writer-compatible format.
+
+    This function translates cell address syntax and common functions from the
+    `oooc` (Calc) namespace to the `ooow` (Writer) namespace.
 
     Args:
+        formula (str): The Calc formula string to convert (e.g., "oooc:=SUM([.A1:.A5])").
 
-        formula -- str
-
-    Returns: str
+    Returns:
+        str: The converted formula in Writer format (e.g., "ooow:sum <A1:A5>").
     """
     _prefix, formula = formula.split(":=", 1)
     # assert "oooc" in prefix
