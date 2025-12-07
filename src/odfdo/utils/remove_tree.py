@@ -17,7 +17,9 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""Utility function remove_tree() to remove recursively a type of Element."""
+"""Provides the remove_tree utility function to recursively remove elements
+of a specific type from an ODF element tree.
+"""
 
 from __future__ import annotations
 
@@ -106,20 +108,19 @@ def remove_tree(
     safe: type[Element] | None = None,
     keep_children: bool = True,
 ) -> None:
-    """Remove elements of class `remove` in the element, recursive.
+    """Recursively removes elements of a given class from an element's subtree.
 
-    Elements whose parent is of class `safe` are not removed.
-    To remove text and child elements, set keep_children to False.
+    This function traverses the XML tree starting from `element` and removes all
+    descendant elements that are of the class `remove`.
 
     Args:
-
-        element -- Element, target of removal
-
-        remove -- Element class, class to remove
-
-        safe -- Element class, no remove if parent is safe
-
-        keep_inner -- bool, keep inner text and element
+        element (Element): The root element from which to start the removal.
+        remove (type[Element]): The class of the elements to be removed.
+        safe (type[Element], optional): A class that, if it is the parent of
+            a matching element, will prevent that element from being removed.
+        keep_children (bool): If True (default), the children and text of the
+            removed elements are preserved and re-parented. If False, they
+            are deleted along with the element.
     """
     if safe:
         safe_tag = safe().tag
