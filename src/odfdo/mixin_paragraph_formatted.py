@@ -35,30 +35,54 @@ def _add_object_text_paragraph(
     context: dict[str, Any],
     result: list[str],
 ) -> None:
+    """Add formatted text from a paragraph-like object to the result list.
+
+    Args:
+        obj (Element): The paragraph-like element to process.
+        context (dict[str, Any]): The formatting context.
+        result (list[str]): The list to append the formatted text to.
+    """
     result.append(_formatted_text(obj, context))
 
 
 def _pre(text: str) -> str:
+    """Extract leading whitespace from a string."""
     if m := RE_SP_PRE.match(text):
         return m.group()
     return ""
 
 
 def _post(text: str) -> str:
+    """Extract trailing whitespace from a string."""
     if m := RE_SP_POST.search(text):
         return m.group()
     return ""
 
 
 def _bold_styled(text: str) -> str:
+    """Format a string as bold in Markdown, preserving leading/trailing spaces."""
     return f"{_pre(text)}**{text.strip()}**{_post(text)}"
 
 
 def _italic_styled(text: str) -> str:
+    """Format a string as italic in Markdown, preserving leading/trailing spaces."""
     return f"{_pre(text)}*{text.strip()}*{_post(text)}"
 
 
 def _formatted_text(element: Element, context: dict[str, Any]) -> str:
+    """Recursively extract and format text from an element and its children.
+
+    This function processes the element's direct children and text nodes,
+    applying specific formatting rules based on their type and the provided context.
+
+    Args:
+        element (Element): The element from which to extract formatted text.
+        context (dict[str, Any]): A dictionary containing formatting context
+            (e.g., `rst_mode`, document reference).
+
+    Returns:
+        str: The extracted and formatted text content.
+    """
     result: list[str] = []
     objects: list[Element | EText] = element.xpath("*|text()")
     for obj in objects:
@@ -74,6 +98,16 @@ def _add_object_text_span(
     context: dict[str, Any],
     result: list[str],
 ) -> None:
+    """Add formatted text from a span element to the result list.
+
+    Applies bold or italic styling if `rst_mode` is enabled in the context
+    and the span's style properties indicate such formatting.
+
+    Args:
+        obj (Element): The span element to process.
+        context (dict[str, Any]): The formatting context, including 'rst_mode' and 'document'.
+        result (list[str]): The list to append the formatted text to.
+    """
     text = _formatted_text(obj, context)
     if not context.get("rst_mode") or not text.strip():
         result.append(text)
@@ -107,6 +141,16 @@ def _add_object_text_note(
     context: dict[str, Any],
     result: list[str],
 ) -> None:
+    """Dispatch function to add formatted text for a note (footnote or endnote).
+
+    Delegates to `_add_object_text_note_foot` or `_add_object_text_note_end`
+    based on the note's class.
+
+    Args:
+        obj (Element): The note element to process.
+        context (dict[str, Any]): The formatting context.
+        result (list[str]): The list to append the formatted text to.
+    """
     if obj.note_class == "footnote":  # type:ignore
         return _add_object_text_note_foot(obj, context, result)
     return _add_object_text_note_end(obj, context, result)
@@ -117,6 +161,16 @@ def _add_object_text_note_foot(
     context: dict[str, Any],
     result: list[str],
 ) -> None:
+    """Add formatted text for a footnote to the result list.
+
+    Formats the footnote citation and appends the note's body to the
+    `footnotes` list in the context.
+
+    Args:
+        obj (Element): The footnote element to process.
+        context (dict[str, Any]): The formatting context, including 'footnotes' and 'rst_mode'.
+        result (list[str]): The list to append the formatted text to.
+    """
     container = context["footnotes"]
     citation = obj.citation  # type:ignore
     if not citation:
@@ -136,6 +190,16 @@ def _add_object_text_note_end(
     context: dict[str, Any],
     result: list[str],
 ) -> None:
+    """Add formatted text for an endnote to the result list.
+
+    Formats the endnote citation and appends the note's body to the
+    `endnotes` list in the context.
+
+    Args:
+        obj (Element): The endnote element to process.
+        context (dict[str, Any]): The formatting context, including 'endnotes' and 'rst_mode'.
+        result (list[str]): The list to append the formatted text to.
+    """
     container = context["endnotes"]
     citation = obj.citation  # type:ignore
     if not citation:
@@ -155,6 +219,16 @@ def _add_object_text_annotation(
     context: dict[str, Any],
     result: list[str],
 ) -> None:
+    """Add formatted text for an annotation to the result list.
+
+    Appends the annotation's body to the `annotations` list in the context
+    and adds an appropriate marker to the result list.
+
+    Args:
+        obj (Element): The annotation element to process.
+        context (dict[str, Any]): The formatting context, including 'annotations' and 'rst_mode'.
+        result (list[str]): The list to append the formatted text to.
+    """
     context["annotations"].append(obj.note_body)  # type:ignore
     if context.get("rst_mode"):
         result.append(" [#]_ ")
@@ -167,6 +241,13 @@ def _add_object_text_tab(
     context: dict[str, Any],
     result: list[str],
 ) -> None:
+    """Add a tab character for a tab element to the result list.
+
+    Args:
+        obj (Element): The tab element to process.
+        context (dict[str, Any]): The formatting context (unused in this function).
+        result (list[str]): The list to append the tab character to.
+    """
     result.append("\t")
 
 
@@ -175,6 +256,16 @@ def _add_object_text_line_break(
     context: dict[str, Any],
     result: list[str],
 ) -> None:
+    """Add a line break to the result list for a line break element.
+
+    Adds a standard newline or an RST-specific line break marker (`\n|`)
+    depending on the `rst_mode` in the context.
+
+    Args:
+        obj (Element): The line break element to process.
+        context (dict[str, Any]): The formatting context, including 'rst_mode'.
+        result (list[str]): The list to append the line break to.
+    """
     if context.get("rst_mode"):
         result.append("\n|")
     else:
@@ -186,6 +277,17 @@ def _add_object_text(
     context: dict[str, Any],
     result: list[str],
 ) -> None:
+    """Dispatch function to add formatted text for various ODF elements.
+
+    This function determines the specific handler for an element based on its
+    tag and delegates to the appropriate helper function to add its formatted
+    text to the result list.
+
+    Args:
+        obj (Element): The element to process.
+        context (dict[str, Any]): The formatting context.
+        result (list[str]): The list to append the formatted text to.
+    """
     tag = obj.tag
     if tag in ("text:a", "text:p"):
         # Simple tags with text
@@ -206,13 +308,23 @@ def _add_object_text(
 
 
 class ParaFormattedTextMixin:
-    """Mixin for get_formatted_text() method, for Paragraph like classes."""
+    """Mixin class providing the `get_formatted_text` method for paragraph-like elements."""
 
     def get_formatted_text(
         self,
         context: dict | None = None,
         simple: bool = False,
     ) -> str:
+        """Get the formatted text content of the paragraph-like element.
+
+        Args:
+            context (dict, optional): A dictionary providing context for formatting.
+            simple (bool): If True, returns only the content string. If False,
+                adds two newlines at the end.
+
+        Returns:
+            str: The formatted text content.
+        """
         if not context:
             context = {
                 "document": None,
