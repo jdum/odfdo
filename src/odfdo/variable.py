@@ -19,7 +19,14 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-"""Variable fields classes."""
+"""Classes for ODF document variables and fields.
+
+This module provides classes for various types of document fields that can
+be automatically updated, such as dates, times, page numbers, and document
+metadata (e.g., author, title). It also includes classes for declaring and
+managing custom variables ('text:variable-decl', 'text:variable-set',
+'text:variable-get').
+"""
 
 from __future__ import annotations
 
@@ -40,13 +47,24 @@ from .user_field import (  # noqa: F401
 
 
 class VarDecls(Element):
-    """Container of variables declarations, "text:variable-decls"."""
+    """A container for variable declarations, "text:variable-decls".
+
+    This element groups all the 'text:variable-decl' elements in the
+    document.
+    """
 
     _tag = "text:variable-decls"
 
 
 class VarDecl(Element):
-    """A variable declaration, "text:variable-decl"."""
+    """A variable declaration, "text:variable-decl".
+
+    This element defines a variable by its name and value type.
+
+    Attributes:
+        name (str): The unique name of the variable.
+        value_type (str): The ODF value type (e.g., 'string', 'float').
+    """
 
     _tag = "text:variable-decl"
     _properties = (
@@ -60,7 +78,12 @@ class VarDecl(Element):
         value_type: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a variable declaration "text:variable-decl"."""
+        """Initializes the VarDecl element.
+
+        Args:
+            name (str, optional): The name of the variable.
+            value_type (str, optional): The ODF value type.
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if name:
@@ -73,7 +96,18 @@ VarDecl._define_attribut_property()
 
 
 class VarSet(ElementTyped):
-    """Representation of a variable setter, "text:variable-set"."""
+    """A variable setter, "text:variable-set".
+
+    This element sets the value of a declared variable. It can optionally
+    display the value at its position in the text.
+
+    Attributes:
+        name (str): The name of the variable to set.
+        style (str, optional): The data style for formatting the displayed
+            value.
+        display (str): Controls whether the value is displayed ('none' or
+            omitted).
+    """
 
     _tag = "text:variable-set"
     _properties = (
@@ -92,7 +126,17 @@ class VarSet(ElementTyped):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a variable setter, "text:variable-set"."""
+        """Initializes the VarSet element.
+
+        Args:
+            name (str, optional): The name of the variable to set.
+            value (Any, optional): The value to assign to the variable.
+            value_type (str, optional): The ODF value type.
+            display (str | bool): If False or 'none', the value is not
+                displayed. Otherwise, it is. Defaults to False.
+            text (str, optional): The textual representation of the value.
+            style (str, optional): The data style name for formatting.
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if name:
@@ -108,6 +152,14 @@ class VarSet(ElementTyped):
                 self.text = text
 
     def set_value(self, value: Any) -> None:
+        """Sets the value of the variable.
+
+        This method updates the value and value type, preserving other
+        attributes like name, style, and display setting.
+
+        Args:
+            value (Any): The new value for the variable.
+        """
         name = self.get_attribute("text:name")
         display = self.get_attribute("text:display")
         style = self.get_attribute("style:data-style-name")
@@ -125,7 +177,15 @@ VarSet._define_attribut_property()
 
 
 class VarGet(ElementTyped):
-    """Representation of a variable getter, "text:variable-get"."""
+    """A variable getter, "text:variable-get".
+
+    This element displays the current value of a variable at its position in
+    the document.
+
+    Attributes:
+        name (str): The name of the variable to display.
+        style (str, optional): The data style for formatting the value.
+    """
 
     _tag = "text:variable-get"
     _properties = (
@@ -142,7 +202,15 @@ class VarGet(ElementTyped):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a variable getter "text:variable-get"."""
+        """Initializes the VarGet element.
+
+        Args:
+            name (str, optional): The name of the variable to get.
+            value (Any, optional): An initial value to display.
+            value_type (str, optional): The ODF value type.
+            text (str, optional): The textual representation to display.
+            style (str, optional): The data style name for formatting.
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if name:
@@ -159,7 +227,17 @@ VarGet._define_attribut_property()
 
 
 class VarPageNumber(Element):
-    """Variable for page number, "text:page-number"."""
+    """A page number field, "text:page-number".
+
+    Displays the page number, which can be the current, previous, or next
+    page number, with an optional adjustment.
+
+    Attributes:
+        select_page (str): Which page number to display ('current',
+            'previous', 'next').
+        page_adjust (str): A numerical value to add to or subtract from the
+            page number.
+    """
 
     _tag = "text:page-number"
     _properties = (
@@ -173,11 +251,13 @@ class VarPageNumber(Element):
         page_adjust: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a variable for page number "text:page-number".
+        """Initializes the VarPageNumber element.
 
-        select_page -- string in ('previous', 'current', 'next')
-
-        page_adjust -- int (to add or subtract to the page number)
+        Args:
+            select_page (str, optional): The page to select: 'current' (the
+                default), 'previous', or 'next'.
+            page_adjust (str, optional): A numerical value to add to or
+                subtract from the selected page number.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -192,13 +272,25 @@ VarPageNumber._define_attribut_property()
 
 
 class VarPageCount(Element):
-    """Variable for page count, "text:page-count"."""
+    """A page count field, "text:page-count".
+
+    Displays the total number of pages in the document.
+    """
 
     _tag = "text:page-count"
 
 
 class VarDate(Element):
-    """Variable for a date, "text:date"."""
+    """A date field, "text:date".
+
+    Displays a date, which can be fixed or automatically updated.
+
+    Attributes:
+        date (str): The date value in ISO 8601 format.
+        fixed (bool): If True, the date is not updated automatically.
+        data_style (str): The style for formatting the date.
+        date_adjust (str): A duration to add to or subtract from the date.
+    """
 
     _tag = "text:date"
     _properties = (
@@ -217,7 +309,18 @@ class VarDate(Element):
         date_adjust: timedelta | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create avariable for a date "text:date"."""
+        """Initializes the VarDate element.
+
+        Args:
+            date (datetime, optional): The date value. If not provided, the
+                field may be updated automatically by a consumer.
+            fixed (bool): If True, the date is not updated automatically.
+            data_style (str, optional): The style name for formatting.
+            text (str, optional): The textual representation of the date.
+                If not provided, it is generated from `date`.
+            date_adjust (timedelta, optional): A timedelta to adjust the
+                date value.
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if date:
@@ -237,7 +340,16 @@ VarDate._define_attribut_property()
 
 
 class VarTime(Element):
-    """Variable for a time, "text:time"."""
+    """A time field, "text:time".
+
+    Displays a time, which can be fixed or automatically updated.
+
+    Attributes:
+        time (str): The time value in ISO 8601 format.
+        fixed (bool): If True, the time is not updated automatically.
+        data_style (str): The style for formatting the time.
+        time_adjust (str): A duration to add to or subtract from the time.
+    """
 
     _tag = "text:time"
     _properties = (
@@ -256,7 +368,18 @@ class VarTime(Element):
         time_adjust: timedelta | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a variable for a time "text:time"."""
+        """Initializes the VarTime element.
+
+        Args:
+            time (datetime | dt_time, optional): The time value. Defaults to
+                the current time.
+            fixed (bool): If True, the time is not updated automatically.
+            data_style (str, optional): The style name for formatting.
+            text (str, optional): The textual representation of the time.
+                If not provided, it is generated from `time`.
+            time_adjust (timedelta, optional): A timedelta to adjust the
+                time value.
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if time is None:
@@ -287,7 +410,17 @@ VarTime._define_attribut_property()
 
 
 class VarChapter(Element):
-    """Variable for a chapter, "text:chapter"."""
+    """A chapter field, "text:chapter".
+
+    Displays information about the current chapter, such as its name or
+    number.
+
+    Attributes:
+        display (str): The format for displaying the chapter information
+            (e.g., 'name', 'number', 'number-and-name').
+        outline_level (str): The heading level to consider for the chapter
+            information.
+    """
 
     _tag = "text:chapter"
     _properties = (
@@ -308,10 +441,13 @@ class VarChapter(Element):
         outline_level: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a variable for a chapter "text:chapter".
+        """Initializes the VarChapter element.
 
-        display can be: 'number', 'name', 'number-and-name', 'plain-number' or
-        'plain-number-and-name'
+        Args:
+            display (str, optional): The format for the chapter information.
+                Can be 'name' (default), 'number', 'number-and-name', etc.
+            outline_level (str, optional): The heading outline level to use
+                for chapter context.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -326,7 +462,16 @@ VarChapter._define_attribut_property()
 
 
 class VarFileName(Element):
-    """Variable for the file name, "text:file-name"."""
+    """A file name field, "text:file-name".
+
+    Displays the file name of the document, with different formatting
+    options.
+
+    Attributes:
+        display (str): The format for the file name ('full', 'path', 'name',
+            'name-and-extension').
+        fixed (bool): If True, the file name is not updated automatically.
+    """
 
     _tag = "text:file-name"
     _properties = (
@@ -346,9 +491,12 @@ class VarFileName(Element):
         fixed: bool = False,
         **kwargs: Any,
     ) -> None:
-        """Create a variable for the file name "text:file-name".
+        """Initializes the VarFileName element.
 
-        display can be: 'full', 'path', 'name' or 'name-and-extension'
+        Args:
+            display (str, optional): The format for the file name. Can be
+                'full' (default), 'path', 'name', or 'name-and-extension'.
+            fixed (bool): If True, the field is not updated automatically.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -363,13 +511,24 @@ VarFileName._define_attribut_property()
 
 
 class VarInitialCreator(Element):
-    """Variable for the initial creator, "text:initial-creator"."""
+    """An initial creator field, "text:initial-creator".
+
+    Displays the name of the person who initially created the document, based
+    on the document's metadata.
+
+    Attributes:
+        fixed (bool): If True, the field is not updated automatically.
+    """
 
     _tag = "text:initial-creator"
     _properties = (PropDef("fixed", "text:fixed"),)
 
     def __init__(self, fixed: bool = False, **kwargs: Any) -> None:
-        """Create a variable for the initial creator "text:initial-creator"."""
+        """Initializes the VarInitialCreator element.
+
+        Args:
+            fixed (bool): If True, the field is not updated automatically.
+        """
         super().__init__(**kwargs)
         if self._do_init and fixed:
             self.fixed = True
@@ -379,7 +538,14 @@ VarInitialCreator._define_attribut_property()
 
 
 class VarCreationDate(Element):
-    """Variable for the creation date, "text:creation-date"."""
+    """A creation date field, "text:creation-date".
+
+    Displays the date the document was created, based on metadata.
+
+    Attributes:
+        fixed (bool): If True, the field is not updated automatically.
+        data_style (str): The style for formatting the date.
+    """
 
     _tag = "text:creation-date"
     _properties = (
@@ -393,7 +559,12 @@ class VarCreationDate(Element):
         data_style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a variable for the creation date "text:creation-date"."""
+        """Initializes the VarCreationDate element.
+
+        Args:
+            fixed (bool): If True, the field is not updated automatically.
+            data_style (str, optional): The style name for formatting.
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if fixed:
@@ -406,7 +577,14 @@ VarCreationDate._define_attribut_property()
 
 
 class VarCreationTime(Element):
-    """Variable for the creation time, "text:creation-time"."""
+    """A creation time field, "text:creation-time".
+
+    Displays the time the document was created, based on metadata.
+
+    Attributes:
+        fixed (bool): If True, the field is not updated automatically.
+        data_style (str): The style for formatting the time.
+    """
 
     _tag = "text:creation-time"
     _properties = (
@@ -420,7 +598,12 @@ class VarCreationTime(Element):
         data_style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a variable for the creation time "text:creation-time"."""
+        """Initializes the VarCreationTime element.
+
+        Args:
+            fixed (bool): If True, the field is not updated automatically.
+            data_style (str, optional): The style name for formatting.
+        """
         super().__init__(**kwargs)
         if self._do_init:
             if fixed:
@@ -433,7 +616,10 @@ VarCreationTime._define_attribut_property()
 
 
 class VarDescription(VarInitialCreator):
-    """Variable for the text description, "text:description"."""
+    """A description field, "text:description".
+
+    Displays the document's description (or comments) from its metadata.
+    """
 
     _tag = "text:description"
 
@@ -442,7 +628,10 @@ VarDescription._define_attribut_property()
 
 
 class VarTitle(VarInitialCreator):
-    """Variable for the title, "text:title"."""
+    """A title field, "text:title".
+
+    Displays the document's title from its metadata.
+    """
 
     _tag = "text:title"
 
@@ -451,7 +640,10 @@ VarTitle._define_attribut_property()
 
 
 class VarSubject(VarInitialCreator):
-    """Variable for the subject, "text:subject"."""
+    """A subject field, "text:subject".
+
+    Displays the document's subject from its metadata.
+    """
 
     _tag = "text:subject"
 
@@ -460,7 +652,10 @@ VarSubject._define_attribut_property()
 
 
 class VarKeywords(VarInitialCreator):
-    """Variable for the keywords, "text:keywords"."""
+    """A keywords field, "text:keywords".
+
+    Displays the document's keywords from its metadata.
+    """
 
     _tag = "text:keywords"
 
