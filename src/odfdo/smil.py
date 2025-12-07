@@ -30,7 +30,8 @@ from .element import Element, PropDef, register_element_class
 
 
 class AnimPar(Element):
-    """Container for SMIL animations, "anim:par"."""
+    """Container for SMIL animations, "anim:par".
+    """
 
     _tag = "anim:par"
     _properties = (
@@ -47,12 +48,12 @@ class AnimPar(Element):
         """Create a container for SMIL presentation animations "anim:par".
 
         Args:
-
-            presentation_node_type -- default, on-click, with-previous,
-                                      after-previous, timing-root, main-sequence
-                                      and interactive-sequence
-
-            smil_begin -- indefinite, 10s, [id].click, [id].begin
+            presentation_node_type (str, optional): The type of presentation node.
+                Can be 'default', 'on-click', 'with-previous', 'after-previous',
+                'timing-root', 'main-sequence', or 'interactive-sequence'.
+            smil_begin (str, optional): Specifies the begin time of the animation.
+                Can be 'indefinite', a time value (e.g., '10s'), or an ID reference
+                (e.g., '[id].click', '[id].begin').
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -86,10 +87,9 @@ class AnimSeq(Element):
         has executed its initial transition.
 
         Args:
-
-            presentation_node_type -- default, on-click, with-previous,
-                                      after-previous, timing-root, main-sequence
-                                      and interactive-sequence
+            presentation_node_type (str, optional): The type of presentation node.
+                Can be 'default', 'on-click', 'with-previous', 'after-previous',
+                'timing-root', 'main-sequence', or 'interactive-sequence'.
         """
         super().__init__(**kwargs)
         if self._do_init and presentation_node_type:
@@ -100,7 +100,8 @@ AnimSeq._define_attribut_property()
 
 
 class AnimTransFilter(Element):
-    """Transition between two frames, "anim:transitionFilter"."""
+    """Transition between two frames, "anim:transitionFilter".
+    """
 
     _tag = "anim:transitionFilter"
     _properties = (
@@ -125,18 +126,17 @@ class AnimTransFilter(Element):
         """Create a transition between two frames "anim:transitionFilter".
 
         Args:
-
-          smil_dur -- str, duration
-
-          smil_type and smil_subtype -- see http://www.w3.org/TR/SMIL20/
-                        smil-transitions.html#TransitionEffects-Appendix
-                                        to get a list of all types/subtypes
-
-          smil_direction -- forward, reverse
-
-          smil_fadeColor -- forward, reverse
-
-          smil_mode -- in, out
+            smil_dur (str, optional): The duration of the transition.
+            smil_type (str, optional): The type of transition. See
+                http://www.w3.org/TR/SMIL20/smil-transitions.html#TransitionEffects-Appendix
+                for a list of types.
+            smil_subtype (str, optional): The subtype of transition. See
+                http://www.w3.org/TR/SMIL20/smil-transitions.html#TransitionEffects-Appendix
+                for a list of subtypes.
+            smil_direction (str, optional): The direction of the transition. Can be
+                'forward' or 'reverse'.
+            smil_fadeColor (str, optional): The fade color for the transition.
+            smil_mode (str, optional): The mode of the transition. Can be 'in' or 'out'.
         """
         super().__init__(**kwargs)
         if self._do_init:
