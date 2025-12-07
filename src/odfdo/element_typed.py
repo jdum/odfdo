@@ -35,6 +35,11 @@ class ElementTyped(Element):
     """Subclass of Element for classes managing typed values."""
 
     def _erase_text_content(self) -> None:
+        """Clear the textual content of the element.
+
+        This method removes all paragraph elements (`text:p`), effectively
+        erasing any visible text within the element.
+        """
         paragraphs = self.get_elements("text:p")
         if not paragraphs:
             # E.g., text:p in draw:text-box in draw:frame
@@ -51,6 +56,29 @@ class ElementTyped(Element):
         text: str | None = None,
         currency: str | None = None,
     ) -> str | None:
+        """Set the value and type of the element.
+
+        This method handles setting the appropriate ODF attributes
+        (e.g., `office:value`, `office:value-type`, `office:string-value`)
+        based on the Python type of the provided `value`.
+
+        Args:
+            value (Any): The value to set.
+            value_type (str, optional): The ODF value type (e.g., "float",
+                "date", "string"). If not provided, it is inferred from the
+                type of `value`.
+            text (str, optional): The textual representation of the value.
+                If not provided, it is generated automatically.
+            currency (str, optional): The currency symbol, used when
+                `value_type` is "currency".
+
+        Returns:
+            str | None: The textual representation of the value that was set,
+                or `None` if the value was `None`.
+
+        Raises:
+            TypeError: If the type of `value` is not supported.
+        """
         # Remove possible previous value and type
         for name in (
             "office:value-type",
@@ -138,9 +166,14 @@ class ElementTyped(Element):
         return text
 
     def _get_typed_value_boolean(self) -> Any:
+        """Get the boolean value from the 'office:boolean-value' attribute."""
         return self.get_attribute("office:boolean-value")
 
     def _get_typed_value_number_type(self) -> Decimal | int | float:
+        """Get the numeric value from the 'office:value' attribute.
+
+        Returns the value as an `int` if possible, otherwise as a `Decimal`.
+        """
         read_number = self.get_attribute_string("office:value")
         if read_number is None:
             raise ValueError('"office:value" has None value')
@@ -152,15 +185,19 @@ class ElementTyped(Element):
         return value
 
     def _get_typed_value_float(self) -> Decimal | int | float:
+        """Get the float value, delegating to _get_typed_value_number_type."""
         return self._get_typed_value_number_type()
 
     def _get_typed_value_percentage(self) -> Decimal | int | float:
+        """Get the percentage value, delegating to _get_typed_value_number_type."""
         return self._get_typed_value_number_type()
 
     def _get_typed_value_currency(self) -> Decimal | int | float:
+        """Get the currency value, delegating to _get_typed_value_number_type."""
         return self._get_typed_value_number_type()
 
     def _get_typed_value_date(self) -> date | datetime:
+        """Get the date or datetime value from the 'office:date-value' attribute."""
         read_attribute = self.get_attribute_string("office:date-value")
         if read_attribute is None:
             raise ValueError('"office:date-value" has None value')
@@ -169,6 +206,12 @@ class ElementTyped(Element):
         return Date.decode(read_attribute)
 
     def _get_typed_value_string(self, try_get_text: bool) -> str | None:
+        """Get the string value.
+
+        Tries to get the value from the 'office:string-value' attribute first.
+        If that fails, and `try_get_text` is True, it attempts to get the
+        text content from child paragraph elements.
+        """
         value = self.get_attribute_string("office:string-value")
         if value is not None:
             return str(value)
@@ -179,6 +222,7 @@ class ElementTyped(Element):
         return None
 
     def _get_typed_value_time(self) -> timedelta:
+        """Get the time value from the 'office:time-value' attribute."""
         read_value = self.get_attribute_string("office:time-value")
         if read_value is None:
             raise ValueError('"office:time-value" has None value')
@@ -189,9 +233,21 @@ class ElementTyped(Element):
         value_type: str = "",
         try_get_text: bool = True,
     ) -> Any:
-        """Return Python typed value.
+        """Get the Python-typed value based on the ODF value type.
 
-        Only for "with office:value-type" elements, not for meta fields.
+        This is a dispatcher method that calls the appropriate `_get_typed_value_*`
+        method based on the `value_type`.
+
+        Args:
+            value_type (str): The ODF value type (e.g., "string", "float").
+            try_get_text (bool): For string types, whether to fall back to
+                reading text from child paragraphs.
+
+        Returns:
+            Any: The value converted to its corresponding Python type.
+
+        Raises:
+            TypeError: If the `value_type` is not supported.
         """
         if value_type == "string":
             return self._get_typed_value_string(try_get_text)
@@ -203,6 +259,21 @@ class ElementTyped(Element):
     def _get_value_and_type(
         self, value_type: str | None = None, try_get_text: bool = True
     ) -> tuple[Any, str | None]:
+        """Get the value and its ODF type.
+
+        If `value_type` is not provided, it is read from the element's
+        'office:value-type' attribute.
+
+        Args:
+            value_type (str, optional): The expected ODF value type.
+            try_get_text (bool): For string types, whether to fall back to
+                reading text from child paragraphs.
+
+        Returns:
+            tuple[Any, str | None]: A tuple containing the Python-typed value
+                and the ODF value type string, or (None, None) if the type
+                cannot be determined.
+        """
         if value_type is None:
             read_value_type = self.get_attribute_string("office:value-type")
             if read_value_type is None:
@@ -222,9 +293,22 @@ class ElementTyped(Element):
         try_get_text: bool = True,
         get_type: bool = False,
     ) -> Any | tuple[Any, str]:
-        """Return Python typed value.
+        """Get the Python-typed value of the element.
 
-        Only for "with office:value-type" elements, not for meta fields.
+        This method is for elements that have an `office:value-type` attribute.
+        It does not apply to meta fields.
+
+        Args:
+            value_type (str, optional): The expected ODF value type. If not
+                provided, it's inferred from the 'office:value-type' attribute.
+            try_get_text (bool): For string types, whether to fall back to
+                reading text from child paragraphs.
+            get_type (bool): If True, returns a tuple of (value, type_string)
+                instead of just the value.
+
+        Returns:
+            Any | tuple[Any, str]: The Python-typed value, or a tuple of
+                (value, type_string) if `get_type` is True.
         """
         value, actual_type = self._get_value_and_type(
             value_type=value_type, try_get_text=try_get_text
