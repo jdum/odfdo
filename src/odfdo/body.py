@@ -21,10 +21,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import cast
 
 from .annotation import AnnotationMixin
 from .bookmark import BookmarkMixin
+from .const import BODY_ALLOW_NAMED_RANGE_TAGS
 from .element import Element, PropDef, PropDefBool, register_element_class
 from .form import FormMixin
 from .mixin_named_range import NRMixin
@@ -32,18 +33,11 @@ from .note import NoteMixin
 from .office_forms import OfficeFormsMixin
 from .reference import ReferenceMixin
 from .section import SectionMixin
+from .table import Table
 from .tracked_changes import TrackedChangesMixin
 
-if TYPE_CHECKING:
-    from .table import Table
-
-BODY_NR_TAGS = {
-    "office:chart",
-    "office:drawing",
-    "office:presentation",
-    "office:spreadsheet",
-    "office:text",
-}
+# for compatibility with version <= 3.18.1
+BODY_NR_TAGS = BODY_ALLOW_NAMED_RANGE_TAGS
 
 
 class Body(Element):
@@ -85,7 +79,7 @@ class Body(Element):
         Returns:
             list[Table]: A list of all Table elements.
         """
-        return self.get_elements("descendant::table:table")  # type: ignore[return-value]
+        return cast(list[Table], self.get_elements("descendant::table:table"))
 
     sheets = tables
 
@@ -120,6 +114,11 @@ class Body(Element):
         return result  # type: ignore[return-value]
 
     get_sheet = get_table
+
+    @property
+    def allow_named_range(self) -> bool:
+        """Return True if the current body allows named ranges."""
+        return self.tag in BODY_ALLOW_NAMED_RANGE_TAGS
 
 
 class Chart(NRMixin, Body):

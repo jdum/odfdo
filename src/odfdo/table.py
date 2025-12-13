@@ -37,9 +37,9 @@ from warnings import warn
 
 from lxml.etree import XPath
 
-from .body import BODY_NR_TAGS
 from .cell import Cell
 from .column import Column
+from .const import BODY_ALLOW_NAMED_RANGE_TAGS
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import (
     Element,
@@ -67,6 +67,9 @@ from .utils import (
 
 if TYPE_CHECKING:
     from .style import Style
+
+# for compatibility with version <= 3.18.1
+BODY_NR_TAGS = BODY_ALLOW_NAMED_RANGE_TAGS
 
 _XP_ROW = xpath_compile(
     "table:table-row|table:table-rows/table:table-row|"
@@ -2389,7 +2392,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """
         if global_scope:
             body = self.document_body
-            if not body or body.tag not in BODY_NR_TAGS:
+            if not body or not body.allow_named_range:
                 return []
             named_ranges = body.get_named_ranges()  # type: ignore[attr-defined]
         else:
@@ -2426,7 +2429,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             body = self.document_body
             if not body:
                 raise ValueError("Table is not inside a document")
-            if body.tag not in BODY_NR_TAGS:
+            if not body.allow_named_range:
                 return None
             nr: NamedRange | None = body.get_named_range(name)  # type: ignore[attr-defined]
 
@@ -2451,7 +2454,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             body = self.document_body
             if not body:
                 raise ValueError("Table is not inside a document")
-            if body.tag not in BODY_NR_TAGS:
+            if not body.allow_named_range:
                 msg = (
                     "Document must be of type Chart, Drawing, "
                     "Presentation, Spreadsheet or Text"
@@ -2490,7 +2493,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             body = self.document_body
             if not body:
                 raise ValueError("Table is not inside a document")
-            if body.tag not in BODY_NR_TAGS:
+            if not body.allow_named_range:
                 msg = (
                     "Document must be of type Chart, Drawing, "
                     "Presentation, Spreadsheet or Text"
@@ -2525,7 +2528,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             body = self.document_body
             if not body:
                 raise ValueError("Table is not inside a document")
-            if body.tag not in BODY_NR_TAGS:
+            if not body.allow_named_range:
                 msg = (
                     "Document must be of type Chart, Drawing, "
                     "Presentation, Spreadsheet or Text"

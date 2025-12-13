@@ -738,3 +738,11 @@ ODF_COLOR_PROPERTY = {
     "style:text-underline-color",
     "svg:stroke-color",
 }
+
+BODY_ALLOW_NAMED_RANGE_TAGS = {
+    "office:chart",
+    "office:drawing",
+    "office:presentation",
+    "office:spreadsheet",
+    "office:text",
+}
