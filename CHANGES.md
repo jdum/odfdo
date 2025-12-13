@@ -1,5 +1,25 @@
 # Odfdo Release Notes
 
+## [3.18.2] - 2025-12-13
+
+-   Refactoring of Element, create mixins `VarDeclMixin`, `LinkMixin`.
+-   Minor refactoring of `Blob`, `Document`.
+-   Minor updated of docstrings.
+
+### Added
+
+-   Add `LinkMixin` class.
+-   Add `VarDeclMixin` class.
+-   Add property `Body.allow_named_range`, used by `Table`.
+-   Add tests for `element.py` module.
+
+### Changed
+
+-   Refactor `Document.merge_styles_from()` method.
+-   Refactor `Blob` class.
+-   Split `VarDecls` and `VarDecl` from `variable.py` module to their own module.
+-   Remove some `__str__` and `__repr__` docstrings.
+
 ## [3.18.1] - 2025-12-07
 
 -   Updated missing docstrings in module `odfdo.document`.
@@ -11,7 +31,6 @@
 
 ### Changed
 
--   
 -   Refactored `Blob` class from `odfdo.document` into the new `odfdo.utils.blob` module.
 -   Renamed private function `container_from_template()` to `_container_from_template()`.
 
