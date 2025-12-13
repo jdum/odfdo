@@ -32,8 +32,6 @@ from odfdo.variable import (
     VarCreationDate,
     VarCreationTime,
     VarDate,
-    VarDecl,
-    VarDecls,
     VarDescription,
     VarFileName,
     VarGet,
@@ -54,16 +52,6 @@ ZOE = "你好 Zoé"
 def document(samples) -> Iterable[Document]:
     document = Document(samples("variable.odt"))
     yield document
-
-
-def test_var_decls_class():
-    variable = VarDecls()
-    assert isinstance(variable, VarDecls)
-
-
-def test_var_decl_class():
-    variable = VarDecl()
-    assert isinstance(variable, VarDecl)
 
 
 def test_var_set_class():
@@ -328,14 +316,6 @@ def test_var_subject_class():
 def test_var_keywords_class():
     variable = VarKeywords()
     assert isinstance(variable, VarKeywords)
-
-
-def test_create_variable_decl():
-    variable_decl = VarDecl(ZOE, "float")
-    assert variable_decl.serialize() in (
-        (f'<text:variable-decl text:name="{ZOE}" office:value-type="float"/>'),
-        (f'<text:variable-decl office:value-type="float" text:name="{ZOE}"/>'),
-    )
 
 
 def test_create_variable_set_float():

@@ -377,8 +377,6 @@ from .variable import (
     VarCreationDate,
     VarCreationTime,
     VarDate,
-    VarDecl,
-    VarDecls,
     VarDescription,
     VarFileName,
     VarGet,
@@ -390,6 +388,10 @@ from .variable import (
     VarSubject,
     VarTime,
     VarTitle,
+)
+from .variable_declaration import (
+    VarDecl,
+    VarDecls,
 )
 from .version import __version__
 from .xmlpart import XmlPart

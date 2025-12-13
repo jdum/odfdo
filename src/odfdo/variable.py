@@ -24,8 +24,7 @@
 This module provides classes for various types of document fields that can
 be automatically updated, such as dates, times, page numbers, and document
 metadata (e.g., author, title). It also includes classes for declaring and
-managing custom variables ('text:variable-decl', 'text:variable-set',
-'text:variable-get').
+managing custom variables ('text:variable-set', 'text:variable-get').
 """
 
 from __future__ import annotations
@@ -44,55 +43,6 @@ from .user_field import (  # noqa: F401
     UserFieldGet,
     UserFieldInput,
 )
-
-
-class VarDecls(Element):
-    """A container for variable declarations, "text:variable-decls".
-
-    This element groups all the 'text:variable-decl' elements in the
-    document.
-    """
-
-    _tag = "text:variable-decls"
-
-
-class VarDecl(Element):
-    """A variable declaration, "text:variable-decl".
-
-    This element defines a variable by its name and value type.
-
-    Attributes:
-        name (str): The unique name of the variable.
-        value_type (str): The ODF value type (e.g., 'string', 'float').
-    """
-
-    _tag = "text:variable-decl"
-    _properties = (
-        PropDef("name", "text:name"),
-        PropDef("value_type", "office:value-type"),
-    )
-
-    def __init__(
-        self,
-        name: str | None = None,
-        value_type: str | None = None,
-        **kwargs: Any,
-    ) -> None:
-        """Initializes the VarDecl element.
-
-        Args:
-            name (str, optional): The name of the variable.
-            value_type (str, optional): The ODF value type.
-        """
-        super().__init__(**kwargs)
-        if self._do_init:
-            if name:
-                self.name = name
-            if value_type:
-                self.value_type = value_type
-
-
-VarDecl._define_attribut_property()
 
 
 class VarSet(ElementTyped):
@@ -662,8 +612,6 @@ class VarKeywords(VarInitialCreator):
 
 VarKeywords._define_attribut_property()
 
-register_element_class(VarDecls)
-register_element_class(VarDecl)
 register_element_class(VarSet)
 register_element_class(VarGet)
 register_element_class(VarPageNumber)
