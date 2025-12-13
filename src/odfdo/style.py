@@ -593,7 +593,6 @@ class Style(StyleProps):
             self.set_attribute("style:family", family)
 
     def __repr__(self) -> str:
-        """Return the representation of the style."""
         return f"<{self.__class__.__name__} family={self.family} name={self.name}>"
 
     def set_background(

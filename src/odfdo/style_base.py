@@ -36,11 +36,9 @@ class StyleBase(Element):
     _tag: str = "style:_pseudo_style_base_"
 
     def __repr__(self) -> str:
-        """Return the representation of the style."""
         return f"<{self.__class__.__name__} family={self.family}>"
 
     def __str__(self) -> str:
-        """Return the string representation of the style."""
         return repr(self)
 
     @property

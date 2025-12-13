@@ -96,14 +96,6 @@ class Paragraph(MDParagraph, ParaFormattedTextMixin, ParaMixin, NoteMixin, Eleme
                 self.style = style
 
     def __str__(self) -> str:
-        """Return a string representation of the paragraph.
-
-        This returns the inner text of the paragraph followed by a newline character.
-
-        Returns:
-            str: The string representation of the paragraph.
-        """
-        # '\n' at the end slightly breaks compatibility, but is clearly better
         return self.inner_text + "\n"
 
 

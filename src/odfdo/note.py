@@ -218,13 +218,6 @@ class Note(MDNote, Element):
             pass
 
     def __str__(self) -> str:
-        """Return a string representation of the note.
-
-        If a citation is present, it formats as "citation. body", otherwise just "body".
-
-        Returns:
-            str: The string representation of the note.
-        """
         if self.citation:
             return f"{self.citation}. {self.note_body}"
         return self.note_body

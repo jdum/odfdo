@@ -1381,11 +1381,6 @@ class Element(MDBase):
             raise TypeError(f'Str type expected: "{type(text)}"') from e
 
     def __str__(self) -> str:
-        """Returns the inner text representation of the element.
-
-        Returns:
-            str: The concatenated text content of the element and its children.
-        """
         return self.inner_text
 
     @property

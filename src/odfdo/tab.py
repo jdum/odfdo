@@ -58,11 +58,6 @@ class Tab(MDTab, Element):
             self.position = str(position)
 
     def __str__(self) -> str:
-        """Return the string representation of a tab character.
-
-        Returns:
-            str: The tab character ("\t").
-        """
         return "\t"
 
     @property

@@ -58,7 +58,6 @@ class Spacer(MDSpacer, Element):
                 self.number = None
 
     def __str__(self) -> str:
-        """Return the string representation of the spacer (e.g., "   ")."""
         return self.text
 
     @property

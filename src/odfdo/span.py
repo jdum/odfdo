@@ -92,11 +92,6 @@ class Span(
                 self.style = style
 
     def __str__(self) -> str:
-        """Return the inner text of the span.
-
-        Returns:
-            str: The text content within the span.
-        """
         return self.inner_text
 
 
