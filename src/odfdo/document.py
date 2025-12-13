@@ -33,7 +33,7 @@ from copy import deepcopy
 from importlib import resources as rso
 from operator import itemgetter
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, BinaryIO
+from typing import TYPE_CHECKING, Any, BinaryIO, cast
 
 from .const import (
     ODF_CONTENT,
@@ -52,6 +52,7 @@ from .container import Container
 from .content import Content
 from .datatype import Boolean
 from .element import Element
+from .image import DrawFillImage, DrawImage
 from .manifest import Manifest
 from .meta import Meta
 from .mixin_md import MDDocument
@@ -1320,6 +1321,20 @@ class Document(MDDocument):
             deleted += 1
         return deleted
 
+    def _copy_image_from_document(self, document: Document, url: str) -> None:
+        """Copy image from another document.
+
+        Args:
+            document: The source `Document` object from which to copy image.
+            url: url of the image in the source document.
+        """
+        image_content = document.get_part(url)
+        if not isinstance(image_content, bytes):
+            return
+        self.set_part(url, image_content)
+        media_type = document.manifest.get_media_type(url) or "application/octet-stream"
+        self.manifest.add_full_path(url, media_type)
+
     def merge_styles_from(self, document: Document) -> None:
         """Copy all styles from another document into this document.
 
@@ -1330,25 +1345,29 @@ class Document(MDDocument):
         Args:
             document: The source `Document` object from which to merge styles.
         """
-        manifest = self.manifest
-        document_manifest = document.manifest
         for style in document.get_styles():
             tagname = style.tag
             family = style.family
-            try:
-                stylename = style.name  # type: ignore[attr-defined]
-            except AttributeError:
+            if family is None:
+                continue
+            if hasattr(style, "name"):
+                stylename = style.name
+            else:
                 stylename = None
             container = style.parent
-            container_name = container.tag  # type: ignore
-            partname = container.parent.tag  # type: ignore
+            if container is None:
+                continue
+            upper_container = container.parent
+            if upper_container is None:
+                continue
+            container_name = container.tag
             # The destination part
-            if partname == "office:document-styles":
+            if upper_container.tag == "office:document-styles":
                 part: Content | Styles = self.styles
-            elif partname == "office:document-content":
+            elif upper_container.tag == "office:document-content":
                 part = self.content
             else:
-                raise NotImplementedError(partname)
+                raise NotImplementedError(upper_container.tag)
             # Implemented containers
             if container_name not in {
                 "office:styles",
@@ -1363,27 +1382,20 @@ class Document(MDDocument):
             # Implemented style types
             # if tagname not in registered_styles:
             #    raise NotImplementedError(tagname)
-            duplicate = part.get_style(family, stylename)  # type: ignore[arg-type]
+            duplicate = part.get_style(family, stylename)
             if duplicate is not None:
                 duplicate.delete()
             dest.append(style)
             # Copy images from the header/footer
             if tagname == "style:master-page":
-                query = "descendant::draw:image"
-                for image in style.get_elements(query):
-                    url = image.url  # type: ignore
-                    part_url = document.get_part(url)
-                    # Manually add the part to keep the name
-                    self.set_part(url, part_url)  # type: ignore
-                    media_type = document_manifest.get_media_type(url)
-                    manifest.add_full_path(url, media_type)  # type: ignore
-            # Copy images from the fill-image
+                images = cast(
+                    list[DrawImage], style.get_elements("descendant::draw:image")
+                )
+                for image in images:
+                    self._copy_image_from_document(document, image.url)
             elif tagname == "draw:fill-image":
-                url = style.url  # type: ignore
-                part_url = document.get_part(url)
-                self.set_part(url, part_url)  # type: ignore
-                media_type = document_manifest.get_media_type(url)
-                manifest.add_full_path(url, media_type)  # type: ignore
+                draw_fill_image = cast(DrawFillImage, style)
+                self._copy_image_from_document(document, draw_fill_image.url)
 
     def add_page_break_style(self) -> None:
         """Ensure the document contains the style required for a manual page break.
