@@ -28,6 +28,7 @@ from .office_forms import OfficeFormsMixin
 from .section import SectionMixin
 from .style_base import StyleBase
 from .tracked_changes import TrackedChangesMixin
+from .variable_declaration import VarDeclMixin
 
 
 class StyleMasterPage(OfficeFormsMixin, StyleBase):
@@ -261,7 +262,7 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
 StyleMasterPage._define_attribut_property()
 
 
-class StyleHeader(TrackedChangesMixin, SectionMixin, StyleBase):
+class StyleHeader(VarDeclMixin, TrackedChangesMixin, SectionMixin, StyleBase):
     """Content of a header in a StyleMasterPage, tag "style:header".
 
     The "style:display" attribute specifies whether the header is displayed or

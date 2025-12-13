@@ -74,7 +74,7 @@ if TYPE_CHECKING:
         TextChangeStart,
     )
     from .user_field import UserDefined, UserFieldDecl, UserFieldDecls
-    from .variable import VarDecls, VarSet
+    from .variable import VarSet
 
 ODF_NAMESPACES = {
     "anim": "urn:oasis:names:tc:opendocument:xmlns:animation:1.0",
@@ -2416,51 +2416,6 @@ class Element(MDBase):
         return list({name for name in strings if name})
 
     # Variables
-
-    def get_variable_decls(self) -> VarDecls:
-        """Returns the container for variable declarations.
-
-        If the container is not found, it is created within the document body.
-
-        Returns:
-            VarDecls: The VarDecls instance (container for variable declarations).
-
-        Raises:
-            ValueError: If the document body is empty and a new container cannot be inserted.
-        """
-        variable_decls = self.get_element("//text:variable-decls")
-        if variable_decls is None:
-            body = self.document_body
-            if not body:
-                raise ValueError("Empty document.body")
-            body.insert(Element.from_tag("text:variable-decls"), FIRST_CHILD)
-            variable_decls = body.get_element("//text:variable-decls")
-
-        return variable_decls  # type: ignore[return-value]
-
-    def get_variable_decl_list(self) -> list[VarDecls]:
-        """Returns all variable declarations as a list.
-
-        Returns:
-            list[VarDecls]: A list of all VarDecls instances that are descendants of this element.
-        """
-        return self._filtered_elements(
-            "descendant::text:variable-decl",
-        )  # type: ignore[return-value]
-
-    def get_variable_decl(self, name: str, position: int = 0) -> VarDecls | None:
-        """Returns a single variable declaration that matches the specified criteria.
-
-        Args:
-            name (str): The name of the variable declaration to retrieve.
-            position (int): The 0-based index of the matching variable declaration to return.
-
-        Returns:
-            VarDecls | None: A VarDecls instance, or None if no declaration matches the criteria.
-        """
-        return self._filtered_element(
-            "descendant::text:variable-decl", position, text_name=name
-        )  # type: ignore[return-value]
 
     def get_variable_sets(self, name: str | None = None) -> list[VarSet]:
         """Returns all variable sets that match the specified criteria.

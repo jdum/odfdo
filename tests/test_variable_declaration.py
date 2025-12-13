@@ -18,24 +18,21 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 
-# from collections.abc import Iterable
+from collections.abc import Iterable
 
-# import pytest
+import pytest
 
-# from odfdo.document import Document
-# from odfdo.element import Element
-from odfdo.variable_declaration import (
-    VarDecl,
-    VarDecls,
-)
+from odfdo.document import Document
+from odfdo.element import Element
+from odfdo.variable_declaration import VarDecl, VarDecls
 
 ZOE = "你好 Zoé"
 
 
-# @pytest.fixture
-# def document(samples) -> Iterable[Document]:
-#     document = Document(samples("variable.odt"))
-#     yield document
+@pytest.fixture
+def document(samples) -> Iterable[Document]:
+    document = Document(samples("variable.odt"))
+    yield document
 
 
 def test_var_decls_class():
@@ -54,3 +51,38 @@ def test_create_variable_decl():
         (f'<text:variable-decl text:name="{ZOE}" office:value-type="float"/>'),
         (f'<text:variable-decl office:value-type="float" text:name="{ZOE}"/>'),
     )
+
+
+def test_element_get_variable_decls_raise():
+    # limitation: for footer, no document body...
+    element = Element.from_tag("<style:header/>")
+    with pytest.raises(ValueError):
+        element.get_variable_decls()
+
+
+def test_element_get_variable_decls_raise_2():
+    element = Element.from_tag("<form:form/>")
+    with pytest.raises(AttributeError):
+        element.get_variable_decls()
+
+
+def test_element_get_variable_decls_1(document):
+    var_decls = document.body.get_variable_decls()
+    assert var_decls.tag == "text:variable-decls"
+
+
+def test_element_get_variable_decls_2(document):
+    document.body.get_variable_decls()
+    # now created
+    var_decls_1 = document.body.get_variable_decls()
+    assert var_decls_1.tag == "text:variable-decls"
+
+
+def test_element_get_variable_decl_list(document):
+    var_decl_list = document.body.get_variable_decl_list()
+    assert len(var_decl_list) == 1
+
+
+def test_element_get_variable_decl_list_2(document):
+    var_decl_list = document.body.get_variable_decl_list()
+    assert isinstance(var_decl_list[0], VarDecl)

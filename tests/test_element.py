@@ -29,7 +29,6 @@ import pytest
 
 from odfdo.const import ODF_CONTENT
 from odfdo.container import Container
-from odfdo.document import Document
 from odfdo.element import (
     FIRST_CHILD,
     NEXT_SIBLING,
@@ -998,23 +997,3 @@ def test_element_get_attribute_int_default_3():
     element._set_attribute_int_default("form:tab-index", "not_an_int", 0)
     result = element._get_attribute_int_default("form:tab-index", 0)
     assert result == 0
-
-
-def test_element_get_variable_decls_raise():
-    element = Element.from_tag("<form:form/>")
-    with pytest.raises(ValueError):
-        element.get_variable_decls()
-
-
-def test_element_get_variable_decls_1(samples):
-    document = Document(samples("example.odt"))
-    var_decls = document.body.get_variable_decls()
-    assert var_decls.tag == "text:variable-decls"
-
-
-def test_element_get_variable_decls_2(samples):
-    document = Document(samples("example.odt"))
-    document.body.get_variable_decls()
-    # now created
-    var_decls_1 = document.body.get_variable_decls()
-    assert var_decls_1.tag == "text:variable-decls"
