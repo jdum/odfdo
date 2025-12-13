@@ -34,6 +34,7 @@ from .element import (
     register_element_class,
 )
 from .line_break import LineBreak
+from .mixin_link import LinkMixin
 from .mixin_md import MDParagraph
 from .mixin_paragraph import ParaMixin
 from .mixin_paragraph_formatted import ParaFormattedTextMixin
@@ -52,7 +53,9 @@ __all__ = [
 ]
 
 
-class Paragraph(MDParagraph, ParaFormattedTextMixin, ParaMixin, NoteMixin, Element):
+class Paragraph(
+    MDParagraph, LinkMixin, ParaFormattedTextMixin, ParaMixin, NoteMixin, Element
+):
     """An ODF paragraph, "text:p".
 
     The "text:p" element represents a paragraph, which is the basic unit of

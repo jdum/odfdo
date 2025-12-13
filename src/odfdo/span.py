@@ -32,6 +32,7 @@ from .element import (
     PropDef,
     register_element_class,
 )
+from .mixin_link import LinkMixin
 from .mixin_md import MDParagraph, MDSpan
 from .mixin_paragraph import ParaMixin
 from .mixin_paragraph_formatted import ParaFormattedTextMixin
@@ -41,6 +42,7 @@ from .note import NoteMixin
 class Span(
     MDSpan,
     MDParagraph,
+    LinkMixin,
     ParaFormattedTextMixin,
     ParaMixin,
     NoteMixin,

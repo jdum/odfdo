@@ -64,14 +64,13 @@ class Blob:
         footprint = hashlib.shake_256(blob.content).hexdigest(16)
         blob.name = f"{footprint}{extension}"
         mime_type, _encoding = guess_type(blob.name)
-        if mime_type:
-            blob.mime_type = mime_type
-        else:
-            blob.mime_type = "application/octet-stream"
+        blob.mime_type = mime_type or "application/octet-stream"
         return blob
 
     @classmethod
-    def from_io(cls, file_like: BinaryIO) -> Blob:
+    def from_io(
+        cls, file_like: BinaryIO, mime_type: str = "application/octet-stream"
+    ) -> Blob:
         """Create a Blob from a file-like object.
 
         The blob's name is generated from a hash of its content. The MIME type
@@ -79,6 +78,7 @@ class Blob:
 
         Args:
             file_like: A file-like object opened in binary mode.
+            mime_type: The MIME type of the blob's content.
 
         Returns:
             A new Blob instance containing the file's content.
@@ -86,11 +86,13 @@ class Blob:
         blob = cls()
         blob.content = file_like.read()
         blob.name = hashlib.shake_256(blob.content).hexdigest(16)
-        blob.mime_type = "application/octet-stream"
+        blob.mime_type = mime_type
         return blob
 
     @classmethod
-    def from_base64(cls, b64string: str | bytes, mime_type: str) -> Blob:
+    def from_base64(
+        cls, b64string: str | bytes, mime_type: str = "application/octet-stream"
+    ) -> Blob:
         """Create a Blob from a base64 encoded string.
 
         The blob's name is generated from a hash of its content.

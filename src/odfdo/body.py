@@ -28,6 +28,7 @@ from .bookmark import BookmarkMixin
 from .const import BODY_ALLOW_NAMED_RANGE_TAGS
 from .element import Element, PropDef, PropDefBool, register_element_class
 from .form import FormMixin
+from .mixin_link import LinkMixin
 from .mixin_named_range import NRMixin
 from .note import NoteMixin
 from .office_forms import OfficeFormsMixin
@@ -150,14 +151,14 @@ class Image(Body):
     _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
-class Presentation(VarDeclMixin, NRMixin, Body):
+class Presentation(LinkMixin, VarDeclMixin, NRMixin, Body):
     """Root of the Presentation document content, "office:presentation"."""
 
     _tag: str = "office:presentation"
     _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
-class Spreadsheet(VarDeclMixin, AnnotationMixin, NRMixin, Body):
+class Spreadsheet(LinkMixin, AnnotationMixin, NRMixin, Body):
     """Root of the Spreadsheet document content, "office:spreadsheet"."""
 
     _tag: str = "office:spreadsheet"
@@ -165,6 +166,7 @@ class Spreadsheet(VarDeclMixin, AnnotationMixin, NRMixin, Body):
 
 
 class Text(
+    LinkMixin,
     VarDeclMixin,
     NRMixin,
     FormMixin,

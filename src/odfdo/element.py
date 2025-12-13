@@ -55,7 +55,6 @@ if TYPE_CHECKING:
     from .frame import Frame
     from .header import Header
     from .image import DrawImage
-    from .link import Link
     from .list import List
     from .paragraph import Paragraph, Span
     from .shapes import (
@@ -2634,63 +2633,6 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::draw:page", position, draw_name=name, content=content
-        )  # type: ignore[return-value]
-
-    # Links
-
-    def get_links(
-        self,
-        name: str | None = None,
-        title: str | None = None,
-        url: str | None = None,
-        content: str | None = None,
-    ) -> list[Link]:
-        """Returns all links that match the specified criteria.
-
-        Args:
-            name (str | None): The name of the link.
-            title (str | None): The title of the link.
-            url (str | None): A regex pattern to match against the link's URL.
-            content (str | None): A regex pattern to match against the link's content.
-
-        Returns:
-            list[Link]: A list of Link instances matching the criteria.
-        """
-        return self._filtered_elements(
-            "descendant::text:a",
-            office_name=name,
-            office_title=title,
-            url=url,
-            content=content,
-        )  # type: ignore[return-value]
-
-    def get_link(
-        self,
-        position: int = 0,
-        name: str | None = None,
-        title: str | None = None,
-        url: str | None = None,
-        content: str | None = None,
-    ) -> Link | None:
-        """Returns a single link that matches the specified criteria.
-
-        Args:
-            position (int): The 0-based index of the matching link to return.
-            name (str | None): The name of the link.
-            title (str | None): The title of the link.
-            url (str | None): A regex pattern to match against the link's URL.
-            content (str | None): A regex pattern to match against the link's content.
-
-        Returns:
-            Link | None: A Link instance, or None if no link matches the criteria.
-        """
-        return self._filtered_element(
-            "descendant::text:a",
-            position,
-            office_name=name,
-            office_title=title,
-            url=url,
-            content=content,
         )  # type: ignore[return-value]
 
     # Shapes elements

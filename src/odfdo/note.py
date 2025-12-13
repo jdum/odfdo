@@ -28,6 +28,7 @@ from typing import Any, ClassVar, Union, cast
 
 from .annotation import Annotation, AnnotationEnd, get_unique_office_name  # noqa: F401
 from .element import Element, PropDef, PropDefBool, register_element_class
+from .mixin_link import LinkMixin
 from .mixin_md import MDNote
 from .section import SectionMixin
 
@@ -92,14 +93,14 @@ class NoteMixin(Element):
         )
 
 
-class NoteBody(SectionMixin):
+class NoteBody(LinkMixin, SectionMixin):
     """Container for the content of a note, "text:note-body"."""
 
     _tag: str = "text:note-body"
     _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
-class Note(MDNote, Element):
+class Note(MDNote, LinkMixin, Element):
     """A note (footnote or endnote), "text:note".
 
     Either a footnote or a endnote element with the given text, optionally

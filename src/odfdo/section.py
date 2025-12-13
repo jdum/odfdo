@@ -26,6 +26,7 @@ from __future__ import annotations
 from typing import Any, Union, cast
 
 from .element import Element, PropDef, register_element_class
+from .mixin_link import LinkMixin
 
 
 class SectionMixin(Element):
@@ -103,7 +104,7 @@ class SectionMixin(Element):
         )
 
 
-class Section(SectionMixin):
+class Section(LinkMixin, SectionMixin):
     """Represents a section within a text document, "text:section".
 
     A section is a container for document content, often used for
