@@ -35,8 +35,8 @@ def _get_successor(
     it traverses up to the parent and tries to find the successor of the parent.
 
     Args:
-        element (Element): The current element to find the successor for.
-        target (Element): The corresponding element in the target structure,
+        element: The current element to find the successor for.
+        target: The corresponding element in the target structure,
             used to maintain context during recursion.
 
     Returns:
@@ -59,7 +59,7 @@ def _find_any_id(element: Element) -> tuple[str, str, str]:
     It iterates through a predefined list of common ODF ID attributes.
 
     Args:
-        element (Element): The element to search for an ID.
+        element: The element to search for an ID.
 
     Returns:
         tuple[str, str, str]: A tuple containing the element's tag, the name
@@ -96,13 +96,13 @@ def _common_ancestor(
     The elements are identified by their tag, attribute, and value.
 
     Args:
-        root (Element): The root element from which to start the search.
-        tag1 (str): The tag name of the first element.
-        attr1 (str): The attribute name of the first element.
-        val1 (str): The value of the attribute for the first element.
-        tag2 (str): The tag name of the second element.
-        attr2 (str): The attribute name of the second element.
-        val2 (str): The value of the attribute for the second element.
+        root: The root element from which to start the search.
+        tag1: The tag name of the first element.
+        attr1: The attribute name of the first element.
+        val1: The value of the attribute for the first element.
+        tag2: The tag name of the second element.
+        attr2: The attribute name of the second element.
+        val2: The value of the attribute for the second element.
 
     Returns:
         Element | None: The common ancestor element, or `None` if not found.
@@ -138,9 +138,9 @@ def _get_between_base(
     the XML tree between them, collecting all elements.
 
     Args:
-        element (Element): The starting element for the search (usually the document root).
-        tag1 (Element): The starting marker element.
-        tag2 (Element): The ending marker element.
+        element: The starting element for the search (usually the document root).
+        tag1: The starting marker element.
+        tag2: The ending marker element.
 
     Returns:
         list[Element]: A list of elements found between `tag1` and `tag2`.
@@ -244,7 +244,7 @@ def _clean_inner_list(inner: list[Element]) -> list[Element]:
     Specifically targets tags related to tracked changes and reference marks.
 
     Args:
-        inner (list[Element]): The list of elements to clean.
+        inner: The list of elements to clean.
 
     Returns:
         list[Element]: A new list with unwanted elements removed or stripped.
@@ -272,7 +272,7 @@ def _no_header_inner_list(inner: list[Element]) -> list[Element]:
     """Internal helper to convert header elements (`text:h`) to paragraph elements (`text:p`).
 
     Args:
-        inner (list[Element]): The list of elements to process.
+        inner: The list of elements to process.
 
     Returns:
         list[Element]: A new list where `text:h` elements are replaced by `text:p`
@@ -307,18 +307,18 @@ def elements_between(
     elements. These markers should be unique and possess an ID attribute.
 
     Args:
-        base (Element): The base element to search within (e.g., the document body).
-        start (Element): The starting marker element.
-        end (Element): The ending marker element.
-        as_text (bool): If True, returns the concatenated text content of the
+        base: The base element to search within (e.g., the document body).
+        start: The starting marker element.
+        end: The ending marker element.
+        as_text: If True, returns the concatenated text content of the
             elements. Otherwise, returns a list of `Element` objects.
-        clean (bool): If True, cleans the extracted elements by removing unwanted
+        clean: If True, cleans the extracted elements by removing unwanted
             tags (e.g., tracked changes marks).
-        no_header (bool): If True, converts any `text:h` (header) elements
+        no_header: If True, converts any `text:h` (header) elements
             within the extracted content to `text:p` (paragraph) elements.
 
     Returns:
-        list[Element] | str: A list of `Element` objects between the markers,
+        list | str: A list of `Element` objects between the markers,
             or a string if `as_text` is True.
 
     Raises:

@@ -156,7 +156,7 @@ def _decode_qname(qname: str) -> tuple[str | None, str]:
     ("urn:oasis:names:tc:opendocument:xmlns:office:1.0", "document").
 
     Args:
-        qname (str): The qualified name (e.g., "prefix:localname" or "localname").
+        qname: The qualified name (e.g., "prefix:localname" or "localname").
 
     Returns:
         tuple[str | None, str]: A tuple containing the namespace URI (or None if no prefix)
@@ -179,7 +179,7 @@ def _uri_to_prefix(uri: str) -> str:
     """Find the XML prefix associated with a given namespace URI.
 
     Args:
-        uri (str): The namespace URI to look up.
+        uri: The namespace URI to look up.
 
     Returns:
         str: The corresponding XML prefix.
@@ -197,7 +197,7 @@ def _get_prefixed_name(tag: str) -> str:
     """Convert an lxml-style tag name (e.g., "{uri}name") to a prefixed name (e.g., "prefix:name").
 
     Args:
-        tag (str): The tag name in lxml's "{uri}name" format.
+        tag: The tag name in lxml's "{uri}name" format.
 
     Returns:
         str: The tag name in "prefix:name" format.
@@ -213,7 +213,7 @@ def _get_lxml_tag(qname: str) -> str:
     """Convert a prefixed qualified name (e.g., "prefix:name") to an lxml-style tag name (e.g., "{uri}name").
 
     Args:
-        qname (str): The qualified name in "prefix:name" format.
+        qname: The qualified name in "prefix:name" format.
 
     Returns:
         str: The tag name in lxml's "{uri}name" format.
@@ -229,7 +229,7 @@ def _get_lxml_tag_or_name(qname: str) -> str:
     If it has no prefix, it returns just the local name.
 
     Args:
-        qname (str): The qualified name (e.g., "prefix:localname" or "localname").
+        qname: The qualified name (e.g., "prefix:localname" or "localname").
 
     Returns:
         str: The tag name in lxml's "{uri}name" format, or the local name if no prefix.
@@ -244,7 +244,7 @@ def _family_style_tagname(family: str) -> str:
     """Map a style family string to its corresponding ODF tag name.
 
     Args:
-        family (str): The style family (e.g., "paragraph", "text").
+        family: The style family (e.g., "paragraph", "text").
 
     Returns:
         str: The ODF tag name associated with the style family.
@@ -267,7 +267,7 @@ def xpath_compile(path: str) -> XPath:
     the same XPath query multiple times.
 
     Args:
-        path (str): The XPath query string.
+        path: The XPath query string.
 
     Returns:
         XPath: A compiled `lxml.etree.XPath` object.
@@ -282,8 +282,8 @@ def xpath_return_elements(xpath: XPath, target: _Element) -> list[_Element]:
     objects are returned.
 
     Args:
-        xpath (XPath): A compiled `lxml.etree.XPath` object.
-        target (_Element): The lxml element on which to apply the XPath query.
+        xpath: A compiled `lxml.etree.XPath` object.
+        target: The lxml element on which to apply the XPath query.
 
     Returns:
         list[_Element]: A list of matching `lxml.etree._Element` objects.
@@ -304,8 +304,8 @@ def xpath_return_strings(xpath: XPath, target: _Element) -> list[str]:
     are returned.
 
     Args:
-        xpath (XPath): A compiled `lxml.etree.XPath` object.
-        target (_Element): The lxml element on which to apply the XPath query.
+        xpath: A compiled `lxml.etree.XPath` object.
+        target: The lxml element on which to apply the XPath query.
 
     Returns:
         list[str]: A list of matching string objects.
@@ -338,7 +338,7 @@ def register_element_class(cls: type[Element]) -> None:
     Element class.
 
     Args:
-        cls (type[Element]): Python class, subtype of Element.
+        cls: Python class, subtype of Element.
     """
     # Turn tag name into what lxml is expecting
     _register_element_class(cls, cls._tag)
@@ -357,8 +357,8 @@ def register_element_class_list(cls: type[Element], tag_list: Iterable[str]) -> 
     specialized style classes.
 
     Args:
-        cls (type[Element]): Python class.
-        tag_list (Iterable[str]): Iterable of qname tags for the class.
+        cls: Python class.
+        tag_list: Iterable of qname tags for the class.
     """
     # Turn tag name into what lxml is expecting
     for qname in tag_list:
@@ -390,7 +390,7 @@ class EText(str):
         """Initialize EText instance.
 
         Args:
-            text_result (_Element): The lxml element representing the text node.
+            text_result: The lxml element representing the text node.
         """
         self.__parent = text_result.getparent()
         self.__is_text: bool = bool(text_result.is_text)
@@ -482,7 +482,7 @@ class Element(MDBase):
         ODF XML Element of the appropriate class (e.g., Paragraph, Table, etc.).
 
         Args:
-            tag_or_elem (str | _Element): Either an ODF string tag (e.g., "text:p")
+            tag_or_elem: Either an ODF string tag (e.g., "text:p")
                 or an existing `lxml.etree._Element` instance.
 
         Returns:
@@ -508,8 +508,8 @@ class Element(MDBase):
         for cloning operations, potentially utilizing a cache.
 
         Args:
-            tree_element (_Element): The `lxml.etree._Element` instance to clone.
-            cache (tuple | None): An optional cache to be copied to the new element.
+            tree_element: The `lxml.etree._Element` instance to clone.
+            cache: An optional cache to be copied to the new element.
 
         Returns:
             Element: A new Element instance (or subclass) representing the cloned element.
@@ -527,7 +527,7 @@ class Element(MDBase):
         This method is intended to be redefined by subclasses that utilize caching.
 
         Args:
-            cache (tuple): The cache data to be copied.
+            cache: The cache data to be copied.
         """
         pass
 
@@ -536,7 +536,7 @@ class Element(MDBase):
         """Create an lxml Element from an ODF tag string.
 
         Args:
-            tag (str): The ODF tag string (e.g., "text:p", "<text:p/>").
+            tag: The ODF tag string (e.g., "text:p", "<text:p/>").
 
         Returns:
             _Element: An lxml Element instance.
@@ -2071,8 +2071,8 @@ class Element(MDBase):
         """Returns all paragraphs that match the specified criteria.
 
         Args:
-            style (str | None): The name of the style to filter paragraphs by.
-            content (str | None): A regex pattern to match against the paragraph's content.
+            style: The name of the style to filter paragraphs by.
+            content: A regex pattern to match against the paragraph's content.
 
         Returns:
             list[Paragraph]: A list of Paragraph instances matching the criteria.
@@ -2100,8 +2100,8 @@ class Element(MDBase):
         """Returns a single paragraph that matches the specified criteria.
 
         Args:
-            position (int): The 0-based index of the matching paragraph to return.
-            content (str | None): A regex pattern to match against the paragraph's content.
+            position: The 0-based index of the matching paragraph to return.
+            content: A regex pattern to match against the paragraph's content.
 
         Returns:
             Paragraph | None: A Paragraph instance, or None if no paragraph matches the criteria.
@@ -2122,8 +2122,8 @@ class Element(MDBase):
         """Returns all spans that match the specified criteria.
 
         Args:
-            style (str | None): The name of the style to filter spans by.
-            content (str | None): A regex pattern to match against the span's content.
+            style: The name of the style to filter spans by.
+            content: A regex pattern to match against the span's content.
 
         Returns:
             list[Span]: A list of Span instances matching the criteria.
@@ -2149,8 +2149,8 @@ class Element(MDBase):
         """Returns a single span that matches the specified criteria.
 
         Args:
-            position (int): The 0-based index of the matching span to return.
-            content (str | None): A regex pattern to match against the span's content.
+            position: The 0-based index of the matching span to return.
+            content: A regex pattern to match against the span's content.
 
         Returns:
             Span | None: A Span instance, or None if no span matches the criteria.
@@ -2170,9 +2170,9 @@ class Element(MDBase):
         """Returns all headers that match the specified criteria.
 
         Args:
-            style (str | None): The name of the style to filter headers by.
-            outline_level (str | None): The outline level to filter headers by.
-            content (str | None): A regex pattern to match against the header's content.
+            style: The name of the style to filter headers by.
+            outline_level: The outline level to filter headers by.
+            content: A regex pattern to match against the header's content.
 
         Returns:
             list[Header]: A list of Header instances matching the criteria.
@@ -2202,9 +2202,9 @@ class Element(MDBase):
         """Returns a single header that matches the specified criteria.
 
         Args:
-            position (int): The 0-based index of the matching header to return.
-            outline_level (str | None): The outline level to filter headers by.
-            content (str | None): A regex pattern to match against the header's content.
+            position: The 0-based index of the matching header to return.
+            outline_level: The outline level to filter headers by.
+            content: A regex pattern to match against the header's content.
 
         Returns:
             Header | None: A Header instance, or None if no header matches the criteria.
@@ -2226,8 +2226,8 @@ class Element(MDBase):
         """Returns all lists that match the specified criteria.
 
         Args:
-            style (str | None): The name of the style to filter lists by.
-            content (str | None): A regex pattern to match against the list's content.
+            style: The name of the style to filter lists by.
+            content: A regex pattern to match against the list's content.
 
         Returns:
             list[List]: A list of List instances matching the criteria.
@@ -2256,8 +2256,8 @@ class Element(MDBase):
         """Returns a single list that matches the specified criteria.
 
         Args:
-            position (int): The 0-based index of the matching list to return.
-            content (str | None): A regex pattern to match against the list's content.
+            position: The 0-based index of the matching list to return.
+            content: A regex pattern to match against the list's content.
 
         Returns:
             List | None: A List instance, or None if no list matches the criteria.
@@ -2279,11 +2279,11 @@ class Element(MDBase):
         """Returns all frames that match the specified criteria.
 
         Args:
-            presentation_class (str | None): The presentation class to filter frames by.
-            style (str | None): The name of the style to filter frames by.
-            title (str | None): A regex pattern to match against the frame's title.
-            description (str | None): A regex pattern to match against the frame's description.
-            content (str | None): A regex pattern to match against the frame's content.
+            presentation_class: The presentation class to filter frames by.
+            style: The name of the style to filter frames by.
+            title: A regex pattern to match against the frame's title.
+            description: A regex pattern to match against the frame's description.
+            content: A regex pattern to match against the frame's content.
 
         Returns:
             list[Frame]: A list of Frame instances matching the criteria.
@@ -2318,12 +2318,12 @@ class Element(MDBase):
         """Returns a single frame that matches the specified criteria.
 
         Args:
-            position (int): The 0-based index of the matching frame to return.
-            name (str | None): The name of the frame.
-            presentation_class (str | None): The presentation class to filter frames by.
-            title (str | None): A regex pattern to match against the frame's title.
-            description (str | None): A regex pattern to match against the frame's description.
-            content (str | None): A regex pattern to match against the frame's content.
+            position: The 0-based index of the matching frame to return.
+            name: The name of the frame.
+            presentation_class: The presentation class to filter frames by.
+            title: A regex pattern to match against the frame's title.
+            description: A regex pattern to match against the frame's description.
+            content: A regex pattern to match against the frame's content.
 
         Returns:
             Frame | None: A Frame instance, or None if no frame matches the criteria.
@@ -2349,9 +2349,9 @@ class Element(MDBase):
         """Returns all images that match the specified criteria.
 
         Args:
-            style (str | None): The name of the style to filter images by.
-            url (str | None): A regex pattern to match against the image's URL.
-            content (str | None): A regex pattern to match against the image's content.
+            style: The name of the style to filter images by.
+            url: A regex pattern to match against the image's URL.
+            content: A regex pattern to match against the image's content.
 
         Returns:
             list[DrawImage]: A list of DrawImage instances matching the criteria.
@@ -2379,10 +2379,10 @@ class Element(MDBase):
         """Returns a single image that matches the specified criteria.
 
         Args:
-            position (int): The 0-based index of the matching image to return.
-            name (str | None): The name of the image (stored in its parent frame).
-            url (str | None): A regex pattern to match against the image's URL.
-            content (str | None): A regex pattern to match against the image's content.
+            position: The 0-based index of the matching image to return.
+            name: The name of the image (stored in its parent frame).
+            url: A regex pattern to match against the image's URL.
+            content: A regex pattern to match against the image's content.
 
         Returns:
             DrawImage | None: A DrawImage instance, or None if no image matches the criteria.
@@ -2418,7 +2418,7 @@ class Element(MDBase):
         """Returns all variable sets that match the specified criteria.
 
         Args:
-            name (str | None): The name of the variable set to filter by.
+            name: The name of the variable set to filter by.
 
         Returns:
             list[VarSet]: A list of VarSet instances matching the criteria.
@@ -2432,8 +2432,8 @@ class Element(MDBase):
         """Returns a single variable set that matches the specified criteria.
 
         Args:
-            name (str): The name of the variable set to retrieve.
-            position (int): The 0-based index of the matching variable set to return.
+            name: The name of the variable set to retrieve.
+            position: The 0-based index of the matching variable set to return.
                 A negative value (e.g., -1) typically refers to the last one found.
 
         Returns:
@@ -2451,8 +2451,8 @@ class Element(MDBase):
         """Returns the value of the last variable set for the given name.
 
         Args:
-            name (str): The name of the variable to retrieve its value.
-            value_type (str | None): The expected type of the variable's value.
+            name: The name of the variable to retrieve its value.
+            value_type: The expected type of the variable's value.
                 Can be 'boolean', 'currency', 'date', 'float', 'percentage',
                 'string', 'time', or None for automatic type detection.
 
@@ -2476,8 +2476,8 @@ class Element(MDBase):
         """Returns all draw pages that match the specified criteria.
 
         Args:
-            style (str | None): The name of the style to filter draw pages by.
-            content (str | None): A regex pattern to match against the draw page's content.
+            style: The name of the style to filter draw pages by.
+            content: A regex pattern to match against the draw page's content.
 
         Returns:
             list[DrawPage]: A list of DrawPage instances matching the criteria.
@@ -2495,9 +2495,9 @@ class Element(MDBase):
         """Returns a single draw page that matches the specified criteria.
 
         Args:
-            position (int): The 0-based index of the matching draw page to return.
-            name (str | None): The name of the draw page.
-            content (str | None): A regex pattern to match against the draw page's content.
+            position: The 0-based index of the matching draw page to return.
+            name: The name of the draw page.
+            content: A regex pattern to match against the draw page's content.
 
         Returns:
             DrawPage | None: A DrawPage instance, or None if no draw page matches the criteria.
@@ -2519,9 +2519,9 @@ class Element(MDBase):
         """Returns all draw groups that match the specified criteria.
 
         Args:
-            title (str | None): A regex pattern to match against the group's title.
-            description (str | None): A regex pattern to match against the group's description.
-            content (str | None): A regex pattern to match against the group's content.
+            title: A regex pattern to match against the group's title.
+            description: A regex pattern to match against the group's description.
+            content: A regex pattern to match against the group's content.
 
         Returns:
             list[DrawGroup]: A list of DrawGroup instances matching the criteria.
@@ -2544,11 +2544,11 @@ class Element(MDBase):
         """Returns a single draw group that matches the specified criteria.
 
         Args:
-            position (int): The 0-based index of the matching draw group to return.
-            name (str | None): The name of the draw group.
-            title (str | None): A regex pattern to match against the group's title.
-            description (str | None): A regex pattern to match against the group's description.
-            content (str | None): A regex pattern to match against the group's content.
+            position: The 0-based index of the matching draw group to return.
+            name: The name of the draw group.
+            title: A regex pattern to match against the group's title.
+            description: A regex pattern to match against the group's description.
+            content: A regex pattern to match against the group's content.
 
         Returns:
             DrawGroup | None: A DrawGroup instance, or None if no group matches the criteria.
@@ -2573,9 +2573,9 @@ class Element(MDBase):
         """Returns all draw lines that match the specified criteria.
 
         Args:
-            draw_style (str | None): The name of the draw style to filter lines by.
-            draw_text_style (str | None): The name of the draw text style to filter lines by.
-            content (str | None): A regex pattern to match against the line's content.
+            draw_style: The name of the draw style to filter lines by.
+            draw_text_style: The name of the draw text style to filter lines by.
+            content: A regex pattern to match against the line's content.
 
         Returns:
             list[LineShape]: A list of LineShape instances matching the criteria.
@@ -2596,9 +2596,9 @@ class Element(MDBase):
         """Returns a single draw line that matches the specified criteria.
 
         Args:
-            position (int): The 0-based index of the matching draw line to return.
-            id (str | None): The ID of the draw line.
-            content (str | None): A regex pattern to match against the line's content.
+            position: The 0-based index of the matching draw line to return.
+            id: The ID of the draw line.
+            content: A regex pattern to match against the line's content.
 
         Returns:
             LineShape | None: A LineShape instance, or None if no line matches the criteria.
