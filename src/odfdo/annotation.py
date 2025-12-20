@@ -41,10 +41,19 @@ if TYPE_CHECKING:
 class AnnotationMixin(Element):
     """Mixin class for classes containing Annotations.
 
-    Used by the following classes: "table:covered-table-cell",
-    "table:table-cell", "text:a", "text:h", "text:meta", "text:meta-field",
-    "text:p", "text:ruby-base", "text:span". And with "office:text" and
-    "office:spreadsheet" for compatibility with previous versions.
+    Used by the following classes:
+        - "table:covered-table-cell"
+        - "table:table-cell"
+        - "text:a"
+        - "text:h"
+        - "text:meta"
+        - "text:meta-field"
+        - "text:p"
+        - "text:ruby-base"
+        - "text:span"
+
+    and "office:text", "office:spreadsheet" for compatibility with previous
+    versions.
     """
 
     def get_annotations(

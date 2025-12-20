@@ -22,16 +22,15 @@
 """Classes related to user-defined fields in ODF documents.
 
 This module provides classes for managing user field declarations
-and their content within the document content, such as
-'text:user-field-get', and 'text:user-defined'.
+content within the document, "text:user-defined", text:user-field-get",
+"text:user-field-input".
 """
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, Union, cast
 
-from .document import Document
-from .element import PropDef, register_element_class
+from .element import Element, PropDef, register_element_class
 from .element_typed import ElementTyped
 
 # for compatibility for version <= 3.18.2
@@ -39,6 +38,89 @@ from .user_field_declaration import (  # noqa: F401
     UserFieldDecl,
     UserFieldDecls,
 )
+
+if TYPE_CHECKING:
+    from datetime import datetime, timedelta
+    from decimal import Decimal
+
+    from .document import Document
+
+
+class UserDefinedMixin(Element):
+    """Mixin class for classes containing user defined fields.
+
+    Used by the following classes:
+        - "text:a"
+        - "text:h"
+        - "text:meta"
+        - "text:meta-field"
+        - "text:p"
+        - "text:ruby-base"
+        - "text:span"
+
+    and "office:text", "office:spreadsheet","office:presentation" for
+    compatibility with previous versions.
+    """
+
+    def get_user_defined_list(self) -> list[UserDefined]:
+        """Returns all user-defined field declarations as a list.
+
+        Returns:
+            list[UserDefined]: A list of all UserDefined instances that are descendants of this element.
+        """
+        return cast(
+            list[UserDefined],
+            self._filtered_elements(
+                "descendant::text:user-defined",
+            ),
+        )
+
+    @property
+    def user_defined_list(self) -> list[UserDefined]:
+        """Returns all user-defined field declarations as a list.
+
+        Returns:
+            list[UserDefined]: A list of all UserDefined instances that are descendants of this element.
+        """
+        return self.get_user_defined_list()
+
+    def get_user_defined(self, name: str, position: int = 0) -> UserDefined | None:
+        """Returns a single user-defined field declaration that matches the specified criteria.
+
+        Args:
+            name: The name of the user-defined field to retrieve.
+            position: The 0-based index of the matching user-defined field to return.
+
+        Returns:
+            UserDefined | None: A UserDefined instance, or None if no declaration matches the criteria.
+        """
+        return cast(
+            Union[None, UserDefined],
+            self._filtered_element(
+                "descendant::text:user-defined", position, text_name=name
+            ),
+        )
+
+    def get_user_defined_value(
+        self, name: str, value_type: str | None = None
+    ) -> bool | str | int | float | Decimal | datetime | timedelta | None:
+        """Returns the value of the specified user-defined field.
+
+        Args:
+            name (str): The name of the user-defined field to retrieve its value.
+            value_type (str | None): The expected type of the user-defined field's value.
+                Can be 'boolean', 'date', 'float', 'string', 'time', or None
+                for automatic type detection.
+
+        Returns:
+            bool | str | int | float | Decimal | datetime | timedelta | None:
+                The value of the user-defined field, cast to the most appropriate
+                Python type, or None if the user-defined field is not found.
+        """
+        user_defined = self.get_user_defined(name)
+        if user_defined is None:
+            return None
+        return user_defined.get_value(value_type)  # type: ignore[return-value]
 
 
 class UserFieldGet(ElementTyped):

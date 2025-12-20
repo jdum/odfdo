@@ -42,6 +42,7 @@ from .note import NoteMixin
 from .spacer import Spacer
 from .span import Span
 from .tab import Tab
+from .user_field import UserDefinedMixin
 
 __all__ = [
     "LineBreak",
@@ -54,7 +55,13 @@ __all__ = [
 
 
 class Paragraph(
-    MDParagraph, LinkMixin, ParaFormattedTextMixin, ParaMixin, NoteMixin, Element
+    MDParagraph,
+    UserDefinedMixin,
+    LinkMixin,
+    ParaFormattedTextMixin,
+    ParaMixin,
+    NoteMixin,
+    Element,
 ):
     """An ODF paragraph, "text:p".
 

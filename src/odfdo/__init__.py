@@ -175,6 +175,7 @@ __all__ = [  # noqa: RUF022
     "TrackedChanges",
     "TrackedChangesMixin",
     "UserDefined",
+    "UserDefinedMixin",
     "UserFieldDecl",
     "UserFieldDeclContMixin",
     "UserFieldDeclMixin",
@@ -367,11 +368,7 @@ from .tracked_changes import (
     TrackedChanges,
     TrackedChangesMixin,
 )
-from .user_field import (
-    UserDefined,
-    UserFieldGet,
-    UserFieldInput,
-)
+from .user_field import UserDefined, UserDefinedMixin, UserFieldGet, UserFieldInput
 from .user_field_declaration import (
     UserFieldDecl,
     UserFieldDeclContMixin,

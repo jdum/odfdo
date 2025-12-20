@@ -32,10 +32,12 @@ from .mixin_md import MDLink
 from .mixin_paragraph_formatted import ParaFormattedTextMixin
 from .note import NoteMixin
 from .reference import ReferenceMixin
+from .user_field import UserDefinedMixin
 
 
 class Link(
     MDLink,
+    UserDefinedMixin,
     ParaFormattedTextMixin,
     ReferenceMixin,
     BookmarkMixin,

@@ -227,3 +227,9 @@ def test_get_user_defined_value(document):
     assert value is True
     value = body.get_user_defined_value("unknown_in_meta2")
     assert value == datetime(2013, 12, 30)
+
+
+def test_get_user_defined_get_none(document):
+    body = document.body
+    value = body.get_user_defined_value("unknown")
+    assert value is None

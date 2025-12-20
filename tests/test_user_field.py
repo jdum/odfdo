@@ -90,3 +90,9 @@ def test_get_user_field_get(document):
     body = document.body
     value = body.get_user_field_value(CHAMP)
     assert value
+
+
+def test_get_user_field_get_none(document):
+    body = document.body
+    value = body.get_user_field_value("unknown")
+    assert value is None

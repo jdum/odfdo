@@ -72,7 +72,6 @@ if TYPE_CHECKING:
         TextChangeEnd,
         TextChangeStart,
     )
-    from .user_field import UserDefined
     from .variable import VarSet
 
 ODF_NAMESPACES = {
@@ -2468,62 +2467,7 @@ class Element(MDBase):
             return None
         return variable_set.get_value(value_type)  # type: ignore[return-value]
 
-    # User defined fields
-    # They are fields who should contain a copy of a user defined medtadata
 
-    def get_user_defined_list(self) -> list[UserDefined]:
-        """Returns all user-defined field declarations as a list.
-
-        Returns:
-            list[UserDefined]: A list of all UserDefined instances that are descendants of this element.
-        """
-        return self._filtered_elements(
-            "descendant::text:user-defined",
-        )  # type: ignore[return-value]
-
-    @property
-    def user_defined_list(self) -> list[UserDefined]:
-        """Returns all user-defined field declarations as a list.
-
-        Returns:
-            list[UserDefined]: A list of all UserDefined instances that are descendants of this element.
-        """
-        return self.get_user_defined_list()
-
-    def get_user_defined(self, name: str, position: int = 0) -> UserDefined | None:
-        """Returns a single user-defined field declaration that matches the specified criteria.
-
-        Args:
-            name (str): The name of the user-defined field to retrieve.
-            position (int): The 0-based index of the matching user-defined field to return.
-
-        Returns:
-            UserDefined | None: A UserDefined instance, or None if no declaration matches the criteria.
-        """
-        return self._filtered_element(
-            "descendant::text:user-defined", position, text_name=name
-        )  # type: ignore[return-value]
-
-    def get_user_defined_value(
-        self, name: str, value_type: str | None = None
-    ) -> bool | str | int | float | Decimal | datetime | timedelta | None:
-        """Returns the value of the specified user-defined field.
-
-        Args:
-            name (str): The name of the user-defined field to retrieve its value.
-            value_type (str | None): The expected type of the user-defined field's value.
-                Can be 'boolean', 'date', 'float', 'string', 'time', or None
-                for automatic type detection.
-
-        Returns:
-            bool | str | int | float | Decimal | datetime | timedelta | None:
-                The value of the user-defined field, cast to the most appropriate
-                Python type, or None if the user-defined field is not found.
-        """
-        user_defined = self.get_user_defined(name)
-        if user_defined is None:
-            return None
-        return user_defined.get_value(value_type)  # type: ignore[return-value]
 
     # Draw Pages
 

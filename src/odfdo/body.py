@@ -36,6 +36,7 @@ from .reference import ReferenceMixin
 from .section import SectionMixin
 from .table import Table
 from .tracked_changes import TrackedChangesMixin
+from .user_field import UserDefinedMixin
 from .user_field_declaration import UserFieldDeclContMixin
 from .variable_declaration import VarDeclMixin
 
@@ -152,7 +153,9 @@ class Image(Body):
     _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
-class Presentation(UserFieldDeclContMixin, LinkMixin, VarDeclMixin, NRMixin, Body):
+class Presentation(
+    UserDefinedMixin, UserFieldDeclContMixin, LinkMixin, VarDeclMixin, NRMixin, Body
+):
     """Root of the Presentation document content, "office:presentation"."""
 
     _tag: str = "office:presentation"
@@ -160,7 +163,13 @@ class Presentation(UserFieldDeclContMixin, LinkMixin, VarDeclMixin, NRMixin, Bod
 
 
 class Spreadsheet(
-    UserFieldDeclContMixin, VarDeclMixin, LinkMixin, AnnotationMixin, NRMixin, Body
+    UserDefinedMixin,
+    UserFieldDeclContMixin,
+    VarDeclMixin,
+    LinkMixin,
+    AnnotationMixin,
+    NRMixin,
+    Body,
 ):
     """Root of the Spreadsheet document content, "office:spreadsheet"."""
 
@@ -169,8 +178,9 @@ class Spreadsheet(
 
 
 class Text(
-    LinkMixin,
+    UserDefinedMixin,
     UserFieldDeclContMixin,
+    LinkMixin,
     VarDeclMixin,
     NRMixin,
     FormMixin,

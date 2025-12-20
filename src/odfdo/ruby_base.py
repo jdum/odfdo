@@ -27,9 +27,17 @@ from .element import register_element_class
 from .mixin_link import LinkMixin
 from .note import NoteMixin
 from .reference import ReferenceMixin
+from .user_field import UserDefinedMixin
 
 
-class RubyBase(LinkMixin, ReferenceMixin, BookmarkMixin, AnnotationMixin, NoteMixin):
+class RubyBase(
+    UserDefinedMixin,
+    LinkMixin,
+    ReferenceMixin,
+    BookmarkMixin,
+    AnnotationMixin,
+    NoteMixin,
+):
     """Represents the base text for a ruby annotation, "text:ruby-base".
 
     This element contains the text content that is to be annotated. It can

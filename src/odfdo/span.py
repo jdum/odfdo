@@ -37,11 +37,13 @@ from .mixin_md import MDParagraph, MDSpan
 from .mixin_paragraph import ParaMixin
 from .mixin_paragraph_formatted import ParaFormattedTextMixin
 from .note import NoteMixin
+from .user_field import UserDefinedMixin
 
 
 class Span(
     MDSpan,
     MDParagraph,
+    UserDefinedMixin,
     LinkMixin,
     ParaFormattedTextMixin,
     ParaMixin,
