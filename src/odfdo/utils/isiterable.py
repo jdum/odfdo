@@ -40,7 +40,7 @@ def isiterable(instance: Any) -> bool:
     also include simple text.
 
     Args:
-        instance (Any): The object to check.
+        instance: The object to check.
 
     Returns:
         bool: True if the object is iterable (and not a string/bytes),

@@ -37,9 +37,9 @@ def translate_from_any(x: str | int, length: int, idx: int) -> int:
     """Translate a coordinate from any format to a 0-based integer index.
 
     Args:
-        x (str | int): The coordinate, which can be a 1-based integer or a string.
-        length (int): The length of the axis for handling negative indices.
-        idx (int): The index in the coordinate tuple to use (0 for x, 1 for y).
+        x: The coordinate, which can be a 1-based integer or a string.
+        length: The length of the axis for handling negative indices.
+        idx: The index in the coordinate tuple to use (0 for x, 1 for y).
 
     Returns:
         int: The 0-based integer coordinate.
@@ -66,7 +66,7 @@ def alpha_to_digit(alpha: str) -> int:
     For example, "A" becomes 0, "B" becomes 1, and "AB" becomes 27.
 
     Args:
-        alpha (str): The alphabetic column name.
+        alpha: The alphabetic column name.
 
     Returns:
         int: The 0-based numeric index of the column.
@@ -91,7 +91,7 @@ def digit_to_alpha(digit: int | str) -> str:
     For example, 0 becomes "A", 1 becomes "B", and 27 becomes "AB".
 
     Args:
-        digit (int | str): The 0-based numeric index of the column.
+        digit: The 0-based numeric index of the column.
 
     Returns:
         str: The alphabetic representation of the column.
@@ -117,8 +117,8 @@ def increment(value: int, step: int) -> int:
     This is used to handle negative indexing in table coordinates.
 
     Args:
-        value (int): The index value, which may be negative.
-        step (int): The total size of the dimension (e.g., table width or height).
+        value: The index value, which may be negative.
+        step: The total size of the dimension (e.g., table width or height).
 
     Returns:
         int: The adjusted, non-negative index.
@@ -140,7 +140,7 @@ def convert_coordinates(
     returned as a (col1, row1, col2, row2) tuple.
 
     Args:
-        obj (tuple | list | str): The coordinate representation to convert.
+        obj: The coordinate representation to convert.
 
     Returns:
         tuple[int | None, ...]: A tuple of 0-based integer coordinates.

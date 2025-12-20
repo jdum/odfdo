@@ -62,7 +62,7 @@ def read_document(input_path: str | None) -> Document:
     Otherwise, the document is read from the standard input stream.
 
     Args:
-        input_path (str | None): The path to the input ODF file.
+        input_path: The path to the input ODF file.
 
     Returns:
         Document: The loaded odfdo Document object.
@@ -84,8 +84,8 @@ def save_document(document: Document, output_path: str | None) -> None:
     Otherwise, the document is written to the standard output stream.
 
     Args:
-        document (Document): The odfdo Document object to save.
-        output_path (str | None): The path to the output ODF file.
+        document: The odfdo Document object to save.
+        output_path: The path to the output ODF file.
     """
     if output_path:
         return document.save(output_path)

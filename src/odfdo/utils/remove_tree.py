@@ -114,11 +114,11 @@ def remove_tree(
     descendant elements that are of the class `remove`.
 
     Args:
-        element (Element): The root element from which to start the removal.
-        remove (type[Element]): The class of the elements to be removed.
-        safe (type[Element], optional): A class that, if it is the parent of
+        element: The root element from which to start the removal.
+        remove: The class of the elements to be removed.
+        safe: A class that, if it is the parent of
             a matching element, will prevent that element from being removed.
-        keep_children (bool): If True (default), the children and text of the
+        keep_children: If True (default), the children and text of the
             removed elements are preserved and re-parented. If False, they
             are deleted along with the element.
     """

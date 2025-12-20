@@ -33,7 +33,7 @@ def hex2rgb(color: str) -> tuple[int, int, int]:
     """Convert a "#RRGGBB" hexadecimal color to an (R, G, B) tuple.
 
     Args:
-        color (str): The hexadecimal color string (e.g., "#FF0000").
+        color: The hexadecimal color string (e.g., "#FF0000").
 
     Returns:
         tuple[int, int, int]: A tuple representing the RGB values.
@@ -54,8 +54,8 @@ def rgb2hex(color: str | tuple[int, int, int]) -> str:
     """Convert a color name or (R, G, B) tuple to a "#RRGGBB" hexadecimal string.
 
     Args:
-        color (str | tuple[int, int, int]): The color as a standard CSS color
-            name (e.g., "yellow") or an RGB tuple (e.g., (238, 130, 238)).
+        color: The color as a standard CSS color name (e.g., "yellow") or an
+            RGB tuple (e.g., (238, 130, 238)).
 
     Returns:
         str: The hexadecimal representation of the color (e.g., "#FFFF00").
@@ -99,8 +99,8 @@ def hexa_color(color: str | tuple[int, int, int] | None = None) -> str | None:
     - A hex value is returned as is.
 
     Args:
-        color (str | tuple[int, int, int] | None): The color representation to
-            convert. Can be a color name, an RGB tuple, a hex string, or None.
+        color: The color representation to convert. Can be a color name, an
+            RGB tuple, a hex string, or None.
 
     Returns:
         str | None: The hexadecimal color string, or None if the input was None.

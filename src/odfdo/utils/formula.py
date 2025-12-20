@@ -36,7 +36,7 @@ def oooc_to_ooow(formula: str) -> str:
     `oooc` (Calc) namespace to the `ooow` (Writer) namespace.
 
     Args:
-        formula (str): The Calc formula string to convert (e.g., "oooc:=SUM([.A1:.A5])").
+        formula: The Calc formula string to convert (e.g., "oooc:=SUM([.A1:.A5])").
 
     Returns:
         str: The converted formula in Writer format (e.g., "ooow:sum <A1:A5>").

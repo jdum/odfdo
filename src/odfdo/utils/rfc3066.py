@@ -37,7 +37,7 @@ def is_RFC3066(lang: str) -> bool:
     alphanumeric.
 
     Args:
-        lang (str): The language tag string to validate.
+        lang: The language tag string to validate.
 
     Returns:
         bool: True if the tag is valid, False otherwise.
