@@ -38,9 +38,9 @@ def _add_object_text_paragraph(
     """Add formatted text from a paragraph-like object to the result list.
 
     Args:
-        obj (Element): The paragraph-like element to process.
-        context (dict[str, Any]): The formatting context.
-        result (list[str]): The list to append the formatted text to.
+        obj: The paragraph-like element to process.
+        context: The formatting context.
+        result: The list to append the formatted text to.
     """
     result.append(_formatted_text(obj, context))
 
@@ -76,8 +76,8 @@ def _formatted_text(element: Element, context: dict[str, Any]) -> str:
     applying specific formatting rules based on their type and the provided context.
 
     Args:
-        element (Element): The element from which to extract formatted text.
-        context (dict[str, Any]): A dictionary containing formatting context
+        element: The element from which to extract formatted text.
+        context: A dictionary containing formatting context
             (e.g., `rst_mode`, document reference).
 
     Returns:
@@ -104,9 +104,9 @@ def _add_object_text_span(
     and the span's style properties indicate such formatting.
 
     Args:
-        obj (Element): The span element to process.
-        context (dict[str, Any]): The formatting context, including 'rst_mode' and 'document'.
-        result (list[str]): The list to append the formatted text to.
+        obj: The span element to process.
+        context: The formatting context, including 'rst_mode' and 'document'.
+        result: The list to append the formatted text to.
     """
     text = _formatted_text(obj, context)
     if not context.get("rst_mode") or not text.strip():
@@ -147,9 +147,9 @@ def _add_object_text_note(
     based on the note's class.
 
     Args:
-        obj (Element): The note element to process.
-        context (dict[str, Any]): The formatting context.
-        result (list[str]): The list to append the formatted text to.
+        obj: The note element to process.
+        context: The formatting context.
+        result: The list to append the formatted text to.
     """
     if obj.note_class == "footnote":  # type:ignore
         return _add_object_text_note_foot(obj, context, result)
@@ -167,9 +167,9 @@ def _add_object_text_note_foot(
     `footnotes` list in the context.
 
     Args:
-        obj (Element): The footnote element to process.
-        context (dict[str, Any]): The formatting context, including 'footnotes' and 'rst_mode'.
-        result (list[str]): The list to append the formatted text to.
+        obj: The footnote element to process.
+        context: The formatting context, including 'footnotes' and 'rst_mode'.
+        result: The list to append the formatted text to.
     """
     container = context["footnotes"]
     citation = obj.citation  # type:ignore
@@ -196,9 +196,9 @@ def _add_object_text_note_end(
     `endnotes` list in the context.
 
     Args:
-        obj (Element): The endnote element to process.
-        context (dict[str, Any]): The formatting context, including 'endnotes' and 'rst_mode'.
-        result (list[str]): The list to append the formatted text to.
+        obj: The endnote element to process.
+        context: The formatting context, including 'endnotes' and 'rst_mode'.
+        result: The list to append the formatted text to.
     """
     container = context["endnotes"]
     citation = obj.citation  # type:ignore
@@ -225,9 +225,9 @@ def _add_object_text_annotation(
     and adds an appropriate marker to the result list.
 
     Args:
-        obj (Element): The annotation element to process.
-        context (dict[str, Any]): The formatting context, including 'annotations' and 'rst_mode'.
-        result (list[str]): The list to append the formatted text to.
+        obj: The annotation element to process.
+        context: The formatting context, including 'annotations' and 'rst_mode'.
+        result: The list to append the formatted text to.
     """
     context["annotations"].append(obj.note_body)  # type:ignore
     if context.get("rst_mode"):
@@ -244,9 +244,9 @@ def _add_object_text_tab(
     """Add a tab character for a tab element to the result list.
 
     Args:
-        obj (Element): The tab element to process.
-        context (dict[str, Any]): The formatting context (unused in this function).
-        result (list[str]): The list to append the tab character to.
+        obj: The tab element to process.
+        context: The formatting context (unused in this function).
+        result: The list to append the tab character to.
     """
     result.append("\t")
 
@@ -262,9 +262,9 @@ def _add_object_text_line_break(
     depending on the `rst_mode` in the context.
 
     Args:
-        obj (Element): The line break element to process.
-        context (dict[str, Any]): The formatting context, including 'rst_mode'.
-        result (list[str]): The list to append the line break to.
+        obj: The line break element to process.
+        context: The formatting context, including 'rst_mode'.
+        result: The list to append the line break to.
     """
     if context.get("rst_mode"):
         result.append("\n|")
@@ -284,9 +284,9 @@ def _add_object_text(
     text to the result list.
 
     Args:
-        obj (Element): The element to process.
-        context (dict[str, Any]): The formatting context.
-        result (list[str]): The list to append the formatted text to.
+        obj: The element to process.
+        context: The formatting context.
+        result: The list to append the formatted text to.
     """
     tag = obj.tag
     if tag in ("text:a", "text:p"):
@@ -318,8 +318,8 @@ class ParaFormattedTextMixin:
         """Get the formatted text content of the paragraph-like element.
 
         Args:
-            context (dict, optional): A dictionary providing context for formatting.
-            simple (bool): If True, returns only the content string. If False,
+            context: A dictionary providing context for formatting.
+            simple: If True, returns only the content string. If False,
                 adds two newlines at the end.
 
         Returns:

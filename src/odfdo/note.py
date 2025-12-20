@@ -50,8 +50,8 @@ class NoteMixin(Element):
         """Retrieve all notes (`text:note`) that match the specified criteria.
 
         Args:
-            note_class (str | None): Filter by note class ("footnote" or "endnote").
-            content (str | None): A regular expression to match against the note's content.
+            note_class: Filter by note class ("footnote" or "endnote").
+            content: A regular expression to match against the note's content.
 
         Returns:
             list[Note]: A list of `Note` instances matching the criteria.
@@ -73,11 +73,11 @@ class NoteMixin(Element):
         """Retrieve a specific note (`text:note`) that matches the specified criteria.
 
         Args:
-            position (int): The index of the note to retrieve if multiple match
+            position: The 0-based index of the matching note to retrieve if multiple match
                 the other criteria. Defaults to 0.
-            note_id (str | None): The unique ID of the note.
-            note_class (str | None): Filter by note class ("footnote" or "endnote").
-            content (str | None): A regular expression to match against the note's content.
+            note_id: The unique ID of the note.
+            note_class: Filter by note class ("footnote" or "endnote").
+            content: A regular expression to match against the note's content.
 
         Returns:
             Note | None: A `Note` instance matching the criteria, or `None` if not found.
@@ -126,11 +126,11 @@ class Note(MDNote, LinkMixin, Element):
         """Initialize a Note element (footnote or endnote).
 
         Args:
-            note_class (str): The class of the note ("footnote" or "endnote").
+            note_class: The class of the note ("footnote" or "endnote").
                 Defaults to "footnote".
-            note_id (str | None): A unique ID for the note. If None, one is generated.
-            citation (str | None): The citation text for the note.
-            body (str | None): The content of the note body. Can be a string or an `Element`.
+            note_id: A unique ID for the note. If None, one is generated.
+            citation: The citation text for the note.
+            body: The content of the note body. Can be a string or an `Element`.
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
@@ -162,7 +162,7 @@ class Note(MDNote, LinkMixin, Element):
         """Set the text content of the note citation.
 
         Args:
-            text (str | None): The new citation text.
+            text: The new citation text.
         """
         note_citation = self.get_element("text:note-citation")
         if note_citation:
@@ -185,7 +185,7 @@ class Note(MDNote, LinkMixin, Element):
         """Set the content of the note body.
 
         Args:
-            text_or_element (Element | str | None): The new content for the note body.
+            text_or_element: The new content for the note body.
                 Can be a string, an `Element`, or None to clear the content.
         """
         note_body = self.get_element("text:note-body")

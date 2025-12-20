@@ -35,7 +35,8 @@ class DcDateMixin:
 
         (Also available as "self.date" property.)
 
-        Returns: datetime (or None if inexistent)
+        Returns:
+            datetime | None: The last modified date as a datetime object, or None if inexistent.
         """
         element = self.clone.get_element("//dc:date")
         if element is None:
@@ -51,8 +52,7 @@ class DcDateMixin:
         (Also available as "self.date" property.)
 
         Args:
-
-            dtdate -- datetime
+            date: The datetime object to set as the last modified date.
         """
         element = self.get_element("//dc:date")
         if element is None:

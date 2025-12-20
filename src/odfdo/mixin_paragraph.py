@@ -73,9 +73,9 @@ def _by_offset_wrapper(
     the text content of the `element`.
 
     Args:
-        method (Callable): The function that creates the new element.
-        element (Element): The parent element whose text content is being modified.
-        offset (int): The character offset at which to perform the insertion.
+        method: The function that creates the new element.
+        element: The parent element whose text content is being modified.
+        offset: The character offset at which to perform the insertion.
         *args: Positional arguments to pass to the wrapped method.
         **kwargs: Keyword arguments to pass to the wrapped method,
             including 'length' for the matched string length.
@@ -140,9 +140,9 @@ def _by_regex_wrapper(
     expression within the text content of the `element`.
 
     Args:
-        method (Callable): The function that creates the new element.
-        element (Element): The parent element whose text content is being modified.
-        regex (str): The regular expression pattern to match.
+        method: The function that creates the new element.
+        element: The parent element whose text content is being modified.
+        regex: The regular expression pattern to match.
         *args: Positional arguments to pass to the wrapped method.
         **kwargs: Keyword arguments to pass to the wrapped method.
 
@@ -196,7 +196,7 @@ def _by_regex_offset(method: Callable) -> Callable:
     specify where the new element should be inserted within the text content.
 
     Args:
-        method (Callable): The function that creates the new element. It will
+        method: The function that creates the new element. It will
             receive `element`, `*args`, and `match_string` as keyword argument.
 
     Returns:
@@ -237,7 +237,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         merging consecutive text nodes and converting `<text:s>` into strings.
 
         Args:
-            added_string (str): A string to append at the end of the expansion.
+            added_string: A string to append at the end of the expansion.
 
         Returns:
             list[Element | str]: A list of elements and strings with spaces expanded.
@@ -267,7 +267,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         """Merge multiple consecutive spaces into `<text:s>` elements where appropriate.
 
         Args:
-            content (list[Element | str]): A list of elements and strings to process.
+            content: A list of elements and strings to process.
 
         Returns:
             list[Element | str]: A new list with consecutive spaces merged into `<text:s>` elements.
@@ -285,7 +285,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         """Internal helper to merge spaces within a string into `Spacer` elements.
 
         Args:
-            text (str): The string to process.
+            text: The string to process.
 
         Returns:
             list[Element | str]: A list of elements and strings, with spaces
@@ -334,7 +334,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         """Replace tab and line break characters within a list of content with ODF elements.
 
         Args:
-            content (list[Element | str]): A list of elements and strings to process.
+            content: A list of elements and strings to process.
 
         Returns:
             list[Element | str]: A new list with tabs and line breaks replaced by `Tab` and `LineBreak` elements.
@@ -352,7 +352,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         """Internal helper to replace tab and line break characters in a string with ODF elements.
 
         Args:
-            text (str): The string to process.
+            text: The string to process.
 
         Returns:
             list[Element | str]: A list of elements and strings, with tab and
@@ -382,7 +382,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         `<text:tab>`, `<text:s>`). Existing content of the paragraph is cleared.
 
         Args:
-            text (str | bytes | None): The plain text to append.
+            text: The plain text to append.
         """
         if text is None:
             stext = ""
@@ -404,7 +404,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         """Remove extra whitespace and newlines, replacing them with single spaces.
 
         Args:
-            text (str | bytes | None): The input text.
+            text: The input text.
 
         Returns:
             str: The unformatted text.
@@ -425,8 +425,8 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         """Append a string or an element to the paragraph.
 
         Args:
-            str_or_element (str | bytes | Element): The content to append.
-            formatted (bool): If True (default), special characters like
+            str_or_element: The content to append.
+            formatted: If True (default), special characters like
                 newlines, tabs, and multiple spaces in strings are converted
                 to their ODF tag equivalents. If False, the string content
                 is inserted unformatted (only extra whitespace is removed).
@@ -461,14 +461,14 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         or an existing `Note` element can be inserted.
 
         Args:
-            note_element (Note | None): An existing `Note` element to insert.
+            note_element: An existing `Note` element to insert.
                 If None, a new one is created.
-            after (str | Element | None): A regular expression (str) or an
+            after: A regular expression (str) or an
                 `Element` after which to insert the note.
-            note_class (str): The class of the note ("footnote" or "endnote").
-            note_id (str | None): A unique ID for the note.
-            citation (str | None): The citation text for the note.
-            body (str | None): The content of the note body.
+            note_class: The class of the note ("footnote" or "endnote").
+            note_id: A unique ID for the note.
+            citation: The citation text for the note.
+            body: The content of the note body.
         """
         if note_element is None:
             note_element = Note(
@@ -518,18 +518,18 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         the `position` argument can be used to select which match to use.
 
         Args:
-            annotation_element (Annotation | None): An optional pre-existing `Annotation` element.
+            annotation_element: An optional pre-existing `Annotation` element.
                 If None, a new `Annotation` is created using `body`, `creator`, and `date`.
-            before (str | None): A regular expression. The annotation is inserted before text matching this regex.
-            after (str | Element | None): A regular expression or an `Element`.
+            before: A regular expression. The annotation is inserted before text matching this regex.
+            after: A regular expression or an `Element`.
                 The annotation is inserted after text matching this regex or as the first child of the `Element`.
-            position (int | tuple): An integer for character offset, or a 2-tuple `(start, end)`
+            position: An integer for character offset, or a 2-tuple `(start, end)`
                 for a range. Used when `before`, `after`, and `content` are not specified.
-            content (str | Element | None): A regular expression or an `Element`. If provided,
+            content: A regular expression or an `Element`. If provided,
                 the annotation spans the matching content.
-            body (str | None): The content of the annotation.
-            creator (str | None): The creator of the annotation.
-            date (datetime | None): The creation date of the annotation. Defaults to current date if None.
+            body: The content of the annotation.
+            creator: The creator of the annotation.
+            date: The creation date of the annotation. Defaults to current date if None.
 
         Returns:
             Annotation: The inserted annotation element.
@@ -622,13 +622,13 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         or a numerical `position`.
 
         Args:
-            annotation_element (Annotation): The `Annotation` element for which
+            annotation_element: The `Annotation` element for which
                 to create the end tag.
-            before (str | None): A regular expression. The end tag is inserted
+            before: A regular expression. The end tag is inserted
                 before text matching this regex.
-            after (str | None): A regular expression. The end tag is inserted
+            after: A regular expression. The end tag is inserted
                 after text matching this regex.
-            position (int): An integer character offset for insertion.
+            position: An integer character offset for insertion.
 
         Returns:
             AnnotationEnd: The inserted `AnnotationEnd` element.
@@ -677,12 +677,12 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         The `name` is mandatory and should be unique within the document for the reference mark.
 
         Args:
-            name (str): The name of the reference mark.
-            before (str | None): A regular expression. The mark is inserted before text matching this regex.
-            after (str | None): A regular expression. The mark is inserted after text matching this regex.
-            position (int | tuple): An integer for character offset, or a 2-tuple `(start, end)`
+            name: The name of the reference mark.
+            before: A regular expression. The mark is inserted before text matching this regex.
+            after: A regular expression. The mark is inserted after text matching this regex.
+            position: An integer for character offset, or a 2-tuple `(start, end)`
                 for a range.
-            content (str | Element | None): A regular expression or an `Element`. If provided,
+            content: A regular expression or an `Element`. If provided,
                 the reference mark spans the matching content.
 
         Returns:
@@ -757,13 +757,13 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         or a numerical `position`.
 
         Args:
-            reference_mark (Element): The `ReferenceMark` or `ReferenceMarkStart`
+            reference_mark: The `ReferenceMark` or `ReferenceMarkStart`
                 element for which to create the end tag.
-            before (str | None): A regular expression. The end tag is inserted
+            before: A regular expression. The end tag is inserted
                 before text matching this regex.
-            after (str | None): A regular expression. The end tag is inserted
+            after: A regular expression. The end tag is inserted
                 after text matching this regex.
-            position (int): An integer character offset for insertion.
+            position: An integer character offset for insertion.
 
         Returns:
             ReferenceMarkEnd: The inserted `ReferenceMarkEnd` element.
@@ -793,8 +793,8 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         """Insert a variable element into the paragraph.
 
         Args:
-            variable_element (Element): The variable element to insert.
-            after (str | None): A regular expression after which to insert the variable.
+            variable_element: The variable element to insert.
+            after: A regular expression after which to insert the variable.
         """
         self._insert(variable_element, after=after)
 
@@ -813,10 +813,10 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         or by an `offset` and `length`.
 
         Args:
-            style (str): The name of the text style to apply.
-            regex (str | None): A regular expression to match the text content.
-            offset (int | None): The starting character offset in the paragraph's text content.
-            length (int): The length of the text content to apply the style to,
+            style: The name of the text style to apply.
+            regex: A regular expression to match the text content.
+            offset: The starting character offset in the paragraph's text content.
+            length: The length of the text content to apply the style to,
                 starting from `offset`.
 
         Returns:
@@ -833,7 +833,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         """Remove all `text:span` elements from a copy of the paragraph.
 
         Args:
-            keep_heading (bool): If True, `text:h` (heading) elements are
+            keep_heading: If True, `text:h` (heading) elements are
                 protected from stripping. Defaults to True.
 
         Returns:
@@ -851,7 +851,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         """Remove specific `text:span` elements from a copy of the paragraph.
 
         Args:
-            spans (Element | list[Element]): The `Span` element(s) to remove.
+            spans: The `Span` element(s) to remove.
 
         Returns:
             Element: A new `Element` instance representing the paragraph
@@ -874,10 +874,10 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         or by an `offset` and `length`.
 
         Args:
-            url (str): The URL that the hyperlink points to.
-            regex (str | None): A regular expression to match the text content.
-            offset (int | None): The starting character offset in the paragraph's text content.
-            length (int): The length of the text content to convert into a link,
+            url: The URL that the hyperlink points to.
+            regex: A regular expression to match the text content.
+            offset: The starting character offset in the paragraph's text content.
+            length: The length of the text content to convert into a link,
                 starting from `offset`.
 
         Returns:
@@ -901,7 +901,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         """Remove specific `text:a` (hyperlink) elements from a copy of the paragraph.
 
         Args:
-            links (Link | list[Link]): The `Link` element(s) to remove.
+            links: The `Link` element(s) to remove.
 
         Returns:
             Element: A new `Element` instance representing the paragraph
@@ -938,21 +938,15 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         this element.
 
         Args:
-
-            name -- str
-
-            ref_format -- one of : 'chapter', 'direction', 'page', 'text',
-                                    'caption', 'category-and-value', 'value',
-                                    'number', 'number-all-superior',
-                                    'number-no-superior'
-
-            before -- str regular expression or None
-
-            after -- str regular expression or odf element or None
-
-            position -- int
-
-            display -- str or None
+            name: The name of the reference mark.
+            ref_format: The format for the reference, one of 'chapter',
+                'direction', 'page', 'text', 'caption', 'category-and-value',
+                'value', 'number', 'number-all-superior',
+                'number-no-superior'.
+            before: A regular expression before which to insert the reference.
+            after: A regular expression or an ODF element after which to insert the reference.
+            position: The insertion position.
+            display: The text value for the reference, if provided.
         """
         reference = Reference(name, ref_format)
         if display is None and ref_format == "text":
@@ -994,12 +988,12 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
           or `BookmarkEnd` (if `role="end"`) is inserted based on `before`, `after`, or `position`.
 
         Args:
-            name (str): The name of the bookmark.
-            before (str | None): A regular expression. The bookmark is inserted before text matching this regex.
-            after (str | None): A regular expression. The bookmark is inserted after text matching this regex.
-            position (int | tuple): An integer for a character offset, or a 2-tuple `(start, end)` for a range.
-            role (str | None): Specifies the type of bookmark to insert: "start", "end", or None for a regular bookmark.
-            content (str | None): A regular expression. If provided, the bookmark spans the matching content.
+            name: The name of the bookmark.
+            before: A regular expression. The bookmark is inserted before text matching this regex.
+            after: A regular expression. The bookmark is inserted after text matching this regex.
+            position: An integer for a character offset, or a 2-tuple `(start, end)` for a range.
+            role: Specifies the type of bookmark to insert: "start", "end", or None for a regular bookmark.
+            content: A regular expression. If provided, the bookmark spans the matching content.
 
         Returns:
             Element | tuple[Element, Element]: The created bookmark element(s).

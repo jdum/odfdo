@@ -33,7 +33,7 @@ class DcCreatorMixin:
         This corresponds to the `dc:creator` element.
 
         Returns:
-            str | None: The creator's name, or `None` if not specified.
+            The creator's name, or `None` if not specified.
         """
         element = self.clone.get_element("//dc:creator")
         if element is None:
@@ -46,7 +46,7 @@ class DcCreatorMixin:
         This updates the `dc:creator` element.
 
         Args:
-            creator (str): The name of the creator to set.
+            creator: The name of the creator to set.
         """
         element = self.get_element("//dc:creator")
         if element is None:

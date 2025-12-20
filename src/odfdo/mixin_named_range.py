@@ -64,7 +64,7 @@ class NRMixin(Element):
         """Retrieve a specific named range global to the document by its name.
 
         Args:
-            name (str): The name of the named range to retrieve.
+            name: The name of the named range to retrieve.
 
         Returns:
             NamedRange | None: The `NamedRange` instance if found, otherwise `None`.
@@ -86,7 +86,7 @@ class NRMixin(Element):
         If a named range with the same name already exists, it will be replaced.
 
         Args:
-            named_range (NamedRange): The `NamedRange` object to append.
+            named_range: The `NamedRange` object to append.
         """
         named_expressions = cast(
             Union[None, TableNamedExpressions],
@@ -122,12 +122,12 @@ class NRMixin(Element):
         it will be replaced.
 
         Args:
-            name (str): The name of the named range.
-            crange (str | tuple | list): The cell or cell range coordinate
+            name: The name of the named range.
+            crange: The cell or cell range coordinate
                 (e.g., "Sheet1.A1", "Sheet1.A1:B2", or a tuple/list of integers
                 representing coordinates).
-            table_name (str): The name of the table to which the named range refers.
-            usage (str | None): Optional usage type (e.g., "print-range", "filter",
+            table_name: The name of the table to which the named range refers.
+            usage: Optional usage type (e.g., "print-range", "filter",
                 "repeat-column", "repeat-row").
 
         Raises:
@@ -146,7 +146,7 @@ class NRMixin(Element):
         """Delete a named range from the document by its name.
 
         Args:
-            name (str): The name of the named range to delete.
+            name: The name of the named range to delete.
         """
         named_range = self.get_named_range(name)
         if not named_range:

@@ -55,10 +55,10 @@ class LinkMixin(Element):
         """Returns all links that match the specified criteria.
 
         Args:
-            name (str | None): The name of the link.
-            title (str | None): The title of the link.
-            url (str | None): A regex pattern to match against the link's URL.
-            content (str | None): A regex pattern to match against the link's content.
+            name: The name of the link.
+            title: The title of the link.
+            url: A regex pattern to match against the link's URL.
+            content: A regex pattern to match against the link's content.
 
         Returns:
             list[Link]: A list of Link instances matching the criteria.
@@ -82,11 +82,11 @@ class LinkMixin(Element):
         """Returns a single link that matches the specified criteria.
 
         Args:
-            position (int): The 0-based index of the matching link to return.
-            name (str | None): The name of the link.
-            title (str | None): The title of the link.
-            url (str | None): A regex pattern to match against the link's URL.
-            content (str | None): A regex pattern to match against the link's content.
+            position: The 0-based index of the matching link to return.
+            name: The name of the link.
+            title: The title of the link.
+            url: A regex pattern to match against the link's URL.
+            content: A regex pattern to match against the link's content.
 
         Returns:
             Link | None: A Link instance, or None if no link matches the criteria.

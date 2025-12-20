@@ -79,8 +79,8 @@ class TocMixin(Element):
         """Returns a single table of contents that matches the specified criteria.
 
         Args:
-            position (int): The 0-based index of the matching table of contents to return.
-            content (str | None): A regex pattern to match against the TOC's content.
+            position: The 0-based index of the matching table of contents to return.
+            content: A regex pattern to match against the TOC's content.
 
         Returns:
             TOC | None: A TOC instance, or None if no TOC matches the criteria.
@@ -94,6 +94,6 @@ class TocMixin(Element):
         """Returns the first table of contents found within the element's subtree.
 
         Returns:
-            TOC | None: The first TOC instance, or None if not found.
+            The first TOC instance, or None if not found.
         """
         return self.get_toc()

@@ -47,7 +47,7 @@ def table_name_check(name: Any) -> str:
     characters like single quotes, slashes, asterisks, question marks, or brackets.
 
     Args:
-        name (Any): The name to validate.
+        name: The name to validate.
 
     Returns:
         str: The validated and stripped table name.
@@ -124,11 +124,11 @@ class NamedRange(Element):
         The `table_name` must be a valid table name (without single quotes or slashes).
 
         Args:
-            name (str | None): The name of the named range.
-            crange (str | tuple | list | None): The cell or area coordinate,
+            name: The name of the named range.
+            crange: The cell or area coordinate,
                 e.g., "A1", "A1:B2", (0, 0), or (0, 0, 1, 1).
-            table_name (str | None): The name of the table the range belongs to.
-            usage (str | None): The usage of the named range, one of
+            table_name: The name of the table the range belongs to.
+            usage: The usage of the named range, one of
                 "print-range", "filter", "repeat-column", "repeat-row", or None.
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
@@ -163,7 +163,7 @@ class NamedRange(Element):
         for printing, filtering, or repeating columns/rows).
 
         Args:
-            usage (str | None): The usage type. Can be "print-range", "filter",
+            usage: The usage type. Can be "print-range", "filter",
                 "repeat-column", "repeat-row", or None to clear the usage.
         """
         if usage is not None:
@@ -186,7 +186,7 @@ class NamedRange(Element):
         underscores, and does not resemble a cell coordinate (e.g., "A1").
 
         Args:
-            name (str): The name to validate.
+            name: The name to validate.
 
         Returns:
             str: The validated name.
@@ -238,7 +238,7 @@ class NamedRange(Element):
         will be replaced.
 
         Args:
-            name (str): The new name for the named range.
+            name: The new name for the named range.
         """
         name = self._check_nr_name(name)
         with contextlib.suppress(Exception):
@@ -255,7 +255,7 @@ class NamedRange(Element):
         """Set the name of the table associated with the named range.
 
         Args:
-            name (str): The name of the table.
+            name: The name of the table.
 
         Raises:
             TypeError: If `name` is not a string (propagated from `table_name_check`).
@@ -268,7 +268,7 @@ class NamedRange(Element):
         """Internal helper to set the cell range coordinates.
 
         Args:
-            coord (tuple | list | str): The cell or area coordinate,
+            coord: The cell or area coordinate,
                 e.g., "A1", "A1:B2", (0, 0), or (0, 0, 1, 1).
 
         Raises:
@@ -296,8 +296,7 @@ class NamedRange(Element):
         an area (e.g., "A1:B2", (0, 0, 1, 1)).
 
         Args:
-            crange (str | tuple[int, int] | tuple[int, int, int, int] | list[int]):
-                The cell or area coordinate.
+            crange: The cell or area coordinate.
 
         Raises:
             ValueError: If the coordinate format is incorrect (propagated from `_set_range`).
@@ -356,11 +355,11 @@ class NamedRange(Element):
         table and range defined by this named range.
 
         Args:
-            cell_type (str | None): Filter cells by their type (e.g., "string", "float").
-            complete (bool): If True, returns a rectangular list, filling empty
+            cell_type: Filter cells by their type (e.g., "string", "float").
+            complete: If True, returns a rectangular list, filling empty
                 cells with None. If False, returns only non-empty cells.
-            get_type (bool): If True, returns (value, type) tuples for each cell.
-            flat (bool): If True, returns a flat list of values.
+            get_type: If True, returns (value, type) tuples for each cell.
+            flat: If True, returns a flat list of values.
 
         Returns:
             list: A list of cell values, formatted according to the arguments.
@@ -383,7 +382,7 @@ class NamedRange(Element):
         first cell defined by this named range.
 
         Args:
-            get_type (bool): If True, returns a tuple of (value, type) for the cell.
+            get_type: If True, returns a tuple of (value, type) for the cell.
 
         Returns:
             Any | tuple[Any, str]: The cell's value, or a tuple of (value, type)
@@ -413,10 +412,10 @@ class NamedRange(Element):
         table and range defined by this named range.
 
         Args:
-            values (list): A list of lists representing the new values for the cells.
-            style (str | None): The style name to apply to the cells.
-            cell_type (str | None): The type to set for the cells (e.g., "string", "float").
-            currency (str | None): The currency symbol to use for "currency" type cells.
+            values: A list of lists representing the new values for the cells.
+            style: The style name to apply to the cells.
+            cell_type: The type to set for the cells (e.g., "string", "float").
+            currency: The currency symbol to use for "currency" type cells.
 
         Raises:
             ValueError: If the named range's table is not found or not inside a document.
@@ -448,10 +447,10 @@ class NamedRange(Element):
         first cell defined by this named range.
 
         Args:
-            value (Any): The value to set for the cell.
-            cell_type (str | None): The type to set for the cell (e.g., "string", "float").
-            currency (str | None): The currency symbol to use for "currency" type cells.
-            style (str | None): The style name to apply to the cell.
+            value: The value to set for the cell.
+            cell_type: The type to set for the cell (e.g., "string", "float").
+            currency: The currency symbol to use for "currency" type cells.
+            style: The style name to apply to the cell.
 
         Raises:
             ValueError: If the named range's table is not found or not inside a document.
