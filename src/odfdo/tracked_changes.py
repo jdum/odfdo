@@ -96,10 +96,8 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
         """Initializes the ChangeInfo element.
 
         Args:
-            creator (str, optional): The name of the author of the change.
-                Defaults to "Unknown".
-            date (datetime, optional): The date and time of the change.
-                Defaults to the current time if not provided.
+            creator: The name of the author of the change. Defaults to "Unknown".
+            date: The date and time of the change. Defaults to the current time if not provided.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -110,7 +108,7 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
         """Gets the text content of the comments.
 
         Args:
-            joined (bool): If True (the default), concatenates the text of
+            joined: If True (the default), concatenates the text of
                 all comment paragraphs into a single string. If False,
                 returns a list of strings, one for each paragraph.
 
@@ -128,8 +126,8 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
         """Sets the text content of the comments.
 
         Args:
-            text (str): The new text for the comments.
-            replace (bool): If True (the default), the new text replaces any
+            text: The new text for the comments.
+            replace: If True (the default), the new text replaces any
                 existing comments. If False, it is appended as a new
                 paragraph.
         """
@@ -161,8 +159,8 @@ class TextInsertion(Element):
         This method is for consistency with other change types.
 
         Args:
-            as_text (bool): Ignored.
-            no_header (bool): Ignored.
+            as_text: Ignored.
+            no_header: Ignored.
 
         Returns:
             None | str: Always None for list return, empty string for text.
@@ -183,12 +181,10 @@ class TextInsertion(Element):
         'text:change-end' tags and return the content between them.
 
         Args:
-            as_text (bool): If True, returns the content as a plain text
-                string.
-            no_header (bool): If True, converts any 'text:h' (heading)
+            as_text: If True, returns the content as a plain text string.
+            no_header: If True, converts any 'text:h' (heading)
                 elements to 'text:p' (paragraph) elements.
-            clean (bool): If True, filters out unwanted elements from the
-                result.
+            clean: If True, filters out unwanted elements from the result.
 
         Returns:
             str | Element | list[Element] | None: The inserted content,
@@ -230,14 +226,13 @@ class TextInsertion(Element):
         other arguments. Any existing change info is replaced.
 
         Args:
-            change_info (Element, optional): An existing ChangeInfo element
+            change_info: An existing ChangeInfo element
                 to set.
-            creator (str, optional): The name of the author. Defaults to
+            creator: The name of the author. Defaults to
                 'Unknown'.
-            date (datetime, optional): The date and time of the change.
+            date: The date and time of the change.
                 Defaults to the current time.
-            comments (Element | list[Element], optional): A Paragraph or
-                list of Paragraphs to add as comments.
+            comments: A Paragraph or list of Paragraphs to add as comments.
         """
         if change_info is None:
             new_change_info = ChangeInfo(creator, date)
@@ -283,9 +278,9 @@ class TextDeletion(TocMixin, SectionMixin, TextInsertion):
         """Gets the content that was deleted.
 
         Args:
-            as_text (bool): If True, returns the content as a plain text
+            as_text: If True, returns the content as a plain text
                 string.
-            no_header (bool): If True, converts any 'text:h' (heading)
+            no_header: If True, converts any 'text:h' (heading)
                 elements to 'text:p' (paragraph) elements.
 
         Returns:
@@ -320,7 +315,7 @@ class TextDeletion(TocMixin, SectionMixin, TextInsertion):
         This method replaces any existing deleted content within this element.
 
         Args:
-            paragraph_or_list (Element | list[Element]): A Paragraph,
+            paragraph_or_list: A Paragraph,
                 Header, or a list of such elements representing the deleted
                 content.
         """
@@ -342,9 +337,9 @@ class TextDeletion(TocMixin, SectionMixin, TextInsertion):
         This method is for consistency with other change types.
 
         Args:
-            as_text (bool): Ignored.
-            no_header (bool): Ignored.
-            clean (bool): Ignored.
+            as_text: Ignored.
+            no_header: Ignored.
+            clean: Ignored.
 
         Returns:
             None | str: Always None for list return, empty string for text.
@@ -413,10 +408,10 @@ class TextChangedRegion(Element):
         more details.
 
         Args:
-            change_info (Element, optional): An existing ChangeInfo element.
-            creator (str, optional): The author's name.
-            date (datetime, optional): The date of the change.
-            comments (Element | list[Element], optional): Comments to add.
+            change_info: An existing ChangeInfo element.
+            creator: The author's name.
+            date: The date of the change.
+            comments: Comments to add.
         """
         child = self.get_change_element()
         if not child:
@@ -464,7 +459,7 @@ class TextChangedRegion(Element):
         """Sets both the "text:id" and "xml:id" attributes to the same value.
 
         Args:
-            idx (str): The ID to set.
+            idx: The ID to set.
         """
         self._set_text_id(idx)
         self._set_xml_id(idx)
@@ -493,11 +488,10 @@ class TrackedChanges(MDZap, Element):
         """Gets a list of 'text:changed-region' elements matching criteria.
 
         Args:
-            creator (str, optional): Filter by the author's name.
-            date (datetime, optional): Filter by the date of the change.
-            content (str, optional): Filter by a regex match in the content.
-            role (str, optional): Filter by the type of change ('insertion',
-                'deletion', 'format-change').
+            creator: Filter by the author's name.
+            date: Filter by the date of the change.
+            content: Filter by a regex match in the content.
+            role: Filter by the type of change ('insertion', 'deletion', 'format-change').
 
         Returns:
             list[Element]: A list of matching TextChangedRegion elements.
@@ -530,11 +524,11 @@ class TrackedChanges(MDZap, Element):
         """Gets a single 'text:changed-region' element by position or criteria.
 
         Args:
-            position (int): The index of the region to retrieve.
-            text_id (str, optional): Get the region with this specific ID.
-            creator (str, optional): Filter by the author's name.
-            date (datetime, optional): Filter by the date of the change.
-            content (str, optional): Filter by a regex match in the content.
+            position: The index of the region to retrieve.
+            text_id: Get the region with this specific ID.
+            creator: Filter by the author's name.
+            date: Filter by the date of the change.
+            content: Filter by a regex match in the content.
 
         Returns:
             Element | None: The matching TextChangedRegion element, or None
@@ -571,7 +565,7 @@ class TextChange(Element):
         """Sets the ID of the change this marker refers to.
 
         Args:
-            idx (str): The ID to set as 'text:change-id'.
+            idx: The ID to set as 'text:change-id'.
         """
         self.set_attribute("text:change-id", idx)
 
@@ -588,7 +582,7 @@ class TextChange(Element):
         """Finds the 'text:changed-region' this marker is associated with.
 
         Args:
-            tracked_changes (TrackedChanges, optional): The parent tracked
+            tracked_changes: The parent tracked
                 changes container to search in. If not provided, it is
                 inferred from the document.
 
@@ -608,8 +602,7 @@ class TextChange(Element):
         """Gets the 'office:change-info' for the change this marker refers to.
 
         Args:
-            tracked_changes (TrackedChanges, optional): The parent tracked
-                changes container to search in.
+            tracked_changes: The parent tracked changes container to search in.
 
         Returns:
             Element | None: The ChangeInfo element, or None if not found.
@@ -628,8 +621,7 @@ class TextChange(Element):
         This will be one of TextInsertion, TextDeletion, or TextFormatChange.
 
         Args:
-            tracked_changes (TrackedChanges, optional): The parent tracked
-                changes container to search in.
+            tracked_changes: The parent tracked changes container to search in.
 
         Returns:
             Element | None: The change element, or None if not found.
@@ -652,11 +644,10 @@ class TextChange(Element):
         retrieve its content.
 
         Args:
-            tracked_changes (TrackedChanges, optional): The parent tracked
-                changes container.
-            as_text (bool): Return content as a plain text string.
-            no_header (bool): Convert headings to paragraphs.
-            clean (bool): Ignored.
+            tracked_changes: The parent tracked changes container.
+            as_text: Return content as a plain text string.
+            no_header: Convert headings to paragraphs.
+            clean: Ignored.
 
         Returns:
             Element | None: The deleted content.
@@ -749,12 +740,9 @@ class TextChangeEnd(TextChange):
         """Gets the content between the start and end change markers.
 
         Args:
-            as_text (bool): If True, returns the content as a plain text
-                string.
-            no_header (bool): If True, converts any 'text:h' (heading)
-                elements to 'text:p' (paragraph) elements.
-            clean (bool): If True, filters out unwanted elements from the
-                result.
+            as_text: If True, returns the content as a plain text string.
+            no_header: If True, converts any 'text:h' (heading) elements to 'text:p' (paragraph) elements.
+            clean: If True, filters out unwanted elements from the result.
 
         Returns:
             str | Element | list[Element] | None: The inserted content.
@@ -817,9 +805,9 @@ class TextChangeStart(TextChangeEnd):
         'text:change-end' tag if it exists.
 
         Args:
-            child (Element, optional): A specific child to delete. If None,
+            child: A specific child to delete. If None,
                 the element itself is deleted.
-            keep_tail (bool): If True, the text that follows the element
+            keep_tail: If True, the text that follows the element
                 is preserved. Defaults to True.
         """
         if child is not None:  # act like normal delete
