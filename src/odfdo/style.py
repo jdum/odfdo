@@ -80,7 +80,7 @@ def _make_thick_string(thick: str | float | int | None) -> str:
     """Helper to convert a thickness value to a string for border properties.
 
     Args:
-        thick (str, float, int, optional): The thickness value. Can be a string
+        thick: The thickness value. Can be a string
             (e.g., "1pt"), a float (e.g., 0.5 for 0.5pt), or an int (e.g., 100 for 1.00pt).
 
     Returns:
@@ -108,7 +108,7 @@ def _make_line_string(line: str | None) -> str:
     """Helper to convert a line style value to a string for border properties.
 
     Args:
-        line (str, optional): The line style value (e.g., "solid", "dotted").
+        line: The line style value (e.g., "solid", "dotted").
 
     Returns:
         str: The formatted line style string (e.g., "solid").
@@ -137,11 +137,11 @@ def make_table_cell_border_string(
     The default output is "0.06pt solid #000000".
 
     Args:
-        thick (str, float, int, optional): The thickness of the border. Can be
+        thick: The thickness of the border. Can be
             a string (e.g., "1pt"), a float (e.g., 0.5 for 0.5pt), or an int
             (e.g., 100 for 1.00pt).
-        line (str, optional): The style of the line (e.g., "solid", "dotted").
-        color (str or tuple, optional): The color of the border. Can be a string
+        line: The style of the line (e.g., "solid", "dotted").
+        color: The color of the border. Can be a string
             (e.g., "black", "#RRGGBB") or an RGB 3-tuple.
 
     Returns:
@@ -183,19 +183,19 @@ def create_table_cell_style(
     sides can be specified. Default padding is none.
 
     Args:
-        border (str, optional): Style string for all four borders. Use "default" for a predefined style.
-        border_top (str, optional): Style string for the top border.
-        border_bottom (str, optional): Style string for the bottom border.
-        border_left (str, optional): Style string for the left border.
-        border_right (str, optional): Style string for the right border.
-        padding (str, optional): Style string for padding on all four sides.
-        padding_top (str, optional): Style string for top padding.
-        padding_bottom (str, optional): Style string for bottom padding.
-        padding_left (str, optional): Style string for left padding.
-        padding_right (str, optional): Style string for right padding.
-        background_color (str or tuple, optional): Background color (e.g., "#RRGGBB", "red", or RGB tuple).
-        shadow (str, optional): Shadow specification (e.g., "#808080 0.176cm 0.176cm").
-        color (str or tuple, optional): Text color (e.g., "black", "#RRGGBB", or RGB tuple).
+        border: Style string for all four borders. Use "default" for a predefined style.
+        border_top: Style string for the top border.
+        border_bottom: Style string for the bottom border.
+        border_left: Style string for the left border.
+        border_right: Style string for the right border.
+        padding: Style string for padding on all four sides.
+        padding_top: Style string for top padding.
+        padding_bottom: Style string for bottom padding.
+        padding_left: Style string for left padding.
+        padding_right: Style string for right padding.
+        background_color: Background color (e.g., "#RRGGBB", "red", or RGB tuple).
+        shadow: Shadow specification (e.g., "#808080 0.176cm 0.176cm").
+        color: Text color (e.g., "black", "#RRGGBB", or RGB tuple).
 
     Returns:
         Style: A Style object configured for a table cell.
@@ -399,61 +399,61 @@ class Style(StyleProps):
         apply to is optional and defaults to the family.
 
         Args:
-            family (str, optional): The style family. Can be 'paragraph', 'text',
+            family: The style family. Can be 'paragraph', 'text',
                 'section', 'table', 'table-column', 'table-row', 'table-cell',
                 'table-page', 'chart', 'drawing-page', 'graphic', 'presentation',
                 'control', 'ruby', 'list', 'number', 'page-layout', 'font-face',
                 or 'master-page'.
-            name (str, optional): The programmatic name of the style.
-            display_name (str, optional): The display name of the style.
-            parent_style (str, optional): The name of the parent style.
-            area (str, optional): The specific area to which properties apply.
+            name: The programmatic name of the style.
+            display_name: The display name of the style.
+            parent_style: The name of the parent style.
+            area: The specific area to which properties apply.
                 Defaults to the style's family.
 
         'text' Properties:
-            color (str or tuple, optional): Text color (e.g., "#RRGGBB" or "red").
-            background_color (str or tuple, optional): Background color (e.g., "#RRGGBB" or "red").
-            italic (bool): If True, applies italic formatting.
-            bold (bool): If True, applies bold formatting.
+            color: Text color (e.g., "#RRGGBB" or "red").
+            background_color: Background color (e.g., "#RRGGBB" or "red").
+            italic: If True, applies italic formatting.
+            bold: If True, applies bold formatting.
 
         'paragraph' Properties:
-            master_page (str, optional): The master page to use for the paragraph.
+            master_page: The master page to use for the paragraph.
 
         'table-cell' Properties:
-            data_style (str, optional): The data style for the cell. (unused)
-            border (str, optional): Style string for all four borders (e.g., "0.002cm solid #000000").
-            border_top (str, optional): Style string for the top border.
-            border_right (str, optional): Style string for the right border.
-            border_bottom (str, optional): Style string for the bottom border.
-            border_left (str, optional): Style string for the left border.
-            padding (str, optional): Style string for padding on all four sides (e.g., "0.002cm").
-            padding_top (str, optional): Style string for top padding.
-            padding_bottom (str, optional): Style string for bottom padding.
-            padding_left (str, optional): Style string for left padding.
-            padding_right (str, optional): Style string for right padding.
-            shadow (str, optional): Shadow specification (e.g., "#808080 0.176cm 0.176cm").
+            data_style: The data style for the cell. (unused)
+            border: Style string for all four borders (e.g., "0.002cm solid #000000").
+            border_top: Style string for the top border.
+            border_right: Style string for the right border.
+            border_bottom: Style string for the bottom border.
+            border_left: Style string for the left border.
+            padding: Style string for padding on all four sides (e.g., "0.002cm").
+            padding_top: Style string for top padding.
+            padding_bottom: Style string for bottom padding.
+            padding_left: Style string for left padding.
+            padding_right: Style string for right padding.
+            shadow: Shadow specification (e.g., "#808080 0.176cm 0.176cm").
 
         'table-row' Properties:
-            height (str, optional): Row height (e.g., '5cm').
-            use_optimal_height (bool): If True, use optimal row height.
+            height: Row height (e.g., '5cm').
+            use_optimal_height: If True, use optimal row height.
 
         'table-column' Properties:
-            width (str, optional): Column width (e.g., '5cm').
-            break_before (str, optional): Page or column break before ('page', 'column', or 'auto').
-            break_after (str, optional): Page or column break after ('page', 'column', or 'auto').
+            width: Column width (e.g., '5cm').
+            break_before: Page or column break before ('page', 'column', or 'auto').
+            break_after: Page or column break after ('page', 'column', or 'auto').
 
         'table' Properties:
-            width (str, optional): Table width (e.g., '5cm').
-            align (str, optional): Table alignment ('left', 'center', 'margins', or 'right').
+            width: Table width (e.g., '5cm').
+            align: Table alignment ('left', 'center', 'margins', or 'right').
 
         'graphic' Properties:
-            min_height (str, optional): Minimum height for the graphic (e.g., '1cm').
+            min_height: Minimum height for the graphic (e.g., '1cm').
 
         'font-face' Properties:
-            font_name (str, optional): The font name.
-            font_family (str, optional): The font family.
-            font_family_generic (str, optional): Generic font family.
-            font_pitch (str): Font pitch ('variable' or 'fixed'). Defaults to 'variable'.
+            font_name: The font name.
+            font_family: The font family.
+            font_family_generic: Generic font family.
+            font_pitch: Font pitch ('variable' or 'fixed'). Defaults to 'variable'.
 
         **kwargs: Additional properties to set on the style.
         """
@@ -586,7 +586,7 @@ class Style(StyleProps):
         """Set the style family.
 
         Args:
-            family (str or None): The style family to set.
+            family: The style family to set.
         """
         self._family = family
         if family in FAMILY_ODF_STD and self.tag == "style:style":
@@ -623,12 +623,12 @@ class Style(StyleProps):
         with background properties.
 
         Args:
-            color (str, optional): The background color (e.g., '#rrggbb').
-            url (str, optional): The URL of the background image.
-            position (str, optional): The position of the background image. Defaults to "center".
-            repeat (str, optional): How the background image is repeated.
-            opacity (str or int, optional): The opacity of the background.
-            filter (str, optional): An application-specific filter name.
+            color: The background color (e.g., '#rrggbb').
+            url: The URL of the background image.
+            position: The position of the background image. Defaults to "center".
+            repeat: How the background image is repeated.
+            opacity: The opacity of the background.
+            filter: An application-specific filter name.
         """
         _set_background(self, color, url, position, repeat, opacity, filter)
 
@@ -640,10 +640,10 @@ class Style(StyleProps):
         This method is applicable only if the style family is 'list'.
 
         Args:
-            level (int): The list level (1-based index).
+            level: The list level (1-based index).
 
         Returns:
-            Style or None: The Style element for the specified level, or None
+            Style | None: The Style element for the specified level, or None
             if the style family is not 'list' or the level style is not found.
         """
         if self.family != "list":
@@ -673,19 +673,19 @@ class Style(StyleProps):
         This method is applicable only if the style family is 'list'.
 
         Args:
-            level (int): The list level to configure (1-based index).
-            num_format (str, optional): Number format for numbered lists.
-            bullet_char (str, optional): Bullet character for bulleted lists.
-            url (str, optional): URL of the image for image bulleted lists.
-            display_levels (int, optional): The number of list levels to display.
-            prefix (str, optional): Text prefix for the list item.
-            suffix (str, optional): Text suffix for the list item.
-            start_value (int, optional): The starting value for a numbered list.
-            style (str, optional): The text style name for the list item.
-            clone (Style, optional): An existing Style object to clone properties from.
+            level: The list level to configure (1-based index).
+            num_format: Number format for numbered lists.
+            bullet_char: Bullet character for bulleted lists.
+            url: URL of the image for image bulleted lists.
+            display_levels: The number of list levels to display.
+            prefix: Text prefix for the list item.
+            suffix: Text suffix for the list item.
+            start_value: The starting value for a numbered list.
+            style: The text style name for the list item.
+            clone: An existing Style object to clone properties from.
 
         Returns:
-            Style or None: The created or modified level style, or None
+            Style | None: The created or modified level style, or None
             if the style family is not 'list'.
 
         Raises:
@@ -760,10 +760,10 @@ class Style(StyleProps):
         This method is applicable only if the style family is 'font-face'.
 
         Args:
-            name (str): The font name.
-            family (str, optional): The font family. If None, defaults to `name`.
-            family_generic (str, optional): The generic font family (e.g., 'swiss', 'roman').
-            pitch (str): The font pitch ('variable' or 'fixed'). Defaults to 'variable'.
+            name: The font name.
+            family: The font family. If None, defaults to `name`.
+            family_generic: The generic font family (e.g., 'swiss', 'roman').
+            pitch: The font pitch ('variable' or 'fixed'). Defaults to 'variable'.
         """
         if self.family != "font-face":
             return
@@ -814,12 +814,12 @@ class BackgroundImage(Style, DrawImage):
         """Create a style for a background image "style:background-image".
 
         Args:
-            name (str, optional): The name of the background image style.
-            display_name (str, optional): The display name of the background image style.
-            position (str, optional): The position of the background image.
-            repeat (str, optional): How the background image is repeated.
-            opacity (str, optional): The opacity of the background image.
-            filter (str, optional): A filter to apply to the image.
+            name: The name of the background image style.
+            display_name: The display name of the background image style.
+            position: The position of the background image.
+            repeat: How the background image is repeated.
+            opacity: The opacity of the background image.
+            filter: A filter to apply to the image.
             **kwargs: Additional properties to set on the background image style.
         """
         kwargs["family"] = "background-image"

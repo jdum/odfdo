@@ -42,7 +42,7 @@ def default_boolean_style() -> Style:
     """Return a default boolean style.
 
     Returns:
-        Style: An Element representing a default boolean style.
+        An Element representing a default boolean style.
     """
     return Element.from_tag(  # type: ignore[return-value]
         '<number:boolean-style style:name="lpod-default-boolean-style">\n'
@@ -118,7 +118,7 @@ def default_time_style() -> Style:
     """Return a default time style.
 
     Returns:
-        Style: An Element representing a default time style.
+        An Element representing a default time style.
     """
     return Element.from_tag(  # type: ignore[return-value]
         '<number:time-style style:name="lpod-default-time-style">\n'

@@ -79,10 +79,10 @@ def _map_key(key: str) -> str | None:
     insufficient.
 
     Args:
-        key (str): The simplified property key.
+        key: The simplified property key.
 
     Returns:
-        str or None: The full ODF attribute name, or None if no mapping is found.
+        str | None: The full ODF attribute name, or None if no mapping is found.
     """
     if key in ODF_PROPERTIES:
         return key
@@ -98,8 +98,8 @@ def _merge_dicts(dic_base: dict, *args: dict, **kwargs: Any) -> dict:
     """Merge two or more dictionaries into a new dictionary object.
 
     Args:
-        dic_base (dict): The base dictionary.
-        *args (dict): Additional dictionaries to merge.
+        dic_base: The base dictionary.
+        *args: Additional dictionaries to merge.
         **kwargs: Keyword arguments to merge.
 
     Returns:
@@ -116,10 +116,10 @@ def _expand_properties_dict(properties: dict[str, str | dict]) -> dict[str, str 
     """Expand a dictionary of properties by mapping keys to their full ODF attribute names.
 
     Args:
-        properties (dict): A dictionary of properties with potentially simplified keys.
+        properties: A dictionary of properties with potentially simplified keys.
 
     Returns:
-        dict: A new dictionary with keys mapped to full ODF attribute names.
+        dict[str, str | dict]: A new dictionary with keys mapped to full ODF attribute names.
     """
     expanded = {}
     for key in sorted(properties.keys()):
@@ -136,10 +136,10 @@ def _expand_properties_list(properties: list[str]) -> list[str]:
     """Expand a list of property keys by mapping them to their full ODF attribute names.
 
     Args:
-        properties (list): A list of property keys with potentially simplified names.
+        properties: A list of property keys with potentially simplified names.
 
     Returns:
-        list: A new list with keys mapped to full ODF attribute names.
+        list[str]: A new list with keys mapped to full ODF attribute names.
     """
     return list(filter(None, (_map_key(key) for key in properties)))
 
@@ -148,7 +148,7 @@ def _check_background_support(family: str) -> None:
     """Check if the given style family supports background properties.
 
     Args:
-        family (str): The style family to check.
+        family: The style family to check.
 
     Raises:
         TypeError: If the family does not support background properties.
@@ -170,7 +170,7 @@ def _check_position(position: str | None) -> None:
     """Validate a background position string.
 
     Args:
-        position (str, optional): The background position string.
+        position: The background position string.
 
     Raises:
         ValueError: If the position string is not well-formatted or contains
@@ -190,7 +190,7 @@ def _check_repeat(repeat: str | None) -> None:
     """Validate a background repeat string.
 
     Args:
-        repeat (str, optional): The background repeat string.
+        repeat: The background repeat string.
 
     Raises:
         ValueError: If the repeat string is not well-formatted or contains
@@ -210,7 +210,7 @@ def _check_opacity(opacity: str | int | None) -> None:
     """Validate an opacity value.
 
     Args:
-        opacity (str or int, optional): The opacity value (0-100).
+        opacity: The opacity value (0-100).
 
     Raises:
         ValueError: If the opacity value is outside the valid range (0-100).
@@ -226,7 +226,7 @@ def _erase_background(element: Element) -> None:
     """Erase background properties (color and image) from the given element.
 
     Args:
-        element (Element): The element from which to erase background properties.
+        element: The element from which to erase background properties.
     """
     family = element.family  # type: ignore[attr-defined]
     properties = element.get_element(f"style:{family}-properties")
@@ -245,8 +245,8 @@ def _set_background_color(element: Element, color: str) -> None:
     If a background image exists, it will be removed.
 
     Args:
-        element (Element): The element to set the background color for.
-        color (str): The color string (e.g., "#RRGGBB" or "red").
+        element: The element to set the background color for.
+        color: The color string (e.g., "#RRGGBB" or "red").
     """
     family = element.family  # type: ignore[attr-defined]
     properties = element.get_element(f"style:{family}-properties")
@@ -272,12 +272,12 @@ def _set_background_image(
     If a background color exists, it will be removed.
 
     Args:
-        element (Element): The element to set the background image for.
-        url (str, optional): The URL of the image.
-        position (str, optional): The position of the background image.
-        repeat (str, optional): How the background image is repeated.
-        opacity (str or int, optional): The opacity of the background image (0-100).
-        filter (str, optional): A filter to apply to the image.
+        element: The element to set the background image for.
+        url: The URL of the image.
+        position: The position of the background image.
+        repeat: How the background image is repeated.
+        opacity: The opacity of the background image (0-100).
+        filter: A filter to apply to the image.
     """
     _check_position(position)
     _check_repeat(repeat)
@@ -322,13 +322,13 @@ def _set_background(
     handled correctly.
 
     Args:
-        element (Element): The element to set the background for.
-        color (str, optional): The background color string.
-        url (str, optional): The URL of the background image.
-        position (str, optional): The position of the background image.
-        repeat (str, optional): How the background image is repeated.
-        opacity (str or int, optional): The opacity of the background (0-100).
-        filter (str, optional): A filter to apply to the background image.
+        element: The element to set the background for.
+        color: The background color string.
+        url: The URL of the background image.
+        position: The position of the background image.
+        repeat: How the background image is repeated.
+        opacity: The opacity of the background (0-100).
+        filter: A filter to apply to the background image.
 
     Raises:
         TypeError: If a background image is specified for a text style.

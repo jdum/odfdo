@@ -75,8 +75,8 @@ class Styles(XmlPart):
         """Get the XML contexts where styles are stored.
 
         Args:
-            family (str): The style family to search for.
-            automatic (bool): Whether to only search in automatic styles.
+            family: The style family to search for.
+            automatic: Whether to only search in automatic styles.
 
         Returns:
             list[Element]: A list of XML elements that are contexts for styles.
@@ -106,9 +106,9 @@ class Styles(XmlPart):
         to automatic styles.
 
         Args:
-            family (str, optional): The style family to filter by (e.g.,
+            family: The style family to filter by (e.g.,
                 'paragraph', 'text').
-            automatic (bool, optional): If True, only automatic styles are
+            automatic: If True, only automatic styles are
                 returned. Defaults to False.
 
         Returns:
@@ -138,7 +138,7 @@ class Styles(XmlPart):
         """Set the default language and country in styles.
 
         Args:
-            value (str): The language/country code in RFC3066 format (e.g., "en-US").
+            value: The language/country code in RFC3066 format (e.g., "en-US").
 
         Raises:
             TypeError: If the language code format is invalid.
@@ -194,14 +194,14 @@ class Styles(XmlPart):
         `display_name` argument instead.
 
         Args:
-            family (str): The style family (e.g., 'paragraph', 'text', 'graphic').
-            name_or_element (str or StyleBase, optional): The internal name of the
+            family: The style family (e.g., 'paragraph', 'text', 'graphic').
+            name_or_element: The internal name of the
                 style or a Style object itself.
-            display_name (str, optional): The display name of the style as seen in an
+            display_name: The display name of the style as seen in an
                 office application.
 
         Returns:
-            StyleBase or None: The matching Style object, or None if not found.
+            StyleBase | None: The matching Style object, or None if not found.
         """
         for context in self._get_style_contexts(family):
             if context is None:
@@ -220,7 +220,7 @@ class Styles(XmlPart):
         """Get or set the "office:master-styles" element.
 
         Returns:
-            OfficeMasterStyles or None: The "office:master-styles" element, or None if not found.
+            OfficeMasterStyles | None: The "office:master-styles" element, or None if not found.
         """
         return cast(
             Union[None, OfficeMasterStyles], self.get_element("//office:master-styles")
@@ -234,7 +234,7 @@ class Styles(XmlPart):
         """Set the "office:master-styles" element.
 
         Args:
-            office_master_styles (OfficeMasterStyles): The "office:master-styles" element to set.
+            office_master_styles: The "office:master-styles" element to set.
         """
         current = self.office_master_styles
         if isinstance(current, OfficeMasterStyles):
@@ -261,10 +261,10 @@ class Styles(XmlPart):
         """Get a master page by its position.
 
         Args:
-            position (int): The position (index) of the master page. Defaults to 0.
+            position: The position (index) of the master page. Defaults to 0.
 
         Returns:
-            StyleMasterPage or None: The StyleMasterPage element at the given position,
+            StyleMasterPage | None: The StyleMasterPage element at the given position,
             or None if not found.
         """
         results = self.master_pages
@@ -278,7 +278,7 @@ class Styles(XmlPart):
         """Get or set the "office:automatic-styles" element.
 
         Returns:
-            OfficeAutomaticStyles or None: The "office:automatic-styles" element,
+            OfficeAutomaticStyles | None: The "office:automatic-styles" element,
             or None if not found.
         """
         return cast(
@@ -293,7 +293,7 @@ class Styles(XmlPart):
         """Set the "office:automatic-styles" element.
 
         Args:
-            office_automatic_styles (OfficeAutomaticStyles): The "office:automatic-styles"
+            office_automatic_styles: The "office:automatic-styles"
                 element to set.
         """
         current = self.office_automatic_styles

@@ -58,7 +58,7 @@ class StyleProps(StyleBase):
         """Validate the provided area or use the style's family as default.
 
         Args:
-            area (str, optional): The area to check. If None, uses the style's family.
+            area: The area to check. If None, uses the style's family.
 
         Returns:
             str: The validated area.
@@ -80,11 +80,11 @@ class StyleProps(StyleBase):
         properties from a different area (e.g., text properties of a paragraph style).
 
         Args:
-            area (str, optional): The specific area of properties to retrieve
+            area: The specific area of properties to retrieve
                 (e.g., 'text', 'paragraph').
 
         Returns:
-            dict or None: A dictionary of properties, or None if no properties are found.
+            dict[str, str | dict] | None: A dictionary of properties, or None if no properties are found.
         """
         try:
             area = self._check_area(area)
@@ -108,7 +108,7 @@ class StyleProps(StyleBase):
         dictionary based on existing OpenDocument style attributes.
 
         Args:
-            props (dict): The dictionary of style properties to update.
+            props: The dictionary of style properties to update.
         """
         strike = props.get("style:text-line-through-style", "")
         if strike == "none":
@@ -218,11 +218,8 @@ class StyleProps(StyleBase):
         defaults to the style's family.
 
         Args:
-            properties (list[str], optional): A list of property names to delete.
-            area (str, optional): The specific area from which to delete properties.
-
-        Raises:
-            ValueError: If the properties element for the specified area does not exist.
+            properties: A list of property names to delete.
+            area: The specific area from which to delete properties.
         """
         area = self._check_area(area)
         if properties is None:

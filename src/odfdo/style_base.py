@@ -46,7 +46,7 @@ class StyleBase(Element):
         """Get the style family.
 
         Returns:
-            str or None: The style family as a string, or None if not set.
+            str | None: The style family as a string, or None if not set.
         """
         return None
 
@@ -55,7 +55,7 @@ class StyleBase(Element):
         """Set the style family.
 
         Args:
-            _family (str or None): The style family to set.
+            _family: The style family to set.
         """
         pass
 
@@ -63,11 +63,11 @@ class StyleBase(Element):
         """Get the mapping of all properties of this style.
 
         Args:
-            area (str, optional): The specific area of properties to retrieve
+            area: The specific area of properties to retrieve
                 (e.g., 'text', 'paragraph'). If None, all properties are returned.
 
         Returns:
-            dict or None: A dictionary of properties, or None if no properties are found.
+            dict[str, str | dict] | None: A dictionary of properties, or None if no properties are found.
         """
         return None
 
@@ -84,10 +84,10 @@ class StyleBase(Element):
         another `StyleBase` object, or keyword arguments.
 
         Args:
-            properties (dict, optional): A dictionary of properties to set.
-            style (StyleBase, optional): Another StyleBase object from which
+            properties: A dictionary of properties to set.
+            style: Another StyleBase object from which
                 to copy properties.
-            area (str, optional): The specific area of properties to set
+            area: The specific area of properties to set
                 (e.g., 'text', 'paragraph').
             **kwargs: Arbitrary keyword arguments representing properties to set.
         """
