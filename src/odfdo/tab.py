@@ -50,7 +50,7 @@ class Tab(MDTab, Element):
         """Create a tabulation element "text:tab".
 
         Args:
-            position (int, optional): The position of the tab-stop. If provided,
+            position: The position of the tab-stop. If provided,
                 must be a non-negative integer.
         """
         super().__init__(**kwargs)

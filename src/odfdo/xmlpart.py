@@ -56,8 +56,8 @@ class XmlPart:
         """Initializes an XmlPart instance.
 
         Args:
-            part_name (str): The name of the XML part (e.g., "content.xml").
-            container (Container): The ODF container (zip file) that holds
+            part_name: The name of the XML part (e.g., "content.xml").
+            container: The ODF container (zip file) that holds
                 this XML part.
         """
         self.part_name = part_name
@@ -125,7 +125,7 @@ class XmlPart:
         """Sets the document body with a new Element.
 
         Args:
-            new_body (Element): The new 'office:body' element to set.
+            new_body: The new 'office:body' element to set.
         """
         body = self._get_body()
         tail = body.tail
@@ -141,7 +141,7 @@ class XmlPart:
         The XPath query is applied to the root of this XML part.
 
         Args:
-            xpath_query (str): The XPath query string.
+            xpath_query: The XPath query string.
 
         Returns:
             list[Element]: A list of matching Element objects.
@@ -154,7 +154,7 @@ class XmlPart:
         The XPath query is applied to the root of this XML part.
 
         Args:
-            xpath_query (str): The XPath query string.
+            xpath_query: The XPath query string.
 
         Returns:
             Element | None: The first matching Element object, or None if
@@ -166,7 +166,7 @@ class XmlPart:
         """Deletes a specified child element from the XML tree.
 
         Args:
-            child (Element): The child element to delete.
+            child: The child element to delete.
         """
         child.delete()
 
@@ -174,7 +174,7 @@ class XmlPart:
         """Applies an XPath query to the root of the XML part and its subtree.
 
         Args:
-            xpath_query (str): The XPath query string.
+            xpath_query: The XPath query string.
 
         Returns:
             list[Element | EText]: A list of Element or EText instances
@@ -207,7 +207,7 @@ class XmlPart:
         """Serializes the XML part to bytes.
 
         Args:
-            pretty (bool): If True, the output XML will be pretty-printed.
+            pretty: If True, the output XML will be pretty-printed.
                 Defaults to False.
 
         Returns:

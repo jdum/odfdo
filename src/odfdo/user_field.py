@@ -107,8 +107,8 @@ class UserDefinedMixin(Element):
         """Returns the value of the specified user-defined field.
 
         Args:
-            name (str): The name of the user-defined field to retrieve its value.
-            value_type (str | None): The expected type of the user-defined field's value.
+            name: The name of the user-defined field to retrieve its value.
+            value_type: The expected type of the user-defined field's value.
                 Can be 'boolean', 'date', 'float', 'string', 'time', or None
                 for automatic type detection.
 
@@ -153,12 +153,12 @@ class UserFieldGet(ElementTyped):
         """Initializes the UserFieldGet element.
 
         Args:
-            name (str, optional): The name of the user field to get.
-            value (Any, optional): An initial value to display.
-            value_type (str, optional): The ODF value type.
-            text (str, optional): The textual representation to display. If
+            name: The name of the user field to get.
+            value: An initial value to display.
+            value_type: The ODF value type.
+            text: The textual representation to display. If
                 not provided, it's generated from `value`.
-            style (str, optional): The data style name for formatting.
+            style: The data style name for formatting.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -225,12 +225,12 @@ class UserDefined(ElementTyped):
         name from that document.
 
         Args:
-            name (str): The name of the user-defined field.
-            value (Any, optional): The value of the field.
-            value_type (str, optional): The ODF value type (e.g., 'string').
-            text (str, optional): The textual representation of the value.
-            style (str, optional): The data style name for formatting.
-            from_document (Document, optional): A document from which to load
+            name: The name of the user-defined field.
+            value: The value of the field.
+            value_type: The ODF value type (e.g., 'string').
+            text: The textual representation of the value.
+            style: The data style name for formatting.
+            from_document: A document from which to load
                 the field's value from the meta section.
         """
         super().__init__(**kwargs)

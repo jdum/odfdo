@@ -59,9 +59,9 @@ class Unit:
         (e.g., "10.5cm") or accept a numerical value and a unit separately.
 
         Args:
-            value (str | float | int | Decimal): The value of the measurement.
+            value: The value of the measurement.
                 If a string, it can include the unit.
-            unit (str): The unit of measurement (e.g., 'cm', 'in', 'pt').
+            unit: The unit of measurement (e.g., 'cm', 'in', 'pt').
                 Defaults to 'cm'. This is ignored if the unit is present in
                 the `value` string.
         """
@@ -91,7 +91,7 @@ class Unit:
         """Checks if the 'other' object is a compatible Unit for comparison.
 
         Args:
-            other (Unit): The other Unit instance to compare against.
+            other: The other Unit instance to compare against.
 
         Raises:
             TypeError: If 'other' is not a Unit instance.
@@ -119,8 +119,8 @@ class Unit:
         length units.
 
         Args:
-            unit (str): The target unit to convert to. Must be 'px'.
-            dpi (int | Decimal | float): The dots per inch resolution to use
+            unit: The target unit to convert to. Must be 'px'.
+            dpi: The dots per inch resolution to use
                 for pixel conversion. Defaults to 72.
 
         Returns:

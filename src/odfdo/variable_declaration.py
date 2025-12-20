@@ -85,8 +85,8 @@ class VarDeclMixin(Element):
         """Returns a single variable declaration that matches the specified criteria.
 
         Args:
-            name (str): The name of the variable declaration to retrieve.
-            position (int): The 0-based index of the matching variable declaration to return.
+            name: The name of the variable declaration to retrieve.
+            position: The 0-based index of the matching variable declaration to return.
 
         Returns:
             VarDecls | None: A VarDecls instance, or None if no declaration matches the criteria.
@@ -134,8 +134,8 @@ class VarDecl(Element):
         """Initializes the VarDecl element.
 
         Args:
-            name (str, optional): The name of the variable.
-            value_type (str, optional): The ODF value type.
+            name: The name of the variable.
+            value_type: The ODF value type.
         """
         super().__init__(**kwargs)
         if self._do_init:

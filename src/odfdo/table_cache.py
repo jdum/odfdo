@@ -61,11 +61,10 @@ def _insert_map_once(
 ) -> list[int]:
     """Add an item (cell or row) to the map.
 
-        map  --  cache map
-
-        odf_idx  --  index in ODF XML
-
-        repeated  --  repeated value of item, 1 or more
+    Args:
+        cache_map: Cache map.
+        odf_idx: Index in ODF XML.
+        repeated: Repeated value of item, 1 or more.
 
     odf_idx is NOT position (col or row), neither raw XML position, but ODF index
     """
@@ -89,9 +88,9 @@ def _insert_map_once(
 def _erase_map_once(cache_map: list[int], odf_idx: int) -> list[int]:
     """Remove an item (cell or row) from the map.
 
-    map  --  cache map
-
-    odf_idx  --  index in ODF XML
+    Args:
+        cache_map: Cache map.
+        odf_idx: Index in ODF XML.
     """
     if odf_idx >= len(cache_map):
         raise IndexError
@@ -157,6 +156,16 @@ def _set_item_in_vault(
 ) -> tuple[list[int], Cell | Row | Column]:
     """Set the item (cell, row) in its vault (row, table), updating the cache
     map.
+
+    Args:
+        position: Position of the item.
+        item: The item to set.
+        idx: Index in ODF XML.
+        current_item: Current item.
+        vault: Vault.
+        vault_map: Vault map.
+        vault_scheme: Vault scheme.
+        clone: Whether to clone the item.
     """
     repeated = item.repeated or 1
     target_idx = vault.index(current_item)
@@ -270,7 +279,8 @@ class RowCache:
         """Get the number of expected cells in the row, i.e. addition
         repetitions.
 
-        Returns: int
+        Returns:
+            int: The number of expected cells in the row.
         """
         try:
             return self.cell_map[-1] + 1
@@ -409,7 +419,8 @@ class TableCache:
     def height(self) -> int:
         """Get the current height of the table.
 
-        Returns: int
+        Returns:
+            int: The current height of the table.
         """
         try:
             return self.row_map[-1] + 1
@@ -422,7 +433,8 @@ class TableCache:
         Rows may have different widths, use the Table API to ensure width
         consistency.
 
-        Returns: int
+        Returns:
+            int: The current width of the table.
         """
         try:
             return self.col_map[-1] + 1

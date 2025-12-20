@@ -193,9 +193,9 @@ class UserFieldDecl(ElementTyped):
         """Initializes the UserFieldDecl element.
 
         Args:
-            name (str, optional): The name of the user field.
-            value (Any, optional): The initial value of the field.
-            value_type (str, optional): The ODF value type (e.g., 'string',
+            name: The name of the user field.
+            value: The initial value of the field.
+            value_type: The ODF value type (e.g., 'string',
                 'float'). If not provided, it is inferred from the `value`.
         """
         super().__init__(**kwargs)
@@ -211,7 +211,7 @@ class UserFieldDecl(ElementTyped):
         preserving its name.
 
         Args:
-            value (Any): The new value for the field.
+            value: The new value for the field.
         """
         name = self.get_attribute("text:name")
         self.clear()

@@ -93,8 +93,8 @@ def _get_python_value(data: str | bytes | int | float | bool, encoding: str) -> 
     none of these conversions are successful, the data is returned as a string.
 
     Args:
-        data (str | bytes | int | float | bool): The input data.
-        encoding (str): The encoding to use if `data` is bytes.
+        data: The input data.
+        encoding: The encoding to use if `data` is bytes.
 
     Returns:
         Any: The data converted to its guessed Python type, or a string.
@@ -167,20 +167,20 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         and cells.
 
         Args:
-            name (str, optional): The name of the table. It is required and
+            name: The name of the table. It is required and
                 cannot contain specific characters like `[]*?:/\\`.
                 Apostrophes are also forbidden as the first or last character.
-            width (int or str, optional): The initial number of columns for the table.
-            height (int or str, optional): The initial number of rows for the table.
-            protected (bool): If True, the table is protected. A `protection_key`
+            width: The initial number of columns for the table.
+            height: The initial number of rows for the table.
+            protected: If True, the table is protected. A `protection_key`
                 must be provided if this is True.
-            protection_key (str, optional): A hash value of the password for
+            protection_key: A hash value of the password for
                 table protection.
-            printable (bool): If False, the table will not be printed. Defaults to True.
-            print_ranges (list[str], optional): A list of cell ranges
+            printable: If False, the table will not be printed. Defaults to True.
+            print_ranges: A list of cell ranges
                 (e.g., `['E6:K12', 'P6:R12']`) or a raw string specifying the
                 print ranges.
-            style (str, optional): The name of the style to apply to the table.
+            style: The name of the style to apply to the table.
             **kwargs: Additional keyword arguments for the Element base class.
 
         Raises:
@@ -250,7 +250,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         The query is applied to the current table element.
 
         Args:
-            xpath_query (XPath | str): The XPath query string or a compiled
+            xpath_query: The XPath query string or a compiled
                 XPath object.
 
         Returns:
@@ -279,7 +279,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Translate a 'y' coordinate from any format to a 0-based integer index.
 
         Args:
-            y (str | int): The Y-coordinate, which can be a 1-based integer or a string.
+            y: The Y-coordinate, which can be a 1-based integer or a string.
 
         Returns:
             int: The 0-based integer Y-coordinate.
@@ -609,7 +609,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Get the current height of the table.
 
         Returns:
-            int: The number of rows in the table.
+            The number of rows in the table.
         """
         return self._table_cache.height()
 
@@ -631,7 +631,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Get the current width and height of the table.
 
         Returns:
-            tuple[int, int]: A tuple containing the (width, height) of the table.
+            A tuple containing the (width, height) of the table.
         """
         return self.width, self.height
 
@@ -734,7 +734,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         a simple string with cell values.
 
         Args:
-            context (dict, optional): A dictionary of context variables for
+            context: A dictionary of context variables for
                 formatting.
 
         Returns:
@@ -757,17 +757,17 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Get a matrix of values from the table, optionally from a specified area.
 
         Args:
-            coord (tuple | list | str, optional): The coordinates of the area
+            coord: The coordinates of the area
                 to parse (e.g., "A1:C3" or (0, 0, 2, 2)). If None, the entire
                 table is parsed.
-            cell_type (str, optional): Filters cells by their value type
+            cell_type: Filters cells by their value type
                 (e.g., 'boolean', 'float', 'string'). 'all' retrieves any
                 non-empty cell.
-            complete (bool): If True (default), missing values in the specified
+            complete: If True (default), missing values in the specified
                 area are replaced by None to ensure a complete matrix.
-            get_type (bool): If True, returns tuples of (value, odf_type). For
+            get_type: If True, returns tuples of (value, odf_type). For
                 empty cells with `complete=True`, this will be (None, None).
-            flat (bool): If True, returns a single flat list of values instead
+            flat: If True, returns a single flat list of values instead
                 of a list of lists. Defaults to False.
 
         Returns:
@@ -814,12 +814,12 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Yield an iterator of rows, where each row is a list of Python values.
 
         Args:
-            coord (tuple | list | str, optional): The coordinates of the area
+            coord: The coordinates of the area
                 to parse.
-            cell_type (str, optional): Filters cells by value type (e.g., 'float').
+            cell_type: Filters cells by value type (e.g., 'float').
                 'all' retrieves any non-empty cell. See `get_values` for more.
-            complete (bool): If True, missing values are replaced by None.
-            get_type (bool): If True, yields tuples of (value, odf_type).
+            complete: If True, missing values are replaced by None.
+            get_type: If True, yields tuples of (value, odf_type).
 
         Yields:
             Iterator[list]: An iterator where each item is a list representing
@@ -865,13 +865,13 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         where each inner list represents a row.
 
         Args:
-            values (list): A list of lists of Python types to set.
-            coord (tuple | list | str, optional): The coordinate of the top-left
+            values: A list of lists of Python types to set.
+            coord: The coordinate of the top-left
                 cell where values should be set (e.g., "A1" or (0, 0)).
                 Defaults to "A1".
-            style (str, optional): The name of a cell style to apply.
-            cell_type (str, optional): The value type for the cells (e.g., 'float').
-            currency (str, optional): A three-letter currency code (e.g., 'USD').
+            style: The name of a cell style to apply.
+            cell_type: The value type for the cells (e.g., 'float').
+            currency: A three-letter currency code (e.g., 'USD').
         """
         if coord:
             x, y = self._translate_cell_coordinates(coord)
@@ -907,7 +907,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         to False) and no style.
 
         Args:
-            aggressive (bool): If True, empty cells with styles are also
+            aggressive: If True, empty cells with styles are also
                 considered empty and will be removed.
         """
         # Step 1: remove empty rows below the table
@@ -1020,7 +1020,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Swap rows and columns of the table in-place.
 
         Args:
-            coord (tuple | list | str, optional): The coordinates of a specific
+            coord: The coordinates of a specific
                 area to transpose. If None, the entire table is transposed.
                 If the area is not square, some cells may be overwritten.
         """
@@ -1076,7 +1076,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         to False, like an empty string) and no style.
 
         Args:
-            aggressive (bool): If True, empty cells with styles are also
+            aggressive: If True, empty cells with styles are also
                 considered empty.
 
         Returns:
@@ -1111,8 +1111,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         The returned rows are copies; use `set_row()` to apply changes.
 
         Args:
-            start (int, optional): The starting row index (0-based).
-            end (int, optional): The ending row index (inclusive).
+            start: The starting row index (0-based).
+            end: The ending row index (inclusive).
 
         Yields:
             Iterator[Row]: An iterator of Row elements.
@@ -1145,10 +1145,10 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Get a list of rows matching the specified criteria.
 
         Args:
-            coord (tuple | list | str, optional): The coordinates of the rows
+            coord: The coordinates of the rows
                 to retrieve (e.g., (0, 2) for the first three rows).
-            style (str, optional): The name of a style to filter rows by.
-            content (str, optional): A regular expression to match against the
+            style: The name of a style to filter rows by.
+            content: A regular expression to match against the
                 content of the rows.
 
         Returns:
@@ -1220,9 +1220,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         A copy of the row is returned; use `set_row()` to apply any changes.
 
         Args:
-            y (int | str): The 0-based index or string representation of the row.
-            clone (bool): If True (default), a copy of the row is returned.
-            create (bool): If True (default) and the row does not exist, a new
+            y: The 0-based index or string representation of the row.
+            clone: If True (default), a copy of the row is returned.
+            create: If True (default) and the row does not exist, a new
                 empty row is created.
 
         Returns:
@@ -1243,9 +1243,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         empty row is created.
 
         Args:
-            y (int | str): The 0-based index of the row to replace.
-            row (Row, optional): The new Row element to set.
-            clone (bool): If True (default), a copy of the provided row is used.
+            y: The 0-based index of the row to replace.
+            row: The new Row element to set.
+            clone: If True (default), a copy of the provided row is used.
 
         Returns:
             Row: The newly set row, with its `y` attribute updated.
@@ -1274,16 +1274,16 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         return row_back
 
     def insert_row(
-        self, y: str | int, row: Row | None = None, clone: bool = True
+        self, y: int | str, row: Row | None = None, clone: bool = True
     ) -> Row:
         """Insert a row before the given 'y' position (0-based).
 
         If no `row` is provided, an empty one is created.
 
         Args:
-            y (int | str): The 0-based index at which to insert the row.
-            row (Row, optional): The Row element to insert.
-            clone (bool): If True (default), a copy of the provided row is used.
+            y: The 0-based index at which to insert the row.
+            row: The Row element to insert.
+            clone: If True (default), a copy of the provided row is used.
 
         Returns:
             Row: The newly inserted row, with its `y` attribute updated.
@@ -1309,7 +1309,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Append a list of rows to the end of the table.
 
         Args:
-            rows (list[Row], optional): A list of Row elements to append.
+            rows: A list of Row elements to append.
         """
         if rows is None:
             rows = []
@@ -1337,9 +1337,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         so it's best to insert a filled row first.
 
         Args:
-            row (Row, optional): The Row element to append.
-            clone (bool): If True (default), a copy of the provided row is used.
-            _repeated (int, optional): The number of times the row is repeated.
+            row: The Row element to append.
+            clone: If True (default), a copy of the provided row is used.
+            _repeated: The number of times the row is repeated.
 
         Returns:
             Row: The newly appended row, with its `y` attribute updated.
@@ -1369,7 +1369,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Delete the row at the given 'y' position (0-based).
 
         Args:
-            y (int | str): The 0-based index of the row to delete.
+            y: The 0-based index of the row to delete.
         """
         y = self._translate_y_from_any(y)
         # Outside the defined table
@@ -1388,11 +1388,11 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Get the list of Python values for the cells of the row at the given 'y' position.
 
         Args:
-            y (int or str): The 0-based index of the row.
-            cell_type (str, optional): Filters cells by value type (e.g., 'float').
+            y: The 0-based index of the row.
+            cell_type: Filters cells by value type (e.g., 'float').
                 'all' retrieves any non-empty cell.
-            complete (bool): If True (default), missing values are replaced by None.
-            get_type (bool): If True, returns tuples of (value, odf_type).
+            complete: If True (default), missing values are replaced by None.
+            get_type: If True, returns tuples of (value, odf_type).
 
         Returns:
             list: A list of Python types or (value, odf_type) tuples.
@@ -1414,7 +1414,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         Missing values are replaced by None.
 
         Args:
-            y (int or str): The 0-based index of the row.
+            y: The 0-based index of the row.
 
         Returns:
             list[Any]: A list of sub-elements from each cell in the row.
@@ -1434,11 +1434,11 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Set the values of all cells in the row at the given 'y' position.
 
         Args:
-            y (int or str): The 0-based index of the row.
-            values (list): A list of Python types to set as cell values.
-            cell_type (str, optional): The value type for the cells (e.g., 'float').
-            currency (str, optional): A three-letter currency code.
-            style (str, optional): The name of a cell style to apply.
+            y: The 0-based index of the row.
+            values: A list of Python types to set as cell values.
+            cell_type: The value type for the cells (e.g., 'float').
+            currency: A three-letter currency code.
+            style: The name of a cell style to apply.
 
         Returns:
             Row: The modified row, with its `y` attribute updated.
@@ -1451,8 +1451,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Set all the cells of the row at the given 'y' position.
 
         Args:
-            y (int or str): The 0-based index of the row.
-            cells (list, optional): A list of Cell elements to set.
+            y: The 0-based index of the row.
+            cells: A list of Cell elements to set.
 
         Returns:
             Row: The modified row, with its `y` attribute updated.
@@ -1470,8 +1470,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         to False, like an empty string) and no style.
 
         Args:
-            y (int or str): The 0-based index of the row.
-            aggressive (bool): If True, empty cells with styles are also
+            y: The 0-based index of the row.
+            aggressive: If True, empty cells with styles are also
                 considered empty.
 
         Returns:
@@ -1494,11 +1494,11 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Get a list of cells, optionally from a specified area and filtered by criteria.
 
         Args:
-            coord (tuple | list | str, optional): The coordinates of the area to parse.
-            cell_type (str, optional): Filters by value type. 'all' gets any non-empty cell.
-            style (str, optional): Filters by cell style name.
-            content (str, optional): A regex to match against cell content.
-            flat (bool): If True, returns a single flat list of cells. Defaults to False.
+            coord: The coordinates of the area to parse.
+            cell_type: Filters by value type. 'all' gets any non-empty cell.
+            style: Filters by cell style name.
+            content: A regex to match against cell content.
+            flat: If True, returns a single flat list of cells. Defaults to False.
 
         Returns:
             list: A list of lists of Cell elements, or a flat list if `flat` is True.
@@ -1554,10 +1554,10 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         A copy of the cell is returned by default; use `set_cell()` to apply changes.
 
         Args:
-            coord (tuple | list | str): The 0-based (x, y) coordinates or an
+            coord: The 0-based (x, y) coordinates or an
                 alphanumeric string like "A1".
-            clone (bool): If True (default), a copy of the cell is returned.
-            keep_repeated (bool): If True (default), retains the repeated
+            clone: If True (default), a copy of the cell is returned.
+            keep_repeated: If True (default), retains the repeated
                 property of the cell.
 
         Returns:
@@ -1596,8 +1596,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Get the Python value of the cell at the given coordinates.
 
         Args:
-            coord (tuple | list | str): The cell coordinates (e.g., "A1" or (0,0)).
-            get_type (bool): If True, returns a tuple of (value, odf_type).
+            coord: The cell coordinates (e.g., "A1" or (0,0)).
+            get_type: If True, returns a tuple of (value, odf_type).
 
         Returns:
             Any: The Python value of the cell, or a (value, type) tuple if
@@ -1636,9 +1636,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         If `cell` is None, an empty cell is created.
 
         Args:
-            coord (tuple | list | str): The coordinates of the cell to replace.
-            cell (Cell, optional): The new Cell element to set.
-            clone (bool): If True (default), a copy of the provided cell is used.
+            coord: The coordinates of the cell to replace.
+            cell: The new Cell element to set.
+            clone: If True (default), a copy of the provided cell is used.
 
         Returns:
             Cell: The newly set cell, with its `x` and `y` attributes updated.
@@ -1684,14 +1684,14 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Set a matrix of cells in the table, starting from a specified coordinate.
 
         The table is not cleared before this operation. The `cells` argument should
-        be a list of lists, where each inner list represents a row of cells.
+        be a list of lists, where each inner list represents a row.
 
         Args:
-            cells (Iterable[list[Cell]] | Iterable[tuple[Cell]]): A list of lists
+            cells: A list of lists
                 of Cell elements.
-            coord (tuple | list | str, optional): The top-left coordinate for
+            coord: The top-left coordinate for
                 placing the cells. Defaults to "A1".
-            clone (bool): If True (default), copies of the provided cells are used.
+            clone: If True (default), copies of the provided cells are used.
         """
         if coord:
             x, y = self._translate_cell_coordinates(coord)
@@ -1725,11 +1725,11 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Set the Python value of the cell at the given coordinates.
 
         Args:
-            coord (tuple | list | str): The coordinates of the cell.
-            value (Any): The Python value to set.
-            cell_type (str, optional): The value type (e.g., 'float', 'string').
-            currency (str, optional): A three-letter currency code.
-            style (str, optional): The name of a cell style to apply.
+            coord: The coordinates of the cell.
+            value: The Python value to set.
+            cell_type: The value type (e.g., 'float', 'string').
+            currency: A three-letter currency code.
+            style: The name of a cell style to apply.
         """
         self.set_cell(
             coord,
@@ -1750,9 +1750,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         way to achieve this.
 
         Args:
-            coord (tuple | list | str): The coordinates of the cell.
-            image_frame (Frame): The Frame element containing the image.
-            doc_type (str, optional): The document type ('spreadsheet' or 'text').
+            coord: The coordinates of the cell.
+            image_frame: The Frame element containing the image.
+            doc_type: The document type ('spreadsheet' or 'text').
         """
         warn("Table.set_cell_image() is deprecated", DeprecationWarning, stacklevel=2)
         # Test document type
@@ -1808,9 +1808,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         If `cell` is None, an empty cell is created.
 
         Args:
-            coord (tuple | list | str): The (x, y) coordinates for insertion.
-            cell (Cell, optional): The Cell element to insert.
-            clone (bool): If True (default), a copy of the provided cell is used.
+            coord: The (x, y) coordinates for insertion.
+            cell: The Cell element to insert.
+            clone: If True (default), a copy of the provided cell is used.
 
         Returns:
             Cell: The newly inserted cell, with its `x` and `y` attributes updated.
@@ -1845,9 +1845,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         If `cell` is None, an empty cell is created.
 
         Args:
-            y (int | str): The 0-based index of the row to append to.
-            cell (Cell, optional): The Cell element to append.
-            clone (bool): If True (default), a copy of the provided cell is used.
+            y: The 0-based index of the row to append to.
+            cell: The Cell element to append.
+            clone: If True (default), a copy of the provided cell is used.
 
         Returns:
             Cell: The newly appended cell, with its `x` and `y` attributes updated.
@@ -1873,7 +1873,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         empty value.
 
         Args:
-            coord (tuple | list | str): The coordinates of the cell to delete.
+            coord: The coordinates of the cell to delete.
         """
         x, y = self._translate_cell_coordinates(coord)
         if x is None:
@@ -1906,8 +1906,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         The returned columns are copies; use `set_column()` to apply changes.
 
         Args:
-            start (int, optional): The starting column index (0-based).
-            end (int, optional): The ending column index (inclusive).
+            start: The starting column index (0-based).
+            end: The ending column index (inclusive).
 
         Yields:
             Iterator[Column]: An iterator of Column elements.
@@ -1951,9 +1951,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         The returned columns are copies; use `set_column()` to apply any changes.
 
         Args:
-            coord (tuple | list | str, optional): The coordinates of the columns
+            coord: The coordinates of the columns
                 to retrieve.
-            style (str, optional): The name of a style to filter columns by.
+            style: The name of a style to filter columns by.
 
         Returns:
             list[Column]: A list of matching Column elements.
@@ -1993,7 +1993,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         The returned columns are copies; use `set_column()` to apply any changes.
 
         Returns:
-            list[Column]: A list of all Column elements.
+            A list of all Column elements.
         """
         return list(self.iter_columns())
 
@@ -2004,7 +2004,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         the column is returned; use `set_column()` to apply any changes.
 
         Args:
-            x (int or str): The 0-based index or alphabetical representation
+            x: The 0-based index or alphabetical representation
                 (e.g., "C") of the column.
 
         Returns:
@@ -2027,9 +2027,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         ODF columns primarily store style information.
 
         Args:
-            x (int or str): The 0-based index or alphabetical representation
+            x: The 0-based index or alphabetical representation
                 of the column to replace.
-            column (Column, optional): The new Column element to set. If None,
+            column: The new Column element to set. If None,
                 an empty column is created.
 
         Returns:
@@ -2064,8 +2064,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         If no `column` is provided, an empty one is created.
 
         Args:
-            x (int or str): The 0-based index at which to insert the column.
-            column (Column, optional): The Column element to insert.
+            x: The 0-based index at which to insert the column.
+            column: The Column element to insert.
 
         Returns:
             Column: The newly inserted column, with its `x` attribute updated.
@@ -2103,8 +2103,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         contain cells, only style information.
 
         Args:
-            column (Column, optional): The Column element to append.
-            _repeated (int, optional): The number of times the column is repeated.
+            column: The Column element to append.
+            _repeated: The number of times the column is repeated.
 
         Returns:
             Column: The newly appended column, with its `x` attribute updated.
@@ -2135,7 +2135,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Delete the column at the given position.
 
         Args:
-            x (int or str): The 0-based index or alphabetical representation
+            x: The 0-based index or alphabetical representation
                 of the column to delete.
         """
         x = self._translate_x_from_any(x)
@@ -2161,13 +2161,13 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Get a list of cells from the column at the given 'x' position.
 
         Args:
-            x (int or str): The 0-based index or alphabetical representation
+            x: The 0-based index or alphabetical representation
                 of the column.
-            style (str, optional): Filters by cell style name.
-            content (str, optional): A regex to match against cell content.
-            cell_type (str, optional): Filters by value type. 'all' gets any
+            style: Filters by cell style name.
+            content: A regex to match against cell content.
+            cell_type: Filters by value type. 'all' gets any
                 non-empty cell.
-            complete (bool): If True, missing cells are represented by None.
+            complete: If True, missing cells are represented by None.
 
         Returns:
             list[Cell | None]: A list of Cell elements or None.
@@ -2214,10 +2214,10 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Get the list of Python values for the cells in the column at the given 'x' position.
 
         Args:
-            x (int or str): The 0-based index or alphabetical representation of the column.
-            cell_type (str, optional): Filters by value type. 'all' gets any non-empty cell.
-            complete (bool): If True (default), missing values are replaced by None.
-            get_type (bool): If True, returns tuples of (value, odf_type).
+            x: The 0-based index or alphabetical representation of the column.
+            cell_type: Filters by value type. 'all' gets any non-empty cell.
+            complete: If True (default), missing values are replaced by None.
+            get_type: If True, returns tuples of (value, odf_type).
 
         Returns:
             list[Any]: A list of Python values or (value, odf_type) tuples.
@@ -2252,9 +2252,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         The provided list of cells must have the same length as the table's height.
 
         Args:
-            x (int or str): The 0-based index or alphabetical representation
+            x: The 0-based index or alphabetical representation
                 of the column.
-            cells (list[Cell]): A list of Cell elements to set.
+            cells: A list of Cell elements to set.
         """
         height = self.height
         if len(cells) != height:
@@ -2277,11 +2277,11 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         The provided list of values must have the same length as the table's height.
 
         Args:
-            x (int or str): The 0-based index or alphabetical representation of the column.
-            values (list): A list of Python types to set as cell values.
-            cell_type (str, optional): The value type for the cells.
-            currency (str, optional): A three-letter currency code.
-            style (str, optional): The name of a cell style to apply.
+            x: The 0-based index or alphabetical representation of the column.
+            values: A list of Python types to set as cell values.
+            cell_type: The value type for the cells.
+            currency: A three-letter currency code.
+            style: The name of a cell style to apply.
         """
         cells = [
             Cell(value, cell_type=cell_type, currency=currency, style=style)
@@ -2296,8 +2296,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         to False) and no style.
 
         Args:
-            x (int or str): The 0-based index or alphabetical representation of the column.
-            aggressive (bool): If True, empty cells with styles are also considered empty.
+            x: The 0-based index or alphabetical representation of the column.
+            aggressive: If True, empty cells with styles are also considered empty.
 
         Returns:
             bool: True if the column is empty, False otherwise.
@@ -2380,9 +2380,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         called on a cloned table if access to global named ranges is required.
 
         Args:
-            table_name (str or list[str], optional): A name or list of names
+            table_name: A name or list of names
                 of tables to filter by.
-            global_scope (bool): If True (default), searches the entire document.
+            global_scope: If True (default), searches the entire document.
                 If False, searches only the current table.
 
         Returns:
@@ -2416,8 +2416,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         the body level, so do not call this on a cloned table for global access.
 
         Args:
-            name (str): The name of the named range object.
-            global_scope (bool): If True (default), searches the entire document.
+            name: The name of the named range object.
+            global_scope: If True (default), searches the entire document.
                 If False, searches only the current table.
 
         Returns:
@@ -2444,8 +2444,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         the body level, so do not call this on a cloned table for global access.
 
         Args:
-            named_range (NamedRange): The NamedRange element to append.
-            global_scope (bool): If True (default), appends to the document body.
+            named_range: The NamedRange element to append.
+            global_scope: If True (default), appends to the document body.
                 If False, appends to the current table.
         """
         if global_scope:
@@ -2476,12 +2476,12 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         the body level, so do not call this on a cloned table for global access.
 
         Args:
-            name (str): The name of the named range.
-            crange (str | tuple | list): The cell or area coordinates.
-            table_name (str, optional): The name of the table. Defaults to the
+            name: The name of the named range.
+            crange: The cell or area coordinates.
+            table_name: The name of the table. Defaults to the
                 current table's name if `global_scope` is True.
-            usage (str, optional): The usage type ('print-range', 'filter', etc.).
-            global_scope (bool): If True (default), inserts into the document body.
+            usage: The usage type ('print-range', 'filter', etc.).
+            global_scope: If True (default), inserts into the document body.
                 If False, inserts into the current table.
         """
         name = name.strip()
@@ -2515,8 +2515,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         the body level, so do not call this on a cloned table for global access.
 
         Args:
-            name (str): The name of the named range to delete.
-            global_scope (bool): If True (default), searches the entire document.
+            name: The name of the named range to delete.
+            global_scope: If True (default), searches the entire document.
                 If False, searches only the current table.
         """
         name = name.strip()
@@ -2551,8 +2551,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         to a previous span. If the area defines only one cell, this method does nothing.
 
         Args:
-            area (str | tuple | list): The cell or area coordinates (e.g., "A1:B2").
-            merge (bool): If True, concatenates the text of covered cells into the
+            area: The cell or area coordinates (e.g., "A1:B2").
+            merge: If True, concatenates the text of covered cells into the
                 first cell. If False (default), text in covered cells is preserved
                 but may not be displayed by office applications.
 
@@ -2645,7 +2645,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         The `area` should specify the top-left cell of the spanned area.
 
         Args:
-            area (str | tuple | list): The coordinates of the top-left cell
+            area: The coordinates of the top-left cell
                 of the spanned area.
 
         Returns:
@@ -2695,9 +2695,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Export the table as a CSV string or file.
 
         Args:
-            path_or_file (str | Path | None): The path to save the CSV file to.
+            path_or_file: The path to save the CSV file to.
                 If None, the CSV content is returned as a string.
-            dialect (str): The CSV dialect to use (e.g., 'excel', 'unix').
+            dialect: The CSV dialect to use (e.g., 'excel', 'unix').
             **fmtparams: Additional keyword arguments to pass to the
                 `csv.writer` method.
 
@@ -2738,9 +2738,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         to define `csv.reader` parameters for more control.
 
         Args:
-            content (str): The CSV content as a string.
-            name (str): The name of the table to create.
-            style (str, optional): The style to apply to the table.
+            content: The CSV content as a string.
+            name: The name of the table to create.
+            style: The style to apply to the table.
             **fmtparams: Additional keyword arguments for the `csv.reader` method.
 
         Returns:
@@ -2778,10 +2778,10 @@ def import_from_csv(
     to define `csv.reader` parameters for more control.
 
     Args:
-        path_or_file (str | Path | object): The path to a CSV file or a
+        path_or_file: The path to a CSV file or a
             file-like object to read from.
-        name (str): The name of the table to create.
-        style (str, optional): The style to apply to the table.
+        name: The name of the table to create.
+        style: The style to apply to the table.
         **fmtparams: Additional keyword arguments for the `csv.reader` method.
 
     Returns:
