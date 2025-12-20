@@ -46,7 +46,7 @@ class Boolean:
         """Decode an ODF boolean string to a Python boolean.
 
         Args:
-            data (str): The string to decode, expected to be 'true' or 'false'.
+            data: The string to decode, expected to be 'true' or 'false'.
 
         Returns:
             bool: `True` if data is 'true', `False` if data is 'false'.
@@ -65,8 +65,7 @@ class Boolean:
         """Encode a Python boolean (or boolean-like string/bytes) to an ODF boolean string.
 
         Args:
-            value (bool | str | bytes): The value to encode. Can be a Python `bool`,
-                a string ('true', 'false' case-insensitive), or bytes.
+            value: The value to encode. Can be a Python `bool`, a string ('true', 'false' case-insensitive), or bytes.
 
         Returns:
             str: The ODF boolean string ('true' or 'false').
@@ -93,7 +92,7 @@ class Date:
         """Decode an ODF date string to a Python `datetime` object.
 
         Args:
-            data (str): The date string to decode, expected in ISO 8601 format (YYYY-MM-DD).
+            data: The date string to decode, expected in ISO 8601 format (YYYY-MM-DD).
 
         Returns:
             datetime: A `datetime` object representing the decoded date.
@@ -107,7 +106,7 @@ class Date:
         The output string is formatted as "YYYY-MM-DD".
 
         Args:
-            value (datetime | date): The `datetime` or `date` object to encode.
+            value: The `datetime` or `date` object to encode.
 
         Returns:
             str: The ODF date string (e.g., "2024-01-31").
@@ -131,7 +130,7 @@ class DateTime:
         specific `fromisoformat` behaviors.
 
         Args:
-            data (str): The date-time string to decode, expected in ISO 8601 format.
+            data: The date-time string to decode, expected in ISO 8601 format.
 
         Returns:
             datetime: A `datetime.datetime` object representing the decoded date-time.
@@ -168,7 +167,7 @@ class DateTime:
         are converted to the canonical 'Z' representation.
 
         Args:
-            value (datetime): The `datetime.datetime` object to encode.
+            value: The `datetime.datetime` object to encode.
 
         Returns:
             str: The ODF date-time string (e.g., "YYYY-MM-DDTHH:MM:SSZ").
@@ -190,7 +189,7 @@ class Duration:
         """Decode an ODF duration string (ISO 8601) to a Python `datetime.timedelta` object.
 
         Args:
-            data (str): The duration string to decode (e.g., "PT1H30M0S", "-P5D").
+            data: The duration string to decode (e.g., "PT1H30M0S", "-P5D").
 
         Returns:
             timedelta: A `datetime.timedelta` object representing the decoded duration.
@@ -242,7 +241,7 @@ class Duration:
         """Encode a Python `datetime.timedelta` object to an ODF duration string (ISO 8601).
 
         Args:
-            value (timedelta): The `datetime.timedelta` object to encode.
+            value: The `datetime.timedelta` object to encode.
 
         Returns:
             str: The ODF duration string (e.g., "PT1H30M0S", "-P5D").

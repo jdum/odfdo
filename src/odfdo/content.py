@@ -55,10 +55,10 @@ class Content(XmlPart):
         the given family.
 
         Args:
+            family: The style family to filter by.
 
-            family -- str or None
-
-        Returns: list of Style
+        Returns:
+            A list of styles.
         """
         result: list[StyleBase] = []
         for context in self._get_style_contexts(family):
@@ -82,14 +82,14 @@ class Content(XmlPart):
         desktop application, use display_name instead.
 
         Args:
+            family: The family of the style to retrieve (e.g., 'paragraph',
+                'text', 'graphic').
+            name_or_element: The name of the style or a Style element. If
+                None, the default style for the family is returned.
+            display_name: The display name of the style to search for.
 
-            family -- 'paragraph', 'text', 'graphic', 'table', 'list',
-                      'number', ...
-            name_or_element -- str or Style
-
-            display_name -- str
-
-        Returns: Style or None if not found
+        Returns:
+            The Style object, or None if not found.
         """
         for context in self._get_style_contexts(family):
             if context is None:

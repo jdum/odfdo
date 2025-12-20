@@ -249,8 +249,7 @@ class Container:
         """Storage of the ODF document, as zip or other format.
 
         Args:
-
-        path -- path like, io.BytesIO or None
+            path: The path to the ODF file, a file-like object, or None.
         """
         self.__parts: dict[str, bytes | None] = {}
         self.__parts_ts: dict[str, int] = {}
@@ -754,12 +753,12 @@ class Container:
         unless "packaging" is different.
 
         Args:
-
-            target -- str or file-like or Path
-
-            packaging -- 'zip', or for debugging purpose 'xml' or 'folder'
-
-            backup -- boolean
+            target: The path, file-like object, or Path object where the
+                document will be saved.
+            packaging: The packaging format to use. Can be 'zip', 'xml', or
+                'folder'. If None, the current packaging is used.
+            backup: If True, a backup of the original file is created.
+            pretty: If True, the XML output will be pretty-printed.
         """
         parts = self.__parts
         packaging = self._clean_save_packaging(packaging)

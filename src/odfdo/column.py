@@ -60,11 +60,11 @@ class Column(Element):
             higher-level Table API should be used instead.
 
         Args:
-            default_cell_style (str or None, optional): The name of the
+            default_cell_style: The name of the
                 default style to apply to cells in this column.
-            repeated (int or None, optional): The number of times this column
+            repeated: The number of times this column
                 should be repeated. Must be greater than 1.
-            style (str or None, optional): The name of the style to apply to
+            style: The name of the style to apply to
                 the column itself.
         """
         super().__init__(**kwargs)
@@ -103,7 +103,7 @@ class Column(Element):
         (See also the `default_cell_style` property.)
 
         Args:
-            style (Style, str, or None): The style to apply. Can be a Style
+            style: The style to apply. Can be a Style
                 object, the name of a style, or None to remove the style.
         """
         self.set_style_attribute("table:default-cell-style-name", style)
@@ -129,7 +129,7 @@ class Column(Element):
         attribute.
 
         Args:
-            repeated (int, optional): The number of times the column should be
+            repeated: The number of times the column should be
                 repeated. If None or less than 2, the attribute is removed.
         """
         if repeated is None or repeated < 2:

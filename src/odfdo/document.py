@@ -77,8 +77,8 @@ def _underline_string(level: int, name: str) -> str:
     If the level is out of bounds, returns a newline.
 
     Args:
-        level (int): The nesting level, which determines the underline character.
-        name (str): The string to be underlined. The length of this string
+        level: The nesting level, which determines the underline character.
+        name: The string to be underlined. The length of this string
             determines the length of the underline.
 
     Returns:
@@ -96,8 +96,8 @@ def _show_styles(element: Element, level: int = 0) -> str | None:
     including their attributes and children.
 
     Args:
-        element (Element): The style element to represent.
-        level (int): The current nesting level for indentation and underlining.
+        element: The style element to represent.
+        level: The current nesting level for indentation and underlining.
 
     Returns:
         str | None: A formatted string representing the style element, or
@@ -145,7 +145,7 @@ def _get_part_path(path: str) -> str:
     a recognized short name, it is returned unchanged.
 
     Args:
-        path (str): The short name or full path of the part.
+        path: The short name or full path of the part.
 
     Returns:
         str: The full path of the XML part.
@@ -165,7 +165,7 @@ def _get_part_class(
     """Get the specialized class for a core ODF XML part.
 
     Args:
-        path (str): The full path of the XML part (e.g., "content.xml").
+        path: The full path of the XML part (e.g., "content.xml").
 
     Returns:
         type[XmlPart] | None: The class corresponding to the part
@@ -228,7 +228,7 @@ class Document(MDDocument):
         existing one from a path, file-like object, or Container.
 
         Args:
-            target (str | bytes | Path | Container | io.BytesIO | None):
+            target:
                 The source to create or load the document from.
                 - If a string like "text", "spreadsheet", "presentation",
                   "drawing", or their file extensions ("odt", "ods", "odp",
@@ -299,7 +299,7 @@ class Document(MDDocument):
         """Create a new Document from a template.
 
         Args:
-            template (str | Path | io.BytesIO): The template to use.
+            template: The template to use.
                 - If a string like "text", "spreadsheet", etc., a default
                   template is used.
                 - If a path to a custom template file, that template is used.
@@ -612,7 +612,7 @@ class Document(MDDocument):
         and image references. For spreadsheets, it returns a CSV representation.
 
         Args:
-            rst_mode (bool): If True, formats the output in reStructuredText (RST)
+            rst_mode: If True, formats the output in reStructuredText (RST)
                 syntax, especially for footnotes and annotations.
 
         Returns:

@@ -74,20 +74,20 @@ class Cell(TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         repeated across a given number of columns.
 
         Args:
-            value (any, optional): The Python value to set for the cell. Can be
+            value: The Python value to set for the cell. Can be
                 a boolean, int, float, Decimal, date, datetime, str, or timedelta.
-            text (str, optional): The textual representation of the cell's
+            text: The textual representation of the cell's
                 content. If not provided, it is generated from the value.
-            cell_type (str, optional): The explicit type of the cell. Valid
+            cell_type: The explicit type of the cell. Valid
                 options include 'boolean', 'currency', 'date', 'float',
                 'percentage', 'string', or 'time'. If not provided, it's
                 guessed from the value.
-            currency (str, optional): A three-letter currency code (e.g., "EUR",
+            currency: A three-letter currency code (e.g., "EUR",
                 "USD") if the cell_type is 'currency'.
-            formula (str, optional): The formula for the cell.
-            repeated (int, optional): The number of times this cell should be
+            formula: The formula for the cell.
+            repeated: The number of times this cell should be
                 repeated across columns. Must be greater than 1.
-            style (str, optional): The name of the style to apply to the cell.
+            style: The name of the style to apply to the cell.
         """
         super().__init__(**kwargs)
         self.x: int | None = None
@@ -395,16 +395,16 @@ class Cell(TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         For monetary values, the name of the currency must be provided.
 
         Args:
-            value (Union[str, bytes, float, int, Decimal, bool, datetime, date, timedelta, None]):
+            value:
                 The Python value to assign to the cell.
-            text (str, optional): The explicit textual representation of the
+            text: The explicit textual representation of the
                 cell's content. If None, it is derived from the `value`.
-            cell_type (str, optional): The explicit type of the cell's value.
+            cell_type: The explicit type of the cell's value.
                 Can be 'boolean', 'float', 'date', 'string', 'time', 'currency',
                 or 'percentage'.
-            currency (str, optional): A string representing the currency, e.g.,
+            currency: A string representing the currency, e.g.,
                 "EUR" or "USD", required if `cell_type` is 'currency'.
-            formula (str, optional): The formula to set for the cell.
+            formula: The formula to set for the cell.
         """
         self.clear()
         text = self.set_value_and_type(
@@ -454,7 +454,7 @@ class Cell(TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         triggering cache updates.
 
         Args:
-            repeated (int, optional): The number of times the cell should be
+            repeated: The number of times the cell should be
                 repeated. If None or less than 2, the attribute is removed.
         """
         if repeated is None or repeated < 2:
@@ -529,7 +529,7 @@ class Cell(TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         spanned. By default, cells with a style are not considered empty.
 
         Args:
-            aggressive (bool, optional): If True, a cell with a style but no
+            aggressive: If True, a cell with a style but no
                 content is also considered empty. Defaults to False.
 
         Returns:
@@ -563,7 +563,7 @@ class Cell(TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         or 'table:number-rows-spanned' attributes.
 
         Args:
-            covered (bool, optional): If True, covered cells (those with the
+            covered: If True, covered cells (those with the
                 "table:covered-table-cell" tag) are also considered spanned.
                 Defaults to True.
 

@@ -56,14 +56,14 @@ class DrawPage(OfficeFormsMixin, Element):
         """Initialize the DrawPage.
 
         Args:
-            draw_id (str, optional): The ID of the draw page ('draw:id').
-            name (str, optional): The name of the draw page ('draw:name').
-            master_page (str, optional): The name of the master page to use
+            draw_id: The ID of the draw page ('draw:id').
+            name: The name of the draw page ('draw:name').
+            master_page: The name of the master page to use
                 ('draw:master-page-name').
-            presentation_page_layout (str, optional): The name of the
+            presentation_page_layout: The name of the
                 presentation page layout to use
                 ('presentation:presentation-page-layout-name').
-            style (str, optional): The name of the style to apply to the page
+            style: The name of the style to apply to the page
                 ('draw:style-name').
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
@@ -102,10 +102,10 @@ class DrawPage(OfficeFormsMixin, Element):
         and replaces any existing transition on the page.
 
         Args:
-            smil_type (str): The SMIL type for the transition (e.g., "fade").
-            subtype (str | None): The SMIL subtype for the transition.
-            dur (str): The duration of the transition (e.g., "2s").
-            node_type (str): The presentation node type.
+            smil_type: The SMIL type for the transition (e.g., "fade").
+            subtype: The SMIL subtype for the transition.
+            dur: The duration of the transition (e.g., "2s").
+            node_type: The presentation node type.
         """
         # Create the new animation
         anim_page = AnimPar(presentation_node_type=node_type)
@@ -143,7 +143,7 @@ class DrawPage(OfficeFormsMixin, Element):
         including presentation notes.
 
         Args:
-            context (dict | None): A dictionary providing context for formatting,
+            context: A dictionary providing context for formatting,
                 such as footnote or annotation tracking.
 
         Returns:

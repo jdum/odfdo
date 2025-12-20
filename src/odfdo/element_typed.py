@@ -63,13 +63,13 @@ class ElementTyped(Element):
         based on the Python type of the provided `value`.
 
         Args:
-            value (Any): The value to set.
-            value_type (str, optional): The ODF value type (e.g., "float",
+            value: The value to set.
+            value_type: The ODF value type (e.g., "float",
                 "date", "string"). If not provided, it is inferred from the
                 type of `value`.
-            text (str, optional): The textual representation of the value.
+            text: The textual representation of the value.
                 If not provided, it is generated automatically.
-            currency (str, optional): The currency symbol, used when
+            currency: The currency symbol, used when
                 `value_type` is "currency".
 
         Returns:
@@ -299,11 +299,11 @@ class ElementTyped(Element):
         It does not apply to meta fields.
 
         Args:
-            value_type (str, optional): The expected ODF value type. If not
+            value_type: The expected ODF value type. If not
                 provided, it's inferred from the 'office:value-type' attribute.
-            try_get_text (bool): For string types, whether to fall back to
+            try_get_text: For string types, whether to fall back to
                 reading text from child paragraphs.
-            get_type (bool): If True, returns a tuple of (value, type_string)
+            get_type: If True, returns a tuple of (value, type_string)
                 instead of just the value.
 
         Returns:

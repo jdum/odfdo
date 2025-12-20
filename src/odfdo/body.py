@@ -61,8 +61,8 @@ class Body(Element):
         The method is also accessible via the alias `get_sheets()`.
 
         Args:
-            style (str, optional): The style name of the tables to match.
-            content (str, optional): A regex pattern to match within the table content.
+            style: The style name of the tables to match.
+            content: A regex pattern to match within the table content.
 
         Returns:
             list[Table]: A list of matching Table elements.
@@ -99,10 +99,10 @@ class Body(Element):
         The method is also accessible via the alias `get_sheet()`.
 
         Args:
-            position (int, optional): The 0-based index of the table to retrieve
+            position: The 0-based index of the table to retrieve
                 among the matching tables. Defaults to 0.
-            name (str, optional): The name of the table to match.
-            content (str, optional): A regex pattern to match within the table content.
+            name: The name of the table to match.
+            content: A regex pattern to match within the table content.
 
         Returns:
             Table or None: The matching Table element, or None if not found.

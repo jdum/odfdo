@@ -38,8 +38,8 @@ def strip_elements(
     create clones.
 
     Args:
-        element (Element): The parent element from which tags will be stripped.
-        sub_elements (Element | Iterable[Element]): An element or a list of
+        element: The parent element from which tags will be stripped.
+        sub_elements: An element or a list of
             elements whose tags should be stripped.
 
     Returns:
@@ -70,13 +70,13 @@ def strip_tags(
     This function is analogous to `lxml.etree.strip_tags`.
 
     Args:
-        element (Element): The element to strip tags from.
-        strip (Iterable[str] | None): A list of qualified ODF tag names
+        element: The element to strip tags from.
+        strip: A list of qualified ODF tag names
             (e.g., "text:span") to remove. If `None`, no tags are stripped.
-        protect (Iterable[str] | None): A list of qualified ODF tag names
+        protect: A list of qualified ODF tag names
             that should not be stripped. The protection applies to the
             element itself but not its descendants.
-        default (str | None): If the top-level `element` is stripped, its
+        default: If the top-level `element` is stripped, its
             content (children and text) is wrapped in a new element with this
             tag name. If `None`, a list of `Element` and `str` objects is
             returned instead. Defaults to "text:p".
