@@ -1,5 +1,23 @@
 # Odfdo Release Notes
 
+## [3.18.3] - 2025-12-20
+
+-   Refactoring of Element, create mixins `UserDefinedMixin`, `UserFieldDeclContMixin`, `UserFieldDeclMixin`, `TocMixin`.
+-   Refactoring of module `toc.py`.
+-   Refactoring of docstrings.
+
+### Added
+
+-  Add classes `UserDefinedMixin`, `UserFieldDeclContMixin`, `UserFieldDeclMixin`.
+-  Add class `TocMixin`.
+
+### Changed
+-  Split `UserFieldDecl` and `UserFieldDecls` from `user_field.py` module to their own module.
+-  Move `Element.get_user_field_value()` to module `user_field_declaration.py`.
+-  Refactor module `toc.py`.
+-  Move `IndexBody`, `IndexTitle`, `IndexTitleTemplate` to `toc.py` module. 
+-  Refactor docstrings.
+
 ## [3.18.2] - 2025-12-13
 
 -   Refactoring of Element, create mixins `VarDeclMixin`, `LinkMixin`.
