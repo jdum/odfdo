@@ -26,7 +26,7 @@ import pytest
 
 from odfdo.document import Document
 from odfdo.element import Element
-from odfdo.user_field import UserFieldDecl, UserFieldDecls, UserFieldGet, UserFieldInput
+from odfdo.user_field import UserFieldGet, UserFieldInput
 
 ZOE = "你好 Zoé"
 CHAMP = "Champêtre"
@@ -36,22 +36,6 @@ CHAMP = "Champêtre"
 def document(samples) -> Iterable[Document]:
     document = Document(samples("variable.odt"))
     yield document
-
-
-def test_user_field_decls_class():
-    field = UserFieldDecls()
-    assert isinstance(field, UserFieldDecls)
-
-
-def test_user_field_decl_class():
-    field = UserFieldDecl()
-    assert isinstance(field, UserFieldDecl)
-
-
-def test_user_field_decl_set_value():
-    field = UserFieldDecl(name="field_name")
-    field.set_value(42)
-    assert field.get_value() == 42
 
 
 def test_user_field_get_class():
@@ -78,16 +62,6 @@ def test_user_field_input_class():
     assert isinstance(field, UserFieldInput)
 
 
-def test_create_user_field_decl():
-    user_field_decl = UserFieldDecl(ZOE, 42)
-    expected = (
-        f'<text:user-field-decl text:name="{ZOE}" '
-        'office:value-type="float" calcext:value-type="float" '
-        'office:value="42" calcext:value="42"/>'
-    )
-    assert user_field_decl.serialize() == expected
-
-
 def test_create_user_field_get():
     user_field_get = UserFieldGet(ZOE, value=42)
     expected = (
@@ -110,16 +84,6 @@ def test_create_user_field_input():
         "</text:user-field-input>"
     )
     assert user_field_input.serialize() == expected
-
-
-def test_get_user_field_decl(document):
-    body = document.body
-    user_field_decl = body.get_user_field_decl(CHAMP)
-    expected = (
-        '<text:user-field-decl office:value-type="float" '
-        f'office:value="1" text:name="{CHAMP}"/>'
-    )
-    assert user_field_decl.serialize() == expected
 
 
 def test_get_user_field_get(document):

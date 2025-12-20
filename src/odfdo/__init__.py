@@ -366,10 +366,12 @@ from .tracked_changes import (
 )
 from .user_field import (
     UserDefined,
-    UserFieldDecl,
-    UserFieldDecls,
     UserFieldGet,
     UserFieldInput,
+)
+from .user_field_declaration import (
+    UserFieldDecl,
+    UserFieldDecls,
 )
 from .utils import hex2rgb, hexa_color, remove_tree, rgb2hex
 from .variable import (

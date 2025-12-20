@@ -38,10 +38,14 @@ from .element import Element, PropDef, register_element_class
 from .element_typed import ElementTyped
 from .user_field import (  # noqa: F401
     UserDefined,
-    UserFieldDecl,
-    UserFieldDecls,
     UserFieldGet,
     UserFieldInput,
+)
+
+# for compatibility for version <= 3.18.2
+from .user_field_declaration import (  # noqa: F401
+    UserFieldDecl,
+    UserFieldDecls,
 )
 
 
