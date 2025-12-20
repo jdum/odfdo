@@ -41,10 +41,10 @@ class FormMixin(Element):
         """Return all the Form that match the criteria.
 
         Args:
+            name: The name of the form to filter by.
 
-            name -- str
-
-        Returns: list of Form
+        Returns:
+            list[Form]: A list of Form instances matching the criteria.
         """
         return cast(
             list[Form],
@@ -55,7 +55,8 @@ class FormMixin(Element):
     def forms(self) -> list[Form]:
         """Return all the Form elements..
 
-        Returns: list of Form
+        Returns:
+            list[Form]: A list of Form elements.
         """
         return cast(list[Form], self._filtered_elements("descendant::form:form"))
 
@@ -98,20 +99,13 @@ class Form(FormMixin, OfficeTargetFrameMixin):
         "form:form" and "office:forms".
 
         Args:
-
-            name -- str
-
-            command -- str
-
-            datasource -- str
-
-            apply_filter -- bool
-
-            command_type -- str
-
-            control_implementation -- str
-
-            target_frame -- str
+            name: The name of the form.
+            command: The command for the form.
+            datasource: The data source for the form.
+            apply_filter: If True, a filter is applied.
+            command_type: The type of the command.
+            control_implementation: The control implementation.
+            target_frame: The target frame for the form.
         """
         super().__init__(**kwargs)
         if self._do_init:

@@ -53,9 +53,9 @@ class MetaAutoReload(Element):
         of time has elapsed.
 
         Args:
-            delay (timedelta | None): The time delay after which the document
+            delay: The time delay after which the document
                 should auto-reload.
-            href (str): The URL or path to the document to reload or replace with.
+            href: The URL or path to the document to reload or replace with.
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
@@ -86,7 +86,7 @@ class MetaAutoReload(Element):
         None, it defaults to `timedelta(0)`.
 
         Args:
-            delay (timedelta | None): The delay duration.
+            delay: The delay duration.
         """
         if delay is None:
             delay = timedelta(0)
@@ -118,7 +118,7 @@ class MetaAutoReload(Element):
         """Set the attributes of the auto-reload element from a Python dictionary.
 
         Args:
-            data (dict[str, Any]): A dictionary containing the meta auto-reload
+            data: A dictionary containing the meta auto-reload
                 attributes (e.g., "meta:delay", "xlink:href").
         """
         self._set_delay(data.get("meta:delay"))

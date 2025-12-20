@@ -96,7 +96,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.title" property.)
 
-        Returns: str (or None if inexistent)
+        Returns:
+            str | None: The title string, or None if inexistent.
         """
         element = self.get_element("//dc:title")
         if element is None:
@@ -111,8 +112,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         (Also available as "self.title" property.)
 
         Args:
-
-            title -- str
+            title: The title string to set.
         """
         element = self.get_element("//dc:title")
         if element is None:
@@ -137,7 +137,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.description" property.)
 
-        Returns: str (or None if inexistent)
+        Returns:
+            str | None: The description string, or None if inexistent.
         """
         element = self.get_element("//dc:description")
         if element is None:
@@ -153,8 +154,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         (Also available as "self.description" property.)
 
         Args:
-
-            description -- str
+            description: The description string to set.
         """
         element = self.get_element("//dc:description")
         if element is None:
@@ -181,7 +181,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.subject" property.)
 
-        Returns: str (or None if inexistent)
+        Returns:
+            str | None: The subject string, or None if inexistent.
         """
         element = self.get_element("//dc:subject")
         if element is None:
@@ -194,8 +195,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         (Also available as "self.subject" property.)
 
         Args:
-
-            subject -- str
+            subject: The subject string to set.
         """
         element = self.get_element("//dc:subject")
         if element is None:
@@ -223,7 +223,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.language" property.)
 
-        Returns: str (or None if inexistent)
+        Returns:
+            str | None: The language string, or None if inexistent.
 
         Example::
 
@@ -245,8 +246,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         (Also available as "self.language" property.)
 
         Args:
-
-            language -- str
+            language: The language string to set.
 
         Example::
 
@@ -284,7 +284,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.creation_date" property.)
 
-        Returns: datetime (or None if inexistent)
+        Returns:
+            datetime | None: The creation date as a datetime object, or None if inexistent.
         """
         element = self.get_element("//meta:creation-date")
         if element is None:
@@ -300,8 +301,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         (Also available as "self.creation_date" property.)
 
         Args:
-
-            date -- datetime
+            date: The datetime object to set as the creation date.
         """
         element = self.get_element("//meta:creation-date")
         if element is None:
@@ -333,7 +333,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         If provided datetime is None, use current time.
 
-        Returns: datetime (or None if inexistent)
+        Returns:
+            datetime | None: The print date as a datetime object, or None if inexistent.
         """
         element = self.get_element("//meta:print-date")
         if element is None:
@@ -373,9 +374,9 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         Any existing `meta:template` element will be removed.
 
         Args:
-            date (datetime | None): The date and time when the template was used.
-            href (str): The URI for the document template (XLink).
-            title (str): The title of the document template (XLink).
+            date: The date and time when the template was used.
+            href: The URI for the document template (XLink).
+            title: The title of the document template (XLink).
         """
         template = MetaTemplate(date=date, href=href, title=title)
         current = self.template
@@ -401,8 +402,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         `meta:auto-reload` element will be removed.
 
         Args:
-            delay (timedelta): The time delay after which the document should auto-reload.
-            href (str): The URL or path to the document to reload or replace with.
+            delay: The time delay after which the document should auto-reload.
+            href: The URL or path to the document to reload or replace with.
         """
         autoreload = MetaAutoReload(delay=delay, href=href)
         current = self.auto_reload
@@ -437,9 +438,9 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         Any existing `meta:hyperlink-behaviour` element will be removed.
 
         Args:
-            target_frame_name (str): The name of the target frame for the hyperlink.
+            target_frame_name: The name of the target frame for the hyperlink.
                 Defaults to "_blank" (new window/tab).
-            show (str): Specifies how the target resource is presented.
+            show: Specifies how the target resource is presented.
                 Defaults to "replace".
         """
         behaviour = MetaHyperlinkBehaviour(
@@ -455,7 +456,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.initial_creator" property.)
 
-        Returns: str (or None if inexistent)
+        Returns:
+            str | None: The initial creator string, or None if inexistent.
 
         Example::
 
@@ -473,8 +475,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         (Also available as "self.initial_creator" property.)
 
         Args:
-
-            creator -- str
+            creator: The creator string to set.
 
         Example::
 
@@ -503,7 +504,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Get or set the name of the last person who printed a document.
         <meta:printed-by>
 
-        Returns: str (or None if inexistent)
+        Returns:
+            str | None: The printed by string, or None if inexistent.
         """
         element = self.get_element("//meta:printed-by")
         if element is None:
@@ -524,7 +526,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.keyword" and "self.keywords" property.)
 
-        Returns: str (or None if inexistent)
+        Returns:
+            str | None: The keywords string, or None if inexistent.
         """
         element = self.get_element("//meta:keyword")
         if element is None:
@@ -538,8 +541,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         (Also available as "self.keyword" and "self.keywords" property.)
 
         Args:
-
-            keywords -- str
+            keywords: The keywords string to set.
         """
         element = self.get_element("//meta:keyword")
         if element is None:
@@ -552,7 +554,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Get or set some keyword(s) keyword pertaining to a document
         <dc:keyword>.
 
-        Returns: str (or None if inexistent)
+        Returns:
+            str | None: The keyword string, or None if inexistent.
         """
         return self.get_keywords()
 
@@ -567,7 +570,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.editing_duration" property.)
 
-        Returns: timedelta (or None if inexistent)
+        Returns:
+            timedelta | None: The editing duration as a timedelta object, or None if inexistent.
         """
         element = self.get_element("//meta:editing-duration")
         if element is None:
@@ -581,8 +585,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         (Also available as "self.editing_duration" property.)
 
         Args:
-
-            duration -- timedelta
+            duration: The timedelta object representing the editing duration.
         """
         if not isinstance(duration, timedelta):
             raise TypeError("duration must be a timedelta")
@@ -611,7 +614,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.editing_cycles" property.)
 
-        Returns: int (or None if inexistent)
+        Returns:
+            int | None: The number of editing cycles as an integer, or None if inexistent.
         """
         element = self.get_element("//meta:editing-cycles")
         if element is None:
@@ -625,8 +629,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         (Also available as "self.editing_cycles" property.)
 
         Args:
-
-            cycles -- int
+            cycles: The number of editing cycles to set.
         """
         if not isinstance(cycles, int):
             raise TypeError("cycles must be an int")
@@ -659,7 +662,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Get or set the signature of the software that generated this
         document.
 
-        Returns: str (or None if inexistent)
+        Returns:
+            str | None: The generator string, or None if inexistent.
 
         Example::
 
@@ -701,8 +705,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         (Also available as "self.generator" property.)
 
         Args:
-
-            generator -- str
+            generator: The generator string to set.
 
         Example::
 
@@ -754,8 +757,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         (Also available as "self.statistic" property.)
 
         Args:
-
-            statistic -- dict
+            statistic: The statistics dictionary to set.
 
         Example::
 
@@ -788,7 +790,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Get or set the statistics about a document, "meta:document-
         statistic" tag.
 
-        Returns: dict (or None if inexistent)
+        Returns:
+            dict[str, int] | None: The statistics dictionary, or None if inexistent.
 
         Example::
 
@@ -877,7 +880,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Internal helper to find a specific user-defined metadata element by name.
 
         Args:
-            name (str): The name of the user-defined metadata field to find.
+            name: The name of the user-defined metadata field to find.
 
         Returns:
             MetaUserDefined | None: The `MetaUserDefined` element if found,
@@ -895,10 +898,10 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         None if no name matches or a dic of fields.
 
         Args:
+            keyname: The name of the user-defined metadata field to find.
 
-            name -- string, name (meta:name content)
-
-        Returns: a dict with keys "name", "value", "value_type", "text".
+        Returns:
+            dict[str, Any]: A dict with keys "name", "value", "value_type", "text".
         """
         item = self._user_defined_metadata_by_name(keyname)
         if item is None:
@@ -923,10 +926,10 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         If value is None, any existing metadata of that name is deleted.
 
         Args:
-
-            name -- string, name (meta:name content)
-
-            value -- bool, int, float, Decimal, datetime, dtdate, str, timedelta or None for deletion.
+            name: The name of the user-defined metadata field.
+            value: The value to set for the metadata field.
+                Can be a boolean, int, float, Decimal, datetime, date, string,
+                timedelta, or None for deletion.
         """
         if value is None:
             self.delete_user_defined_metadata_of_name(name)
@@ -945,7 +948,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """Delete all user-defined metadata fields with a specific name.
 
         Args:
-            name (str): The name of the user-defined metadata field to delete.
+            name: The name of the user-defined metadata field to delete.
         """
         while True:
             metadata = self._user_defined_metadata_by_name(name)
@@ -959,8 +962,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         if 'full' is True, export also the keys with no value assigned.
 
         Args:
-
-            full -- boolean
+            full: If True, exports also the keys with no value assigned.
         """
 
         def _stats() -> dict[str, int]:
@@ -1172,8 +1174,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             metadata.
 
         Args:
-
-            data -- dict of metadata.
+            data: A dictionary of metadata.
         """
 
         def _value_delete(key: str) -> Any:
@@ -1336,10 +1337,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         All user defined metadata are removed.
 
         Args:
-
-            generator -- str, string for the meta:generator field.
-
-            creation_date -- datetime or None, meta:creation-date value.
+            generator: String for the meta:generator field.
+            creation_date: Datetime or None, meta:creation-date value.
         """
 
         self.body.clear()

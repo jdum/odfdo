@@ -55,12 +55,11 @@ class MetaUserDefined(Element):
         This element declares a user-defined metadata field.
 
         Args:
-            name (str | None): The name of the user-defined metadata field
+            name: The name of the user-defined metadata field
                 (corresponds to `meta:name` attribute).
-            value_type (str | None): The type of the value. Must be one of
+            value_type: The type of the value. Must be one of
                 "boolean", "date", "float", "time", "string".
-            value (int | float | Decimal | datetime | dtdate | timedelta | bool | str | None):
-                The actual value of the user-defined metadata.
+            value: The actual value of the user-defined metadata.
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
@@ -83,7 +82,7 @@ class MetaUserDefined(Element):
         """Set the name of the user-defined metadata field.
 
         Args:
-            name (str | None): The new name for the field.
+            name: The new name for the field.
 
         Raises:
             ValueError: If the provided name is empty.
@@ -106,7 +105,7 @@ class MetaUserDefined(Element):
         """Set the type of the user-defined value.
 
         Args:
-            value_type (str | None): The new value type. Must be one of
+            value_type: The new value type. Must be one of
                 "boolean", "date", "float", "time", "string".
 
         Raises:
@@ -167,8 +166,7 @@ class MetaUserDefined(Element):
         and stored as the element's text content.
 
         Args:
-            value (int | float | Decimal | datetime | dtdate | timedelta | bool | str | None):
-                The value to set.
+            value: The value to set.
         """
         value_type = self.get_attribute_string("meta:value-type")
         if value_type == "boolean":
@@ -193,8 +191,7 @@ class MetaUserDefined(Element):
         """Internal helper to infer the ODF value type from a Python value.
 
         Args:
-            value (bool | int | float | Decimal | datetime | dtdate | str | timedelta):
-                The Python value.
+            value: The Python value.
 
         Returns:
             str: The inferred ODF value type ("boolean", "float", "date", "string", or "time").

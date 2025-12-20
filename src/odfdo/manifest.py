@@ -43,7 +43,7 @@ class Manifest(XmlPart):
         """Internal helper to find a specific `manifest:file-entry` element.
 
         Args:
-            full_path (str): The full path of the file entry to find.
+            full_path: The full path of the file entry to find.
 
         Returns:
             Element: The `manifest:file-entry` element.
@@ -84,7 +84,7 @@ class Manifest(XmlPart):
         """Get the media type associated with a specific full path in the manifest.
 
         Args:
-            full_path (str): The full path of the file entry.
+            full_path: The full path of the file entry.
 
         Returns:
             str | None: The media type string, or `None` if the path is not found.
@@ -102,8 +102,8 @@ class Manifest(XmlPart):
         """Set the media type for an existing file entry in the manifest.
 
         Args:
-            full_path (str): The full path of the file entry.
-            media_type (str): The new media type to set.
+            full_path: The full path of the file entry.
+            media_type: The new media type to set.
         """
         file_entry = self._file_entry(full_path)
         file_entry.set_attribute("manifest:media-type", media_type)
@@ -113,8 +113,8 @@ class Manifest(XmlPart):
         """Create a new `manifest:file-entry` element.
 
         Args:
-            full_path (str): The full path for the file entry.
-            media_type (str): The media type for the file entry.
+            full_path: The full path for the file entry.
+            media_type: The media type for the file entry.
 
         Returns:
             Element: A new `manifest:file-entry` element.
@@ -134,8 +134,8 @@ class Manifest(XmlPart):
         created and added.
 
         Args:
-            full_path (str): The full path of the file to add or update.
-            media_type (str): The media type of the file.
+            full_path: The full path of the file to add or update.
+            media_type: The media type of the file.
         """
         # Existing?
         existing = self.get_media_type(full_path)
@@ -148,7 +148,7 @@ class Manifest(XmlPart):
         """Delete a file entry from the manifest.
 
         Args:
-            full_path (str): The full path of the file entry to delete.
+            full_path: The full path of the file entry to delete.
 
         Raises:
             KeyError: If the specified `full_path` is not found in the manifest.

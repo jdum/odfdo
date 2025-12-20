@@ -221,28 +221,20 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
 
 
         Args:
-
-            name -- str
-
-            draw_id -- str
-
-            style -- str
-
-            position -- (str, str)
-
-            size -- (str, str)
-
-            z_index -- int (default 0)
-
-            presentation_class -- str
-
-            anchor_type -- 'page', 'frame', 'paragraph', 'char' or 'as-char'
-
-            anchor_page -- int, page number is anchor_type is 'page'
-
-            layer -- str
-
-            presentation_style -- str
+            name: The name of the frame.
+            draw_id: The ID of the drawing object.
+            style: The name of the style to apply to the frame.
+            position: The position of the frame as a (x, y) tuple of strings
+                including units (e.g., ('1cm', '1cm')).
+            size: The size of the frame as a (width, height) tuple of strings
+                including units (e.g., ('1cm', '1cm')). Defaults to ('1cm', '1cm').
+            z_index: The z-index for stacking order. Defaults to 0.
+            presentation_class: The presentation class of the frame.
+            anchor_type: How the frame is anchored to the document. Can be
+                'page', 'frame', 'paragraph', 'char', or 'as-char'.
+            anchor_page: The page number if `anchor_type` is 'page'.
+            layer: The drawing layer to which the frame belongs.
+            presentation_style: The presentation style of the frame.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -293,14 +285,25 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
         The optional text will appear above the image.
 
         Args:
+            image: A `DrawImage` element or the URL of the image.
+            text: Optional text to appear above the image.
+            name: The name of the frame.
+            draw_id: The ID of the drawing object.
+            style: The name of the style to apply to the frame.
+            position: The position of the frame as a (x, y) tuple of strings
+                including units (e.g., ('1cm', '1cm')).
+            size: The size of the frame as a (width, height) tuple of strings
+                including units (e.g., ('1cm', '1cm')). Defaults to ('1cm', '1cm').
+            z_index: The z-index for stacking order. Defaults to 0.
+            presentation_class: The presentation class of the frame.
+            anchor_type: How the frame is anchored to the document. Can be
+                'page', 'frame', 'paragraph', 'char', or 'as-char'.
+            anchor_page: The page number if `anchor_type` is 'page'.
+            layer: The drawing layer to which the frame belongs.
+            presentation_style: The presentation style of the frame.
 
-            image -- DrawImage or str, DrawImage element or URL of the image
-
-            text -- str, text for the image
-
-            See Frame() initialization for the other arguments
-
-        Returns: Frame
+        Returns:
+            Element: The created Frame element.
         """
         frame = cls(
             name=name,
@@ -345,15 +348,26 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
         The optional text will appear above the image.
 
         Args:
+            text_or_element: The text content of the text box, can be a string,
+                an `Element`, or an iterable of strings/Elements.
+            text_style: The name of the style for the text within the text box.
+            name: The name of the frame.
+            draw_id: The ID of the drawing object.
+            style: The name of the style to apply to the frame.
+            position: The position of the frame as a (x, y) tuple of strings
+                including units (e.g., ('1cm', '1cm')).
+            size: The size of the frame as a (width, height) tuple of strings
+                including units (e.g., ('1cm', '1cm')). Defaults to ('1cm', '1cm').
+            z_index: The z-index for stacking order. Defaults to 0.
+            presentation_class: The presentation class of the frame.
+            anchor_type: How the frame is anchored to the document. Can be
+                'page', 'frame', 'paragraph', 'char', or 'as-char'.
+            anchor_page: The page number if `anchor_type` is 'page'.
+            layer: The drawing layer to which the frame belongs.
+            presentation_style: The presentation style of the frame.
 
-            text_or_element -- str or Element, or list of them, text content
-                               of the text box.
-
-            text_style -- str, name of the style for the text
-
-            See Frame() initialization for the other arguments
-
-        Returns: Frame
+        Returns:
+            Element: The created Frame element.
         """
         frame = cls(
             name=name,
@@ -426,6 +440,16 @@ class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
         text_or_element: Iterable[Element | str] | Element | str,
         text_style: str | None = None,
     ) -> Element:
+        """Set the text box content of the frame.
+
+        Args:
+            text_or_element: The text content of the text box, can be a string,
+                an `Element`, or an iterable of strings/Elements.
+            text_style: The name of the style for the text within the text box.
+
+        Returns:
+            Element: The text box element.
+        """
         text_box = self.get_text_box()
         if text_box is None:
             text_box = Element.from_tag("draw:text-box")

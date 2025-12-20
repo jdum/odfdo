@@ -49,9 +49,9 @@ class MetaHyperlinkBehaviour(Element):
         for hyperlinks in a document.
 
         Args:
-            target_frame_name (str): The name of the target frame for the hyperlink.
+            target_frame_name: The name of the target frame for the hyperlink.
                 Defaults to "_blank" (new window/tab).
-            show (str): Specifies how the target resource is presented.
+            show: Specifies how the target resource is presented.
                 Defaults to "replace".
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
@@ -86,7 +86,7 @@ class MetaHyperlinkBehaviour(Element):
         """Set the attributes of the hyperlink behavior element from a Python dictionary.
 
         Args:
-            data (dict[str, Any]): A dictionary containing the hyperlink behavior
+            data: A dictionary containing the hyperlink behavior
                 attributes (e.g., "office:target-frame-name", "xlink:show").
         """
         self.target_frame_name = str(data.get("office:target-frame-name", ""))

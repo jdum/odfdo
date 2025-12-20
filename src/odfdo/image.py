@@ -67,11 +67,11 @@ class DrawImage(Element):
         element (see `Frame` class).
 
         Args:
-            url (str): The URL or internal path of the image.
-            xlink_type (str): The XLink type, usually "simple".
-            show (str): How the image should be shown, usually "embed".
-            actuate (str): When the image should be loaded, usually "onLoad".
-            filter_name (str | None): An optional filter name to apply to the image.
+            url: The URL or internal path of the image.
+            xlink_type: The XLink type, usually "simple".
+            show: How the image should be shown, usually "embed".
+            actuate: When the image should be loaded, usually "onLoad".
+            filter_name: An optional filter name to apply to the image.
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
@@ -112,10 +112,10 @@ class DrawFillImage(DrawImage):
         used within the `office:styles` element.
 
         Args:
-            name (str | None): The internal name of the fill image.
-            display_name (str | None): The display name of the fill image.
-            height (str | None): The height of the fill image (e.g., "10cm").
-            width (str | None): The width of the fill image (e.g., "15cm").
+            name: The internal name of the fill image.
+            display_name: The display name of the fill image.
+            height: The height of the fill image (e.g., "10cm").
+            width: The width of the fill image (e.g., "15cm").
             **kwargs: Additional keyword arguments for the parent `DrawImage` class.
         """
         super().__init__(**kwargs)

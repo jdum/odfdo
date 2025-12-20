@@ -100,14 +100,14 @@ class FormProperty(Element):
         element.
 
         Args:
-            property_name (str): The name of the property.
-            boolean_value (bool): The boolean value.
-            currency (str): The currency unit.
-            date_value (str): The date value.
-            string_value (str): The string value.
-            time_value (str): The time value.
-            value (Decimal, int, float): The numeric value.
-            value_type (str): The type of the value.
+            property_name: The name of the property.
+            boolean_value: The boolean value.
+            currency: The currency unit.
+            date_value: The date value.
+            string_value: The string value.
+            time_value: The time value.
+            value: The numeric value.
+            value_type: The type of the value.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -171,8 +171,8 @@ class FormListProperty(Element):
         element.
 
         Args:
-            property_name (str): The name of the property.
-            value_type (str): The type of the values in the list.
+            property_name: The name of the property.
+            value_type: The type of the values in the list.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -230,12 +230,12 @@ class FormListValue(Element):
         element.
 
         Args:
-            boolean_value (bool): The boolean value.
-            currency (str): The currency unit.
-            date_value (str): The date value.
-            string_value (str): The string value.
-            time_value (str): The time value.
-            value (str): The numeric or str value.
+            boolean_value: The boolean value.
+            currency: The currency unit.
+            date_value: The date value.
+            string_value: The string value.
+            time_value: The time value.
+            value: The numeric or str value.
         """
         super().__init__(**kwargs)
         if self._do_init:

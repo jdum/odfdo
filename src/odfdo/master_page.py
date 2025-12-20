@@ -106,11 +106,11 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         The `display_name` is the name visible to the user in office applications.
 
         Args:
-            name (str | None): The internal name of the master page style.
-            display_name (str | None): The user-facing display name of the style.
-            page_layout (str | None): The name of the page layout style to use.
-            next_style (str | None): The name of the next master page style to apply.
-            draw_style_name (str | None): The name of the drawing style to apply.
+            name: The internal name of the master page style.
+            display_name: The user-facing display name of the style.
+            page_layout: The name of the page layout style to use.
+            next_style: The name of the next master page style to apply.
+            draw_style_name: The name of the drawing style to apply.
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         self._family = "master-page"
@@ -162,11 +162,10 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         or a list of `Element`s or strings.
 
         Args:
-            text_or_element (str | Element | list[Element | str]): The content
-                to set. Can be a string, an `Element`, or an iterable of strings
-                and/or `Element`s.
-            name (str): The name of the part to set ("header" or "footer").
-            style (str): The default style name to apply to new paragraphs
+            text_or_element: The content to set. Can be a string, an `Element`,
+                or an iterable of strings and/or `Element`s.
+            name: The name of the part to set ("header" or "footer").
+            style: The default style name to apply to new paragraphs
                 created from string content.
         """
         if name == "header":
@@ -220,8 +219,7 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         entirely, retrieve it first using `get_page_header` and use its API.
 
         Args:
-            text_or_element (str | Element | list[Element | str]): The new
-                content for the header.
+            text_or_element: The new content for the header.
         """
         self._set_header_or_footer(text_or_element)
 
@@ -246,8 +244,7 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         entirely, retrieve it first using `get_page_footer` and use its API.
 
         Args:
-            text_or_element (str | Element | list[Element | str]): The new
-                content for the footer.
+            text_or_element: The new content for the footer.
         """
         self._set_header_or_footer(text_or_element, name="footer", style="Footer")
 
@@ -289,7 +286,7 @@ class StyleHeader(
         """Initialize a StyleHeader element.
 
         Args:
-            display (str | bool | None): Specifies whether the header is displayed.
+            display: Specifies whether the header is displayed.
                 Can be "true", "false", or a boolean. Defaults to True.
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
@@ -313,7 +310,7 @@ class StyleHeader(
         """Set the display status of the header.
 
         Args:
-            display (bool | str | None): The display status. Can be a boolean,
+            display: The display status. Can be a boolean,
                 or "true"/"false" string.
         """
         self._set_attribute_bool_default("style:display", display, True)

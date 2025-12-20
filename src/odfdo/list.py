@@ -53,7 +53,7 @@ class ListItem(MDListItem, Element):
         A `ListItem` can be initialized with text content or another element.
 
         Args:
-            text_or_element (str | Element | None, optional): The initial
+            text_or_element: The initial
                 content of the list item. If a string, a paragraph containing
                 the text is created. If an element, it is appended as a child.
             **kwargs: Additional keyword arguments for the parent `Element` class.
@@ -90,10 +90,9 @@ class List(MDList, Element):
         (string or element) or an iterable of items.
 
         Args:
-            list_content (str | Element | Iterable[str | Element] | None, optional):
-                The initial content of the list. Each item is wrapped in a
+            list_content: The initial content of the list. Each item is wrapped in a
                 `ListItem`.
-            style (str, optional): The name of the style to apply to the list.
+            style: The name of the style to apply to the list.
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
@@ -113,7 +112,7 @@ class List(MDList, Element):
         Optionally filters items by their textual content.
 
         Args:
-            content (str, optional): A regular expression to match against
+            content: A regular expression to match against
                 the text content of the items.
 
         Returns:
@@ -133,8 +132,8 @@ class List(MDList, Element):
         the matched content.
 
         Args:
-            position (int): The index of the item to retrieve. Defaults to 0.
-            content (str, optional): A regular expression to match against
+            position: The index of the item to retrieve. Defaults to 0.
+            content: A regular expression to match against
                 the text content of the items. If provided, `position` is
                 ignored.
 
@@ -161,8 +160,7 @@ class List(MDList, Element):
         the provided content.
 
         Args:
-            text_or_element (str | Element | Iterable[str | Element]): The
-                content for the list header. Can be a single string or element,
+            text_or_element: The content for the list header. Can be a single string or element,
                 or an iterable of strings and/or elements.
         """
         if isinstance(text_or_element, (str, Element)):
@@ -192,12 +190,12 @@ class List(MDList, Element):
         `after` an existing element.
 
         Args:
-            item (ListItem | str | Element | None): The item to insert.
+            item: The item to insert.
                 If not a `ListItem`, it will be wrapped in one.
-            position (int, optional): The index at which to insert the item.
-            before (Element, optional): An existing element to insert the item
+            position: The index at which to insert the item.
+            before: An existing element to insert the item
                 before.
-            after (Element, optional): An existing element to insert the item
+            after: An existing element to insert the item
                 after.
 
         Raises:
@@ -221,7 +219,7 @@ class List(MDList, Element):
         """Append a new item to the end of the list.
 
         Args:
-            item (ListItem | str | Element | None): The item to append.
+            item: The item to append.
                 If not a `ListItem`, it will be wrapped in one.
         """
         if not isinstance(item, ListItem):
@@ -234,7 +232,7 @@ class List(MDList, Element):
         Each list item is prefixed with "- " and indented.
 
         Args:
-            context (dict, optional): A dictionary providing context for
+            context: A dictionary providing context for
                 formatting. If `rst_mode` is True in the context, additional
                 newlines are added for reStructuredText compatibility.
 
