@@ -60,8 +60,8 @@ class SectionMixin(Element):
         """Return all sections that match the criteria.
 
         Args:
-            style (str, optional): The style name to filter by.
-            content (str, optional): A regex to match in the section content.
+            style: The style name to filter by.
+            content: A regex to match in the section content.
 
         Returns:
             list[Section]: A list of matching Section elements.
@@ -90,9 +90,9 @@ class SectionMixin(Element):
         """Return the section that matches the criteria.
 
         Args:
-            position (int, optional): The index of the section to return.
+            position: The index of the section to return.
                 Defaults to 0 (first section).
-            content (str, optional): A regex to match in the section content.
+            content: A regex to match in the section content.
 
         Returns:
             Section or None: The matching Section element, or None if not found.
@@ -127,8 +127,8 @@ class Section(TocMixin, LinkMixin, SectionMixin):
         """Create a Section element.
 
         Args:
-            style (str, optional): The style name for the section.
-            name (str, optional): The name of the section.
+            style: The style name for the section.
+            name: The name of the section.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -141,7 +141,7 @@ class Section(TocMixin, LinkMixin, SectionMixin):
         """Return the formatted text content of the section.
 
         Args:
-            context (dict, optional): A dictionary of context variables.
+            context: A dictionary of context variables.
 
         Returns:
             str: The formatted text content.

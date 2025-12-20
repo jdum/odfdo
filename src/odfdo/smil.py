@@ -47,10 +47,10 @@ class AnimPar(Element):
         """Create a container for SMIL presentation animations "anim:par".
 
         Args:
-            presentation_node_type (str, optional): The type of presentation node.
+            presentation_node_type: The type of presentation node.
                 Can be 'default', 'on-click', 'with-previous', 'after-previous',
                 'timing-root', 'main-sequence', or 'interactive-sequence'.
-            smil_begin (str, optional): Specifies the begin time of the animation.
+            smil_begin: Specifies the begin time of the animation.
                 Can be 'indefinite', a time value (e.g., '10s'), or an ID reference
                 (e.g., '[id].click', '[id].begin').
         """
@@ -86,7 +86,7 @@ class AnimSeq(Element):
         has executed its initial transition.
 
         Args:
-            presentation_node_type (str, optional): The type of presentation node.
+            presentation_node_type: The type of presentation node.
                 Can be 'default', 'on-click', 'with-previous', 'after-previous',
                 'timing-root', 'main-sequence', or 'interactive-sequence'.
         """
@@ -124,17 +124,17 @@ class AnimTransFilter(Element):
         """Create a transition between two frames "anim:transitionFilter".
 
         Args:
-            smil_dur (str, optional): The duration of the transition.
-            smil_type (str, optional): The type of transition. See
+            smil_dur: The duration of the transition.
+            smil_type: The type of transition. See
                 http://www.w3.org/TR/SMIL20/smil-transitions.html#TransitionEffects-Appendix
                 for a list of types.
-            smil_subtype (str, optional): The subtype of transition. See
+            smil_subtype: The subtype of transition. See
                 http://www.w3.org/TR/SMIL20/smil-transitions.html#TransitionEffects-Appendix
                 for a list of subtypes.
-            smil_direction (str, optional): The direction of the transition. Can be
+            smil_direction: The direction of the transition. Can be
                 'forward' or 'reverse'.
-            smil_fadeColor (str, optional): The fade color for the transition.
-            smil_mode (str, optional): The mode of the transition. Can be 'in' or 'out'.
+            smil_fadeColor: The fade color for the transition.
+            smil_mode: The mode of the transition. Can be 'in' or 'out'.
         """
         super().__init__(**kwargs)
         if self._do_init:

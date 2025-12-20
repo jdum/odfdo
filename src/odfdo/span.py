@@ -79,9 +79,9 @@ class Span(
         <TAB> and multiple spaces replaced by ODF corresponding tags.
 
         Args:
-            text (str, optional): The text content for the span.
-            style (str, optional): The style name for the span.
-            formatted (bool): If True, special characters in `text` are
+            text: The text content for the span.
+            style: The style name for the span.
+            formatted: If True, special characters in `text` are
                 replaced by ODF corresponding tags. Defaults to True.
         """
         super().__init__(**kwargs)

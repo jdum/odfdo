@@ -88,7 +88,7 @@ class OfficeForms(FormMixin):
         """Set the `form:apply-design-mode` attribute.
 
         Args:
-            apply_design_mode (bool): Whether to apply design mode.
+            apply_design_mode: Whether to apply design mode.
         """
         self._set_attribute_bool_default(
             "form:apply-design-mode", apply_design_mode, True
@@ -99,7 +99,7 @@ class OfficeForms(FormMixin):
         """Get the `form:automatic-focus` attribute.
 
         Returns:
-            bool: True if automatic focus is enabled, False otherwise. Defaults to False.
+            True if automatic focus is enabled, False otherwise. Defaults to False.
         """
         return self._get_attribute_bool_default("form:automatic-focus", False)
 
@@ -108,7 +108,7 @@ class OfficeForms(FormMixin):
         """Set the `form:automatic-focus` attribute.
 
         Args:
-            automatic_focus (bool): Whether to enable automatic focus.
+            automatic_focus: Whether to enable automatic focus.
         """
         self._set_attribute_bool_default("form:automatic-focus", automatic_focus, False)
 

@@ -48,7 +48,7 @@ class Spacer(MDSpacer, Element):
         """Create a Spacer element, "text:s", representing several spaces.
 
         Args:
-            number (int, optional): The number of spaces. Defaults to 1.
+            number: The number of spaces. Defaults to 1.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -74,7 +74,7 @@ class Spacer(MDSpacer, Element):
         """Set the string value of the spacer, which updates its length.
 
         Args:
-            text (str or None): The string to set.
+            text: The string to set.
         """
         if text is None:
             text = ""
@@ -97,7 +97,7 @@ class Spacer(MDSpacer, Element):
         """Set the number of spaces represented by the spacer.
 
         Args:
-            value (int or None): The number of spaces to set. If None or less
+            value: The number of spaces to set. If None or less
                 than 2, the `text:c` attribute is removed, defaulting to 1 space.
         """
         if value is None or int(value) < 2:

@@ -59,8 +59,8 @@ class StylePageLayout(StyleProps):
         inserting into a document as an automatic style.
 
         Args:
-            name (str | None): The name of the page layout style.
-            page_usage (str | None): The type of pages the layout applies to.
+            name: The name of the page layout style.
+            page_usage: The type of pages the layout applies to.
                 Allowed values are "all" (default), "left", "mirrored", "right".
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
@@ -112,7 +112,7 @@ class StylePageLayout(StyleProps):
         """Set the `style:page-usage` attribute.
 
         Args:
-            page_usage (str | None): The page usage type. Allowed values are
+            page_usage: The page usage type. Allowed values are
                 "all", "left", "right", "mirrored". Invalid values default to "all".
         """
         if page_usage not in self.PAGE_USAGE:
@@ -125,7 +125,7 @@ class StylePageLayout(StyleProps):
         """Retrieve the page-layout properties of the `StylePageLayout`.
 
         Args:
-            area (str | None): The area for which to retrieve properties.
+            area: The area for which to retrieve properties.
                 (Parameter is kept for compatibility but internally fixed to "page-layout").
 
         Returns:
@@ -146,9 +146,9 @@ class StylePageLayout(StyleProps):
         or as keyword arguments. The `area` is internally fixed to "page-layout".
 
         Args:
-            properties (dict[str, str | dict] | None): A dictionary of properties to set.
-            style (StyleBase | None): A `StyleBase` object from which to copy properties.
-            area (str | None): The area for which to set properties.
+            properties: A dictionary of properties to set.
+            style: A `StyleBase` object from which to copy properties.
+            area: The area for which to set properties.
                 (Parameter is kept for compatibility but internally fixed to "page-layout").
             **kwargs: Additional keyword arguments for properties to set.
         """
@@ -164,8 +164,8 @@ class StylePageLayout(StyleProps):
         """Delete specific properties from the page-layout.
 
         Args:
-            properties (list[str] | None): A list of property names to delete.
-            area (str | None): The area from which to delete properties.
+            properties: A list of property names to delete.
+            area: The area from which to delete properties.
                 (Parameter is kept for compatibility but internally fixed to "page-layout").
         """
         return super().del_properties(properties=properties, area="page-layout")
@@ -185,16 +185,16 @@ class StylePageLayout(StyleProps):
         provided, any existing background is removed.
 
         Args:
-            color (str | None): The background color in '#RRGGBB' format.
-            url (str | None): The URL of a background image.
-            position (str | None): The position of the background image. Can be
+            color: The background color in '#RRGGBB' format.
+            url: The URL of a background image.
+            position: The position of the background image. Can be
                 "left", "center", "right", "top", "bottom", or a combination
                 of two (e.g., "top center"). Defaults to "center".
-            repeat (str | None): How the background image repeats. Can be
+            repeat: How the background image repeats. Can be
                 "no-repeat", "repeat", or "stretch".
-            opacity (str | int | None): The opacity of the background image as
+            opacity: The opacity of the background image as
                 a percentage integer (0-100).
-            filter (str | None): An application-specific filter name for the background image.
+            filter: An application-specific filter name for the background image.
         """
         _set_background(self, color, url, position, repeat, opacity, filter)
 
@@ -211,7 +211,7 @@ class StylePageLayout(StyleProps):
         """Set or replace the `style:header-style` element within the page layout.
 
         Args:
-            new_style (StyleBase): The new header style to set.
+            new_style: The new header style to set.
         """
         header_style = self.get_header_style()
         if header_style is not None:
@@ -231,7 +231,7 @@ class StylePageLayout(StyleProps):
         """Set or replace the `style:footer-style` element within the page layout.
 
         Args:
-            new_style (StyleBase): The new footer style to set.
+            new_style: The new footer style to set.
         """
         footer_style = self.get_footer_style()
         if footer_style is not None:

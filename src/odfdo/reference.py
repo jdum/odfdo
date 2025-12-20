@@ -47,7 +47,7 @@ class ReferenceMixin(Element):
         It is recommended to use `get_reference_marks()` for a more comprehensive search.
 
         Returns:
-            list[ReferenceMark]: A list of `ReferenceMark` instances.
+            A list of `ReferenceMark` instances.
         """
         return cast(
             list[ReferenceMark],
@@ -66,8 +66,8 @@ class ReferenceMixin(Element):
         It is recommended to use `get_reference_mark()` for a more comprehensive search.
 
         Args:
-            position (int): The index of the mark to retrieve. Defaults to 0.
-            name (str | None): The name of the reference mark.
+            position: The index of the mark to retrieve. Defaults to 0.
+            name: The name of the reference mark.
 
         Returns:
             ReferenceMark | None: The `ReferenceMark` instance if found, otherwise `None`.
@@ -104,8 +104,8 @@ class ReferenceMixin(Element):
         It is recommended to use `get_reference_mark()` for a more comprehensive search.
 
         Args:
-            position (int): The index of the mark to retrieve. Defaults to 0.
-            name (str | None): The name of the reference mark.
+            position: The index of the mark to retrieve. Defaults to 0.
+            name: The name of the reference mark.
 
         Returns:
             ReferenceMarkStart | None: The `ReferenceMarkStart` instance if found, otherwise `None`.
@@ -142,8 +142,8 @@ class ReferenceMixin(Element):
         It is recommended to use `get_reference_mark()` for a more comprehensive search.
 
         Args:
-            position (int): The index of the mark to retrieve. Defaults to 0.
-            name (str | None): The name of the reference mark.
+            position: The index of the mark to retrieve. Defaults to 0.
+            name: The name of the reference mark.
 
         Returns:
             ReferenceMarkEnd | None: The `ReferenceMarkEnd` instance if found, otherwise `None`.
@@ -183,8 +183,8 @@ class ReferenceMixin(Element):
         start of a ranged mark (`text:reference-mark-start`).
 
         Args:
-            position (int): The index of the mark to retrieve if `name` is not provided.
-            name (str | None): The name of the reference mark.
+            position: The index of the mark to retrieve if `name` is not provided.
+            name: The name of the reference mark.
 
         Returns:
             ReferenceMark | ReferenceMarkStart | None: The found reference mark element,
@@ -213,7 +213,7 @@ class ReferenceMixin(Element):
         """Get all reference fields (`text:reference-ref`).
 
         Args:
-            name (str | None): If provided, filter references by their `text:ref-name`.
+            name: If provided, filter references by their `text:ref-name`.
 
         Returns:
             list[Reference]: A list of `Reference` instances.
@@ -303,8 +303,8 @@ class Reference(Element):
         Consider using the `odfdo.paragraph.insert_reference()` method for easier creation.
 
         Args:
-            name (str): The name of the reference mark to refer to.
-            ref_format (str): The format of the reference field, which determines
+            name: The name of the reference mark to refer to.
+            ref_format: The format of the reference field, which determines
                 what is displayed (e.g., "page", "chapter", "text").
                 Defaults to "page".
             **kwargs: Additional keyword arguments for the parent `Element` class.
@@ -331,7 +331,7 @@ class Reference(Element):
         """Set the `text:reference-format` attribute.
 
         Args:
-            ref_format (str): The new reference format. If invalid, defaults to "page".
+            ref_format: The new reference format. If invalid, defaults to "page".
         """
         if not ref_format or ref_format not in self.FORMAT_ALLOWED:
             ref_format = "page"
@@ -379,7 +379,7 @@ class ReferenceMark(Element):
         for easier creation.
 
         Args:
-            name (str): The name of the reference mark.
+            name: The name of the reference mark.
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
@@ -404,7 +404,7 @@ class ReferenceMarkEnd(Element):
         `odfdo.paragraph.set_reference_mark_end()` for creation.
 
         Args:
-            name (str): The name of the reference mark this element ends.
+            name: The name of the reference mark this element ends.
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
@@ -441,7 +441,7 @@ class ReferenceMarkStart(Element):
         helper method `odfdo.paragraph.set_reference_mark()` for creation.
 
         Args:
-            name (str): The name of the reference mark this element starts.
+            name: The name of the reference mark this element starts.
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
@@ -474,10 +474,10 @@ class ReferenceMarkStart(Element):
         a list of `Element`s, or an XML string).
 
         Args:
-            no_header (bool): If True, converts `text:h` elements to `text:p` elements.
-            clean (bool): If True, removes unwanted tags like tracked changes marks.
-            as_xml (bool): If True, returns the content as a serialized XML string.
-            as_list (bool): If True, returns the content as a list of `Element` objects
+            no_header: If True, converts `text:h` elements to `text:p` elements.
+            clean: If True, removes unwanted tags like tracked changes marks.
+            as_xml: If True, returns the content as a serialized XML string.
+            as_list: If True, returns the content as a list of `Element` objects
                 instead of being wrapped in an `office:text` element.
 
         Returns:
@@ -515,9 +515,9 @@ class ReferenceMarkStart(Element):
         tag if it exists.
 
         Args:
-            child (Element | None): The child element to delete. If `None`,
+            child: The child element to delete. If `None`,
                 the current element (`self`) is deleted.
-            keep_tail (bool): If True, the `tail` text of the deleted element
+            keep_tail: If True, the `tail` text of the deleted element
                 is preserved.
         """
         if child is not None:  # act like normal delete
@@ -548,7 +548,7 @@ def strip_references(element: Element) -> Element | list:
     also delete its inner content.
 
     Args:
-        element (Element): The element from which to strip reference tags.
+        element: The element from which to strip reference tags.
 
     Returns:
         Element | list: The element with reference tags removed, or a list
@@ -568,7 +568,7 @@ def remove_all_reference_marks(element: Element) -> Element | list:
     also delete its inner content.
 
     Args:
-        element (Element): The element from which to remove reference marks.
+        element: The element from which to remove reference marks.
 
     Returns:
         Element | list: The element with reference marks removed, or a list
@@ -596,9 +596,9 @@ def remove_reference_mark(
     also delete its inner content.
 
     Args:
-        element (Element): The element from which to remove the reference mark.
-        position (int): The index of the mark to remove if `name` is not provided.
-        name (str | None): The name of the reference mark to remove.
+        element: The element from which to remove the reference mark.
+        position: The index of the mark to remove if `name` is not provided.
+        name: The name of the reference mark to remove.
     """
     if hasattr(element, "get_reference_mark"):
         start_ref = element.get_reference_mark(position=position, name=name)

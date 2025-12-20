@@ -75,9 +75,9 @@ class Row(Element):
         You don't generally have to create rows by hand, use the Table API.
 
         Args:
-            width (int, optional): The number of cells to create in the row.
-            repeated (int, optional): The number of times the row is repeated.
-            style (str, optional): The style name for the row.
+            width: The number of cells to create in the row.
+            repeated: The number of times the row is repeated.
+            style: The style name for the row.
         """
         super().__init__(**kwargs)
         self._table_cache = TableCache()
@@ -101,7 +101,7 @@ class Row(Element):
         """Get a list of elements matching the XPath query.
 
         Args:
-            xpath_query (XPath | str): The XPath query.
+            xpath_query: The XPath query.
 
         Returns:
             list[Element]: A list of matching elements.
@@ -123,7 +123,7 @@ class Row(Element):
         """Copy cache when cloning.
 
         Args:
-            cache (tuple): The cache to copy.
+            cache: The cache to copy.
         """
         self._table_cache = cache[0]
         if cache[1]:  # pragma: no cover
@@ -176,7 +176,7 @@ class Row(Element):
         Internal use only. Without changing cache.
 
         Args:
-            repeated (int, optional): The number of repetitions.
+            repeated: The number of repetitions.
         """
         if repeated is None or repeated < 2:
             with contextlib.suppress(KeyError):
@@ -191,7 +191,7 @@ class Row(Element):
         Always None when using the table API.
 
         Returns:
-            int or None: The number of repetitions.
+            int | None: The number of repetitions.
         """
         repeated = self.get_attribute("table:number-rows-repeated")
         if repeated is None:
@@ -221,7 +221,7 @@ class Row(Element):
         """Get /set the style of the row itself.
 
         Returns:
-            str or None: The style name.
+            str | None: The style name.
         """
         return self.get_attribute_string("table:style-name")
 
@@ -262,8 +262,8 @@ class Row(Element):
         Use `set_cell` to apply changes.
 
         Args:
-            start (int, optional): The starting index.
-            end (int, optional): The ending index.
+            start: The starting index.
+            end: The ending index.
 
         Yields:
             Iterator[Cell]: The cell elements.
@@ -304,10 +304,10 @@ class Row(Element):
         'coord', minus the other filters.
 
         Args:
-            coord (str or tuple, optional): The coordinates of the cells.
-            style (str, optional): The style name to filter by.
-            content (str, optional): A regex to match in the cell content.
-            cell_type (str, optional): The type of the cell. Can be 'boolean',
+            coord: The coordinates of the cells.
+            style: The style name to filter by.
+            content: A regex to match in the cell content.
+            cell_type: The type of the cell. Can be 'boolean',
                 'float', 'date', 'string', 'time', 'currency', 'percentage'
                 or 'all'.
 
@@ -343,7 +343,7 @@ class Row(Element):
         """Get the list of all cells.
 
         Returns:
-            list[Cell]: A list of all cells.
+            A list of all cells.
         """
         # fixme : not clones ?
         return list(self.iter_cells())
@@ -378,11 +378,11 @@ class Row(Element):
         Use `set_cell` to apply changes.
 
         Args:
-            x (int or str): The column index or name.
-            clone (bool): Whether to return a copy of the cell.
+            x: The column index or name.
+            clone: Whether to return a copy of the cell.
 
         Returns:
-            Cell or None: The cell at the given position.
+            Cell | None: The cell at the given position.
         """
         x = self._translate_x_from_any(x)
         cell = self._get_cell2(x, clone=clone)
@@ -403,11 +403,11 @@ class Row(Element):
         If the cell is empty, returns None or (None, None).
 
         Args:
-            x (int or str): The column index or name.
-            get_type (bool): Whether to return the ODF type of the value.
+            x: The column index or name.
+            get_type: Whether to return the ODF type of the value.
 
         Returns:
-            The value of the cell, or a tuple (value, type).
+            Any | tuple[Any, str]: The value of the cell, or a tuple (value, type).
         """
         if get_type:
             x = self._translate_x_from_any(x)
@@ -431,10 +431,10 @@ class Row(Element):
         also accepted.
 
         Args:
-            x (int or str): The column index or name.
-            cell (Cell, optional): The cell to set. If None, an empty cell is
+            x: The column index or name.
+            cell: The cell to set. If None, an empty cell is
                 created.
-            clone (bool): Whether to clone the cell before setting it.
+            clone: Whether to clone the cell before setting it.
 
         Returns:
             Cell: The cell that was set.
@@ -472,12 +472,13 @@ class Row(Element):
         """Shortcut to set the value of the cell at position "x".
 
         Args:
-            x (int or str): The column index or name.
+            x: The column index or name.
             value: The value to set.
-            style (str, optional): The style to apply to the cell.
-            cell_type (str, optional): The type of the cell. Can be 'boolean',
-                'currency', 'date', 'float', 'percentage', 'string' or 'time'.
-            currency (str, optional): The currency symbol if the type is
+            style: The style to apply to the cell.
+            cell_type: The type of the cell. Can be 'boolean',
+                'currency', 'date', 'float', 'string', 'time', 'currency' or
+                'percentage'.
+            currency: The currency symbol if the type is
                 'currency'.
         """
         self.set_cell(
@@ -500,9 +501,9 @@ class Row(Element):
         Do not use when working on a table, use Table.insert_cell().
 
         Args:
-            x (int or str): The column index or name.
-            cell (Cell, optional): The cell to insert.
-            clone (bool): Whether to clone the cell before inserting it.
+            x: The column index or name.
+            cell: The cell to insert.
+            clone: Whether to clone the cell before inserting it.
 
         Returns:
             Cell: The cell that was inserted.
@@ -528,7 +529,7 @@ class Row(Element):
         """Extend the row with a list of cells.
 
         Args:
-            cells (Iterable[Cell], optional): The cells to append.
+            cells: The cells to append.
         """
         if cells is None:
             cells = []
@@ -547,9 +548,9 @@ class Row(Element):
         Do not use when working on a table, use Table.append_cell().
 
         Args:
-            cell (Cell, optional): The cell to append.
-            clone (bool): Whether to clone the cell before appending it.
-            _repeated (int, optional): The repeated value of the cell.
+            cell: The cell to append.
+            clone: Whether to clone the cell before appending it.
+            _repeated: The repeated value of the cell.
 
         Returns:
             Cell: The cell that was appended.
@@ -578,7 +579,7 @@ class Row(Element):
         rows remain unaffected.
 
         Args:
-            x (int or str): The column index or name.
+            x: The column index or name.
         """
         x = self._translate_x_from_any(x)
         if x >= self.width:
@@ -607,15 +608,15 @@ class Row(Element):
           coordinates with None for empty cells, except when using `cell_type`.
 
         Args:
-            coord (str or tuple, optional): Coordinates in the row.
-            cell_type (str, optional): Type of cell to filter by. Can be
+            coord: Coordinates in the row.
+            cell_type: Type of cell to filter by. Can be
                 'boolean', 'float', 'date', 'string', 'time', 'currency',
                 'percentage' or 'all'.
-            complete (bool): Whether to include empty cells as None.
-            get_type (bool): Whether to return the ODF type of the value.
+            complete: Whether to include empty cells as None.
+            get_type: Whether to return the ODF type of the value.
 
         Returns:
-            list: A list of values, or a list of (value, type) tuples.
+            list[Any | tuple[Any, Any]]: A list of values, or a list of (value, type) tuples.
         """
         if coord:
             x, z = self._translate_row_coordinates(coord)
@@ -653,7 +654,7 @@ class Row(Element):
         to the length of the row.
 
         Returns:
-            list[Element]: A list of elements.
+            list[Any]: A list of elements.
         """
         return [cell.children for cell in self.iter_cells()]
 
@@ -667,9 +668,9 @@ class Row(Element):
         not clear the row, use row.clear() before to start with an empty row.
 
         Args:
-            cells (list[Cell] or tuple[Cell], optional): The cells to set.
-            start (int or str): The starting column index or name.
-            clone (bool): Whether to clone the cells before setting them.
+            cells: The cells to set.
+            start: The starting column index or name.
+            clone: Whether to clone the cells before setting them.
         """
         if cells is None:
             cells = []
@@ -702,13 +703,13 @@ class Row(Element):
         before to start with an empty row.
 
         Args:
-            values (list): A list of values to set.
-            start (int or str): The starting column index or name.
-            style (str, optional): The style to apply to the cells.
-            cell_type (str, optional): The type of the cells. Can be
+            values: A list of values to set.
+            start: The starting column index or name.
+            style: The style to apply to the cells.
+            cell_type: The type of the cells. Can be
                 'boolean', 'float', 'date', 'string', 'time', 'currency' or
                 'percentage'.
-            currency (str, optional): The currency symbol if the type is
+            currency: The currency symbol if the type is
                 'currency'.
         """
         # fixme : if values n, n+ are same, use repeat
@@ -740,7 +741,7 @@ class Row(Element):
         True, style is ignored.
 
         Args:
-            aggressive (bool): If True, ignores cell style.
+            aggressive: If True, ignores cell style.
         """
         for cell in reversed(self._get_cells()):
             if not cell.is_empty(aggressive=aggressive):
@@ -801,7 +802,7 @@ class Row(Element):
         with the required max width.
 
         Args:
-            width (int): The target width.
+            width: The target width.
         """
         cell = self.last_cell()
         if cell is None or not cell.is_empty(aggressive=True):
@@ -823,7 +824,7 @@ class Row(Element):
         empty.
 
         Args:
-            aggressive (bool): If True, ignores cell style.
+            aggressive: If True, ignores cell style.
 
         Returns:
             bool: True if the row is empty, False otherwise.

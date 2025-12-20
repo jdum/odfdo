@@ -84,10 +84,10 @@ class Paragraph(
         """Initialize a Paragraph element (`text:p`).
 
         Args:
-            text_or_element (str | bytes | Element | None): Initial content for the paragraph.
+            text_or_element: Initial content for the paragraph.
                 If a string/bytes, it's treated as plain text. If an `Element`, it's appended.
-            style (str | None): The name of the style to apply to the paragraph.
-            formatted (bool): If True (default), special characters (`\\n`, `\\t`, multiple spaces)
+            style: The name of the style to apply to the paragraph.
+            formatted: If True (default), special characters (`\\n`, `\\t`, multiple spaces)
                 in `text_or_element` are converted to their ODF tag equivalents.
                 If False, only extra whitespace is removed.
             **kwargs: Additional keyword arguments for the parent `Element` class.
