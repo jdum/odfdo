@@ -2468,30 +2468,6 @@ class Element(MDBase):
             return None
         return variable_set.get_value(value_type)  # type: ignore[return-value]
 
-    # User fields
-
-    def get_user_field_value(
-        self, name: str, value_type: str | None = None
-    ) -> bool | str | int | float | Decimal | datetime | timedelta | None:
-        """Returns the value of the specified user field.
-
-        Args:
-            name (str): The name of the user field to retrieve its value.
-            value_type (str | None): The expected type of the user field's value.
-                Can be 'boolean', 'currency', 'date', 'float', 'percentage',
-                'string', 'time', or None for automatic type detection.
-
-        Returns:
-            bool | str | int | float | Decimal | datetime | timedelta | None:
-                The value of the user field, cast to the most appropriate Python type,
-                or None if the user field is not found.
-        """
-        user_field_decl = self.get_user_field_decl(name)  # type: ignore[attr-defined]
-        if user_field_decl is None:
-            return None
-        value = user_field_decl.get_value(value_type)
-        return value  # type: ignore
-
     # User defined fields
     # They are fields who should contain a copy of a user defined medtadata
 
