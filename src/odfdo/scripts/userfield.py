@@ -33,7 +33,7 @@ from odfdo import Document, Element, __version__
 from odfdo.utils.script_utils import read_document, save_document
 
 if TYPE_CHECKING:
-    from odfdo.user_field import UserFieldDecl
+    from odfdo.user_field_declaration import UserFieldDecl
 
 PROG = "odfdo-userfield"
 
@@ -186,14 +186,18 @@ def show_fields(document: Document, args: Namespace) -> None:
     field_set = set()
     if not args.all and args.fields:
         field_set = set(args.fields)
-    for field in document.body.get_user_field_decl_list():
-        if not args.all and field.name not in field_set:
-            continue
-        print(_field_string(field, args))
+    body = document.body
+    if hasattr(body, "get_user_field_decl_list"):
+        for field in body.get_user_field_decl_list():
+            if not args.all and field.name not in field_set:
+                continue
+            print(_field_string(field, args))
+    else:  # pragma: nocover
+        print("Warning: Document can not have user fields", file=sys.stderr)
 
 
 def _change_field(body: Element, name: str, value: str) -> None:
-    field = body.get_user_field_decl(name)
+    field = body.get_user_field_decl(name)  # type: ignore[attr-defined]
     if not field:
         print(f"Warning: unknown user-field {name!r}", file=sys.stderr)
         return
@@ -202,8 +206,11 @@ def _change_field(body: Element, name: str, value: str) -> None:
 
 def change_fields(document: Document, changes: list[list[str]]) -> None:
     body = document.body
-    for name_value in changes:
-        _change_field(body, name_value[0], name_value[1])
+    if hasattr(body, "get_user_field_decl"):
+        for name_value in changes:
+            _change_field(body, name_value[0], name_value[1])
+    else:  # pragma: nocover
+        print("Warning: Document can not have user fields", file=sys.stderr)
 
 
 if __name__ == "__main__":

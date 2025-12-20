@@ -23,8 +23,7 @@ from collections.abc import Iterable
 import pytest
 
 from odfdo.document import Document
-
-# from odfdo.element import Element
+from odfdo.element import Element
 from odfdo.user_field_declaration import UserFieldDecl, UserFieldDecls
 
 ZOE = "你好 Zoé"
@@ -42,9 +41,54 @@ def test_user_field_decls_class():
     assert isinstance(field, UserFieldDecls)
 
 
+def test_user_field_decls_minimal_tag():
+    field = Element.from_tag("<text:user-field-decls/>")
+    assert isinstance(field, UserFieldDecls)
+
+
 def test_user_field_decl_class():
     field = UserFieldDecl()
     assert isinstance(field, UserFieldDecl)
+
+
+def test_user_field_decl_minimal_tag():
+    field = Element.from_tag("<text:user-field-decl/>")
+    assert isinstance(field, UserFieldDecl)
+
+
+def test_element_get_user_field_decls_raise():
+    # limitation: for footer, no document body...
+    element = Element.from_tag("<style:header/>")
+    with pytest.raises(ValueError):
+        element.get_user_field_decls()
+
+
+def test_element_get_user_field_decls_raise_2():
+    element = Element.from_tag("<form:form/>")
+    with pytest.raises(AttributeError):
+        element.get_user_field_decls()
+
+
+def test_element_get_user_field_decls_1(document):
+    fields = document.body.get_user_field_decls()
+    assert fields.tag == "text:user-field-decls"
+
+
+def test_element_get_user_field_decls_2(document):
+    document.body.get_user_field_decls()
+    # now created
+    fields = document.body.get_user_field_decls()
+    assert fields.tag == "text:user-field-decls"
+
+
+def test_element_get_user_field_decl_list(document):
+    fields = document.body.get_user_field_decl_list()
+    assert len(fields) == 1
+
+
+def test_element_get_user_field_decl_list_2(document):
+    var_decl_list = document.body.get_user_field_decl_list()
+    assert isinstance(var_decl_list[0], UserFieldDecl)
 
 
 def test_user_field_decl_set_value():

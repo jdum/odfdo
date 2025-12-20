@@ -29,7 +29,6 @@ __all__ = [  # noqa: RUF022
     "AnnotationEnd",
     "AnnotationMixin",
     "BackgroundImage",
-    "FormButtonTypeMixin",
     "Body",
     "Bookmark",
     "BookmarkEnd",
@@ -60,6 +59,7 @@ __all__ = [  # noqa: RUF022
     "Form",
     "FormAsDictMixin",
     "FormButton",
+    "FormButtonTypeMixin",
     "FormButtonTypeMixin",
     "FormCheckbox",
     "FormColumn",
@@ -176,6 +176,8 @@ __all__ = [  # noqa: RUF022
     "TrackedChangesMixin",
     "UserDefined",
     "UserFieldDecl",
+    "UserFieldDeclContMixin",
+    "UserFieldDeclMixin",
     "UserFieldDecls",
     "UserFieldGet",
     "UserFieldInput",
@@ -184,6 +186,7 @@ __all__ = [  # noqa: RUF022
     "VarCreationTime",
     "VarDate",
     "VarDecl",
+    "VarDeclMixin",
     "VarDecls",
     "VarDescription",
     "VarFileName",
@@ -371,6 +374,8 @@ from .user_field import (
 )
 from .user_field_declaration import (
     UserFieldDecl,
+    UserFieldDeclContMixin,
+    UserFieldDeclMixin,
     UserFieldDecls,
 )
 from .utils import hex2rgb, hexa_color, remove_tree, rgb2hex
@@ -391,9 +396,6 @@ from .variable import (
     VarTime,
     VarTitle,
 )
-from .variable_declaration import (
-    VarDecl,
-    VarDecls,
-)
+from .variable_declaration import VarDecl, VarDeclMixin, VarDecls
 from .version import __version__
 from .xmlpart import XmlPart

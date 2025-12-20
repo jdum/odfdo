@@ -36,6 +36,7 @@ from .reference import ReferenceMixin
 from .section import SectionMixin
 from .table import Table
 from .tracked_changes import TrackedChangesMixin
+from .user_field_declaration import UserFieldDeclContMixin
 from .variable_declaration import VarDeclMixin
 
 # for compatibility with version <= 3.18.1
@@ -123,7 +124,7 @@ class Body(Element):
         return self.tag in BODY_ALLOW_NAMED_RANGE_TAGS
 
 
-class Chart(VarDeclMixin, NRMixin, Body):
+class Chart(UserFieldDeclContMixin, VarDeclMixin, NRMixin, Body):
     """Root of the Chart document content, "office:chart"."""
 
     _tag: str = "office:chart"
@@ -137,7 +138,7 @@ class Database(Body):
     _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
-class Drawing(VarDeclMixin, NRMixin, Body):
+class Drawing(UserFieldDeclContMixin, VarDeclMixin, NRMixin, Body):
     """Root of the Drawing document content, "office:drawing"."""
 
     _tag: str = "office:drawing"
@@ -151,14 +152,16 @@ class Image(Body):
     _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
-class Presentation(LinkMixin, VarDeclMixin, NRMixin, Body):
+class Presentation(UserFieldDeclContMixin, LinkMixin, VarDeclMixin, NRMixin, Body):
     """Root of the Presentation document content, "office:presentation"."""
 
     _tag: str = "office:presentation"
     _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
-class Spreadsheet(LinkMixin, AnnotationMixin, NRMixin, Body):
+class Spreadsheet(
+    UserFieldDeclContMixin, VarDeclMixin, LinkMixin, AnnotationMixin, NRMixin, Body
+):
     """Root of the Spreadsheet document content, "office:spreadsheet"."""
 
     _tag: str = "office:spreadsheet"
@@ -167,6 +170,7 @@ class Spreadsheet(LinkMixin, AnnotationMixin, NRMixin, Body):
 
 class Text(
     LinkMixin,
+    UserFieldDeclContMixin,
     VarDeclMixin,
     NRMixin,
     FormMixin,

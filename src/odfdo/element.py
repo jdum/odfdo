@@ -72,7 +72,7 @@ if TYPE_CHECKING:
         TextChangeEnd,
         TextChangeStart,
     )
-    from .user_field import UserDefined, UserFieldDecl, UserFieldDecls
+    from .user_field import UserDefined
     from .variable import VarSet
 
 ODF_NAMESPACES = {
@@ -2470,52 +2470,6 @@ class Element(MDBase):
 
     # User fields
 
-    def get_user_field_decls(self) -> UserFieldDecls | None:
-        """Returns the container for user field declarations.
-
-        If the container is not found, it is created within the document body.
-
-        Returns:
-            UserFieldDecls | None: The UserFieldDecls instance (container for user field declarations),
-                or None if the document body is empty.
-
-        Raises:
-            ValueError: If the document body is empty and a new container cannot be inserted.
-        """
-        user_field_decls = self.get_element("//text:user-field-decls")
-        if user_field_decls is None:
-            body = self.document_body
-            if not body:
-                raise ValueError("Empty document.body")
-            body.insert(Element.from_tag("text:user-field-decls"), FIRST_CHILD)
-            user_field_decls = body.get_element("//text:user-field-decls")
-
-        return user_field_decls  # type: ignore[return-value]
-
-    def get_user_field_decl_list(self) -> list[UserFieldDecl]:
-        """Returns all user field declarations as a list.
-
-        Returns:
-            list[UserFieldDecl]: A list of all UserFieldDecl instances that are descendants of this element.
-        """
-        return self._filtered_elements(
-            "descendant::text:user-field-decl",
-        )  # type: ignore[return-value]
-
-    def get_user_field_decl(self, name: str, position: int = 0) -> UserFieldDecl | None:
-        """Returns a single user field declaration that matches the specified criteria.
-
-        Args:
-            name (str): The name of the user field declaration to retrieve.
-            position (int): The 0-based index of the matching user field declaration to return.
-
-        Returns:
-            UserFieldDecl | None: A UserFieldDecl instance, or None if no declaration matches the criteria.
-        """
-        return self._filtered_element(
-            "descendant::text:user-field-decl", position, text_name=name
-        )  # type: ignore[return-value]
-
     def get_user_field_value(
         self, name: str, value_type: str | None = None
     ) -> bool | str | int | float | Decimal | datetime | timedelta | None:
@@ -2532,11 +2486,11 @@ class Element(MDBase):
                 The value of the user field, cast to the most appropriate Python type,
                 or None if the user field is not found.
         """
-        user_field_decl = self.get_user_field_decl(name)
+        user_field_decl = self.get_user_field_decl(name)  # type: ignore[attr-defined]
         if user_field_decl is None:
             return None
         value = user_field_decl.get_value(value_type)
-        return value  # type: ignore[return-value]
+        return value  # type: ignore
 
     # User defined fields
     # They are fields who should contain a copy of a user defined medtadata

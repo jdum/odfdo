@@ -20,20 +20,120 @@
 """Classes for ODF document user fields declarations.
 
 This module provides classes for managing user field declarations and their
-containers within the document content, tags "text:user-field-decl",
-"text:user-field-decls".
+containers within the document content, tags "text:user-field-decls",
+"text:user-field-decl".
 .
 """
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Union, cast
 
-from .element import Element, PropDef, register_element_class
+from .element import FIRST_CHILD, Element, PropDef, register_element_class
 from .element_typed import ElementTyped
 
 
-class UserFieldDecls(Element):
+class UserFieldDeclMixin(Element):
+    """Mixin class for elements that can contain user field declarations.
+
+    This mixin provides methods to access "text:user-field-decl".
+
+    Used by the following classes:
+        - "office:chart"
+        - "office:drawing"
+        - "office:presentation"
+        - "office:spreadsheet"
+        - "office:text"
+        - "style:footer"
+        - "style:footer-first"
+        - "style:footer-left"
+        - "style:header"
+        - "style:header-first"
+        - "style:header-left"
+        - "text:user-field-decls"
+    """
+
+    def get_user_field_decl_list(self) -> list[UserFieldDecl]:
+        """Returns all user field declarations as a list.
+
+        Returns:
+            list[UserFieldDecl]: A list of all UserFieldDecl instances that
+            are descendants of this element.
+        """
+        return cast(
+            list[UserFieldDecl],
+            self._filtered_elements(
+                "descendant::text:user-field-decl",
+            ),
+        )
+
+    def get_user_field_decl(self, name: str, position: int = 0) -> UserFieldDecl | None:
+        """Returns a single user field declaration that matches the specified
+        criteria.
+
+        Args:
+            name: The name of the user field declaration to retrieve.
+            position: The 0-based index of the matching user field
+            declaration to return.
+
+        Returns:
+            UserFieldDecl | None: A UserFieldDecl instance, or None if no
+            declaration matches the criteria.
+        """
+        return cast(
+            Union[None, UserFieldDecl],
+            self._filtered_element(
+                "descendant::text:user-field-decl", position, text_name=name
+            ),
+        )
+
+
+class UserFieldDeclContMixin(UserFieldDeclMixin):
+    """Mixin class for elements that can contain user field declarations.
+
+    This mixin provides methods to access and manipulate
+    "text:user-field-decls" and "text:user-field-decl".
+
+    Used by the following classes:
+        UserFieldDecls
+        - "office:chart"
+        - "office:drawing"
+        - "office:presentation"
+        - "office:spreadsheet"
+        - "office:text"
+        - "style:footer"
+        - "style:footer-first"
+        - "style:footer-left"
+        - "style:header"
+        - "style:header-first"
+        - "style:header-left"
+    """
+
+    def get_user_field_decls(self) -> UserFieldDecls:
+        """Returns the container for user field declarations.
+
+        If the container is not found, it is created within the document body.
+
+        Returns:
+            UserFieldDecls: The UserFieldDecls instance (container for
+                user field declarations).
+
+        Raises:
+            ValueError: If the document body is empty and a new container
+                cannot be inserted.
+        """
+        user_field_decls = self.get_element("//text:user-field-decls")
+        if user_field_decls is None:
+            body = self.document_body
+            if not body:
+                raise ValueError("Empty document.body")
+            body.insert(Element.from_tag("text:user-field-decls"), FIRST_CHILD)
+            user_field_decls = body.get_element("//text:user-field-decls")
+
+        return cast(UserFieldDecls, user_field_decls)
+
+
+class UserFieldDecls(UserFieldDeclMixin):
     """A container for user field declarations, "text:user-field-decls".
 
     This element groups all the 'text:user-field-decl' elements in the
