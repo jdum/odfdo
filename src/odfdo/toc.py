@@ -18,22 +18,23 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""TOC class for "text:table-of-content" tag and TabStopStyle, TocEntryTemplate
-related classes."""
+"""TOC class for "text:table-of-content" tag and TabStopStyle,
+TocEntryTemplate, IndexBody, IndexTitle, IndexTitleTemplate related
+classes.
+"""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Union, cast
 
-from .document import Document
-from .element import FIRST_CHILD, Element, PropDef, register_element_class
+from .element import FIRST_CHILD, Element, PropDef, PropDefBool, register_element_class
 from .mixin_md import MDToc
-from .paragraph import Paragraph
+from .mixin_toc import TocMixin
+from .section import SectionMixin
 from .style import Style
-from .text_index import IndexBody, IndexTitle, IndexTitleTemplate
 
 if TYPE_CHECKING:
-    pass
+    from .document import Document
 
 
 def _toc_entry_style_name(level: int) -> str:
@@ -380,9 +381,9 @@ class TOC(MDToc, Element):
         """Sets the title of the TOC.
 
         Args:
-            title (str): The new title for the TOC.
-            style (str, optional): The style for the index title element.
-            text_style (str, optional): The style for the title's paragraph.
+            title: The new title for the TOC.
+            style: The style for the index title element.
+            text_style: The style for the title's paragraph.
         """
         index_body = self.body
         if index_body is None:
@@ -391,22 +392,20 @@ class TOC(MDToc, Element):
         index_title = cast(
             Union[None, IndexTitle], index_body.get_element(IndexTitle._tag)
         )
-        if index_title is None:
-            name = f"{self.name}_Head"
-            index_title = IndexTitle(
-                name=name, style=style, title_text=title, text_style=text_style
-            )
-            index_body.append(index_title)
+        if index_title:
+            style = style or index_title.style
+            if not text_style:
+                index_title_paragraph = index_title.get_element("text:p")
+                if index_title_paragraph:
+                    text_style = index_title_paragraph.style  # type: ignore[attr-defined]
+            name = index_title.name
+            index_title.delete()
         else:
-            if style:
-                index_title.style = style
-            paragraph = index_title.get_paragraph()
-            if paragraph is None:
-                paragraph = Paragraph()
-                index_title.append(paragraph)
-            if text_style:
-                paragraph.style = text_style
-            paragraph.text = title
+            name = f"{self.name}_Head"
+        index_title = IndexTitle(
+            name=name, style=style, title_text=title, text_style=text_style
+        )
+        index_body.append(index_title)
 
     @staticmethod
     def _header_numbering(level_indexes: dict[int, int], level: int) -> str:
@@ -453,10 +452,10 @@ class TOC(MDToc, Element):
         `use_default_styles` as True.
 
         Args:
-            document (Document, optional): The document to scan for titles.
+            document: The document to scan for titles.
                 If not provided, the TOC must already be attached to a
                 document.
-            use_default_styles (bool): If True, applies default styles to the
+            use_default_styles: If True, applies default styles to the
                 TOC entries.
         """
         # Find the body
@@ -507,9 +506,10 @@ class TOC(MDToc, Element):
                 continue
             number_str = self._header_numbering(level_indexes, level)
             # Make the title with "1.2.3. Title" format
-            paragraph = Paragraph(f"{number_str} {header}")
+            paragraph = Element.from_tag("text:p")
+            paragraph.append_plain_text(f"{number_str} {header}")  # type: ignore[attr-defined]
             if use_default_styles:
-                paragraph.style = _toc_entry_style_name(level)
+                paragraph.style = _toc_entry_style_name(level)  # type: ignore[attr-defined]
             index_body.append(paragraph)
 
 
@@ -578,6 +578,126 @@ class TocEntryTemplate(Element):
 
 TocEntryTemplate._define_attribut_property()
 
+
+class IndexBody(TocMixin, SectionMixin):
+    """Represents the "text:index-body" element, which contains the content of an index.
+
+    This element is used for all types of indexes within an ODF document and
+    holds the generated index content.
+    """
+
+    _tag: str = "text:index-body"
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
+
+
+class IndexTitle(TocMixin, SectionMixin):
+    """Represents the title of an index, "text:index-title".
+
+    This element contains the title for an index, and its properties define
+    how the title is displayed and protected.
+
+    Attributes:
+        name (str): The name of the index title.
+        style (str): The style name applied to the index title.
+        xml_id (str): A unique XML identifier.
+        protected (bool): Indicates if the index title is protected.
+        protection_key (str): The protection key if the title is protected.
+        protection_key_digest_algorithm (str): The algorithm used for the protection key.
+    """
+
+    _tag = "text:index-title"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("name", "text:name"),
+        PropDef("style", "text:style-name"),
+        PropDef("xml_id", "xml:id"),
+        PropDef("protected", "text:protected"),
+        PropDef("protection_key", "text:protection-key"),
+        PropDef(
+            "protection_key_digest_algorithm", "text:protection-key-digest-algorithm"
+        ),
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        style: str | None = None,
+        title_text: str | None = None,
+        title_text_style: str | None = None,
+        xml_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create an IndexTitle element.
+
+        Args:
+            name (str, optional): The name of the index title.
+            style (str, optional): The style name for the index title.
+            title_text (str, optional): The actual text content of the title.
+            title_text_style (str, optional): The style name for the title text.
+            xml_id (str, optional): A unique XML identifier for the title.
+            **kwargs: Arbitrary keyword arguments for the Element base class.
+        """
+        super().__init__(**kwargs)
+        if self._do_init:
+            if name:
+                self.name = name
+            if style:
+                self.style = style
+            if xml_id:
+                self.xml_id = xml_id
+            if title_text:
+                self.set_title_text(title_text, title_text_style)
+
+    def set_title_text(
+        self,
+        title_text: str,
+        title_text_style: str | None = None,
+    ) -> None:
+        """Set the actual text content of the index title.
+
+        Args:
+            title_text (str): The text content to set for the title.
+            title_text_style (str, optional): The style name for the title text.
+        """
+        current = self.get_element("text:p")
+        if current:
+            current.delete()
+        title = Element.from_tag("text:p")
+        title.append_plain_text(title_text)  # type: ignore[attr-defined]
+        title.style = title_text_style  # type: ignore[attr-defined]
+        self.append(title)
+
+
+IndexTitle._define_attribut_property()
+
+
+class IndexTitleTemplate(Element):
+    """Represents a template style for an index title, "text:index-title-template".
+
+    This element defines the styling for index titles within an ODF document.
+    """
+
+    _tag = "text:index-title-template"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("style", "text:style-name"),
+    )
+
+    def __init__(self, style: str | None = None, **kwargs: Any) -> None:
+        """Create an IndexTitleTemplate element.
+
+        Args:
+            style (str, optional): The style name for the template.
+            **kwargs: Arbitrary keyword arguments for the Element base class.
+        """
+        super().__init__(**kwargs)
+        if self._do_init and style:
+            self.style = style
+
+
+IndexTitleTemplate._define_attribut_property()
+
 register_element_class(TocEntryTemplate)
 register_element_class(TabStopStyle)
 register_element_class(TOC)
+register_element_class(IndexBody)
+register_element_class(IndexTitle)
+register_element_class(IndexTitleTemplate)

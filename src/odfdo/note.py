@@ -30,6 +30,7 @@ from .annotation import Annotation, AnnotationEnd, get_unique_office_name  # noq
 from .element import Element, PropDef, PropDefBool, register_element_class
 from .mixin_link import LinkMixin
 from .mixin_md import MDNote
+from .mixin_toc import TocMixin
 from .section import SectionMixin
 
 
@@ -93,7 +94,7 @@ class NoteMixin(Element):
         )
 
 
-class NoteBody(LinkMixin, SectionMixin):
+class NoteBody(TocMixin, LinkMixin, SectionMixin):
     """Container for the content of a note, "text:note-body"."""
 
     _tag: str = "text:note-body"

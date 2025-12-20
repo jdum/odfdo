@@ -37,6 +37,7 @@ from .annotation import AnnotationMixin
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element, register_element_class_list
 from .element_typed import ElementTyped
+from .mixin_toc import TocMixin
 from .section import SectionMixin
 
 _int = builtins.int
@@ -46,7 +47,7 @@ if TYPE_CHECKING:
     from .style import Style
 
 
-class Cell(SectionMixin, AnnotationMixin, ElementTyped):
+class Cell(TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
     """A cell of a table, "table:table-cell" and "table:covered-table-cell"."""
 
     _tag = "table:table-cell"

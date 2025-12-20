@@ -172,6 +172,7 @@ __all__ = [  # noqa: RUF022
     "TextInsertion",
     "TextMeta",
     "TocEntryTemplate",
+    "TocMixin",
     "TrackedChanges",
     "TrackedChangesMixin",
     "UserDefined",
@@ -311,6 +312,7 @@ from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
 from .mixin_named_range import NRMixin, TableNamedExpressions
 from .mixin_paragraph import ParaMixin
+from .mixin_toc import TocMixin
 from .named_range import NamedRange
 from .note import Note, NoteBody, NoteMixin
 from .office_forms import OfficeForms, OfficeFormsMixin
@@ -349,9 +351,11 @@ from .style_defaults import (
 from .styles import Styles
 from .tab import Tab
 from .table import Table
-from .text_index import IndexBody, IndexTitle, IndexTitleTemplate
 from .toc import (
     TOC,
+    IndexBody,
+    IndexTitle,
+    IndexTitleTemplate,
     TabStopStyle,
     TocEntryTemplate,
     default_toc_level_style,

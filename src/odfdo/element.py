@@ -66,7 +66,6 @@ if TYPE_CHECKING:
     )
     from .style import Style
     from .style_base import StyleBase
-    from .toc import TOC
     from .tracked_changes import (
         TextChange,
         TextChangeEnd,
@@ -2467,8 +2466,6 @@ class Element(MDBase):
             return None
         return variable_set.get_value(value_type)  # type: ignore[return-value]
 
-
-
     # Draw Pages
 
     def get_draw_pages(
@@ -2918,52 +2915,6 @@ class Element(MDBase):
 
         request = "descendant::text:change-start | descendant::text:change"
         return self._filtered_element(request, position)  # type: ignore[return-value]
-
-    # Table Of Content
-
-    def get_tocs(self) -> list[TOC]:
-        """Returns all tables of contents found within the element's subtree.
-
-        Returns:
-            list[TOC]: A list of TOC instances.
-        """
-        return self.get_elements("text:table-of-content")  # type: ignore[return-value]
-
-    @property
-    def tocs(self) -> list[TOC]:
-        """Returns all tables of contents found within the element's subtree.
-
-        Returns:
-            list[TOC]: A list of TOC instances.
-        """
-        return self.get_elements("text:table-of-content")  # type: ignore[return-value]
-
-    def get_toc(
-        self,
-        position: int = 0,
-        content: str | None = None,
-    ) -> TOC | None:
-        """Returns a single table of contents that matches the specified criteria.
-
-        Args:
-            position (int): The 0-based index of the matching table of contents to return.
-            content (str | None): A regex pattern to match against the TOC's content.
-
-        Returns:
-            TOC | None: A TOC instance, or None if no TOC matches the criteria.
-        """
-        return self._filtered_element(
-            "text:table-of-content", position, content=content
-        )  # type: ignore[return-value]
-
-    @property
-    def toc(self) -> TOC | None:
-        """Returns the first table of contents found within the element's subtree.
-
-        Returns:
-            TOC | None: The first TOC instance, or None if not found.
-        """
-        return self.get_toc()
 
     # Styles
 

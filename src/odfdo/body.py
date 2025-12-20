@@ -30,6 +30,7 @@ from .element import Element, PropDef, PropDefBool, register_element_class
 from .form import FormMixin
 from .mixin_link import LinkMixin
 from .mixin_named_range import NRMixin
+from .mixin_toc import TocMixin
 from .note import NoteMixin
 from .office_forms import OfficeFormsMixin
 from .reference import ReferenceMixin
@@ -178,6 +179,7 @@ class Spreadsheet(
 
 
 class Text(
+    TocMixin,
     UserDefinedMixin,
     UserFieldDeclContMixin,
     LinkMixin,

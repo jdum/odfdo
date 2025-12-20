@@ -24,6 +24,7 @@ from __future__ import annotations
 from typing import Any
 
 from .element import Element, PropDef, PropDefBool, register_element_class
+from .mixin_toc import TocMixin
 from .office_forms import OfficeFormsMixin
 from .section import SectionMixin
 from .style_base import StyleBase
@@ -264,7 +265,12 @@ StyleMasterPage._define_attribut_property()
 
 
 class StyleHeader(
-    UserFieldDeclContMixin, VarDeclMixin, TrackedChangesMixin, SectionMixin, StyleBase
+    TocMixin,
+    UserFieldDeclContMixin,
+    VarDeclMixin,
+    TrackedChangesMixin,
+    SectionMixin,
+    StyleBase,
 ):
     """Content of a header in a StyleMasterPage, tag "style:header".
 
