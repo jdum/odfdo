@@ -60,7 +60,6 @@ __all__ = [  # noqa: RUF022
     "FormAsDictMixin",
     "FormButton",
     "FormButtonTypeMixin",
-    "FormButtonTypeMixin",
     "FormCheckbox",
     "FormColumn",
     "FormCombobox",
@@ -106,6 +105,7 @@ __all__ = [  # noqa: RUF022
     "LineBreak",
     "LineShape",
     "Link",
+    "LinkMixin",
     "List",
     "ListItem",
     "ListMixin",
@@ -130,6 +130,7 @@ __all__ = [  # noqa: RUF022
     "OfficeTargetFrameMixin",
     "PREV_SIBLING",
     "PageBreak",
+    "ParaFormattedTextMixin",
     "ParaMixin",
     "Paragraph",
     "Presentation",
@@ -222,8 +223,6 @@ __all__ = [  # noqa: RUF022
     "remove_tree",
     "rgb2hex",
 ]
-
-
 from .annotation import Annotation, AnnotationEnd, AnnotationMixin
 from .body import (
     Body,
@@ -314,9 +313,11 @@ from .meta_template import MetaTemplate
 from .meta_user_defined import MetaUserDefined
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
+from .mixin_link import LinkMixin
 from .mixin_list import ListMixin
 from .mixin_named_range import NRMixin, TableNamedExpressions
 from .mixin_paragraph import ParaMixin
+from .mixin_paragraph_formatted import ParaFormattedTextMixin
 from .mixin_toc import TocMixin
 from .named_range import NamedRange
 from .note import Note, NoteBody, NoteMixin
