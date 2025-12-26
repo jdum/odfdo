@@ -32,7 +32,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from functools import cache
 from re import search
-from typing import TYPE_CHECKING, Any, NamedTuple, cast
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 from lxml.etree import Element as lxml_Element
 from lxml.etree import XPath, _Element, fromstring, tostring
@@ -55,7 +55,6 @@ if TYPE_CHECKING:
     from .frame import Frame
     from .header import Header
     from .image import DrawImage
-    from .list import List
     from .paragraph import Paragraph, Span
     from .shapes import (
         ConnectorShape,
@@ -2176,56 +2175,6 @@ class Element(MDBase):
             position,
             outline_level=outline_level,
             content=content,
-        )  # type: ignore[return-value]
-
-    # Lists
-
-    def get_lists(
-        self,
-        style: str | None = None,
-        content: str | None = None,
-    ) -> list[List]:
-        """Returns all lists that match the specified criteria.
-
-        Args:
-            style: The name of the style to filter lists by.
-            content: A regex pattern to match against the list's content.
-
-        Returns:
-            list[List]: A list of List instances matching the criteria.
-        """
-        return cast(
-            "list[List]",
-            self._filtered_elements(
-                "descendant::text:list", text_style=style, content=content
-            ),
-        )
-
-    @property
-    def lists(self) -> list[List]:
-        """Returns all lists as a list.
-
-        Returns:
-            list[List]: A list of all List instances that are descendants of this element.
-        """
-        return cast("list[List]", self.get_elements("descendant::text:list"))
-
-    def get_list(
-        self,
-        position: int = 0,
-        content: str | None = None,
-    ) -> List | None:
-        """Returns a single list that matches the specified criteria.
-
-        Args:
-            position: The 0-based index of the matching list to return.
-            content: A regex pattern to match against the list's content.
-
-        Returns:
-            List | None: A List instance, or None if no list matches the criteria.
-        """
-        return self._filtered_element(
-            "descendant::text:list", position, content=content
         )  # type: ignore[return-value]
 
     # Frames

@@ -32,6 +32,7 @@ from .elements_between import elements_between
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
 from .mixin_link import LinkMixin
+from .mixin_list import ListMixin
 from .mixin_md import MDTail
 
 if TYPE_CHECKING:
@@ -203,7 +204,7 @@ def get_unique_office_name(element: Element | None = None) -> str:
     return name
 
 
-class Annotation(MDTail, LinkMixin, Element, DcCreatorMixin, DcDateMixin):
+class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMixin):
     """An annotation (private note), "office:annotation".
 
     This element contains the content of a comment or annotation, along with

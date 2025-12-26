@@ -908,51 +908,6 @@ def test_append_named_range_in_class(tag):
     assert isinstance(result, NamedRange)
 
 
-def test_get_lists_1():
-    element = Element.from_tag("office:text")
-    result = element.get_lists()
-    assert result == []
-
-
-def test_get_lists_2():
-    element = Element.from_tag("office:text")
-    result = element.lists
-    assert result == []
-
-
-def test_get_lists_3():
-    element = Element.from_tag("office:text")
-    element.insert(List(["a", "b"]), position=0)
-    result = element.lists
-    assert len(result) == 1
-    assert isinstance(result[0], List)
-
-
-def test_get_lists_4():
-    element = Element.from_tag("office:text")
-    element.insert(List(["a", "b"]), position=0)
-    element.insert(List(["c"]), position=0)
-    result = element.lists
-    assert len(result) == 2
-    assert isinstance(result[0], List)
-
-
-def test_get_list_1():
-    element = Element.from_tag("office:text")
-    element.insert(List(["a", "b"]), position=0)
-    element.insert(List(["c"]), position=0)
-    result = element.get_list(content="c")
-    assert isinstance(result, List)
-
-
-def test_get_list_2():
-    element = Element.from_tag("office:text")
-    element.insert(List(["a", "b"]), position=0)
-    element.insert(List(["c"]), position=0)
-    result = element.get_list(content="z")
-    assert result is None
-
-
 def test_element_get_attribute_int_default_1():
     element = Element.from_tag("<form:form/>")
     result = element._get_attribute_int_default("form:tab-index", 0)

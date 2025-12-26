@@ -29,6 +29,7 @@ from .const import BODY_ALLOW_NAMED_RANGE_TAGS
 from .element import Element, PropDef, PropDefBool, register_element_class
 from .form import FormMixin
 from .mixin_link import LinkMixin
+from .mixin_list import ListMixin
 from .mixin_named_range import NRMixin
 from .mixin_toc import TocMixin
 from .note import NoteMixin
@@ -179,6 +180,7 @@ class Spreadsheet(
 
 
 class Text(
+    ListMixin,
     TocMixin,
     UserDefinedMixin,
     UserFieldDeclContMixin,

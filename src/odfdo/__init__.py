@@ -108,6 +108,7 @@ __all__ = [  # noqa: RUF022
     "Link",
     "List",
     "ListItem",
+    "ListMixin",
     "Manifest",
     "Meta",
     "MetaAutoReload",
@@ -313,6 +314,7 @@ from .meta_template import MetaTemplate
 from .meta_user_defined import MetaUserDefined
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
+from .mixin_list import ListMixin
 from .mixin_named_range import NRMixin, TableNamedExpressions
 from .mixin_paragraph import ParaMixin
 from .mixin_toc import TocMixin
