@@ -28,9 +28,10 @@ from .element import Element, PropDef, register_element_class
 from .office_forms import OfficeFormsMixin
 from .shapes import registered_shapes
 from .smil import AnimPar, AnimTransFilter
+from .svg import SvgMixin
 
 
-class DrawPage(OfficeFormsMixin, Element):
+class DrawPage(SvgMixin, OfficeFormsMixin, Element):
     """ODF draw page for presentations and drawings, "draw:page"."""
 
     _tag = "draw:page"

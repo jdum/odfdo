@@ -26,6 +26,49 @@ from typing import Any
 from .element import Element, PropDef, PropDefBool, register_element_class
 
 
+class SvgMixin(Element):
+    """Mixin class for elements that can contain "svg:title" and "svg:desc".
+
+    This mixin provides methods to access and manipulate SvgTitle and
+    SvgDescription.
+
+    Used by the following implemented classes:
+        - "draw:connector"
+        - "draw:ellipse"
+        - "draw:frame"
+        - "draw:g"
+        - "draw:line"
+        - "draw:page"
+        - "draw:rect"
+    """
+
+    @property
+    def svg_title(self) -> str | None:
+        """Get or set the SVG title of the element.
+
+        Returns:
+            str | None: The title string, or None if not present.
+        """
+        return self._get_inner_text("svg:title")
+
+    @svg_title.setter
+    def svg_title(self, title: str) -> None:
+        self._set_inner_text("svg:title", title)
+
+    @property
+    def svg_description(self) -> str | None:
+        """Get or set the SVG description of the element.
+
+        Returns:
+            str | None: The description string, or None if not present.
+        """
+        return self._get_inner_text("svg:desc")
+
+    @svg_description.setter
+    def svg_description(self, description: str) -> None:
+        self._set_inner_text("svg:desc", description)
+
+
 class SvgTitle(Element):
     """Store a name for a graphic object.
 

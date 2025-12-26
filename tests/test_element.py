@@ -883,32 +883,6 @@ def test_get_inner_text_no_content():
     assert result is None
 
 
-def test_svg_title_1():
-    element = Element.from_tag("<text:p>x</text:p>")
-    result = element.svg_title
-    assert result is None
-
-
-def test_svg_title_2():
-    element = Element.from_tag("<text:p>x</text:p>")
-    element.svg_title = "content"
-    result = element.svg_title
-    assert result == "content"
-
-
-def test_svg_description_1():
-    element = Element.from_tag("<text:p>x</text:p>")
-    result = element.svg_description
-    assert result is None
-
-
-def test_svg_description_2():
-    element = Element.from_tag("<text:p>x</text:p>")
-    element.svg_description = "content"
-    result = element.svg_description
-    assert result == "content"
-
-
 def test_sections(sample):
     content = sample.content
     result = content.body.sections

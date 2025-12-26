@@ -236,3 +236,57 @@ def test_set_frame_anchor_type():
     frame.anchor_page = 3
     assert frame.anchor_type == "page"
     assert frame.anchor_page == 3
+
+
+def test_svg_description_1():
+    frame = Element.from_tag(
+        '<draw:frame svg:width="10cm" svg:height="10cm" '
+        'draw:z-index="0" draw:name="Another Frame" '
+        'draw:style-name="Graphics" '
+        'svg:x="10mm" svg:y="10mm" '
+        'text:anchor-type="page" '
+        'text:anchor-page-number="1"/>'
+    )
+    result = frame.svg_description
+    assert result is None
+
+
+def test_svg_description_2():
+    frame = Element.from_tag(
+        '<draw:frame svg:width="10cm" svg:height="10cm" '
+        'draw:z-index="0" draw:name="Another Frame" '
+        'draw:style-name="Graphics" '
+        'svg:x="10mm" svg:y="10mm" '
+        'text:anchor-type="page" '
+        'text:anchor-page-number="1"/>'
+    )
+    frame.svg_description = "some description"
+    result = frame.svg_description
+    assert result == "some description"
+
+
+def test_svg_title_1():
+    frame = Element.from_tag(
+        '<draw:frame svg:width="10cm" svg:height="10cm" '
+        'draw:z-index="0" draw:name="Another Frame" '
+        'draw:style-name="Graphics" '
+        'svg:x="10mm" svg:y="10mm" '
+        'text:anchor-type="page" '
+        'text:anchor-page-number="1"/>'
+    )
+    result = frame.svg_title
+    assert result is None
+
+
+def test_svg_title_2():
+    frame = Element.from_tag(
+        '<draw:frame svg:width="10cm" svg:height="10cm" '
+        'draw:z-index="0" draw:name="Another Frame" '
+        'draw:style-name="Graphics" '
+        'svg:x="10mm" svg:y="10mm" '
+        'text:anchor-type="page" '
+        'text:anchor-page-number="1"/>'
+    )
+    frame.svg_title = "some title"
+    result = frame.svg_title
+    assert result == "some title"

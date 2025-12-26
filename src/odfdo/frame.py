@@ -34,6 +34,7 @@ from .mixin_toc import TocMixin
 from .paragraph import Paragraph
 from .section import SectionMixin
 from .style import Style
+from .svg import SvgMixin
 from .unit import Unit
 
 # This DPI is computed to have:
@@ -166,7 +167,7 @@ class SizeMix:
         self.height = size[1]
 
 
-class Frame(MDDrawFrame, Element, AnchorMix, PosMix, ZMix, SizeMix):
+class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
     """ODF Frame, "draw:frame".
 
     Frames are not useful by themselves. Consider calling Frame.image_frame()

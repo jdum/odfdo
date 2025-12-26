@@ -29,9 +29,10 @@ from typing import Any
 
 from .element import Element, PropDef, PropDefBool, register_element_class
 from .frame import AnchorMix, PosMix, SizeMix, ZMix
+from .svg import SvgMixin
 
 
-class ShapeBase(Element, SizeMix, PosMix):
+class ShapeBase(SvgMixin, SizeMix, PosMix, Element):
     """Base class for all drawing shapes.
 
     This class provides common properties and methods for various shapes

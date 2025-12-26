@@ -2023,44 +2023,6 @@ class Element(MDBase):
             self.__append(element)
         element.text = text
 
-    # SVG
-
-    @property
-    def svg_title(self) -> str | None:
-        """Gets the SVG title of the element.
-
-        Returns:
-            str | None: The title string, or None if not present.
-        """
-        return self._get_inner_text("svg:title")
-
-    @svg_title.setter
-    def svg_title(self, title: str) -> None:
-        """Sets the SVG title of the element.
-
-        Args:
-            title (str): The title string to set.
-        """
-        self._set_inner_text("svg:title", title)
-
-    @property
-    def svg_description(self) -> str | None:
-        """Gets the SVG description of the element.
-
-        Returns:
-            str | None: The description string, or None if not present.
-        """
-        return self._get_inner_text("svg:desc")
-
-    @svg_description.setter
-    def svg_description(self, description: str) -> None:
-        """Sets the SVG description of the element.
-
-        Args:
-            description (str): The description string to set.
-        """
-        self._set_inner_text("svg:desc", description)
-
     # Paragraphs
 
     def get_paragraphs(

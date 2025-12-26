@@ -158,6 +158,7 @@ __all__ = [  # noqa: RUF022
     "StylePageLayout",
     "Styles",
     "SvgDescription",
+    "SvgMixin",
     "SvgTitle",
     "TOC",
     "Tab",
@@ -351,7 +352,7 @@ from .style_defaults import (
     default_time_style,
 )
 from .styles import Styles
-from .svg import SvgDescription, SvgTitle
+from .svg import SvgDescription, SvgMixin, SvgTitle
 from .tab import Tab
 from .table import Table
 from .toc import (
