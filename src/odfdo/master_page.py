@@ -24,6 +24,7 @@ from __future__ import annotations
 from typing import Any
 
 from .element import Element, PropDef, PropDefBool, register_element_class
+from .mixin_list import ListMixin
 from .mixin_toc import TocMixin
 from .office_forms import OfficeFormsMixin
 from .section import SectionMixin
@@ -262,6 +263,7 @@ StyleMasterPage._define_attribut_property()
 
 
 class StyleHeader(
+    ListMixin,
     TocMixin,
     UserFieldDeclContMixin,
     VarDeclMixin,

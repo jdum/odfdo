@@ -33,6 +33,7 @@ from .element import FIRST_CHILD, LAST_CHILD, Element, register_element_class
 from .elements_between import elements_between
 from .mixin_dc_creator import DcCreatorMixin
 from .mixin_dc_date import DcDateMixin
+from .mixin_list import ListMixin
 from .mixin_md import MDZap
 from .mixin_toc import TocMixin
 from .paragraph import Paragraph
@@ -259,7 +260,7 @@ class TextInsertion(Element):
             self.insert(new_change_info, xmlposition=FIRST_CHILD)
 
 
-class TextDeletion(TocMixin, SectionMixin, TextInsertion):
+class TextDeletion(ListMixin, TocMixin, SectionMixin, TextInsertion):
     """Represents a text deletion, "text:deletion".
 
     This element contains metadata about a deletion (author, date, comments)

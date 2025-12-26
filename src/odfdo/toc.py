@@ -28,6 +28,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Union, cast
 
 from .element import FIRST_CHILD, Element, PropDef, PropDefBool, register_element_class
+from .mixin_list import ListMixin
 from .mixin_md import MDToc
 from .mixin_toc import TocMixin
 from .section import SectionMixin
@@ -579,7 +580,7 @@ class TocEntryTemplate(Element):
 TocEntryTemplate._define_attribut_property()
 
 
-class IndexBody(TocMixin, SectionMixin):
+class IndexBody(ListMixin, TocMixin, SectionMixin):
     """Represents the "text:index-body" element, which contains the content of an index.
 
     This element is used for all types of indexes within an ODF document and
@@ -590,7 +591,7 @@ class IndexBody(TocMixin, SectionMixin):
     _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
-class IndexTitle(TocMixin, SectionMixin):
+class IndexTitle(ListMixin, TocMixin, SectionMixin):
     """Represents the title of an index, "text:index-title".
 
     This element contains the title for an index, and its properties define

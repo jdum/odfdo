@@ -27,6 +27,8 @@ from collections.abc import Iterable
 from decimal import Decimal
 from typing import Any
 
+from odfdo.mixin_list import ListMixin
+
 from .element import Element, PropDef, register_element_class
 from .image import DrawImage
 from .mixin_md import MDDrawFrame, MDDrawTextBox
@@ -524,7 +526,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
 Frame._define_attribut_property()
 
 
-class DrawTextBox(MDDrawTextBox, TocMixin, SectionMixin):
+class DrawTextBox(MDDrawTextBox, ListMixin, TocMixin, SectionMixin):
     """ODF text box, "draw:text-box".
 
     Minimal class to facilitate internal iteration.

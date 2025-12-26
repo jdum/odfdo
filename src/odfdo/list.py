@@ -34,11 +34,12 @@ from .element import (
     PropDef,
     register_element_class,
 )
+from .mixin_list import ListMixin
 from .mixin_md import MDList, MDListItem
 from .paragraph import Paragraph
 
 
-class ListItem(MDListItem, Element):
+class ListItem(MDListItem, ListMixin, Element):
     """An item of a list, "text:list-item"."""
 
     _tag = "text:list-item"

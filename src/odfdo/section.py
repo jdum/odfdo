@@ -27,6 +27,7 @@ from typing import Any, Union, cast
 
 from .element import Element, PropDef, register_element_class
 from .mixin_link import LinkMixin
+from .mixin_list import ListMixin
 from .mixin_toc import TocMixin
 
 
@@ -105,7 +106,7 @@ class SectionMixin(Element):
         )
 
 
-class Section(TocMixin, LinkMixin, SectionMixin):
+class Section(ListMixin, TocMixin, LinkMixin, SectionMixin):
     """Represents a section within a text document, "text:section".
 
     A section is a container for document content, often used for
