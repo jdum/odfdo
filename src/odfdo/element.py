@@ -563,7 +563,7 @@ class Element(MDBase):
         """Internal method to get the value of an attribute by its qualified name.
 
         Args:
-            attr_name (str): The qualified name of the attribute (e.g., "office:name").
+            attr_name: The qualified name of the attribute (e.g., "office:name").
 
         Returns:
             str | None: The attribute's value as a string, or None if the attribute is not found.
@@ -581,9 +581,9 @@ class Element(MDBase):
         """Internal method to set the value of an attribute by its qualified name.
 
         Args:
-            attr_name (str): The qualified name of the attribute (e.g., "office:name").
-            value (str | int | float | bool | None): The value to set for the attribute.
-                If None, the attribute is removed. Boolean values are encoded.
+            attr_name: The qualified name of the attribute (e.g., "office:name").
+            value: The value to set for the attribute. If None, the attribute
+                is removed. Boolean values are encoded.
         """
         if value is None:
             with contextlib.suppress(KeyError):
@@ -598,8 +598,8 @@ class Element(MDBase):
         """Creates a getter function for a generic attribute.
 
         Args:
-            attr_name (str): The qualified name of the attribute.
-            family (str | None): Optional family name to filter by.
+            attr_name: The qualified name of the attribute.
+            family: Optional family name to filter by.
 
         Returns:
             Callable: A getter function that takes an Element instance and returns
@@ -626,8 +626,8 @@ class Element(MDBase):
         """Creates a setter function for a generic attribute.
 
         Args:
-            attr_name (str): The qualified name of the attribute.
-            family (str | None): Optional family name to filter by.
+            attr_name: The qualified name of the attribute.
+            family: Optional family name to filter by.
 
         Returns:
             Callable: A setter function that takes an Element instance and the value
@@ -649,7 +649,7 @@ class Element(MDBase):
         """Creates a getter function for a boolean attribute.
 
         Args:
-            prop (PropDefBool): A NamedTuple defining the boolean property.
+            prop: A NamedTuple defining the boolean property.
 
         Returns:
             Callable: A getter function that takes an Element instance and returns
@@ -666,7 +666,7 @@ class Element(MDBase):
         """Creates a setter function for a boolean attribute.
 
         Args:
-            prop (PropDefBool): A NamedTuple defining the boolean property.
+            prop: A NamedTuple defining the boolean property.
 
         Returns:
             Callable: A setter function that takes an Element instance and the boolean
@@ -717,8 +717,8 @@ class Element(MDBase):
         """Compiles a regular expression for insertion before or after text.
 
         Args:
-            before (str | None): A regex pattern to match text before which to insert.
-            after (str | None): A regex pattern to match text after which to insert.
+            before: A regex pattern to match text before which to insert.
+            after: A regex pattern to match text after which to insert.
 
         Returns:
             re.Pattern: A compiled regex pattern based on `before` or `after`.
@@ -742,8 +742,8 @@ class Element(MDBase):
         """Searches for the last occurrence of a regex pattern in a list of strings.
 
         Args:
-            xpath_result (list[str]): A list of strings to search within.
-            regex (re.Pattern): The compiled regex pattern to search for.
+            xpath_result: A list of strings to search within.
+            regex: The compiled regex pattern to search for.
 
         Returns:
             tuple[str, re.Match]: A tuple containing the string where the match was
@@ -769,9 +769,9 @@ class Element(MDBase):
         """Searches for the nth occurrence of a regex pattern in a list of strings.
 
         Args:
-            xpath_result (list[str]): A list of strings to search within.
-            regex (re.Pattern): The compiled regex pattern to search for.
-            position (int): The 0-based index of the match to find.
+            xpath_result: A list of strings to search within.
+            regex: The compiled regex pattern to search for.
+            position: The 0-based index of the match to find.
 
         Returns:
             tuple[str, re.Match]: A tuple containing the string where the match was
@@ -803,12 +803,12 @@ class Element(MDBase):
         """Calculates the insertion position based on 'before' or 'after' regex.
 
         Args:
-            current (_Element): The current lxml element.
-            element (_Element): The element to be inserted.
-            before (str | None): Regex pattern to find position before.
-            after (str | None): Regex pattern to find position after.
-            position (int): The occurrence of the regex to consider (negative for last).
-            xpath_text (XPath): Compiled XPath for text extraction.
+            current: The current lxml element.
+            element: The element to be inserted.
+            before: Regex pattern to find position before.
+            after: Regex pattern to find position after.
+            position: The occurrence of the regex to consider (negative for last).
+            xpath_text: Compiled XPath for text extraction.
 
         Returns:
             tuple[int, str]: A tuple containing the calculated insertion position
@@ -841,12 +841,12 @@ class Element(MDBase):
         """Finds the text and insertion point based on a character position.
 
         Args:
-            current (_Element): The current lxml element.
-            element (_Element): The element to be inserted.
-            before (str | None): Not used in this method, kept for signature compatibility.
-            after (str | None): Not used in this method, kept for signature compatibility.
-            position (int): The character position for insertion.
-            xpath_text (XPath): Compiled XPath for text extraction.
+            current: The current lxml element.
+            element: The element to be inserted.
+            before: Not used in this method, kept for signature compatibility.
+            after: Not used in this method, kept for signature compatibility.
+            position: The character position for insertion.
+            xpath_text: Compiled XPath for text extraction.
 
         Returns:
             tuple[int, str]: A tuple containing the calculated insertion point within
@@ -885,12 +885,12 @@ class Element(MDBase):
         Annotation text content is ignored.
 
         Args:
-            element (Element): The element to insert.
-            before (str | None): A regex pattern. The element will be inserted
+            element: The element to insert.
+            before: A regex pattern. The element will be inserted
                 before the text matching this pattern.
-            after (str | None): A regex pattern. The element will be inserted
+            after: A regex pattern. The element will be inserted
                 after the text matching this pattern.
-            position (int): The 0-based index of the regex match to consider,
+            position: The 0-based index of the regex match to consider,
                 or a character position if `before` and `after` are None.
 
         Raises:
@@ -957,7 +957,7 @@ class Element(MDBase):
         Warning: Direct change of the tag does not change the Python element class itself.
 
         Args:
-            qname (str): The new qualified name for the XML tag (e.g., "text:span").
+            qname: The new qualified name for the XML tag (e.g., "text:span").
         """
         self.__element.tag = _get_lxml_tag(qname)
 
@@ -974,8 +974,8 @@ class Element(MDBase):
         element and how many times it is logically repeated.
 
         Args:
-            xpath_instance (XPath): A compiled XPath object to select sub-elements.
-            name (str): The name of the attribute (e.g., "table:number-columns-repeated")
+            xpath_instance: A compiled XPath object to select sub-elements.
+            name: The name of the attribute (e.g., "table:number-columns-repeated")
                 that indicates repetition.
 
         Returns:
@@ -1002,7 +1002,7 @@ class Element(MDBase):
         """Returns a list of elements obtained by applying an XPath query.
 
         Args:
-            xpath_query (XPath | str): The XPath query string or a compiled `lxml.etree.XPath` object.
+            xpath_query: The XPath query string or a compiled `lxml.etree.XPath` object.
 
         Returns:
             list[Element]: A list of Element instances matching the query.
@@ -1017,7 +1017,7 @@ class Element(MDBase):
         """Returns the first element obtained by applying an XPath query.
 
         Args:
-            xpath_query (str): The XPath query string.
+            xpath_query: The XPath query string.
 
         Returns:
             Element | None: The first Element instance matching the query, or None if no match.
@@ -1031,8 +1031,8 @@ class Element(MDBase):
         """Returns the element at a specific index from an XPath query result.
 
         Args:
-            xpath_query (XPath | str): The XPath query string or a compiled `lxml.etree.XPath` object.
-            idx (int): The 0-based index of the desired element in the query result.
+            xpath_query: The XPath query string or a compiled `lxml.etree.XPath` object.
+            idx: The 0-based index of the desired element in the query result.
 
         Returns:
             Element | None: The Element instance at the specified index, or None if not found.
@@ -1048,8 +1048,8 @@ class Element(MDBase):
         """Returns the element at a specific index using a pre-compiled XPath instance.
 
         Args:
-            xpath_instance (XPath): A compiled `lxml.etree.XPath` object.
-            idx (int): The 0-based index of the desired element in the query result.
+            xpath_instance: A compiled `lxml.etree.XPath` object.
+            idx: The 0-based index of the desired element in the query result.
 
         Returns:
             Element | None: The Element instance at the specified index, or None if not found.
@@ -1078,7 +1078,7 @@ class Element(MDBase):
         """Returns the value of a specified attribute.
 
         Args:
-            name (str): The qualified name of the attribute to retrieve (e.g., "office:name").
+            name: The qualified name of the attribute to retrieve (e.g., "office:name").
 
         Returns:
             str | bool | None: The attribute's value, which can be a string, a boolean
@@ -1097,7 +1097,7 @@ class Element(MDBase):
         """Returns the value of a specified attribute as an integer.
 
         Args:
-            name (str): The qualified name of the attribute to retrieve.
+            name: The qualified name of the attribute to retrieve.
 
         Returns:
             int | None: The attribute's value as an integer, or None if the attribute
@@ -1117,7 +1117,7 @@ class Element(MDBase):
         """Returns the value of a specified attribute as a number (Decimal or int).
 
         Args:
-            name (str): The qualified name of the attribute to retrieve.
+            name: The qualified name of the attribute to retrieve.
 
         Returns:
             int | Decimal | None: The attribute's value as an int (if it's a whole number)
@@ -1140,7 +1140,7 @@ class Element(MDBase):
         """Returns the value of a specified attribute as a string.
 
         Args:
-            name (str): The qualified name of the attribute to retrieve.
+            name: The qualified name of the attribute to retrieve.
 
         Returns:
             str | None: The attribute's value as a string, or None if the attribute is not found.
@@ -1156,8 +1156,8 @@ class Element(MDBase):
         """Returns the value of a specified boolean attribute, using a default if not present.
 
         Args:
-            name (str): The qualified name of the attribute to retrieve.
-            default (bool): The default boolean value to return if the attribute is not found.
+            name: The qualified name of the attribute to retrieve.
+            default: The default boolean value to return if the attribute is not found.
 
         Returns:
             bool: The attribute's boolean value or the provided default value.
@@ -1175,10 +1175,10 @@ class Element(MDBase):
         """Sets the value of a specified boolean attribute, removing it if it matches the default.
 
         Args:
-            name (str): The qualified name of the attribute to set.
-            value (bool | str | None): The boolean value to set. Can be a bool,
+            name: The qualified name of the attribute to set.
+            value: The boolean value to set. Can be a bool,
                 "true"/"false" string, or None. If None, it defaults to False.
-            default (bool): The default boolean value. If the `value` to set
+            default: The default boolean value. If the `value` to set
                 matches this default, the attribute is removed.
         """
         element = self.__element
@@ -1197,8 +1197,8 @@ class Element(MDBase):
         """Returns the value of a specified string attribute, using a default if not present.
 
         Args:
-            name (str): The qualified name of the attribute to retrieve.
-            default (str): The default string value to return if the attribute is not found.
+            name: The qualified name of the attribute to retrieve.
+            default: The default string value to return if the attribute is not found.
 
         Returns:
             str: The attribute's string value or the provided default value.
@@ -1216,10 +1216,10 @@ class Element(MDBase):
         """Sets the value of a specified string attribute, removing it if it matches the default.
 
         Args:
-            name (str): The qualified name of the attribute to set.
-            value (str | None): The string value to set. If None or matches `default`,
+            name: The qualified name of the attribute to set.
+            value: The string value to set. If None or matches `default`,
                 the attribute is removed.
-            default (str): The default string value. If the `value` to set
+            default: The default string value. If the `value` to set
                 matches this default, the attribute is removed.
         """
         element = self.__element
@@ -1234,8 +1234,8 @@ class Element(MDBase):
         """Returns the value of a specified integer attribute, using a default if not present.
 
         Args:
-            name (str): The qualified name of the attribute to retrieve.
-            default (int): The default integer value to return if the attribute is not found
+            name: The qualified name of the attribute to retrieve.
+            default: The default integer value to return if the attribute is not found
                 or cannot be converted.
 
         Returns:
@@ -1257,10 +1257,10 @@ class Element(MDBase):
         """Sets the value of a specified integer attribute, removing it if it matches the default.
 
         Args:
-            name (str): The qualified name of the attribute to set.
-            value (int | None): The integer value to set. If None or matches `default`,
+            name: The qualified name of the attribute to set.
+            value: The integer value to set. If None or matches `default`,
                 the attribute is removed.
-            default (int): The default integer value. If the `value` to set
+            default: The default integer value. If the `value` to set
                 matches this default, the attribute is removed.
         """
         element = self.__element
@@ -1281,10 +1281,10 @@ class Element(MDBase):
         removing it if it matches the default.
 
         Args:
-            name (str): The qualified name of the attribute to set.
-            value (Decimal | int | float | None): The numeric value to set.
+            name: The qualified name of the attribute to set.
+            value: The numeric value to set.
                 If None or matches `default`, the attribute is removed.
-            default (Decimal | int | float | None): The default numeric value.
+            default: The default numeric value.
                 If the `value` to set matches this default, the attribute is removed.
         """
         element = self.__element
@@ -1303,8 +1303,8 @@ class Element(MDBase):
         Handles special cases for color properties and boolean values.
 
         Args:
-            name (str): The qualified name of the attribute to set.
-            value (bool | str | tuple[int, int, int] | None): The value to set.
+            name: The qualified name of the attribute to set.
+            value: The value to set.
                 Can be a boolean, string, a color tuple (R, G, B), or None.
                 If None, the attribute is removed.
 
@@ -1330,8 +1330,8 @@ class Element(MDBase):
         """Sets a style-related attribute, allowing a Style object as a value.
 
         Args:
-            name (str): The qualified name of the style attribute to set.
-            value (Style | str | None): The value for the style attribute.
+            name: The qualified name of the style attribute to set.
+            value: The value for the style attribute.
                 Can be a `Style` object (its name will be used), a string, or None.
         """
         if isinstance(value, Element):
@@ -1342,7 +1342,7 @@ class Element(MDBase):
         """Deletes a specified attribute from the element.
 
         Args:
-            name (str): The qualified name of the attribute to delete.
+            name: The qualified name of the attribute to delete.
 
         Raises:
             KeyError: If the specified attribute does not exist.
@@ -1365,7 +1365,7 @@ class Element(MDBase):
         """Sets the text content of the element.
 
         Args:
-            text (str | None): The new text content. If None, it is set to an empty string.
+            text: The new text content. If None, it is set to an empty string.
 
         Raises:
             TypeError: If the provided text is not a string type.
@@ -1426,7 +1426,7 @@ class Element(MDBase):
         """Sets the text immediately following the element.
 
         Args:
-            text (str | None): The new tail text. If None, it is set to an empty string.
+            text: The new tail text. If None, it is set to an empty string.
         """
         self.__element.tail = text or ""
 
@@ -1436,7 +1436,7 @@ class Element(MDBase):
         Python regular expression syntax applies.
 
         Args:
-            pattern (str): The regex pattern to search for.
+            pattern: The regex pattern to search for.
 
         Returns:
             int | None: The starting index of the first match, or None if not found.
@@ -1452,7 +1452,7 @@ class Element(MDBase):
         Python regular expression syntax applies.
 
         Args:
-            pattern (str): The regex pattern to search for.
+            pattern: The regex pattern to search for.
 
         Returns:
             tuple[int, int] | None: A tuple (start_position, end_position) of the
@@ -1469,7 +1469,7 @@ class Element(MDBase):
         Python regular expression syntax applies.
 
         Args:
-            pattern (str): The regex pattern to search for.
+            pattern: The regex pattern to search for.
 
         Returns:
             list[tuple[int, int]]: A list of (start_position, end_position) tuples for all matches.
@@ -1483,8 +1483,8 @@ class Element(MDBase):
         """Returns the recursive text content of the element between specified positions.
 
         Args:
-            start (int): The starting character position (0-based).
-            end (int | None): The ending character position (exclusive). If None,
+            start: The starting character position (0-based).
+            end: The ending character position (exclusive). If None,
                 returns text from `start` to the end.
 
         Returns:
@@ -1505,7 +1505,7 @@ class Element(MDBase):
         Python regular expression syntax applies.
 
         Args:
-            pattern (str): The regex pattern to match.
+            pattern: The regex pattern to match.
 
         Returns:
             bool: True if the pattern is found, False otherwise.
@@ -1531,10 +1531,10 @@ class Element(MDBase):
         On very complex contents, the result may differ from expectations.
 
         Args:
-            pattern (str): The regex pattern to search and replace.
-            new (str | None): The replacement string. If None, it counts occurrences.
+            pattern: The regex pattern to search and replace.
+            new: The replacement string. If None, it counts occurrences.
                 If an empty string, it deletes matches.
-            formatted (bool): If True, attempts to convert whitespace in replacement
+            formatted: If True, attempts to convert whitespace in replacement
                 text to ODF elements for formatting.
 
         Returns:
@@ -1635,7 +1635,7 @@ class Element(MDBase):
         Inspired by lxml's behavior.
 
         Args:
-            child (Element): The child element to find the index of.
+            child: The child element to find the index of.
 
         Returns:
             int: The 0-based index of the child element.
@@ -1665,7 +1665,7 @@ class Element(MDBase):
         existing text nodes and children that may contain text.
 
         Args:
-            text (str | Element | None): The new text content. Can be a string,
+            text: The new text content. Can be a string,
                 another `Element`, or None (clears content).
         """
         paragraphs = self.get_elements("text:p")
@@ -1717,12 +1717,12 @@ class Element(MDBase):
         Positions are 0-based.
 
         Args:
-            element (Element): The element to insert.
-            xmlposition (int | None): Specifies insertion relative to DOM, using
+            element: The element to insert.
+            xmlposition: Specifies insertion relative to DOM, using
                 `FIRST_CHILD`, `LAST_CHILD`, `NEXT_SIBLING`, or `PREV_SIBLING`.
-            position (int | None): A 0-based numeric index for insertion. Used if
+            position: A 0-based numeric index for insertion. Used if
                 `xmlposition` is None.
-            start (bool): If True, insert the element before any existing text of the
+            start: If True, insert the element before any existing text of the
                 current element, preserving the text as the tail of the inserted element.
 
         Raises:
@@ -1763,7 +1763,7 @@ class Element(MDBase):
         """Appends multiple ODF elements efficiently to the end of the current element.
 
         Args:
-            odf_elements (Iterable[Element]): An iterable (e.g., list) of Element instances to append.
+            odf_elements: An iterable (e.g., list) of Element instances to append.
         """
         if odf_elements:
             current = self.__element
@@ -1774,7 +1774,7 @@ class Element(MDBase):
         """Appends the underlying lxml element of another Element instance.
 
         Args:
-            element (Element): The Element instance whose underlying XML element will be appended.
+            element: The Element instance whose underlying XML element will be appended.
         """
         self.__element.append(element.__element)
 
@@ -1794,7 +1794,7 @@ class Element(MDBase):
         `Element`, its underlying XML element is appended.
 
         Args:
-            str_or_element (str | Element): The string or Element to append.
+            str_or_element: The string or Element to append.
 
         Raises:
             TypeError: If the provided argument is neither a string nor an Element.
@@ -1829,8 +1829,8 @@ class Element(MDBase):
         The XML library may allow orphaned elements to be used as long as a reference exists.
 
         Args:
-            child (Element | None): The child element to delete. If None, `self` is deleted.
-            keep_tail (bool): If True (default), the tail text of the deleted element
+            child: The child element to delete. If None, `self` is deleted.
+            keep_tail: If True (default), the tail text of the deleted element
                 is preserved and appended to the previous sibling or parent's text.
 
         Raises:
@@ -1867,8 +1867,8 @@ class Element(MDBase):
         removed from the tree.
 
         Args:
-            old_element (Element): The existing child element to be replaced.
-            new_element (Element): The new element to insert in place of `old_element`.
+            old_element: The existing child element to be replaced.
+            new_element: The new element to insert in place of `old_element`.
         """
         current = self.__element
         current.replace(old_element.__element, new_element.__element)
@@ -1877,7 +1877,7 @@ class Element(MDBase):
         """Applies an XPath query to the element and its subtree.
 
         Args:
-            xpath_query (str): The XPath query string to apply.
+            xpath_query: The XPath query string to apply.
 
         Returns:
             list[Element | EText]: A list of matching Element or EText instances.
@@ -1917,7 +1917,7 @@ class Element(MDBase):
         """Removes xmlns:* attributes from a serialized XML string.
 
         Args:
-            data (str): The serialized XML string.
+            data: The serialized XML string.
 
         Returns:
             str: The XML string with xmlns attributes removed.
@@ -1928,8 +1928,8 @@ class Element(MDBase):
         """Returns the text serialization of the XML element.
 
         Args:
-            pretty (bool): If True, the output XML will be pretty-printed.
-            with_ns (bool): If True, namespace declarations will be included in the output.
+            pretty: If True, the output XML will be pretty-printed.
+            with_ns: If True, namespace declarations will be included in the output.
 
         Returns:
             str: The serialized XML content as a string.
@@ -1964,7 +1964,7 @@ class Element(MDBase):
         text formatting based on the element type and context.
 
         Args:
-            context (dict | None): Optional dictionary providing context for formatting.
+            context: Optional dictionary providing context for formatting.
 
         Returns:
             str: A formatted string representation of the element's text.
@@ -1975,7 +1975,7 @@ class Element(MDBase):
         """Finds elements (paragraphs, tables, etc.) using a given style name.
 
         Args:
-            name (str): The name of the style to filter by. If an empty string,
+            name: The name of the style to filter by. If an empty string,
                 all styled elements are returned.
 
         Returns:
@@ -1998,7 +1998,7 @@ class Element(MDBase):
         """Retrieves the text content of a specified inner element.
 
         Args:
-            tag (str): The qualified name of the inner element (e.g., "svg:title").
+            tag: The qualified name of the inner element (e.g., "svg:title").
 
         Returns:
             str | None: The text content of the inner element, or None if the element is not found.
@@ -2014,8 +2014,8 @@ class Element(MDBase):
         If the inner element does not exist, it is created.
 
         Args:
-            tag (str): The qualified name of the inner element (e.g., "svg:title").
-            text (str): The new text content to set.
+            tag: The qualified name of the inner element (e.g., "svg:title").
+            text: The new text content to set.
         """
         element = self.get_element(tag)
         if element is None:
@@ -2580,9 +2580,9 @@ class Element(MDBase):
         """Returns all draw rectangles that match the specified criteria.
 
         Args:
-            draw_style (str | None): The name of the draw style to filter rectangles by.
-            draw_text_style (str | None): The name of the draw text style to filter rectangles by.
-            content (str | None): A regex pattern to match against the rectangle's content.
+            draw_style: The name of the draw style to filter rectangles by.
+            draw_text_style: The name of the draw text style to filter rectangles by.
+            content: A regex pattern to match against the rectangle's content.
 
         Returns:
             list[RectangleShape]: A list of RectangleShape instances matching the criteria.
@@ -2603,9 +2603,9 @@ class Element(MDBase):
         """Returns a single draw rectangle that matches the specified criteria.
 
         Args:
-            position (int): The 0-based index of the matching draw rectangle to return.
-            id (str | None): The ID of the draw rectangle.
-            content (str | None): A regex pattern to match against the rectangle's content.
+            position: The 0-based index of the matching draw rectangle to return.
+            id: The ID of the draw rectangle.
+            content: A regex pattern to match against the rectangle's content.
 
         Returns:
             RectangleShape | None: A RectangleShape instance, or None if no rectangle matches the criteria.
@@ -2625,9 +2625,9 @@ class Element(MDBase):
         """Returns all draw ellipses that match the specified criteria.
 
         Args:
-            draw_style (str | None): The name of the draw style to filter ellipses by.
-            draw_text_style (str | None): The name of the draw text style to filter ellipses by.
-            content (str | None): A regex pattern to match against the ellipse's content.
+            draw_style: The name of the draw style to filter ellipses by.
+            draw_text_style: The name of the draw text style to filter ellipses by.
+            content: A regex pattern to match against the ellipse's content.
 
         Returns:
             list[EllipseShape]: A list of EllipseShape instances matching the criteria.
@@ -2648,9 +2648,9 @@ class Element(MDBase):
         """Returns a single draw ellipse that matches the specified criteria.
 
         Args:
-            position (int): The 0-based index of the matching draw ellipse to return.
-            id (str | None): The ID of the draw ellipse.
-            content (str | None): A regex pattern to match against the ellipse's content.
+            position: The 0-based index of the matching draw ellipse to return.
+            id: The ID of the draw ellipse.
+            content: A regex pattern to match against the ellipse's content.
 
         Returns:
             EllipseShape | None: An EllipseShape instance, or None if no ellipse matches the criteria.
@@ -2670,9 +2670,9 @@ class Element(MDBase):
         """Returns all draw connectors that match the specified criteria.
 
         Args:
-            draw_style (str | None): The name of the draw style to filter connectors by.
-            draw_text_style (str | None): The name of the draw text style to filter connectors by.
-            content (str | None): A regex pattern to match against the connector's content.
+            draw_style: The name of the draw style to filter connectors by.
+            draw_text_style: The name of the draw text style to filter connectors by.
+            content: A regex pattern to match against the connector's content.
 
         Returns:
             list[ConnectorShape]: A list of ConnectorShape instances matching the criteria.
@@ -2693,9 +2693,9 @@ class Element(MDBase):
         """Returns a single draw connector that matches the specified criteria.
 
         Args:
-            position (int): The 0-based index of the matching draw connector to return.
-            id (str | None): The ID of the draw connector.
-            content (str | None): A regex pattern to match against the connector's content.
+            position: The 0-based index of the matching draw connector to return.
+            id: The ID of the draw connector.
+            content: A regex pattern to match against the connector's content.
 
         Returns:
             ConnectorShape | None: A ConnectorShape instance, or None if no connector matches the criteria.
@@ -2755,8 +2755,8 @@ class Element(MDBase):
         Consider using `get_text_change()` for a more general approach.
 
         Args:
-            position (int): The 0-based index of the matching text:change element to return.
-            idx (str | None): The `change-id` attribute of the element.
+            position: The 0-based index of the matching text:change element to return.
+            idx: The `change-id` attribute of the element.
 
         Returns:
             TextChange | None: A TextChange instance, or None if no match is found.
@@ -2787,8 +2787,8 @@ class Element(MDBase):
         Consider using `get_text_change()` for a more general approach.
 
         Args:
-            position (int): The 0-based index of the matching text:change-start element to return.
-            idx (str | None): The `change-id` attribute of the element.
+            position: The 0-based index of the matching text:change-start element to return.
+            idx: The `change-id` attribute of the element.
 
         Returns:
             TextChangeStart | None: A TextChangeStart instance, or None if no match is found.
@@ -2819,8 +2819,8 @@ class Element(MDBase):
         Consider using `get_text_change()` for a more general approach.
 
         Args:
-            position (int): The 0-based index of the matching text:change-end element to return.
-            idx (str | None): The `change-id` attribute of the element.
+            position: The 0-based index of the matching text:change-end element to return.
+            idx: The `change-id` attribute of the element.
 
         Returns:
             TextChangeEnd | None: A TextChangeEnd instance, or None if no match is found.
@@ -2860,9 +2860,9 @@ class Element(MDBase):
         of a range of changes (text:change-start).
 
         Args:
-            position (int): The 0-based index of the element to retrieve if
+            position: The 0-based index of the element to retrieve if
                 several matches are found. Defaults to 0.
-            idx (str | None): The `change-id` attribute of the element to match.
+            idx: The `change-id` attribute of the element to match.
 
         Returns:
             TextChange | TextChangeStart | None: A TextChange or TextChangeStart
@@ -2885,8 +2885,8 @@ class Element(MDBase):
         """Determines the appropriate ODF tag name for a given style family.
 
         Args:
-            family (str | None): The style family (e.g., "paragraph", "text").
-            is_default (bool): If True, specifically look for default styles.
+            family: The style family (e.g., "paragraph", "text").
+            is_default: If True, specifically look for default styles.
 
         Returns:
             str: The ODF tag name(s) to match for the given style family.
@@ -2909,7 +2909,7 @@ class Element(MDBase):
         """Returns all styles (common and default) that match the specified family.
 
         Args:
-            family (str | None): The style family to filter by (e.g., "paragraph", "text").
+            family: The style family to filter by (e.g., "paragraph", "text").
                 If None, retrieves all styles regardless of family.
 
         Returns:
@@ -2932,10 +2932,10 @@ class Element(MDBase):
         internal name.
 
         Args:
-            family (str): The style family (e.g., "paragraph", "text", "graphic", "table", "list", "number").
-            name_or_element (str | Element | None): The internal name of the style, or
+            family: The style family (e.g., "paragraph", "text", "graphic", "table", "list", "number").
+            name_or_element: The internal name of the style, or
                 an existing Style (or subclass) instance.
-            display_name (str | None): The user-facing name of the style.
+            display_name: The user-facing name of the style.
 
         Returns:
             StyleBase | None: A StyleBase instance, or None if no matching style is found.
@@ -2978,9 +2978,9 @@ class Element(MDBase):
         """Returns a single filtered element at a specific position.
 
         Args:
-            query_string (str): The XPath query string to apply.
-            position (int): The 0-based index of the desired element from the filtered results.
-            **kwargs (Any): Additional keyword arguments to pass to `_filtered_elements`
+            query_string: The XPath query string to apply.
+            position: The 0-based index of the desired element from the filtered results.
+            **kwargs: Additional keyword arguments to pass to `_filtered_elements`
                 for filtering criteria.
 
         Returns:
@@ -3010,14 +3010,14 @@ class Element(MDBase):
         Dublin Core creator/date, and other keyword arguments.
 
         Args:
-            query_string (str): The initial XPath query string to select elements.
-            content (str | None): A regex pattern to match against the element's text content.
-            url (str | None): A regex pattern to match against the `xlink:href` attribute.
-            svg_title (str | None): A regex pattern to match against an inner `svg:title` element.
-            svg_desc (str | None): A regex pattern to match against an inner `svg:desc` element.
-            dc_creator (str | None): A regex pattern to match against an inner `dc:creator` element.
-            dc_date (datetime | None): A datetime object to match against an inner `dc:date` element.
-            **kwargs (Any): Additional keyword arguments representing attribute filters
+            query_string: The initial XPath query string to select elements.
+            content: A regex pattern to match against the element's text content.
+            url: A regex pattern to match against the `xlink:href` attribute.
+            svg_title: A regex pattern to match against an inner `svg:title` element.
+            svg_desc: A regex pattern to match against an inner `svg:desc` element.
+            dc_creator: A regex pattern to match against an inner `dc:creator` element.
+            dc_date: A datetime object to match against an inner `dc:date` element.
+            **kwargs: Additional keyword arguments representing attribute filters
                 (e.g., `text_style="MyStyle"`, `draw_name="MyDraw"`, etc.).
 
         Returns:
