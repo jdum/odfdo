@@ -27,9 +27,10 @@ from __future__ import annotations
 from typing import Any
 
 from .element import Element, PropDef, PropDefBool, register_element_class
+from .mixin_list import ListMixin
 
 
-class DrawImage(Element):
+class DrawImage(ListMixin, Element):
     """An ODF image, "draw:image".
 
     The "draw:image" element represents an image. An image can be either a link
@@ -39,10 +40,12 @@ class DrawImage(Element):
     _tag = "draw:image"
     _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("url", "xlink:href"),
-        PropDef("type", "xlink:type"),
+        PropDef("xlink_type", "xlink:type"),
         PropDef("show", "xlink:show"),
         PropDef("actuate", "xlink:actuate"),
         PropDef("filter_name", "draw:filter-name"),
+        PropDef("mime_type", "draw:mime-type"),
+        PropDef("xml_id", "xml:id"),
     )
 
     def __init__(
@@ -52,9 +55,11 @@ class DrawImage(Element):
         show: str = "embed",
         actuate: str = "onLoad",
         filter_name: str | None = None,
+        mime_type: str | None = None,
+        xml_id: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize an ODF image (`draw:image`).
+        """Initialize an ODF image, "draw:image".
 
         The `draw:image` element represents an image. It can be a link to an
         external resource or, more commonly, embedded within the document.
@@ -72,29 +77,40 @@ class DrawImage(Element):
             show: How the image should be shown, usually "embed".
             actuate: When the image should be loaded, usually "onLoad".
             filter_name: An optional filter name to apply to the image.
+            mime_type: The MIME type of the image's content.
+            xml_id: The unique XML ID.
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
         if self._do_init:
             self.url = url
-            self.type = xlink_type
+            self.xlink_type = xlink_type
             self.show = show
             self.actuate = actuate
             self.filter_name = filter_name
+            self.mime_type = mime_type
+            self.xml_id = xml_id
+
+    def __str__(self) -> str:
+        return f"({self.url})"
 
 
 DrawImage._define_attribut_property()
 
 
-class DrawFillImage(DrawImage):
+class DrawFillImage(Element):
     """A link to a bitmap resource, "draw:fill-image"."""
 
     _tag = "draw:fill-image"
     _properties: tuple[PropDef | PropDefBool, ...] = (
-        PropDef("display_name", "draw:display-name"),
         PropDef("name", "draw:name"),
+        PropDef("display_name", "draw:display-name"),
         PropDef("height", "svg:height"),
         PropDef("width", "svg:width"),
+        PropDef("url", "xlink:href"),
+        PropDef("xlink_type", "xlink:type"),
+        PropDef("show", "xlink:show"),
+        PropDef("actuate", "xlink:actuate"),
     )
 
     def __init__(
@@ -103,9 +119,13 @@ class DrawFillImage(DrawImage):
         display_name: str | None = None,
         height: str | None = None,
         width: str | None = None,
+        url: str = "",
+        xlink_type: str = "simple",
+        show: str = "embed",
+        actuate: str = "onLoad",
         **kwargs: Any,
     ) -> None:
-        """Initialize a DrawFillImage (`draw:fill-image`).
+        """Initialize a DrawFillImage, "draw:fill-image".
 
         The `draw:fill-image` element specifies a link to a bitmap resource.
         Fill images are not available as automatic styles and are typically
@@ -116,6 +136,10 @@ class DrawFillImage(DrawImage):
             display_name: The display name of the fill image.
             height: The height of the fill image (e.g., "10cm").
             width: The width of the fill image (e.g., "15cm").
+            url: The URL or internal path of the image.
+            xlink_type: The XLink type, usually "simple".
+            show: How the image should be shown, usually "embed".
+            actuate: When the image should be loaded, usually "onLoad".
             **kwargs: Additional keyword arguments for the parent `DrawImage` class.
         """
         super().__init__(**kwargs)
@@ -124,7 +148,14 @@ class DrawFillImage(DrawImage):
             self.display_name = display_name
             self.height = height
             self.width = width
+            self.url = url
+            self.xlink_type = xlink_type
+            self.show = show
+            self.actuate = actuate
         self.family = ""
+
+    def __str__(self) -> str:
+        return f"({self.url})"
 
 
 DrawFillImage._define_attribut_property()
