@@ -22,7 +22,6 @@
 from collections.abc import Iterable
 
 import pytest
-
 from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.toc import (
@@ -84,6 +83,33 @@ def test_tab_stop_style_class():
 def test_tab_stop_style_class_from_tag():
     element = Element.from_tag("<style:tab-stop/>")
     assert isinstance(element, TabStopStyle)
+
+
+def test_index_title_title_text_1():
+    title = IndexTitle(
+        style="Standard",
+        xml_id="abc",
+        title_text="some title",
+        title_text_style="some_style_name",
+    )
+    paragraph = title.get_paragraph()
+    assert paragraph is not None
+    assert str(paragraph).strip() == "some title"
+    assert paragraph.style == "some_style_name"
+
+
+def test_index_title_title_text_2():
+    title = IndexTitle(
+        style="Standard",
+        xml_id="abc",
+        title_text="some title",
+        title_text_style="some_style_name",
+    )
+    title.set_title_text("new title", "new_style")
+    paragraph = title.get_paragraph()
+    assert paragraph is not None
+    assert str(paragraph).strip() == "new title"
+    assert paragraph.style == "new_style"
 
 
 def test_tab_stop_style_argsg():
