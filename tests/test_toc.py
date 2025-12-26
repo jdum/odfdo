@@ -22,6 +22,7 @@
 from collections.abc import Iterable
 
 import pytest
+
 from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.toc import (
