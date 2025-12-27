@@ -394,7 +394,7 @@ class RectangleShape(PosMix, SizeMix, ShapeBase):
 RectangleShape._define_attribut_property()
 
 
-class EllipseShape(ShapeBase):
+class EllipseShape(PosMix, SizeMix, ShapeBase):
     """Represents an ellipse shape, "draw:ellipse".
 
     This shape defines an elliptical or circular area.
@@ -429,11 +429,14 @@ class EllipseShape(ShapeBase):
                 "text_style": text_style,
                 "draw_id": draw_id,
                 "layer": layer,
-                "size": size,
-                "position": position,
             }
         )
         super().__init__(**kwargs)
+        if self._do_init:
+            if position:
+                self.position = position
+            if size:
+                self.size = size
 
 
 EllipseShape._define_attribut_property()
