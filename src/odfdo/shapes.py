@@ -290,8 +290,6 @@ class RectangleShape(PosMix, SizeMix, ShapeBase):
     _tag = "draw:rect"
     _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("corner_radius", "draw:corner-radius"),
-        PropDef("pos_x", "svg:x"),
-        PropDef("pos_y", "svg:y"),
         PropDef("width", "svg:width"),
         PropDef("height", "svg:height"),
         PropDef("rx", "svg:rx"),
@@ -516,7 +514,7 @@ class ConnectorShape(ShapeBase):
 ConnectorShape._define_attribut_property()
 
 
-class DrawGroup(Element, AnchorMix, ZMix, PosMix):
+class DrawGroup(AnchorMix, ZMix, PosMix):
     """Representation of a group of drawing shapes, "draw:g".
 
     Warning: implementation is currently minimal.
@@ -546,8 +544,6 @@ class DrawGroup(Element, AnchorMix, ZMix, PosMix):
         # ('anchor_page', 'text:anchor-page-number'),
         # ('anchor_type', 'text:anchor-type'),
         PropDef("xml_id", "xml:id"),
-        PropDef("pos_x", "svg:x"),
-        PropDef("pos_y", "svg:y"),
     )
 
     def __init__(

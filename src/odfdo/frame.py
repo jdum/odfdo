@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from decimal import Decimal
-from typing import Any, Union, cast
+from typing import TYPE_CHECKING, Any, Union, cast
 
 from odfdo.mixin_list import ListMixin
 
@@ -38,6 +38,9 @@ from .section import SectionMixin
 from .style import Style
 from .svg import SvgMixin
 from .unit import Unit
+
+if TYPE_CHECKING:
+    from .element import PropDefBool
 
 # This DPI is computed to have:
 # 640 px (width of your wiki) <==> 17 cm (width of a normal ODT page)
@@ -110,7 +113,7 @@ class AnchorMix:
         self.set_attribute("text:anchor-page-number", anchor_page)  # type: ignore
 
 
-class PosMix:
+class PosMix(Element):
     """Position relative to anchor point.
 
     Setting the position may require a specific style for actual display on
@@ -120,16 +123,25 @@ class PosMix:
     ('10cm', '15cm').
     """
 
+    _tag = "draw:posmixin-odfdo-notodf"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("pos_x", "svg:x"),
+        PropDef("pos_y", "svg:y"),
+    )
+
     @property
     def position(self) -> tuple[str | None, str | None]:
         'Get or set the tuple of position ("svg:x", "svg:y").'
-        get_attr = self.get_attribute_string  # type: ignore
+        get_attr = self.get_attribute_string
         return get_attr("svg:x"), get_attr("svg:y")
 
     @position.setter
     def position(self, position: tuple[str, str] | list[str]) -> None:
         self.pos_x = position[0]
         self.pos_y = position[1]
+
+
+PosMix._define_attribut_property()
 
 
 class ZMix:
@@ -177,14 +189,12 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
     """
 
     _tag = "draw:frame"
-    _properties = (
+    _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "draw:name"),
         PropDef("draw_id", "draw:id"),
         PropDef("width", "svg:width"),
         PropDef("height", "svg:height"),
         PropDef("style", "draw:style-name"),
-        PropDef("pos_x", "svg:x"),
-        PropDef("pos_y", "svg:y"),
         PropDef("presentation_class", "presentation:class"),
         PropDef("layer", "draw:layer"),
         PropDef("presentation_style", "presentation:style-name"),
