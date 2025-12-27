@@ -33,6 +33,7 @@ from decimal import Decimal
 from functools import cache
 from re import search
 from typing import TYPE_CHECKING, Any, NamedTuple
+from xml.etree.ElementTree import canonicalize
 
 from lxml.etree import Element as lxml_Element
 from lxml.etree import XPath, _Element, fromstring, tostring
@@ -1952,12 +1953,26 @@ class Element(MDBase):
         # This copy bypasses serialization side-effects in lxml
         native = deepcopy(self.__element)
         data: str = tostring(
-            native, with_tail=False, pretty_print=pretty, encoding="unicode"
+            native,
+            with_tail=False,
+            pretty_print=pretty,
+            encoding="unicode",
         )
         if with_ns:
             return data
         # Remove namespaces
         return self._strip_namespaces(data)
+
+    def _canonicalize(self) -> str:
+        """(Internal) Returns a canonical representation of the Element
+        (C14N2), with namespaces stripped.
+
+        Used in the test suite.
+
+        Returns:
+            str: The normalized XML content as a string.
+        """
+        return self._strip_namespaces(canonicalize(tostring(self.__element)))
 
     # Element helpers usable from any context
 
