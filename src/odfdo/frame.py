@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from decimal import Decimal
-from typing import Any
+from typing import Any, Union, cast
 
 from odfdo.mixin_list import ListMixin
 
@@ -121,13 +121,13 @@ class PosMix:
     """
 
     @property
-    def position(self) -> tuple:
-        "getter/setter"
-        get_attr = self.get_attribute  # type: ignore
+    def position(self) -> tuple[str | None, str | None]:
+        'Get or set the tuple of position ("svg:x", "svg:y").'
+        get_attr = self.get_attribute_string  # type: ignore
         return get_attr("svg:x"), get_attr("svg:y")
 
     @position.setter
-    def position(self, position: tuple | list) -> None:
+    def position(self, position: tuple[str, str] | list[str]) -> None:
         self.pos_x = position[0]
         self.pos_y = position[1]
 
@@ -140,15 +140,15 @@ class ZMix:
 
     @property
     def z_index(self) -> int | None:
-        "getter/setter"
-        z_index = self.get_attribute("draw:z-index")  # type: ignore
-        if z_index is None:
-            return None
-        return int(z_index)
+        'Get or set the z index "draw:z-index"'
+        return cast(
+            Union[None, int],
+            self.get_attribute_integer("draw:z-index"),  # type: ignore[attr-defined]
+        )
 
     @z_index.setter
-    def z_index(self, z_index: int) -> None:
-        self.set_attribute("draw:z-index", z_index)  # type: ignore
+    def z_index(self, z_index: int | None) -> None:
+        self.set_attribute("draw:z-index", z_index)  # type: ignore[attr-defined]
 
 
 class SizeMix:
@@ -159,12 +159,12 @@ class SizeMix:
     """
 
     @property
-    def size(self) -> tuple:
-        "getter/setter"
+    def size(self) -> tuple[str | None, str | None]:
+        'Get or set the the tuple of size ("svg:width", "svg:height").'
         return (self.width, self.height)
 
     @size.setter
-    def size(self, size: tuple | list) -> None:
+    def size(self, size: tuple[str, str] | list[str]) -> None:
         self.width = size[0]
         self.height = size[1]
 
@@ -221,7 +221,6 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
             Frame.image_frame()
         or
             Frame.text_frame()
-
 
         Args:
             name: The name of the frame.
@@ -281,7 +280,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
         layer: str | None = None,
         presentation_style: str | None = None,
         **kwargs: Any,
-    ) -> Element:
+    ) -> Frame:
         """Create a ready-to-use image, since image must be embedded in a
         frame.
 
@@ -306,7 +305,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
             presentation_style: The presentation style of the frame.
 
         Returns:
-            Element: The created Frame element.
+            Frame: The created Frame element.
         """
         frame = cls(
             name=name,
@@ -344,7 +343,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
         layer: str | None = None,
         presentation_style: str | None = None,
         **kwargs: Any,
-    ) -> Element:
+    ) -> Frame:
         """Create a ready-to-use text box, since text box must be embedded in a
         frame.
 
@@ -370,7 +369,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
             presentation_style: The presentation style of the frame.
 
         Returns:
-            Element: The created Frame element.
+            Frame: The created Frame element.
         """
         frame = cls(
             name=name,
@@ -391,6 +390,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
 
     @property
     def text_content(self) -> str:
+        'Get or set the "draw:text-box" text content.'
         text_box = self.get_element("draw:text-box")
         if text_box is None:
             return ""
@@ -415,9 +415,9 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
         url: str | None = None,
         content: str | None = None,
     ) -> DrawImage | None:
-        return self.get_element("draw:image")  # type: ignore[return-value]
+        return cast(Union[None, DrawImage], self.get_element("draw:image"))
 
-    def set_image(self, url_or_element: DrawImage | str) -> Element:
+    def set_image(self, url_or_element: DrawImage | str) -> DrawImage:
         image: DrawImage | None = self.get_image()
         if image is None:
             if isinstance(url_or_element, Element):
@@ -435,14 +435,14 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
                 image.set_url(url_or_element)  # type: ignore
         return image
 
-    def get_text_box(self) -> Element | None:
-        return self.get_element("draw:text-box")
+    def get_text_box(self) -> DrawTextBox | None:
+        return cast(Union[None, DrawTextBox], self.get_element("draw:text-box"))
 
     def set_text_box(
         self,
         text_or_element: Iterable[Element | str] | Element | str,
         text_style: str | None = None,
-    ) -> Element:
+    ) -> DrawTextBox:
         """Set the text box content of the frame.
 
         Args:
@@ -451,11 +451,11 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
             text_style: The name of the style for the text within the text box.
 
         Returns:
-            Element: The text box element.
+            DrawTextBox: The text box element.
         """
-        text_box = self.get_text_box()
+        text_box: DrawTextBox | None = self.get_text_box()
         if text_box is None:
-            text_box = Element.from_tag("draw:text-box")
+            text_box = DrawTextBox()
             self.append(text_box)
         else:
             text_box.clear()
@@ -495,18 +495,20 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
                     # Compute width and height
                     width, height = self.size
                     if width is not None:
-                        width = Unit(width)
-                        width = width.convert("px", DPI)
+                        uwidth = Unit(width)
+                        uwidth = uwidth.convert("px", DPI)
+                        width = str(uwidth)
                     if height is not None:
-                        height = Unit(height)
-                        height = height.convert("px", DPI)
+                        uheight = Unit(height)
+                        uheight = uheight.convert("px", DPI)
+                        height = str(uheight)
 
                     # Insert or not ?
                     if context["no_img_level"]:
                         context["img_counter"] += 1
                         ref = f"|img{context['img_counter']}|"
                         result.append(ref)
-                        context["images"].append((ref, filename, (width, height)))
+                        context["images"].append((ref, filename, width, height))
                     else:
                         result.append(f"\n.. image:: {filename}\n")
                         if width is not None:
@@ -529,7 +531,7 @@ Frame._define_attribut_property()
 class DrawTextBox(MDDrawTextBox, ListMixin, TocMixin, SectionMixin):
     """ODF text box, "draw:text-box".
 
-    Minimal class to facilitate internal iteration.
+    Minimal class to facilitate internal iterations.
     """
 
     _tag = "draw:text-box"

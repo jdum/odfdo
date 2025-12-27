@@ -13,3 +13,6 @@ lock:
 
 sync:
     uv sync
+
+doc: sync
+    cd doc_src && python generate_doc.py

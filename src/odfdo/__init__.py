@@ -22,6 +22,7 @@
 #          Romain Gauthier <romain@itaapy.com>
 
 __all__ = [  # noqa: RUF022
+    "AnchorMix",
     "AnimPar",
     "AnimSeq",
     "AnimTransFilter",
@@ -134,6 +135,7 @@ __all__ = [  # noqa: RUF022
     "ParaFormattedTextMixin",
     "ParaMixin",
     "Paragraph",
+    "PosMix",
     "Presentation",
     "PresentationNotes",
     "RectangleShape",
@@ -147,6 +149,7 @@ __all__ = [  # noqa: RUF022
     "RubyBase",
     "Section",
     "SectionMixin",
+    "SizeMix",
     "Spacer",
     "Span",
     "Spreadsheet",
@@ -208,6 +211,7 @@ __all__ = [  # noqa: RUF022
     "VarTime",
     "VarTitle",
     "XmlPart",
+    "ZMix",
     "__version__",
     "create_table_cell_style",
     "default_boolean_style",
@@ -289,7 +293,15 @@ from .form_properties import (
     FormProperties,
     FormProperty,
 )
-from .frame import DrawTextBox, Frame, default_frame_position_style
+from .frame import (
+    AnchorMix,
+    DrawTextBox,
+    Frame,
+    PosMix,
+    SizeMix,
+    ZMix,
+    default_frame_position_style,
+)
 from .header import Header
 from .header_rows import HeaderRows
 from .image import DrawFillImage, DrawImage

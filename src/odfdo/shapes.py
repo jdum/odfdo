@@ -33,51 +33,94 @@ from .mixin_list import ListMixin
 from .svg import SvgMixin
 
 
-class ShapeBase(ListMixin, SvgMixin, SizeMix, PosMix, Element):
+class ShapeBase(ListMixin, SvgMixin, ZMix, Element):
     """Base class for all drawing shapes.
 
     This class provides common properties and methods for various shapes
     like lines, rectangles, ellipses, and connectors. It integrates sizing
-    and positioning functionalities through mixins.
+    functionalities through mixins.
     """
 
     _tag = "draw:shape-odfdo-notodf"
     _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("name", "draw:name"),
         PropDef("draw_id", "draw:id"),
         PropDef("layer", "draw:layer"),
-        PropDef("width", "svg:width"),
-        PropDef("height", "svg:height"),
-        PropDef("pos_x", "svg:x"),
-        PropDef("pos_y", "svg:y"),
-        PropDef("presentation_class", "presentation:class"),
+        PropDef("presentation_class", "presentation:class-names"),
+        PropDef("presentation_style", "presentation:style-name"),
         PropDef("style", "draw:style-name"),
         PropDef("text_style", "draw:text-style-name"),
+        PropDef("caption_id", "draw:caption-id"),
+        PropDef("class_names", "draw:class-names"),
+        PropDef("transform", "draw:transform"),
+        PropDef("z_index", "draw:z-index"),
+        PropDef("end_cell_address", "table:end-cell-address"),
+        PropDef("end_x", "table:end-x"),
+        PropDef("end_y", "table:end-y"),
+        PropDefBool("table_background", "table:table-background", False),
+        PropDef("anchor_page_number", "text:anchor-page-number"),
+        PropDef("anchor_type", "text:anchor-type"),
+        PropDef("xml_id", "xml:id"),
     )
 
     def __init__(
         self,
+        name: str | None = None,
         style: str | None = None,
         text_style: str | None = None,
         draw_id: str | None = None,
         layer: str | None = None,
-        position: tuple | None = None,
-        size: tuple | None = None,
         presentation_class: str | None = None,
+        presentation_style: str | None = None,
+        caption_id: str | None = None,
+        class_names: str | None = None,
+        transform: str | None = None,
+        z_index: int | None = None,
+        end_cell_address: str | None = None,
+        end_x: str | None = None,
+        end_y: str | None = None,
+        table_background: bool | None = None,
+        anchor_page_number: int | None = None,
+        anchor_type: str | None = None,
+        xml_id: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize a ShapeBase element.
 
         Args:
+            name: Name of the graphical element.
             style: The style name for the shape.
             text_style: The text style name for the shape.
             draw_id: The unique ID for the drawing shape.
             layer: The drawing layer of the shape.
-            position: The (x, y) coordinates for the shape's position.
-            size: The (width, height) for the shape's size.
-            presentation_class: The presentation class name.
+            # size: The (width, height) for the shape's size.
+            presentation_class: White-space-separated list of presentation
+                class names.
+            presentation_style: Style for a presentation shape.
+            caption_id: Target ID assigned to the "draw:text-box" hat
+                contains the caption.
+            class_names: White-space-separated list of styles
+                with the family value of graphic.
+            transform: White-space or comma separated list of transform
+                definitions.
+            z_index: Rendering order for shapes in a document instance.
+            end_cell_address: End position of the shape if it is included
+                in a spreadsheet document.
+            end_x: The x-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            end_y: The y-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            table_background: Wether the shape is in the table background if
+                the drawing shape is included in a spreadsheet.
+            anchor_page_number: Physical page number of an anchor if the drawing
+                object is bound to a page within a text document.
+            anchor_type: How a drawing shape is bound to a text document.
+            xml_id: The unique XML ID.
         """
         super().__init__(**kwargs)
         if self._do_init:
+            if name:
+                self.name = name
             if style:
                 self.style = style
             if text_style:
@@ -86,12 +129,32 @@ class ShapeBase(ListMixin, SvgMixin, SizeMix, PosMix, Element):
                 self.draw_id = draw_id
             if layer:
                 self.layer = layer
-            if position:
-                self.position = position
-            if size:
-                self.size = size
             if presentation_class:
                 self.presentation_class = presentation_class
+            if presentation_style:
+                self.presentation_style = presentation_style
+            if caption_id:
+                self.caption_id = caption_id
+            if class_names:
+                self.class_names = class_names
+            if transform:
+                self.transform = transform
+            if z_index is not None:
+                self.z_index = z_index
+            if end_cell_address:
+                self.end_cell_address = end_cell_address
+            if end_x:
+                self.end_x = end_x
+            if end_y:
+                self.end_y = end_y
+            if table_background is not None:
+                self.table_background = table_background
+            if anchor_page_number is not None:
+                self.anchor_page_number = anchor_page_number
+            if anchor_type:
+                self.anchor_type = anchor_type
+            if xml_id:
+                self.xml_id = xml_id
 
     def get_formatted_text(self, context: dict | None = None) -> str:
         """Return the formatted text content of the shape.
@@ -128,30 +191,81 @@ class LineShape(ShapeBase):
 
     def __init__(
         self,
+        name: str | None = None,
         style: str | None = None,
         text_style: str | None = None,
         draw_id: str | None = None,
         layer: str | None = None,
-        p1: tuple | None = None,
-        p2: tuple | None = None,
+        p1: tuple[str, str] | list[str] | None = None,
+        p2: tuple[str, str] | list[str] | None = None,
+        presentation_class: str | None = None,
+        presentation_style: str | None = None,
+        caption_id: str | None = None,
+        class_names: str | None = None,
+        transform: str | None = None,
+        z_index: int | None = None,
+        end_cell_address: str | None = None,
+        end_x: str | None = None,
+        end_y: str | None = None,
+        table_background: bool | None = None,
+        anchor_page_number: int | None = None,
+        anchor_type: str | None = None,
+        xml_id: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Create a line shape "draw:line".
 
         Args:
+            name: Name of the graphical element.
             style: The style name for the line.
             text_style: The text style name for the line.
             draw_id: The unique ID for the drawing shape.
             layer: The drawing layer of the line.
             p1: The (x1, y1) coordinates of the starting point.
             p2: The (x2, y2) coordinates of the ending point.
+            presentation_class: White-space-separated list of presentation
+                class names.
+            presentation_style: Style for a presentation shape.
+            caption_id: Target ID assigned to the "draw:text-box" hat
+                contains the caption.
+            class_names: White-space-separated list of styles
+                with the family value of graphic.
+            transform: White-space or comma separated list of transform
+                definitions.
+            z_index: Rendering order for shapes in a document instance.
+            end_cell_address: End position of the shape if it is included
+                in a spreadsheet document.
+            end_x: The x-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            end_y: The y-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            table_background: Wether the shape is in the table background if
+                the drawing shape is included in a spreadsheet.
+            anchor_page_number: Physical page number of an anchor if the drawing
+                object is bound to a page within a text document.
+            anchor_type: How a drawing shape is bound to a text document.
+            xml_id: The unique XML ID.
         """
         kwargs.update(
             {
+                "name": name,
                 "style": style,
                 "text_style": text_style,
                 "draw_id": draw_id,
                 "layer": layer,
+                "presentation_class": presentation_class,
+                "presentation_style": presentation_style,
+                "caption_id": caption_id,
+                "class_names": class_names,
+                "transform": transform,
+                "z_index": z_index,
+                "end_cell_address": end_cell_address,
+                "end_x": end_x,
+                "end_y": end_y,
+                "table_background": table_background,
+                "anchor_page_number": anchor_page_number,
+                "anchor_type": anchor_type,
+                "xml_id": xml_id,
             }
         )
         super().__init__(**kwargs)
@@ -167,46 +281,120 @@ class LineShape(ShapeBase):
 LineShape._define_attribut_property()
 
 
-class RectangleShape(ShapeBase):
+class RectangleShape(PosMix, SizeMix, ShapeBase):
     """Represents a rectangle shape, "draw:rect".
 
     This shape defines a rectangular area.
     """
 
     _tag = "draw:rect"
-    _properties: tuple[PropDef | PropDefBool, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("corner_radius", "draw:corner-radius"),
+        PropDef("pos_x", "svg:x"),
+        PropDef("pos_y", "svg:y"),
+        PropDef("width", "svg:width"),
+        PropDef("height", "svg:height"),
+        PropDef("rx", "svg:rx"),
+        PropDef("ry", "svg:ry"),
+    )
 
     def __init__(
         self,
+        name: str | None = None,
         style: str | None = None,
         text_style: str | None = None,
         draw_id: str | None = None,
         layer: str | None = None,
-        position: tuple | None = None,
-        size: tuple | None = None,
+        position: tuple[str, str] | list[str] | None = None,
+        size: tuple[str, str] | list[str] | None = None,
+        corner_radius: str | None = None,
+        rx: str | None = None,
+        ry: str | None = None,
+        presentation_class: str | None = None,
+        presentation_style: str | None = None,
+        caption_id: str | None = None,
+        class_names: str | None = None,
+        transform: str | None = None,
+        z_index: int | None = None,
+        end_cell_address: str | None = None,
+        end_x: str | None = None,
+        end_y: str | None = None,
+        table_background: bool | None = None,
+        anchor_page_number: int | None = None,
+        anchor_type: str | None = None,
+        xml_id: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Create a rectangle shape "draw:rect".
 
         Args:
+            name: Name of the graphical element.
             style: The style name for the rectangle.
             text_style: The text style name for the rectangle.
             draw_id: The unique ID for the drawing shape.
             layer: The drawing layer of the rectangle.
             position: The (x, y) coordinates for the rectangle's position.
-            size: The (width, height) for the rectangle's size.
+            size: The (width, height) values for the rectangle's size.
+            corner_radius: radius of the circle used to round off the corners.
+            rx: x-axis radius of the ellipse used to round off the corners.
+            ry: y-axis radius of the ellipse used to round off the corners.
+            presentation_class: White-space-separated list of presentation
+                class names.
+            presentation_style: Style for a presentation shape.
+            caption_id: Target ID assigned to the "draw:text-box" hat
+                contains the caption.
+            class_names: White-space-separated list of styles
+                with the family value of graphic.
+            transform: White-space or comma separated list of transform
+                definitions.
+            z_index: Rendering order for shapes in a document instance.
+            end_cell_address: End position of the shape if it is included
+                in a spreadsheet document.
+            end_x: The x-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            end_y: The y-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            table_background: Wether the shape is in the table background if
+                the drawing shape is included in a spreadsheet.
+            anchor_page_number: Physical page number of an anchor if the drawing
+                object is bound to a page within a text document.
+            anchor_type: How a drawing shape is bound to a text document.
+            xml_id: The unique XML ID.
         """
         kwargs.update(
             {
+                "name": name,
                 "style": style,
                 "text_style": text_style,
                 "draw_id": draw_id,
                 "layer": layer,
-                "size": size,
-                "position": position,
+                "presentation_class": presentation_class,
+                "presentation_style": presentation_style,
+                "caption_id": caption_id,
+                "class_names": class_names,
+                "transform": transform,
+                "z_index": z_index,
+                "end_cell_address": end_cell_address,
+                "end_x": end_x,
+                "end_y": end_y,
+                "table_background": table_background,
+                "anchor_page_number": anchor_page_number,
+                "anchor_type": anchor_type,
+                "xml_id": xml_id,
             }
         )
         super().__init__(**kwargs)
+        if self._do_init:
+            if position:
+                self.position = position
+            if size:
+                self.size = size
+            if corner_radius:
+                self.corner_radius = corner_radius
+            if rx:
+                self.rx = rx
+            if ry:
+                self.rx = ry
 
 
 RectangleShape._define_attribut_property()
