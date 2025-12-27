@@ -19,14 +19,24 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 
+from __future__ import annotations
+
 from collections.abc import Iterable
 
 import pytest
 
 from odfdo.document import Document
 from odfdo.element import Element
-from odfdo.frame import Frame
+from odfdo.frame import (
+    AnchorMix,
+    Frame,
+    PosMix,
+    SizeMix,
+    ZMix,
+    default_frame_position_style,
+)
 from odfdo.header import Header
+from odfdo.style import Style
 
 ZOE = "你好 Zoé"
 
@@ -37,42 +47,57 @@ def frame_body(samples) -> Iterable[Element]:
     yield document.body
 
 
-def test_create_frame():
-    frame = Frame("A Frame", size=("10cm", "10cm"), style="Graphics")
+def test_frame_minimal():
+    frame = Frame()
     expected = (
-        '<draw:frame svg:width="10cm" svg:height="10cm" '
-        'draw:z-index="0" draw:name="A Frame" '
-        'draw:style-name="Graphics"/>'
+        '<draw:frame draw:z-index="0" svg:height="1cm" svg:width="1cm"></draw:frame>'
     )
-    assert frame.serialize() == expected
+    assert frame._canonicalize() == expected
+
+
+def test_frame_minimal_2():
+    frame = Element.from_tag(
+        '<draw:frame draw:z-index="0" svg:height="1cm" svg:width="1cm"></draw:frame>'
+    )
+    assert isinstance(frame, Frame)
+
+
+def test_create_frame():
+    frame = Frame("A Frame", size=("10cm", "12cm"), style="Graphics")
+    expected = (
+        '<draw:frame draw:name="A Frame" '
+        'draw:style-name="Graphics" '
+        'draw:z-index="0" '
+        'svg:height="12cm" '
+        'svg:width="10cm">'
+        "</draw:frame>"
+    )
+    assert frame._canonicalize() == expected
 
 
 def test_create_frame_page():
     frame = Frame(
         "Another Frame",
-        size=("10cm", "10cm"),
+        size=("10cm", "12cm"),
         anchor_type="page",
         anchor_page=1,
-        position=("10mm", "10mm"),
+        position=("14mm", "15mm"),
         style="Graphics",
     )
-    assert frame.serialize() in (
-        (
-            '<draw:frame svg:width="10cm" svg:height="10cm" '
-            'draw:z-index="0" draw:name="Another Frame" '
-            'draw:style-name="Graphics" '
-            'svg:x="10mm" svg:y="10mm" '
-            'text:anchor-type="page" '
-            'text:anchor-page-number="1"/>'
-        ),
-        (
-            '<draw:frame svg:width="10cm" svg:height="10cm" '
-            'draw:z-index="0" draw:name="Another Frame" '
-            'text:anchor-type="page" text:anchor-page-number="1" '
-            'svg:x="10mm" svg:y="10mm" '
-            'draw:style-name="Graphics"/>'
-        ),
+    expected = (
+        "<draw:frame "
+        'draw:name="Another Frame" '
+        'draw:style-name="Graphics" '
+        'draw:z-index="0" '
+        'svg:height="12cm" '
+        'svg:width="10cm" '
+        'svg:x="14mm" '
+        'svg:y="15mm" '
+        'text:anchor-page-number="1" '
+        'text:anchor-type="page">'
+        "</draw:frame>"
     )
+    assert frame._canonicalize() == expected
 
 
 def test_get_frame_list(frame_body):
@@ -108,10 +133,10 @@ def test_get_frame_by_description(frame_body):
 
 def test_insert_frame(frame_body):
     body = frame_body.clone
-    frame1 = Frame("frame1", size=("10cm", "10cm"), style="Graphics")
+    frame1 = Frame("frame1", size=("10cm", "12cm"), style="Graphics")
     frame2 = Frame(
         "frame2",
-        size=("10cm", "10cm"),
+        size=("10cm", "13cm"),
         anchor_page=1,
         position=("10mm", "10mm"),
         style="Graphics",
@@ -129,56 +154,66 @@ def test_insert_frame(frame_body):
 def test_create_image_frame():
     frame = Frame.image_frame("Pictures/zoe.jpg")
     expected = (
-        '<draw:frame svg:width="1cm" svg:height="1cm" '
-        'draw:z-index="0">'
-        '<draw:image xlink:href="Pictures/zoe.jpg" '
-        'xlink:type="simple" xlink:show="embed" '
-        'xlink:actuate="onLoad"/>'
+        "<draw:frame "
+        'draw:z-index="0" '
+        'svg:height="1cm" '
+        'svg:width="1cm">'
+        '<draw:image xlink:actuate="onLoad" '
+        'xlink:href="Pictures/zoe.jpg" '
+        'xlink:show="embed" '
+        'xlink:type="simple">'
+        "</draw:image>"
         "</draw:frame>"
     )
-    assert frame.serialize() == expected
+    assert frame._canonicalize() == expected
 
 
 def test_create_image_frame_text():
     frame = Frame.image_frame("Pictures/zoe.jpg", text=ZOE)
     expected = (
-        '<draw:frame svg:width="1cm" svg:height="1cm" '
-        'draw:z-index="0">'
-        '<draw:image xlink:href="Pictures/zoe.jpg" '
-        'xlink:type="simple" xlink:show="embed" '
-        'xlink:actuate="onLoad">'
+        "<draw:frame "
+        'draw:z-index="0" '
+        'svg:height="1cm" '
+        'svg:width="1cm">'
+        '<draw:image xlink:actuate="onLoad" '
+        'xlink:href="Pictures/zoe.jpg" '
+        'xlink:show="embed" '
+        'xlink:type="simple">'
         f"<text:p>{ZOE}</text:p>"
-        "</draw:image>"
-        "</draw:frame>"
+        "</draw:image></draw:frame>"
     )
-    assert frame.serialize() == expected
+
+    assert frame._canonicalize() == expected
 
 
 def test_create_text_frame():
     frame = Frame.text_frame(ZOE)
     expected = (
-        '<draw:frame svg:width="1cm" svg:height="1cm" '
-        'draw:z-index="0">'
+        '<draw:frame draw:z-index="0" '
+        'svg:height="1cm" '
+        'svg:width="1cm">'
         "<draw:text-box>"
         f"<text:p>{ZOE}</text:p>"
         "</draw:text-box>"
         "</draw:frame>"
     )
-    assert frame.serialize() == expected
+    assert frame._canonicalize() == expected
 
 
 def test_create_text_frame_element():
     heading = Header(1, ZOE)
     frame = Frame.text_frame(heading)
     expected = (
-        '<draw:frame svg:width="1cm" svg:height="1cm" '
-        'draw:z-index="0">'
+        '<draw:frame draw:z-index="0" '
+        'svg:height="1cm" '
+        'svg:width="1cm">'
         "<draw:text-box>"
-        f'<text:h text:outline-level="1">{ZOE}</text:h>'
+        "<text:h "
+        f'text:outline-level="1">{ZOE}</text:h>'
         "</draw:text-box>"
         "</draw:frame>"
     )
-    assert frame.serialize() == expected
+    assert frame._canonicalize() == expected
 
 
 def test_get_frame(frame_body):
