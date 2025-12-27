@@ -19,8 +19,8 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
-"""Drawing classes ShapeBase, LineShape, RectangleShape, EllipseShape,
-ConnectorShape and DrawGroup.
+"""Drawing classes ShapeBase, LineShape, PolylineShape, RectangleShape,
+EllipseShape, ConnectorShape and DrawGroup.
 """
 
 from __future__ import annotations
@@ -394,6 +394,114 @@ class RectangleShape(PosMix, SizeMix, ShapeBase):
 RectangleShape._define_attribut_property()
 
 
+class PolylineShape(PosMix, SizeMix, ShapeBase):
+    """Represents a polyline shape, "draw:polyline"."""
+
+    _tag = "draw:polyline"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("points", "draw:points"),
+        PropDef("view_box", "svg:viewBox"),
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        points: str | None = None,
+        position: tuple[str, str] | list[str] | None = None,
+        size: tuple[str, str] | list[str] | None = None,
+        view_box: str | None = None,
+        presentation_class: str | None = None,
+        presentation_style: str | None = None,
+        caption_id: str | None = None,
+        class_names: str | None = None,
+        transform: str | None = None,
+        z_index: int | None = None,
+        end_cell_address: str | None = None,
+        end_x: str | None = None,
+        end_y: str | None = None,
+        table_background: bool | None = None,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        xml_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a polyline shape "draw:polyline".
+
+        Args:
+            name: Name of the graphical element.
+            style: The style name for the polyline.
+            text_style: The text style name for the polyline.
+            draw_id: The unique ID for the drawing shape.
+            layer: The drawing layer of the polyline.
+            points: The coordinates of the polyline.
+            position: The (x, y) coordinates for the polyline's position.
+            size: The (width, height) values for the polyline's size.
+            view_box: The rectangle in a local coordinates system used by the
+                points.
+            presentation_class: White-space-separated list of presentation
+                class names.
+            presentation_style: Style for a presentation shape.
+            caption_id: Target ID assigned to the "draw:text-box" hat
+                contains the caption.
+            class_names: White-space-separated list of styles
+                with the family value of graphic.
+            transform: White-space or comma separated list of transform
+                definitions.
+            z_index: Rendering order for shapes in a document instance.
+            end_cell_address: End position of the shape if it is included
+                in a spreadsheet document.
+            end_x: The x-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            end_y: The y-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            table_background: Wether the shape is in the table background if
+                the drawing shape is included in a spreadsheet.
+            anchor_type: How a drawing shape is bound to a text document.
+            anchor_page_number: Physical page number of an anchor if the drawing
+                object is bound to a page within a text document.
+            xml_id: The unique XML ID.
+        """
+        kwargs.update(
+            {
+                "name": name,
+                "style": style,
+                "text_style": text_style,
+                "draw_id": draw_id,
+                "layer": layer,
+                "presentation_class": presentation_class,
+                "presentation_style": presentation_style,
+                "caption_id": caption_id,
+                "class_names": class_names,
+                "transform": transform,
+                "z_index": z_index,
+                "end_cell_address": end_cell_address,
+                "end_x": end_x,
+                "end_y": end_y,
+                "table_background": table_background,
+                "anchor_type": anchor_type,
+                "anchor_page": anchor_page,
+                "xml_id": xml_id,
+            }
+        )
+        super().__init__(**kwargs)
+        if self._do_init:
+            if points:
+                self.points = points
+            if position:
+                self.position = position
+            if size:
+                self.size = size
+            if view_box:
+                self.view_box = view_box
+
+
+PolylineShape._define_attribut_property()
+
+
 class EllipseShape(PosMix, SizeMix, ShapeBase):
     """Represents an ellipse shape, "draw:ellipse".
 
@@ -590,10 +698,18 @@ class DrawGroup(AnchorMix, ZMix, PosMix):
 DrawGroup._define_attribut_property()
 
 registered_shapes = [
-    s._tag for s in (LineShape, RectangleShape, EllipseShape, ConnectorShape)
+    s._tag
+    for s in (
+        ConnectorShape,
+        EllipseShape,
+        LineShape,
+        PolylineShape,
+        RectangleShape,
+    )
 ]
-register_element_class(LineShape)
-register_element_class(RectangleShape)
-register_element_class(EllipseShape)
 register_element_class(ConnectorShape)
 register_element_class(DrawGroup)
+register_element_class(EllipseShape)
+register_element_class(LineShape)
+register_element_class(PolylineShape)
+register_element_class(RectangleShape)

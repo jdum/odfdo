@@ -135,6 +135,7 @@ __all__ = [  # noqa: RUF022
     "ParaFormattedTextMixin",
     "ParaMixin",
     "Paragraph",
+    "PolylineShape",
     "PosMix",
     "Presentation",
     "PresentationNotes",
@@ -349,7 +350,14 @@ from .row import Row
 from .row_group import RowGroup
 from .ruby_base import RubyBase
 from .section import Section, SectionMixin
-from .shapes import ConnectorShape, DrawGroup, EllipseShape, LineShape, RectangleShape
+from .shapes import (
+    ConnectorShape,
+    DrawGroup,
+    EllipseShape,
+    LineShape,
+    PolylineShape,
+    RectangleShape,
+)
 from .smil import AnimPar, AnimSeq, AnimTransFilter
 from .spacer import Spacer
 from .style import (
