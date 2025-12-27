@@ -54,41 +54,28 @@ def test_create_rectangle():
     page = DrawPage("Page1")
     rectangle = RectangleShape(size=("2cm", "1cm"), position=("3cm", "4cm"))
     page.append(rectangle)
-    assert page.serialize() in (
-        (
-            '<draw:page draw:id="Page1">'
-            '<draw:rect svg:x="3cm" svg:y="4cm" '
-            'svg:width="2cm" svg:height="1cm"/>'
-            "</draw:page>"
-        ),
-        (
-            '<draw:page draw:id="Page1">'
-            '<draw:rect svg:width="2cm" '
-            'svg:height="1cm" svg:x="3cm"'
-            ' svg:y="4cm"/>'
-            "</draw:page>"
-        ),
+    expected = (
+        '<draw:page draw:id="Page1">'
+        '<draw:rect svg:height="1cm" '
+        'svg:width="2cm" svg:x="3cm" '
+        'svg:y="4cm">'
+        "</draw:rect></draw:page>"
     )
+    assert page._canonicalize() == expected
 
 
 def test_create_ellipse():
     page = DrawPage("Page1")
-    # svg_attrs = {
-    #     "svg:width": "2cm",
-    #     "svg:height": "2cm",
-    #     "svg:x": "2cm",
-    #     "svg:y": "2cm",
-    # }
     ellipse = EllipseShape(size=("2cm", "1cm"), position=("3cm", "4cm"))
     page.append(ellipse)
     expected = (
         '<draw:page draw:id="Page1">'
         "<draw:ellipse "
-        'svg:x="3cm" svg:y="4cm" '
-        'svg:width="2cm" svg:height="1cm"/>'
-        "</draw:page>"
+        'svg:height="1cm" svg:width="2cm" '
+        'svg:x="3cm" svg:y="4cm">'
+        "</draw:ellipse></draw:page>"
     )
-    assert page.serialize() == expected
+    assert page._canonicalize() == expected
 
 
 def test_create_connector():
