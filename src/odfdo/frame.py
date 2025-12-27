@@ -144,23 +144,26 @@ class PosMix(Element):
 PosMix._define_attribut_property()
 
 
-class ZMix:
+class ZMix(Element):
     """Z-index position.
 
     z-index is an integer.
     """
+
+    _tag = "draw:zmix-odfdo-notodf"
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
     @property
     def z_index(self) -> int | None:
         'Get or set the z index "draw:z-index"'
         return cast(
             Union[None, int],
-            self.get_attribute_integer("draw:z-index"),  # type: ignore[attr-defined]
+            self.get_attribute_integer("draw:z-index"),
         )
 
     @z_index.setter
     def z_index(self, z_index: int | None) -> None:
-        self.set_attribute("draw:z-index", z_index)  # type: ignore[attr-defined]
+        self._set_attribute_int("draw:z-index", z_index)
 
 
 class SizeMix:

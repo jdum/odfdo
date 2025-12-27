@@ -1250,6 +1250,22 @@ class Element(MDBase):
         except ValueError:
             return default
 
+    def _set_attribute_int(self, name: str, value: int | None) -> None:
+        """Sets the value of a specified integer attribute.
+
+        Args:
+            name: The qualified name of the attribute to set.
+            value: The integer value to set. If None, the attribute is
+                removed.
+        """
+        element = self.__element
+        lxml_tag = _get_lxml_tag_or_name(name)
+        if value is None:
+            with contextlib.suppress(KeyError):
+                del element.attrib[lxml_tag]
+            return
+        element.set(lxml_tag, str(value))
+
     def _set_attribute_int_default(
         self, name: str, value: int | None, default: int
     ) -> None:
