@@ -24,8 +24,9 @@ import pytest
 
 from odfdo.const import ODF_CONTENT
 from odfdo.document import Document
+from odfdo.element import Element
 from odfdo.header import Header
-from odfdo.list import List, ListItem
+from odfdo.list import List, ListHeader, ListItem
 from odfdo.paragraph import Paragraph
 
 ZOE = "你好 Zoé"
@@ -35,6 +36,22 @@ def test_create_item():
     item = ListItem()
     expected = "<text:list-item/>"
     assert item.serialize() == expected
+
+
+def test_list_headezr_class():
+    item = ListHeader()
+    expected = "<text:list-header/>"
+    assert item.serialize() == expected
+
+
+def test_list_header_minimal():
+    item = Element.from_tag("<text:list-header/>")
+    assert isinstance(item, ListHeader)
+
+
+def test_list_item_minimal():
+    item = Element.from_tag("<text:list-item/>")
+    assert isinstance(item, ListItem)
 
 
 def test_create_list():
@@ -582,3 +599,20 @@ def test_list_get_formatted_text_4_sub():
     }
     result = lst.get_formatted_text(ctx)
     assert result == "- A\n- B\n- - C\n  - D\n"
+
+
+def test_list_get_formatted_text_5():
+    lst = List(["A", "B"])
+    lst.set_list_header("some header")
+    ctx = {
+        "document": None,
+        "footnotes": [],
+        "endnotes": [],
+        "annotations": [],
+        "rst_mode": False,
+        "img_counter": 0,
+        "images": [],
+        "no_img_level": 0,
+    }
+    result = lst.get_formatted_text(ctx)
+    assert result == "  some header\n- A\n- B\n"

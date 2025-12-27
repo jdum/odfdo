@@ -22,4 +22,8 @@ in toc.py.
 
 This module is kept for compatibility with odfdo versions <= 3.18.2."""
 
-from .toc import IndexBody, IndexTitle, IndexTitleTemplate  # noqa: F401
+from .toc import (  # noqa: F401  # pragma: nocover
+    IndexBody,
+    IndexTitle,
+    IndexTitleTemplate,
+)

@@ -40,7 +40,7 @@ class ListMixin(Element):
     "style:footer-first", "style:footer-left", "style:header",
     "style:header-first", "style:header-left", "table:covered-table-cell",
     "table:table-cell", "text:deletion", "text:index-body",
-    "text:index-title", *"text:list-header", "text:list-item",
+    "text:index-title", "text:list-header", "text:list-item",
     "text:note-body", "text:section".
 
     *: not implemented.

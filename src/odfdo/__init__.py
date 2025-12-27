@@ -107,6 +107,7 @@ __all__ = [  # noqa: RUF022
     "Link",
     "LinkMixin",
     "List",
+    "ListHeader",
     "ListItem",
     "ListMixin",
     "Manifest",
@@ -294,7 +295,7 @@ from .header_rows import HeaderRows
 from .image import DrawFillImage, DrawImage
 from .line_break import LineBreak
 from .link import Link
-from .list import List, ListItem
+from .list import List, ListHeader, ListItem
 from .manifest import Manifest
 from .master_page import (
     StyleFooter,

@@ -24,7 +24,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, Union, cast
 
 from .element import (
     FIRST_CHILD,
@@ -49,14 +49,14 @@ class ListItem(MDListItem, ListMixin, Element):
         text_or_element: str | Element | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize the ListItem.
+        """Initialize the ListItem, "text:list-item".
 
-        A `ListItem` can be initialized with text content or another element.
+        A "ListItem" can be initialized with text content or another element.
 
         Args:
-            text_or_element: The initial
-                content of the list item. If a string, a paragraph containing
-                the text is created. If an element, it is appended as a child.
+            text_or_element: The initial content of the list item. If a
+                string, a paragraph containing the text is created. If an
+                element, it is appended as a child.
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         super().__init__(**kwargs)
@@ -71,6 +71,45 @@ class ListItem(MDListItem, ListMixin, Element):
     def __str__(self) -> str:
         self._md_initialize_level()
         return "\n".join(self._md_collect())
+
+
+class ListHeader(ListMixin, Element):
+    """An header of a list, "text:list-header"."""
+
+    _tag = "text:list-header"
+
+    def __init__(
+        self,
+        text_or_element: str | Element | Iterable[str | Element] | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Initialize the ListHeader, "text:list-header".
+
+        A "ListItem" can be initialized with text content or another element.
+
+        Args:
+            text_or_element: The initial content of the list item. If a
+                string, a paragraph containing the text is created. If an
+                element, it is appended as a child.
+            **kwargs: Additional keyword arguments for the parent `Element` class.
+        """
+        super().__init__(**kwargs)
+        if self._do_init:
+            actual_list: list[str | Element] | tuple = []
+            if text_or_element is None:
+                pass
+            elif isinstance(text_or_element, (str, Element)):
+                actual_list = [text_or_element]
+            elif isinstance(text_or_element, (list, tuple)):
+                actual_list = text_or_element
+            else:
+                raise TypeError(f"Expected str or Element, not {text_or_element!r}")
+            for item in reversed(actual_list):
+                if isinstance(item, str):
+                    paragraph = Paragraph(item)
+                else:
+                    paragraph = item
+                self.insert(paragraph, FIRST_CHILD)
 
 
 class List(MDList, Element):
@@ -151,6 +190,21 @@ class List(MDList, Element):
             return None
         return self._filtered_element("text:list-item", position)
 
+    @property
+    def list_header(self) -> ListHeader | None:
+        """Get or set the list header."""
+        return cast(Union[None, ListHeader], self.get_element("text:list-header"))
+
+    @list_header.setter
+    def list_header(
+        self, text_or_element: str | Element | Iterable[str | Element] | None = None
+    ) -> None:
+        current = cast(Union[None, ListHeader], self.get_element("text:list-header"))
+        if current:
+            current.delete()
+        new_header = ListHeader(text_or_element)
+        self.insert(new_header, FIRST_CHILD)
+
     def set_list_header(
         self,
         text_or_element: str | Element | Iterable[str | Element],
@@ -160,23 +214,13 @@ class List(MDList, Element):
         This method replaces any existing header paragraphs (`text:p`) with
         the provided content.
 
+        You may consider using the property List.list_header.
+
         Args:
-            text_or_element: The content for the list header. Can be a single string or element,
-                or an iterable of strings and/or elements.
+            text_or_element: The content for the list header. Can be a single
+                string or element, or an iterable of strings and/or elements.
         """
-        if isinstance(text_or_element, (str, Element)):
-            actual_list: list[str | Element] | tuple = [text_or_element]
-        elif isinstance(text_or_element, (list, tuple)):
-            actual_list = text_or_element
-        else:
-            raise TypeError
-        # Remove existing header
-        for element in self.get_elements("text:p"):
-            self.delete(element)
-        for paragraph in reversed(actual_list):
-            if isinstance(paragraph, str):
-                paragraph = Paragraph(paragraph)
-            self.insert(paragraph, FIRST_CHILD)
+        self.list_header = text_or_element
 
     def insert_item(
         self,
@@ -233,8 +277,8 @@ class List(MDList, Element):
         Each list item is prefixed with "- " and indented.
 
         Args:
-            context: A dictionary providing context for
-                formatting. If `rst_mode` is True in the context, additional
+            context: A dictionary providing context for formatting. If
+                `rst_mode` is True in the context, additional
                 newlines are added for reStructuredText compatibility.
 
         Returns:
@@ -255,6 +299,18 @@ class List(MDList, Element):
         result = []
         if rst_mode:
             result.append("\n")
+        list_header = self.list_header
+        if list_header:
+            text_header_buf = []
+            for child in list_header.children:
+                text = child.get_formatted_text(context)
+                text_header_buf.append(text)
+                text_sum = "".join(text_header_buf)
+                text_sum = text_sum.strip("\n")
+                # Indent the text
+                text_sum = text_sum.replace("\n", "\n  ")
+                text_sum = f"  {text_sum}\n"
+                result.append(text_sum)
         for list_item in self.get_elements("text:list-item"):
             textbuf = []
             for child in list_item.children:
@@ -281,5 +337,6 @@ class List(MDList, Element):
 
 List._define_attribut_property()
 
-register_element_class(ListItem)
 register_element_class(List)
+register_element_class(ListHeader)
+register_element_class(ListItem)

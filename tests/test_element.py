@@ -40,7 +40,6 @@ from odfdo.element import (
     register_element_class,
     xpath_compile,
 )
-from odfdo.list import List
 from odfdo.named_range import NamedRange
 from odfdo.paragraph import Paragraph
 from odfdo.section import Section
