@@ -33,7 +33,7 @@ from .mixin_list import ListMixin
 from .svg import SvgMixin
 
 
-class ShapeBase(ListMixin, SvgMixin, ZMix, Element):
+class ShapeBase(ListMixin, AnchorMix, SvgMixin, ZMix, Element):
     """Base class for all drawing shapes.
 
     This class provides common properties and methods for various shapes
@@ -58,8 +58,6 @@ class ShapeBase(ListMixin, SvgMixin, ZMix, Element):
         PropDef("end_x", "table:end-x"),
         PropDef("end_y", "table:end-y"),
         PropDefBool("table_background", "table:table-background", False),
-        PropDef("anchor_page_number", "text:anchor-page-number"),
-        PropDef("anchor_type", "text:anchor-type"),
         PropDef("xml_id", "xml:id"),
     )
 
@@ -80,8 +78,8 @@ class ShapeBase(ListMixin, SvgMixin, ZMix, Element):
         end_x: str | None = None,
         end_y: str | None = None,
         table_background: bool | None = None,
-        anchor_page_number: int | None = None,
         anchor_type: str | None = None,
+        anchor_page: int | None = None,
         xml_id: str | None = None,
         **kwargs: Any,
     ) -> None:
@@ -112,9 +110,9 @@ class ShapeBase(ListMixin, SvgMixin, ZMix, Element):
                 to the top-left edge of a cell.
             table_background: Wether the shape is in the table background if
                 the drawing shape is included in a spreadsheet.
-            anchor_page_number: Physical page number of an anchor if the drawing
-                object is bound to a page within a text document.
             anchor_type: How a drawing shape is bound to a text document.
+            anchor_page: Physical page number of an anchor if the drawing
+                object is bound to a page within a text document.
             xml_id: The unique XML ID.
         """
         super().__init__(**kwargs)
@@ -149,10 +147,10 @@ class ShapeBase(ListMixin, SvgMixin, ZMix, Element):
                 self.end_y = end_y
             if table_background is not None:
                 self.table_background = table_background
-            if anchor_page_number is not None:
-                self.anchor_page_number = anchor_page_number
             if anchor_type:
                 self.anchor_type = anchor_type
+            if anchor_page is not None:
+                self.anchor_page = anchor_page
             if xml_id:
                 self.xml_id = xml_id
 
@@ -208,8 +206,8 @@ class LineShape(ShapeBase):
         end_x: str | None = None,
         end_y: str | None = None,
         table_background: bool | None = None,
-        anchor_page_number: int | None = None,
         anchor_type: str | None = None,
+        anchor_page: int | None = None,
         xml_id: str | None = None,
         **kwargs: Any,
     ) -> None:
@@ -241,9 +239,9 @@ class LineShape(ShapeBase):
                 to the top-left edge of a cell.
             table_background: Wether the shape is in the table background if
                 the drawing shape is included in a spreadsheet.
+            anchor_type: How a drawing shape is bound to a text document.
             anchor_page_number: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
-            anchor_type: How a drawing shape is bound to a text document.
             xml_id: The unique XML ID.
         """
         kwargs.update(
@@ -263,8 +261,8 @@ class LineShape(ShapeBase):
                 "end_x": end_x,
                 "end_y": end_y,
                 "table_background": table_background,
-                "anchor_page_number": anchor_page_number,
                 "anchor_type": anchor_type,
+                "anchor_page": anchor_page,
                 "xml_id": xml_id,
             }
         )
@@ -290,8 +288,6 @@ class RectangleShape(PosMix, SizeMix, ShapeBase):
     _tag = "draw:rect"
     _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("corner_radius", "draw:corner-radius"),
-        PropDef("width", "svg:width"),
-        PropDef("height", "svg:height"),
         PropDef("rx", "svg:rx"),
         PropDef("ry", "svg:ry"),
     )
@@ -318,8 +314,8 @@ class RectangleShape(PosMix, SizeMix, ShapeBase):
         end_x: str | None = None,
         end_y: str | None = None,
         table_background: bool | None = None,
-        anchor_page_number: int | None = None,
         anchor_type: str | None = None,
+        anchor_page: int | None = None,
         xml_id: str | None = None,
         **kwargs: Any,
     ) -> None:
@@ -354,9 +350,9 @@ class RectangleShape(PosMix, SizeMix, ShapeBase):
                 to the top-left edge of a cell.
             table_background: Wether the shape is in the table background if
                 the drawing shape is included in a spreadsheet.
-            anchor_page_number: Physical page number of an anchor if the drawing
-                object is bound to a page within a text document.
             anchor_type: How a drawing shape is bound to a text document.
+            anchor_page: Physical page number of an anchor if the drawing
+                object is bound to a page within a text document.
             xml_id: The unique XML ID.
         """
         kwargs.update(
@@ -376,8 +372,8 @@ class RectangleShape(PosMix, SizeMix, ShapeBase):
                 "end_x": end_x,
                 "end_y": end_y,
                 "table_background": table_background,
-                "anchor_page_number": anchor_page_number,
                 "anchor_type": anchor_type,
+                "anchor_page": anchor_page,
                 "xml_id": xml_id,
             }
         )
@@ -541,8 +537,6 @@ class DrawGroup(AnchorMix, ZMix, PosMix):
         PropDef("table_end_x", "table:end-x"),
         PropDef("table_end_y", "table:end-y"),
         PropDef("table_background", "table:table-background"),
-        # ('anchor_page', 'text:anchor-page-number'),
-        # ('anchor_type', 'text:anchor-type'),
         PropDef("xml_id", "xml:id"),
     )
 

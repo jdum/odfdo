@@ -71,11 +71,14 @@ def default_frame_position_style(
     )
 
 
-class AnchorMix:
+class AnchorMix(Element):
     """Anchor parameter, how the element is attached to its environment.
 
     value can be: 'page', 'frame', 'paragraph', 'char' or 'as-char'
     """
+
+    _tag = "draw:anchormix-odfdo-notodf"
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
 
     ANCHOR_VALUE_CHOICE = {  # noqa: RUF012
         "page",
@@ -87,30 +90,29 @@ class AnchorMix:
 
     @property
     def anchor_type(self) -> str | None:
-        "Anchor_type getter/setter."
-        return self.get_attribute_string("text:anchor-type")  # type: ignore
+        'Get or set the anchor type "text:anchor-type".'
+        return self.get_attribute_string("text:anchor-type")
 
     @anchor_type.setter
     def anchor_type(self, anchor_type: str) -> None:
         if anchor_type not in self.ANCHOR_VALUE_CHOICE:
             raise TypeError(f"anchor_type not valid: '{anchor_type!r}'")
-        self.set_attribute("text:anchor-type", anchor_type)  # type: ignore
+        self.set_attribute("text:anchor-type", anchor_type)
 
     @property
     def anchor_page(self) -> int | None:
-        """Getter/setter for the number of the page when the anchor type is
-        'page'.
+        """Get or set the number of the page when the anchor type is 'page'.
 
         type : int or None
         """
-        anchor_page = self.get_attribute("text:anchor-page-number")  # type: ignore
+        anchor_page = self.get_attribute("text:anchor-page-number")
         if anchor_page is None:
             return None
         return int(anchor_page)
 
     @anchor_page.setter
     def anchor_page(self, anchor_page: int | None) -> None:
-        self.set_attribute("text:anchor-page-number", anchor_page)  # type: ignore
+        self._set_attribute_int("text:anchor-page-number", anchor_page)
 
 
 class PosMix(Element):
@@ -166,22 +168,31 @@ class ZMix(Element):
         self._set_attribute_int("draw:z-index", z_index)
 
 
-class SizeMix:
+class SizeMix(Element):
     """Size of the frame.
 
     Size is a (width, height) tuple with items including the unit, e.g.
     ('10cm', '15cm').
     """
 
+    _tag = "draw:sizemix-odfdo-notodf"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("width", "svg:width"),
+        PropDef("height", "svg:height"),
+    )
+
     @property
     def size(self) -> tuple[str | None, str | None]:
-        'Get or set the the tuple of size ("svg:width", "svg:height").'
+        'Get or set the tuple of size ("svg:width", "svg:height").'
         return (self.width, self.height)
 
     @size.setter
     def size(self, size: tuple[str, str] | list[str]) -> None:
         self.width = size[0]
         self.height = size[1]
+
+
+SizeMix._define_attribut_property()
 
 
 class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
@@ -195,8 +206,6 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
     _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "draw:name"),
         PropDef("draw_id", "draw:id"),
-        PropDef("width", "svg:width"),
-        PropDef("height", "svg:height"),
         PropDef("style", "draw:style-name"),
         PropDef("presentation_class", "presentation:class"),
         PropDef("layer", "draw:layer"),
