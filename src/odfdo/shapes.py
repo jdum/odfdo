@@ -656,6 +656,137 @@ class PolygonShape(PolylineShape):
 PolygonShape._define_attribut_property()
 
 
+class RegularPolygonShape(PosMix, SizeMix, ShapeBase):
+    """Represents a regular polygon, "draw:regular-polygon".
+
+    A regular polygon is a polygon that is specified by its number of edges
+    (that is equal to the number of its corners), rather than by arbitrary
+    points."""
+
+    _tag = "draw:regular-polygon"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDefBool("concave", "draw:concave", False),
+        PropDef("sharpness", "draw:sharpness"),
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        corners: int | None = None,
+        concave: bool | None = None,
+        sharpness: str | None = None,
+        position: tuple[str, str] | list[str] | None = None,
+        size: tuple[str, str] | list[str] | None = None,
+        presentation_class: str | None = None,
+        presentation_style: str | None = None,
+        caption_id: str | None = None,
+        class_names: str | None = None,
+        transform: str | None = None,
+        z_index: int | None = None,
+        end_cell_address: str | None = None,
+        end_x: str | None = None,
+        end_y: str | None = None,
+        table_background: bool | None = None,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        xml_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a polygon shape "draw:regular-polygon>".
+
+        Args:
+            name: Name of the graphical element.
+            style: The style name for the polygon.
+            text_style: The text style name for the polygon.
+            draw_id: The unique ID for the drawing shape.
+            layer: The drawing layer of the polygon.
+            corners: The number of polygon corners.
+            concave: Whether a regular polygon is convex or concave.
+            sharpness: The radius of the ellipse on which inner polygon
+                corners are located for concave polygon.
+            position: The (x, y) coordinates for the polygon's position.
+            size: The (width, height) values for the polygon's size.
+            presentation_class: White-space-separated list of presentation
+                class names.
+            presentation_style: Style for a presentation shape.
+            caption_id: Target ID assigned to the "draw:text-box" hat
+                contains the caption.
+            class_names: White-space-separated list of styles
+                with the family value of graphic.
+            transform: White-space or comma separated list of transform
+                definitions.
+            z_index: Rendering order for shapes in a document instance.
+            end_cell_address: End position of the shape if it is included
+                in a spreadsheet document.
+            end_x: The x-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            end_y: The y-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            table_background: Wether the shape is in the table background if
+                the drawing shape is included in a spreadsheet.
+            anchor_type: How a drawing shape is bound to a text document.
+            anchor_page_number: Physical page number of an anchor if the drawing
+                object is bound to a page within a text document.
+            xml_id: The unique XML ID.
+        """
+        kwargs.update(
+            {
+                "name": name,
+                "style": style,
+                "text_style": text_style,
+                "draw_id": draw_id,
+                "layer": layer,
+                "presentation_class": presentation_class,
+                "presentation_style": presentation_style,
+                "caption_id": caption_id,
+                "class_names": class_names,
+                "transform": transform,
+                "z_index": z_index,
+                "end_cell_address": end_cell_address,
+                "end_x": end_x,
+                "end_y": end_y,
+                "table_background": table_background,
+                "anchor_type": anchor_type,
+                "anchor_page": anchor_page,
+                "xml_id": xml_id,
+            }
+        )
+        super().__init__(**kwargs)
+        if self._do_init:
+            if corners:
+                self.corners = corners
+            if concave is not None:
+                self.concave = concave
+            if sharpness:
+                self.sharpness = sharpness
+            if position:
+                self.position = position
+            if size:
+                self.size = size
+
+    @property
+    def corners(self) -> int | None:
+        """Get or set the number of polygon corners.
+
+        type : int or None
+        """
+        corners = self.get_attribute("draw:corners")
+        if corners is None:
+            return None
+        return int(corners)
+
+    @corners.setter
+    def corners(self, corners: int | None) -> None:
+        self._set_attribute_int("draw:corners", corners)
+
+
+RegularPolygonShape._define_attribut_property()
+
+
 class EllipseShape(AngleMix, PosMix, SizeMix, ShapeBase):
     """Represents an ellipse shape, "draw:ellipse".
 
@@ -1154,6 +1285,7 @@ registered_shapes = [
         PolygonShape,
         PolylineShape,
         RectangleShape,
+        RegularPolygonShape,
     )
 ]
 register_element_class(ConnectorShape)
@@ -1163,3 +1295,4 @@ register_element_class(LineShape)
 register_element_class(PolygonShape)
 register_element_class(PolylineShape)
 register_element_class(RectangleShape)
+register_element_class(RegularPolygonShape)

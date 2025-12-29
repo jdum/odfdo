@@ -147,6 +147,7 @@ __all__ = [  # noqa: RUF022
     "ReferenceMarkEnd",
     "ReferenceMarkStart",
     "ReferenceMixin",
+    "RegularPolygonShape",
     "Row",
     "RowGroup",
     "RubyBase",
@@ -361,6 +362,7 @@ from .shapes import (
     PolygonShape,
     PolylineShape,
     RectangleShape,
+    RegularPolygonShape,
 )
 from .smil import AnimPar, AnimSeq, AnimTransFilter
 from .spacer import Spacer
