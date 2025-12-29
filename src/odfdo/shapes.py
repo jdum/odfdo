@@ -899,6 +899,136 @@ class DrawPath(PosMix, SizeMix, ShapeBase):
 DrawPath._define_attribut_property()
 
 
+class DrawCaption(PosMix, SizeMix, ShapeBase):
+    """Represents a description attached to a fixed point, "draw:caption".
+
+    It consists of rectangular drawing shape with an additional set of
+    connected lines that connect the rectangle with the fixed point.
+    """
+
+    _tag = "draw:caption"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("caption_point_x", "draw:caption-point-x"),
+        PropDef("caption_point_y", "draw:caption-point-y"),
+        PropDef("corner_radius", "draw:corner-radius"),
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        caption_point: tuple[str, str] | list[str] | None = None,
+        position: tuple[str, str] | list[str] | None = None,
+        size: tuple[str, str] | list[str] | None = None,
+        corner_radius: str | None = None,
+        presentation_class: str | None = None,
+        presentation_style: str | None = None,
+        caption_id: str | None = None,
+        class_names: str | None = None,
+        transform: str | None = None,
+        z_index: int | None = None,
+        end_cell_address: str | None = None,
+        end_x: str | None = None,
+        end_y: str | None = None,
+        table_background: bool | None = None,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        xml_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a draw caption "draw:caption".
+
+        Args:
+            name: Name of the graphical element.
+            style: The style name for the path.
+            text_style: The text style name for the path.
+            draw_id: The unique ID for the drawing shape.
+            layer: The drawing layer of the path.
+            caption_point: The position of a point that is captioned. A set
+                of lines is rendered to that point from the caption area.
+            position: The (x, y) coordinates for the path's position.
+            size: The (width, height) values for the path's size.
+            corner_radius: radius of the circle used to round off the corners.
+            view_box: The rectangle in a local coordinates system used by the
+                points.
+            presentation_class: White-space-separated list of presentation
+                class names.
+            presentation_style: Style for a presentation shape.
+            caption_id: Target ID assigned to the "draw:text-box" that
+                contains the caption.
+            class_names: White-space-separated list of styles with the
+                family value of graphic.
+            transform: White-space or comma separated list of transform
+                definitions.
+            z_index: Rendering order for shapes in a document instance.
+            end_cell_address: End position of the shape if it is included
+                in a spreadsheet document.
+            end_x: The x-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            end_y: The y-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            table_background: Wether the shape is in the table background if
+                the drawing shape is included in a spreadsheet.
+            anchor_type: How a drawing shape is bound to a text document.
+            anchor_page_number: Physical page number of an anchor if the drawing
+                object is bound to a page within a text document.
+            xml_id: The unique XML ID.
+        """
+        kwargs.update(
+            {
+                "name": name,
+                "style": style,
+                "text_style": text_style,
+                "draw_id": draw_id,
+                "layer": layer,
+                "presentation_class": presentation_class,
+                "presentation_style": presentation_style,
+                "caption_id": caption_id,
+                "class_names": class_names,
+                "transform": transform,
+                "z_index": z_index,
+                "end_cell_address": end_cell_address,
+                "end_x": end_x,
+                "end_y": end_y,
+                "table_background": table_background,
+                "anchor_type": anchor_type,
+                "anchor_page": anchor_page,
+                "xml_id": xml_id,
+            }
+        )
+        super().__init__(**kwargs)
+        if self._do_init:
+            if position:
+                self.position = position
+            if size:
+                self.size = size
+            if corner_radius:
+                self.corner_radius = corner_radius
+            if caption_point:
+                self.caption_point = caption_point
+
+    @property
+    def caption_point(self) -> tuple[str | None, str | None]:
+        """Get or set the (caption_point_x, caption_point_y) coordinates of the
+        caption point."""
+        return (self.caption_point_x, self.caption_point_y)
+
+    @caption_point.setter
+    def caption_point(self, caption_point: tuple[str, str] | list[str] | None) -> None:
+        if caption_point is None:
+            self.caption_point_x = None
+            self.caption_point_y = None
+        else:
+            self.caption_point_x = caption_point[0]
+            self.caption_point_y = caption_point[1]
+
+
+DrawCaption._define_attribut_property()
+
+
 class EllipseShape(AngleMix, PosMix, SizeMix, ShapeBase):
     """Represents an ellipse shape, "draw:ellipse".
 
@@ -1535,17 +1665,19 @@ registered_shapes = [
     for s in (
         CircleShape,
         ConnectorShape,
+        DrawCaption,
+        DrawPath,
         EllipseShape,
         LineShape,
         PolygonShape,
         PolylineShape,
         RectangleShape,
         RegularPolygonShape,
-        DrawPath,
     )
 ]
 register_element_class(CircleShape)
 register_element_class(ConnectorShape)
+register_element_class(DrawCaption)
 register_element_class(DrawGroup)
 register_element_class(DrawPath)
 register_element_class(EllipseShape)
