@@ -25,9 +25,7 @@ import pytest
 
 from odfdo import Element
 from odfdo.document import Document
-from odfdo.draw_page import DrawPage
-from odfdo.paragraph import Paragraph
-from odfdo.shapes import ConnectorShape, EllipseShape, LineShape, RectangleShape
+from odfdo.shapes import EllipseShape
 
 
 @pytest.fixture
@@ -54,6 +52,100 @@ def test_ellipse_minimal():
 def test_ellipse_class():
     shape = Element.from_tag("<draw:ellipse/>")
     assert isinstance(shape, EllipseShape)
+
+
+def test_ellipse_kind(ellipse):
+    assert ellipse.kind == "full"
+
+
+def test_ellipse_kind_2(ellipse):
+    ellipse.kind = "arc"
+    assert ellipse.kind == "arc"
+
+
+def test_ellipse_kind_3(ellipse):
+    with pytest.raises(TypeError):
+        ellipse.kind = "bad"
+
+
+def test_ellipse_angle_1():
+    shape = EllipseShape(
+        name="Name",
+        size=("10cm", "20cm"),
+        position=("3cm", "4cm"),
+        kind="arc",
+        start_angle="10",
+        end_angle="55",
+    )
+    assert shape.kind == "arc"
+
+
+def test_ellipse_angle_2():
+    shape = EllipseShape(
+        name="Name",
+        size=("10cm", "20cm"),
+        position=("3cm", "4cm"),
+        kind="arc",
+        start_angle="10",
+        end_angle="55",
+    )
+    assert shape.start_angle == "10"
+
+
+def test_ellipse_angle_3():
+    shape = EllipseShape(
+        name="Name",
+        size=("10cm", "20cm"),
+        position=("3cm", "4cm"),
+        kind="arc",
+        start_angle="10",
+        end_angle="55",
+    )
+    assert shape.end_angle == "55"
+
+
+def test_ellipse_cx():
+    shape = EllipseShape(
+        name="Name",
+        size=("10cm", "20cm"),
+        position=("3cm", "4cm"),
+        cx="15cm",
+        cy="16cm",
+    )
+    assert shape.cx == "15cm"
+
+
+def test_ellipse_cy():
+    shape = EllipseShape(
+        name="Name",
+        size=("10cm", "20cm"),
+        position=("3cm", "4cm"),
+        cx="15cm",
+        cy="16cm",
+    )
+    assert shape.cy == "16cm"
+
+
+def test_ellipse_rx():
+    shape = EllipseShape(
+        name="Name",
+        size=("10cm", "20cm"),
+        position=("3cm", "4cm"),
+        rx="17cm",
+        ry="18cm",
+    )
+    assert shape.rx == "17cm"
+
+
+def test_ellipse_ry():
+    shape = EllipseShape(
+        name="Name",
+        size=("10cm", "20cm"),
+        position=("3cm", "4cm"),
+        rx="17cm",
+        ry="18cm",
+    )
+    assert shape.ry == "18cm"
 
 
 def test_ellipse_position_1(ellipse):

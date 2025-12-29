@@ -23,6 +23,7 @@
 
 __all__ = [  # noqa: RUF022
     "AnchorMix",
+    "AngleMix",
     "AnimPar",
     "AnimSeq",
     "AnimTransFilter",
@@ -351,6 +352,7 @@ from .row_group import RowGroup
 from .ruby_base import RubyBase
 from .section import Section, SectionMixin
 from .shapes import (
+    AngleMix,
     ConnectorShape,
     DrawGroup,
     EllipseShape,

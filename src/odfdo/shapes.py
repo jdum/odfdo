@@ -172,6 +172,37 @@ class ShapeBase(ListMixin, AnchorMix, SvgMixin, ZMix, Element):
 ShapeBase._define_attribut_property()
 
 
+class AngleMix(Element):
+    """Kind, start_angle and end_angle for circle and ellipse.
+
+    Kind value can be: 'full', 'section', 'cut' or 'arc'. Default is 'full'.
+    """
+
+    _tag = "draw:anglemix-odfdo-notodf"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("start_angle", "draw:start-angle"),
+        PropDef("end_angle", "draw:end-angle"),
+    )
+
+    KIND_VALUE_CHOICE = {  # noqa: RUF012
+        "full",
+        "section",
+        "cut",
+        "arc",
+    }
+
+    @property
+    def kind(self) -> str:
+        'Get or set the kind, "draw:kind".'
+        return self._get_attribute_str_default("draw:kind", "full")
+
+    @kind.setter
+    def kind(self, kind: str) -> None:
+        if kind not in self.KIND_VALUE_CHOICE:
+            raise TypeError(f"'draw:kind' not valid: '{kind!r}'")
+        self._set_attribute_str_default("draw:kind", kind, "full")
+
+
 class LineShape(ShapeBase):
     """Represents a line shape, "draw:line".
 
@@ -525,41 +556,116 @@ class PolylineShape(PosMix, SizeMix, ShapeBase):
 PolylineShape._define_attribut_property()
 
 
-class EllipseShape(PosMix, SizeMix, ShapeBase):
+class EllipseShape(AngleMix, PosMix, SizeMix, ShapeBase):
     """Represents an ellipse shape, "draw:ellipse".
 
     This shape defines an elliptical or circular area.
     """
 
     _tag = "draw:ellipse"
-    _properties: tuple[PropDef | PropDefBool, ...] = ()
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("cx", "svg:cx"),
+        PropDef("cy", "svg:cy"),
+        PropDef("rx", "svg:rx"),
+        PropDef("ry", "svg:ry"),
+    )
 
     def __init__(
         self,
+        name: str | None = None,
         style: str | None = None,
         text_style: str | None = None,
         draw_id: str | None = None,
         layer: str | None = None,
         position: tuple | None = None,
         size: tuple | None = None,
+        kind: str | None = None,
+        start_angle: str | None = None,
+        end_angle: str | None = None,
+        cx: str | None = None,
+        cy: str | None = None,
+        rx: str | None = None,
+        ry: str | None = None,
+        presentation_class: str | None = None,
+        presentation_style: str | None = None,
+        caption_id: str | None = None,
+        class_names: str | None = None,
+        transform: str | None = None,
+        z_index: int | None = None,
+        end_cell_address: str | None = None,
+        end_x: str | None = None,
+        end_y: str | None = None,
+        table_background: bool | None = None,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        xml_id: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Create an ellipse shape "draw:ellipse".
 
         Args:
+            name: Name of the graphical element.
             style: The style name for the ellipse.
             text_style: The text style name for the ellipse.
             draw_id: The unique ID for the drawing shape.
             layer: The drawing layer of the ellipse.
             position: The (x, y) coordinates for the ellipse's position.
             size: The (width, height) for the ellipse's size.
+            kind: The appearance of a circle or ellipse, "full", "section",
+                "cut" or "arc". Default is "full".
+            start_angle: The start angle of a section, cut, or arc where the
+                draw:kind is "section", "cut" or "arc".
+            end_angle: The end angle of a section, cut, or arc where the
+                draw:kind is "section", "cut" or "arc".
+            cx: The x-axis coordinate of the center of a circular image map
+                area.
+            cy: The y-axis coordinate of the center of a circular image map
+                area.
+            rx: The x-axis radius of the ellipse.
+            ry: The y-axis radius of the ellipse.
+            presentation_class: White-space-separated list of presentation
+                class names.
+            presentation_style: Style for a presentation shape.
+            caption_id: Target ID assigned to the "draw:text-box" hat
+                contains the caption.
+            class_names: White-space-separated list of styles
+                with the family value of graphic.
+            transform: White-space or comma separated list of transform
+                definitions.
+            z_index: Rendering order for shapes in a document instance.
+            end_cell_address: End position of the shape if it is included
+                in a spreadsheet document.
+            end_x: The x-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            end_y: The y-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            table_background: Wether the shape is in the table background if
+                the drawing shape is included in a spreadsheet.
+            anchor_type: How a drawing shape is bound to a text document.
+            anchor_page: Physical page number of an anchor if the drawing
+                object is bound to a page within a text document.
+            xml_id: The unique XML ID.
         """
         kwargs.update(
             {
+                "name": name,
                 "style": style,
                 "text_style": text_style,
                 "draw_id": draw_id,
                 "layer": layer,
+                "presentation_class": presentation_class,
+                "presentation_style": presentation_style,
+                "caption_id": caption_id,
+                "class_names": class_names,
+                "transform": transform,
+                "z_index": z_index,
+                "end_cell_address": end_cell_address,
+                "end_x": end_x,
+                "end_y": end_y,
+                "table_background": table_background,
+                "anchor_type": anchor_type,
+                "anchor_page": anchor_page,
+                "xml_id": xml_id,
             }
         )
         super().__init__(**kwargs)
@@ -568,6 +674,20 @@ class EllipseShape(PosMix, SizeMix, ShapeBase):
                 self.position = position
             if size:
                 self.size = size
+            if kind:
+                self.kind = kind
+            if start_angle:
+                self.start_angle = start_angle
+            if end_angle:
+                self.end_angle = end_angle
+            if cx:
+                self.cx = cx
+            if cy:
+                self.cy = cy
+            if rx:
+                self.rx = rx
+            if ry:
+                self.ry = ry
 
 
 EllipseShape._define_attribut_property()
