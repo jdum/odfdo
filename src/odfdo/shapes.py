@@ -90,7 +90,6 @@ class ShapeBase(ListMixin, AnchorMix, SvgMixin, ZMix, Element):
             text_style: The text style name for the shape.
             draw_id: The unique ID for the drawing shape.
             layer: The drawing layer of the shape.
-            # size: The (width, height) for the shape's size.
             presentation_class: White-space-separated list of presentation
                 class names.
             presentation_style: Style for a presentation shape.
@@ -914,7 +913,7 @@ class ConnectorShape(ShapeBase):
 ConnectorShape._define_attribut_property()
 
 
-class DrawGroup(AnchorMix, ZMix, PosMix):
+class DrawGroup(SvgMixin, AnchorMix, ZMix, Element):
     """Representation of a group of drawing shapes, "draw:g".
 
     Warning: implementation is currently minimal.
@@ -929,63 +928,118 @@ class DrawGroup(AnchorMix, ZMix, PosMix):
 
     _tag = "draw:g"
     _properties: tuple[PropDef | PropDefBool, ...] = (
-        PropDef("draw_id", "draw:id"),
-        PropDef("caption_id", "draw:caption-id"),
-        PropDef("draw_class_names", "draw:class-names"),
         PropDef("name", "draw:name"),
         PropDef("style", "draw:style-name"),
-        # ('z_index', 'draw:z-index'),
-        PropDef("presentation_class_names", "presentation:class-names"),
+        PropDef("draw_id", "draw:id"),
+        PropDef("svg_y", "svg:y"),
+        PropDef("presentation_class", "presentation:class-names"),
         PropDef("presentation_style", "presentation:style-name"),
-        PropDef("table_end_cell", "table:end-cell-address"),
-        PropDef("table_end_x", "table:end-x"),
-        PropDef("table_end_y", "table:end-y"),
-        PropDef("table_background", "table:table-background"),
+        PropDef("caption_id", "draw:caption-id"),
+        PropDef("class_names", "draw:class-names"),
+        PropDef("end_cell_address", "table:end-cell-address"),
+        PropDef("end_x", "table:end-x"),
+        PropDef("end_y", "table:end-y"),
+        PropDefBool("table_background", "table:table-background", False),
         PropDef("xml_id", "xml:id"),
     )
 
     def __init__(
         self,
         name: str | None = None,
-        draw_id: str | None = None,
         style: str | None = None,
-        position: tuple | None = None,
-        z_index: int = 0,
+        draw_id: str | None = None,
+        svg_y: str | None = None,
+        presentation_class: str | None = None,
+        presentation_style: str | None = None,
+        caption_id: str | None = None,
+        class_names: str | None = None,
+        z_index: int | None = None,
+        end_cell_address: str | None = None,
+        end_x: str | None = None,
+        end_y: str | None = None,
+        table_background: bool | None = None,
         anchor_type: str | None = None,
         anchor_page: int | None = None,
-        presentation_style: str | None = None,
+        xml_id: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Create a group of drawing shapes "draw:g".
 
         Args:
-            name: The name of the drawing group.
+            name: Name of the group.
+            style: The style name for the group.
             draw_id: The unique ID for the drawing group.
-            style: The style name for the drawing group.
-            position: The (x, y) coordinates for the group's position.
-            z_index: The z-index of the group, controlling its stacking order.
-            anchor_type: The anchor type of the group (e.g., 'paragraph', 'char').
-            anchor_page: The page number to which the group is anchored.
-            presentation_style: The presentation style name for the group.
+            svg_y: Position on the y-axis of the group.
+            presentation_class: White-space-separated list of presentation
+                class names.
+            presentation_style: Style for a presentation shape.
+            caption_id: Target ID assigned to the "draw:text-box" hat
+                contains the caption.
+            class_names: White-space-separated list of styles
+                with the family value of graphic.
+            z_index: Rendering order for shapes in a document instance.
+            end_cell_address: End position of the shape if it is included
+                in a spreadsheet document.
+            end_x: The x-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            end_y: The y-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            table_background: Wether the shape is in the table background if
+                the drawing shape is included in a spreadsheet.
+            anchor_type: How a drawing shape is bound to a text document.
+            anchor_page: Physical page number of an anchor if the drawing
+                object is bound to a page within a text document.
+            xml_id: The unique XML ID.
         """
         super().__init__(**kwargs)
         if self._do_init:
-            if z_index is not None:
-                self.z_index = z_index
             if name:
                 self.name = name
-            if draw_id is not None:
-                self.draw_id = draw_id
-            if style is not None:
+            if style:
                 self.style = style
-            if position is not None:
-                self.position = position
+            if draw_id:
+                self.draw_id = draw_id
+            if svg_y:
+                self.svg_y = svg_y
+            if presentation_class:
+                self.presentation_class = presentation_class
+            if presentation_style:
+                self.presentation_style = presentation_style
+            if caption_id:
+                self.caption_id = caption_id
+            if class_names:
+                self.class_names = class_names
+            if z_index is not None:
+                self.z_index = z_index
+            if end_cell_address:
+                self.end_cell_address = end_cell_address
+            if end_x:
+                self.end_x = end_x
+            if end_y:
+                self.end_y = end_y
+            if table_background is not None:
+                self.table_background = table_background
             if anchor_type:
                 self.anchor_type = anchor_type
             if anchor_page is not None:
                 self.anchor_page = anchor_page
-            if presentation_style is not None:
-                self.presentation_style = presentation_style
+            if xml_id:
+                self.xml_id = xml_id
+
+    def get_formatted_text(self, context: dict | None = None) -> str:
+        """Return the formatted text content of the shape.
+
+        Args:
+            context: A dictionary of context variables.
+
+        Returns:
+            str: The formatted text content.
+        """
+        result: list[str] = []
+        for child in self.children:
+            result.append(child.get_formatted_text(context))
+        result.append("\n")
+        return "".join(result)
 
 
 DrawGroup._define_attribut_property()
