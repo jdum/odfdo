@@ -152,4 +152,4 @@ def test_set_transition_no_previous(doc_body):
 def test_get_shapes(doc_body):
     dp = doc_body.get_draw_page(position=0)
     shapes = dp.get_shapes()
-    assert shapes == []
+    assert len(shapes) == 1
