@@ -1,0 +1,79 @@
+# Copyright 2018-2025 Jérôme Dumonteil
+# Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#
+# Authors (odfdo project): jerome.dumonteil@gmail.com
+# The odfdo project is a derivative work of the lpod-python project:
+# https://github.com/lpod/lpod-python
+
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+import pytest
+
+from odfdo import Element
+from odfdo.shapes import DrawCaption
+
+
+@pytest.fixture
+def caption() -> Iterable[DrawCaption]:
+    shape = DrawCaption(
+        name="some name",
+        position=("1cm", "2cm"),
+        size=("10cm", "12cm"),
+        corner_radius="3cm",
+        caption_point=("20cm", "21cm"),
+    )
+    yield shape
+
+
+def test_draw_caption_minimal():
+    caption = DrawCaption()
+    assert caption._canonicalize() == "<draw:caption></draw:caption>"
+
+
+def test_draw_caption_class():
+    caption = Element.from_tag("<draw:caption/>")
+    assert isinstance(caption, DrawCaption)
+
+
+def test_draw_caption_position(caption):
+    assert caption.position == ("1cm", "2cm")
+
+
+def test_draw_caption_size(caption):
+    assert caption.size == ("10cm", "12cm")
+
+
+def test_draw_caption_corner_radius(caption):
+    assert caption.corner_radius == "3cm"
+
+
+def test_draw_caption_caption_point(caption):
+    assert caption.caption_point == ("20cm", "21cm")
+
+
+def test_draw_caption_caption_point_x(caption):
+    assert caption.caption_point_x == "20cm"
+
+
+def test_draw_caption_caption_point_y(caption):
+    assert caption.caption_point_y == "21cm"
+
+
+def test_draw_caption_caption_point_none(caption):
+    caption.caption_point = None
+    assert caption.caption_point == (None, None)
