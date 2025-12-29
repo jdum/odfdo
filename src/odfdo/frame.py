@@ -442,20 +442,21 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
     def set_image(self, url_or_element: DrawImage | str) -> DrawImage:
         image: DrawImage | None = self.get_image()
         if image is None:
-            if isinstance(url_or_element, Element):
-                image = url_or_element
-                self.append(image)
+            if isinstance(url_or_element, str):
+                draw_image = DrawImage(url_or_element)
+                self.append(draw_image)
             else:
-                image = DrawImage(url_or_element)
-                self.append(image)
+                draw_image = url_or_element
+                self.append(draw_image)
         else:
-            if isinstance(url_or_element, Element):
-                image.delete()
-                image = url_or_element
-                self.append(image)
+            if isinstance(url_or_element, str):
+                draw_image = image
+                draw_image.url = url_or_element
             else:
-                image.set_url(url_or_element)  # type: ignore
-        return image
+                image.delete()
+                draw_image = url_or_element
+                self.append(draw_image)
+        return draw_image
 
     def get_text_box(self) -> DrawTextBox | None:
         return cast(Union[None, DrawTextBox], self.get_element("draw:text-box"))
@@ -511,9 +512,8 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
         for element in self.children:
             tag = element.tag
             if tag == "draw:image":
-                if context["rst_mode"]:
+                if context.get("rst_mode"):
                     filename = element.get_attribute("xlink:href")
-
                     # Compute width and height
                     width, height = self.size
                     if width is not None:
@@ -524,13 +524,16 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
                         uheight = Unit(height)
                         uheight = uheight.convert("px", DPI)
                         height = str(uheight)
-
                     # Insert or not ?
-                    if context["no_img_level"]:
-                        context["img_counter"] += 1
-                        ref = f"|img{context['img_counter']}|"
+                    if context.get("no_img_level"):
+                        counter = context.get("img_counter") or 0
+                        counter += 1
+                        context["img_counter"] = counter
+                        ref = f"|img{counter}|"
                         result.append(ref)
-                        context["images"].append((ref, filename, width, height))
+                        images = context.get("images") or []
+                        images.append((ref, filename, width, height))
+                        context["images"] = images
                     else:
                         result.append(f"\n.. image:: {filename}\n")
                         if width is not None:

@@ -28,15 +28,11 @@ import pytest
 from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.frame import (
-    AnchorMix,
     Frame,
-    PosMix,
-    SizeMix,
-    ZMix,
-    default_frame_position_style,
 )
 from odfdo.header import Header
-from odfdo.style import Style
+from odfdo.image import DrawImage
+from odfdo.paragraph import Paragraph
 
 ZOE = "你好 Zoé"
 
@@ -68,6 +64,31 @@ def test_create_frame():
         '<draw:frame draw:name="A Frame" '
         'draw:style-name="Graphics" '
         'draw:z-index="0" '
+        'svg:height="12cm" '
+        'svg:width="10cm">'
+        "</draw:frame>"
+    )
+    assert frame._canonicalize() == expected
+
+
+def test_create_frame_ids():
+    frame = Frame(
+        "A Frame",
+        draw_id="some id",
+        presentation_class="some classes",
+        presentation_style="presentation style",
+        layer="some layer",
+        size=("10cm", "12cm"),
+        style="Graphics",
+    )
+    expected = (
+        '<draw:frame draw:id="some id" '
+        'draw:layer="some layer" '
+        'draw:name="A Frame" '
+        'draw:style-name="Graphics" '
+        'draw:z-index="0" '
+        'presentation:class="some classes" '
+        'presentation:style-name="presentation style" '
         'svg:height="12cm" '
         'svg:width="10cm">'
         "</draw:frame>"
@@ -168,6 +189,30 @@ def test_create_image_frame():
     assert frame._canonicalize() == expected
 
 
+def test_image_frame_set_image_element_on_previous():
+    frame = Frame.image_frame("Pictures/zoe.jpg")
+    image = DrawImage("Pictures/new.jpg")
+    frame.set_image(image)
+    read_image = frame.get_image()
+    assert read_image.url == "Pictures/new.jpg"
+
+
+def test_image_frame_set_image_element_on_none():
+    frame = Frame("frame name")
+    image = DrawImage("Pictures/new.jpg")
+    frame.set_image(image)
+    read_image = frame.get_image()
+    assert read_image.url == "Pictures/new.jpg"
+
+
+def test_image_frame_set_image_url():
+    frame = Frame.image_frame("Pictures/zoe.jpg")
+    url = "Pictures/new.jpg"
+    frame.set_image(url)
+    read_image = frame.get_image()
+    assert read_image.url == "Pictures/new.jpg"
+
+
 def test_create_image_frame_text():
     frame = Frame.image_frame("Pictures/zoe.jpg", text=ZOE)
     expected = (
@@ -182,7 +227,6 @@ def test_create_image_frame_text():
         f"<text:p>{ZOE}</text:p>"
         "</draw:image></draw:frame>"
     )
-
     assert frame._canonicalize() == expected
 
 
@@ -198,6 +242,42 @@ def test_create_text_frame():
         "</draw:frame>"
     )
     assert frame._canonicalize() == expected
+
+
+def test_frame_get_text_content():
+    frame = Frame.text_frame(ZOE)
+    expected = ZOE
+    assert frame.text_content == expected
+
+
+def test_frame_get_text_content_none():
+    frame = Frame()
+    assert frame.text_content == ""
+
+
+def test_frame_set_text_content_1():
+    frame = Frame()
+    frame.text_content = "content"
+    assert frame.text_content == "content"
+
+
+def test_frame_set_text_content_2():
+    frame = Frame.text_frame("previous")
+    new_content = Paragraph("new")
+    frame.text_content = new_content
+    assert frame.text_content == "new"
+
+
+def test_framset_text_box():
+    frame = Frame.text_frame(ZOE)
+    frame.set_text_box("some text")
+    assert frame.text_content == "some text"
+
+
+def test_frame_set_text_box_list():
+    frame = Frame.text_frame(ZOE)
+    frame.set_text_box(["some text", "second text"])
+    assert frame.text_content == "some text\nsecond text"
 
 
 def test_create_text_frame_element():
@@ -325,3 +405,58 @@ def test_svg_title_2():
     frame.svg_title = "some title"
     result = frame.svg_title
     assert result == "some title"
+
+
+def test_frame_get_formatted_text():
+    frame = Frame.text_frame("content")
+    expected = "  content\n  \n\n"
+    assert frame.get_formatted_text() == expected
+
+
+def test_frame_get_formatted_text_svg_title():
+    frame = Frame()
+    frame.svg_title = "some title"
+    expected = "some title\n\n"
+    assert frame.get_formatted_text() == expected
+
+
+def test_frame_get_formatted_text_svg_description():
+    frame = Frame()
+    frame.svg_description = "some desc"
+    expected = "some desc\n\n"
+    assert frame.get_formatted_text() == expected
+
+
+def test_frame_get_formatted_text_image():
+    frame = Frame()
+    frame.set_image("Pictures/image.jpg")
+    expected = "[Image Pictures/image.jpg]\n\n"
+    assert frame.get_formatted_text() == expected
+
+
+def test_frame_get_formatted_text_image_rst():
+    frame = Frame()
+    frame.set_image("Pictures/image.jpg")
+    expected = "\n.. image:: Pictures/image.jpg\n   :width: 37px\n   :height: 37px\n\n"
+    assert frame.get_formatted_text({"rst_mode": True}) == expected
+
+
+def test_frame_get_formatted_text_image_rst_no_size():
+    frame = Frame()
+    frame.set_image("Pictures/image.jpg")
+    frame.width = None
+    frame.height = None
+    expected = "\n.. image:: Pictures/image.jpg\n\n"
+    assert frame.get_formatted_text({"rst_mode": True}) == expected
+
+
+def test_frame_get_formatted_text_image_rst_no_img():
+    frame = Frame()
+    frame.set_image("Pictures/image.jpg")
+    expected = "|img1|\n"
+    assert (
+        frame.get_formatted_text(
+            {"rst_mode": True, "no_img_level": True},
+        )
+        == expected
+    )
