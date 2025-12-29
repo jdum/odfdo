@@ -199,7 +199,7 @@ class AngleMix(Element):
     @kind.setter
     def kind(self, kind: str) -> None:
         if kind not in self.KIND_VALUE_CHOICE:
-            raise TypeError(f"'draw:kind' not valid: '{kind!r}'")
+            raise TypeError(f"'draw:kind' not valid: {kind!r}")
         self._set_attribute_str_default("draw:kind", kind, "full")
 
 
@@ -577,8 +577,8 @@ class EllipseShape(AngleMix, PosMix, SizeMix, ShapeBase):
         text_style: str | None = None,
         draw_id: str | None = None,
         layer: str | None = None,
-        position: tuple | None = None,
-        size: tuple | None = None,
+        position: tuple[str, str] | list[str] | None = None,
+        size: tuple[str, str] | list[str] | None = None,
         kind: str | None = None,
         start_angle: str | None = None,
         end_angle: str | None = None,
@@ -709,56 +709,206 @@ class ConnectorShape(ShapeBase):
         PropDef("y1", "svg:y1"),
         PropDef("x2", "svg:x2"),
         PropDef("y2", "svg:y2"),
+        PropDef("line_skew", "draw:line-skew"),
+        PropDef("svg_d", "svg:d"),
+        PropDef("view_box", "svg:viewBox"),
     )
+
+    DRAW_TYOE_CHOICE = {  # noqa: RUF012
+        "standard",
+        "lines",
+        "line",
+        "curve",
+    }
 
     def __init__(
         self,
+        name: str | None = None,
         style: str | None = None,
         text_style: str | None = None,
         draw_id: str | None = None,
         layer: str | None = None,
-        connected_shapes: tuple | None = None,
-        glue_points: tuple | None = None,
-        p1: tuple | None = None,
-        p2: tuple | None = None,
+        connected_shapes: tuple[ShapeBase, ShapeBase] | list[ShapeBase] | None = None,
+        glue_points: tuple[str | int, str | int] | list[str | int] | None = None,
+        p1: tuple[str, str] | list[str] | None = None,
+        p2: tuple[str, str] | list[str] | None = None,
+        draw_type: str | None = None,
+        line_skew: str | None = None,
+        svg_d: str | None = None,
+        view_box: str | None = None,
+        presentation_class: str | None = None,
+        presentation_style: str | None = None,
+        caption_id: str | None = None,
+        class_names: str | None = None,
+        transform: str | None = None,
+        z_index: int | None = None,
+        end_cell_address: str | None = None,
+        end_x: str | None = None,
+        end_y: str | None = None,
+        table_background: bool | None = None,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        xml_id: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a Connector shape "draw:connector".
+        """Create a connector shape "draw:connector".
 
         Args:
+            name: Name of the graphical element.
             style: The style name for the connector.
             text_style: The text style name for the connector.
             draw_id: The unique ID for the drawing shape.
             layer: The drawing layer of the connector.
             connected_shapes: A tuple of (start_shape, end_shape)
-                where each shape is an `Element` with a `draw_id`.
+                where each shape is a shape with a `draw_id`.
             glue_points: A tuple of (start_glue_point, end_glue_point)
                 specifying the glue points for connection.
             p1: The (x1, y1) coordinates of the starting point.
             p2: The (x2, y2) coordinates of the ending point.
+            draw_type: The line or series of lines that connect two glue
+                points. Values are 'standard' (default), 'lines', 'line'
+                or 'curve'.
+            line_skew: A list of offsets for the placements of connector
+                lines if the connector is of type standard.
+            svg_d: A path data.
+            view_box: The rectangle in a local coordinates system used by the
+                points.
+            presentation_class: White-space-separated list of presentation
+                class names.
+            presentation_style: Style for a presentation shape.
+            caption_id: Target ID assigned to the "draw:text-box" hat
+                contains the caption.
+            class_names: White-space-separated list of styles
+                with the family value of graphic.
+            transform: White-space or comma separated list of transform
+                definitions.
+            z_index: Rendering order for shapes in a document instance.
+            end_cell_address: End position of the shape if it is included
+                in a spreadsheet document.
+            end_x: The x-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            end_y: The y-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            table_background: Wether the shape is in the table background if
+                the drawing shape is included in a spreadsheet.
+            anchor_type: How a drawing shape is bound to a text document.
+            anchor_page_number: Physical page number of an anchor if the drawing
+                object is bound to a page within a text document.
+            xml_id: The unique XML ID.
         """
         kwargs.update(
             {
+                "name": name,
                 "style": style,
                 "text_style": text_style,
                 "draw_id": draw_id,
                 "layer": layer,
+                "presentation_class": presentation_class,
+                "presentation_style": presentation_style,
+                "caption_id": caption_id,
+                "class_names": class_names,
+                "transform": transform,
+                "z_index": z_index,
+                "end_cell_address": end_cell_address,
+                "end_x": end_x,
+                "end_y": end_y,
+                "table_background": table_background,
+                "anchor_type": anchor_type,
+                "anchor_page": anchor_page,
+                "xml_id": xml_id,
             }
         )
         super().__init__(**kwargs)
         if self._do_init:
             if connected_shapes:
-                self.start_shape = connected_shapes[0].draw_id
-                self.end_shape = connected_shapes[1].draw_id
+                self.connected_shapes = connected_shapes
             if glue_points:
-                self.start_glue_point = glue_points[0]
-                self.end_glue_point = glue_points[1]
-            if p1:
-                self.x1 = p1[0]
-                self.y1 = p1[1]
-            if p2:
-                self.x2 = p2[0]
-                self.y2 = p2[1]
+                self.glue_points = glue_points
+            self.p1 = p1
+            self.p2 = p2
+            if draw_type:
+                self.draw_type = draw_type
+            if line_skew:
+                self.line_skew = line_skew
+            if svg_d:
+                self.svg_d = svg_d
+            if view_box:
+                self.view_box = view_box
+
+    @property
+    def connected_shapes(self) -> tuple[str | None, str | None]:
+        """Get or set the connected shapes ("draw:start-shape",
+        "draw:end-shape")."""
+        get_attr = self.get_attribute_string
+        return get_attr("draw:start-shape"), get_attr("draw:end-shape")
+
+    @connected_shapes.setter
+    def connected_shapes(
+        self, connected_shapes: tuple[ShapeBase, ShapeBase] | list[ShapeBase] | None
+    ) -> None:
+        if connected_shapes is None:
+            self.start_shape = None
+            self.end_shape = None
+        else:
+            self.start_shape = connected_shapes[0].draw_id
+            self.end_shape = connected_shapes[1].draw_id
+
+    @property
+    def glue_points(self) -> tuple[str | None, str | None]:
+        """Get or set the the glue points for connection
+        ("draw:start-glue-point", "draw:end-glue-point")."""
+        get_attr = self.get_attribute_string
+        return get_attr("draw:start-glue-point"), get_attr("draw:end-glue-point")
+
+    @glue_points.setter
+    def glue_points(
+        self, glue_points: tuple[str | int, str | int] | list[str | int] | None
+    ) -> None:
+        if glue_points is None:
+            self.start_glue_point = None
+            self.end_glue_point = None
+        else:
+            self.start_glue_point = glue_points[0]
+            self.end_glue_point = glue_points[1]
+
+    @property
+    def p1(self) -> tuple[str | None, str | None]:
+        "Get or set the (x1, y1) coordinates of the starting point."
+        return (self.x1, self.y1)
+
+    @p1.setter
+    def p1(self, p1: tuple[str, str] | list[str] | None) -> None:
+        if p1 is None:
+            self.x1 = None
+            self.y1 = None
+        else:
+            self.x1 = p1[0]
+            self.y1 = p1[1]
+
+    @property
+    def p2(self) -> tuple[str | None, str | None]:
+        "Get or set the (x2, y2) coordinates of the ending point."
+        return (self.x2, self.y2)
+
+    @p2.setter
+    def p2(self, p2: tuple[str, str] | list[str] | None) -> None:
+        if p2 is None:
+            self.x2 = None
+            self.y2 = None
+        else:
+            self.x2 = p2[0]
+            self.y2 = p2[1]
+
+    @property
+    def draw_type(self) -> str:
+        'Get or set the draw type, "draw:type".'
+        return self._get_attribute_str_default("draw:type", "standard")
+
+    @draw_type.setter
+    def draw_type(self, draw_type: str) -> None:
+        if draw_type not in self.DRAW_TYOE_CHOICE:
+            raise TypeError(f"'draw:type' not valid: {draw_type!r}")
+        self._set_attribute_str_default("draw:type", draw_type, "standard")
 
 
 ConnectorShape._define_attribut_property()

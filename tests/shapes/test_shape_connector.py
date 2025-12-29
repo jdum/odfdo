@@ -36,7 +36,139 @@ def body(samples) -> Iterable[Element]:
     yield document.body
 
 
-def test_create_connector():
+@pytest.fixture
+def connector() -> Iterable[ConnectorShape]:
+    shape1 = RectangleShape(draw_id="31")
+    shape2 = RectangleShape(draw_id="32")
+    shape = ConnectorShape(
+        name="some name",
+        style="style name",
+        text_style="text style",
+        draw_id="draw_id",
+        layer="layer",
+        connected_shapes=(shape1, shape2),
+        glue_points=("100", "200"),
+        p1=("1cm", "2cm"),
+        p2=("3cm", "4cm"),
+        line_skew="5",
+        svg_d="6",
+        view_box="view box",
+        presentation_class="pres class",
+        presentation_style="pres style",
+        caption_id="capid",
+        class_names="class1",
+        transform="tr1",
+        z_index=4,
+        end_cell_address="x10",
+        end_x="10",
+        end_y="20",
+        table_background=True,
+        anchor_type="page",
+        anchor_page=42,
+        xml_id="xmlid",
+    )
+    shape.svg_title = "title"
+    yield shape
+
+
+def test_connectorshape_minimal():
+    shape = ConnectorShape()
+    assert shape._canonicalize() == "<draw:connector></draw:connector>"
+
+
+def test_connectorshape_class():
+    shape = Element.from_tag("<draw:connector/>")
+    assert isinstance(shape, ConnectorShape)
+
+
+def test_connectorshape_connected_shapes_1(connector):
+    assert connector.connected_shapes == ("31", "32")
+
+
+def test_connectorshape_connected_shapes_2(connector):
+    assert connector.start_shape == "31"
+
+
+def test_connectorshape_connected_shapes_3(connector):
+    assert connector.end_shape == "32"
+
+
+def test_connectorshape_connected_shapes_4(connector):
+    connector.connected_shapes = None
+    assert connector.connected_shapes == (None, None)
+
+
+def test_connectorshape_glue_points_1(connector):
+    assert connector.glue_points == ("100", "200")
+
+
+def test_connectorshape_glue_points_2(connector):
+    assert connector.start_glue_point == "100"
+
+
+def test_connectorshape_glue_points_3(connector):
+    assert connector.end_glue_point == "200"
+
+
+def test_connectorshape_glue_points_4(connector):
+    connector.glue_points = None
+    assert connector.glue_points == (None, None)
+
+
+def test_connectorshape_p1_1(connector):
+    assert connector.p1 == ("1cm", "2cm")
+
+
+def test_connectorshape_p1_2(connector):
+    assert connector.x1 == "1cm"
+
+
+def test_connectorshape_p1_3(connector):
+    assert connector.y1 == "2cm"
+
+
+def test_connectorshape_p1_4(connector):
+    connector.p1 = None
+    assert connector.p1 == (None, None)
+
+
+def test_connectorshape_p2_1(connector):
+    assert connector.p2 == ("3cm", "4cm")
+
+
+def test_connectorshape_p2_2(connector):
+    assert connector.x2 == "3cm"
+
+
+def test_connectorshape_p2_3(connector):
+    assert connector.y2 == "4cm"
+
+
+def test_connectorshape_p2_4(connector):
+    connector.p2 = None
+    assert connector.p2 == (None, None)
+
+
+def test_connectorshape_draw_type_1(connector):
+    assert connector.draw_type == "standard"
+
+
+def test_connectorshape_draw_type_2(connector):
+    connector.draw_type = "curve"
+    assert connector.draw_type == "curve"
+
+
+def test_connectorshape_draw_type_3(connector):
+    with pytest.raises(TypeError):
+        connector.draw_type = "bad"
+
+
+def test_connectorshape_draw_type_4():
+    connector = ConnectorShape(draw_type="line")
+    assert connector.draw_type == "line"
+
+
+def test_create_connectorshape():
     page = DrawPage("Page1")
     rectangle = RectangleShape(
         size=("10cm", "20cm"), position=("3cm", "4cm"), draw_id="rectangle"
@@ -75,31 +207,31 @@ def test_create_connector():
     assert page._canonicalize() == expected
 
 
-def test_get_draw_connector_list(body):
+def test_page_get_draw_connector_list(body):
     page = body.get_draw_page()
     connectors = page.get_draw_connectors()
     assert len(connectors) == 1
 
 
-def test_get_draw_connector_list_regex(body):
+def test_page_get_draw_connector_list_regex(body):
     page = body.get_draw_page()
     connectors = page.get_draw_connectors(content="Con")
     assert len(connectors) == 1
 
 
-def test_get_draw_connector_list_draw_style(body):
+def test_page_get_draw_connector_list_draw_style(body):
     page = body.get_draw_page()
     connectors = page.get_draw_connectors(draw_style="gr4")
     assert len(connectors) == 0
 
 
-def test_get_draw_connector_list_draw_text_style(body):
+def test_page_get_draw_connector_list_draw_text_style(body):
     page = body.get_draw_page()
     connectors = page.get_draw_connectors(draw_text_style="P1")
     assert len(connectors) == 1
 
 
-def test_get_draw_connector_by_content(body):
+def test_page_get_draw_connector_by_content(body):
     page = body.get_draw_page()
     connector = page.get_draw_connector(content="ecteur")
     expected = (
@@ -121,11 +253,10 @@ def test_get_draw_connector_by_content(body):
         "</text:p>"
         "</draw:connector>"
     )
-    print(connector._canonicalize())
     assert connector._canonicalize() == expected
 
 
-def test_get_draw_connector_by_id(body):
+def test_page_get_draw_connector_by_id(body):
     page = body.get_draw_page()
     connector = ConnectorShape(draw_id="an id")
     page.append(connector)
@@ -134,7 +265,7 @@ def test_get_draw_connector_by_id(body):
     assert connector._canonicalize() == expected
 
 
-def test_get_draw_orphans_connector(body):
+def test_page_get_draw_orphans_connector(body):
     # page = body.get_draw_page()
     orphan_connector = ConnectorShape()
     orphan_connector.append(Paragraph("Orphan c"))
