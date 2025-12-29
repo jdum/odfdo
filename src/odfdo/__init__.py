@@ -103,6 +103,7 @@ __all__ = [  # noqa: RUF022
     "IndexBody",
     "IndexTitle",
     "IndexTitleTemplate",
+    "CircleShape",
     "LAST_CHILD",
     "LineBreak",
     "LineShape",
@@ -355,6 +356,7 @@ from .ruby_base import RubyBase
 from .section import Section, SectionMixin
 from .shapes import (
     AngleMix,
+    CircleShape,
     ConnectorShape,
     DrawGroup,
     EllipseShape,
