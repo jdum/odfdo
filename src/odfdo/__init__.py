@@ -136,6 +136,7 @@ __all__ = [  # noqa: RUF022
     "ParaFormattedTextMixin",
     "ParaMixin",
     "Paragraph",
+    "PolygonShape",
     "PolylineShape",
     "PosMix",
     "Presentation",
@@ -357,6 +358,7 @@ from .shapes import (
     DrawGroup,
     EllipseShape,
     LineShape,
+    PolygonShape,
     PolylineShape,
     RectangleShape,
 )
