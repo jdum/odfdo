@@ -33,7 +33,7 @@ def poly() -> Iterable[RegularPolygonShape]:
     shape = RegularPolygonShape(
         name="Name",
         corners=4,
-        convave=False,
+        concave=False,
         size=("10cm", "10cm"),
         position=("3cm", "4cm"),
     )
