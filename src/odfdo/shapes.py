@@ -53,7 +53,6 @@ class ShapeBase(ListMixin, AnchorMix, SvgMixin, ZMix, Element):
         PropDef("caption_id", "draw:caption-id"),
         PropDef("class_names", "draw:class-names"),
         PropDef("transform", "draw:transform"),
-        PropDef("z_index", "draw:z-index"),
         PropDef("end_cell_address", "table:end-cell-address"),
         PropDef("end_x", "table:end-x"),
         PropDef("end_y", "table:end-y"),
@@ -268,12 +267,36 @@ class LineShape(ShapeBase):
         )
         super().__init__(**kwargs)
         if self._do_init:
-            if p1:
-                self.x1 = p1[0]
-                self.y1 = p1[1]
-            if p2:
-                self.x2 = p2[0]
-                self.y2 = p2[1]
+            self.p1 = p1
+            self.p2 = p2
+
+    @property
+    def p1(self) -> tuple[str | None, str | None]:
+        "Get or set the (x1, y1) coordinates of the starting point."
+        return (self.x1, self.y1)
+
+    @p1.setter
+    def p1(self, p1: tuple[str, str] | list[str] | None) -> None:
+        if p1 is None:
+            self.x1 = None
+            self.y1 = None
+        else:
+            self.x1 = p1[0]
+            self.y1 = p1[1]
+
+    @property
+    def p2(self) -> tuple[str | None, str | None]:
+        "Get or set the (x2, y2) coordinates of the ending point."
+        return (self.x2, self.y2)
+
+    @p2.setter
+    def p2(self, p2: tuple[str, str] | list[str] | None) -> None:
+        if p2 is None:
+            self.x2 = None
+            self.y2 = None
+        else:
+            self.x2 = p2[0]
+            self.y2 = p2[1]
 
 
 LineShape._define_attribut_property()
