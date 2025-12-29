@@ -332,6 +332,97 @@ class LineShape(ShapeBase):
 LineShape._define_attribut_property()
 
 
+class DrawMeasure(LineShape):
+    """Represents a shape that is used to measure distances in drawings,
+    "draw:measure".
+    """
+
+    _tag = "draw:measure"
+
+    def __init__(
+        self,
+        name: str | None = None,
+        style: str | None = None,
+        text_style: str | None = None,
+        draw_id: str | None = None,
+        layer: str | None = None,
+        p1: tuple[str, str] | list[str] | None = None,
+        p2: tuple[str, str] | list[str] | None = None,
+        presentation_class: str | None = None,
+        presentation_style: str | None = None,
+        caption_id: str | None = None,
+        class_names: str | None = None,
+        transform: str | None = None,
+        z_index: int | None = None,
+        end_cell_address: str | None = None,
+        end_x: str | None = None,
+        end_y: str | None = None,
+        table_background: bool | None = None,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        xml_id: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a line shape "draw:line".
+
+        Args:
+            name: Name of the graphical element.
+            style: The style name for the measure.
+            text_style: The text style name for the measure.
+            draw_id: The unique ID for the drawing shape.
+            layer: The drawing layer of the measure.
+            p1: The (x1, y1) coordinates of the starting point.
+            p2: The (x2, y2) coordinates of the ending point.
+            presentation_class: White-space-separated list of presentation
+                class names.
+            presentation_style: Style for a presentation shape.
+            caption_id: Target ID assigned to the "draw:text-box" that
+                contains the caption.
+            class_names: White-space-separated list of styles with the
+                family value of graphic.
+            transform: White-space or comma separated list of transform
+                definitions.
+            z_index: Rendering order for shapes in a document instance.
+            end_cell_address: End position of the shape if it is included
+                in a spreadsheet document.
+            end_x: The x-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            end_y: The y-coordinate of the end position of a shape relative
+                to the top-left edge of a cell.
+            table_background: Wether the shape is in the table background if
+                the drawing shape is included in a spreadsheet.
+            anchor_type: How a drawing shape is bound to a text document.
+            anchor_page_number: Physical page number of an anchor if the drawing
+                object is bound to a page within a text document.
+            xml_id: The unique XML ID.
+        """
+        kwargs.update(
+            {
+                "name": name,
+                "style": style,
+                "text_style": text_style,
+                "draw_id": draw_id,
+                "layer": layer,
+                "p1": p1,
+                "p2": p2,
+                "presentation_class": presentation_class,
+                "presentation_style": presentation_style,
+                "caption_id": caption_id,
+                "class_names": class_names,
+                "transform": transform,
+                "z_index": z_index,
+                "end_cell_address": end_cell_address,
+                "end_x": end_x,
+                "end_y": end_y,
+                "table_background": table_background,
+                "anchor_type": anchor_type,
+                "anchor_page": anchor_page,
+                "xml_id": xml_id,
+            }
+        )
+        super().__init__(**kwargs)
+
+
 class RectangleShape(PosMix, SizeMix, ShapeBase):
     """Represents a rectangle shape, "draw:rect".
 
@@ -1666,6 +1757,7 @@ registered_shapes = [
         CircleShape,
         ConnectorShape,
         DrawCaption,
+        DrawMeasure,
         DrawPath,
         EllipseShape,
         LineShape,
@@ -1679,6 +1771,7 @@ register_element_class(CircleShape)
 register_element_class(ConnectorShape)
 register_element_class(DrawCaption)
 register_element_class(DrawGroup)
+register_element_class(DrawMeasure)
 register_element_class(DrawPath)
 register_element_class(EllipseShape)
 register_element_class(LineShape)
