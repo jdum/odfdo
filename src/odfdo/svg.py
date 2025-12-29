@@ -113,6 +113,9 @@ class SvgTitle(Element):
     def title(self, title: str) -> None:
         self.text = title
 
+    def get_formatted_text(self, context: dict | None = None) -> str:
+        return f"{self.title}\n"
+
 
 class SvgDescription(Element):
     """Store a prose description of a graphic object that may be used to
@@ -158,6 +161,9 @@ class SvgDescription(Element):
     @description.setter
     def description(self, description: str) -> None:
         self.text = description
+
+    def get_formatted_text(self, context: dict | None = None) -> str:
+        return f"{self.text}\n"
 
 
 register_element_class(SvgTitle)
