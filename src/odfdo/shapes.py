@@ -950,8 +950,7 @@ class CircleShape(AngleMix, PosMix, SizeMix, ShapeBase):
         kind: str | None = None,
         start_angle: str | None = None,
         end_angle: str | None = None,
-        cx: str | None = None,
-        cy: str | None = None,
+        center: tuple[str, str] | list[str] | None = None,
         presentation_class: str | None = None,
         presentation_style: str | None = None,
         caption_id: str | None = None,
@@ -984,10 +983,9 @@ class CircleShape(AngleMix, PosMix, SizeMix, ShapeBase):
                 draw:kind is "section", "cut" or "arc".
             end_angle: The end angle of a section, cut, or arc where the
                 draw:kind is "section", "cut" or "arc".
-            cx: The x-axis coordinate of the center of a circular image map
+            center: The x-axis coordinate of the center of a circular image map
                 area.
-            cy: The y-axis coordinate of the center of a circular image map
-                area.
+            center: The (cx, cy) coordinates of the center of the circle.
             presentation_class: White-space-separated list of presentation
                 class names.
             presentation_style: Style for a presentation shape.
@@ -1047,10 +1045,22 @@ class CircleShape(AngleMix, PosMix, SizeMix, ShapeBase):
                 self.start_angle = start_angle
             if end_angle:
                 self.end_angle = end_angle
-            if cx:
-                self.cx = cx
-            if cy:
-                self.cy = cy
+            if center:
+                self.center = center
+
+    @property
+    def center(self) -> tuple[str | None, str | None]:
+        "Get or set the center (cx, cy) coordinates of the circle."
+        return (self.cx, self.cy)
+
+    @center.setter
+    def center(self, center: tuple[str, str] | list[str] | None) -> None:
+        if center is None:
+            self.cx = None
+            self.cy = None
+        else:
+            self.cx = center[0]
+            self.cy = center[1]
 
 
 CircleShape._define_attribut_property()
