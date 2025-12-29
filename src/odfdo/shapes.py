@@ -269,7 +269,7 @@ class LineShape(ShapeBase):
             table_background: Wether the shape is in the table background if
                 the drawing shape is included in a spreadsheet.
             anchor_type: How a drawing shape is bound to a text document.
-            anchor_page_number: Physical page number of an anchor if the drawing
+            anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
         """
@@ -392,7 +392,7 @@ class DrawMeasure(LineShape):
             table_background: Wether the shape is in the table background if
                 the drawing shape is included in a spreadsheet.
             anchor_type: How a drawing shape is bound to a text document.
-            anchor_page_number: Physical page number of an anchor if the drawing
+            anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
         """
@@ -605,7 +605,7 @@ class PolylineShape(PosMix, SizeMix, ShapeBase):
             table_background: Wether the shape is in the table background if
                 the drawing shape is included in a spreadsheet.
             anchor_type: How a drawing shape is bound to a text document.
-            anchor_page_number: Physical page number of an anchor if the drawing
+            anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
         """
@@ -711,7 +711,7 @@ class PolygonShape(PolylineShape):
             table_background: Wether the shape is in the table background if
                 the drawing shape is included in a spreadsheet.
             anchor_type: How a drawing shape is bound to a text document.
-            anchor_page_number: Physical page number of an anchor if the drawing
+            anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
         """
@@ -820,7 +820,7 @@ class RegularPolygonShape(PosMix, SizeMix, ShapeBase):
             table_background: Wether the shape is in the table background if
                 the drawing shape is included in a spreadsheet.
             anchor_type: How a drawing shape is bound to a text document.
-            anchor_page_number: Physical page number of an anchor if the drawing
+            anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
         """
@@ -949,7 +949,7 @@ class DrawPath(PosMix, SizeMix, ShapeBase):
             table_background: Wether the shape is in the table background if
                 the drawing shape is included in a spreadsheet.
             anchor_type: How a drawing shape is bound to a text document.
-            anchor_page_number: Physical page number of an anchor if the drawing
+            anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
         """
@@ -1064,7 +1064,7 @@ class DrawCaption(PosMix, SizeMix, ShapeBase):
             table_background: Wether the shape is in the table background if
                 the drawing shape is included in a spreadsheet.
             anchor_type: How a drawing shape is bound to a text document.
-            anchor_page_number: Physical page number of an anchor if the drawing
+            anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
         """
@@ -1498,7 +1498,7 @@ class ConnectorShape(ShapeBase):
             table_background: Wether the shape is in the table background if
                 the drawing shape is included in a spreadsheet.
             anchor_type: How a drawing shape is bound to a text document.
-            anchor_page_number: Physical page number of an anchor if the drawing
+            anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
         """
@@ -1686,7 +1686,7 @@ class DrawControl(PosMix, SizeMix, ShapeBase):
             table_background: Wether the shape is in the table background if
                 the drawing shape is included in a spreadsheet.
             anchor_type: How a drawing shape is bound to a text document.
-            anchor_page_number: Physical page number of an anchor if the drawing
+            anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
         """
@@ -1798,7 +1798,7 @@ class DrawPageThumbnail(PosMix, SizeMix, ShapeBase):
             table_background: Wether the shape is in the table background if
                 the drawing shape is included in a spreadsheet.
             anchor_type: How a drawing shape is bound to a text document.
-            anchor_page_number: Physical page number of an anchor if the drawing
+            anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
         """
