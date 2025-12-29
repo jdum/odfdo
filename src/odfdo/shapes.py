@@ -411,7 +411,7 @@ class RectangleShape(PosMix, SizeMix, ShapeBase):
             if rx:
                 self.rx = rx
             if ry:
-                self.rx = ry
+                self.ry = ry
 
 
 RectangleShape._define_attribut_property()
