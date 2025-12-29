@@ -696,7 +696,7 @@ class RegularPolygonShape(PosMix, SizeMix, ShapeBase):
         xml_id: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a polygon shape "draw:regular-polygon>".
+        """Create a regular polygon shape "draw:regular-polygon".
 
         Args:
             name: Name of the graphical element.
