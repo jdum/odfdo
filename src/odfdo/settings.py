@@ -26,11 +26,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Union, cast
 
+from .body import OfficeSettings
+from .config_elements import ConfigItemSet
 from .element import Element
 from .xmlpart import XmlPart
 
 if TYPE_CHECKING:
-    from .body import OfficeSettings
+    pass
 
 
 class Settings(XmlPart):
@@ -61,3 +63,18 @@ class Settings(XmlPart):
         if odsettings:
             return odsettings.get_attribute_string("office:version") or ""
         return ""  # pragma: nocover
+
+    @property
+    def config_item_sets(self) -> list[ConfigItemSet]:
+        """Get a list of first-level ConfigItemSet elements within the
+        settings.
+
+        These represent top-level configuration item sets in the document's
+        settings.
+
+        Returns:
+            list[ConfigItemSet]: A list of `ConfigItemSet` objects.
+        """
+        return cast(
+            list[ConfigItemSet], self.body.get_elements("/config:config-item-set")
+        )

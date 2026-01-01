@@ -27,6 +27,7 @@ from odfdo.body import OfficeSettings
 from odfdo.const import ODF_SETTINGS
 from odfdo.document import Document
 from odfdo.settings import Settings
+from odfdo.config_elements import ConfigItemSet
 
 
 @pytest.fixture
