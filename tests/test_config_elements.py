@@ -28,6 +28,7 @@ from odfdo.config_elements import (
     ConfigItemSet,
     ConfigItemMapIndexed,
     ConfigItemMapEntry,
+    ConfigItemMapNamed,
 )
 from odfdo.const import ODF_SETTINGS
 from odfdo.document import Document
@@ -202,3 +203,40 @@ def test_config_item_map_entry_get_iitem_maps_indexed(base_settings):
     entry = entries[0]
     item_sets = entry.config_item_maps_indexed
     assert len(item_sets) == 0
+
+
+# ConfigItemMapNamed
+
+
+def test_config_item_map_named_class():
+    named = ConfigItemMapNamed()
+    assert isinstance(named, ConfigItemMapNamed)
+
+
+def test_config_item_map_named_name():
+    named = ConfigItemMapNamed(name="foo")
+    assert named.name == "foo"
+
+
+def test_config_item_map_named_xml():
+    named = ConfigItemMapNamed(name="foo")
+    expected = '<config:config-item-map-named config:name="foo"/>'
+    assert named.serialize() == expected
+
+
+def test_config_item_map_named_from_tag():
+    content = '<config:config-item-map-named config:name="foo"/>'
+    named = Element.from_tag(content)
+    assert isinstance(named, ConfigItemMapNamed)
+    assert named.name == "foo"
+
+
+def test_config_item_map_named_repr():
+    named = ConfigItemMapNamed(name="foo")
+    expected = "<ConfigItemMapNamed tag=config:config-item-map-named name=foo>"
+    assert repr(named) == expected
+
+
+def test_config_item_map_get_config_item_maps_entries():
+    named = ConfigItemMapNamed(name="foo")
+    assert not named.config_item_maps_entries
