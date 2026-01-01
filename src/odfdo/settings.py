@@ -73,8 +73,12 @@ class Settings(XmlPart):
         settings.
 
         Returns:
-            list[ConfigItemSet]: A list of `ConfigItemSet` objects.
+        list[ConfigItemSet]: A list of `ConfigItemSet` objects.
         """
         return cast(
             list[ConfigItemSet], self.body.get_elements("config:config-item-set")
         )
+
+    def as_dict(self) -> dict[str, str | int | bool | dict[str, Any] | list[Any]]:
+        body: OfficeSettings = cast(OfficeSettings, self.body)
+        return body.as_dict()

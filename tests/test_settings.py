@@ -20,6 +20,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from copy import deepcopy
 
 import pytest
 
@@ -70,3 +71,18 @@ def test_settings_as_dict(base_settings):
     assert len(config) == 2
     assert len(config["children"]) == 2
     assert len(config["children"][0]) == 3
+
+
+def test_settings_as_dict_empty():
+    settings = OfficeSettings()
+    config = settings.as_dict()
+    assert config["class"] == "office:settings"
+    assert len(config) == 1
+    assert "children" not in config
+
+
+def test_settings_from_dict(base_settings):
+    source = base_settings.as_dict()
+    obj = OfficeSettings.from_dict(deepcopy(source))
+    assert isinstance(obj, OfficeSettings)
+    assert obj.as_dict() == source

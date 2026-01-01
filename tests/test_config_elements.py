@@ -134,6 +134,14 @@ def test_config_item_set_empty_as_dict():
     assert "children" not in content
 
 
+def test_config_item_set_from_dict_base():
+    item_set = ConfigItemSet(name="foo")
+    content = item_set.as_dict()
+    result = ConfigItemSet.from_dict(content)
+    assert isinstance(result, ConfigItemSet)
+    assert result.name == "foo"
+
+
 # ConfigItemMapIndexed
 
 
@@ -174,7 +182,7 @@ def test_config_item_map_indexed_read(base_settings):
     assert mapi.name == "Views"
 
 
-def test_config_item_map_get_map_entries(base_settings):
+def test_config_item_map_indexed_get_map_entries(base_settings):
     item_sets = base_settings.config_item_sets
     maps = item_sets[0].config_item_maps_indexed
     mapi = maps[0]
@@ -182,6 +190,14 @@ def test_config_item_map_get_map_entries(base_settings):
     assert len(entries) == 1
     entry = entries[0]
     assert isinstance(entry, ConfigItemMapEntry)
+
+
+def test_config_item_map_indexed_set_from_dict_base():
+    item_set = ConfigItemMapIndexed(name="foo")
+    content = item_set.as_dict()
+    result = ConfigItemMapIndexed.from_dict(content)
+    assert isinstance(result, ConfigItemMapIndexed)
+    assert result.name == "foo"
 
 
 # ConfigItemMapEntry
@@ -272,6 +288,14 @@ def test_config_item_map_entry_get_config_item_sets(base_settings):
     assert len(item_sets) == 0
 
 
+def test_config_item_map_entry_set_from_dict_base():
+    item_set = ConfigItemMapEntry(name="foo")
+    content = item_set.as_dict()
+    result = ConfigItemMapEntry.from_dict(content)
+    assert isinstance(result, ConfigItemMapEntry)
+    assert result.name == "foo"
+
+
 # ConfigItemMapNamed
 
 
@@ -304,17 +328,25 @@ def test_config_item_map_named_repr():
     assert repr(named) == expected
 
 
-def test_config_item_map_get_config_item_maps_entries():
+def test_config_item_map_named_get_config_item_maps_entries():
     named = ConfigItemMapNamed(name="foo")
     assert not named.config_item_maps_entries
 
 
-def test_config_item_map_as_empty_dict():
+def test_config_item_map_named_as_empty_dict():
     named = ConfigItemMapNamed(name="foo")
     result = named.as_dict()
     assert result["class"] == "config:config-item-map-named"
     assert result["config:name"] == "foo"
     assert "children" not in result
+
+
+def test_config_item_map_named_set_from_dict_base():
+    item_set = ConfigItemMapNamed(name="foo")
+    content = item_set.as_dict()
+    result = ConfigItemMapNamed.from_dict(content)
+    assert isinstance(result, ConfigItemMapNamed)
+    assert result.name == "foo"
 
 
 # ConfigItem
@@ -401,7 +433,7 @@ def test_config_item_from_set_double():
     assert item.text == "-4"
 
 
-def test_config_item_from_dict():
+def test_config_item_from_dict_str():
     data = {
         "class": "config:config-item",
         "config:name": "foo",

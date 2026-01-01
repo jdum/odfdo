@@ -327,6 +327,7 @@ _xpath_text_descendant_no_annotation = xpath_compile(
 )
 
 _class_registry: dict[str, type[Element]] = {}
+_tag_class_registry: dict[str, type[Element]] = {}
 
 
 def register_element_class(cls: type[Element]) -> None:
@@ -372,6 +373,14 @@ def _register_element_class(cls: type[Element], qname: str) -> None:
         msg = f"Class with tag {qname!r} already seen: {_class_registry[tag]!r}"
         raise RuntimeError(msg)
     _class_registry[tag] = cls
+    if qname in _tag_class_registry:  # pragma: nocover
+        msg = f"Class with tag {qname!r} already seen: {_tag_class_registry[qname]!r}"
+        raise RuntimeError(msg)
+    _tag_class_registry[qname] = cls
+
+
+def class_from_tag(qname: str) -> type[Element]:
+    return _tag_class_registry[qname]
 
 
 class EText(str):

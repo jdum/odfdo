@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING, Any, cast
 from .annotation import AnnotationMixin
 from .bookmark import BookmarkMixin
 from .const import BODY_ALLOW_NAMED_RANGE_TAGS
+from .config_elements import _from_dict
 from .element import Element, PropDef, PropDefBool, register_element_class
 from .form import FormMixin
 from .mixin_link import LinkMixin
@@ -228,11 +229,19 @@ class OfficeSettings(Body):
                 where the key is the element's tag and the value is a
                 dictionary containing its children's representations.
         """
-        conf = {"class": self._tag}
+        conf: dict[str, str | int | bool | dict[str, Any] | list[Any]] = {
+            "class": self._tag
+        }
         children = [child.as_dict() for child in self.children]  # type: ignore[attr-defined]
         if children:
             conf["children"] = children
         return conf
+
+    @classmethod
+    def from_dict(
+        cls, data: dict[str, str | int | bool | dict[str, Any]]
+    ) -> OfficeSettings:
+        return cast(OfficeSettings, _from_dict(data))
 
 
 register_element_class(Body)
@@ -241,7 +250,7 @@ register_element_class(Database)
 register_element_class(Drawing)
 register_element_class(Image)
 register_element_class(Metadata)
-register_element_class(Presentation)
 register_element_class(OfficeSettings)
+register_element_class(Presentation)
 register_element_class(Spreadsheet)
 register_element_class(Text)

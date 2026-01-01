@@ -29,7 +29,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from .datatype import Boolean
-from .element import Element, PropDef, _class_registry, register_element_class
+from .element import Element, PropDef, class_from_tag, register_element_class
 
 if TYPE_CHECKING:
     pass
@@ -40,8 +40,10 @@ def _as_dict(
     | ConfigItemMapIndexed
     | ConfigItemMapNamed
     | ConfigItemSet,
-) -> dict[str, str | int | bool | dict[str, Any]]:
-    conf: dict[str, str | list[Any]] = {"class": element._tag}
+) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
+    conf: dict[str, str | int | bool | list[Any] | dict[str, Any]] = {
+        "class": element._tag
+    }
     if element.name:
         conf["config:name"] = element.name
     # all children are known to be classes with as_dict()
@@ -52,16 +54,14 @@ def _as_dict(
 
 
 def _from_dict(data: dict[str, str | int | bool | dict[str, Any]]) -> Element:
-    class_name = data.pop("class")
+    class_tag: str = data.pop("class")  # type: ignore[assignment]
+    if class_tag == "config:config-item":
+        return ConfigItem.from_dict(data)  # type: ignore[arg-type]
     kwargs: dict[str, str | int | bool] = {}
     if "config:name" in data:
-        kwargs["name"] = data.pop("config:name")
-    if "config:type" in data:
-        kwargs["config_type"] = data.pop("config:type")
-    if class_name == "config:config-item":
-        return ConfigItem(**kwargs)
-    children = data.pop("children", [])
-    klass = _class_registry.get(data["class"])
+        kwargs["name"] = data.pop("config:name")  # type: ignore[assignment]
+    children: list[Any] = data.pop("children", [])  # type: ignore[assignment]
+    klass = class_from_tag(class_tag)
     result = klass(**kwargs)
     for child in children:
         result.append(_from_dict(child))
@@ -140,7 +140,7 @@ class ConfigItemSet(Element):
         """Return list of ConfigItem."""
         return cast(list[ConfigItem], self.get_elements("config:config-item"))
 
-    def as_dict(self) -> dict[str, str | int | bool | dict]:
+    def as_dict(self) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
         return _as_dict(self)
 
     @classmethod
@@ -196,7 +196,7 @@ class ConfigItemMapIndexed(Element):
             list[ConfigItemMapEntry], self.get_elements("config:config-item-map-entry")
         )
 
-    def as_dict(self) -> dict[str, str | int | bool | dict]:
+    def as_dict(self) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
         return _as_dict(self)
 
     @classmethod
@@ -276,7 +276,7 @@ class ConfigItemMapEntry(Element):
         """Return list of ConfigItem."""
         return cast(list[ConfigItem], self.get_elements("config:config-item"))
 
-    def as_dict(self) -> dict[str, str | int | bool | dict]:
+    def as_dict(self) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
         return _as_dict(self)
 
     @classmethod
@@ -333,7 +333,7 @@ class ConfigItemMapNamed(Element):
             list[ConfigItemMapEntry], self.get_elements("config:config-item-map-entry")
         )
 
-    def as_dict(self) -> dict[str, str | int | bool | dict]:
+    def as_dict(self) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
         return _as_dict(self)
 
     @classmethod
@@ -438,7 +438,7 @@ class ConfigItem(Element):
     def as_dict(self) -> dict[str, str | int | bool]:
         return {
             "class": self._tag,
-            "config:name": self.name,
+            "config:name": self.name,  # type: ignore[dict-item]
             "config:type": self.config_type,
             "value": self.value,
         }
@@ -446,8 +446,8 @@ class ConfigItem(Element):
     @classmethod
     def from_dict(cls, data: dict[str, str | int | bool]) -> ConfigItem:
         return cls(
-            name=data["config:name"],
-            config_type=data.get("config:type"),
+            name=data["config:name"],  # type: ignore[arg-type]
+            config_type=data.get("config:type"),  # type: ignore[arg-type]
             value=data.get("value"),
         )
 
