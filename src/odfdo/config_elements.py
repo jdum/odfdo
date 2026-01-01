@@ -29,7 +29,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from .datatype import Boolean
-from .element import Element, PropDef, PropDefBool, register_element_class
+from .element import Element, PropDef, _class_registry, register_element_class
 
 if TYPE_CHECKING:
     pass
@@ -49,6 +49,23 @@ def _as_dict(
     if children:
         conf["children"] = children
     return conf
+
+
+def _from_dict(data: dict[str, str | int | bool | dict[str, Any]]) -> Element:
+    class_name = data.pop("class")
+    kwargs: dict[str, str | int | bool] = {}
+    if "config:name" in data:
+        kwargs["name"] = data.pop("config:name")
+    if "config:type" in data:
+        kwargs["config_type"] = data.pop("config:type")
+    if class_name == "config:config-item":
+        return ConfigItem(**kwargs)
+    children = data.pop("children", [])
+    klass = _class_registry.get(data["class"])
+    result = klass(**kwargs)
+    for child in children:
+        result.append(_from_dict(child))
+    return result
 
 
 class ConfigItemSet(Element):
@@ -126,6 +143,12 @@ class ConfigItemSet(Element):
     def as_dict(self) -> dict[str, str | int | bool | dict]:
         return _as_dict(self)
 
+    @classmethod
+    def from_dict(
+        cls, data: dict[str, str | int | bool | dict[str, Any]]
+    ) -> ConfigItemSet:
+        return cast(ConfigItemSet, _from_dict(data))
+
 
 ConfigItemSet._define_attribut_property()
 
@@ -176,6 +199,12 @@ class ConfigItemMapIndexed(Element):
     def as_dict(self) -> dict[str, str | int | bool | dict]:
         return _as_dict(self)
 
+    @classmethod
+    def from_dict(
+        cls, data: dict[str, str | int | bool | dict[str, Any]]
+    ) -> ConfigItemMapIndexed:
+        return cast(ConfigItemMapIndexed, _from_dict(data))
+
 
 ConfigItemMapIndexed._define_attribut_property()
 
@@ -203,9 +232,14 @@ class ConfigItemMapEntry(Element):
         name: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize a ConfigItemMapEntry element.
+        """A single setting in a sequence of settings, "config:config-item-map-entry" tag.
 
-        This represents an entry within an ordered configuration map.
+        The setting itself is defined by the child element of "config:config-item-map-entry",
+        and may be a single value, a set of settings, or a sequence of settings.
+
+        The "config:config-item-map-entry" element has the following child elements:
+        "config:config-item", "config:config-item-map-indexed", "config:config-item-map-named",
+        and "config:config-item-set.
 
         Args:
             name: The name of the entry.
@@ -244,6 +278,12 @@ class ConfigItemMapEntry(Element):
 
     def as_dict(self) -> dict[str, str | int | bool | dict]:
         return _as_dict(self)
+
+    @classmethod
+    def from_dict(
+        cls, data: dict[str, str | int | bool | dict[str, Any]]
+    ) -> ConfigItemMapEntry:
+        return cast(ConfigItemMapEntry, _from_dict(data))
 
 
 ConfigItemMapEntry._define_attribut_property()
@@ -295,6 +335,12 @@ class ConfigItemMapNamed(Element):
 
     def as_dict(self) -> dict[str, str | int | bool | dict]:
         return _as_dict(self)
+
+    @classmethod
+    def from_dict(
+        cls, data: dict[str, str | int | bool | dict[str, Any]]
+    ) -> ConfigItemMapNamed:
+        return cast(ConfigItemMapNamed, _from_dict(data))
 
 
 ConfigItemMapNamed._define_attribut_property()
