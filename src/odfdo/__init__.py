@@ -160,6 +160,7 @@ __all__ = [  # noqa: RUF022
     "RubyBase",
     "Section",
     "SectionMixin",
+    "Settings",
     "SizeMix",
     "Spacer",
     "Span",
@@ -361,6 +362,8 @@ from .row import Row
 from .row_group import RowGroup
 from .ruby_base import RubyBase
 from .section import Section, SectionMixin
+from .settings import Settings
+from .shapes import ConnectorShape, DrawGroup, EllipseShape, LineShape, RectangleShape
 from .shapes import (
     AngleMix,
     CircleShape,

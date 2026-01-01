@@ -56,6 +56,7 @@ from .image import DrawFillImage, DrawImage
 from .manifest import Manifest
 from .meta import Meta
 from .mixin_md import MDDocument
+from .settings import Settings
 from .styles import Styles
 from .table import Table
 from .utils import FAMILY_MAPPING, Blob, bytes_to_str, is_RFC3066
@@ -176,7 +177,7 @@ def _get_part_class(
     return {
         ODF_CONTENT: Content,
         ODF_META: Meta,
-        ODF_SETTINGS: XmlPart,
+        ODF_SETTINGS: Settings,
         ODF_STYLES: Styles,
         ODF_MANIFEST_NAME: Manifest,
     }.get(name)
@@ -531,6 +532,23 @@ class Document(MDDocument):
         if manifest is None or not isinstance(manifest, Manifest):
             raise ValueError("Empty Manifest")
         return manifest
+
+    @property
+    def settings(self) -> Settings:
+        """Get the settings part (settings.xml) of the document.
+
+        The settings part stores document-wide configuration and preferences.
+
+        Returns:
+            Settings: The `Settings` object representing the document's settings.
+
+        Raises:
+            ValueError: If the settings part is empty or cannot be retrieved.
+        """
+        settings_part = self.get_part(ODF_SETTINGS)
+        if settings_part is None or not isinstance(settings_part, Settings):
+            raise ValueError("Empty settings part")
+        return settings_part
 
     def _get_formatted_text_footnotes(
         self,
