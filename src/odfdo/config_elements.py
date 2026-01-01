@@ -26,13 +26,16 @@ the `settings.xml` file of an ODF document, specifically those related to
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, cast
+from typing import Any, ClassVar, cast
 
 from .datatype import Boolean
-from .element import Element, PropDef, class_from_tag, register_element_class
-
-if TYPE_CHECKING:
-    pass
+from .element import (
+    Element,
+    PropDef,
+    PropDefBool,
+    class_from_tag,
+    register_element_class,
+)
 
 
 def _as_dict(
@@ -41,6 +44,7 @@ def _as_dict(
     | ConfigItemMapNamed
     | ConfigItemSet,
 ) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
+    """Internal helper to serialize a configuration element to a dictionary."""
     conf: dict[str, str | int | bool | list[Any] | dict[str, Any]] = {
         "class": element._tag
     }
@@ -54,6 +58,9 @@ def _as_dict(
 
 
 def _from_dict(data: dict[str, str | int | bool | dict[str, Any]]) -> Element:
+    """Internal helper to deserialize a dictionary into a configuration
+    element.
+    """
     class_tag: str = data.pop("class")  # type: ignore[assignment]
     if class_tag == "config:config-item":
         return ConfigItem.from_dict(data)  # type: ignore[arg-type]
@@ -110,7 +117,7 @@ class ConfigItemSet(Element):
 
     @property
     def config_item_sets(self) -> list[ConfigItemSet]:
-        """Get the list of ConfigItemSet elements of this level.
+        """Get the list of nested ConfigItemSet elements.
 
         Returns:
             list[ConfigItemSet]: A list of `ConfigItemSet` objects.
@@ -119,10 +126,12 @@ class ConfigItemSet(Element):
 
     @property
     def config_item_maps_indexed(self) -> list[ConfigItemMapIndexed]:
-        """Return the list of ConfigItemMapIndexed of this level.
+        """Get the list of indexed configuration item maps.
 
         Returns:
-            list[ConfigItemMapIndexed]: A list of `ConfigItemMapIndexed` objects."""
+            list[ConfigItemMapIndexed]: A list of `ConfigItemMapIndexed`
+                objects.
+        """
         return cast(
             list[ConfigItemMapIndexed],
             self.get_elements("config:config-item-map-indexed"),
@@ -130,23 +139,33 @@ class ConfigItemSet(Element):
 
     @property
     def config_item_maps_named(self) -> list[ConfigItemMapNamed]:
-        """Return list of ConfigItemMapNamed."""
+        """Get the list of named configuration item maps.
+
+        Returns:
+            list[ConfigItemMapNamed]: A list of `ConfigItemMapNamed` objects.
+        """
         return cast(
             list[ConfigItemMapNamed], self.get_elements("config:config-item-map-named")
         )
 
     @property
     def config_items(self) -> list[ConfigItem]:
-        """Return list of ConfigItem."""
+        """Get the list of individual configuration items.
+
+        Returns:
+            list[ConfigItem]: A list of `ConfigItem` objects.
+        """
         return cast(list[ConfigItem], self.get_elements("config:config-item"))
 
     def as_dict(self) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
+        """Serialize the element to a dictionary."""
         return _as_dict(self)
 
     @classmethod
     def from_dict(
         cls, data: dict[str, str | int | bool | dict[str, Any]]
     ) -> ConfigItemSet:
+        """Create an element from a dictionary."""
         return cast(ConfigItemSet, _from_dict(data))
 
 
@@ -191,18 +210,24 @@ class ConfigItemMapIndexed(Element):
 
     @property
     def config_item_maps_entries(self) -> list[ConfigItemMapEntry]:
-        """Return list of ConfigItemMapEntry."""
+        """Get the list of configuration item map entries.
+
+        Returns:
+            list[ConfigItemMapEntry]: A list of `ConfigItemMapEntry` objects.
+        """
         return cast(
             list[ConfigItemMapEntry], self.get_elements("config:config-item-map-entry")
         )
 
     def as_dict(self) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
+        """Serialize the element to a dictionary."""
         return _as_dict(self)
 
     @classmethod
     def from_dict(
         cls, data: dict[str, str | int | bool | dict[str, Any]]
     ) -> ConfigItemMapIndexed:
+        """Create an element from a dictionary."""
         return cast(ConfigItemMapIndexed, _from_dict(data))
 
 
@@ -232,14 +257,9 @@ class ConfigItemMapEntry(Element):
         name: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """A single setting in a sequence of settings, "config:config-item-map-entry" tag.
+        """Initialize a ConfigItemMapEntry element.
 
-        The setting itself is defined by the child element of "config:config-item-map-entry",
-        and may be a single value, a set of settings, or a sequence of settings.
-
-        The "config:config-item-map-entry" element has the following child elements:
-        "config:config-item", "config:config-item-map-indexed", "config:config-item-map-named",
-        and "config:config-item-set.
+        This represents an entry within an ordered configuration map.
 
         Args:
             name: The name of the entry.
@@ -253,12 +273,21 @@ class ConfigItemMapEntry(Element):
 
     @property
     def config_item_sets(self) -> list[ConfigItemSet]:
-        """Return list of first level ConfigItemSet."""
+        """Get the list of nested ConfigItemSet elements.
+
+        Returns:
+            list[ConfigItemSet]: A list of `ConfigItemSet` objects.
+        """
         return cast(list[ConfigItemSet], self.get_elements("config:config-item-set"))
 
     @property
     def config_item_maps_indexed(self) -> list[ConfigItemMapIndexed]:
-        """Return list of ConfigItemMapIndexed."""
+        """Get the list of indexed configuration item maps.
+
+        Returns:
+            list[ConfigItemMapIndexed]: A list of `ConfigItemMapIndexed`
+                objects.
+        """
         return cast(
             list[ConfigItemMapIndexed],
             self.get_elements("config:config-item-map-indexed"),
@@ -266,23 +295,33 @@ class ConfigItemMapEntry(Element):
 
     @property
     def config_item_maps_named(self) -> list[ConfigItemMapNamed]:
-        """Return list of ConfigItemMapNamed."""
+        """Get the list of named configuration item maps.
+
+        Returns:
+            list[ConfigItemMapNamed]: A list of `ConfigItemMapNamed` objects.
+        """
         return cast(
             list[ConfigItemMapNamed], self.get_elements("config:config-item-map-named")
         )
 
     @property
     def config_items(self) -> list[ConfigItem]:
-        """Return list of ConfigItem."""
+        """Get the list of individual configuration items.
+
+        Returns:
+            list[ConfigItem]: A list of `ConfigItem` objects.
+        """
         return cast(list[ConfigItem], self.get_elements("config:config-item"))
 
     def as_dict(self) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
+        """Serialize the element to a dictionary."""
         return _as_dict(self)
 
     @classmethod
     def from_dict(
         cls, data: dict[str, str | int | bool | dict[str, Any]]
     ) -> ConfigItemMapEntry:
+        """Create an element from a dictionary."""
         return cast(ConfigItemMapEntry, _from_dict(data))
 
 
@@ -328,18 +367,24 @@ class ConfigItemMapNamed(Element):
 
     @property
     def config_item_maps_entries(self) -> list[ConfigItemMapEntry]:
-        """Return list of ConfigItemMapEntry."""
+        """Get the list of configuration item map entries.
+
+        Returns:
+            list[ConfigItemMapEntry]: A list of `ConfigItemMapEntry` objects.
+        """
         return cast(
             list[ConfigItemMapEntry], self.get_elements("config:config-item-map-entry")
         )
 
     def as_dict(self) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
+        """Serialize the element to a dictionary."""
         return _as_dict(self)
 
     @classmethod
     def from_dict(
         cls, data: dict[str, str | int | bool | dict[str, Any]]
     ) -> ConfigItemMapNamed:
+        """Create an element from a dictionary."""
         return cast(ConfigItemMapNamed, _from_dict(data))
 
 
@@ -357,6 +402,7 @@ class ConfigItem(Element):
     Attributes:
         name (str): The name of the configuration item.
         config_type (str): The data type of the configuration item's value.
+        value (str | int | bool): The actual value of the configuration item.
     """
 
     _tag: str = "config:config-item"
@@ -392,6 +438,7 @@ class ConfigItem(Element):
             config_type: The data type of the configuration item's value,
                 one of "boolean", "short", "int", "long", "double", "string",
                 "datetime", or "base64Binary".
+            value: The actual value of the configuration item.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -404,6 +451,7 @@ class ConfigItem(Element):
 
     @property
     def config_type(self) -> str:
+        """Get the data type of the configuration item's value."""
         config_type = self.get_attribute_string("config:type")
         if config_type not in self.TYPES:
             return "string"
@@ -411,12 +459,25 @@ class ConfigItem(Element):
 
     @config_type.setter
     def config_type(self, config_type: str | None) -> None:
+        """Set the data type of the configuration item's value."""
         if config_type not in self.TYPES:
             config_type = "string"
         self._set_attribute_str("config:type", config_type)
 
     @property
     def value(self) -> str | int | bool:
+        """Get or set the value of the configuration item.
+
+        When getting, the value is cast to its appropriate Python type (str,
+        int, or bool) based on the `config_type` attribute.
+
+        When setting, the provided value is converted to a string and stored
+        as the element's text content, applying type-specific encoding (e.g.,
+        for booleans) based on the `config_type` attribute.
+
+        Returns:
+            The value of the configuration item as a str, int, or bool.
+        """
         content: str = self.text
         config_type = self.config_type
         if config_type == "boolean":
@@ -436,6 +497,7 @@ class ConfigItem(Element):
             self.text = str(value or "")
 
     def as_dict(self) -> dict[str, str | int | bool]:
+        """Serialize the element to a dictionary."""
         return {
             "class": self._tag,
             "config:name": self.name,  # type: ignore[dict-item]
@@ -445,6 +507,7 @@ class ConfigItem(Element):
 
     @classmethod
     def from_dict(cls, data: dict[str, str | int | bool]) -> ConfigItem:
+        """Create an element from a dictionary."""
         return cls(
             name=data["config:name"],  # type: ignore[arg-type]
             config_type=data.get("config:type"),  # type: ignore[arg-type]
