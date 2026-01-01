@@ -41,6 +41,7 @@ __all__ = [  # noqa: RUF022
     "Chart",
     "CircleShape",
     "Column",
+    "ConfigItemMapEntry",
     "ConfigItemMapIndexed",
     "ConfigItemSet",
     "ConnectorShape",
@@ -258,7 +259,7 @@ from .body import (
 from .bookmark import Bookmark, BookmarkEnd, BookmarkMixin, BookmarkStart
 from .cell import Cell
 from .column import Column
-from .config_elements import ConfigItemMapIndexed, ConfigItemSet
+from .config_elements import ConfigItemMapEntry, ConfigItemMapIndexed, ConfigItemSet
 from .container import Container
 from .content import Content
 from .document import Document

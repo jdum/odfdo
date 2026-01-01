@@ -69,8 +69,6 @@ class ConfigItemSet(Element):
             **kwargs: Arbitrary keyword arguments passed to the base `Element`
                 class.
         """
-        # fixme : use offset
-        # TODO allow paragraph and text styles
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
@@ -133,8 +131,54 @@ class ConfigItemMapIndexed(Element):
             **kwargs: Arbitrary keyword arguments passed to the base `Element`
                 class.
         """
-        # fixme : use offset
-        # TODO allow paragraph and text styles
+        super().__init__(**kwargs)
+        if self._do_init:
+            self.name = name
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} tag={self.tag} name={self.name}>"
+
+    @property
+    def config_item_maps_entries(self) -> list[ConfigItemMapEntry]:
+        """Return list of ConfigItemMapEntry."""
+        return self.get_elements("config:config-item-map-entry")  # type: ignore[return-value]
+
+
+ConfigItemMapIndexed._define_attribut_property()
+
+
+class ConfigItemMapEntry(Element):
+    """Represents a single setting entry in a sequence of settings,
+    corresponding to the "config:config-item-map-entry" tag.
+
+    The setting itself is defined by the child element of "config:config-item-map-entry",
+    and may be a single value, a set of settings, or a sequence of settings.
+
+    The "config:config-item-map-entry" element has the following child elements:
+    "config:config-item", "config:config-item-map-indexed", "config:config-item-map-named",
+    and "config:config-item-set.
+
+    Attributes:
+        name (str): The name of the entry.
+    """
+
+    _tag: str = "config:config-item-map-entry"
+    _properties: tuple[PropDef | PropDefBool, ...] = (PropDef("name", "config:name"),)
+
+    def __init__(
+        self,
+        name: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Initialize a ConfigItemMapEntry element.
+
+        This represents an entry within an ordered configuration map.
+
+        Args:
+            name: The name of the entry.
+            **kwargs: Arbitrary keyword arguments passed to the base `Element`
+                class.
+        """
         super().__init__(**kwargs)
         if self._do_init:
             self.name = name
@@ -143,7 +187,8 @@ class ConfigItemMapIndexed(Element):
         return f"<{self.__class__.__name__} tag={self.tag} name={self.name}>"
 
 
-ConfigItemMapIndexed._define_attribut_property()
+ConfigItemMapEntry._define_attribut_property()
 
 register_element_class(ConfigItemSet)
 register_element_class(ConfigItemMapIndexed)
+register_element_class(ConfigItemMapEntry)
