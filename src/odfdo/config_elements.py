@@ -66,8 +66,6 @@ class ConfigItemSet(Element):
 
         Args:
             name: The name of the configuration item set.
-            **kwargs: Arbitrary keyword arguments passed to the base `Element`
-                class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -128,8 +126,6 @@ class ConfigItemMapIndexed(Element):
 
         Args:
             name: The name of the indexed configuration item map.
-            **kwargs: Arbitrary keyword arguments passed to the base `Element`
-                class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -178,8 +174,6 @@ class ConfigItemMapEntry(Element):
 
         Args:
             name: The name of the entry.
-            **kwargs: Arbitrary keyword arguments passed to the base `Element`
-                class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -229,8 +223,6 @@ class ConfigItemMapNamed(Element):
 
         Args:
             name: The name of the named configuration item map.
-            **kwargs: Arbitrary keyword arguments passed to the base `Element`
-                class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -247,8 +239,53 @@ class ConfigItemMapNamed(Element):
         )
 
 
-ConfigItemMapNamed._define_attribut_property()
+class ConfigItem(Element):
+    """Represents an element containing the value of an application setting,
+    identified by its `config:name` attribute. This corresponds to the
+    "config:config-item" tag.
 
+    This element holds a single configuration value and does not have any
+    child elements.
+
+    Attributes:
+        name (str): The name of the configuration item.
+        config_type (str): The data type of the configuration item's value.
+    """
+
+    _tag: str = "config:config-item"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("name", "config:name"),
+        PropDef("config_type", "config:type"),
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        config_type: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Initialize a ConfigItem element.
+
+        This element contains the value of an application setting.
+
+        Args:
+            name: The name of the configuration item.
+            config_type: The data type of the configuration item's value,
+                one of "boolean", "short", "int", "long", "double", "string",
+                "datetime", or "base64Binary".
+        """
+        super().__init__(**kwargs)
+        if self._do_init:
+            self.name = name
+            self.config_type = config_type
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} tag={self.tag} name={self.name}>"
+
+
+ConfigItem._define_attribut_property()
+
+register_element_class(ConfigItem)
 register_element_class(ConfigItemMapEntry)
 register_element_class(ConfigItemMapIndexed)
 register_element_class(ConfigItemMapNamed)
