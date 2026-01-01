@@ -24,7 +24,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from odfdo.config_elements import ConfigItemSet
+from odfdo.config_elements import ConfigItemSet, ConfigItemMapIndexed
 from odfdo.const import ODF_SETTINGS
 from odfdo.document import Document
 from odfdo.element import Element
@@ -76,9 +76,40 @@ def test_config_item_set_read_name(base_settings):
 
 
 def test_config_item_set_item_sets(base_settings):
-    item_set = ConfigItemSet(name="foo")
     level1 = base_settings.config_item_sets
     level2_1 = level1[0].config_item_sets
     level2_2 = level1[0].config_item_sets
     assert level2_1 == []
     assert level2_2 == []
+
+
+# ConfigItemMapIndexed
+
+
+def test_config_item_map_indexed_class():
+    item_map = ConfigItemMapIndexed()
+    assert isinstance(item_map, ConfigItemMapIndexed)
+
+
+def test_config_item_map_indexed_name():
+    item_map = ConfigItemMapIndexed(name="foo")
+    assert item_map.name == "foo"
+
+
+def test_config_item_map_indexed_xml():
+    item_map = ConfigItemMapIndexed(name="foo")
+    expected = '<config:config-item-map-indexed config:name="foo"/>'
+    assert item_map.serialize() == expected
+
+
+def test_config_item_map_indexed_from_tag():
+    content = '<config:config-item-map-indexed config:name="foo"/>'
+    item_map = Element.from_tag(content)
+    assert isinstance(item_map, ConfigItemMapIndexed)
+    assert item_map.name == "foo"
+
+
+def test_config_item_map_indexed_repr():
+    item_map = ConfigItemMapIndexed(name="foo")
+    expected = "<ConfigItemMapIndexed tag=config:config-item-map-indexed name=foo>"
+    assert repr(item_map) == expected
