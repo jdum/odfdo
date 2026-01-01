@@ -71,6 +71,9 @@ class ConfigItemSet(Element):
         if self._do_init:
             self.name = name
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} tag={self.tag} name={self.name}>"
+
 
 ConfigItemSet._define_attribut_property()
 
