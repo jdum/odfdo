@@ -45,6 +45,9 @@ def base_settings(samples) -> Iterable[Settings]:
     yield document.get_part(ODF_SETTINGS)
 
 
+# ConfigItemSet
+
+
 def test_config_item_set_class():
     item_set = ConfigItemSet()
     assert isinstance(item_set, ConfigItemSet)
@@ -100,6 +103,24 @@ def test_config_item_set_get_config_item_maps_indexed_2(base_settings):
     item_sets = base_settings.config_item_sets
     maps2 = item_sets[1].config_item_maps_indexed
     assert len(maps2) == 0
+
+
+def test_config_item_set_as_dict(base_settings):
+    item_sets = base_settings.config_item_sets
+    content = item_sets[0].as_dict()
+    assert len(content) == 1
+    item_set = content["config:config-item-set"]
+    assert item_set["config:name"] == "ooo:view-settings"
+    assert len(item_set["children"]) == 7
+
+
+def test_config_item_set_empty_as_dict():
+    item_set = ConfigItemSet(name="foo")
+    content = item_set.as_dict()
+    assert len(content) == 1
+    values = content["config:config-item-set"]
+    assert values["config:name"] == "foo"
+    assert "children" not in values
 
 
 # ConfigItemMapIndexed
@@ -257,8 +278,8 @@ def test_config_item_name():
 
 
 def test_config_item_xml():
-    item = ConfigItem(name="foo")
-    expected = '<config:config-item config:name="foo"/>'
+    item = ConfigItem(name="foo", value="bar")
+    expected = '<config:config-item config:name="foo" config:type="string">bar</config:config-item>'
     assert item.serialize() == expected
 
 

@@ -62,3 +62,10 @@ def test_settings_config_item_sets(base_settings):
     item_sets = base_settings.config_item_sets
     assert len(item_sets) == 2
     assert all(isinstance(x, ConfigItemSet) for x in item_sets)
+
+
+def test_settings_as_dict(base_settings):
+    config = base_settings.as_dict()
+    assert len(config) == 1
+    assert len(config["office:settings"]["children"]) == 2
+    assert len(config["office:settings"]["children"][0]) == 1
