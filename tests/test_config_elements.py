@@ -68,8 +68,8 @@ def test_config_item_set_repr():
 
 
 def test_config_item_set_read_name(base_settings):
-    item_set = base_settings.config_item_sets
-    assert [i.name for i in item_set] == [
+    item_sets = base_settings.config_item_sets
+    assert [i.name for i in item_sets] == [
         "ooo:view-settings",
         "ooo:configuration-settings",
     ]
@@ -81,6 +81,19 @@ def test_config_item_set_item_sets(base_settings):
     level2_2 = level1[0].config_item_sets
     assert level2_1 == []
     assert level2_2 == []
+
+
+def test_config_item_set_get_config_item_maps_indexed_1(base_settings):
+    item_sets = base_settings.config_item_sets
+    maps1 = item_sets[0].config_item_maps_indexed
+    assert len(maps1) == 1
+    assert isinstance(maps1[0], ConfigItemMapIndexed)
+
+
+def test_config_item_set_get_config_item_maps_indexed_2(base_settings):
+    item_sets = base_settings.config_item_sets
+    maps2 = item_sets[1].config_item_maps_indexed
+    assert len(maps2) == 0
 
 
 # ConfigItemMapIndexed
@@ -113,3 +126,11 @@ def test_config_item_map_indexed_repr():
     item_map = ConfigItemMapIndexed(name="foo")
     expected = "<ConfigItemMapIndexed tag=config:config-item-map-indexed name=foo>"
     assert repr(item_map) == expected
+
+
+def test_config_item_map_indexed_read(base_settings):
+    item_sets = base_settings.config_item_sets
+    maps = item_sets[0].config_item_maps_indexed
+    mapi = maps[0]
+    assert isinstance(mapi, ConfigItemMapIndexed)
+    assert mapi.name == "Views"

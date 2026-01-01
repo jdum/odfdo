@@ -87,6 +87,17 @@ class ConfigItemSet(Element):
         """
         return cast(list[ConfigItemSet], self.get_elements("config:config-item-set"))
 
+    @property
+    def config_item_maps_indexed(self) -> list[ConfigItemMapIndexed]:
+        """Return the list of ConfigItemMapIndexed of this level.
+
+        Returns:
+            list[ConfigItemMapIndexed]: A list of `ConfigItemMapIndexed` objects."""
+        return cast(
+            list[ConfigItemMapIndexed],
+            self.get_elements("config:config-item-map-indexed"),
+        )
+
 
 ConfigItemSet._define_attribut_property()
 
