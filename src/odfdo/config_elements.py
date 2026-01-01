@@ -41,14 +41,14 @@ def _as_dict(
     | ConfigItemMapNamed
     | ConfigItemSet,
 ) -> dict[str, str | int | bool | dict[str, Any]]:
-    conf: dict[str, str | list[Any]] = {}
+    conf: dict[str, str | list[Any]] = {"class": element._tag}
     if element.name:
         conf["config:name"] = element.name
     # all children are known to be classes with as_dict()
     children = [child.as_dict() for child in element.children]  # type: ignore[attr-defined]
     if children:
         conf["children"] = children
-    return {element._tag: conf}
+    return conf
 
 
 class ConfigItemSet(Element):
@@ -391,20 +391,18 @@ class ConfigItem(Element):
 
     def as_dict(self) -> dict[str, str | int | bool]:
         return {
-            self._tag: {  # type: ignore[dict-item]
-                "config:name": self.name,
-                "config:type": self.config_type,
-                "value": self.value,
-            }
+            "class": self._tag,
+            "config:name": self.name,
+            "config:type": self.config_type,
+            "value": self.value,
         }
 
     @classmethod
     def from_dict(cls, data: dict[str, str | int | bool]) -> ConfigItem:
-        content = data[cls._tag]
         return cls(
-            name=content["config:name"],
-            config_type=content.get("config:type"),
-            value=content.get("value"),
+            name=data["config:name"],
+            config_type=data.get("config:type"),
+            value=data.get("value"),
         )
 
 

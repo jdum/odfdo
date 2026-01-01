@@ -66,6 +66,7 @@ def test_settings_config_item_sets(base_settings):
 
 def test_settings_as_dict(base_settings):
     config = base_settings.as_dict()
-    assert len(config) == 1
-    assert len(config["office:settings"]["children"]) == 2
-    assert len(config["office:settings"]["children"][0]) == 1
+    assert config["class"] == "office:settings"
+    assert len(config) == 2
+    assert len(config["children"]) == 2
+    assert len(config["children"][0]) == 3

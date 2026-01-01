@@ -228,11 +228,11 @@ class OfficeSettings(Body):
                 where the key is the element's tag and the value is a
                 dictionary containing its children's representations.
         """
-        conf = {}
+        conf = {"class": self._tag}
         children = [child.as_dict() for child in self.children]  # type: ignore[attr-defined]
         if children:
             conf["children"] = children
-        return {self._tag: conf}
+        return conf
 
 
 register_element_class(Body)

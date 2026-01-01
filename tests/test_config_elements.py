@@ -120,19 +120,18 @@ def test_config_item_set_get_config_items(base_settings):
 def test_config_item_set_as_dict(base_settings):
     item_sets = base_settings.config_item_sets
     content = item_sets[0].as_dict()
-    assert len(content) == 1
-    item_set = content["config:config-item-set"]
-    assert item_set["config:name"] == "ooo:view-settings"
-    assert len(item_set["children"]) == 7
+    assert len(content) == 3
+    assert content["class"] == "config:config-item-set"
+    assert content["config:name"] == "ooo:view-settings"
+    assert len(content["children"]) == 7
 
 
 def test_config_item_set_empty_as_dict():
     item_set = ConfigItemSet(name="foo")
     content = item_set.as_dict()
-    assert len(content) == 1
-    values = content["config:config-item-set"]
-    assert values["config:name"] == "foo"
-    assert "children" not in values
+    assert content["class"] == "config:config-item-set"
+    assert content["config:name"] == "foo"
+    assert "children" not in content
 
 
 # ConfigItemMapIndexed
@@ -313,8 +312,9 @@ def test_config_item_map_get_config_item_maps_entries():
 def test_config_item_map_as_empty_dict():
     named = ConfigItemMapNamed(name="foo")
     result = named.as_dict()
-    assert result["config:config-item-map-named"]["config:name"] == "foo"
-    assert "children" not in result["config:config-item-map-named"]
+    assert result["class"] == "config:config-item-map-named"
+    assert result["config:name"] == "foo"
+    assert "children" not in result
 
 
 # ConfigItem
@@ -403,11 +403,10 @@ def test_config_item_from_set_double():
 
 def test_config_item_from_dict():
     data = {
-        "config:config-item": {
-            "config:name": "foo",
-            "config:type": "string",
-            "value": "bar",
-        }
+        "class": "config:config-item",
+        "config:name": "foo",
+        "config:type": "string",
+        "value": "bar",
     }
     item = ConfigItem.from_dict(data)
     assert item.name == "foo"
@@ -417,11 +416,10 @@ def test_config_item_from_dict():
 
 def test_config_item_from_dict_bool():
     data = {
-        "config:config-item": {
-            "config:name": "foo",
-            "config:type": "boolean",
-            "value": "false",
-        }
+        "class": "config:config-item",
+        "config:name": "foo",
+        "config:type": "boolean",
+        "value": "false",
     }
     item = ConfigItem.from_dict(data)
     assert item.name == "foo"
@@ -431,11 +429,10 @@ def test_config_item_from_dict_bool():
 
 def test_config_item_from_dict_int():
     data = {
-        "config:config-item": {
-            "config:name": "foo",
-            "config:type": "int",
-            "value": 42,
-        }
+        "class": "config:config-item",
+        "config:name": "foo",
+        "config:type": "int",
+        "value": 42,
     }
     item = ConfigItem.from_dict(data)
     assert item.name == "foo"
