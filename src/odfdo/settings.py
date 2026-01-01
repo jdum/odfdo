@@ -80,5 +80,14 @@ class Settings(XmlPart):
         )
 
     def as_dict(self) -> dict[str, str | int | bool | dict[str, Any] | list[Any]]:
+        """Serialize the settings content into a dictionary.
+
+        This method delegates the serialization to the underlying
+        `OfficeSettings` body, returning a dictionary representation of
+        the settings.
+
+        Returns:
+            dict: A dictionary representing the settings content.
+        """
         body: OfficeSettings = cast(OfficeSettings, self.body)
         return body.as_dict()
