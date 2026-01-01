@@ -380,6 +380,23 @@ def _register_element_class(cls: type[Element], qname: str) -> None:
 
 
 def class_from_tag(qname: str) -> type[Element]:
+    """Retrieves the Python class associated with a given ODF qualified tag
+    name.
+
+    This function looks up the registered class for a specific ODF XML tag,
+    allowing for dynamic instantiation of the correct Element subclass based
+    on the tag.
+
+    Args:
+        qname: The qualified name of the ODF tag (e.g., "text:p",
+            "office:body").
+
+    Returns:
+        The Python class (a subclass of Element) registered for the given tag.
+
+    Raises:
+        KeyError: If no class is registered for the provided qualified name.
+    """
     return _tag_class_registry[qname]
 
 
@@ -1220,7 +1237,16 @@ class Element(MDBase):
         return str(value)
 
     def _set_attribute_str(self, name: str, value: str) -> None:
-        """Set valid string attribute."""
+        """Sets the value of a string attribute.
+
+        This internal method directly sets the value of an attribute without
+        any default handling or type conversions beyond converting the value
+        to a string if necessary.
+
+        Args:
+            name: The qualified name of the attribute to set.
+            value: The string value to set for the attribute.
+        """
         lxml_tag = _get_lxml_tag_or_name(name)
         self.__element.set(lxml_tag, value)
 
