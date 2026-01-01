@@ -24,7 +24,11 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from odfdo.config_elements import ConfigItemSet, ConfigItemMapIndexed
+from odfdo.config_elements import (
+    ConfigItemSet,
+    ConfigItemMapIndexed,
+    ConfigItemMapEntry,
+)
 from odfdo.const import ODF_SETTINGS
 from odfdo.document import Document
 from odfdo.element import Element
@@ -134,3 +138,67 @@ def test_config_item_map_indexed_read(base_settings):
     mapi = maps[0]
     assert isinstance(mapi, ConfigItemMapIndexed)
     assert mapi.name == "Views"
+
+
+def test_config_item_map_get_map_entries(base_settings):
+    item_sets = base_settings.config_item_sets
+    maps = item_sets[0].config_item_maps_indexed
+    mapi = maps[0]
+    entries = mapi.config_item_maps_entries
+    assert len(entries) == 1
+    entry = entries[0]
+    assert isinstance(entry, ConfigItemMapEntry)
+
+
+# ConfigItemMapEntry
+
+
+def test_config_item_map_entry_class():
+    entry = ConfigItemMapEntry()
+    assert isinstance(entry, ConfigItemMapEntry)
+
+
+def test_config_item_map_entry_name():
+    entry = ConfigItemMapEntry(name="foo")
+    assert entry.name == "foo"
+
+
+def test_config_item_map_entry_xml():
+    entry = ConfigItemMapEntry(name="foo")
+    expected = '<config:config-item-map-entry config:name="foo"/>'
+    assert entry.serialize() == expected
+
+
+def test_config_item_map_entry_from_tag():
+    content = '<config:config-item-map-entry config:name="foo"/>'
+    entry = Element.from_tag(content)
+    assert isinstance(entry, ConfigItemMapEntry)
+    assert entry.name == "foo"
+
+
+def test_config_item_map_entry_repr():
+    entry = ConfigItemMapEntry(name="foo")
+    expected = "<ConfigItemMapEntry tag=config:config-item-map-entry name=foo>"
+    assert repr(entry) == expected
+
+
+def test_config_item_map_entry_read_map_entry(base_settings):
+    item_sets = base_settings.config_item_sets
+    maps = item_sets[0].config_item_maps_indexed
+    mapi = maps[0]
+    entries = mapi.config_item_maps_entries
+    assert len(entries) == 1
+    entry = entries[0]
+    assert isinstance(entry, ConfigItemMapEntry)
+    assert not entry.name
+
+
+def test_config_item_map_entry_get_iitem_maps_indexed(base_settings):
+    item_sets = base_settings.config_item_sets
+    maps = item_sets[0].config_item_maps_indexed
+    mapi = maps[0]
+    entries = mapi.config_item_maps_entries
+    assert len(entries) == 1
+    entry = entries[0]
+    item_sets = entry.config_item_maps_indexed
+    assert len(item_sets) == 0

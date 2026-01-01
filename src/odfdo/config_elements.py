@@ -141,7 +141,9 @@ class ConfigItemMapIndexed(Element):
     @property
     def config_item_maps_entries(self) -> list[ConfigItemMapEntry]:
         """Return list of ConfigItemMapEntry."""
-        return self.get_elements("config:config-item-map-entry")  # type: ignore[return-value]
+        return cast(
+            list[ConfigItemMapEntry], self.get_elements("config:config-item-map-entry")
+        )
 
 
 ConfigItemMapIndexed._define_attribut_property()
@@ -186,9 +188,68 @@ class ConfigItemMapEntry(Element):
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} tag={self.tag} name={self.name}>"
 
+    @property
+    def config_item_maps_indexed(self) -> list[ConfigItemMapIndexed]:
+        """Return list of ConfigItemMapIndexed."""
+        return cast(
+            list[ConfigItemMapIndexed],
+            self.get_elements("config:config-item-map-indexed"),
+        )
+
 
 ConfigItemMapEntry._define_attribut_property()
 
-register_element_class(ConfigItemSet)
-register_element_class(ConfigItemMapIndexed)
+
+class ConfigItemMapNamed(Element):
+    """Represents a container for a sequence of application setting elements,
+    where each sequence is identified by the value of its `config:name`
+    attribute. This corresponds to the "config:config-item-map-named" tag.
+
+    This element is used to store a collection of configuration items that
+    can be accessed by a descriptive name rather than an index.
+
+    The "config:config-item-map-named" element has the following child
+    element: "config:config-item-map-entry".
+
+    Attributes:
+        name (str): The name of the named configuration item map.
+    """
+
+    _tag: str = "config:config-item-map-named"
+    _properties: tuple[PropDef | PropDefBool, ...] = (PropDef("name", "config:name"),)
+
+    def __init__(
+        self,
+        name: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Initialize a ConfigItemMapNamed element.
+
+        This container holds named sequences of application setting elements.
+
+        Args:
+            name: The name of the named configuration item map.
+            **kwargs: Arbitrary keyword arguments passed to the base `Element`
+                class.
+        """
+        super().__init__(**kwargs)
+        if self._do_init:
+            self.name = name
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} tag={self.tag} name={self.name}>"
+
+    @property
+    def config_item_maps_entries(self) -> list[ConfigItemMapEntry]:
+        """Return list of ConfigItemMapEntry."""
+        return cast(
+            list[ConfigItemMapEntry], self.get_elements("config:config-item-map-entry")
+        )
+
+
+ConfigItemMapNamed._define_attribut_property()
+
 register_element_class(ConfigItemMapEntry)
+register_element_class(ConfigItemMapIndexed)
+register_element_class(ConfigItemMapNamed)
+register_element_class(ConfigItemSet)
