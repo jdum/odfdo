@@ -76,5 +76,5 @@ class Settings(XmlPart):
             list[ConfigItemSet]: A list of `ConfigItemSet` objects.
         """
         return cast(
-            list[ConfigItemSet], self.body.get_elements("/config:config-item-set")
+            list[ConfigItemSet], self.body.get_elements("config:config-item-set")
         )

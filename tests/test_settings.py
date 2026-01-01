@@ -24,10 +24,10 @@ from collections.abc import Iterable
 import pytest
 
 from odfdo.body import OfficeSettings
+from odfdo.config_elements import ConfigItemSet
 from odfdo.const import ODF_SETTINGS
 from odfdo.document import Document
 from odfdo.settings import Settings
-from odfdo.config_elements import ConfigItemSet
 
 
 @pytest.fixture
@@ -56,3 +56,9 @@ def test_settings_body(base_settings):
 def test_settings_version(base_settings):
     version = base_settings.odf_office_version
     assert version == "1.3"
+
+
+def test_settings_config_item_sets(base_settings):
+    item_sets = base_settings.config_item_sets
+    assert len(item_sets) == 2
+    assert all(isinstance(x, ConfigItemSet) for x in item_sets)
