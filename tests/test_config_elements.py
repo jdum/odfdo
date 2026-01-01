@@ -29,6 +29,7 @@ from odfdo.config_elements import (
     ConfigItemMapIndexed,
     ConfigItemMapEntry,
     ConfigItemMapNamed,
+    ConfigItem,
 )
 from odfdo.const import ODF_SETTINGS
 from odfdo.document import Document
@@ -240,3 +241,35 @@ def test_config_item_map_named_repr():
 def test_config_item_map_get_config_item_maps_entries():
     named = ConfigItemMapNamed(name="foo")
     assert not named.config_item_maps_entries
+
+
+# ConfigItem
+
+
+def test_config_item_class():
+    item = ConfigItem()
+    assert isinstance(item, ConfigItem)
+
+
+def test_config_item_name():
+    item = ConfigItem(name="foo")
+    assert item.name == "foo"
+
+
+def test_config_item_xml():
+    item = ConfigItem(name="foo")
+    expected = '<config:config-item config:name="foo"/>'
+    assert item.serialize() == expected
+
+
+def test_config_item_from_tag():
+    content = '<config:config-item config:name="foo"/>'
+    item = Element.from_tag(content)
+    assert isinstance(item, ConfigItem)
+    assert item.name == "foo"
+
+
+def test_config_item_repr():
+    item = ConfigItem(name="foo")
+    expected = "<ConfigItem tag=config:config-item name=foo>"
+    assert repr(item) == expected

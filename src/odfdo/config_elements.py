@@ -249,6 +249,9 @@ class ConfigItemMapNamed(Element):
         )
 
 
+ConfigItemMapNamed._define_attribut_property()
+
+
 class ConfigItem(Element):
     """Represents an element containing the value of an application setting,
     identified by its `config:name` attribute. This corresponds to the
