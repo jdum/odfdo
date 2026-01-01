@@ -25,11 +25,11 @@ from typing import TYPE_CHECKING
 import pytest
 
 from odfdo.config_elements import (
-    ConfigItemSet,
-    ConfigItemMapIndexed,
-    ConfigItemMapEntry,
-    ConfigItemMapNamed,
     ConfigItem,
+    ConfigItemMapEntry,
+    ConfigItemMapIndexed,
+    ConfigItemMapNamed,
+    ConfigItemSet,
 )
 from odfdo.const import ODF_SETTINGS
 from odfdo.document import Document
@@ -87,7 +87,7 @@ def test_config_item_set_read_name(base_settings):
 def test_config_item_set_item_sets(base_settings):
     level1 = base_settings.config_item_sets
     level2_1 = level1[0].config_item_sets
-    level2_2 = level1[0].config_item_sets
+    level2_2 = level1[1].config_item_sets
     assert level2_1 == []
     assert level2_2 == []
 
@@ -103,6 +103,18 @@ def test_config_item_set_get_config_item_maps_indexed_2(base_settings):
     item_sets = base_settings.config_item_sets
     maps2 = item_sets[1].config_item_maps_indexed
     assert len(maps2) == 0
+
+
+def test_config_item_set_get_named(base_settings):
+    level1 = base_settings.config_item_sets
+    named = level1[0].config_item_maps_named
+    assert len(named) == 0
+
+
+def test_config_item_set_get_config_items(base_settings):
+    level1 = base_settings.config_item_sets
+    config_items = level1[0].config_items
+    assert len(config_items) == 6
 
 
 def test_config_item_set_as_dict(base_settings):
@@ -216,7 +228,7 @@ def test_config_item_map_entry_read_map_entry(base_settings):
     assert not entry.name
 
 
-def test_config_item_map_entry_get_iitem_maps_indexed(base_settings):
+def test_config_item_map_entry_get_item_maps_indexed(base_settings):
     item_sets = base_settings.config_item_sets
     maps = item_sets[0].config_item_maps_indexed
     mapi = maps[0]
@@ -224,6 +236,40 @@ def test_config_item_map_entry_get_iitem_maps_indexed(base_settings):
     assert len(entries) == 1
     entry = entries[0]
     item_sets = entry.config_item_maps_indexed
+    assert len(item_sets) == 0
+
+
+def test_config_item_map_entry_get_config_items(base_settings):
+    item_sets = base_settings.config_item_sets
+    maps = item_sets[0].config_item_maps_indexed
+    mapi = maps[0]
+    entries = mapi.config_item_maps_entries
+    assert len(entries) == 1
+    entry = entries[0]
+    config_items = entry.config_items
+    assert len(config_items) == 15
+    assert isinstance(config_items[0], ConfigItem)
+
+
+def test_config_item_map_entry_get_maps_named(base_settings):
+    item_sets = base_settings.config_item_sets
+    maps = item_sets[0].config_item_maps_indexed
+    mapi = maps[0]
+    entries = mapi.config_item_maps_entries
+    assert len(entries) == 1
+    entry = entries[0]
+    nameds = entry.config_item_maps_named
+    assert len(nameds) == 0
+
+
+def test_config_item_map_entry_get_config_item_sets(base_settings):
+    item_sets = base_settings.config_item_sets
+    maps = item_sets[0].config_item_maps_indexed
+    mapi = maps[0]
+    entries = mapi.config_item_maps_entries
+    assert len(entries) == 1
+    entry = entries[0]
+    item_sets = entry.config_item_sets
     assert len(item_sets) == 0
 
 
@@ -264,6 +310,13 @@ def test_config_item_map_get_config_item_maps_entries():
     assert not named.config_item_maps_entries
 
 
+def test_config_item_map_as_empty_dict():
+    named = ConfigItemMapNamed(name="foo")
+    result = named.as_dict()
+    assert result["config:config-item-map-named"]["config:name"] == "foo"
+    assert "children" not in result["config:config-item-map-named"]
+
+
 # ConfigItem
 
 
@@ -283,11 +336,63 @@ def test_config_item_xml():
     assert item.serialize() == expected
 
 
-def test_config_item_from_tag():
-    content = '<config:config-item config:name="foo"/>'
+def test_config_item_from_tag_string():
+    content = '<config:config-item config:name="foo" config:type="string">bar</config:config-item>'
     item = Element.from_tag(content)
     assert isinstance(item, ConfigItem)
     assert item.name == "foo"
+    assert item.config_type == "string"
+    assert item.value == "bar"
+
+
+def test_config_item_from_tag_true():
+    content = '<config:config-item config:name="foo" config:type="boolean">true</config:config-item>'
+    item = Element.from_tag(content)
+    assert isinstance(item, ConfigItem)
+    assert item.name == "foo"
+    assert item.config_type == "boolean"
+    assert item.value is True
+
+
+def test_config_item_from_tag_long():
+    content = '<config:config-item config:name="foo" config:type="long">42</config:config-item>'
+    item = Element.from_tag(content)
+    assert isinstance(item, ConfigItem)
+    assert item.name == "foo"
+    assert item.config_type == "long"
+    assert item.value == 42
+
+
+def test_config_item_from_tag_bad_long():
+    content = '<config:config-item config:name="foo" config:type="bad">42</config:config-item>'
+    item = Element.from_tag(content)
+    assert isinstance(item, ConfigItem)
+    assert item.name == "foo"
+    assert item.config_type == "string"
+    assert item.value == "42"
+
+
+def test_config_item_from_set_bad_long():
+    item = ConfigItem(name="foo", config_type="bad", value=42)
+    assert item.name == "foo"
+    assert item.config_type == "string"
+    assert item.value == "42"
+
+
+def test_config_item_from_set_boolean():
+    item = ConfigItem(name="foo", config_type="boolean", value=True)
+    assert item.name == "foo"
+    assert item.config_type == "boolean"
+    assert item.value is True
+    assert item.text == "true"
+
+
+def test_config_item_from_set_double():
+    item = ConfigItem(name="foo", config_type="double", value=-4)
+    assert item.name == "foo"
+    assert item.config_type == "double"
+    assert item.value == -4
+    assert item.text == "-4"
 
 
 def test_config_item_repr():
