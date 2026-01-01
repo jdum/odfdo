@@ -398,6 +398,15 @@ class ConfigItem(Element):
             }
         }
 
+    @classmethod
+    def from_dict(cls, data: dict[str, str | int | bool]) -> ConfigItem:
+        content = data[cls._tag]
+        return cls(
+            name=content["config:name"],
+            config_type=content.get("config:type"),
+            value=content.get("value"),
+        )
+
 
 ConfigItem._define_attribut_property()
 

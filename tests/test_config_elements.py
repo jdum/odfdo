@@ -325,6 +325,12 @@ def test_config_item_class():
     assert isinstance(item, ConfigItem)
 
 
+def test_config_item_repr():
+    item = ConfigItem(name="foo")
+    expected = "<ConfigItem tag=config:config-item name=foo>"
+    assert repr(item) == expected
+
+
 def test_config_item_name():
     item = ConfigItem(name="foo")
     assert item.name == "foo"
@@ -395,7 +401,43 @@ def test_config_item_from_set_double():
     assert item.text == "-4"
 
 
-def test_config_item_repr():
-    item = ConfigItem(name="foo")
-    expected = "<ConfigItem tag=config:config-item name=foo>"
-    assert repr(item) == expected
+def test_config_item_from_dict():
+    data = {
+        "config:config-item": {
+            "config:name": "foo",
+            "config:type": "string",
+            "value": "bar",
+        }
+    }
+    item = ConfigItem.from_dict(data)
+    assert item.name == "foo"
+    assert item.config_type == "string"
+    assert item.value == "bar"
+
+
+def test_config_item_from_dict_bool():
+    data = {
+        "config:config-item": {
+            "config:name": "foo",
+            "config:type": "boolean",
+            "value": "false",
+        }
+    }
+    item = ConfigItem.from_dict(data)
+    assert item.name == "foo"
+    assert item.config_type == "boolean"
+    assert item.value is False
+
+
+def test_config_item_from_dict_int():
+    data = {
+        "config:config-item": {
+            "config:name": "foo",
+            "config:type": "int",
+            "value": 42,
+        }
+    }
+    item = ConfigItem.from_dict(data)
+    assert item.name == "foo"
+    assert item.config_type == "int"
+    assert item.value == 42
