@@ -24,15 +24,12 @@ This part stores document-wide settings.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import Any, Union, cast
 
 from .body import OfficeSettings
 from .config_elements import ConfigItemSet
 from .element import Element
 from .xmlpart import XmlPart
-
-if TYPE_CHECKING:
-    pass
 
 
 class Settings(XmlPart):
@@ -43,9 +40,9 @@ class Settings(XmlPart):
 
     def _get_body(self) -> OfficeSettings:
         body = cast(Union[None, OfficeSettings], self.get_element("//office:settings"))
-        if not isinstance(body, OfficeSettings):
-            raise TypeError("No OfficeSettings found")
-        return body
+        if isinstance(body, OfficeSettings):
+            return body
+        raise TypeError("No OfficeSettings found")  # pragma: nocover
 
     @property
     def odf_office_version(self) -> str:
@@ -59,7 +56,7 @@ class Settings(XmlPart):
         odsettings = cast(
             Union[None, Element], self.get_element("//office:document-settings")
         )
-        # "office:version" sould be always present
+        # "office:version" should be always present
         if odsettings:
             return odsettings.get_attribute_string("office:version") or ""
         return ""  # pragma: nocover
