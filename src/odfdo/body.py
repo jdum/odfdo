@@ -210,6 +210,13 @@ class Metadata(Body):
     _properties: tuple[PropDef | PropDefBool, ...] = ()
 
 
+class OfficeSettings(Body):
+    """Root of the Settings document content, "office:settings"."""
+
+    _tag: str = "office:settings"
+    _properties: tuple[PropDef | PropDefBool, ...] = ()
+
+
 register_element_class(Body)
 register_element_class(Chart)
 register_element_class(Database)
@@ -217,5 +224,6 @@ register_element_class(Drawing)
 register_element_class(Image)
 register_element_class(Metadata)
 register_element_class(Presentation)
+register_element_class(OfficeSettings)
 register_element_class(Spreadsheet)
 register_element_class(Text)
