@@ -19,21 +19,24 @@
 # https://github.com/lpod/lpod-python
 from __future__ import annotations
 
-from odfdo.config_elements import ConfigItemSet
+from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
-# from odfdo.const import ODF_SETTINGS
+import pytest
+
+from odfdo.config_elements import ConfigItemSet
+from odfdo.const import ODF_SETTINGS
+from odfdo.document import Document
 from odfdo.element import Element
 
-# from collections.abc import Iterable
-
-# import pytest
-
+if TYPE_CHECKING:
+    from odfdo.settings import Settings
 
 
-# @pytest.fixture
-# def base_settings(samples) -> Iterable[Settings]:
-#     document = Document(samples("base_text.odt"))
-#     yield document.get_part(ODF_SETTINGS)
+@pytest.fixture
+def base_settings(samples) -> Iterable[Settings]:
+    document = Document(samples("base_text.odt"))
+    yield document.get_part(ODF_SETTINGS)
 
 
 def test_config_item_set_class():
@@ -48,12 +51,12 @@ def test_config_item_set_name():
 
 def test_config_item_set_xml():
     item_set = ConfigItemSet(name="foo")
-    expected = '<config:config-item-set text:name="foo"/>'
+    expected = '<config:config-item-set config:name="foo"/>'
     assert item_set.serialize() == expected
 
 
 def test_config_item_set_from_tag():
-    content = '<config:config-item-set text:name="foo"/>'
+    content = '<config:config-item-set config:name="foo"/>'
     item_set = Element.from_tag(content)
     assert isinstance(item_set, ConfigItemSet)
     assert item_set.name == "foo"
@@ -62,3 +65,20 @@ def test_config_item_set_from_tag():
 def test_config_item_set_repr():
     item_set = ConfigItemSet(name="foo")
     assert repr(item_set) == "<ConfigItemSet tag=config:config-item-set name=foo>"
+
+
+def test_config_item_set_read_name(base_settings):
+    item_set = base_settings.config_item_sets
+    assert [i.name for i in item_set] == [
+        "ooo:view-settings",
+        "ooo:configuration-settings",
+    ]
+
+
+def test_config_item_set_item_sets(base_settings):
+    item_set = ConfigItemSet(name="foo")
+    level1 = base_settings.config_item_sets
+    level2_1 = level1[0].config_item_sets
+    level2_2 = level1[0].config_item_sets
+    assert level2_1 == []
+    assert level2_2 == []

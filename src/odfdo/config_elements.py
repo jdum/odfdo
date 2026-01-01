@@ -26,7 +26,7 @@ the `settings.xml` file of an ODF document, specifically those related to
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from .element import Element, PropDef, PropDefBool, register_element_class
 
@@ -46,7 +46,7 @@ class ConfigItemSet(Element):
     """
 
     _tag: str = "config:config-item-set"
-    _properties: tuple[PropDef | PropDefBool, ...] = (PropDef("name", "text:name"),)
+    _properties: tuple[PropDef | PropDefBool, ...] = (PropDef("name", "config:name"),)
 
     def __init__(
         self,
@@ -59,6 +59,10 @@ class ConfigItemSet(Element):
         elements, including `config:config-item`,
         `config:config-item-map-indexed`, `config:config-item-map-named`,
         and nested `config:config-item-set`.
+
+        The "config:config-item-set" element has the following child elements:
+        "config:config-item", "config:config-item-map-indexed",
+        "config:config-item-map-named" and "config:config-item-set"
 
         Args:
             name: The name of the configuration item set.
@@ -74,7 +78,61 @@ class ConfigItemSet(Element):
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} tag={self.tag} name={self.name}>"
 
+    @property
+    def config_item_sets(self) -> list[ConfigItemSet]:
+        """Get the list of ConfigItemSet elements of this level.
+
+        Returns:
+            list[ConfigItemSet]: A list of `ConfigItemSet` objects.
+        """
+        return cast(list[ConfigItemSet], self.get_elements("config:config-item-set"))
+
 
 ConfigItemSet._define_attribut_property()
 
+
+class ConfigItemMapIndexed(Element):
+    """Represents a container for ordered sequences of application settings,
+    corresponding to the "config:config-item-map-indexed" tag.
+
+    This element is used to store a collection of configuration items that are
+    ordered and can be accessed by index.
+
+    Attributes:
+        name (str): The name of the indexed configuration item map.
+    """
+
+    _tag: str = "config:config-item-map-indexed"
+    _properties: tuple[PropDef | PropDefBool, ...] = (PropDef("name", "config:name"),)
+
+    def __init__(
+        self,
+        name: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Initialize a ConfigItemMapIndexed element.
+
+        This container holds ordered sequences of application settings.
+
+        The "config:config-item-map-indexed" element has the following child
+        element: "config:config-item-map-entry".
+
+        Args:
+            name: The name of the indexed configuration item map.
+            **kwargs: Arbitrary keyword arguments passed to the base `Element`
+                class.
+        """
+        # fixme : use offset
+        # TODO allow paragraph and text styles
+        super().__init__(**kwargs)
+        if self._do_init:
+            self.name = name
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} tag={self.tag} name={self.name}>"
+
+
+ConfigItemMapIndexed._define_attribut_property()
+
 register_element_class(ConfigItemSet)
+register_element_class(ConfigItemMapIndexed)
