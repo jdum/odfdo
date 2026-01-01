@@ -21,12 +21,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, cast
 
 from .annotation import AnnotationMixin
 from .bookmark import BookmarkMixin
-from .const import BODY_ALLOW_NAMED_RANGE_TAGS
 from .config_elements import _from_dict
+from .const import BODY_ALLOW_NAMED_RANGE_TAGS
 from .element import Element, PropDef, PropDefBool, register_element_class
 from .form import FormMixin
 from .mixin_link import LinkMixin
