@@ -94,6 +94,11 @@ class ConfigItemSet(Element):
             self.get_elements("config:config-item-map-indexed"),
         )
 
+    @property
+    def config_items(self) -> list[ConfigItem]:
+        """Return list of ConfigItem."""
+        return cast(list[ConfigItem], self.get_elements("config:config-item"))
+
 
 ConfigItemSet._define_attribut_property()
 
@@ -189,6 +194,11 @@ class ConfigItemMapEntry(Element):
             list[ConfigItemMapIndexed],
             self.get_elements("config:config-item-map-indexed"),
         )
+
+    @property
+    def config_items(self) -> list[ConfigItem]:
+        """Return list of ConfigItem."""
+        return cast(list[ConfigItem], self.get_elements("config:config-item"))
 
 
 ConfigItemMapEntry._define_attribut_property()
