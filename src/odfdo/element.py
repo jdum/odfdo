@@ -1210,6 +1210,11 @@ class Element(MDBase):
             return default
         return str(value)
 
+    def _set_attribute_str(self, name: str, value: str) -> None:
+        """Set valid string attribute."""
+        lxml_tag = _get_lxml_tag_or_name(name)
+        self.__element.set(lxml_tag, value)
+
     def _set_attribute_str_default(
         self, name: str, value: str | None, default: str = ""
     ) -> None:

@@ -61,7 +61,7 @@ class Boolean:
         raise ValueError(f"boolean {data!r} is invalid")
 
     @staticmethod
-    def encode(value: bool | str | bytes) -> str:
+    def encode(value: bool | str | bytes | int | None) -> str:
         """Encode a Python boolean (or boolean-like string/bytes) to an ODF boolean string.
 
         Args:

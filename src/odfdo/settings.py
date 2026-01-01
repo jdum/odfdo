@@ -24,7 +24,7 @@ This part stores document-wide settings.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Union, cast
+from typing import TYPE_CHECKING, Any, Union, cast
 
 from .body import OfficeSettings
 from .config_elements import ConfigItemSet

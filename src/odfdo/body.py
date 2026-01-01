@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 
-from typing import cast
+from typing import TYPE_CHECKING, Any, cast
 
 from .annotation import AnnotationMixin
 from .bookmark import BookmarkMixin
@@ -215,6 +215,24 @@ class OfficeSettings(Body):
 
     _tag: str = "office:settings"
     _properties: tuple[PropDef | PropDefBool, ...] = ()
+
+    def as_dict(self) -> dict[str, str | int | bool | dict[str, Any]]:
+        """Serialize the OfficeSettings element and its children to a dictionary.
+
+        This method recursively converts the element and its child elements
+        (if they also have an `as_dict` method) into a dictionary
+        representation.
+
+        Returns:
+            dict: A dictionary representing the OfficeSettings element,
+                where the key is the element's tag and the value is a
+                dictionary containing its children's representations.
+        """
+        conf = {}
+        children = [child.as_dict() for child in self.children]  # type: ignore[attr-defined]
+        if children:
+            conf["children"] = children
+        return {self._tag: conf}
 
 
 register_element_class(Body)

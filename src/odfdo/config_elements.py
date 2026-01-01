@@ -26,12 +26,29 @@ the `settings.xml` file of an ODF document, specifically those related to
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
+from .datatype import Boolean
 from .element import Element, PropDef, PropDefBool, register_element_class
 
 if TYPE_CHECKING:
     pass
+
+
+def _as_dict(
+    element: ConfigItemMapEntry
+    | ConfigItemMapIndexed
+    | ConfigItemMapNamed
+    | ConfigItemSet,
+) -> dict[str, str | int | bool | dict[str, Any]]:
+    conf: dict[str, str | list[Any]] = {}
+    if element.name:
+        conf["config:name"] = element.name
+    # all children are known to be classes with as_dict()
+    children = [child.as_dict() for child in element.children]  # type: ignore[attr-defined]
+    if children:
+        conf["children"] = children
+    return {element._tag: conf}
 
 
 class ConfigItemSet(Element):
@@ -95,9 +112,19 @@ class ConfigItemSet(Element):
         )
 
     @property
+    def config_item_maps_named(self) -> list[ConfigItemMapNamed]:
+        """Return list of ConfigItemMapNamed."""
+        return cast(
+            list[ConfigItemMapNamed], self.get_elements("config:config-item-map-named")
+        )
+
+    @property
     def config_items(self) -> list[ConfigItem]:
         """Return list of ConfigItem."""
         return cast(list[ConfigItem], self.get_elements("config:config-item"))
+
+    def as_dict(self) -> dict[str, str | int | bool | dict]:
+        return _as_dict(self)
 
 
 ConfigItemSet._define_attribut_property()
@@ -146,6 +173,9 @@ class ConfigItemMapIndexed(Element):
             list[ConfigItemMapEntry], self.get_elements("config:config-item-map-entry")
         )
 
+    def as_dict(self) -> dict[str, str | int | bool | dict]:
+        return _as_dict(self)
+
 
 ConfigItemMapIndexed._define_attribut_property()
 
@@ -188,6 +218,11 @@ class ConfigItemMapEntry(Element):
         return f"<{self.__class__.__name__} tag={self.tag} name={self.name}>"
 
     @property
+    def config_item_sets(self) -> list[ConfigItemSet]:
+        """Return list of first level ConfigItemSet."""
+        return cast(list[ConfigItemSet], self.get_elements("config:config-item-set"))
+
+    @property
     def config_item_maps_indexed(self) -> list[ConfigItemMapIndexed]:
         """Return list of ConfigItemMapIndexed."""
         return cast(
@@ -196,9 +231,19 @@ class ConfigItemMapEntry(Element):
         )
 
     @property
+    def config_item_maps_named(self) -> list[ConfigItemMapNamed]:
+        """Return list of ConfigItemMapNamed."""
+        return cast(
+            list[ConfigItemMapNamed], self.get_elements("config:config-item-map-named")
+        )
+
+    @property
     def config_items(self) -> list[ConfigItem]:
         """Return list of ConfigItem."""
         return cast(list[ConfigItem], self.get_elements("config:config-item"))
+
+    def as_dict(self) -> dict[str, str | int | bool | dict]:
+        return _as_dict(self)
 
 
 ConfigItemMapEntry._define_attribut_property()
@@ -248,6 +293,9 @@ class ConfigItemMapNamed(Element):
             list[ConfigItemMapEntry], self.get_elements("config:config-item-map-entry")
         )
 
+    def as_dict(self) -> dict[str, str | int | bool | dict]:
+        return _as_dict(self)
+
 
 ConfigItemMapNamed._define_attribut_property()
 
@@ -270,11 +318,23 @@ class ConfigItem(Element):
         PropDef("name", "config:name"),
         PropDef("config_type", "config:type"),
     )
+    _properties = (PropDef("name", "config:name"),)
+    TYPES: ClassVar = {
+        "boolean",
+        "short",
+        "int",
+        "long",
+        "double",
+        "string",
+        "datetime",
+        "base64Binary",
+    }
 
     def __init__(
         self,
         name: str | None = None,
         config_type: str | None = None,
+        value: str | int | bool | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize a ConfigItem element.
@@ -291,9 +351,52 @@ class ConfigItem(Element):
         if self._do_init:
             self.name = name
             self.config_type = config_type
+            self.value = value
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} tag={self.tag} name={self.name}>"
+
+    @property
+    def config_type(self) -> str:
+        config_type = self.get_attribute_string("config:type")
+        if config_type not in self.TYPES:
+            return "string"
+        return config_type
+
+    @config_type.setter
+    def config_type(self, config_type: str | None) -> None:
+        if config_type not in self.TYPES:
+            config_type = "string"
+        self._set_attribute_str("config:type", config_type)
+
+    @property
+    def value(self) -> str | int | bool:
+        content: str = self.text
+        config_type = self.config_type
+        if config_type == "boolean":
+            return Boolean.decode(content)
+        elif config_type in {"short", "int", "long", "double"}:
+            return int(content)
+        return content or ""
+
+    @value.setter
+    def value(self, value: str | int | bool | None) -> None:
+        config_type = self.config_type
+        if config_type == "boolean":
+            self.text = Boolean.encode(value)
+        elif config_type in {"short", "int", "long", "double"}:
+            self.text = str(int(value))  # type: ignore[arg-type]
+        else:
+            self.text = str(value or "")
+
+    def as_dict(self) -> dict[str, str | int | bool]:
+        return {
+            self._tag: {  # type: ignore[dict-item]
+                "config:name": self.name,
+                "config:type": self.config_type,
+                "value": self.value,
+            }
+        }
 
 
 ConfigItem._define_attribut_property()

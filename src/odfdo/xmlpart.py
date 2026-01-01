@@ -38,6 +38,7 @@ from .element import Element, EText
 
 if TYPE_CHECKING:
     from .body import Body
+    from .settings import OfficeSettings
 
 
 class XmlPart:
@@ -113,7 +114,7 @@ class XmlPart:
         return body
 
     @property
-    def body(self) -> Body:
+    def body(self) -> Body | OfficeSettings:
         """The document body element ('office:body').
 
         This property provides access to the main content body of the XML part.
