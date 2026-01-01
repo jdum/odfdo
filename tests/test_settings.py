@@ -1,0 +1,57 @@
+# Copyright 2018-2025 Jérôme Dumonteil
+# Copyright (c) 2009-2010 Ars Aperta, Itaapy, Pierlis, Talend.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#
+# Authors (odfdo project): jerome.dumonteil@gmail.com
+# The odfdo project is a derivative work of the lpod-python project:
+# https://github.com/lpod/lpod-python
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+import pytest
+
+from odfdo.body import OfficeSettings
+from odfdo.const import ODF_SETTINGS
+from odfdo.document import Document
+from odfdo.settings import Settings
+
+
+@pytest.fixture
+def base_settings(samples) -> Iterable[Settings]:
+    document = Document(samples("base_text.odt"))
+    yield document.get_part(ODF_SETTINGS)
+
+
+def test_settings_get(base_settings):
+    assert isinstance(base_settings, Settings)
+
+
+def test_settings_repr(base_settings):
+    assert repr(base_settings) == "<Settings part_name=settings.xml>"
+
+
+def test_settings_str(base_settings):
+    assert str(base_settings) == repr(base_settings)
+
+
+def test_settings_body(base_settings):
+    body = base_settings.body
+    assert isinstance(body, OfficeSettings)
+
+
+def test_settings_version(base_settings):
+    version = base_settings.odf_office_version
+    assert version == "1.3"

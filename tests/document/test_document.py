@@ -28,12 +28,19 @@ from io import BytesIO
 
 import pytest
 
-from odfdo.const import ODF_CONTENT, ODF_EXTENSIONS, ODF_MANIFEST, ODF_META
+from odfdo.const import (
+    ODF_CONTENT,
+    ODF_EXTENSIONS,
+    ODF_MANIFEST,
+    ODF_META,
+    ODF_SETTINGS,
+)
 from odfdo.content import Content
 from odfdo.document import Document
 from odfdo.manifest import Manifest
 from odfdo.meta import Meta
 from odfdo.paragraph import Paragraph
+from odfdo.settings import Settings
 
 
 def _copied_template(tmp_path, template):
@@ -169,6 +176,12 @@ def test_case_get_manifest(samples):
     document = Document(samples("example.odt"))
     manifest = document.get_part(ODF_MANIFEST)
     assert isinstance(manifest, Manifest)
+
+
+def test_case_get_settings(samples):
+    document = Document(samples("example.odt"))
+    settings = document.get_part(ODF_SETTINGS)
+    assert isinstance(settings, Settings)
 
 
 def test_case_get_body(samples):
