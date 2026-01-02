@@ -18,8 +18,8 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
-"""DrawImage class for "draw:image" tag and DrawFillImage for "draw:fill-image"
-tag.
+"""DrawImage class for "draw:image" tag, DrawFillImage for "draw:fill-image"
+tag, and DrawMarker for "draw:marker" tag.
 """
 
 from __future__ import annotations
@@ -160,5 +160,57 @@ class DrawFillImage(Element):
 
 DrawFillImage._define_attribut_property()
 
+
+class DrawMarker(Element):
+    """A marker, "draw:marker", which is used to draw polygons at the start
+    or end point of a stroke depending on whether it is referenced by a
+    "draw:marker-start" or "draw:marker-end" attribute.
+
+    Marker geometry is defined by a svg:d attribute.
+
+    The "draw:marker" element is usable within the "office:styles"."""
+
+    _tag = "draw:marker"
+    _properties: tuple[PropDef | PropDefBool, ...] = (
+        PropDef("name", "draw:name"),
+        PropDef("display_name", "draw:display-name"),
+        PropDef("svg_d", "svg:d"),
+        PropDef("view_box", "svg:viewBox"),
+    )
+
+    def __init__(
+        self,
+        name: str | None = None,
+        display_name: str | None = None,
+        svg_d: str | None = None,
+        view_box: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Create a draw marker "draw:marker".
+
+        Args:
+            name: The internal name of the fill image.
+            display_name: The display name of the fill image.
+            svg_d: A path data.
+            view_box: The rectangle in a local coordinates system used by the
+                points.
+            **kwargs: Additional keyword arguments for the `DrawMarker` class.
+        """
+        super().__init__(**kwargs)
+        if self._do_init:
+            if name:
+                self.name = name
+            if display_name:
+                self.display_name = display_name
+            if svg_d:
+                self.svg_d = svg_d
+            if view_box:
+                self.view_box = view_box
+
+
+DrawMarker._define_attribut_property()
+
+
 register_element_class(DrawImage)
 register_element_class(DrawFillImage)
+register_element_class(DrawMarker)

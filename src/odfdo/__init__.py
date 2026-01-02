@@ -58,6 +58,7 @@ __all__ = [  # noqa: RUF022
     "DrawFillImage",
     "DrawGroup",
     "DrawImage",
+    "DrawMarker",
     "DrawMeasure",
     "DrawPage",
     "DrawPageThumbnail",
@@ -329,7 +330,7 @@ from .frame import (
 )
 from .header import Header
 from .header_rows import HeaderRows
-from .image import DrawFillImage, DrawImage
+from .image import DrawFillImage, DrawImage, DrawMarker
 from .line_break import LineBreak
 from .link import Link
 from .list import List, ListHeader, ListItem
