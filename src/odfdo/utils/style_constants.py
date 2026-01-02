@@ -82,5 +82,10 @@ SUBCLASS_STYLES = {"background-image"}
 FAMILY_MAPPING = {**_BASE_FAMILY_MAP, **_FALSE_FAMILY_MAP}
 
 FALSE_FAMILY_MAP_REVERSE = {v: k for k, v in _FALSE_FAMILY_MAP.items()}
-SUBCLASSED_STYLES = {"style:background-image", "style:master-page", "style:page-layout"}
+SUBCLASSED_STYLES = {
+    "style:background-image",
+    "style:master-page",
+    "style:page-layout",
+    "draw:marker",
+}
 STYLES_TO_REGISTER = (set(FAMILY_MAPPING.values()) | OTHER_STYLES) - SUBCLASSED_STYLES

@@ -29,7 +29,7 @@ from odfdo.const import FOLDER
 from odfdo.document import Document
 from odfdo.element import NEXT_SIBLING
 from odfdo.frame import Frame
-from odfdo.image import DrawFillImage, DrawImage
+from odfdo.image import DrawFillImage, DrawImage, DrawMarker
 
 IMG_PATH = "Pictures/100002010000012C00000042188DCB81589D2C10.png"
 
@@ -112,3 +112,70 @@ def test_repr(sample_body):
 def test_str(sample_body):
     element = sample_body.get_image(name="odfdo")
     assert str(element).endswith(".png)")
+
+
+def test_draw_marker_class():
+    marker = DrawMarker()
+    assert marker.serialize() == "<draw:marker/>"
+
+
+def test_draw_marker_class_tag():
+    marker = Element.from_tag("<draw:marker/>")
+    assert isinstance(marker, DrawMarker)
+
+
+def test_draw_marker_xml():
+    marker = DrawMarker(
+        name="name",
+        display_name="display name",
+        svg_d="some geometry",
+        view_box="some vb",
+    )
+    assert marker._canonicalize() == (
+        "<draw:marker "
+        'draw:display-name="display name" '
+        'draw:name="name" '
+        'svg:d="some geometry" '
+        'svg:viewBox="some vb">'
+        "</draw:marker>"
+    )
+
+
+def test_draw_marker_name():
+    marker = DrawMarker(
+        name="name",
+        display_name="display name",
+        svg_d="some geometry",
+        view_box="some vb",
+    )
+    assert marker.name == "name"
+
+
+def test_draw_marker_display_name():
+    marker = DrawMarker(
+        name="name",
+        display_name="display name",
+        svg_d="some geometry",
+        view_box="some vb",
+    )
+    assert marker.display_name == "display name"
+
+
+def test_draw_marker_svg_d():
+    marker = DrawMarker(
+        name="name",
+        display_name="display name",
+        svg_d="some geometry",
+        view_box="some vb",
+    )
+    assert marker.svg_d == "some geometry"
+
+
+def test_draw_marker_view_box():
+    marker = DrawMarker(
+        name="name",
+        display_name="display name",
+        svg_d="some geometry",
+        view_box="some vb",
+    )
+    assert marker.view_box == "some vb"
