@@ -33,7 +33,7 @@ from copy import deepcopy
 from importlib import resources as rso
 from operator import itemgetter
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, BinaryIO, cast
+from typing import TYPE_CHECKING, Any, BinaryIO, Union, cast
 
 from .const import (
     ODF_CONTENT,
@@ -52,11 +52,12 @@ from .container import Container
 from .content import Content
 from .datatype import Boolean
 from .element import Element
-from .image import DrawFillImage, DrawImage
+from .image import DrawFillImage, DrawImage, DrawMarker
 from .manifest import Manifest
 from .meta import Meta
 from .mixin_md import MDDocument
 from .settings import Settings
+from .style_base import StyleBase
 from .styles import Styles
 from .table import Table
 from .utils import FAMILY_MAPPING, Blob, bytes_to_str, is_RFC3066
@@ -64,7 +65,6 @@ from .xmlpart import XmlPart
 
 if TYPE_CHECKING:
     from .body import Body
-    from .style_base import StyleBase
 
 AUTOMATIC_PREFIX = "odfdo_auto_"
 
@@ -895,7 +895,7 @@ class Document(MDDocument):
         self,
         family: str | bytes = "",
         automatic: bool = False,
-    ) -> list[StyleBase]:
+    ) -> list[StyleBase | DrawFillImage | DrawMarker]:
         """Retrieve a list of styles from both content.xml and styles.xml.
 
         This method allows filtering styles by family and can include automatic
@@ -907,21 +907,23 @@ class Document(MDDocument):
             automatic: If `True`, includes automatic styles from styles.xml.
 
         Returns:
-            A list of `StyleBase` objects matching the criteria.
+            list[StyleBase | DrawFillImage | DrawMarker]: A list of style-like
+                objects matching the criteria.
         """
         # compatibility with old versions:
         if isinstance(family, bytes):
             family = bytes_to_str(family)
-        return self.content.get_styles(family=family) + self.styles.get_styles(
+        all_styles = self.content.get_styles(family=family) + self.styles.get_styles(
             family=family, automatic=automatic
         )
+        return [s for s in all_styles if s is not None]
 
     def get_style(
         self,
         family: str,
         name_or_element: str | StyleBase | None = None,
         display_name: str | None = None,
-    ) -> StyleBase | None:
+    ) -> StyleBase | DrawFillImage | DrawMarker | None:
         """Return the style uniquely identified by its name and family.
 
         If `name_or_element` is already a `StyleBase` object, it is returned directly.
@@ -938,7 +940,8 @@ class Document(MDDocument):
             display_name: The user-facing display name of the style.
 
         Returns:
-            The matching `StyleBase` object, or `None` if no matching style is found.
+            StyleBase | DrawFillImage | DrawMarker | None: The matching style-like,
+                instance, or `None` if no matching style is found.
         """
         # 1. content.xml
         element = self.content.get_style(
@@ -953,14 +956,16 @@ class Document(MDDocument):
             display_name=display_name,
         )
 
-    def get_parent_style(self, style: StyleBase) -> StyleBase | None:
+    def get_parent_style(
+        self, style: StyleBase
+    ) -> StyleBase | DrawFillImage | DrawMarker | None:
         """Get the parent style of a given style.
 
         Args:
             style: The `StyleBase` object for which to find the parent.
 
         Returns:
-            The parent `StyleBase` object, or `None` if the style
+            The parent `StyleBase`, or `None` if the style
             has no parent or the parent style cannot be found.
         """
         family = style.family
@@ -984,7 +989,7 @@ class Document(MDDocument):
         list_style_name = style.list_style_name  # type: ignore[attr-defined]
         if not list_style_name:
             return None
-        return self.get_style("list", list_style_name)
+        return cast(Union[None, StyleBase], self.get_style("list", list_style_name))
 
     @staticmethod
     def _pseudo_style_attribute(
@@ -1002,12 +1007,14 @@ class Document(MDDocument):
         styles = self.get_styles(family=family, automatic=True)
         max_index = 0
         for existing_style in styles:
+            if existing_style is None:
+                continue
             if not hasattr(existing_style, "name"):
                 continue
-            if not existing_style.name.startswith(AUTOMATIC_PREFIX):
+            if not existing_style.name.startswith(AUTOMATIC_PREFIX):  # type: ignore[union-attr]
                 continue
             try:
-                index = int(existing_style.name[len(AUTOMATIC_PREFIX) :])
+                index = int(existing_style.name[len(AUTOMATIC_PREFIX) :])  # type: ignore
             except ValueError:
                 continue
             max_index = max(max_index, index)
@@ -1247,7 +1254,7 @@ class Document(MDDocument):
         infos = []
         for style in self.get_styles():
             try:
-                name = style.name  # type: ignore[attr-defined]
+                name: str = style.name or ""  # type: ignore [union-attr]
             except AttributeError:
                 print("Style error:")
                 print(style.__class__)
@@ -1262,6 +1269,10 @@ class Document(MDDocument):
             if (is_auto and automatic is False) or (not is_auto and common is False):
                 continue
             is_used = bool(self.get_styled_elements(name))
+            if isinstance(style, StyleBase) and properties:
+                style_properties = style.get_properties()
+            else:
+                style_properties = None
             infos.append(
                 {
                     "type": "auto  " if is_auto else "common",
@@ -1271,7 +1282,7 @@ class Document(MDDocument):
                     "name": name or "",
                     "display_name": self._pseudo_style_attribute(style, "display_name")
                     or "",
-                    "properties": style.get_properties() if properties else None,
+                    "properties": style_properties,
                 }
             )
         if not infos:
@@ -1326,7 +1337,7 @@ class Document(MDDocument):
         deleted = 0
         for style in self.get_styles():
             try:
-                name = style.name  # type: ignore[attr-defined]
+                name = style.name or ""  # type: ignore[union-attr]
             except AttributeError:
                 continue
                 # Don't delete default styles
@@ -1426,13 +1437,13 @@ class Document(MDDocument):
         Note: This style uses the property 'fo:break-after'; another
         possibility could be the property 'fo:break-before'.
         """
-        if existing := self.get_style(  # noqa: SIM102
+        if existing := self.get_style(
             family="paragraph",
             name_or_element="odfdopagebreak",
         ):
-            if properties := existing.get_properties():  # noqa: SIM102
-                if properties["fo:break-after"] == "page":
-                    return
+            properties = existing.get_properties()  # type: ignore
+            if properties and properties["fo:break-after"] == "page":
+                return
         style = (
             '<style:style style:family="paragraph" style:parent-style-name="Standard" '
             'style:name="odfdopagebreak">'
@@ -1549,7 +1560,7 @@ class Document(MDDocument):
         """
         if not (sheet := self._get_table(table)):
             return None
-        return self.get_style("table", sheet.style)
+        return self.get_style("table", sheet.style)  # type: ignore
 
     def get_table_displayed(self, table: str | int) -> bool:
         """Return the `table:display` property of the table's style.

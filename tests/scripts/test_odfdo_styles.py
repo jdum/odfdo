@@ -174,7 +174,7 @@ def test_styles_2_delete_to_stdout(capsysbinary, samples):
     main_styles(params)
     captured = capsysbinary.readouterr()
 
-    assert b"23 styles removed (0 error, 0 warning)" in captured.err
+    assert b"27 styles removed (0 error, 0 warning)" in captured.err
     assert len(captured.out) > 8000
 
 
@@ -186,7 +186,7 @@ def test_styles_2_delete_to_file(tmp_path, capsys, samples):
     main_styles(params)
     captured = capsys.readouterr()
 
-    assert "23 styles removed (0 error, 0 warning)" in captured.err
+    assert "27 styles removed (0 error, 0 warning)" in captured.err
     assert dest.is_file()
 
 

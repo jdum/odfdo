@@ -206,6 +206,8 @@ class DrawMarker(Element):
                 self.svg_d = svg_d
             if view_box:
                 self.view_box = view_box
+        # false family for easier parsing:
+        self.family = ""
 
 
 DrawMarker._define_attribut_property()

@@ -276,7 +276,8 @@ def test_unit(document: Document) -> None:
         return
 
     doc_styles_names = {s.name for s in document.get_styles()}
-    assert len(doc_styles_names) == 11
+    print(doc_styles_names)
+    assert len(doc_styles_names) == 10
     for name in ("bolder", "description", "line", "smallserif"):
         assert name in doc_styles_names
     paragraphs = document.body.paragraphs

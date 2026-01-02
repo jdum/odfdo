@@ -32,6 +32,7 @@ from .utils import is_RFC3066
 from .xmlpart import XmlPart
 
 if TYPE_CHECKING:
+    from .image import DrawFillImage, DrawMarker
     from .master_page import StyleMasterPage
 
 
@@ -99,7 +100,9 @@ class Styles(XmlPart):
             ]
         return [e for e in elems if isinstance(e, Element)]
 
-    def get_styles(self, family: str = "", automatic: bool = False) -> list[StyleBase]:
+    def get_styles(
+        self, family: str = "", automatic: bool = False
+    ) -> list[StyleBase | DrawFillImage | DrawMarker]:
         """Return the list of styles in the Styles part.
 
         Optionally, the results can be limited to a specific family and/or
@@ -112,7 +115,8 @@ class Styles(XmlPart):
                 returned. Defaults to False.
 
         Returns:
-            list[StyleBase]: A list of Style elements.
+            list[StyleBase|DrawFillImage|DrawMarker]: A list of style-like
+            instances matching the criteria..
         """
         result = []
         for context in self._get_style_contexts(family, automatic=automatic):
@@ -185,7 +189,7 @@ class Styles(XmlPart):
         family: str,
         name_or_element: str | StyleBase | None = None,
         display_name: str | None = None,
-    ) -> StyleBase | None:
+    ) -> StyleBase | DrawFillImage | DrawMarker | None:
         """Return the style uniquely identified by its family and name.
 
         If the `name_or_element` argument is already a Style object, it will be
@@ -201,7 +205,8 @@ class Styles(XmlPart):
                 office application.
 
         Returns:
-            StyleBase | None: The matching Style object, or None if not found.
+            StyleBase | DrawFillImage | DrawMarker | None: A style-like
+                instance, or None if not found.
         """
         for context in self._get_style_contexts(family):
             if context is None:
@@ -222,9 +227,6 @@ class Styles(XmlPart):
         Returns:
             OfficeMasterStyles | None: The "office:master-styles" element, or None if not found.
         """
-        return cast(
-            Union[None, OfficeMasterStyles], self.get_element("//office:master-styles")
-        )
         return cast(
             Union[None, OfficeMasterStyles], self.get_element("//office:master-styles")
         )

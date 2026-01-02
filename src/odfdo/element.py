@@ -55,7 +55,7 @@ if TYPE_CHECKING:
     from .draw_page import DrawPage
     from .frame import Frame
     from .header import Header
-    from .image import DrawImage
+    from .image import DrawFillImage, DrawImage, DrawMarker
     from .paragraph import Paragraph, Span
     from .shapes import (
         ConnectorShape,
@@ -65,7 +65,9 @@ if TYPE_CHECKING:
         RectangleShape,
     )
     from .style import Style
-    from .style_base import StyleBase
+    from .style_base import (
+        StyleBase,
+    )
     from .tracked_changes import (
         TextChange,
         TextChangeEnd,
@@ -2913,6 +2915,9 @@ class Element(MDBase):
         """
         tagname: str
         if not family:
+            # here is a problem: to retrive actual styles we sould use this:
+            #   tagname = "style:default-style|*[@style:name]"
+            # however, background images are usually considered as styles too
             tagname = "(style:default-style|*[@style:name]|draw:fill-image|draw:marker)"
         elif is_default:
             # Default style
@@ -2925,7 +2930,9 @@ class Element(MDBase):
                 tagname = f"({tagname}|style:default-style)"
         return tagname
 
-    def get_styles(self, family: str | None = None) -> list[StyleBase]:
+    def get_styles(
+        self, family: str | None = None
+    ) -> list[StyleBase | DrawFillImage | DrawMarker]:
         """Returns all styles (common and default) that match the specified family.
 
         Args:
@@ -2933,7 +2940,8 @@ class Element(MDBase):
                 If None, retrieves all styles regardless of family.
 
         Returns:
-            list[StyleBase]: A list of StyleBase instances matching the criteria.
+            list[StyleBase|DrawFillImage|DrawMarker]: A list of style-like
+            instances matching the criteria.
         """
         # Both common and default styles
         tagname = self._get_style_tagname(family)
@@ -2944,24 +2952,28 @@ class Element(MDBase):
         family: str,
         name_or_element: str | Element | None = None,
         display_name: str | None = None,
-    ) -> StyleBase | None:
-        """Returns a single style uniquely identified by family/name, or a provided style object.
+    ) -> StyleBase | DrawFillImage | DrawMarker | None:
+        """Returns a single style uniquely identified by family/name, or a
+        provided style object.
 
-        If the provided `name_or_element` is already a style object, it is returned directly.
-        Use `display_name` if the style is known by its user-facing name instead of its
-        internal name.
+        If the provided `name_or_element` is already a style object, it is
+        returned directly. Use `display_name` if the style is known by its
+        user-facing name instead of its internal name.
 
         Args:
-            family: The style family (e.g., "paragraph", "text", "graphic", "table", "list", "number").
+            family: The style family (e.g., "paragraph", "text", "graphic",
+                "table", "list", "number").
             name_or_element: The internal name of the style, or
                 an existing Style (or subclass) instance.
             display_name: The user-facing name of the style.
 
         Returns:
-            StyleBase | None: A StyleBase instance, or None if no matching style is found.
+            StyleBase | DrawFillImage | DrawMarker | None: A style-like
+                instance, or None if no matching style is found.
 
         Raises:
-            ValueError: If `name_or_element` is an Element but not a recognized odf_style.
+            ValueError: If `name_or_element` is an Element but not a
+                recognized odf_style.
         """
         if isinstance(name_or_element, Element):
             name = self.get_attribute("style:name")
@@ -2999,12 +3011,14 @@ class Element(MDBase):
 
         Args:
             query_string: The XPath query string to apply.
-            position: The 0-based index of the desired element from the filtered results.
+            position: The 0-based index of the desired element from the filtered
+                results.
             **kwargs: Additional keyword arguments to pass to `_filtered_elements`
                 for filtering criteria.
 
         Returns:
-            Element | None: The Element instance at the specified position, or None if not found.
+            Element | None: The Element instance at the specified position, or None
+                if not found.
         """
         results = self._filtered_elements(query_string, **kwargs)
         try:
