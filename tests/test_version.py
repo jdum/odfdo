@@ -1,4 +1,4 @@
-# Copyright 2018-2025 Jérôme Dumonteil
+# Copyright 2018-2026 Jérôme Dumonteil
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 
 from odfdo.version import __version__

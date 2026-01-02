@@ -1,4 +1,4 @@
-# Copyright 2018-2025 Jérôme Dumonteil
+# Copyright 2018-2026 Jérôme Dumonteil
 # Copyright (c) 2010 Ars Aperta, Itaapy, Pierlis, Talend.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
