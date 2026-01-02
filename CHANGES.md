@@ -1,5 +1,41 @@
 # Odfdo Release Notes
 
+## [3.19.0] - 2026-01-02
+
+-   New classes for handling configuration settings (the rarely used `settings.xml` is now fully managed).
+-   Major refactoring of frame and shape classes.
+-   Addition of many new drawing and shape classes.
+-   Rework of styles for more precise return types.
+-   Extensive addition of tests for new features.
+
+### Added
+ 
+ -   Add new drawing classes: `DrawMarker`, `DrawPageThumbnail`, `DrawControl`, `DrawMeasure`, 
+`DrawCaption`, `DrawPath`.
+ -   Add new shape classes: `CircleShape`, `RegularPolygonShape`, `PolygonShape`, `PolylineShape` (issue #44).
+ -   Add new settings-related classes for `settings.xml` content: `Settings`, `OfficeSettings`, `ConfigItem`, `ConfigItemSet`, `ConfigItemMapNamed`, `ConfigItemMapEntry`, `ConfigItemMapIndexed`.
+-   Add `as_dict()` and `from_dict()` methods for `Settings` classes.
+-   Add class `ListHeader`.
+-   Add mixin classes `ListMixin`, `SvgMixin`.
+-   Add SVG-related classes: `SvgTitle` and `SvgDescription`.
+-   Add many tests for new features.
+ 
+### Changed
+ 
+-   Refactor `DrawGroup`, `ConnectorShape`, `EllipseShape`, `LineShape`.
+-   Refactor `frame.py` and `shapes.py` for more completeness.
+-   Refactor `DrawImage` and `DrawFillImage` for missing attributes.
+-   Refactor mixin classes: `AnchorMix`, `ZMix`, `PosMix`.
+-   Refactor `list.py` module.
+-   Update many docstrings.
+ 
+### Fixed
+ 
+-   Fix `Element.get_styles()` and `.get_style()` to return more precise types (issues #30, #61).
+-   Move `py.typed` to the package directory (issue #62).
+-   Fix `ConfigItemSet.name` property.
+-   Fix typo in shape docstrings.
+
 ## [3.18.3] - 2025-12-20
 
 -   Refactoring of Element, create mixins `UserDefinedMixin`, `UserFieldDeclContMixin`, `UserFieldDeclMixin`, `TocMixin`.
