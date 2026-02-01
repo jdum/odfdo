@@ -407,7 +407,9 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def date(self) -> _date:
-        """Get or set the value of the cell as a date."""
+        """Get or set the value of the cell as a date.
+
+        When setting the value, force the cell type to "date"."""
         value = self.get_attribute("office:date-value")
         if isinstance(value, str):
             return Date.decode(value).date()
@@ -415,9 +417,15 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
     @date.setter
     def date(self, value: _date) -> None:
-        self.clear()
-        self.set_attribute("office:value-type", "date")
         dvalue = Date.encode(value)
+        if self.type != "date":
+            # remove attributes that can exist from a previous different cell
+            # type.
+            # Note: the Cell may also contains non standanrd attributes (ooo)
+            # or sub elements (test:p, ...)
+            self.clear_attrinutes()
+            self.set_attribute("office:value-type", "date")
+        self._erase_text_content()
         self.set_attribute("office:date-value", dvalue)
         self.text = dvalue
 

@@ -511,6 +511,21 @@ def test_value_property_date_getter_empty():
     assert cell.date == date.fromtimestamp(0)
 
 
+def test_value_property_set_date_styled():
+    cell = Cell("before", cell_type="string", style="bold")
+    cell.value = date(2009, 6, 30)
+    assert cell.date == date(2009, 6, 30)
+    expected = (
+        "<table:table-cell "
+        'office:date-value="2009-06-30" '
+        'office:value-type="date" '
+        'table:style-name="bold">'
+        "2009-06-30"
+        "</table:table-cell>"
+    )
+    assert cell._canonicalize() == expected
+
+
 def test_value_property_bytes():
     cell = Cell()
     cell.clear()
