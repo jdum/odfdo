@@ -248,11 +248,13 @@ def test_internal_set_cell_in_cache(table):
 def test_internal_set_cell_in_cache2(table):
     row = table.get_row(0)
     cache = row._row_cache
+    assert row.get_values() == [1, 1, 1, 2, 3, 3, 3]
+    assert str(cache) == "RC cell:[2, 3, 6]"
     cell = row.get_cell(0)
     cell.value = 42
     row.set_cell(0, cell)
-    assert str(cache) == "RC cell:[0, 2, 3, 6]"
-    assert row.get_values() == [42, 1, 1, 2, 3, 3, 3]
+    assert str(cache) == "RC cell:[2, 3, 6]"
+    assert row.get_values() == [42, 42, 42, 2, 3, 3, 3]
 
 
 def test_internal_insert_cell_in_cache(table):
@@ -269,8 +271,8 @@ def test_internal_insert_cell_in_cache2(table):
     cell = row.get_cell(0)
     cell.value = 42
     row.insert_cell(0, cell)
-    assert str(cache) == "RC cell:[0, 3, 4, 7]"
-    assert row.get_values() == [42, 1, 1, 1, 2, 3, 3, 3]
+    assert str(cache) == "RC cell:[2, 5, 6, 9]"
+    assert row.get_values() == [42, 42, 42, 1, 1, 1, 2, 3, 3, 3]
 
 
 def test_internal_delete_cell_in_cache(table):

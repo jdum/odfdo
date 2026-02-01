@@ -129,7 +129,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
         Note: the cell content is only cleared when using "cell.value = None".
         To ensure an absolute empty cell, use cell.clear() that will remove
-        all componants (style,  xml:id, ...).
+        all componants (style, span property, xml:id, ...).
 
         Warning:
             *   For `date`, `datetime`, and `timedelta`, a default text value
@@ -275,7 +275,9 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def int(self) -> _int:
-        """Get or set the value of the cell as an integer (or 0)."""
+        """Get or set the value of the cell as an integer (or 0).
+
+        When setting the value, force the cell type to "float"."""
         for tag in ("office:value", "office:string-value"):
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
@@ -290,10 +292,12 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         except (ValueError, TypeError, ConversionSyntax):
             value_int = 0
         value_str = str(value_int)
-        self.clear()
-        self.set_attribute("office:value", value_str)
-        self.set_attribute("office:value-type", "float")
-        self.text = value_str
+
+        # self.clear()
+        # self.set_attribute("office:value", value_str)
+        # self.set_attribute("office:value-type", "float")
+        # self.text = value_str
+        self._set_float_value_str(value_str)
 
     @property
     def string(self) -> str:

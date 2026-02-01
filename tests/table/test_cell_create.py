@@ -653,6 +653,20 @@ def test_int_value_property_3():
     assert cell.int == 0
 
 
+def test_int_property_4():
+    cell = Cell("before", cell_type="string", style="bold")
+    cell.int = 12
+    expected = (
+        "<table:table-cell "
+        'office:value="12" '
+        'office:value-type="float" '
+        'table:style-name="bold">'
+        "12"
+        "</table:table-cell>"
+    )
+    assert cell._canonicalize() == expected
+
+
 def test_float_property_2():
     cell = Cell(1.54, cell_type="currency", currency="EUR")
     cell.float = 12
