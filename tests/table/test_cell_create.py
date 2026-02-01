@@ -476,6 +476,21 @@ def test_value_property_datetime_getter_empty():
     assert cell.datetime == datetime.fromtimestamp(0)
 
 
+def test_value_property_set_datetime_styled():
+    cell = Cell("before", cell_type="string", style="bold")
+    cell.value = datetime(2009, 6, 30, 0, 0)
+    assert cell.datetime == datetime(2009, 6, 30, 0, 0)
+    expected = (
+        "<table:table-cell "
+        'office:date-value="2009-06-30T00:00:00" '
+        'office:value-type="date" '
+        'table:style-name="bold">'
+        "2009-06-30T00:00:00"
+        "</table:table-cell>"
+    )
+    assert cell._canonicalize() == expected
+
+
 def test_value_property_set_date():
     cell = Cell(1.54, cell_type="currency", currency="EUR")
     cell.value = date(2009, 6, 30)
