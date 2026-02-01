@@ -636,7 +636,7 @@ def test_int_value_property_3():
     assert cell.int == 0
 
 
-def test_float_property2():
+def test_float_property_2():
     cell = Cell(1.54, cell_type="currency", currency="EUR")
     cell.float = 12
     expected = (
@@ -644,7 +644,21 @@ def test_float_property2():
         'office:value-type="float">12.0'
         "</table:table-cell>"
     )
-    assert cell.serialize() == expected
+    assert cell._canonicalize() == expected
+
+
+def test_float_property_3():
+    cell = Cell("before", cell_type="string", style="bold")
+    cell.float = 12.0
+    expected = (
+        "<table:table-cell "
+        'office:value="12.0" '
+        'office:value-type="float" '
+        'table:style-name="bold">'
+        "12.0"
+        "</table:table-cell>"
+    )
+    assert cell._canonicalize() == expected
 
 
 def test_bool_property():

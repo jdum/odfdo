@@ -221,7 +221,9 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def float(self) -> _float:
-        """Get or set the value of the cell as a float (or 0.0)."""
+        """Get or set the value of the cell as a float (or 0.0).
+
+        When setting the value, force the cell type to "float"."""
         for tag in ("office:value", "office:string-value"):
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
@@ -236,9 +238,15 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         except (ValueError, TypeError, ConversionSyntax):
             value_float = 0.0
         value_str = str(value_float)
-        self.clear()
+        if self.type != "float":
+            # remove attributes that can exist from a previous different cell
+            # type.
+            # Note: the Cell may also contains non standanrd attributes (ooo)
+            # or sub elements (test:p, ...)
+            self.clear_attrinutes()
+            self.set_attribute("office:value-type", "float")
+        self._erase_text_content()
         self.set_attribute("office:value", value_str)
-        self.set_attribute("office:value-type", "float")
         self.text = value_str
 
     @property
