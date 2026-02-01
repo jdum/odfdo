@@ -238,6 +238,9 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         except (ValueError, TypeError, ConversionSyntax):
             value_float = 0.0
         value_str = str(value_float)
+        self._set_float_value_str(value_str)
+
+    def _set_float_value_str(self, value_str: str) -> None:
         if self.type != "float":
             # remove attributes that can exist from a previous different cell
             # type.
@@ -251,7 +254,9 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def decimal(self) -> Decimal:
-        """Get or set the value of the cell as a Decimal (or 0.0)."""
+        """Get or set the value of the cell as a Decimal (or 0.0).
+
+        When setting the value, force the cell type to "float"."""
         for tag in ("office:value", "office:string-value"):
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
@@ -266,10 +271,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         except (ValueError, TypeError, ConversionSyntax, InvalidOperation):
             value_decimal = Decimal("0.0")
         value_str = str(value_decimal)
-        self.clear()
-        self.set_attribute("office:value", value_str)
-        self.set_attribute("office:value-type", "float")
-        self.text = value_str
+        self._set_float_value_str(value_str)
 
     @property
     def int(self) -> _int:

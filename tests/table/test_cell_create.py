@@ -613,6 +613,23 @@ def test_decimal_value_property_3():
     assert cell.decimal == dec("0.0")
 
 
+def test_decimal_value_property_4():
+    cell = Cell("before", cell_type="string", style="bold")
+    cell.decimal = dec("3.14")
+    assert cell.float == 3.14
+    assert cell.value == dec("3.14")
+    assert cell.decimal == dec("3.14")
+    expected = (
+        "<table:table-cell "
+        'office:value="3.14" '
+        'office:value-type="float" '
+        'table:style-name="bold">'
+        "3.14"
+        "</table:table-cell>"
+    )
+    assert cell._canonicalize() == expected
+
+
 def test_int_value_property():
     cell = Cell(0, cell_type="float")
     assert cell.float == 0.0
