@@ -262,6 +262,22 @@ def test_timedelta_repr():
     assert cell.serialize() == expected
 
 
+def test_timedelta_style():
+    cell = Cell("before", cell_type="time", style="bold")
+    duration = timedelta(days=0, hours=2, minutes=15)
+    cell.value = duration
+    expected = (
+        "<table:table-cell "
+        'office:time-value="PT02H15M00S" '
+        'office:value-type="time" '
+        'table:style-name="bold" '
+        'calcext:value-type="time">'
+        "PT02H15M00S"
+        "</table:table-cell>"
+    )
+    assert cell._canonicalize() == expected
+
+
 def test_percentage():
     cell = Cell(90, cell_type="percentage")
     expected = (

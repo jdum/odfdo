@@ -292,11 +292,6 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         except (ValueError, TypeError, ConversionSyntax):
             value_int = 0
         value_str = str(value_int)
-
-        # self.clear()
-        # self.set_attribute("office:value", value_str)
-        # self.set_attribute("office:value-type", "float")
-        # self.text = value_str
         self._set_float_value_str(value_str)
 
     @property
@@ -364,7 +359,9 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def duration(self) -> timedelta:
-        """Get or set the value of the cell as a duration (Python timedelta)."""
+        """Get or set the value of the cell as a duration (Python timedelta).
+
+        When setting the value, force the cell type to "time"."""
         value = self.get_attribute("office:time-value")
         if isinstance(value, str):
             return Duration.decode(value)
@@ -372,9 +369,15 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
     @duration.setter
     def duration(self, value: timedelta) -> None:
-        self.clear()
-        self.set_attribute("office:value-type", "time")
         dvalue = Duration.encode(value)
+        if self.type != "time":
+            # remove attributes that can exist from a previous different cell
+            # type.
+            # Note: the Cell may also contains non standanrd attributes (ooo)
+            # or sub elements (test:p, ...)
+            self.clear_attrinutes()
+            self.set_attribute("office:value-type", "time")
+        self._erase_text_content()
         self.set_attribute("office:time-value", dvalue)
         self.text = dvalue
 
