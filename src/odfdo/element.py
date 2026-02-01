@@ -1409,6 +1409,16 @@ class Element(MDBase):
         lxml_tag = _get_lxml_tag_or_name(name)
         del element.attrib[lxml_tag]
 
+    def del_attribute_list(self, names: Iterable[str]) -> None:
+        """Deletes a list of attributes from the element if present.
+
+        Args:
+            names: The qualified names of the attributes to delete.
+        """
+        for name in names:
+            with contextlib.suppress(KeyError):
+                del self.__element.attrib[_get_lxml_tag_or_name(name)]
+
     @property
     def text(self) -> str:
         """Gets the text content of the element.
