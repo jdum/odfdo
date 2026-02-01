@@ -189,13 +189,9 @@ def test_erase_text_content_2():
 
 
 def test_erase_text_content_3():
-    element = ElementTyped.from_tag(
-        (
-            "<table:table-cell>"
-            "<text:p>abc</text:p>"
-            "<text:p>xyz</text:p>"
-            "</table:table-cell>"
-        )
+    definition = (
+        "<table:table-cell><text:p>abc</text:p><text:p>xyz</text:p></table:table-cell>"
     )
+    element = ElementTyped.from_tag(definition)
     element._erase_text_content()
     assert element._canonicalize() == "<table:table-cell></table:table-cell>"

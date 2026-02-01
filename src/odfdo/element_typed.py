@@ -49,7 +49,7 @@ class ElementTyped(Element):
             for obsolete in paragraphs:
                 obsolete.delete()
 
-    def clear_attrinutes(self):
+    def clear_attrinutes(self) -> None:
         """Clear attrinutes defining type and value of the Cell."""
         self.del_attribute_list(
             (
