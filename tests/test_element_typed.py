@@ -175,20 +175,27 @@ def test_et_get_value_float_bad():
 
 
 def test_erase_text_content():
-    element = ElementTyped.from_tag("<office:value></office:value>")
+    element = ElementTyped.from_tag("<table:table-cell></table:table-cell>")
     element._erase_text_content()
-    assert element.serialize() == "<office:value/>"
+    assert element._canonicalize() == "<table:table-cell></table:table-cell>"
 
 
 def test_erase_text_content_2():
-    element = ElementTyped.from_tag("<office:value><text:p>abc</text:p></office:value>")
+    element = ElementTyped.from_tag(
+        "<table:table-cell><text:p>abc</text:p></table:table-cell>"
+    )
     element._erase_text_content()
-    assert element.serialize() == "<office:value><text:p>abc</text:p></office:value>"
+    assert element._canonicalize() == "<table:table-cell></table:table-cell>"
 
 
 def test_erase_text_content_3():
     element = ElementTyped.from_tag(
-        "<office:value><text:p>abc</text:p><text:p>xyz</text:p></office:value>"
+        (
+            "<table:table-cell>"
+            "<text:p>abc</text:p>"
+            "<text:p>xyz</text:p>"
+            "</table:table-cell>"
+        )
     )
     element._erase_text_content()
-    assert element.serialize() == "<office:value><text:p>abc</text:p></office:value>"
+    assert element._canonicalize() == "<table:table-cell></table:table-cell>"

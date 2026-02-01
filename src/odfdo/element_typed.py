@@ -45,9 +45,26 @@ class ElementTyped(Element):
             # E.g., text:p in draw:text-box in draw:frame
             paragraphs = self.get_elements("*/text:p")
         if paragraphs:
-            paragraphs.pop(0)
+            # paragraphs.pop(0)
             for obsolete in paragraphs:
                 obsolete.delete()
+
+    def clear_attrinutes(self):
+        """Clear attrinutes defining type and value of the Cell."""
+        self.del_attribute_list(
+            (
+                "office:value-type",
+                "office:boolean-value",
+                "office:value",
+                "office:date-value",
+                "office:string-value",
+                "office:time-value",
+                "table:formula",
+                "office:currency",
+                "calcext:value-type",
+                "loext:value-type",
+            )
+        )
 
     def set_value_and_type(
         self,
@@ -80,20 +97,7 @@ class ElementTyped(Element):
             TypeError: If the type of `value` is not supported.
         """
         # Remove possible previous value and type
-        for name in (
-            "office:value-type",
-            "office:boolean-value",
-            "office:value",
-            "office:date-value",
-            "office:string-value",
-            "office:time-value",
-            "table:formula",
-            "office:currency",
-            "calcext:value-type",
-            "loext:value-type",
-        ):
-            with contextlib.suppress(KeyError):
-                self.del_attribute(name)
+        self.clear_attrinutes()
         if isinstance(value, bytes):
             value = bytes_to_str(value)
         if isinstance(value_type, bytes):
