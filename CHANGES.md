@@ -1,5 +1,23 @@
 # Odfdo Release Notes
 
+## [3.20.0] - 2026-02-01
+
+-   **Breaking Change**: The `Cell.value` property no longer automatically clears the cell's style when a new value is set. Previously, setting `Cell.value` would remove existing styling, and other properties like cell span, xml:id .... Now, styling and other properties are preserved. If the old behavior of clearing styles is desired, explicitly call `Cell.clear()` before setting the new value (issue #63).
+-   Enhanced element manipulation with `Element.del_attribute_list()` and `ElementTyped.clear_attributes()` methods.
+
+### Added
+
+-   Add method `Element.del_attribute_list()`.
+-   Add method `ElementTyped.clear_attributes()`.
+
+### Changed
+
+-   The `Cell.value` property now preserves the cell's style and other properties when setting a new value across all data types (date, datetime, timedelta, int, decimal, float, boolean, string).
+-   `ElementTyped._erase_text_content()` changed to wipe all paragraphs.
+
+### Fixed
+-   The `Cell.value` property no longer automatically clears the cell's style when a new value is set.
+
 ## [3.19.0] - 2026-01-02
 
 -   New classes for handling configuration settings (the rarely used `settings.xml` is now fully managed).
