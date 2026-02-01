@@ -122,18 +122,27 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
     ) -> str | _bool | _int | _float | Decimal | _date | _datetime | timedelta | None:
         """Get or set the value of the cell.
 
-        When getting, the type is inferred from the 'office:value-type' attribute.
+        When getting, the type is inferred from the 'office:value-type'
+        attribute.
         When setting, the type of the provided Python value determines the
         'office:value-type' of the cell.
+
+        Note: the cell content is only cleared when using "cell.value = None".
+        To ensure an absolute empty cell, use cell.clear() that will remove
+        all componants (style,  xml:id, ...).
 
         Warning:
             *   For `date`, `datetime`, and `timedelta`, a default text value
                 is automatically generated.
-            *   For boolean types, the text value will be either 'True' or 'False'.
-            *   For numeric types, the return value is typically `Decimal` or `int`.
-                Use the `float`, `decimal`, or `int` properties to force a
-                specific return type.
-            *   To customize the text representation, use the `set_value()` method.
+            *   For boolean types, the text value will be either 'True' or
+                'False'.
+            *   For numeric types, the return value is typically `Decimal` or
+                `int`. Use the `float`, `decimal`, or `int` properties to
+                force a specific return type.
+            *   To customize the text representation, use the `set_value()`
+                method.
+            *   To change the string representation of the cell without
+                changing the cell type, use the low level property cell.text
 
         Returns:
             Union[str, bool, int, float, Decimal, date, datetime, timedelta, None]:
@@ -278,7 +287,9 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def string(self) -> str:
-        """Get or set the value of the cell as a string (or '')."""
+        """Get or set the value of the cell as a string (or '').
+
+        When setting the value, force the cell type to "string"."""
         value = self.get_attribute_string("office:string-value")
         if isinstance(value, str):
             return value
@@ -289,14 +300,21 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         self,
         value: str | bytes | _int | _float | Decimal | _bool | None,
     ) -> None:
-        self.clear()
+        # self.clear()
         if value is None:
             value_str = ""
         elif isinstance(value, bytes):
             value_str = value.decode()
         else:
             value_str = str(value)
-        self.set_attribute("office:value-type", "string")
+        if self.type != "string":
+            # remove attributes that can exist from a previous different cell
+            # type.
+            # Note: the Cell may also contains non standanrd attributes (ooo)
+            # or sub elements (test:p, ...)
+            self.clear_attrinutes()
+            self.set_attribute("office:value-type", "string")
+        self._erase_text_content()
         self.set_attribute("office:string-value", value_str)
         self.text = value_str
 

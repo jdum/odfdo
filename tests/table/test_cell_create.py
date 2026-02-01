@@ -528,10 +528,13 @@ def test_value_property2():
     cell = Cell(1.54, cell_type="currency", currency="EUR")
     cell.value = "3"
     expected = (
-        '<table:table-cell office:value-type="string" '
-        'office:string-value="3">3</table:table-cell>'
+        "<table:table-cell "
+        'office:string-value="3" '
+        'office:value-type="string">'
+        "3"
+        "</table:table-cell>"
     )
-    assert cell.serialize() == expected
+    assert cell._canonicalize() == expected
 
 
 def test_string_property2():
@@ -539,12 +542,27 @@ def test_string_property2():
     cell.string = "Le changement"
     expected = (
         "<table:table-cell "
-        'office:value-type="string" '
-        'office:string-value="Le changement">'
+        'office:string-value="Le changement" '
+        'office:value-type="string">'
         "Le changement"
         "</table:table-cell>"
     )
-    assert cell.serialize() == expected
+    assert cell._canonicalize() == expected
+
+
+def test_string_property_style():
+    cell = Cell("content", cell_type="string", style="some_style")
+    cell.string = "changed"
+    expected = (
+        "<table:table-cell "
+        'office:string-value="changed" '
+        'office:value-type="string" '
+        'table:style-name="some_style" '
+        'calcext:value-type="string">'
+        "changed"
+        "</table:table-cell>"
+    )
+    assert cell._canonicalize() == expected
 
 
 def test_float_value_property():
