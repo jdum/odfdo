@@ -369,6 +369,20 @@ def test_del_attribute(sample):
     assert element.get_attribute("test") is None
 
 
+def test_del_attribute_raise(sample):
+    element = sample.para
+    with pytest.raises(KeyError):
+        element.del_attribute("office:boolean-value")
+
+
+def test_del_attribute_list(sample):
+    element = sample.para
+    element.set_attribute("test", "test")
+    attr_list = ["text:style-name", "test", "notexist1", "office:boolean-value"]
+    element.del_attribute_list(attr_list)
+    assert element._canonicalize() == "<text:p>This is the first paragraph.</text:p>"
+
+
 def test_del_attribute_namespace(sample):
     element = sample.para
     element.set_attribute("text:style-name", "Note")
