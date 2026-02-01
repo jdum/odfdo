@@ -320,7 +320,9 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def bool(self) -> _bool:
-        """Get or set the value of the cell as a boolean."""
+        """Get or set the value of the cell as a boolean.
+
+        When setting the value, force the cell type to "boolean"."""
         value = self.get_attribute_string("office:boolean-value")
         if isinstance(value, str):
             return value == "true"
@@ -331,12 +333,18 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         self,
         value: str | bytes | _int | _float | Decimal | _bool | None,
     ) -> None:
-        self.clear()
-        self.set_attribute("office:value-type", "boolean")
         if isinstance(value, (_bool, str, bytes)):
             bvalue = Boolean.encode(value)
         else:
             bvalue = Boolean.encode(bool(value))
+        if self.type != "boolean":
+            # remove attributes that can exist from a previous different cell
+            # type.
+            # Note: the Cell may also contains non standanrd attributes (ooo)
+            # or sub elements (test:p, ...)
+            self.clear_attrinutes()
+            self.set_attribute("office:value-type", "boolean")
+        self._erase_text_content()
         self.set_attribute("office:boolean-value", bvalue)
         self.text = bvalue
 

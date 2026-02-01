@@ -771,6 +771,22 @@ def test_bool_property_as_object_2():
     assert cell.decimal == dec("1")
 
 
+def test_bool_property_style():
+    cell = Cell("before", cell_type="string", style="bold")
+    cell.value = True
+    assert cell.bool is True
+
+    expected = (
+        "<table:table-cell "
+        'office:boolean-value="true" '
+        'office:value-type="boolean" '
+        'table:style-name="bold">'
+        "true"
+        "</table:table-cell>"
+    )
+    assert cell._canonicalize() == expected
+
+
 def test_decimal_property():
     cell = Cell(0, cell_type="float")
     cell.decimal = dec("1.43")
