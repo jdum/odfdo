@@ -114,6 +114,14 @@ class SvgTitle(Element):
         self.text = title
 
     def get_formatted_text(self, context: dict | None = None) -> str:
+        """Return a formatted text representation of the SvgTitle.
+
+        Args:
+            context: A dictionary of context variables for formatting.
+
+        Returns:
+            str: The formatted text content.
+        """
         return f"{self.title}\n"
 
 

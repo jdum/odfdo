@@ -734,8 +734,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         a simple string with cell values.
 
         Args:
-            context: A dictionary of context variables for
-                formatting.
+            context: A dictionary of context variables for formatting.
 
         Returns:
             str: The formatted text content of the table.
