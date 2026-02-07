@@ -56,7 +56,8 @@ def test_border_custom():
 
 def test_border_color_raise():
     arg = (None, None, "bug")
-    pytest.raises(ValueError, make_table_cell_border_string, arg)
+    with pytest.raises(ValueError):
+        make_table_cell_border_string(arg)
 
 
 def test_border_color_name():
