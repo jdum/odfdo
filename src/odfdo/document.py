@@ -374,7 +374,15 @@ class Document(MDDocument):
         the real path, e.g. content.xml, and return a dedicated object with its
         own API.
 
-        path formatted as URI, so always use '/' separator
+        The path parameter is formatted as URI, so always use '/' separator.
+
+        Args:
+            path: relative path or one of 'content', 'meta', 'settings',
+                'styles' or 'manifest'.
+
+        Returns:
+             XmlPart | str | bytes | None: the part content.
+
         """
         if not self.container:
             raise ValueError("Empty Container")
