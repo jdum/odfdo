@@ -55,6 +55,7 @@ odfdo-meta-update = 'odfdo.scripts.meta_update:main'
 
 [dependency-groups]
 doc = [
+    "griffe",
     "mkdocs",
     "mkdocs-material>=9.6.22",
     "mkdocstrings>=0.30.1",
@@ -189,7 +190,7 @@ disable_error_code = ["attr-defined"]
 module = "odfdo.mixin_dc_creator"
 disable_error_code = ["attr-defined"]
 
-[tool.pytest.ini_options]
+[tool.pytest]
 minversion = "8.0"
 testpaths = ["tests"]
 

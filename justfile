@@ -5,6 +5,9 @@ lint:
     ruff check src tests
     mypy
 
+doclint:
+    uv run python doc_src/doclint.py
+
 cov:
     uv run pytest -n8 --dist loadfile --cov --cov-report=html
 
