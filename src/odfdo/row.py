@@ -256,17 +256,17 @@ class Row(Element):
         start: int | None = None,
         end: int | None = None,
     ) -> Iterator[Cell]:
-        """Yields cell elements, expanding repetitions.
+        """Yields Cell elements, expanding repetitions.
 
-        Copies are returned, so changes will not affect the document.
-        Use `set_cell` to apply changes.
+        This method produces individual Cell objects. The yielded
+        Cell are copies; use `set_cell()` to apply changes.
 
         Args:
-            start: The starting index.
-            end: The ending index.
+            start: The starting cell index (0-based). Defaults to 0.
+            end: The ending cell index (inclusive). Defaults to 2**32.
 
         Yields:
-            Iterator[Cell]: The cell elements.
+            Cell: The next Cell element in the specified range..
         """
         if start is None:
             start = 0
