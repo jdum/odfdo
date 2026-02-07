@@ -37,7 +37,21 @@ Supported units:
 from __future__ import annotations
 
 from decimal import Decimal
+from fractions import Fraction
 from functools import total_ordering
+
+INCH_CONVERSION = {
+    "in": Fraction("1/1"),
+    "inch": Fraction("1/1"),
+    "cm": Fraction("100/254"),
+    "mm": Fraction("10/254"),
+    "m": Fraction("10000/254"),
+    "km": Fraction("10000000/254"),
+    "pt": Fraction("1/72"),
+    "pc": Fraction("1/6"),
+    "ft": Fraction("12/1"),
+    "mi": Fraction("63360/1"),
+}
 
 
 @total_ordering
@@ -48,7 +62,8 @@ class Unit:
     especially for conversion to pixels.
 
     Attributes:
-        value (Decimal): The numerical value of the measurement.
+        value (Fraction): The numerical value of the measurement.
+        text (str): The str value of the measurement.
         unit (str): The unit of the measurement (e.g., 'cm', 'in').
     """
 
@@ -78,11 +93,12 @@ class Unit:
                 unit = "".join(nondigits)
         elif isinstance(value, float):
             value = str(value)
-        self.value = Decimal(value)
+        self.txt = str(value)
+        self.value = Fraction(value)
         self.unit = unit
 
     def __str__(self) -> str:
-        return str(self.value) + self.unit
+        return self.txt + self.unit
 
     def __repr__(self) -> str:
         return f"{object.__repr__(self)} {self}"
@@ -130,24 +146,10 @@ class Unit:
             NotImplementedError: If conversion to the target `unit` or from
                 the instance's current unit is not supported.
         """
+        try:
+            conversion = INCH_CONVERSION[self.unit]
+        except KeyError as e:
+            raise NotImplementedError(f"unit {str(self.unit)!r}") from e
         if unit == "px":
-            if self.unit == "in" or self.unit == "inch":
-                return Unit(int(self.value * int(dpi)), "px")
-            elif self.unit == "cm":
-                return Unit(int(self.value / Decimal("2.54") * int(dpi)), "px")
-            elif self.unit == "mm":
-                return Unit(int(self.value / Decimal("25.4") * int(dpi)), "px")
-            elif self.unit == "m":
-                return Unit(int(self.value / Decimal("0.0254") * int(dpi)), "px")
-            elif self.unit == "km":
-                return Unit(int(self.value / Decimal("0.0000254") * int(dpi)), "px")
-            elif self.unit == "pt":
-                return Unit(int(self.value / Decimal("72") * int(dpi)), "px")
-            elif self.unit == "pc":
-                return Unit(int(self.value / Decimal("6") * int(dpi)), "px")
-            elif self.unit == "ft":
-                return Unit(int(self.value * Decimal("12") * int(dpi)), "px")
-            elif self.unit == "mi":
-                return Unit(int(self.value * Decimal("63360") * int(dpi)), "px")
-            raise NotImplementedError(f"unit {str(self.unit)!r}")
+            return Unit(int(self.value * conversion * int(dpi)), "px")
         raise NotImplementedError(f"unit {str(unit)!r}")
