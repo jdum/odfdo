@@ -669,8 +669,13 @@ class TextChange(Element):
     ) -> str | Element | list[Element] | None:
         """Returns None, as 'text:change' marks a deletion point.
 
+        Args:
+            as_text: unused.
+            no_header: unused.
+            clean: unused.
+
         Returns:
-            None: Always returns None.
+            str | Element | list[Element] | None: Always returns None.
         """
         return None
 
@@ -678,7 +683,7 @@ class TextChange(Element):
         """Returns None, as this is a single-point marker.
 
         Returns:
-            None: Always returns None.
+            TextChangeStart | None: Always returns None.
         """
         return None
 
@@ -686,7 +691,7 @@ class TextChange(Element):
         """Returns None, as this is a single-point marker.
 
         Returns:
-            None: Always returns None.
+            TextChangeEnd | None: Always returns None.
         """
         return None
 
