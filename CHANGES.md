@@ -1,5 +1,15 @@
 # Odfdo Release Notes
 
+## [3.20.2] - 2026-02-07
+
+-  Improvements of docstrings documentation.
+
+### Changed
+
+-   Improve docstrings in module `config_elements`
+-   Improve docstrings in module `meta`
+-   Improve docstrings in module `form_control_mixin`
+
 ## [3.20.1] - 2026-02-07
 
 -  Improvements of docstrings documentation.
@@ -10,7 +20,7 @@
 -   Add docstring for module `utils`
 -   Add docstring for module `templates`
 -   Add docstring for module `scripts`
--   Add `doclint.py` developement util script..
+-   Add `doclint.py` developement util script.
 
 ### Changed
 
