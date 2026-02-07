@@ -1,5 +1,37 @@
 # Odfdo Release Notes
 
+## [3.20.1] - 2026-02-07
+
+-  Improvements of docstrings documentation.
+-  Refactoring of the `Unit` class.
+
+### Added
+
+-   Add docstring for module `utils`
+-   Add docstring for module `templates`
+-   Add docstring for module `scripts`
+-   Add `doclint.py` developement util script..
+
+### Changed
+
+-   Refactor `Unit` class.
+-   Improve docstrings for `Container`.
+-   Improve docstrings for `Document`.
+-   Improve docstrings for `Annotation`.
+-   Improve docstrings for `ReferenceMarkStart` and `ReferenceMarkEnd`.
+-   Improve docstrings for `Row.iter_cells`.
+-   Improve docstrings for `SvgDescription`.
+-   Improve docstrings for `SvgTitle`.
+-   Improve docstrings for `Table` iterators.
+-   Improve docstrings for `TextChange`.
+-   Improve docstring for `default_frame_position_style()`.
+-   Apply linter to tests files.
+
+### Fixed
+
+-   Fix `user_field_declaration.get_user_field_decl()` docstring.
+-   Fix `shapes.DrawCaption` docstring.
+
 ## [3.20.0] - 2026-02-01
 
 -   **Breaking Change**: The `Cell.value` property no longer automatically clears the cell's style when a new value is set. Previously, setting `Cell.value` would remove existing styling, and other properties like cell span, xml:id .... Now, styling and other properties are preserved. If the old behavior of clearing styles is desired, explicitly call `Cell.clear()` before setting the new value (issue #63).
