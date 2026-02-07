@@ -353,13 +353,21 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         element.text = DateTime.encode(date)
 
     def get_template(self) -> MetaTemplate | None:
-        """Get the MetaTemplate "meta:template" element or None."""
+        """Get the MetaTemplate "meta:template" element or None.
+
+        Returns:
+            A MetaTemplate instance or None.
+        """
         element: MetaTemplate | None = self.get_element("//meta:template")  # type: ignore[assignment]
         return element
 
     @property
     def template(self) -> MetaTemplate | None:
-        """Get the MetaTemplate "meta:template" element or None."""
+        """Get the MetaTemplate "meta:template" element or None.
+
+        Returns:
+            A MetaTemplate instance or None.
+        """
         return self.get_template()
 
     def set_template(
@@ -385,13 +393,21 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         self.body.append(template)
 
     def get_auto_reload(self) -> MetaAutoReload | None:
-        """Get the MetaAutoReload "meta:auto-reload" element or None."""
+        """Get the MetaAutoReload "meta:auto-reload" element or None.
+
+        Returns:
+            A MetaAutoReload instance or None.
+        """
         element: MetaAutoReload | None = self.get_element("//meta:auto-reload")  # type: ignore[assignment]
         return element
 
     @property
     def auto_reload(self) -> MetaAutoReload | None:
-        """Get the MetaAutoReload "meta:auto-reload" element or None."""
+        """Get the MetaAutoReload "meta:auto-reload" element or None.
+
+        Returns:
+            A MetaAutoReload instance or None.
+        """
         return self.get_auto_reload()
 
     def set_auto_reload(self, delay: timedelta, href: str = "") -> None:
@@ -414,6 +430,9 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     def get_hyperlink_behaviour(self) -> MetaHyperlinkBehaviour | None:
         """Get the MetaHyperlinkBehaviour "meta:hyperlink-behaviour" element or
         None.
+
+        Returns:
+            A MetaHyperlinkBehaviour instance or None.
         """
         element: MetaHyperlinkBehaviour | None = self.get_element(  # type: ignore[assignment]
             "//meta:hyperlink-behaviour"
@@ -424,6 +443,9 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     def hyperlink_behaviour(self) -> MetaHyperlinkBehaviour | None:
         """Get the MetaHyperlinkBehaviour "meta:hyperlink-behaviour" element or
         None.
+
+        Returns:
+            A MetaHyperlinkBehaviour instance or None.
         """
         return self.get_hyperlink_behaviour()
 
@@ -690,7 +712,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.generator" property.)
 
-        Returns: str (or None if inexistent)
+        Returns:
+            str (or None if inexistent).
 
         Example::
 
@@ -729,7 +752,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.statistic" property.)
 
-        Returns: dict (or None if inexistent)
+        Returns:
+            A dict (or None if inexistent).
 
         Example::
 
@@ -818,7 +842,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         (Also available as "self.user_defined_metadata" property.)
 
-        Return a dict of str/value mapping.
+        Returns:
+           A dict of str/value mapping.
 
         Value types can be: Decimal, datetime, date, timedelta, bool or str.
         """
@@ -963,6 +988,9 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
         Args:
             full: If True, exports also the keys with no value assigned.
+
+        Returns:
+            The metadata of the document as a Python dict.
         """
 
         def _stats() -> dict[str, int]:
@@ -1074,8 +1102,10 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         if 'full' is True, export also the keys with no value assigned.
 
         Args:
+            full:  boolean
 
-            full -- boolean
+        Returns:
+            The metadata of the document as a JSON string.
         """
         return json.dumps(
             self._as_json_dict(full=full),
@@ -1087,6 +1117,13 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     def as_text(self, no_user_defined_msg: str = "") -> str:
         """Return meta information as text, with some formatting for
         printing.
+
+        Args:
+            no_user_defined_msg: customize the string when no user defined
+                data is present.
+
+        Returns:
+            The metadata of the document as a text.
         """
         data = self._as_json_dict(full=False)
         result: list[str] = []
