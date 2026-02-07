@@ -42,7 +42,8 @@ def testalpha_to_digit_digit():
 
 
 def testalpha_to_digit_digit_alphanum():
-    pytest.raises(ValueError, alpha_to_digit, "730")
+    with pytest.raises(ValueError):
+        alpha_to_digit("730")
 
 
 def testdigit_to_alpha_digit():
@@ -50,7 +51,8 @@ def testdigit_to_alpha_digit():
 
 
 def testdigit_to_alpha_alphanum():
-    pytest.raises(TypeError, digit_to_alpha, "730")
+    with pytest.raises(TypeError):
+        digit_to_alpha("730")
 
 
 def testconvert_coordinates_tuple():
@@ -90,8 +92,12 @@ def testconvert_coordinates_alphanum4_4():
     assert converted == (730, 122, 5, 6)
 
 
-def testconvert_coordinates_bad():
-    pytest.raises(TypeError, convert_coordinates, None)
+def testconvert_coordinates_bad_1():
+    with pytest.raises(TypeError):
+        convert_coordinates(None)
+
+
+def testconvert_coordinates_bad_2():
     assert convert_coordinates((None,)) == (None,)
     assert convert_coordinates((None, None)) == (None, None)
     assert convert_coordinates((1, "bad")) == (1, "bad")
@@ -109,9 +115,14 @@ def testconvert_coordinates_std():
     assert convert_coordinates(" aa 1 ") == (26, 0)
 
 
-def testconvert_coordinates_assert():
-    pytest.raises(ValueError, convert_coordinates, "A0")
-    pytest.raises(ValueError, convert_coordinates, "A-5")
+def testconvert_coordinates_assert_1():
+    with pytest.raises(ValueError):
+        convert_coordinates("A0")
+
+
+def testconvert_coordinates_assert_2():
+    with pytest.raises(ValueError):
+        convert_coordinates("A-5")
 
 
 def testconvert_coordinates_big():
