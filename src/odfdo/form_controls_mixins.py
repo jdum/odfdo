@@ -64,6 +64,11 @@ class FormAsDictMixin:
     """Mixin for the as_dict() method of Form Control classes."""
 
     def as_dict(self) -> dict[str, str | Decimal | int | None]:
+        """Serialize the Form content as a Python dict.
+
+        Returns:
+            The Form content as a Python dict.
+        """
         return {
             "tag": self.tag,  # type: ignore[attr-defined]
             "name": self.name,  # type: ignore[attr-defined]
