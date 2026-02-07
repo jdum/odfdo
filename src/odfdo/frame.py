@@ -60,14 +60,27 @@ def default_frame_position_style(
 
     Use the returned Style as the frame style or build a new graphic style with
     this style as the parent.
+
+    Args:
+        name: Style name, default to ".
+        horizontal_pos: Position horizontal, default to "from-left".
+        vertical_pos: Position vertical, default to "from-top".
+        horizontal_rel: Relative position horizontal, default to "paragraph".
+        vertical_rel: Relative position vertical, default to "paragraph".
+
+    Returns:
+        Style: The generated style.
     """
-    return Style(
-        family="graphic",
-        name=name,
-        horizontal_pos=horizontal_pos,
-        horizontal_rel=horizontal_rel,
-        vertical_pos=vertical_pos,
-        vertical_rel=vertical_rel,
+    return cast(
+        Style,
+        Style(
+            family="graphic",
+            name=name,
+            horizontal_pos=horizontal_pos,
+            horizontal_rel=horizontal_rel,
+            vertical_pos=vertical_pos,
+            vertical_rel=vertical_rel,
+        ),
     )
 
 
