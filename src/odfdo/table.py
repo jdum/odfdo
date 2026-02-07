@@ -811,19 +811,20 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         complete: bool = True,
         get_type: bool = False,
     ) -> Iterator[list]:
-        """Yield an iterator of rows, where each row is a list of Python values.
+        """Yield lists of values of rows.
+
+        Each yielded list contains the python values ot the cells of the row.
 
         Args:
-            coord: The coordinates of the area
-                to parse.
-            cell_type: Filters cells by value type (e.g., 'float').
-                'all' retrieves any non-empty cell. See `get_values` for more.
+            coord: The coordinates of the area to parse.
+            cell_type: Filters cells by value type (e.g., 'float'). 'all'
+                retrieves any non-empty cell. See `get_values` for more.
             complete: If True, missing values are replaced by None.
             get_type: If True, yields tuples of (value, odf_type).
 
         Yields:
-            Iterator[list]: An iterator where each item is a list representing
-                a row of cell values.
+            list: An iterator where each item is a list representing a row of
+            cell values.
         """
         if coord:
             x, y, z, t = self._translate_table_coordinates(coord)
@@ -1105,17 +1106,18 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         start: int | None = None,
         end: int | None = None,
     ) -> Iterator[Row]:
-        """Yield an iterator of row elements, expanding repetitions.
+        """Yield row elements, expanding repetitions.
 
-        This method returns the same row object as many times as it is repeated.
-        The returned rows are copies; use `set_row()` to apply changes.
+        This method produces individual row objects. The same row
+        object is yielded as many times as it is repeated. The yielded
+        columns are copies; use `set_row()` to apply changes.
 
         Args:
-            start: The starting row index (0-based).
-            end: The ending row index (inclusive).
+            start: The starting row index (0-based). Defaults to 0.
+            end: The ending row index (inclusive). Defaults to 2**32.
 
         Yields:
-            Iterator[Row]: An iterator of Row elements.
+            Row: The next row element in the specified range.
         """
         if start is None:
             start = 0
@@ -1900,17 +1902,18 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         start: int | None = None,
         end: int | None = None,
     ) -> Iterator[Column]:
-        """Yield an iterator of column elements, expanding repetitions.
+        """Yield column elements, expanding repetitions.
 
-        This method returns the same column object as many times as it is repeated.
-        The returned columns are copies; use `set_column()` to apply changes.
+        This method produces individual column objects. The same column
+        object is yielded as many times as it is repeated. The yielded
+        columns are copies; use `set_column()` to apply changes.
 
         Args:
-            start: The starting column index (0-based).
-            end: The ending column index (inclusive).
+            start: The starting column index (0-based). Defaults to 0.
+            end: The ending column index (inclusive). Defaults to 2**32.
 
         Yields:
-            Iterator[Column]: An iterator of Column elements.
+            Column: The next column element in the specified range.
         """
         if start is None:
             start = 0
