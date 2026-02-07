@@ -1043,8 +1043,6 @@ class DrawCaption(PosMix, SizeMix, ShapeBase):
             position: The (x, y) coordinates for the path's position.
             size: The (width, height) values for the path's size.
             corner_radius: radius of the circle used to round off the corners.
-            view_box: The rectangle in a local coordinates system used by the
-                points.
             presentation_class: White-space-separated list of presentation
                 class names.
             presentation_style: Style for a presentation shape.
