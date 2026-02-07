@@ -312,7 +312,8 @@ def test_delete_self_5():
 def test_delete_root():
     element = Element.from_tag("<text:p><text:span/></text:p>")
     root = element.root
-    pytest.raises(ValueError, root.delete)
+    with pytest.raises(ValueError):
+        root.delete()
 
 
 def test_get_attributes(sample):
