@@ -78,7 +78,7 @@ class UserFieldDeclMixin(Element):
         Args:
             name: The name of the user field declaration to retrieve.
             position: The 0-based index of the matching user field
-            declaration to return.
+                declaration to return.
 
         Returns:
             UserFieldDecl | None: A UserFieldDecl instance, or None if no
