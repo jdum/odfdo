@@ -187,6 +187,11 @@ TEXT_CONTENT = {
 
 
 def printwarn(message: str) -> None:
+    """Print a message on stderr.
+
+    Args:
+        message: the text to print.
+    """
     print(f"Warning: {message}", file=sys.stderr)
 
 
@@ -196,7 +201,15 @@ def pretty_indent(
     ending_level: int = 0,
     textual_parent: bool = False,
 ) -> _ElementTree | _Element:
-    """Return an indented _ElementTree."""
+    """Return an indented _ElementTree.
+
+    Args:
+        elem: the source Element.
+        level: current indentation level.
+        ending_level: previous indentation level.
+        textual_parent: True if the parent element contains text.
+
+    """
     nb_child = len(elem)
     follow_level = level + 1
     tag = f"{elem.prefix}:{elem.tag.rpartition('}')[2]}"
@@ -237,6 +250,13 @@ def pretty_indent(
 
 
 def normalize_path(path: str) -> str:
+    """Normalize a string path to Posix format.
+
+    Args:
+        path: The path to normalize.
+
+    Returns:
+        str: Posix representation of the path."""
     if path.endswith("/"):  # folder
         return PurePath(path[:-1]).as_posix() + "/"
     return PurePath(path).as_posix()
@@ -263,7 +283,11 @@ class Container:
         return f"<{self.__class__.__name__} type={self.mimetype} path={self.path}>"
 
     def open(self, path_or_file: Path | str | io.BytesIO) -> None:
-        """Load the content of an ODF file."""
+        """Load the content of an ODF file.
+
+        Args:
+            path_or_file: Path to the document, or an opened file.
+        """
         self.__path_like = path_or_file
         if isinstance(path_or_file, (str, Path)):
             self.path = Path(path_or_file).expanduser()
@@ -538,7 +562,11 @@ class Container:
     # Public API
 
     def get_parts(self) -> list[str]:
-        """Get the list of members."""
+        """Get the list of the parts in the Container.
+
+        Returns:
+            The list of path of the parts in the Container.
+        """
         if not self.path:
             # maybe a file like zip archive
             return list(self.__parts.keys())
@@ -556,11 +584,22 @@ class Container:
 
     @property
     def parts(self) -> list[str]:
-        """Get the list of members."""
+        """Get the list of the parts in the Container.
+
+        Returns:
+            The list of path of the parts in the Container.
+        """
         return self.get_parts()
 
     def get_part(self, path: str) -> str | bytes | None:
-        """Get the bytes of a part of the ODF."""
+        """Get the actual content of a part of the ODF Container.
+
+        Args:
+            path: path of the required part.
+
+        Returns:
+            The actual content of the part.
+        """
         path = str(path)
         if path in self.__parts:
             part = self.__parts[path]
@@ -632,11 +671,20 @@ class Container:
             raise TypeError(f'Wrong mimetype "{mimetype!r}"')
 
     def set_part(self, path: str, data: bytes) -> None:
-        """Replace or add a new part."""
+        """Replace or add a new part.
+
+        Args:
+            path: The relative path in the Container.
+            data: Content of the part.
+        """
         self.__parts[path] = data
 
     def del_part(self, path: str) -> None:
-        """Mark a part for deletion."""
+        """Mark a part for deletion.
+
+        Args:
+            path: The relative path in the Container.
+        """
         self.__parts[path] = None
 
     @property
