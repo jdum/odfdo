@@ -414,6 +414,9 @@ class ReferenceMarkEnd(Element):
     def referenced_text(self) -> str:
         """Return the text between reference-mark-start and reference-mark-
         end.
+
+        Returns:
+            str: The referenced text.
         """
         name = self.name
         request = (
@@ -451,6 +454,9 @@ class ReferenceMarkStart(Element):
     def referenced_text(self) -> str:
         """Return the text between reference-mark-start and reference-mark-
         end.
+
+        Returns:
+            str: The referenced text.
         """
         name = self.name
         request = (
