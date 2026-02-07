@@ -377,6 +377,7 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
         super().delete()
 
     def check_validity(self) -> None:
+        """Checks the validity of the Annotation."""
         if not self.note_body:
             raise ValueError("Annotation must have a body")
         if not self.dc_creator:
