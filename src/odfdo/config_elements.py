@@ -158,14 +158,25 @@ class ConfigItemSet(Element):
         return cast(list[ConfigItem], self.get_elements("config:config-item"))
 
     def as_dict(self) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
-        """Serialize the element to a dictionary."""
+        """Serialize the element to a dictionary.
+
+        Returns:
+            A dict with content of the ConfigItemSet serialized.
+        """
         return _as_dict(self)
 
     @classmethod
     def from_dict(
         cls, data: dict[str, str | int | bool | dict[str, Any]]
     ) -> ConfigItemSet:
-        """Create an element from a dictionary."""
+        """Create an element from a dictionary.
+
+        Args:
+            data: The ConfigItemSet content serialized as a dict.
+
+        Returns:
+            A ConfigItemSet.
+        """
         return cast(ConfigItemSet, _from_dict(data))
 
 
@@ -220,14 +231,25 @@ class ConfigItemMapIndexed(Element):
         )
 
     def as_dict(self) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
-        """Serialize the element to a dictionary."""
+        """Serialize the element to a dictionary.
+
+        Returns:
+            A dict with content of the ConfigItemMapIndexed serialized.
+        """
         return _as_dict(self)
 
     @classmethod
     def from_dict(
         cls, data: dict[str, str | int | bool | dict[str, Any]]
     ) -> ConfigItemMapIndexed:
-        """Create an element from a dictionary."""
+        """Create an element from a dictionary.
+
+        Args:
+            data: The ConfigItemMapIndexed content serialized as a dict.
+
+        Returns:
+            A ConfigItemMapIndexed.
+        """
         return cast(ConfigItemMapIndexed, _from_dict(data))
 
 
@@ -314,14 +336,24 @@ class ConfigItemMapEntry(Element):
         return cast(list[ConfigItem], self.get_elements("config:config-item"))
 
     def as_dict(self) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
-        """Serialize the element to a dictionary."""
+        """Serialize the element to a dictionary.
+
+        Returns:
+            A dict with content of the ConfigItemMapEntry serialized."""
         return _as_dict(self)
 
     @classmethod
     def from_dict(
         cls, data: dict[str, str | int | bool | dict[str, Any]]
     ) -> ConfigItemMapEntry:
-        """Create an element from a dictionary."""
+        """Create an element from a dictionary.
+
+        Args:
+            data: The ConfigItemMapEntry content serialized as a dict.
+
+        Returns:
+            A ConfigItemMapEntry.
+        """
         return cast(ConfigItemMapEntry, _from_dict(data))
 
 
@@ -377,14 +409,25 @@ class ConfigItemMapNamed(Element):
         )
 
     def as_dict(self) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
-        """Serialize the element to a dictionary."""
+        """Serialize the element to a dictionary.
+
+        Returns:
+            A dict with content of the ConfigItemMapNamed serialized.
+        """
         return _as_dict(self)
 
     @classmethod
     def from_dict(
         cls, data: dict[str, str | int | bool | dict[str, Any]]
     ) -> ConfigItemMapNamed:
-        """Create an element from a dictionary."""
+        """Create an element from a dictionary.
+
+        Args:
+            data: The ConfigItemMapNamed content serialized as a dict.
+
+        Returns:
+            A ConfigItemMapNamed.
+        """
         return cast(ConfigItemMapNamed, _from_dict(data))
 
 
@@ -497,7 +540,11 @@ class ConfigItem(Element):
             self.text = str(value or "")
 
     def as_dict(self) -> dict[str, str | int | bool]:
-        """Serialize the element to a dictionary."""
+        """Serialize the element to a dictionary.
+
+        Returns:
+            A dict with content of the ConfigItem serialized.
+        """
         return {
             "class": self._tag,
             "config:name": self.name,  # type: ignore[dict-item]
@@ -507,7 +554,14 @@ class ConfigItem(Element):
 
     @classmethod
     def from_dict(cls, data: dict[str, str | int | bool]) -> ConfigItem:
-        """Create an element from a dictionary."""
+        """Create an element from a dictionary.
+
+        Args:
+            data: The  ConfigItem content serialized in a dict.
+
+        Returns:
+            A ConfigItem instance."
+        """
         return cls(
             name=data["config:name"],  # type: ignore[arg-type]
             config_type=data.get("config:type"),  # type: ignore[arg-type]
