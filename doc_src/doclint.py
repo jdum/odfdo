@@ -179,6 +179,7 @@ def check_method(meth: griffe.Method) -> None:
 
     documented_params = set()
     has_returns = False
+    has_yield = False
 
     for section in sections:
         if section.kind.value == "parameters":
@@ -189,6 +190,8 @@ def check_method(meth: griffe.Method) -> None:
                 documented_params.add(name)
         elif section.kind.value == "returns":
             has_returns = True
+        elif section.kind.value == "yields":
+            has_yield = True
 
     actual_params: set = {
         p.name for p in meth.parameters if p.name not in ("self", "cls")
@@ -202,7 +205,7 @@ def check_method(meth: griffe.Method) -> None:
         fail(f"undocumented parameters: {', '.join(undocumented)}")
     if not_existing:
         fail(f"documented parameters not found: {', '.join(not_existing)}")
-    if meth.returns and not has_returns and meth.returns != "None":
+    if meth.returns and not has_returns and meth.returns != "None" and not has_yield:
         fail(f"has return type ({meth.returns}) but no return documentation")
 
 
