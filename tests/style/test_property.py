@@ -19,6 +19,7 @@
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 
+import warnings
 from collections.abc import Iterable
 
 import pytest
@@ -72,10 +73,13 @@ def test_get_style_properties_bad_area(style_element):
 
 def test_set_style_properties(style_element):
     style = style_element
-    style.set_properties({"fo:color": "#f00"})
+    # will not be allowed in paragraph-property (it's a text-property)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=UserWarning)
+        style.set_properties({"fo:color": "#f00"})
     properties = style.get_properties()
-    assert len(properties) == 13
-    assert properties["fo:color"] == "#f00"
+    assert len(properties) == 12  # unchanged
+    assert properties.get("fo:color") is None
 
 
 def test_set_style_properties_area(style_element):
