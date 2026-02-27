@@ -24,7 +24,7 @@ from __future__ import annotations
 from typing import Any, ClassVar, Union, cast
 
 from .element import Element, PropDef, PropDefBool, register_element_class
-from .style_base import StyleBase
+from .style_base import PropDict, StyleBase
 from .style_props import StyleProps
 from .style_utils import (
     _set_background,
@@ -119,9 +119,7 @@ class StylePageLayout(StyleProps):
             page_usage = "all"
         self._set_attribute_str_default("style:page-usage", page_usage, "all")
 
-    def get_properties(
-        self, area: str | None = "page-layout"
-    ) -> dict[str, str | dict] | None:
+    def get_properties(self, area: str | None = "page-layout") -> PropDict | None:
         """Retrieve the page-layout properties of the `StylePageLayout`.
 
         Args:
@@ -135,7 +133,7 @@ class StylePageLayout(StyleProps):
 
     def set_properties(
         self,
-        properties: dict[str, str | dict] | None = None,
+        properties: PropDict | None = None,
         style: StyleBase | None = None,
         area: str | None = None,
         **kwargs: Any,

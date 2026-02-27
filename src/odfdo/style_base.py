@@ -21,9 +21,14 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .element import Element
+
+if TYPE_CHECKING:
+    PropDict = dict[str, str | bool | tuple | None | "PropDict"]
+else:
+    PropDict = dict
 
 
 class StyleBase(Element):
@@ -59,7 +64,7 @@ class StyleBase(Element):
         """
         pass
 
-    def get_properties(self, area: str | None = None) -> dict[str, str | dict] | None:
+    def get_properties(self, area: str | None = None) -> PropDict | None:
         """Get the mapping of all properties of this style.
 
         Args:
@@ -73,7 +78,7 @@ class StyleBase(Element):
 
     def set_properties(
         self,
-        properties: dict[str, str | dict] | None = None,
+        properties: PropDict | None = None,
         style: StyleBase | None = None,
         area: str | None = None,
         **kwargs: Any,

@@ -26,8 +26,9 @@ from copy import deepcopy
 from typing import Any
 
 from .const import ODF_PROPERTIES
-from .utils.style_constants import _BASE_PROPERTY_MAPPING, STYLE_ATTRIBUTES
 from .element import Element
+from .style_base import PropDict
+from .utils.style_constants import _BASE_PROPERTY_MAPPING, STYLE_ATTRIBUTES
 
 
 def _merge_dicts(dic_base: dict, *args: dict, **kwargs: Any) -> dict:
@@ -107,7 +108,7 @@ def _map_key(key: str) -> str | None:
     return None
 
 
-def _expand_properties_dict(properties: dict[str, str | dict]) -> dict[str, str | dict]:
+def _expand_properties_dict(properties: PropDict) -> PropDict:
     """Expand a dictionary of properties by mapping keys to their full ODF attribute names.
 
     Args:

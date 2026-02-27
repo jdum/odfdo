@@ -26,7 +26,7 @@ from typing import Any, ClassVar
 from warnings import warn
 
 from .element import Element
-from .style_base import StyleBase
+from .style_base import PropDict, StyleBase
 from .style_utils import _expand_properties_dict, _expand_properties_list, _merge_dicts
 from .utils.style_constants import STYLE_ATTRIBUTES
 
@@ -74,7 +74,7 @@ class StyleProps(StyleBase):
             raise ValueError(f"Unexpected area value: {area!r}")
         return area
 
-    def get_properties(self, area: str | None = None) -> dict[str, str | dict] | None:
+    def get_properties(self, area: str | None = None) -> PropDict | None:
         """Get the mapping of all properties of this style.
 
         By default, retrieves properties of the same family as the style (e.g.,
@@ -95,10 +95,10 @@ class StyleProps(StyleBase):
         element = self.get_element(f"style:{area}-properties")
         if element is None:
             return None
-        properties: dict[str, str | dict[str, Any]] = element.attributes  # type: ignore
+        properties: PropDict = dict(element.attributes)
         # Nested properties are nested dictionaries
         for child in element.children:
-            properties[child.tag] = child.attributes
+            properties[child.tag] = dict(child.attributes)
         return properties
 
     @staticmethod
@@ -170,7 +170,7 @@ class StyleProps(StyleBase):
     def _apply_valid_properties(
         properties_element: Element,
         area: str,
-        properties: dict[str, str | bool | tuple | None],
+        properties: PropDict,
     ) -> None:
         # first filter only valid known properties
         allowed = STYLE_ATTRIBUTES.get(area)
@@ -190,7 +190,7 @@ class StyleProps(StyleBase):
 
     def set_properties(
         self,
-        properties: dict[str, str | dict] | None = None,
+        properties: PropDict | None = None,
         style: StyleBase | None = None,
         area: str | None = None,
         **kwargs: Any,
@@ -219,17 +219,23 @@ class StyleProps(StyleBase):
         if element is None:
             element = Element.from_tag(f"style:{area}-properties")
             self.append(element)
+        working_properties: PropDict
         if properties or kwargs:
-            properties = _expand_properties_dict(_merge_dicts(properties, kwargs))
+            working_properties = _expand_properties_dict(
+                _merge_dicts(properties, kwargs)
+            )
         elif style is not None:
-            properties = style.get_properties(area=area)
-            if properties is None:
+            style_props = style.get_properties(area=area)
+            if style_props is None:
                 return
-        for key, value in properties.items():
+            working_properties = style_props
+        else:
+            working_properties = {}
+        for key, value in working_properties.items():
             if value is None:
                 with contextlib.suppress(KeyError):
                     element.del_attribute(key)
-        self._apply_valid_properties(element, area, properties)
+        self._apply_valid_properties(element, area, working_properties)
 
     def del_properties(
         self,
