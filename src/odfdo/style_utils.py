@@ -26,72 +26,8 @@ from copy import deepcopy
 from typing import Any
 
 from .const import ODF_PROPERTIES
+from .utils.style_constants import _BASE_PROPERTY_MAPPING, STYLE_ATTRIBUTES
 from .element import Element
-
-_PROPERTY_MAPPING = {
-    # This mapping is not exhaustive, it only contains cases where replacing
-    # '_' with '-' and adding the "fo:" prefix is not enough
-    # text
-    "display": "text:display",
-    "family_generic": "style:font-family-generic",
-    "font": "style:font-name",
-    "outline": "style:text-outline",
-    "pitch": "style:font-pitch",
-    "size": "fo:font-size",
-    "style": "fo:font-style",
-    "underline": "style:text-underline-style",
-    "weight": "fo:font-weight",
-    # compliance with office suites
-    "font_family": "fo:font-family",
-    "font_style_name": "style:font-style-name",
-    # paragraph
-    "align-last": "fo:text-align-last",
-    "align": "fo:text-align",
-    "indent": "fo:text-indent",
-    "together": "fo:keep-together",
-    # frame position
-    "horizontal_pos": "style:horizontal-pos",
-    "horizontal_rel": "style:horizontal-rel",
-    "vertical_pos": "style:vertical-pos",
-    "vertical_rel": "style:vertical-rel",
-    # TODO 'page-break-before': 'fo:page-break-before',
-    # TODO 'page-break-after': 'fo:page-break-after',
-    "shadow": "fo:text-shadow",
-    # Graphic
-    "fill_color": "draw:fill-color",
-    "fill_image_height": "draw:fill-image-height",
-    "fill_image_width": "draw:fill-image-width",
-    "guide_distance": "draw:guide-distance",
-    "guide_overhang": "draw:guide-overhang",
-    "line_distance": "draw:line-distance",
-    "stroke": "draw:stroke",
-    "textarea_vertical_align": "draw:textarea-vertical-align",
-}
-
-
-def _map_key(key: str) -> str | None:
-    """Map a simplified property key to its full ODF attribute name.
-
-    This function translates common or simplified property names (e.g., 'size',
-    'font_family') into their corresponding ODF attribute names (e.g.,
-    'fo:font-size', 'fo:font-family'). It also handles cases where simply
-    replacing underscores with hyphens and adding an "fo:" prefix is
-    insufficient.
-
-    Args:
-        key: The simplified property key.
-
-    Returns:
-        str | None: The full ODF attribute name, or None if no mapping is found.
-    """
-    if key in ODF_PROPERTIES:
-        return key
-    key = _PROPERTY_MAPPING.get(key, key).replace("_", "-")
-    if ":" not in key:
-        key = f"fo:{key}"
-    if key in ODF_PROPERTIES:
-        return key
-    return None
 
 
 def _merge_dicts(dic_base: dict, *args: dict, **kwargs: Any) -> dict:
@@ -110,6 +46,65 @@ def _merge_dicts(dic_base: dict, *args: dict, **kwargs: Any) -> dict:
         new_dict.update(dic)
     new_dict.update(kwargs)
     return new_dict
+
+
+def _generate_property_mapping() -> dict[str, str]:
+    # add 6<style:paragraph-properties> <style:text-properties>
+    all_attributes = (
+        STYLE_ATTRIBUTES["paragraph"]
+        | STYLE_ATTRIBUTES["text"]
+        | STYLE_ATTRIBUTES["page-layout"]
+        | STYLE_ATTRIBUTES["ruby"]
+        | STYLE_ATTRIBUTES["section"]
+        | STYLE_ATTRIBUTES["table"]
+        | STYLE_ATTRIBUTES["table-column"]
+        | STYLE_ATTRIBUTES["table-row"]
+        | STYLE_ATTRIBUTES["table-cell"]
+        | STYLE_ATTRIBUTES["graphic"]
+    )
+    map_1 = {
+        a[6:].replace("-", "_"): a for a in all_attributes if a.startswith("style:")
+    }
+    map_2 = {
+        a[5:].replace("-", "_"): a for a in all_attributes if a.startswith("text:")
+    }
+    map_3 = {
+        a.replace("-", "_").replace(":", "_"): a
+        for a in all_attributes
+        if a.startswith("dr3d:")
+    }
+    map_4 = {
+        a.replace("-", "_").replace(":", "_"): a
+        for a in all_attributes
+        if a.startswith("draw:")
+    }
+    map_5 = {
+        a.replace("-", "_").replace(":", "_"): a
+        for a in all_attributes
+        if a.startswith("svg:")
+    }
+    map_6 = {
+        a.replace("-", "_").replace(":", "_"): a
+        for a in all_attributes
+        if a.startswith("table:")
+    }
+    return _merge_dicts(
+        _BASE_PROPERTY_MAPPING, map_1, map_2, map_3, map_4, map_5, map_6
+    )
+
+
+_PROPERTY_MAPPING = _generate_property_mapping()
+
+
+def _map_key(key: str) -> str | None:
+    if key in ODF_PROPERTIES:
+        return key
+    key = _PROPERTY_MAPPING.get(key, key).replace("_", "-")
+    if ":" not in key:
+        key = f"fo:{key}"
+    if key in ODF_PROPERTIES:
+        return key
+    return None
 
 
 def _expand_properties_dict(properties: dict[str, str | dict]) -> dict[str, str | dict]:
