@@ -157,7 +157,7 @@ def default_toc_level_style(level: int) -> Style:
     toc_style_level = Style(
         family="paragraph",
         name=_toc_entry_style_name(level),
-        parent=f"Contents_20_{level}",
+        parent_style=f"Contents_20_{level}",
     )
     toc_style_level.append(properties)
     return toc_style_level
