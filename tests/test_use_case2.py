@@ -80,7 +80,7 @@ def use_case1(destination_file, source_path):
     style = Style(
         "paragraph",
         "style1",
-        parent="Standard",
+        parent_style="Standard",
         area="text",
         color=rgb2hex("blue"),
         background_color=rgb2hex("red"),
@@ -138,7 +138,7 @@ def use_case1(destination_file, source_path):
     style = Style(
         "text",
         "style2",
-        parent="Standard",
+        parent_style="Standard",
         area="text",
         background_color=rgb2hex("yellow"),
     )
