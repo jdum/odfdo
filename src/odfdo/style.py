@@ -280,24 +280,27 @@ def _new_page_layout(*args: Any, **kwargs: Any) -> StyleBase:
 
 
 class Style(StyleProps):
-    """Represents an ODF style, "style:style", "number:date-style", etc.
+    """Style class for many ODF tags, "style:style", "number:date-style",...
 
-    This class serves as a versatile container for various OpenDocument styles,
-    providing a unified interface for managing formatting properties.
+    The <style:style> element represents styles.
+    Styles defined by the <style:style> element use a hierarchical style model.
+    The <style:style> element supports inheritance of formatting properties
+    by a style from its parent style. A parent style is specified by the
+    style:parent-style-name attribute on a <style:style> element.
 
-    Supported style families include:
-        - "style:style"
-        - "number:date-style"
-        - "number:number-style"
-        - "number:percentage-style"
-        - "number:time-style"
-        - "style:font-face"
-        - "style:page-layout"
-        - "style:presentation-page-layout"
-        - "text:list-style"
-        - "text:outline-style"
-        - "style:tab-stops"
-        - ... (and more)
+    Partial list of ODF elements covered by this generic class:
+    "style:style",
+    "number:date-style",
+    "number:number-style",
+    "number:percentage-style",
+    "number:time-style",
+    "style:font-face",
+    "style:page-layout",
+    "style:presentation-page-layout",
+    "text:list-style",
+    "text:outline-style",
+    "style:tab-stops"
+    ...
     """
 
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -391,10 +394,36 @@ class Style(StyleProps):
     ) -> None:
         """Create a style of the given family.
 
-        The name is not mandatory at this point but will become required when
-        inserting in a document as a common style. The display name is the name
-        the user sees in an office application. The parent_style is the name
-        of the style this style will inherit from.
+        A Style of a given family (example: 'paragraph') may have a sub element (example: <style:paragraph-properties>) containing the relevant details.
+        A Style may also have sub elements for other areas, however the Style initialisation method manages at most one area at creation time (see note 2).
+
+        In brief, this initilisation method permits to create relatively simple styles like the below examples, but defining by program complex style hierarchies requires a lot of code.
+
+        Style("table-column", width="5cm")
+        Style("paragraph", area="text", color="#ff0000")
+
+
+        Note 1: for "master-page" and "page-layout" style families, use the dedicated classes StyleMasterPage and StylePageLayout.
+
+        Note 2: it is possible to add or modify area sub elements (ie: <style:paragraph-properties>) after the initialisation with the method Style.set_properties().
+
+        Note 3: a helper function is provided for a specialized styles for table cells, see create_table_cell_style().
+
+        family: str | None = None,
+        name: str | None = None,
+        display_name: str | None = None,
+        parent_style: str | None = None,
+        # Where properties apply
+        area: str | None = None,
+
+
+        The name is not mandatory at this
+        point but will become required when inserting in a document as a common
+        style.
+
+        The display name is the name the user sees in an office application.
+
+        The parent_style is the name of the style this style will inherit from.
 
         To set properties, pass them as keyword arguments. The area properties
         apply to is optional and defaults to the family.
