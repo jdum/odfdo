@@ -1,5 +1,29 @@
 # Odfdo Release Notes
 
+## [3.21.0] - 2026-02-28
+
+-   ODF standard compliance: style properties are now validated against the ODF standard attribute list.
+-   Improved type safety for style properties with new `PropDict` type alias.
+
+### Added
+
+-   Add `STYLE_ATTRIBUTES` dictionary in `utils/style_constants.py` containing all ODF standard attributes organized by style area.
+-   Add dynamic property mapping based on actual attributes allowed by the ODF standard.
+-   Add validation of style properties against ODF standard attribute list, with warnings for non-compliant attributes.
+
+### Changed
+
+-   Refactor `style.Style()` class for improved attribute validation.
+-   Refactor `StyleProps` methods to use `PropDict` type alias for better type consistency.
+-   Refactor `StyleBase`, `StyleProps`, and `StylePageLayout` type annotations.
+-   Improve style-related docstrings.
+-   Move `_BASE_PROPERTY_MAPPING` to `utils/style_constants.py`.
+
+### Fixed
+
+-   Fix issue #16 "border and padding attributes are ignored when style is used for text_frame"
+-   Fix `StyleBase` properties type annotations.
+
 ## [3.20.2] - 2026-02-07
 
 -  Improvements of docstrings documentation.
