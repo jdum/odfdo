@@ -353,9 +353,10 @@ class Style(StyleProps):
         background_color: str | tuple | None = None,
         italic: bool = False,
         bold: bool = False,
+        text_shadow: str | None = None,
         # For family 'paragraph'
         master_page: str | None = None,
-        # For family 'table-cell'
+        # For family 'table-cell' (and for paragraph for most of them)
         data_style: str | None = None,  # unused
         border: str | None = None,
         border_top: str | None = None,
@@ -397,6 +398,11 @@ class Style(StyleProps):
 
         To set properties, pass them as keyword arguments. The area properties
         apply to is optional and defaults to the family.
+
+        For attributes of style:{area}-properties (for example
+        "style:paragraph-properties"), pass the attributes as keywords.
+        You can safely remove the "fo:" or "style:" prefix and replace "-"
+        by "_", so use "padding_let" for "fo:padding-left" value.
 
         Args:
             family: The style family. Can be 'paragraph', 'text',
