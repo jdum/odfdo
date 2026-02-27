@@ -23,10 +23,12 @@ from __future__ import annotations
 
 import contextlib
 from typing import Any, ClassVar
+from warnings import warn
 
 from .element import Element
 from .style_base import StyleBase
 from .style_utils import _expand_properties_dict, _expand_properties_list, _merge_dicts
+from .utils.style_constants import STYLE_ATTRIBUTES
 
 
 class StyleProps(StyleBase):
@@ -164,6 +166,28 @@ class StyleProps(StyleBase):
         self._update_boolean_styles(props)  # type: ignore[arg-type]
         return props  # type: ignore[return-value]
 
+    @staticmethod
+    def _apply_valid_properties(
+        properties_element: Element,
+        area: str,
+        properties: dict[str, str | bool | tuple | None],
+    ) -> None:
+        # first filter only valid known properties
+        allowed = STYLE_ATTRIBUTES.get(area)
+        if allowed:
+            for key, value in properties.items():
+                if key in allowed:
+                    if isinstance(value, (str, bool, tuple)):
+                        properties_element.set_attribute(key, value)
+                else:
+                    msg = f"{key!r} property not allowed in <{properties_element.tag}>"
+                    warn(msg, stacklevel=2)
+
+        else:
+            for key, value in properties.items():
+                if isinstance(value, (str, bool, tuple)):
+                    properties_element.set_attribute(key, value)
+
     def set_properties(
         self,
         properties: dict[str, str | dict] | None = None,
@@ -171,12 +195,14 @@ class StyleProps(StyleBase):
         area: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Set the properties of the specified `area` for this style.
+        """Set the properties of the "area" type of this style.
 
-        Properties can be provided as a dictionary, by copying from another
-        `StyleBase` object, or as keyword arguments. If the properties element
-        for the given area is missing, it will be created. The `area` defaults
-        to the style's family.
+        Properties are given either as a dict or as named arguments (or both).
+        The area is identical to the style family by default. If the
+        properties element is missing, it is created.
+
+        Instead of properties, you can pass a style with properties of the
+        same area. These will be copied.
 
         Args:
             properties (dict, optional): A dictionary of properties to set.
@@ -203,8 +229,7 @@ class StyleProps(StyleBase):
             if value is None:
                 with contextlib.suppress(KeyError):
                     element.del_attribute(key)
-            elif isinstance(value, (str, bool, tuple)):
-                element.set_attribute(key, value)
+        self._apply_valid_properties(element, area, properties)
 
     def del_properties(
         self,
