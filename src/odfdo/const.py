@@ -117,6 +117,17 @@ ODF_FLAT_EXTENSIONS = {
     ".fodf",
 }
 
+# Mapping from mimetype to flat ODF extension
+ODF_MIMETYPE_TO_FLAT_EXTENSION = {
+    ODF_TEXT: ".fodt",
+    ODF_SPREADSHEET: ".fods",
+    ODF_PRESENTATION: ".fodp",
+    ODF_DRAWING: ".fodg",
+    ODF_CHART: ".fodc",
+    ODF_IMAGE: ".fodi",
+    ODF_FORMULA: ".fodf",
+}
+
 # Standard parts in the container (other are regular paths)
 ODF_PARTS = ("content", "meta", "settings", "styles", "manifest")
 
