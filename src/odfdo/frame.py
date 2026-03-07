@@ -103,7 +103,7 @@ class AnchorMix(Element):
 
     @property
     def anchor_type(self) -> str | None:
-        'Get or set the anchor type "text:anchor-type".'
+        """Get or set the anchor type "text:anchor-type"."""
         return self.get_attribute_string("text:anchor-type")
 
     @anchor_type.setter
@@ -116,7 +116,8 @@ class AnchorMix(Element):
     def anchor_page(self) -> int | None:
         """Get or set the number of the page when the anchor type is 'page'.
 
-        type : int or None
+        Returns:
+            int | None: The page number, or None if not set.
         """
         anchor_page = self.get_attribute("text:anchor-page-number")
         if anchor_page is None:
@@ -146,7 +147,7 @@ class PosMix(Element):
 
     @property
     def position(self) -> tuple[str | None, str | None]:
-        'Get or set the tuple of position ("svg:x", "svg:y").'
+        """Get or set the tuple of position ("svg:x", "svg:y")."""
         get_attr = self.get_attribute_string
         return get_attr("svg:x"), get_attr("svg:y")
 
@@ -170,7 +171,7 @@ class ZMix(Element):
 
     @property
     def z_index(self) -> int | None:
-        'Get or set the z index "draw:z-index"'
+        """Get or set the z index "draw:z-index"."""
         return cast(
             Union[None, int],
             self.get_attribute_integer("draw:z-index"),
@@ -196,7 +197,7 @@ class SizeMix(Element):
 
     @property
     def size(self) -> tuple[str | None, str | None]:
-        'Get or set the tuple of size ("svg:width", "svg:height").'
+        """Get or set the tuple of size ("svg:width", "svg:height")."""
         return (self.width, self.height)
 
     @size.setter
@@ -425,7 +426,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
 
     @property
     def text_content(self) -> str:
-        'Get or set the "draw:text-box" text content.'
+        """Get or set the "draw:text-box" text content."""
         text_box = self.get_element("draw:text-box")
         if text_box is None:
             return ""
@@ -450,9 +451,29 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
         url: str | None = None,
         content: str | None = None,
     ) -> DrawImage | None:
+        """Get the image element contained in the frame.
+
+        Args:
+            position: Position of the image (not used, for compatibility).
+            name: Filter by image name (not used, for compatibility).
+            url: Filter by URL (not used, for compatibility).
+            content: Filter by content (not used, for compatibility).
+
+        Returns:
+            DrawImage | None: The image element if found, None otherwise.
+        """
         return cast(Union[None, DrawImage], self.get_element("draw:image"))
 
     def set_image(self, url_or_element: DrawImage | str) -> DrawImage:
+        """Set or replace the image in the frame.
+
+        Args:
+            url_or_element: Either a URL string pointing to the image,
+                or a DrawImage element to insert.
+
+        Returns:
+            DrawImage: The image element that was added or updated.
+        """
         image: DrawImage | None = self.get_image()
         if image is None:
             if isinstance(url_or_element, str):
@@ -472,6 +493,11 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
         return draw_image
 
     def get_text_box(self) -> DrawTextBox | None:
+        """Get the text box element contained in the frame.
+
+        Returns:
+            DrawTextBox | None: The text box element if found, None otherwise.
+        """
         return cast(Union[None, DrawTextBox], self.get_element("draw:text-box"))
 
     def set_text_box(
@@ -508,6 +534,15 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
 
     @staticmethod
     def _get_formatted_text_subresult(context: dict, element: Element) -> str:
+        """Get formatted text from a child element with indentation.
+
+        Args:
+            context: The rendering context dictionary.
+            element: The element to extract text from.
+
+        Returns:
+            str: The formatted text with proper indentation.
+        """
         str_list = ["  "]
         for child in element.children:
             str_list.append(child.get_formatted_text(context))
@@ -519,6 +554,18 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
         self,
         context: dict | None = None,
     ) -> str:
+        """Get the formatted text representation of the frame.
+
+        Handles images and text boxes within the frame, converting them
+        to appropriate text formats (e.g., reStructuredText for images).
+
+        Args:
+            context: Optional dictionary containing rendering context,
+                including 'rst_mode' and image counters.
+
+        Returns:
+            str: The formatted text representation of the frame content.
+        """
         if not context:
             context = {}
         result = []
