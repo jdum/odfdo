@@ -36,7 +36,7 @@ class TestOdpBackgroundImagesFlat:
         flat_path = tmp_path / "background.fodp"
         doc.save(flat_path, packaging="xml")
 
-        flat_content = flat_path.read_text()
+        flat_content = flat_path.read_text(encoding="utf-8")
 
         # Count binary data sections - should have 2 (1 fill-image + 1 regular image)
         # The original ODP has 2 images; LibreOffice may duplicate them but we preserve unique ones
@@ -53,7 +53,7 @@ class TestOdpBackgroundImagesFlat:
         flat_path = tmp_path / "background.fodp"
         doc.save(flat_path, packaging="xml")
 
-        flat_content = flat_path.read_text()
+        flat_content = flat_path.read_text(encoding="utf-8")
 
         # Check that fill-image elements with binary data exist
         assert "<draw:fill-image" in flat_content
@@ -136,7 +136,7 @@ class TestOdpBackgroundImagesFlat:
         flat_path = tmp_path / "background.fodp"
         doc.save(flat_path, packaging="xml")
 
-        flat_content = flat_path.read_text()
+        flat_content = flat_path.read_text(encoding="utf-8")
 
         # The flat file should have draw:image elements with binary-data children
         # in the styles section (not just content section)

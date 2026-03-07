@@ -38,7 +38,7 @@ class TestFormImageFlatConversion:
         flat_path = tmp_path / "forms.fodt"
         doc.save(flat_path, packaging="xml")
 
-        flat_content = flat_path.read_text()
+        flat_content = flat_path.read_text(encoding="utf-8")
 
         # Check that office:binary-data is present (embedded image)
         assert "<office:binary-data>" in flat_content

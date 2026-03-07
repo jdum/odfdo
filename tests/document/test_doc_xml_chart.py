@@ -37,7 +37,7 @@ class TestChartFlatConversion:
         flat_path = tmp_path / "chart.fodt"
         doc.save(flat_path, packaging="xml")
 
-        flat_content = flat_path.read_text()
+        flat_content = flat_path.read_text(encoding="utf-8")
 
         # Check that draw:object is present with embedded content
         assert "<draw:object>" in flat_content
@@ -55,7 +55,7 @@ class TestChartFlatConversion:
         flat_path = tmp_path / "chart.fodt"
         doc.save(flat_path, packaging="xml")
 
-        flat_content = flat_path.read_text()
+        flat_content = flat_path.read_text(encoding="utf-8")
 
         # Check that the embedded office:document has chart namespaces
         # These are essential for LibreOffice to render the chart
@@ -91,7 +91,7 @@ class TestChartFlatConversion:
         flat_path = tmp_path / "chart.fodt"
         doc.save(flat_path, packaging="xml")
 
-        flat_content = flat_path.read_text()
+        flat_content = flat_path.read_text(encoding="utf-8")
 
         # Check for proper office:document structure
         assert "<office:meta>" in flat_content
@@ -107,7 +107,7 @@ class TestChartFlatConversion:
         flat_path = tmp_path / "chart.fodt"
         doc.save(flat_path, packaging="xml")
 
-        flat_content = flat_path.read_text()
+        flat_content = flat_path.read_text(encoding="utf-8")
 
         # Check that there's a draw:image after draw:object with binary data
         # This is the preview image for the chart

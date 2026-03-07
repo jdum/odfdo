@@ -338,7 +338,7 @@ class TestFlatOdfDetection:
 
         # Create a random XML file
         xml_path = tmp_path / "random.xml"
-        xml_path.write_text("<?xml version='1.0'?><root><item/></root>")
+        xml_path.write_text("<?xml version='1.0'?><root><item/></root>", encoding="utf-8")
 
         content = xml_path.read_bytes()
         assert Container._is_flat_xml(content) is False

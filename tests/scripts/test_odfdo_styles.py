@@ -209,7 +209,7 @@ def test_styles_2_show_to_file2(tmp_path, samples):
 
     main_styles(params)
 
-    content = dest.read_text()
+    content = dest.read_text(encoding="utf-8")
     assert "common used:y family:graphic" in content
     assert "auto   used:y family:text" in content
 
