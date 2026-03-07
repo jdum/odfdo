@@ -1,5 +1,24 @@
 # Odfdo Release Notes
 
+## [3.22.0] - 2026-03-07
+
+-   **New Feature**: Support for Flat ODF format (plain XML files with extensions .fodt, .fods, .fodp, .fodg, etc.).
+-   New command-line script `odfdo-flat` to convert between ZIP ODF and Flat ODF formats.
+
+### Added
+
+-   Add support for reading and writing Flat ODF XML format (`.fodt`, `.fods`, `.fodp`, `.fodg`, `.fodc`, `.fodi`, `.fodf`).
+-   Add `ODF_FLAT_EXTENSIONS` constant with supported flat ODF extensions.
+-   Add `ODF_MIMETYPE_TO_FLAT_EXTENSION` mapping for converting mimetypes to flat extensions.
+-   Add automatic detection of Flat ODF format from file content.
+-   Add command-line script `odfdo-flat` to convert between ZIP ODF and Flat ODF formats.
+-   Add tests for Flat ODF format support.
+
+### Changed
+
+-   `Document.save()` now preserves existing Flat ODF extensions when saving.
+-   Improve docstrings in `frame.py` module.
+
 ## [3.21.0] - 2026-02-28
 
 -   ODF standard compliance: style properties are now validated against the ODF standard attribute list.

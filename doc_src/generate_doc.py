@@ -1,4 +1,5 @@
 import ast
+import os
 import shutil
 import subprocess as sp
 from pathlib import Path
@@ -77,7 +78,9 @@ def add_recipe_blocks(recipes: dict[int, tuple[Path, str]]) -> None:
 
 
 def make_doc() -> None:
-    sp.run(["mkdocs", "build"], cwd=DOC_SRC)  # noqa: S607
+    env = dict(os.environ)
+    env["NO_MKDOCS_2_WARNING"] = "1"
+    sp.run(["mkdocs", "build"], cwd=DOC_SRC, env=env)  # noqa: S607
     shutil.move(SITE, DEST)
 
 

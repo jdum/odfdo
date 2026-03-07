@@ -97,7 +97,8 @@ doc.save('modified_spreadsheet.ods')
 A few scripts are provided with `odfdo`:
 
 -   `odfdo-diff`: show a _diff_ between the textual content of two ODT files.
--   `odfdo-folder`: a standard ODF file (zip archive) to a folder structure, or convert a folder structure back to an ODF file.
+-   `odfdo-folder`: convert a standard ODF file (zip archive) to a folder structure, or convert a folder structure back to an ODF file.
+-   `odfdo-flat`: convert an ODF file (zip archive or folder) to a flat XML ODF file, or convert a flat ODF XML file back to an ODF zip file.
 -   `odfdo-headers`: display the hierarchical headers (headings) of an ODF text document. The headers are printed with their numbering and can be limited by a specified depth.
 -   `odfdo-highlight`: search for a regular expression pattern in an ODF text document and apply a highlighting style to the matching text. The style can include italic, bold, text color, and background color.
 -   `odfdo-markdown`: convert an ODF text document to Markdown format and print to standard output.
