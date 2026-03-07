@@ -106,6 +106,17 @@ ODF_MIMETYPES = {
     ODF_WEB: "oth",
 }
 
+# Flat ODF extensions
+ODF_FLAT_EXTENSIONS = {
+    ".fodt",
+    ".fods",
+    ".fodp",
+    ".fodg",
+    ".fodc",
+    ".fodi",
+    ".fodf",
+}
+
 # Standard parts in the container (other are regular paths)
 ODF_PARTS = ("content", "meta", "settings", "styles", "manifest")
 
