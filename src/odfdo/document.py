@@ -855,6 +855,9 @@ class Document(MDDocument):
             for path in (ODF_CONTENT, ODF_META, ODF_SETTINGS, ODF_STYLES):
                 if path in self.__xmlparts:
                     continue
+                # Only create and serialize the part if it exists in the container
+                if container.get_part(path) is None:
+                    continue
                 cls = _get_part_class(path)
                 if cls is None:
                     raise RuntimeError("Should never happen")

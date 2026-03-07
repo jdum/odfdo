@@ -35,7 +35,14 @@ from copy import deepcopy
 from pathlib import Path, PurePath
 from zipfile import ZIP_DEFLATED, ZIP_STORED, BadZipfile, ZipFile, is_zipfile
 
-from lxml.etree import _Element, _ElementTree, fromstring, tostring
+from lxml.etree import (
+    Element,
+    XMLSyntaxError,
+    _Element,
+    _ElementTree,
+    fromstring,
+    tostring,
+)
 
 from .const import (
     FOLDER,
@@ -185,7 +192,8 @@ TEXT_CONTENT = {
     "text:word-count",
 }
 
-# "office:binary-data" removed,
+XML_TAG = b'<?xml version="1.0" encoding="UTF-8"?>\n'
+NS_OFFICE = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
 
 
 def printwarn(message: str) -> None:
@@ -195,6 +203,11 @@ def printwarn(message: str) -> None:
         message: the text to print.
     """
     print(f"Warning: {message}", file=sys.stderr)
+
+
+def _ns_tag(tag: str) -> str:
+    """Return the tag prefixed by NS_OFFICE."""
+    return f"{{{NS_OFFICE}}}{tag}"
 
 
 def pretty_indent(
@@ -308,8 +321,55 @@ class Container:
             if is_folder:
                 self.__packaging = FOLDER
                 return self._read_folder()
+            # Check if it's a flat XML file
+            with contextlib.suppress(OSError, ValueError):
+                content = self.path.read_bytes()
+                if self._is_flat_xml(content):
+                    self.__packaging = XML
+                    return self._read_xml(content)
+        # Check if it's a BytesIO with flat XML
+        if isinstance(self.__path_like, io.BytesIO):
+            content = self.__path_like.getvalue()
+            if self._is_flat_xml(content):
+                self.__packaging = XML
+                return self._read_xml(content)
         msg = f"Document format not managed by odfdo: {type(path_or_file)}."
         raise TypeError(msg)
+
+    @staticmethod
+    def _is_flat_xml(content: bytes) -> bool:
+        """Check if content is a Flat ODF XML file.
+
+        Args:
+            content: The file content to check.
+
+        Returns:
+            True if the content appears to be a Flat ODF XML file.
+        """
+        # Must start with XML declaration or be parseable XML
+        if not content.strip():
+            return False
+        if not content.lstrip().startswith(b"<?xml"):
+            return False
+        # Quick check for office:document element
+        if b"office:document" not in content:
+            return False
+        try:
+            root = fromstring(content)
+        except (
+            XMLSyntaxError,
+            ValueError,
+            TypeError,
+        ):
+            return False
+        if root.tag != _ns_tag("document"):
+            return False
+        # Check for office:mimetype attribute
+        mimetype = root.get(_ns_tag("mimetype"))
+        if mimetype in ODF_MIMETYPES:
+            return True
+        # And accept if it has office:body child
+        return root.find(_ns_tag("body")) is not None
 
     def _read_zip(self) -> None:
         if isinstance(self.__path_like, io.BytesIO):
@@ -342,6 +402,458 @@ class Container:
             printwarn(msg)
             self.__parts["mimetype"] = str_to_bytes(ODF_EXTENSIONS["odt"])
             self.__parts_ts["mimetype"] = timestamp
+
+    @staticmethod
+    def _detect_image_mime_type(data: bytes) -> str:
+        """Detect image mime type from file content."""
+        if data.startswith(b"\xff\xd8\xff"):
+            return "image/jpeg"
+        if data.startswith(b"\x89PNG\r\n\x1a\n"):
+            return "image/png"
+        if data.startswith(b"GIF87a") or data.startswith(b"GIF89a"):
+            return "image/gif"
+        if data.startswith(b"<?xml") or b"<svg" in data[:100]:
+            return "image/svg+xml"
+        if data.startswith(b"BM"):
+            return "image/bmp"
+        if data.startswith(b"RIFF") and data[8:12] == b"WEBP":
+            return "image/webp"
+        return "application/octet-stream"
+
+    @staticmethod
+    def _image_mime_type_to_ext(mime_type: str) -> str:
+        """Convert mime type to file extension."""
+        mapping = {
+            "image/jpeg": "jpg",
+            "image/png": "png",
+            "image/gif": "gif",
+            "image/svg+xml": "svg",
+            "image/bmp": "bmp",
+            "image/webp": "webp",
+            "image/tiff": "tiff",
+        }
+        return mapping.get(mime_type, "bin")
+
+    @staticmethod
+    def _suffix_to_mime_type(
+        suffix: str,
+        default: str = "application/octet-stream",
+    ) -> str:
+        """Convert file extension to mime type."""
+        mapping = {
+            ".xml": "text/xml",
+            ".jpg": "image/jpeg",
+            ".jpeg": "image/jpeg",
+            ".png": "image/png",
+            ".gif": "image/gif",
+            ".svg": "image/svg+xml",
+        }
+        return mapping.get(suffix.lower(), default)
+
+    def _read_xml(self, content: bytes) -> None:
+        """Read a Flat ODF XML file and extract parts.
+
+        Args:
+            content: The XML content as bytes.
+        """
+        root = fromstring(content)
+        # Extract mimetype from root element
+        mimetype = root.get(_ns_tag("mimetype"), ODF_EXTENSIONS["odt"])
+        self.__parts["mimetype"] = str_to_bytes(mimetype)
+
+        # Use all namespaces from the original flat XML root
+        # Filter out None keys (default namespace) and manifest namespace
+        original_nsmap = {
+            prefix: uri
+            for prefix, uri in root.nsmap.items()
+            if prefix is not None
+            and uri != "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"
+        }
+
+        # For content.xml, reconstruct the full structure with all original namespaces
+        content_root = Element(_ns_tag("document-content"), nsmap=original_nsmap)
+        content_root.set(_ns_tag("version"), OFFICE_VERSION)
+
+        # For styles.xml, use all original namespaces too
+        styles_root = Element(_ns_tag("document-styles"), nsmap=original_nsmap)
+        styles_root.set(_ns_tag("version"), OFFICE_VERSION)
+
+        # Track extracted images
+        image_counter = 0
+        image_parts: dict[str, bytes] = {}
+
+        # First pass: collect style names referenced from master-styles
+        # These styles (like header/footer paragraph styles) need to stay
+        # in styles.xml
+        ns_style = "{urn:oasis:names:tc:opendocument:xmlns:style:1.0}"
+        ns_text = "{urn:oasis:names:tc:opendocument:xmlns:text:1.0}"
+        ns_draw = "{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}"
+        ns_presentation = "{urn:oasis:names:tc:opendocument:xmlns:presentation:1.0}"
+        master_style_refs: set[str] = set()
+
+        for child in root:
+            if child.tag == _ns_tag("master-styles"):
+                # Find all style references in master-styles
+                for elem in child.iter():
+                    # Check for text:style-name (commonly used in headers/footers)
+                    style_ref = elem.get(f"{ns_text}style-name")
+                    if style_ref:
+                        master_style_refs.add(style_ref)
+                    # Check for style:name (the style definition itself)
+                    style_name = elem.get(f"{ns_style}name")
+                    if style_name:
+                        master_style_refs.add(style_name)
+                    # Check for draw:style-name (used in presentation master pages)
+                    draw_style = elem.get(f"{ns_draw}style-name")
+                    if draw_style:
+                        master_style_refs.add(draw_style)
+                    # Check for presentation:style-name (used in presentation master pages)
+                    pres_style = elem.get(f"{ns_presentation}style-name")
+                    if pres_style:
+                        master_style_refs.add(pres_style)
+
+        # Process each child of the root
+        for child in root:
+            tag = child.tag
+            if tag == _ns_tag("meta"):
+                # Wrap in proper XML declaration and root
+                # <office:document-meta> is the required root for meta.xml
+                meta_root = Element(
+                    _ns_tag("document-meta"),
+                    nsmap={
+                        "office": NS_OFFICE,
+                        "meta": "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
+                        "dc": "http://purl.org/dc/elements/1.1/",
+                    },
+                )
+                meta_root.set(_ns_tag("version"), OFFICE_VERSION)
+                meta_root.append(child)
+                meta_xml = XML_TAG + tostring(
+                    meta_root, encoding="UTF-8", xml_declaration=False
+                )
+                self.__parts[ODF_META] = meta_xml
+
+            elif tag == _ns_tag("document-meta"):
+                # Handle case where meta is already wrapped in document-meta
+                # (some older flat ODF files may use this structure)
+                meta_xml = XML_TAG + tostring(
+                    child, encoding="UTF-8", xml_declaration=False
+                )
+                self.__parts[ODF_META] = meta_xml
+
+            elif tag == _ns_tag("settings"):
+                settings_xml = XML_TAG + (
+                    b"<office:document-settings xmlns:office="
+                    b'"urn:oasis:names:tc:opendocument:xmlns:office:1.0" '
+                    b'xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0">'
+                )
+                # Copy children
+                for settings_child in child:
+                    settings_xml += tostring(
+                        settings_child, encoding="UTF-8", xml_declaration=False
+                    )
+                settings_xml += b"</office:document-settings>"
+                self.__parts[ODF_SETTINGS] = settings_xml
+
+            elif tag == _ns_tag("automatic-styles"):
+                # Distribute automatic-styles:
+                # - Styles referenced from master-styles (headers/footers) go to styles.xml
+                # - Page layouts go to styles.xml
+                # - Everything else goes to content.xml
+
+                # Get or create automatic-styles in both roots
+                content_auto = content_root.find(_ns_tag("automatic-styles"))
+                if content_auto is None:
+                    content_auto = Element(_ns_tag("automatic-styles"))
+                    content_root.insert(0, content_auto)
+
+                styles_auto = styles_root.find(_ns_tag("automatic-styles"))
+                if styles_auto is None:
+                    styles_auto = Element(_ns_tag("automatic-styles"))
+                    styles_root.append(styles_auto)
+
+                # Distribute children
+                for grandchild in child:
+                    tag_name = grandchild.tag.split("}")[-1]
+                    # Get style name if this is a style element
+                    style_name = grandchild.get(f"{ns_style}name")
+
+                    # Check if this should go to styles.xml:
+                    # 1. Page layouts always go to styles.xml
+                    # 2. Styles referenced from master-styles go to styles.xml
+                    is_page_layout = tag_name == "page-layout"
+                    is_master_style = (
+                        style_name is not None and style_name in master_style_refs
+                    )
+
+                    if is_page_layout or is_master_style:
+                        styles_auto.append(grandchild)
+                    else:
+                        content_auto.append(grandchild)
+
+            elif tag in {
+                _ns_tag("styles"),
+                _ns_tag("master-styles"),
+                _ns_tag("font-face-decls"),
+            }:
+                # Add to styles root, merging if element already exists
+                existing = styles_root.find(tag)
+                if existing is not None:
+                    # Merge children into existing element
+                    for grandchild in child:
+                        existing.append(grandchild)
+                else:
+                    styles_root.append(child)
+
+            elif tag == _ns_tag("scripts"):
+                # Scripts go in content
+                content_root.append(child)
+
+            elif tag == _ns_tag("body"):
+                # Body goes in content
+                content_root.append(child)
+
+            elif tag is not None:
+                # Other elements go to content
+                content_root.append(child)
+
+        # Process content for embedded images
+        ns_draw = "{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}"
+        xlink_ns = "{http://www.w3.org/1999/xlink}"
+
+        # Find all draw:image elements with office:binary-data (in both
+        # content and styles)
+        xpath_expr = xpath_compile("descendant::draw:image[office:binary-data]")
+        for root_elem in (content_root, styles_root):
+            for img_elem in xpath_expr(root_elem):
+                binary_data_elem = img_elem.find(_ns_tag("binary-data"))
+                if binary_data_elem is not None and binary_data_elem.text:
+                    # Decode base64
+                    try:
+                        image_data = base64.standard_b64decode(
+                            binary_data_elem.text.strip()
+                        )
+                        # Determine mime type from image content first (more reliable)
+                        mime_type = img_elem.get(f"{ns_draw}mime-type")
+                        if mime_type is None or mime_type == "None":
+                            mime_type = self._detect_image_mime_type(image_data)
+                        ext = self._image_mime_type_to_ext(mime_type)
+
+                        image_counter += 1
+                        image_path = f"Pictures/image{image_counter}.{ext}"
+                        image_parts[image_path] = image_data
+
+                        # Replace the image element with one that references the
+                        # external file
+                        # Remove binary-data child
+                        img_elem.remove(binary_data_elem)
+                        # Set xlink:href
+                        img_elem.set(f"{xlink_ns}href", image_path)
+                        img_elem.set(f"{xlink_ns}type", "simple")
+                        img_elem.set(f"{xlink_ns}show", "embed")
+                        img_elem.set(f"{xlink_ns}actuate", "onLoad")
+                    except Exception as e:
+                        printwarn(f"Failed to decode embedded image: {e}")
+
+        # Also process draw:fill-image elements with office:binary-data (used for
+        # backgrounds in presentations)
+        xpath_fill_expr = xpath_compile(
+            "descendant::draw:fill-image[office:binary-data]"
+        )
+        for root_elem in (content_root, styles_root):
+            for fill_img_elem in xpath_fill_expr(root_elem):
+                binary_data_elem = fill_img_elem.find(_ns_tag("binary-data"))
+                if binary_data_elem is not None and binary_data_elem.text:
+                    # Decode base64
+                    try:
+                        image_data = base64.standard_b64decode(
+                            binary_data_elem.text.strip()
+                        )
+                        # Determine mime type from image content
+                        mime_type = self._detect_image_mime_type(image_data)
+                        ext = self._image_mime_type_to_ext(mime_type)
+
+                        image_counter += 1
+                        image_path = f"Pictures/image{image_counter}.{ext}"
+                        image_parts[image_path] = image_data
+
+                        # Replace the fill-image element with one that references
+                        # the external file
+                        # Remove binary-data child
+                        fill_img_elem.remove(binary_data_elem)
+                        # Set xlink:href
+                        fill_img_elem.set(f"{xlink_ns}href", image_path)
+                        fill_img_elem.set(f"{xlink_ns}type", "simple")
+                    except Exception as e:
+                        printwarn(f"Failed to decode embedded fill image: {e}")
+
+        # Store image parts
+        for path, data in image_parts.items():
+            self.__parts[path] = data
+
+        # Process draw:object elements with embedded content
+        # These contain full office:document structures that need to be extracted
+        object_counter = 0
+        xpath_obj_expr = xpath_compile("descendant::draw:object[office:document]")
+        for obj_elem in xpath_obj_expr(content_root):
+            try:
+                object_counter += 1
+                obj_path = f"Object {object_counter}"
+
+                # Extract meta, styles, body from the embedded object
+                # Find the office:document wrapper
+                doc_wrapper = obj_elem.find(_ns_tag("document"))
+                if doc_wrapper is None:
+                    continue
+
+                # Create object content.xml from body
+                body_elem = doc_wrapper.find(_ns_tag("body"))
+                if body_elem is not None:
+                    # Create document-content root
+                    content_root_elem = Element(
+                        _ns_tag("document-content"),
+                        nsmap={
+                            "office": NS_OFFICE,
+                        },
+                    )
+                    content_root_elem.set(_ns_tag("version"), OFFICE_VERSION)
+
+                    # Move children from body to content
+                    for child in list(body_elem):
+                        content_root_elem.append(child)
+
+                    obj_content_xml = XML_TAG + tostring(
+                        content_root_elem, encoding="UTF-8", xml_declaration=False
+                    )
+                    self.__parts[f"{obj_path}/content.xml"] = obj_content_xml
+
+                # Extract styles
+                auto_styles = doc_wrapper.find(_ns_tag("automatic-styles"))
+                if auto_styles is not None:
+                    styles_root_elem = Element(
+                        _ns_tag("document-styles"),
+                        nsmap={
+                            "office": NS_OFFICE,
+                            "style": "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
+                        },
+                    )
+                    styles_root_elem.set(_ns_tag("version"), OFFICE_VERSION)
+                    styles_root_elem.append(auto_styles)
+
+                    obj_styles_xml = XML_TAG + tostring(
+                        styles_root_elem, encoding="UTF-8", xml_declaration=False
+                    )
+                    self.__parts[f"{obj_path}/styles.xml"] = obj_styles_xml
+
+                # Extract meta
+                meta_elem = doc_wrapper.find(_ns_tag("meta"))
+                if meta_elem is not None:
+                    meta_root_elem = Element(
+                        _ns_tag("document-meta"),
+                        nsmap={
+                            "office": NS_OFFICE,
+                            "meta": "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
+                        },
+                    )
+                    meta_root_elem.set(_ns_tag("version"), OFFICE_VERSION)
+                    for child in list(meta_elem):
+                        meta_root_elem.append(child)
+
+                    obj_meta_xml = XML_TAG + tostring(
+                        meta_root_elem, encoding="UTF-8", xml_declaration=False
+                    )
+                    self.__parts[f"{obj_path}/meta.xml"] = obj_meta_xml
+
+                # Replace the embedded object with a reference
+                # Clear children and set xlink:href
+                for child in list(obj_elem):
+                    obj_elem.remove(child)
+                obj_elem.set(f"{xlink_ns}href", f"./{obj_path}")
+                obj_elem.set(f"{xlink_ns}type", "simple")
+                obj_elem.set(f"{xlink_ns}show", "embed")
+                obj_elem.set(f"{xlink_ns}actuate", "onLoad")
+
+            except Exception as e:
+                printwarn(f"Failed to extract embedded object: {e}")
+
+        # Process form elements with embedded image data
+        # Extract the images and restore form:image-data attribute
+        # This must happen BEFORE serializing content_root to XML
+        image_counter = 0
+        xpath_form_img = xpath_compile("descendant::form:*[office:binary-data]")
+        ns_form = "{urn:oasis:names:tc:opendocument:xmlns:form:1.0}"
+        for form_elem in xpath_form_img(content_root):
+            binary_data_elem = form_elem.find(_ns_tag("binary-data"))
+            if binary_data_elem is not None and binary_data_elem.text:
+                try:
+                    image_data = base64.standard_b64decode(
+                        binary_data_elem.text.strip()
+                    )
+                    # Determine mime type from content
+                    mime_type = self._detect_image_mime_type(image_data)
+                    ext = self._image_mime_type_to_ext(mime_type)
+
+                    image_counter += 1
+                    image_path = f"Pictures/image{image_counter}.{ext}"
+                    image_parts[image_path] = image_data
+
+                    # Remove binary-data child
+                    form_elem.remove(binary_data_elem)
+                    # Set form:image-data attribute
+                    form_elem.set(f"{ns_form}image-data", image_path)
+                except Exception as e:
+                    printwarn(f"Failed to decode embedded form image: {e}")
+
+        # Store any additional image parts from form elements
+        for path, data in image_parts.items():
+            if path not in self.__parts:
+                self.__parts[path] = data
+
+        # Serialize content.xml
+        if len(content_root) > 0:
+            content_xml = XML_TAG + tostring(
+                content_root, encoding="UTF-8", xml_declaration=False
+            )
+            self.__parts[ODF_CONTENT] = content_xml
+
+        # Serialize styles.xml
+        if len(styles_root) > 0:
+            styles_xml = XML_TAG + tostring(
+                styles_root, encoding="UTF-8", xml_declaration=False
+            )
+            self.__parts[ODF_STYLES] = styles_xml
+
+        # Create manifest
+        self._create_manifest()
+
+    def _create_manifest(self) -> None:
+        """Create the META-INF/manifest.xml from current parts."""
+        manifest_parts = [
+            XML_TAG,
+            b'<manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0">\n',
+        ]
+
+        # Add mimetype entry
+        mimetype = (
+            self.__parts.get("mimetype") or b"application/vnd.oasis.opendocument.text"
+        )
+
+        manifest_parts.append(
+            f'<manifest:file-entry manifest:media-type="{mimetype.decode()}" manifest:full-path="/"/>\n'.encode()
+        )
+
+        # Add entries for each part
+        for path, data in self.__parts.items():
+            if data is None or path == "mimetype":
+                continue
+            # Determine media type based on path
+            media_type = self._suffix_to_mime_type(Path(path).suffix)
+            manifest_parts.append(
+                f'<manifest:file-entry manifest:media-type="{media_type}" manifest:full-path="{path}"/>\n'.encode()
+            )
+
+        manifest_parts.append(b"</manifest:manifest>")
+        self.__parts[ODF_MANIFEST] = b"".join(manifest_parts)
 
     def _parse_folder(self, folder: str) -> list[str]:
         parts = []
@@ -435,7 +947,10 @@ class Container:
             try:
                 filezip.writestr("mimetype", mimetype, ZIP_STORED)
                 part_names.remove("mimetype")
-            except (ValueError, KeyError):
+            except (
+                ValueError,
+                KeyError,
+            ):
                 printwarn("Missing 'mimetype'")
             # XML parts
             for path in ODF_CONTENT, ODF_META, ODF_SETTINGS, ODF_STYLES:
@@ -490,16 +1005,184 @@ class Container:
         path = elem.get("{http://www.w3.org/1999/xlink}href")
         if not path:
             return None
+        path = path.lstrip("./")
         content = self.__parts[path]
         if not content:
             return None
         text = base64.standard_b64encode(content).decode()
+        # Only include mime-type attribute if it's a valid value
+        if mime_type and mime_type != "None":
+            ebytes = (
+                f'<draw:image draw:mime-type="{mime_type}">'
+                f"<office:binary-data>{text}\n</office:binary-data></draw:image>"
+            ).encode()
+        else:
+            ebytes = (
+                f"<draw:image>"
+                f"<office:binary-data>{text}\n</office:binary-data></draw:image>"
+            ).encode()
+        root = fromstring(NAMESPACES_XML % ebytes)
+        return root[0]
+
+    def _embed_form_image_data(self, elem: _Element, image_path: str) -> None:
+        """Embed image data for form elements with form:image-data attribute.
+
+        Form elements (like image buttons) reference images via form:image-data
+        attribute. We need to embed the image as base64 and replace the
+        attribute reference with the embedded data.
+        """
+        # Strip leading "./" from path
+        path = image_path.lstrip("./")
+        content = self.__parts.get(path)
+        if not content:
+            return
+
+        # Encode the image as base64
+        text = base64.standard_b64encode(content).decode()
+
+        # Create the office:binary-data element
+        binary_data_elem = Element(_ns_tag("binary-data"))
+        binary_data_elem.text = text + "\n"
+
+        # Append the binary-data element to the form element
+        elem.append(binary_data_elem)
+
+    def _encoded_fill_image(self, elem: _Element) -> _Element | None:
+        """Encode a draw:fill-image element with binary data.
+
+        draw:fill-image elements reference images via xlink:href and are used
+        for background images in presentations.
+        """
+        path = elem.get("{http://www.w3.org/1999/xlink}href")
+        if not path:
+            return None
+        # Strip leading "./" from path (e.g., "./Pictures/image.jpg")
+        path = path.lstrip("./")
+        content = self.__parts[path]
+        if not content:
+            return None
+        # mime_type = self._suffix_to_mime_type(Path(path).suffix, "image/jpeg")
+        name = elem.get("{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}name")
+        display_name = elem.get(
+            "{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}display-name"
+        )
+        text = base64.standard_b64encode(content).decode()
+        # Build the element with preserved attributes
+        attrs = []
+        if name:
+            attrs.append(f'draw:name="{name}"')
+        if display_name:
+            attrs.append(f'draw:display-name="{display_name}"')
+        attr_str = " ".join(attrs)
+        if attr_str:
+            attr_str = " " + attr_str
         ebytes = (
-            f'<draw:image draw:mime-type="{mime_type}">'
-            f"<office:binary-data>{text}\n</office:binary-data></draw:image>"
+            f"<draw:fill-image{attr_str}>"
+            f"<office:binary-data>{text}\n</office:binary-data></draw:fill-image>"
         ).encode()
         root = fromstring(NAMESPACES_XML % ebytes)
         return root[0]
+
+    def _encoded_object(self, elem: _Element) -> _Element | None:
+        """Encode a draw:object element by embedding the object content.
+
+        draw:object elements reference embedded ODF objects (like charts)
+        via xlink:href. In flat format, we need to embed the object content
+        directly as an office:document structure.
+        """
+        path = elem.get("{http://www.w3.org/1999/xlink}href")
+        if not path:
+            return None
+        # Strip leading "./" from path (e.g., "./Object 1")
+        path = path.lstrip("./")
+
+        # Check if we have parts for this object (Object 1/content.xml, etc.)
+        content_path = f"{path}/content.xml"
+        styles_path = f"{path}/styles.xml"
+        meta_path = f"{path}/meta.xml"
+
+        # If we don't have the object parts, return None to keep original reference
+        if content_path not in self.__parts:
+            return None
+
+        # Parse the content.xml
+        try:
+            content_doc = fromstring(self.__parts[content_path])
+        except Exception:
+            return None
+
+        # Create a new office:document element with the same namespace map
+        # This preserves all namespace declarations from the original
+        obj_doc = Element(_ns_tag("document"), nsmap=content_doc.nsmap)
+
+        # Add required office:document attributes
+        obj_doc.set(_ns_tag("mimetype"), "application/vnd.oasis.opendocument.chart")
+        obj_doc.set(_ns_tag("version"), OFFICE_VERSION)
+
+        # Force all namespace declarations by adding dummy attributes
+        # lxml optimizes away namespace declarations if they're already in scope
+        # We add them with a unique suffix to prevent optimization
+        for prefix, uri in content_doc.nsmap.items():
+            if prefix and prefix != "office":
+                # Use a special attribute that won't conflict with real ones
+                dummy_attr = f"{{{uri}}}__{prefix}__decl"
+                obj_doc.set(dummy_attr, "")
+
+        # Add meta if available
+        if self.__parts.get(meta_path):
+            try:
+                meta_root = fromstring(self.__parts[meta_path])
+                for child in meta_root:
+                    obj_doc.append(child)
+            except Exception as e:
+                printwarn(f"Error in meta {e}")
+
+        # Add empty styles (objects often don't have separate styles)
+        styles_elem = Element(_ns_tag("styles"))
+        obj_doc.append(styles_elem)
+
+        # Add automatic-styles from styles.xml if available
+        if self.__parts.get(styles_path):
+            try:
+                styles_root = fromstring(self.__parts[styles_path])
+                auto_styles = styles_root.find(_ns_tag("automatic-styles"))
+                if auto_styles is not None:
+                    obj_doc.append(auto_styles)
+            except Exception as e:
+                printwarn(f"Error in styles path {e}")
+
+        # Extract automatic-styles from content and add to obj_doc
+        content_auto_styles = content_doc.find(_ns_tag("automatic-styles"))
+        if content_auto_styles is not None:
+            obj_doc.append(content_auto_styles)
+
+        # Add body with content from content.xml
+        body_elem = Element(_ns_tag("body"))
+        content_body = content_doc.find(_ns_tag("body"))
+        if content_body is not None:
+            for child in content_body:
+                body_elem.append(child)
+        else:
+            # If no office:body, add all children except automatic-styles
+            for child in content_doc:
+                if child.tag != _ns_tag("automatic-styles"):
+                    body_elem.append(child)
+        obj_doc.append(body_elem)
+
+        # Create the draw:object element with the embedded content
+        # To preserve namespace declarations, we need to serialize and re-parse
+        # because lxml optimizes them away when appending to parent
+        new_obj = Element("{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}object")
+
+        # Serialize the embedded document to a string
+        obj_doc_str = tostring(obj_doc, encoding="unicode", pretty_print=False)
+
+        # Parse it back and append to new_obj
+        # This preserves the namespace declarations from the original serialization
+        obj_doc_parsed = fromstring(obj_doc_str.encode("utf-8"))
+        new_obj.append(obj_doc_parsed)
+
+        return new_obj
 
     def _xml_content(self, pretty: bool = True) -> bytes:
         mimetype_b = self.__parts["mimetype"]
@@ -526,22 +1209,50 @@ class Container:
                 xpart = fromstring(part)
             else:
                 xpart = part
-            if path == ODF_CONTENT:
+            if path in {ODF_CONTENT, ODF_STYLES}:
+                # Process draw:image elements (both content and styles)
                 xpath = xpath_compile("descendant::draw:image")
                 images = xpath(xpart)
                 if images:
                     for elem in images:
                         encoded = self._encoded_image(elem)
-                        elem.getparent().replace(elem, encoded)
+                        if encoded is not None:
+                            elem.getparent().replace(elem, encoded)
+                # Process draw:fill-image elements (used for background images in presentations)
+                xpath_fill = xpath_compile("descendant::draw:fill-image")
+                fill_images = xpath_fill(xpart)
+                if fill_images:
+                    for elem in fill_images:
+                        encoded = self._encoded_fill_image(elem)
+                        if encoded is not None:
+                            elem.getparent().replace(elem, encoded)
+                # Process draw:object elements (embedded objects like charts)
+                if path == ODF_CONTENT:
+                    xpath_obj = xpath_compile("descendant::draw:object")
+                    objects = xpath_obj(xpart)
+                    if objects:
+                        for elem in objects:
+                            encoded = self._encoded_object(elem)
+                            if encoded is not None:
+                                elem.getparent().replace(elem, encoded)
+                    # Process form elements with form:image-data attribute
+                    # (used for form control images like buttons with images)
+                    ns_form = "{urn:oasis:names:tc:opendocument:xmlns:form:1.0}"
+                    xpath_form = xpath_compile("descendant::form:*[@form:image-data]")
+                    form_elems = xpath_form(xpart)
+                    if form_elems:
+                        for elem in form_elems:
+                            image_path = elem.get(f"{ns_form}image-data")
+                            if image_path:
+                                self._embed_form_image_data(elem, image_path)
             for child in xpart:
                 root.append(child)
         if pretty:
-            xml_header = b'<?xml version="1.0" encoding="UTF-8"?>\n'
             bytes_tree: bytes = tostring(
                 pretty_indent(root),
                 encoding="unicode",
             ).encode("utf8")
-            return xml_header + bytes_tree
+            return XML_TAG + bytes_tree
         else:
             return tostring(  # type: ignore[no-any-return]
                 root,
@@ -573,7 +1284,7 @@ class Container:
             The list of path of the parts in the Container.
         """
         if not self.path:
-            # maybe a file like zip archive
+            # maybe a file like zip archive or xml
             return list(self.__parts.keys())
         if self.__packaging == ZIP:
             parts = []
@@ -584,6 +1295,9 @@ class Container:
             return parts
         elif self.__packaging == FOLDER:
             return self._get_folder_parts()
+        elif self.__packaging == XML:
+            # For flat XML, parts are stored in memory
+            return list(self.__parts.keys())
         else:
             raise ValueError("Unable to provide parts of the document")
 
