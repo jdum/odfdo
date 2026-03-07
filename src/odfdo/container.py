@@ -44,6 +44,7 @@ from .const import (
     ODF_FLAT_EXTENSIONS,
     ODF_MANIFEST,
     ODF_META,
+    ODF_MIMETYPE_TO_FLAT_EXTENSION,
     ODF_MIMETYPES,
     ODF_SETTINGS,
     ODF_STYLES,
@@ -787,12 +788,14 @@ class Container:
         if isinstance(target, (str, Path)):
             target_path = Path(target)
             suffix = target_path.suffix.lower()
-            # Accept .xml or Flat ODF extensions
-            if suffix not in ODF_FLAT_EXTENSIONS and suffix != "xml":
-                target = str(target) + ".xml"
+            if suffix not in ODF_FLAT_EXTENSIONS and suffix != ".xml":
+                flat_ext = ODF_MIMETYPE_TO_FLAT_EXTENSION.get(self.mimetype, ".xml")
+                target_path = target_path.with_suffix(flat_ext)
             if backup:
-                self._do_backup(target)
-        self._save_xml(target, pretty)
+                self._do_backup(target_path)
+            self._save_xml(target_path, pretty)
+        else:
+            self._save_xml(target, pretty)
 
     def save(
         self,
