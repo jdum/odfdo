@@ -41,6 +41,7 @@ from .const import (
     FOLDER,
     ODF_CONTENT,
     ODF_EXTENSIONS,
+    ODF_FLAT_EXTENSIONS,
     ODF_MANIFEST,
     ODF_META,
     ODF_MIMETYPES,
@@ -554,8 +555,11 @@ class Container:
     ) -> None:
         """Save a XML flat ODF format from the available parts."""
         if isinstance(target, (Path, str)):
-            target = Path(target).with_suffix(".xml")
-            target.write_bytes(self._xml_content(pretty))
+            target_path = Path(target)
+            # Preserve Flat ODF extension is exists, default to .xml
+            if target_path.suffix.lower() not in ODF_FLAT_EXTENSIONS:
+                target_path = target_path.with_suffix(".xml")
+            target_path.write_bytes(self._xml_content(pretty))
         else:
             target.write(self._xml_content(pretty))
 
@@ -781,7 +785,10 @@ class Container:
                 f"Saving in XML format requires a path name, not '{target!r}'"
             )
         if isinstance(target, (str, Path)):
-            if not str(target).endswith(".xml"):
+            target_path = Path(target)
+            suffix = target_path.suffix.lower()
+            # Accept .xml or Flat ODF extensions
+            if suffix not in ODF_FLAT_EXTENSIONS and suffix != "xml":
                 target = str(target) + ".xml"
             if backup:
                 self._do_backup(target)
