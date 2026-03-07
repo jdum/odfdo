@@ -40,6 +40,7 @@ documentation = "https://jdum.github.io/odfdo/"
 [project.scripts]
 odfdo-diff = "odfdo.scripts.diff:main"
 odfdo-folder = 'odfdo.scripts.folder:main'
+odfdo-flat = 'odfdo.scripts.flat:main'
 odfdo-highlight = 'odfdo.scripts.highlight:main'
 odfdo-show = 'odfdo.scripts.show:main'
 odfdo-styles = 'odfdo.scripts.styles:main'
