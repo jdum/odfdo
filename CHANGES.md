@@ -1,5 +1,26 @@
 # Odfdo Release Notes
 
+## [3.22.1] - 2026-03-22
+
+-   Toggle for LibreOffice/OpenOffice extension namespaces via `USE_LO_EXTENSIONS` constant.
+-   Improved ODF 1.2 standard compliance with additional namespaces and properties.
+
+### Added
+
+-   Add `USE_LO_EXTENSIONS` constant to control inclusion of LibreOffice/OpenOffice extension namespaces (default: `True`).
+-   Add missing ODF 1.2 standard namespaces: `rdf`, `pkg`, `dsig`.
+-   Add LibreOffice/OpenOffice extension namespaces: `ooo`, `oooc`, `ooow`, `officeooo`, `tableooo`, `drawooo`, `calcext`, `loext`, `field`, `formx`, `css3t`, `rpt`, `presentationooo`, `formooo`, `chartooo`.
+-   Add `text:s`, `text:tab`, `text:line-break`, and `text:soft-page-break` to `TEXT_CONTENT` set.
+-   Add `office:database` and `office:image` to `BODY_ALLOW_NAMED_RANGE_TAGS`.
+-   Add numerous form-related and other ODF standard properties to `ODF_PROPERTIES`.
+-   Add tests for `container` module.
+-   Add tests for `Cell` class.
+
+### Changed
+
+-   Refactor `OFFICE_PREFIX` to support toggling extension namespaces.
+-   Refactor `ODF_NAMESPACES` to separate core and extension namespaces.
+
 ## [3.22.0] - 2026-03-07
 
 -   **New Feature**: Support for Flat ODF format (plain XML files with extensions .fodt, .fods, .fodp, .fodg, etc.).
