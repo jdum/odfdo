@@ -143,53 +143,73 @@ ODF_MANIFEST_RDF_TYPE = "application/rdf+xml"
 
 OFFICE_VERSION = "1.2"
 
-OFFICE_PREFIX = b"""<?xml version="1.0" encoding="UTF-8"?>
-<office:document
-  xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
-  xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
-  xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
-  xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0"
-  xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
-  xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
-  xmlns:dc="http://purl.org/dc/elements/1.1/"
-  xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
-  xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0"
-  xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"
-  xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
-  xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0"
-  xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0"
-  xmlns:math="http://www.w3.org/1998/Math/MathML"
-  xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0"
-  xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0"
-  xmlns:ooo="http://openoffice.org/2004/office"
-  xmlns:oooc="http://openoffice.org/2004/calc"
-  xmlns:ooow="http://openoffice.org/2004/writer"
-  xmlns:xforms="http://www.w3.org/2002/xforms"
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:smil="urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0"
-  xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0"
-  xmlns:rpt="http://openoffice.org/2005/report"
-  xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2"
-  xmlns:xhtml="http://www.w3.org/1999/xhtml"
-  xmlns:grddl="http://www.w3.org/2003/g/data-view#"
-  xmlns:officeooo="http://openoffice.org/2009/office"
-  xmlns:tableooo="http://openoffice.org/2009/table"
-  xmlns:drawooo="http://openoffice.org/2010/draw"
-  xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0"
-  xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0"
-  xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0"
-  xmlns:formx="urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0"
-  xmlns:css3t="http://www.w3.org/TR/css3-text/"
-  xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0"
-  xmlns:dom="http://www.w3.org/2001/xml-events"
-  xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"
-  xmlns:rdfa="http://docs.oasis-open.org/opendocument/meta/rdfa#"
-  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  xmlns:pkg="http://docs.oasis-open.org/ns/office/1.2/meta/pkg#"
-  xmlns:dsig="urn:oasis:names:tc:opendocument:xmlns:digitalsignature:1.0"
-"""
+# LibreOffice and OpenOffice extensions
+USE_LO_EXTENSIONS = True
+
+_OFFICE_PREFIX_CORE = [
+    b'<?xml version="1.0" encoding="UTF-8"?>',
+    b"<office:document",
+    b'  xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"',
+    b'  xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"',
+    b'  xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"',
+    b'  xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0"',
+    b'  xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"',
+    b'  xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"',
+    b'  xmlns:xlink="http://www.w3.org/1999/xlink"',
+    b'  xmlns:dc="http://purl.org/dc/elements/1.1/"',
+    b'  xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"',
+    b'  xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0"',
+    b'  xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"',
+    b'  xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"',
+    b'  xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0"',
+    b'  xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0"',
+    b'  xmlns:math="http://www.w3.org/1998/Math/MathML"',
+    b'  xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0"',
+    b'  xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0"',
+    b'  xmlns:xforms="http://www.w3.org/2002/xforms"',
+    b'  xmlns:xsd="http://www.w3.org/2001/XMLSchema"',
+    b'  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
+    b'  xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0"',
+    b'  xmlns:smil="urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0"',
+    b'  xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2"',
+    b'  xmlns:xhtml="http://www.w3.org/1999/xhtml"',
+    b'  xmlns:grddl="http://www.w3.org/2003/g/data-view#"',
+    b'  xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0"',
+    b'  xmlns:dom="http://www.w3.org/2001/xml-events"',
+    b'  xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"',
+    b'  xmlns:rdfa="http://docs.oasis-open.org/opendocument/meta/rdfa#"',
+    b'  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"',
+    b'  xmlns:pkg="http://docs.oasis-open.org/ns/office/1.2/meta/pkg#"',
+    b'  xmlns:dsig="urn:oasis:names:tc:opendocument:xmlns:digitalsignature:1.0"',
+]
+
+_OFFICE_PREFIX_EXTENSIONS = [
+    b'  xmlns:ooo="http://openoffice.org/2004/office"',
+    b'  xmlns:oooc="http://openoffice.org/2004/calc"',
+    b'  xmlns:ooow="http://openoffice.org/2004/writer"',
+    b'  xmlns:officeooo="http://openoffice.org/2009/office"',
+    b'  xmlns:tableooo="http://openoffice.org/2009/table"',
+    b'  xmlns:drawooo="http://openoffice.org/2010/draw"',
+    b'  xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0"',
+    b'  xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0"',
+    b'  xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0"',
+    b'  xmlns:formx="urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0"',
+    b'  xmlns:css3t="http://www.w3.org/TR/css3-text/"',
+    b'  xmlns:rpt="http://openoffice.org/2005/report"',
+    b'  xmlns:presentationooo="http://openoffice.org/2012/presentation"',
+    b'  xmlns:formooo="http://openoffice.org/2011/form"',
+    b'  xmlns:chartooo="http://openoffice.org/2010/chart"',
+]
+
+
+def _generate_office_prefix() -> bytes:
+    lines = _OFFICE_PREFIX_CORE[:]
+    if USE_LO_EXTENSIONS:
+        lines.extend(_OFFICE_PREFIX_EXTENSIONS)
+    return b"\n".join(lines) + b" "
+
+
+OFFICE_PREFIX = _generate_office_prefix()
 # packaging
 FOLDER = "folder"
 ZIP = "zip"
