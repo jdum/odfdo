@@ -24,11 +24,10 @@ from odfdo.style import Style
 
 def test_create_style_paragraph():
     style = Style("paragraph", "style1")
-    # expected = ()
-    assert style.serialize() in (
-        ('<style:style style:family="paragraph" style:name="style1"/>'),
-        ('<style:style style:name="style1" style:family="paragraph"/>'),
+    expected = (
+        '<style:style style:family="paragraph" style:name="style1"></style:style>'
     )
+    assert style._canonicalize() == expected
 
 
 def test_create_style_text():
@@ -105,14 +104,26 @@ def test_create_style_parent():
     assert style.serialize() == expected
 
 
-def test_create_style_properties():
+def test_create_style_properties_kwargs():
     style = Style("paragraph", **{"fo:margin-top": "0cm"})
     expected = (
         '<style:style style:family="paragraph">'
-        '<style:paragraph-properties fo:margin-top="0cm"/>'
+        '<style:paragraph-properties fo:margin-top="0cm">'
+        "</style:paragraph-properties>"
         "</style:style>"
     )
-    assert style.serialize() == expected
+    assert style._canonicalize() == expected
+
+
+def test_create_style_properties_long_name():
+    style = Style("paragraph", margin_top="0cm")
+    expected = (
+        '<style:style style:family="paragraph">'
+        '<style:paragraph-properties fo:margin-top="0cm">'
+        "</style:paragraph-properties>"
+        "</style:style>"
+    )
+    assert style._canonicalize() == expected
 
 
 def test_create_style_properties_shorcut():
@@ -124,3 +135,16 @@ def test_create_style_properties_shorcut():
     )
     # <style:style style:family="paragraph"/>
     assert style.serialize() == expected
+
+
+def test_create_style_paragraph_long_property_name():
+    style = Style("paragraph", "style1", border_line_width="1cm")
+    expected = (
+        '<style:style style:family="paragraph" '
+        'style:name="style1">'
+        "<style:paragraph-properties "
+        'style:border-line-width="1cm">'
+        "</style:paragraph-properties>"
+        "</style:style>"
+    )
+    assert style._canonicalize() == expected
