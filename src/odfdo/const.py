@@ -186,6 +186,9 @@ OFFICE_PREFIX = b"""<?xml version="1.0" encoding="UTF-8"?>
   xmlns:dom="http://www.w3.org/2001/xml-events"
   xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"
   xmlns:rdfa="http://docs.oasis-open.org/opendocument/meta/rdfa#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:pkg="http://docs.oasis-open.org/ns/office/1.2/meta/pkg#"
+  xmlns:dsig="urn:oasis:names:tc:opendocument:xmlns:digitalsignature:1.0"
 """
 # packaging
 FOLDER = "folder"
