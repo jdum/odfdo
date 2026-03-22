@@ -50,7 +50,7 @@ def _merge_dicts(dic_base: dict, *args: dict, **kwargs: Any) -> dict:
 
 
 def _generate_property_mapping() -> dict[str, str]:
-    # add 6<style:paragraph-properties> <style:text-properties>
+    # add <style:paragraph-properties> <style:text-properties>
     all_attributes = (
         STYLE_ATTRIBUTES["paragraph"]
         | STYLE_ATTRIBUTES["text"]

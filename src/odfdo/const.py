@@ -379,6 +379,7 @@ ODF_PROPERTIES = {
     "draw:color-mode",
     "draw:contrast",
     "draw:decimal-places",
+    "draw:display-name",  # ODF v1.2
     "draw:draw-aspect",
     "draw:end-guide",
     "draw:end-line-spacing-horizontal",
@@ -406,6 +407,7 @@ ODF_PROPERTIES = {
     "draw:green",
     "draw:guide-distance",
     "draw:guide-overhang",
+    "draw:id",  # ODF v1.0
     "draw:image-opacity",
     "draw:line-distance",
     "draw:luminance",
@@ -417,6 +419,7 @@ ODF_PROPERTIES = {
     "draw:marker-start-width",
     "draw:measure-align",
     "draw:measure-vertical-align",
+    "draw:name",  # ODF v1.0
     "draw:ole-draw-aspect",
     "draw:opacity",
     "draw:opacity-name",
@@ -500,11 +503,35 @@ ODF_PROPERTIES = {
     "fo:widows",
     "fo:width",
     "fo:wrap-option",
+    "form:allow-deletes",  # ODF v1.0
+    "form:allow-inserts",  # ODF v1.0
+    "form:allow-updates",  # ODF v1.0
+    "form:apply-filter",  # ODF v1.0
+    "form:command",  # ODF v1.0
+    "form:command-type",  # ODF v1.0
+    "form:control-implementation",  # ODF v1.2
+    "form:datasource",  # ODF v1.0
+    "form:detail-fields",  # ODF v1.0
+    "form:enctype",  # ODF v1.0
+    "form:filter",  # ODF v1.0
+    "form:id",  # ODF v1.0
+    "form:ignore-result",  # ODF v1.0
+    "form:label",  # ODF v1.0
     "form:linked-cell",
     "form:list-linkage-type",
+    "form:master-fields",  # ODF v1.0
+    "form:method",  # ODF v1.0
+    "form:name",  # ODF v1.0
+    "form:navigation-mode",  # ODF v1.0
+    "form:order",  # ODF v1.0
+    "form:property-name",  # ODF v1.0
     "form:repeat",
     "form:source-cell-range",
     "form:spin-button",
+    "form:tabcycle",  # ODF v1.2
+    "form:value",  # ODF v1.0
+    "form:xforms-list-source",  # ODF v1.0
+    "form:xforms-submission",  # ODF v1.0
     "grddl:transformation",
     "number:rfc-language-tag",
     "number:script",
@@ -540,6 +567,7 @@ ODF_PROPERTIES = {
     "style:diagonal-tl-br",
     "style:diagonal-tl-br-widths",
     "style:direction",
+    "style:display-name",  # ODF v1.0
     "style:dynamic-spacing",
     "style:editable",
     "style:first-page-number",
@@ -596,15 +624,18 @@ ODF_PROPERTIES = {
     "style:line-height-at-least",
     "style:line-spacing",
     "style:list-level",
+    "style:master-page-name",  # ODF v1.0
     "style:may-break-between-rows",
     "style:min-row-height",
     "style:mirror",
+    "style:name",  # ODF v1.0
     "style:num-format",
     "style:num-letter-sync",
     "style:num-prefix",
     "style:num-suffix",
     "style:number-wrapped-paragraphs",
     "style:overflow-behavior",
+    "style:page-layout-name",  # ODF v1.0
     "style:page-number",
     "style:paper-tray-name",
     "style:percentage-data-style-name",
@@ -724,6 +755,7 @@ ODF_PROPERTIES = {
     "text:continue-list",
     "text:display",
     "text:dont-balance-text-columns",
+    "text:id",  # ODF v1.0
     "text:label-followed-by",
     "text:line-break",
     "text:line-number",
@@ -732,10 +764,13 @@ ODF_PROPERTIES = {
     "text:list-tab-stop-position",
     "text:min-label-distance",
     "text:min-label-width",
+    "text:name",  # ODF v1.0
     "text:number-lines",
     "text:protection-key-digest-algorithm",
     "text:space-before",
+    "text:style-name",  # ODF v1.0
     "text:style-override",
+    "xforms:bind",  # ODF v1.2
     "xhtml:about",
     "xhtml:content",
     "xhtml:datatype",
