@@ -798,7 +798,9 @@ ODF_COLOR_PROPERTY = {
 
 BODY_ALLOW_NAMED_RANGE_TAGS = {
     "office:chart",
+    "office:database",
     "office:drawing",
+    "office:image",
     "office:presentation",
     "office:spreadsheet",
     "office:text",
