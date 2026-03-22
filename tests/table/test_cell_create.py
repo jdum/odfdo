@@ -476,6 +476,18 @@ def test_value_property_datetime_getter_empty():
     assert cell.datetime == datetime.fromtimestamp(0)
 
 
+def test_value_property_datetime_set():
+    cell = Cell(datetime(2009, 6, 30, 0, 0), cell_type="date")
+    cell.datetime = datetime(2009, 7, 30, 0, 0)
+    assert cell.datetime == datetime(2009, 7, 30, 0, 0)
+
+
+def test_value_property_date_set():
+    cell = Cell(date(2009, 6, 30), cell_type="date")
+    cell.date = date(2009, 7, 30)
+    assert cell.datetime == datetime(2009, 7, 30)
+
+
 def test_value_property_set_datetime_styled():
     cell = Cell("before", cell_type="string", style="bold")
     cell.value = datetime(2009, 6, 30, 0, 0)
@@ -856,6 +868,15 @@ def test_bool_property_as_object_1():
 def test_bool_property_as_object_2():
     cell = Cell(0, cell_type="float")
     cell.bool = [1, 2, 3]
+    assert cell.bool is True
+    assert cell.int == 1
+    assert cell.float == 1.0
+    assert cell.decimal == dec("1")
+
+
+def test_bool_property_as_bool():
+    cell = Cell(0, cell_type="boolean")
+    cell.bool = True
     assert cell.bool is True
     assert cell.int == 1
     assert cell.float == 1.0
