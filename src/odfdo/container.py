@@ -657,7 +657,7 @@ class Container:
                 _ns_tag("font-face-decls"),
             }:
                 self._merge_or_append_to_styles(child, styles_root)
-            elif tag is not None:
+            else:
                 content_root.append(child)
 
         return image_parts
