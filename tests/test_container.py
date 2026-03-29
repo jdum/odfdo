@@ -22,6 +22,7 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 
+import base64
 import io
 import shutil
 import zipfile
@@ -30,7 +31,7 @@ from pathlib import Path
 from textwrap import dedent
 
 import pytest
-from lxml.etree import Element, register_namespace
+from lxml.etree import Element, fromstring, register_namespace
 
 from odfdo.const import (
     FOLDER,
@@ -1271,15 +1272,253 @@ def test_read_zip_with_path_none_and_non_bytesio(tmp_path, samples):
         zf.writestr("mimetype", ODF_EXTENSIONS["odt"])
         zf.writestr("content.xml", "<office:document-content/>")
 
+    # Create container and manually set up state to trigger the branch
     container = Container()
     container._Container__packaging = "zip"  # type: ignore
-    container._Container__path_like = open(zip_path, "rb")  # type: ignore
+    container._Container__path_like = open(zip_path, "rb")  # noqa: SIM115
     # path is None (default), __path_like is a file object (not BytesIO)
-
     try:
         container._read_zip()
         assert container.mimetype == ODF_EXTENSIONS["odt"]
         assert "content.xml" in container.parts
     finally:
+        # Clean up the file handle
         if hasattr(container._Container__path_like, "close"):
             container._Container__path_like.close()  # type: ignore
+
+
+def test_read_folder_with_invalid_mimetype_no_content_xml(tmp_path):
+    """Test _read_folder with invalid mimetype and missing content.xml."""
+    # Create a folder structure with invalid mimetype and no content.xml
+    folder_path = tmp_path / "invalid_no_content.folder"
+    folder_path.mkdir()
+    (folder_path / "mimetype").write_text("application/invalid")
+    # No content.xml - detection should fail
+
+    container = Container()
+    container.open(folder_path)
+    # Should fall back to ODF Text
+    assert container.mimetype == ODF_EXTENSIONS["odt"]
+
+
+def test_read_folder_with_invalid_mimetype_bad_content_xml(tmp_path):
+    """Test _read_folder with invalid mimetype and unparsable content.xml."""
+    # Create a folder structure with invalid mimetype and bad content.xml
+    folder_path = tmp_path / "invalid_bad_content.folder"
+    folder_path.mkdir()
+    (folder_path / "mimetype").write_text("application/invalid")
+    (folder_path / "content.xml").write_text("not valid xml")
+
+    container = Container()
+    container.open(folder_path)
+    # Should fall back to ODF Text
+    assert container.mimetype == ODF_EXTENSIONS["odt"]
+
+
+def test_read_xml_image_path_already_exists():
+    """Test _read_xml when image path already exists in __parts."""
+    # Create a fake PNG image data
+    fake_png = b"\x89PNG\r\n\x1a\n" + b"fake_png_data"
+    encoded_png = base64.standard_b64encode(fake_png).decode()
+
+    # Build XML using string concatenation to avoid f-string issues
+    xml_parts = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"',
+        '                 xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"',
+        '                 office:mimetype="application/vnd.oasis.opendocument.text">',
+        "    <office:body>",
+        "        <office:text>",
+        "            <draw:frame>",
+        "                <draw:image>",
+        "                    <office:binary-data>"
+        + encoded_png
+        + "</office:binary-data>",
+        "                </draw:image>",
+        "            </draw:frame>",
+        "        </office:text>",
+        "    </office:body>",
+        "</office:document>",
+    ]
+    flat_odf = "\n".join(xml_parts).encode()
+
+    container = Container()
+    # Pre-populate with an image that will conflict
+    container._Container__parts["Pictures/image1.png"] = b"existing_image_data"
+    container._read_xml(flat_odf)
+
+    # The existing image should not be overwritten
+    assert container._Container__parts["Pictures/image1.png"] == b"existing_image_data"
+
+
+def _make_xml_with_body(body_tag: str) -> bytes:
+    """Helper to create XML with a specific body element."""
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0">
+        <office:body>
+            <office:{body_tag}/>
+        </office:body>
+    </office:document>"""
+    return xml.encode()
+
+
+def test_detect_mimetype_from_content_spreadsheet():
+    """Test _detect_mimetype_from_content with spreadsheet body."""
+    container = Container()
+    root = fromstring(_make_xml_with_body("spreadsheet"))
+    result = container._detect_mimetype_from_content(root)
+    assert result == ODF_EXTENSIONS["ods"]
+
+
+def test_detect_mimetype_from_content_presentation():
+    """Test _detect_mimetype_from_content with presentation body."""
+    container = Container()
+    root = fromstring(_make_xml_with_body("presentation"))
+    result = container._detect_mimetype_from_content(root)
+    assert result == ODF_EXTENSIONS["odp"]
+
+
+def test_detect_mimetype_from_content_drawing():
+    """Test _detect_mimetype_from_content with drawing body."""
+    container = Container()
+    root = fromstring(_make_xml_with_body("drawing"))
+    result = container._detect_mimetype_from_content(root)
+    assert result == ODF_EXTENSIONS["odg"]
+
+
+def test_detect_mimetype_from_content_chart():
+    """Test _detect_mimetype_from_content with chart body."""
+    container = Container()
+    root = fromstring(_make_xml_with_body("chart"))
+    result = container._detect_mimetype_from_content(root)
+    assert result == ODF_EXTENSIONS["odc"]
+
+
+def test_detect_mimetype_from_content_image():
+    """Test _detect_mimetype_from_content with image body."""
+    container = Container()
+    root = fromstring(_make_xml_with_body("image"))
+    result = container._detect_mimetype_from_content(root)
+    assert result == ODF_EXTENSIONS["odi"]
+
+
+def test_detect_mimetype_from_content_formula():
+    """Test _detect_mimetype_from_content with formula body."""
+    container = Container()
+    root = fromstring(_make_xml_with_body("formula"))
+    result = container._detect_mimetype_from_content(root)
+    assert result == ODF_EXTENSIONS["odf"]
+
+
+def test_detect_mimetype_from_content_text():
+    """Test _detect_mimetype_from_content falls back to text."""
+    container = Container()
+    root = fromstring(_make_xml_with_body("text"))
+    result = container._detect_mimetype_from_content(root)
+    assert result == ODF_EXTENSIONS["odt"]
+
+
+def test_detect_mimetype_from_content_no_body():
+    """Test _detect_mimetype_from_content with no body element."""
+    container = Container()
+    xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0">
+        <office:meta/>
+    </office:document>"""
+    root = fromstring(xml)
+    result = container._detect_mimetype_from_content(root)
+    assert result == ODF_EXTENSIONS["odt"]
+
+
+def test_detect_mimetype_from_folder_with_none_path():
+    """Test _detect_mimetype_from_folder when path is None."""
+    container = Container()
+    # path is None by default
+    result = container._detect_mimetype_from_folder()
+    assert result is None
+
+
+def test_detect_mimetype_from_folder_no_content_xml(tmp_path):
+    """Test _detect_mimetype_from_folder when content.xml doesn't exist."""
+    folder_path = tmp_path / "test_folder"
+    folder_path.mkdir()
+    # No content.xml
+    container = Container()
+    container.path = folder_path  # type: ignore
+    result = container._detect_mimetype_from_folder()
+    assert result is None
+
+
+def test_detect_mimetype_from_folder_with_content_xml(tmp_path):
+    """Test _detect_mimetype_from_folder successfully detects from content.xml."""
+    folder_path = tmp_path / "test_folder"
+    folder_path.mkdir()
+    content_xml = folder_path / "content.xml"
+    content_xml.write_text("""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0">
+        <office:body>
+            <office:spreadsheet/>
+        </office:body>
+    </office:document>""")
+    container = Container()
+    container.path = folder_path  # type: ignore
+    result = container._detect_mimetype_from_folder()
+    assert result == ODF_EXTENSIONS["ods"]
+
+
+def test_detect_mimetype_from_folder_bad_xml(tmp_path):
+    """Test _detect_mimetype_from_folder with unparseable content.xml."""
+    folder_path = tmp_path / "test_folder"
+    folder_path.mkdir()
+    content_xml = folder_path / "content.xml"
+    content_xml.write_text("not valid xml")
+    container = Container()
+    container.path = folder_path  # type: ignore
+    result = container._detect_mimetype_from_folder()
+    # Should catch exception and return None
+    assert result is None
+
+
+def test_extract_mimetype_and_namespaces_with_mimetype():
+    """Test _extract_mimetype_and_namespaces when mimetype attribute exists."""
+    container = Container()
+    xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+                     office:mimetype="application/vnd.oasis.opendocument.spreadsheet">
+        <office:body/>
+    </office:document>"""
+    root = fromstring(xml)
+    mimetype, nsmap = container._extract_mimetype_and_namespaces(root)
+    assert mimetype == ODF_EXTENSIONS["ods"]
+    assert "office" in nsmap
+
+
+def test_extract_mimetype_and_namespaces_without_mimetype():
+    """Test _extract_mimetype_and_namespaces when mimetype attribute is missing."""
+    container = Container()
+    xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0">
+        <office:body>
+            <office:presentation/>
+        </office:body>
+    </office:document>"""
+    root = fromstring(xml)
+    mimetype, _nsmap = container._extract_mimetype_and_namespaces(root)
+    # Should detect from content
+    assert mimetype == ODF_EXTENSIONS["odp"]
+
+
+def test_extract_mimetype_and_namespaces_filters_manifest():
+    """Test that manifest namespace is filtered from nsmap."""
+    container = Container()
+    xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+                     xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"
+                     office:mimetype="application/vnd.oasis.opendocument.text">
+        <office:body/>
+    </office:document>"""
+    root = fromstring(xml)
+    mimetype, nsmap = container._extract_mimetype_and_namespaces(root)
+    assert mimetype == ODF_EXTENSIONS["odt"]
+    # Manifest namespace should be filtered out
+    assert "manifest" not in nsmap
