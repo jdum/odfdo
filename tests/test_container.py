@@ -31,7 +31,7 @@ from pathlib import Path
 from textwrap import dedent
 
 import pytest
-from lxml.etree import Element, fromstring, register_namespace
+from lxml.etree import Element, SubElement, fromstring, register_namespace
 
 from odfdo.const import (
     FOLDER,
@@ -1522,3 +1522,65 @@ def test_extract_mimetype_and_namespaces_filters_manifest():
     assert mimetype == ODF_EXTENSIONS["odt"]
     # Manifest namespace should be filtered out
     assert "manifest" not in nsmap
+
+
+def test_process_embedded_images_invalid_base64():
+    """Test _process_embedded_images handles invalid base64 data."""
+    container = Container()
+    # Create content root with an image containing invalid base64
+    ns_office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+
+    content_root = Element(f"{{{ns_office}}}document-content")
+    body = SubElement(content_root, f"{{{ns_office}}}body")
+    text = SubElement(body, f"{{{ns_office}}}text")
+    frame = SubElement(text, f"{{{ns_draw}}}frame")
+    img = SubElement(frame, f"{{{ns_draw}}}image")
+    binary_data = SubElement(img, f"{{{ns_office}}}binary-data")
+    binary_data.text = "!!!invalid_base64!!!"
+
+    styles_root = Element(f"{{{ns_office}}}document-styles")
+    image_parts: dict[str, bytes] = {}
+
+    # Should not raise, just print warning and continue
+    result = container._process_embedded_images(
+        content_root, styles_root, image_parts, "{http://www.w3.org/1999/xlink}"
+    )
+
+    # No images processed due to error
+    assert result == 0
+    assert image_parts == {}
+
+
+def test_process_embedded_images_no_binary_data():
+    """Test _process_embedded_images skips images without binary data."""
+    container = Container()
+
+    # Create content root with an image without binary-data
+    ns_office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+
+    content_root = Element(f"{{{ns_office}}}document-content")
+    body = SubElement(content_root, f"{{{ns_office}}}body")
+    text = SubElement(body, f"{{{ns_office}}}text")
+
+    # Image without binary-data element
+    frame1 = SubElement(text, f"{{{ns_draw}}}frame")
+    SubElement(frame1, f"{{{ns_draw}}}image")
+
+    # Image with empty binary-data
+    frame2 = SubElement(text, f"{{{ns_draw}}}frame")
+    img2 = SubElement(frame2, f"{{{ns_draw}}}image")
+    binary_data = SubElement(img2, f"{{{ns_office}}}binary-data")
+    binary_data.text = ""
+
+    styles_root = Element(f"{{{ns_office}}}document-styles")
+    image_parts: dict[str, bytes] = {}
+
+    result = container._process_embedded_images(
+        content_root, styles_root, image_parts, "{http://www.w3.org/1999/xlink}"
+    )
+
+    # No images processed
+    assert result == 0
+    assert image_parts == {}
