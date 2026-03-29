@@ -19,6 +19,7 @@ OpenDocument Format (ODF, ISO/IEC 26300) library for Python
 -   Metadata: Read and write document metadata.
 
 
+This branch `support/python39` is for Python 3.9 legacy support only. No new features will be added.
 
 Project:
 [https://github.com/jdum/odfdo](https://github.com/jdum/odfdo)
@@ -61,7 +62,7 @@ uv run python doc_src/generate_doc.py
 
 # Dependencies
 
-The project is tested on Python 3.10 to 3.14 (Linux, Mac, Windows). See previous releases for earlier versions of Python.
+The project is tested on Python 3.9 (Linux, Mac, Windows). See previous releases for earlier versions of Python.
 
 A special effort has been made to limit the dependencies of this library: the only (non-development) dependency is `lxml`. The required versions of `lxml` depend mainly on the version of Python used; see the `pyproject.toml` file for details. The project tries to keep up with `lxml` version updates regularly.
 

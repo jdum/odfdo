@@ -12,16 +12,7 @@ jobs:
         strategy:
             matrix:
                 os: [ubuntu-latest, macos-latest, windows-latest]
-                python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
-                exclude:
-                    - os: macos-latest
-                      python-version: "3.9"
-                    - os: macos-latest
-                      python-version: "3.10"
-                    - os: windows-latest
-                      python-version: "3.9"
-                    - os: windows-latest
-                      python-version: "3.10"
+                python-version: ["3.9"]
             fail-fast: false
         steps:
             - name: Check out
@@ -47,7 +38,6 @@ jobs:
             - name: Test with tox
               shell: bash
               run: |
-                  # Convert "3.12" to "py312"
                   PY_FACTOR="py$(echo ${{ matrix.python-version }} | tr -d '.')"
 
                   if [ "${{ matrix.python-version }}" == "3.14" ]; then
