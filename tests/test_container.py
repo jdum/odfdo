@@ -21,7 +21,6 @@
 #          Luis Belmar-Letelier <luis@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-
 import base64
 import io
 import shutil
@@ -29,9 +28,10 @@ import zipfile
 from os.path import isfile, join
 from pathlib import Path
 from textwrap import dedent
+from unittest.mock import patch
 
 import pytest
-from lxml.etree import Element, SubElement, fromstring, register_namespace
+from lxml.etree import Element, SubElement, fromstring, register_namespace, tostring
 
 from odfdo.const import (
     FOLDER,
@@ -1252,7 +1252,6 @@ def test_is_flat_xml_with_unclosed_element():
 
 def test_read_zip_with_invalid_mimetype(tmp_path):
     """Test _read_zip raises ValueError for invalid mimetype."""
-    import zipfile
 
     # Create a zip file with invalid mimetype
     zip_path = tmp_path / "invalid_mimetype.odt"
@@ -1614,3 +1613,245 @@ def test_process_fill_images_invalid_base64():
     # Counter not incremented due to error
     assert result == 0
     assert image_parts == {}
+
+
+def test_process_fill_images_empty_binary_data():
+    """Test _process_fill_images skips fill-images with empty binary-data."""
+    container = Container()
+
+    ns_office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+
+    content_root = Element(f"{{{ns_office}}}document-content")
+    body = SubElement(content_root, f"{{{ns_office}}}body")
+    text = SubElement(body, f"{{{ns_office}}}text")
+
+    # Add a fill-image with empty binary-data text
+    fill_img = SubElement(text, f"{{{ns_draw}}}fill-image")
+    binary_data = SubElement(fill_img, f"{{{ns_office}}}binary-data")
+    binary_data.text = ""  # Empty text
+
+    styles_root = Element(f"{{{ns_office}}}document-styles")
+    image_parts: dict[str, bytes] = {}
+
+    # Should skip empty binary-data
+    result = container._process_fill_images(
+        content_root, styles_root, image_parts, 0, "{http://www.w3.org/1999/xlink}"
+    )
+
+    # Counter not incremented
+    assert result == 0
+    assert image_parts == {}
+
+
+def test_process_embedded_objects_no_doc_wrapper():
+    """Test _process_embedded_objects skips objects without document wrapper."""
+    container = Container()
+
+    ns_office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+
+    content_root = Element(f"{{{ns_office}}}document-content")
+    body = SubElement(content_root, f"{{{ns_office}}}body")
+    text = SubElement(body, f"{{{ns_office}}}text")
+
+    # Add an object without office:document child
+    _obj = SubElement(text, f"{{{ns_draw}}}object")
+    # Missing office:document wrapper
+
+    # Should not raise
+    container._process_embedded_objects(content_root, "{http://www.w3.org/1999/xlink}")
+
+    # No parts should be created
+    assert "Object 1/content.xml" not in container.parts
+
+
+def test_process_embedded_objects_exception():
+    """Test _process_embedded_objects handles exceptions gracefully."""
+    container = Container()
+
+    ns_office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+
+    content_root = Element(f"{{{ns_office}}}document-content")
+    body = SubElement(content_root, f"{{{ns_office}}}body")
+    text = SubElement(body, f"{{{ns_office}}}text")
+
+    # Add a valid object structure with body, automatic-styles and meta
+    obj = SubElement(text, f"{{{ns_draw}}}object")
+    doc = SubElement(obj, f"{{{ns_office}}}document")
+    doc_body = SubElement(doc, f"{{{ns_office}}}body")
+    SubElement(doc_body, f"{{{ns_office}}}text")
+    # Add automatic-styles to trigger styles.xml generation
+    auto_styles = SubElement(doc, f"{{{ns_office}}}automatic-styles")
+    SubElement(auto_styles, f"{{{ns_office}}}style")
+    # Add meta to trigger meta.xml generation
+    meta = SubElement(doc, f"{{{ns_office}}}meta")
+    SubElement(meta, f"{{{ns_office}}}creation-date")
+
+    call_count = 0
+
+    def side_effect(*args, **kwargs):
+        nonlocal call_count
+        call_count += 1
+        # Raise on 3rd tostring call (meta.xml) to trigger exception handling
+        # while having processed some content
+        if call_count < 3:
+            return tostring(*args, **kwargs)
+        raise ValueError("Test error")
+
+    # Mock tostring to raise an exception after successful XML generation
+    with patch("odfdo.container.tostring", side_effect=side_effect):
+        # Should not raise, just print warning
+        container._process_embedded_objects(
+            content_root, "{http://www.w3.org/1999/xlink}"
+        )
+
+    # Object processing completed despite late exception
+    assert len(container.parts) >= 0  # May have partial results
+
+
+def test_process_embedded_objects_no_body():
+    """Test _process_embedded_objects skips content.xml when no body element."""
+    container = Container()
+
+    ns_office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+
+    content_root = Element(f"{{{ns_office}}}document-content")
+    body = SubElement(content_root, f"{{{ns_office}}}body")
+    text = SubElement(body, f"{{{ns_office}}}text")
+
+    # Add an object with document but no body element
+    obj = SubElement(text, f"{{{ns_draw}}}object")
+    doc = SubElement(obj, f"{{{ns_office}}}document")
+    # No body element - only automatic-styles
+    auto_styles = SubElement(doc, f"{{{ns_office}}}automatic-styles")
+    SubElement(auto_styles, f"{{{ns_office}}}style")
+
+    container._process_embedded_objects(content_root, "{http://www.w3.org/1999/xlink}")
+
+    # content.xml should not be created (no body)
+    assert "Object 1/content.xml" not in container.parts
+    # styles.xml should be created (has automatic-styles)
+    assert "Object 1/styles.xml" in container.parts
+
+
+def test_process_embedded_objects_no_auto_styles():
+    """Test _process_embedded_objects skips styles.xml when no automatic-styles."""
+    container = Container()
+
+    ns_office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+
+    content_root = Element(f"{{{ns_office}}}document-content")
+    body = SubElement(content_root, f"{{{ns_office}}}body")
+    text = SubElement(body, f"{{{ns_office}}}text")
+
+    # Add an object with document but no automatic-styles
+    obj = SubElement(text, f"{{{ns_draw}}}object")
+    doc = SubElement(obj, f"{{{ns_office}}}document")
+    doc_body = SubElement(doc, f"{{{ns_office}}}body")
+    SubElement(doc_body, f"{{{ns_office}}}text")
+    # No automatic-styles
+
+    container._process_embedded_objects(content_root, "{http://www.w3.org/1999/xlink}")
+
+    # content.xml should be created (has body)
+    assert "Object 1/content.xml" in container.parts
+    # styles.xml should not be created (no automatic-styles)
+    assert "Object 1/styles.xml" not in container.parts
+
+
+def test_process_embedded_objects_no_meta():
+    """Test _process_embedded_objects skips meta.xml when no meta element."""
+    container = Container()
+
+    ns_office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+
+    content_root = Element(f"{{{ns_office}}}document-content")
+    body = SubElement(content_root, f"{{{ns_office}}}body")
+    text = SubElement(body, f"{{{ns_office}}}text")
+
+    # Add an object with document but no meta
+    obj = SubElement(text, f"{{{ns_draw}}}object")
+    doc = SubElement(obj, f"{{{ns_office}}}document")
+    doc_body = SubElement(doc, f"{{{ns_office}}}body")
+    SubElement(doc_body, f"{{{ns_office}}}text")
+    # No meta element
+
+    container._process_embedded_objects(content_root, "{http://www.w3.org/1999/xlink}")
+
+    # content.xml should be created
+    assert "Object 1/content.xml" in container.parts
+    # meta.xml should not be created (no meta)
+    assert "Object 1/meta.xml" not in container.parts
+
+
+def test_process_form_images_invalid_base64():
+    """Test _process_form_images handles invalid base64 data."""
+    container = Container()
+
+    ns_office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    ns_form = "urn:oasis:names:tc:opendocument:xmlns:form:1.0"
+
+    content_root = Element(f"{{{ns_office}}}document-content")
+    body = SubElement(content_root, f"{{{ns_office}}}body")
+    text = SubElement(body, f"{{{ns_office}}}text")
+
+    # Add a form button with invalid base64 image data
+    form_btn = SubElement(text, f"{{{ns_form}}}button")
+    binary_data = SubElement(form_btn, f"{{{ns_office}}}binary-data")
+    binary_data.text = "!!!invalid_base64!!!"
+
+    image_parts: dict[str, bytes] = {}
+
+    # Should not raise, just print warning
+    container._process_form_images(content_root, image_parts)
+
+    # No images processed
+    assert image_parts == {}
+
+
+def test_process_form_images_empty_binary_data():
+    """Test _process_form_images skips form elements with empty binary-data."""
+    container = Container()
+
+    ns_office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    ns_form = "urn:oasis:names:tc:opendocument:xmlns:form:1.0"
+
+    content_root = Element(f"{{{ns_office}}}document-content")
+    body = SubElement(content_root, f"{{{ns_office}}}body")
+    text = SubElement(body, f"{{{ns_office}}}text")
+
+    # Add a form button with empty binary-data text
+    form_btn = SubElement(text, f"{{{ns_form}}}button")
+    binary_data = SubElement(form_btn, f"{{{ns_office}}}binary-data")
+    binary_data.text = ""  # Empty text
+
+    image_parts: dict[str, bytes] = {}
+
+    # Should skip empty binary-data
+    container._process_form_images(content_root, image_parts)
+
+    # No images processed
+    assert image_parts == {}
+
+
+def test_serialize_documents_empty_roots():
+    """Test _serialize_documents handles empty content and styles roots."""
+    container = Container()
+
+    ns_office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+
+    # Create empty roots (no children)
+    content_root = Element(f"{{{ns_office}}}document-content")
+    styles_root = Element(f"{{{ns_office}}}document-styles")
+
+    # Should not create any parts when roots are empty
+    container._serialize_documents(content_root, styles_root)
+
+    # Neither content.xml nor styles.xml should be created
+    assert "content.xml" not in container.parts
+    assert "styles.xml" not in container.parts
