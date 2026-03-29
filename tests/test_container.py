@@ -1855,3 +1855,173 @@ def test_serialize_documents_empty_roots():
     # Neither content.xml nor styles.xml should be created
     assert "content.xml" not in container.parts
     assert "styles.xml" not in container.parts
+
+
+def test_parse_folder_with_none_path():
+    """Test _parse_folder raises ValueError when path is None."""
+    container = Container()
+    # path is None by default
+    with pytest.raises(ValueError, match="Document path is not defined"):
+        container._parse_folder("")
+
+
+def test_get_folder_part_with_none_path():
+    """Test _get_folder_part raises ValueError when path is None."""
+    container = Container()
+    # path is None by default
+    with pytest.raises(ValueError, match="Document path is not defined"):
+        container._get_folder_part("content.xml")
+
+
+def test_get_folder_part_timestamp_with_none_path():
+    """Test _get_folder_part_timestamp raises ValueError when path is None."""
+    container = Container()
+    # path is None by default
+    with pytest.raises(ValueError, match="Document path is not defined"):
+        container._get_folder_part_timestamp("content.xml")
+
+
+def test_get_all_zip_part_with_none_path():
+    """Test _get_all_zip_part raises ValueError when path is None."""
+    container = Container()
+    # path is None by default
+    with pytest.raises(ValueError, match="Document path is not defined"):
+        container._get_all_zip_part()
+
+
+def test_get_all_zip_part_bad_zipfile(tmp_path):
+    """Test _get_all_zip_part handles BadZipFile exception."""
+    # Create a file that is not a valid zip
+    bad_zip_path = tmp_path / "not_a_zip.odt"
+    bad_zip_path.write_text("This is not a zip file")
+
+    container = Container()
+    container.path = bad_zip_path
+
+    # Should not raise, just silently return
+    container._get_all_zip_part()
+
+    # No parts should be loaded (check internal __parts directly)
+    assert len(container._Container__parts) == 0
+
+
+def test_save_zip_missing_mimetype():
+    """Test _save_zip raises ValueError when mimetype is missing."""
+    container = Container()
+    # Add a part but no mimetype
+    container._Container__parts["content.xml"] = b"<content/>"
+
+    buffer = io.BytesIO()
+    with pytest.raises(ValueError, match="Mimetype is not defined"):
+        container._save_zip(buffer)
+
+
+def test_save_folder_skips_none_data(tmp_path):
+    """Test _save_folder skips parts with None data (deleted parts)."""
+    container = Container()
+    # Set mimetype
+    container._Container__parts["mimetype"] = ODF_EXTENSIONS["odt"].encode()
+    # Add a part with None data (marked for deletion)
+    container._Container__parts["deleted.xml"] = None  # type: ignore
+    # Add a normal part
+    container._Container__parts["content.xml"] = b"<content/>"
+
+    folder_path = tmp_path / "output_folder"
+    container._save_folder(folder_path)
+
+    # The deleted part should not be created
+    assert not (folder_path / "deleted.xml").exists()
+    # The normal part should be created
+    assert (folder_path / "content.xml").exists()
+
+
+def test_encoded_image_no_path():
+    """Test _encoded_image returns None when no href path."""
+    container = Container()
+
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+
+    # Create image element without href
+    img_elem = Element(f"{{{ns_draw}}}image")
+    # No xlink:href attribute
+
+    result = container._encoded_image(img_elem)
+    assert result is None
+
+
+def test_encoded_image_no_content():
+    """Test _encoded_image returns None when content is empty."""
+    container = Container()
+
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+
+    # Create image element with href but empty content in parts
+    img_elem = Element(f"{{{ns_draw}}}image")
+    img_elem.set("{http://www.w3.org/1999/xlink}href", "Pictures/empty.png")
+
+    # Pre-populate parts with empty content
+    container._Container__parts["Pictures/empty.png"] = b""
+
+    result = container._encoded_image(img_elem)
+    assert result is None
+
+
+def test_embed_form_image_data_no_content():
+    """Test _embed_form_image_data returns early when no content."""
+    container = Container()
+
+    ns_form = "urn:oasis:names:tc:opendocument:xmlns:form:1.0"
+
+    # Create form element with image-data pointing to missing file
+    form_elem = Element(f"{{{ns_form}}}button")
+
+    # Should return early without error
+    container._embed_form_image_data(form_elem, "Pictures/missing.png")
+
+    # No binary-data should be added
+    assert len(list(form_elem)) == 0
+
+
+def test_encoded_fill_image_no_path():
+    """Test _encoded_fill_image returns None when no href path."""
+    container = Container()
+
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+
+    # Create fill-image element without href
+    fill_elem = Element(f"{{{ns_draw}}}fill-image")
+    # No xlink:href attribute
+
+    result = container._encoded_fill_image(fill_elem)
+    assert result is None
+
+
+def test_encoded_fill_image_no_content():
+    """Test _encoded_fill_image returns None when content is empty."""
+    container = Container()
+
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+
+    # Create fill-image element with href but empty content
+    fill_elem = Element(f"{{{ns_draw}}}fill-image")
+    fill_elem.set("{http://www.w3.org/1999/xlink}href", "Pictures/empty.png")
+
+    # Pre-populate parts with empty content
+    container._Container__parts["Pictures/empty.png"] = b""
+
+    result = container._encoded_fill_image(fill_elem)
+    assert result is None
+
+
+def test_encoded_object_no_path():
+    """Test _encoded_object returns None when no href path."""
+    container = Container()
+
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+
+    # Create object element without href
+    obj_elem = Element(f"{{{ns_draw}}}object")
+    # No xlink:href attribute
+
+    result = container._encoded_object(obj_elem)
+    assert result is None
