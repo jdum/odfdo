@@ -1,5 +1,19 @@
 # Odfdo Release Notes
 
+## [3.22.2] - 2026-03-29
+
+-   Internal refactoring of `container.py` for improved code clarity and maintainability.
+-   Enhanced test coverage for the `container` module.
+
+### Added
+
+-   Improve test coverage for `container.py` module, covering XML related methods and edge cases for empty paths.
+-   Add tests for `const.py` module.
+
+### Changed
+
+-   Refactor `container.py` by splitting `_read_xml()` into smaller focused helper methods.
+
 ## [3.22.1] - 2026-03-22
 
 -   Toggle for LibreOffice/OpenOffice extension namespaces via `USE_LO_EXTENSIONS` constant.
