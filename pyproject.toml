@@ -1,6 +1,6 @@
 [project]
 name = "odfdo"
-version = "3.22.2"
+version = "3.22.3"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 readme = "README.md"
@@ -10,11 +10,9 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -23,9 +21,8 @@ classifiers = [
     "Operating System :: OS Independent",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-requires-python = ">=3.9, <4"
+requires-python = ">=3.10, <4"
 dependencies = [
-    "lxml >=4.8.0, <5; python_version == '3.9'",
     "lxml >=4.8.0, <5.1.1; python_version == '3.10'",
     "lxml >=4.9.4, <7; python_version >= '3.11' and python_version < '3.13'",
     "lxml >=5.3.0, <7; python_version >= '3.13'",
@@ -64,15 +61,15 @@ doc = [
     "mkdocs-include-markdown-plugin>=7.2.0",
 ]
 dev = [
-    "iniconfig==2.1.0",  # Python 3.9
-    "pillow>=11.3.0,<12", # Python 3.9
-    "pytest>=8.4.2,<9",  # Python 3.9
+    "iniconfig>=2.1.0",
+    "pillow>=12.1.1",
+    "pytest>=8.4.2",
     "pytest-xdist>=3.8.0",
-    "coverage>=7.10.0",  # Python 3.9
-    "pytest-cov>=7.0.0",  # Python 3.9
-    "tox==4.30.3",  # Python 3.9
+    "coverage>=7.10.0",
+    "pytest-cov>=7.0.0",
+    "tox>=4.51.0",
     "ruff>=0.15.4",
-    "isort>=6.1.0",   # Python 3.9
+    "isort>=6.1.0",
     "mypy>=1.19.1",
     "mypy-extensions>=1.1.0",
     "typing-extensions>=4.15.0",
@@ -145,7 +142,7 @@ ignore = [
     # Use `X | Y` in `isinstance` call instead of `(X, Y)`
     # "UP038",
     # Use `X | Y` for type annotations
-    "UP007",
+    # "UP007",
     # Avoid specifying long messages outside the exception class
     "TRY003",
     # Use ternary operator

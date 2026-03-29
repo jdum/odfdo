@@ -1,5 +1,13 @@
 # Odfdo Release Notes
 
+## [3.22.3] - 2026-03-29
+
+-   Drop Python 3.9 support. A `support/python3.9` branch is maintained for critical fixes.
+
+### Changed
+
+-   Update type hint syntax to Python 3.10+ style (`|` union operator, `list[]` instead of `List[]`).
+
 ## [3.22.2] - 2026-03-29
 
 -   Internal refactoring of `container.py` for improved code clarity and maintainability.
