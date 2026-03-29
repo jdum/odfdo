@@ -806,23 +806,24 @@ class Container:
         for root_elem in (content_root, styles_root):
             for fill_img_elem in xpath_fill_expr(root_elem):
                 binary_data_elem = fill_img_elem.find(_ns_tag("binary-data"))
-                if binary_data_elem is not None and binary_data_elem.text:
-                    try:
-                        image_data = base64.standard_b64decode(
-                            binary_data_elem.text.strip()
-                        )
-                        mime_type = self._detect_image_mime_type(image_data)
-                        ext = self._image_mime_type_to_ext(mime_type)
+                if binary_data_elem is None or not binary_data_elem.text:
+                    continue
+                try:
+                    image_data = base64.standard_b64decode(
+                        binary_data_elem.text.strip()
+                    )
+                    mime_type = self._detect_image_mime_type(image_data)
+                    ext = self._image_mime_type_to_ext(mime_type)
 
-                        image_counter += 1
-                        image_path = f"Pictures/image{image_counter}.{ext}"
-                        image_parts[image_path] = image_data
+                    image_counter += 1
+                    image_path = f"Pictures/image{image_counter}.{ext}"
+                    image_parts[image_path] = image_data
 
-                        fill_img_elem.remove(binary_data_elem)
-                        fill_img_elem.set(f"{xlink_ns}href", image_path)
-                        fill_img_elem.set(f"{xlink_ns}type", "simple")
-                    except Exception as e:
-                        printwarn(f"Failed to decode embedded fill image: {e}")
+                    fill_img_elem.remove(binary_data_elem)
+                    fill_img_elem.set(f"{xlink_ns}href", image_path)
+                    fill_img_elem.set(f"{xlink_ns}type", "simple")
+                except Exception as e:
+                    printwarn(f"Failed to decode embedded fill image: {e}")
 
         return image_counter
 
@@ -837,7 +838,8 @@ class Container:
                 obj_path = f"Object {object_counter}"
 
                 doc_wrapper = obj_elem.find(_ns_tag("document"))
-                if doc_wrapper is None:
+                # Can not happen: XPath already filters for objects with document
+                if doc_wrapper is None:  # pragma: no cover
                     continue
 
                 # Create object content.xml from body
@@ -914,22 +916,21 @@ class Container:
 
         for form_elem in xpath_form_img(content_root):
             binary_data_elem = form_elem.find(_ns_tag("binary-data"))
-            if binary_data_elem is not None and binary_data_elem.text:
-                try:
-                    image_data = base64.standard_b64decode(
-                        binary_data_elem.text.strip()
-                    )
-                    mime_type = self._detect_image_mime_type(image_data)
-                    ext = self._image_mime_type_to_ext(mime_type)
+            if binary_data_elem is None or not binary_data_elem.text:
+                continue
+            try:
+                image_data = base64.standard_b64decode(binary_data_elem.text.strip())
+                mime_type = self._detect_image_mime_type(image_data)
+                ext = self._image_mime_type_to_ext(mime_type)
 
-                    image_counter += 1
-                    image_path = f"Pictures/image{image_counter}.{ext}"
-                    image_parts[image_path] = image_data
+                image_counter += 1
+                image_path = f"Pictures/image{image_counter}.{ext}"
+                image_parts[image_path] = image_data
 
-                    form_elem.remove(binary_data_elem)
-                    form_elem.set(f"{ns_form}image-data", image_path)
-                except Exception as e:
-                    printwarn(f"Failed to decode embedded form image: {e}")
+                form_elem.remove(binary_data_elem)
+                form_elem.set(f"{ns_form}image-data", image_path)
+            except Exception as e:
+                printwarn(f"Failed to decode embedded form image: {e}")
 
     def _serialize_documents(self, content_root: Element, styles_root: Element) -> None:
         """Serialize content.xml and styles.xml."""
