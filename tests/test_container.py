@@ -24,11 +24,13 @@
 
 import io
 import shutil
+import zipfile
 from os.path import isfile, join
 from pathlib import Path
+from textwrap import dedent
 
 import pytest
-from lxml.etree import Element
+from lxml.etree import Element, register_namespace
 
 from odfdo.const import (
     FOLDER,
@@ -404,17 +406,18 @@ def test_normalize_path():
 
 def test_is_flat_xml_with_valid_flat_odf():
     """Test _is_flat_xml with valid flat ODF content."""
-    flat_odf = b"""\
-<?xml version="1.0" encoding="UTF-8"?>
-<office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
-                 office:mimetype="application/vnd.oasis.opendocument.text"
-                 office:version="1.2">
-    <office:body>
-        <office:text>
-            <text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">Hello</text:p>
-        </office:text>
-    </office:body>
-</office:document>"""
+    flat_odf = dedent("""\
+        <?xml version="1.0" encoding="UTF-8"?>
+        <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+                         office:mimetype="application/vnd.oasis.opendocument.text"
+                         office:version="1.2">
+            <office:body>
+                <office:text>
+                    <text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">Hello</text:p>
+                </office:text>
+            </office:body>
+        </office:document>
+    """).encode()
     assert Container._is_flat_xml(flat_odf) is True
 
 
@@ -427,30 +430,32 @@ def test_is_flat_xml_with_invalid_content():
     # XML but not ODF
     assert Container._is_flat_xml(b'<?xml version="1.0"?><root></root>') is False
     # Invalid mimetype
-    flat_odf = b"""\
-<?xml version="1.0" encoding="UTF-8"?>
-<office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
-                 office:mimetype="application/invalid"
-                 office:version="1.2">
-</office:document>"""
+    flat_odf = dedent("""\
+        <?xml version="1.0" encoding="UTF-8"?>
+        <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+                         office:mimetype="application/invalid"
+                         office:version="1.2">
+        </office:document>
+    """).encode()
     assert Container._is_flat_xml(flat_odf) is False
 
 
 def test_open_flat_xml_file(tmp_path, samples):
     """Test opening a flat XML ODF file."""
     # Create a minimal flat ODF file
-    flat_odf = b"""\
-<?xml version="1.0" encoding="UTF-8"?>
-<office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
-                 xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
-                 office:mimetype="application/vnd.oasis.opendocument.text"
-                 office:version="1.2">
-    <office:body>
-        <office:text>
-            <text:p>Hello World</text:p>
-        </office:text>
-    </office:body>
-</office:document>"""
+    flat_odf = dedent("""\
+        <?xml version="1.0" encoding="UTF-8"?>
+        <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+                         xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+                         office:mimetype="application/vnd.oasis.opendocument.text"
+                         office:version="1.2">
+            <office:body>
+                <office:text>
+                    <text:p>Hello World</text:p>
+                </office:text>
+            </office:body>
+        </office:document>
+    """).encode()
     flat_path = tmp_path / "flat.fodt"
     flat_path.write_bytes(flat_odf)
 
@@ -463,18 +468,19 @@ def test_open_flat_xml_file(tmp_path, samples):
 
 def test_open_flat_xml_bytesio():
     """Test opening a flat XML ODF from BytesIO."""
-    flat_odf = b"""\
-<?xml version="1.0" encoding="UTF-8"?>
-<office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
-                 xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
-                 office:mimetype="application/vnd.oasis.opendocument.text"
-                 office:version="1.2">
-    <office:body>
-        <office:text>
-            <text:p>Hello World</text:p>
-        </office:text>
-    </office:body>
-</office:document>"""
+    flat_odf = dedent("""\
+        <?xml version="1.0" encoding="UTF-8"?>
+        <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+                         xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+                         office:mimetype="application/vnd.oasis.opendocument.text"
+                         office:version="1.2">
+            <office:body>
+                <office:text>
+                    <text:p>Hello World</text:p>
+                </office:text>
+            </office:body>
+        </office:document>
+    """).encode()
     bio = io.BytesIO(flat_odf)
     container = Container()
     container.open(bio)
@@ -722,6 +728,36 @@ def test_pretty_indent_with_binary_data():
     assert result is not None
 
 
+def test_pretty_indent_with_binary_data_existing_tail():
+    """Test pretty_indent with office:binary-data element that already has a tail."""
+    register_namespace("office", "urn:oasis:names:tc:opendocument:xmlns:office:1.0")
+    ns_office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    elem = Element(f"{{{ns_office}}}binary-data")
+    elem.text = "base64encodedcontent"
+    elem.tail = "existing_tail"  # Set a tail value so the condition is False
+
+    result = pretty_indent(elem)
+    assert result is not None
+    # The existing tail should be preserved (not overwritten)
+    assert result.tail == "existing_tail"
+
+
+def test_pretty_indent_with_binary_data_in_parent():
+    """Test pretty_indent with office:binary-data element inside a parent.
+
+    This covers the case where binary-data is processed as a child element,
+    testing the interaction between parent and child tail handling.
+    """
+    ns_office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    parent = Element(f"{{{ns_office}}}document")
+    child = Element(f"{{{ns_office}}}binary-data")
+    child.text = "base64content"
+    parent.append(child)
+
+    result = pretty_indent(parent)
+    assert result is not None
+
+
 def test_save_xml_with_auto_extension(tmp_path, samples):
     """Test saving XML with automatic extension based on mimetype."""
     container = Container()
@@ -804,32 +840,30 @@ def test_clone_with_zip_parts(samples):
             assert original_part == cloned_part
 
 
-# Additional tests for better coverage
-
-
 def test_open_flat_xml_with_meta_and_settings(tmp_path):
     """Test opening flat XML with meta and settings elements."""
-    flat_odf = b"""\
-<?xml version="1.0" encoding="UTF-8"?>
-<office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
-                 xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
-                 xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0"
-                 office:mimetype="application/vnd.oasis.opendocument.text"
-                 office:version="1.2">
-    <office:meta>
-        <meta:generator>Test</meta:generator>
-    </office:meta>
-    <office:settings>
-        <config:config-item-set config:name="ooo:view-settings">
-            <config:config-item config:name="ViewId" config:type="string">writer</config:config-item>
-        </config:config-item-set>
-    </office:settings>
-    <office:body>
-        <office:text>
-            <text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">Hello</text:p>
-        </office:text>
-    </office:body>
-</office:document>"""
+    flat_odf = dedent("""\
+        <?xml version="1.0" encoding="UTF-8"?>
+        <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+                         xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
+                         xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0"
+                         office:mimetype="application/vnd.oasis.opendocument.text"
+                         office:version="1.2">
+            <office:meta>
+                <meta:generator>Test</meta:generator>
+            </office:meta>
+            <office:settings>
+                <config:config-item-set config:name="ooo:view-settings">
+                    <config:config-item config:name="ViewId" config:type="string">writer</config:config-item>
+                </config:config-item-set>
+            </office:settings>
+            <office:body>
+                <office:text>
+                    <text:p xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">Hello</text:p>
+                </office:text>
+            </office:body>
+        </office:document>
+    """).encode()
     flat_path = tmp_path / "flat_complete.fodt"
     flat_path.write_bytes(flat_odf)
 
@@ -847,25 +881,26 @@ def test_open_flat_xml_with_meta_and_settings(tmp_path):
 
 def test_open_flat_xml_with_styles(tmp_path):
     """Test opening flat XML with automatic-styles and master-styles."""
-    flat_odf = b"""\
-<?xml version="1.0" encoding="UTF-8"?>
-<office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
-                 xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
-                 xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
-                 office:mimetype="application/vnd.oasis.opendocument.text"
-                 office:version="1.2">
-    <office:automatic-styles>
-        <style:style style:name="P1" style:family="paragraph"/>
-    </office:automatic-styles>
-    <office:master-styles>
-        <style:master-page style:name="Standard" style:page-layout-name="PM1"/>
-    </office:master-styles>
-    <office:body>
-        <office:text>
-            <text:p text:style-name="P1">Hello</text:p>
-        </office:text>
-    </office:body>
-</office:document>"""
+    flat_odf = dedent("""\
+        <?xml version="1.0" encoding="UTF-8"?>
+        <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+                         xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
+                         xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+                         office:mimetype="application/vnd.oasis.opendocument.text"
+                         office:version="1.2">
+            <office:automatic-styles>
+                <style:style style:name="P1" style:family="paragraph"/>
+            </office:automatic-styles>
+            <office:master-styles>
+                <style:master-page style:name="Standard" style:page-layout-name="PM1"/>
+            </office:master-styles>
+            <office:body>
+                <office:text>
+                    <text:p text:style-name="P1">Hello</text:p>
+                </office:text>
+            </office:body>
+        </office:document>
+    """).encode()
     flat_path = tmp_path / "flat_styles.fodt"
     flat_path.write_bytes(flat_odf)
 
@@ -968,14 +1003,15 @@ def test_container_equality_after_clone(samples):
 
 def test_is_flat_xml_with_body_only():
     """Test _is_flat_xml with ODF that has body but no mimetype attribute."""
-    flat_odf = b"""\
-<?xml version="1.0" encoding="UTF-8"?>
-<office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
-                 office:version="1.2">
-    <office:body>
-        <office:text/>
-    </office:body>
-</office:document>"""
+    flat_odf = dedent("""\
+        <?xml version="1.0" encoding="UTF-8"?>
+        <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+                         office:version="1.2">
+            <office:body>
+                <office:text/>
+            </office:body>
+        </office:document>
+    """).encode()
     # Should be accepted because it has office:body
     assert Container._is_flat_xml(flat_odf) is True
 
@@ -1082,21 +1118,22 @@ def test_open_folder_with_missing_mimetype(tmp_path):
 
 def test_flat_odf_with_document_meta_wrapper(tmp_path):
     """Test flat ODF where meta is already wrapped in document-meta."""
-    flat_odf = b"""\
-<?xml version="1.0" encoding="UTF-8"?>
-<office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
-                 xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
-                 office:mimetype="application/vnd.oasis.opendocument.text"
-                 office:version="1.2">
-    <office:document-meta>
-        <office:meta>
-            <meta:generator>Test</meta:generator>
-        </office:meta>
-    </office:document-meta>
-    <office:body>
-        <office:text/>
-    </office:body>
-</office:document>"""
+    flat_odf = dedent("""\
+        <?xml version="1.0" encoding="UTF-8"?>
+        <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+                         xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
+                         office:mimetype="application/vnd.oasis.opendocument.text"
+                         office:version="1.2">
+            <office:document-meta>
+                <office:meta>
+                    <meta:generator>Test</meta:generator>
+                </office:meta>
+            </office:document-meta>
+            <office:body>
+                <office:text/>
+            </office:body>
+        </office:document>
+    """).encode()
     flat_path = tmp_path / "flat_doc_meta.fodt"
     flat_path.write_bytes(flat_odf)
 
@@ -1144,3 +1181,105 @@ def test_container_get_parts_no_path():
     assert "test1.txt" in parts
     assert "test2.txt" in parts
     assert "mimetype" in parts
+
+
+def test_open_file_path_not_flat_xml(tmp_path):
+    """Test opening a file that is not zip, not folder, and not valid flat XML."""
+    # Create a file that exists but is not valid flat XML
+    not_xml_path = tmp_path / "not_odf.txt"
+    not_xml_path.write_text("This is not XML content")
+
+    container = Container()
+    with pytest.raises(TypeError, match="Document format not managed by odfdo"):
+        container.open(not_xml_path)
+
+
+def test_open_bytesio_not_flat_xml():
+    """Test opening a BytesIO that is not valid flat XML."""
+    # Create a BytesIO with invalid content
+    invalid_content = io.BytesIO(b"This is not valid XML content")
+
+    container = Container()
+    with pytest.raises(TypeError, match="Document format not managed by odfdo"):
+        container.open(invalid_content)
+
+
+def test_is_flat_xml_with_wrong_root_element():
+    """Test _is_flat_xml with XML that has office:document text but wrong root element."""
+    xml_content = dedent("""\
+        <?xml version="1.0" encoding="UTF-8"?>
+        <office:wrong-root xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0">
+            <!-- office:document is mentioned here but this is wrong-root element -->
+            <office:body>
+                <office:text/>
+            </office:body>
+        </office:wrong-root>
+    """).encode()
+    # This should return False because root is not office:document
+    assert Container._is_flat_xml(xml_content) is False
+
+
+def test_is_flat_xml_with_malformed_xml():
+    """Test _is_flat_xml with malformed XML that fails parsing."""
+    # XML that passes the initial checks but fails parsing
+    # Has <?xml declaration and office:document text but is malformed
+    malformed_xml = dedent("""\
+        <?xml version="1.0" encoding="UTF-8"?>
+        <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+                         office:mimetype="application/vnd.oasis.opendocument.text">
+            <office:body>
+                <office:text>
+                    <unclosed-tag>
+            </office:body>
+        </office:document>
+    """).encode()
+    # This should return False because XML parsing fails
+    assert Container._is_flat_xml(malformed_xml) is False
+
+
+def test_is_flat_xml_with_unclosed_element():
+    """Test _is_flat_xml with unclosed XML element causing parse error."""
+    # Another variant of malformed XML
+    bad_xml = dedent("""\
+        <?xml version="1.0" encoding="UTF-8"?>
+        <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0">
+            <unclosed-element attribute="value">
+        </office:document>
+    """).encode()
+    assert Container._is_flat_xml(bad_xml) is False
+
+
+def test_read_zip_with_invalid_mimetype(tmp_path):
+    """Test _read_zip raises ValueError for invalid mimetype."""
+    import zipfile
+
+    # Create a zip file with invalid mimetype
+    zip_path = tmp_path / "invalid_mimetype.odt"
+    with zipfile.ZipFile(zip_path, "w") as zf:
+        zf.writestr("mimetype", "application/invalid-type")
+        zf.writestr("content.xml", "<xml/>")
+
+    container = Container()
+    with pytest.raises(ValueError, match="Document of unknown type"):
+        container.open(zip_path)
+
+
+def test_read_zip_with_path_none_and_non_bytesio(tmp_path, samples):
+    """Test _read_zip when path is None and __path_like is not BytesIO."""
+    zip_path = tmp_path / "test_direct.odt"
+    with zipfile.ZipFile(zip_path, "w") as zf:
+        zf.writestr("mimetype", ODF_EXTENSIONS["odt"])
+        zf.writestr("content.xml", "<office:document-content/>")
+
+    container = Container()
+    container._Container__packaging = "zip"  # type: ignore
+    container._Container__path_like = open(zip_path, "rb")  # type: ignore
+    # path is None (default), __path_like is a file object (not BytesIO)
+
+    try:
+        container._read_zip()
+        assert container.mimetype == ODF_EXTENSIONS["odt"]
+        assert "content.xml" in container.parts
+    finally:
+        if hasattr(container._Container__path_like, "close"):
+            container._Container__path_like.close()  # type: ignore
