@@ -24,7 +24,7 @@
 
 from __future__ import annotations
 
-from typing import Any, ClassVar, Union, cast
+from typing import Any, ClassVar, cast
 
 from .annotation import Annotation, AnnotationEnd, get_unique_office_name  # noqa: F401
 from .element import Element, PropDef, PropDefBool, register_element_class
@@ -84,7 +84,7 @@ class NoteMixin(Element):
             Note | None: A `Note` instance matching the criteria, or `None` if not found.
         """
         return cast(
-            Union[None, Note],
+            None | Note,
             self._filtered_element(
                 "descendant::text:note",
                 position,

@@ -24,7 +24,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any, Union, cast
+from typing import Any, cast
 
 from .element import (
     FIRST_CHILD,
@@ -193,13 +193,13 @@ class List(MDList, Element):
     @property
     def list_header(self) -> ListHeader | None:
         """Get or set the list header."""
-        return cast(Union[None, ListHeader], self.get_element("text:list-header"))
+        return cast(None | ListHeader, self.get_element("text:list-header"))
 
     @list_header.setter
     def list_header(
         self, text_or_element: str | Element | Iterable[str | Element] | None = None
     ) -> None:
-        current = cast(Union[None, ListHeader], self.get_element("text:list-header"))
+        current = cast(None | ListHeader, self.get_element("text:list-header"))
         if current:
             current.delete()
         new_header = ListHeader(text_or_element)

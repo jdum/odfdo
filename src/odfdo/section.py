@@ -23,7 +23,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Union, cast
+from typing import Any, cast
 
 from .element import Element, PropDef, register_element_class
 from .mixin_link import LinkMixin
@@ -99,7 +99,7 @@ class SectionMixin(Element):
             Section or None: The matching Section element, or None if not found.
         """
         return cast(
-            Union[None, Section],
+            None | Section,
             self._filtered_element(
                 "descendant::text:section", position, content=content
             ),

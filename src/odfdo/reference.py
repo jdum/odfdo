@@ -23,7 +23,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from .element import Element, PropDef, register_element_class
 from .element_strip import strip_elements, strip_tags
@@ -73,7 +73,7 @@ class ReferenceMixin(Element):
             ReferenceMark | None: The `ReferenceMark` instance if found, otherwise `None`.
         """
         return cast(
-            Union[None, ReferenceMark],
+            None | ReferenceMark,
             self._filtered_element(
                 "descendant::text:reference-mark", position, text_name=name
             ),
@@ -111,7 +111,7 @@ class ReferenceMixin(Element):
             ReferenceMarkStart | None: The `ReferenceMarkStart` instance if found, otherwise `None`.
         """
         return cast(
-            Union[None, ReferenceMarkStart],
+            None | ReferenceMarkStart,
             self._filtered_element(
                 "descendant::text:reference-mark-start", position, text_name=name
             ),
@@ -149,7 +149,7 @@ class ReferenceMixin(Element):
             ReferenceMarkEnd | None: The `ReferenceMarkEnd` instance if found, otherwise `None`.
         """
         return cast(
-            Union[None, ReferenceMarkEnd],
+            None | ReferenceMarkEnd,
             self._filtered_element(
                 "descendant::text:reference-mark-end", position, text_name=name
             ),
@@ -205,7 +205,7 @@ class ReferenceMixin(Element):
             "descendant::text:reference-mark-start | descendant::text:reference-mark"
         )
         return cast(
-            Union[None, ReferenceMark, ReferenceMarkStart],
+            None | ReferenceMark | ReferenceMarkStart,
             self._filtered_element(request, position),
         )
 

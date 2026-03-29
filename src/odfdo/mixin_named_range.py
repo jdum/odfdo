@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 
-from typing import Union, cast
+from typing import cast
 
 from .element import Element, PropDef, PropDefBool, register_element_class
 from .named_range import NamedRange
@@ -89,7 +89,7 @@ class NRMixin(Element):
             named_range: The `NamedRange` object to append.
         """
         named_expressions = cast(
-            Union[None, TableNamedExpressions],
+            None | TableNamedExpressions,
             self.get_element("table:named-expressions"),
         )
         if not named_expressions:
@@ -99,7 +99,7 @@ class NRMixin(Element):
             self._Element__append(named_expressions)  # type: ignore[attr-defined]
         # exists ?
         current = cast(
-            Union[None, NamedRange],
+            None | NamedRange,
             named_expressions.get_element(
                 f'table:named-range[@table:name="{named_range.name}"][1]'
             ),

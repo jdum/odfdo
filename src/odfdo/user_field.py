@@ -28,7 +28,7 @@ content within the document, "text:user-defined", text:user-field-get",
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from .element import Element, PropDef, register_element_class
 from .element_typed import ElementTyped
@@ -95,7 +95,7 @@ class UserDefinedMixin(Element):
             UserDefined | None: A UserDefined instance, or None if no declaration matches the criteria.
         """
         return cast(
-            Union[None, UserDefined],
+            None | UserDefined,
             self._filtered_element(
                 "descendant::text:user-defined", position, text_name=name
             ),

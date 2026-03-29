@@ -33,7 +33,7 @@ from copy import deepcopy
 from importlib import resources as rso
 from operator import itemgetter
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, BinaryIO, Union, cast
+from typing import TYPE_CHECKING, Any, BinaryIO, cast
 
 from .const import (
     ODF_CONTENT,
@@ -1000,7 +1000,7 @@ class Document(MDDocument):
         list_style_name = style.list_style_name  # type: ignore[attr-defined]
         if not list_style_name:
             return None
-        return cast(Union[None, StyleBase], self.get_style("list", list_style_name))
+        return cast(None | StyleBase, self.get_style("list", list_style_name))
 
     @staticmethod
     def _pseudo_style_attribute(

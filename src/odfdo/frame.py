@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from odfdo.mixin_list import ListMixin
 
@@ -173,7 +173,7 @@ class ZMix(Element):
     def z_index(self) -> int | None:
         """Get or set the z index "draw:z-index"."""
         return cast(
-            Union[None, int],
+            None | int,
             self.get_attribute_integer("draw:z-index"),
         )
 
@@ -462,7 +462,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
         Returns:
             DrawImage | None: The image element if found, None otherwise.
         """
-        return cast(Union[None, DrawImage], self.get_element("draw:image"))
+        return cast(None | DrawImage, self.get_element("draw:image"))
 
     def set_image(self, url_or_element: DrawImage | str) -> DrawImage:
         """Set or replace the image in the frame.
@@ -498,7 +498,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
         Returns:
             DrawTextBox | None: The text box element if found, None otherwise.
         """
-        return cast(Union[None, DrawTextBox], self.get_element("draw:text-box"))
+        return cast(None | DrawTextBox, self.get_element("draw:text-box"))
 
     def set_text_box(
         self,

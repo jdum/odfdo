@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Union, cast
+from typing import TYPE_CHECKING, cast
 
 from .element import Element
 
@@ -93,6 +93,6 @@ class ListMixin(Element):
                 criteria.
         """
         return cast(
-            "Union[None, List]",
+            "None | List",
             self._filtered_element("descendant::text:list", position, content=content),
         )

@@ -27,7 +27,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from .element import FIRST_CHILD, LAST_CHILD, Element, register_element_class
 from .elements_between import elements_between
@@ -59,7 +59,7 @@ class TrackedChangesMixin(Element):
                 not found.
         """
         return cast(
-            Union[None, TrackedChanges], self.get_element("//text:tracked-changes")
+            None | TrackedChanges, self.get_element("//text:tracked-changes")
         )
 
     @property
@@ -211,7 +211,7 @@ class TextInsertion(Element):
             ChangeInfo | None: The ChangeInfo element, or None if not found.
         """
         return cast(
-            Union[None, ChangeInfo], self.get_element("descendant::office:change-info")
+            None | ChangeInfo, self.get_element("descendant::office:change-info")
         )
 
     def set_change_info(
@@ -392,7 +392,7 @@ class TextChangedRegion(Element):
             ChangeInfo | None: The ChangeInfo element, or None if not found.
         """
         return cast(
-            Union[None, ChangeInfo], self.get_element("descendant::office:change-info")
+            None | ChangeInfo, self.get_element("descendant::office:change-info")
         )
 
     def set_change_info(

@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 
-from typing import Any, ClassVar, Union, cast
+from typing import Any, ClassVar, cast
 
 from .element import Element, PropDef, PropDefBool, register_element_class
 from .style_base import PropDict, StyleBase
@@ -203,7 +203,7 @@ class StylePageLayout(StyleProps):
             StyleBase | None: The `StyleBase` instance representing the header
                 style, or `None` if no header style is defined.
         """
-        return cast(Union[None, StyleBase], self.get_element("style:header-style"))
+        return cast(None | StyleBase, self.get_element("style:header-style"))
 
     def set_header_style(self, new_style: StyleBase) -> None:
         """Set or replace the `style:header-style` element within the page layout.
@@ -223,7 +223,7 @@ class StylePageLayout(StyleProps):
             StyleBase | None: The `StyleBase` instance representing the footer
                 style, or `None` if no footer style is defined.
         """
-        return cast(Union[None, StyleBase], self.get_element("style:footer-style"))
+        return cast(None | StyleBase, self.get_element("style:footer-style"))
 
     def set_footer_style(self, new_style: StyleBase) -> None:
         """Set or replace the `style:footer-style` element within the page layout.

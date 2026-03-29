@@ -32,7 +32,7 @@ from io import StringIO
 from itertools import zip_longest
 from pathlib import Path
 from textwrap import wrap
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 from warnings import warn
 
 from lxml.etree import XPath
@@ -674,7 +674,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             str | None: The protection key (a hash value) as a string, or None
                 if not set.
         """
-        return cast(Union[None, str], self.get_attribute("table:protection-key"))
+        return cast(None | str, self.get_attribute("table:protection-key"))
 
     @protection_key.setter
     def protection_key(self, key: str) -> None:
@@ -701,7 +701,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             list[str]: A list of strings representing the print ranges
                 (e.g., ['A1:C5', 'E1:G5']).
         """
-        print_ranges = cast(Union[None, str], self.get_attribute("table:print-ranges"))
+        print_ranges = cast(None | str, self.get_attribute("table:print-ranges"))
         if print_ranges is None:
             return []
         return print_ranges.split()
@@ -2332,7 +2332,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     def _local_append_named_range(self, named_range: NamedRange) -> None:
         """(internal) Append the named range to the current table."""
         named_expressions = cast(
-            Union[None, TableNamedExpressions],
+            None | TableNamedExpressions,
             self.get_element(TableNamedExpressions._tag),
         )
         if not named_expressions:
@@ -2362,7 +2362,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             return
         named_range.delete()
         named_expressions = cast(
-            Union[None, TableNamedExpressions],
+            None | TableNamedExpressions,
             self.get_element(TableNamedExpressions._tag),
         )
         if not named_expressions:

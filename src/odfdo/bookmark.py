@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Union, cast
+from typing import Any, cast
 
 from .element import Element, PropDef, register_element_class
 
@@ -63,7 +63,7 @@ class BookmarkMixin(Element):
             Bookmark or None: The found Bookmark or None if not found.
         """
         return cast(
-            Union[None, Bookmark],
+            None | Bookmark,
             self._filtered_element(
                 "descendant::text:bookmark", position, text_name=name
             ),
@@ -97,7 +97,7 @@ class BookmarkMixin(Element):
             BookmarkStart or None: The found BookmarkStart or None if not found.
         """
         return cast(
-            Union[None, BookmarkStart],
+            None | BookmarkStart,
             self._filtered_element(
                 "descendant::text:bookmark-start", position, text_name=name
             ),
@@ -131,7 +131,7 @@ class BookmarkMixin(Element):
             BookmarkEnd or None: The found BookmarkEnd or None if not found.
         """
         return cast(
-            Union[None, BookmarkEnd],
+            None | BookmarkEnd,
             self._filtered_element(
                 "descendant::text:bookmark-end", position, text_name=name
             ),

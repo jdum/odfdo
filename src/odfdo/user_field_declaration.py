@@ -27,7 +27,7 @@ containers within the document content, tags "text:user-field-decls",
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from .element import FIRST_CHILD, Element, PropDef, register_element_class
 from .element_typed import ElementTyped
@@ -85,7 +85,7 @@ class UserFieldDeclMixin(Element):
             declaration matches the criteria.
         """
         return cast(
-            Union[None, UserFieldDecl],
+            None | UserFieldDecl,
             self._filtered_element(
                 "descendant::text:user-field-decl", position, text_name=name
             ),

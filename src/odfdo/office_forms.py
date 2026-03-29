@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Union, cast
+from typing import Any, cast
 
 from .element import Element, register_element_class
 from .form import FormMixin
@@ -41,7 +41,7 @@ class OfficeFormsMixin(Element):
             OfficeForms | None: The `OfficeForms` instance if found, otherwise `None`.
         """
         return cast(
-            Union[None, OfficeForms], self.get_element("descendant::office:forms")
+            None | OfficeForms, self.get_element("descendant::office:forms")
         )
 
     @property

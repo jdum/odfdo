@@ -25,7 +25,7 @@ This module provides classes for managing variable declaration
 
 from __future__ import annotations
 
-from typing import Any, Union, cast
+from typing import Any, cast
 
 from .element import FIRST_CHILD, Element, PropDef, register_element_class
 
@@ -92,7 +92,7 @@ class VarDeclMixin(Element):
             VarDecls | None: A VarDecls instance, or None if no declaration matches the criteria.
         """
         return cast(
-            Union[None, VarDecls],
+            None | VarDecls,
             self._filtered_element(
                 "descendant::text:variable-decl", position, text_name=name
             ),

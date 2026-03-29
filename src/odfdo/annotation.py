@@ -25,7 +25,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from .element import Element, PropDef, register_element_class
 from .elements_between import elements_between
@@ -117,7 +117,7 @@ class AnnotationMixin(Element):
         """
         if name is not None:
             return cast(
-                Union[None, Annotation],
+                None | Annotation,
                 self._filtered_element(
                     "descendant::office:annotation", 0, office_name=name
                 ),
@@ -167,7 +167,7 @@ class AnnotationMixin(Element):
                 None if not found.
         """
         return cast(
-            Union[None, AnnotationEnd],
+            None | AnnotationEnd,
             self._filtered_element(
                 "descendant::office:annotation-end", position, office_name=name
             ),
@@ -316,7 +316,7 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
             raise ValueError("Can't find end tag: no parent available")
         body: Body | Element = self.document_body or parent
         if hasattr(body, "get_annotation_end"):
-            return cast(Union[None, AnnotationEnd], body.get_annotation_end(name=name))
+            return cast(None | AnnotationEnd, body.get_annotation_end(name=name))
         return None
 
     def get_annotated(
@@ -452,7 +452,7 @@ class AnnotationEnd(MDTail, Element):
             )  # pragma: nocover
         body: Body | Element = self.document_body or parent
         if hasattr(body, "get_annotation"):  # pragma: nocover
-            return cast(Union[None, Annotation], body.get_annotation(name=name))
+            return cast(None | Annotation, body.get_annotation(name=name))
         return None  # pragma: nocover
 
     @property
