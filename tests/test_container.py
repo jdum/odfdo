@@ -1584,3 +1584,33 @@ def test_process_embedded_images_no_binary_data():
     # No images processed
     assert result == 0
     assert image_parts == {}
+
+
+def test_process_fill_images_invalid_base64():
+    """Test _process_fill_images handles invalid base64 data."""
+    container = Container()
+
+    # Create content root with a fill-image containing invalid base64
+    ns_office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+
+    content_root = Element(f"{{{ns_office}}}document-content")
+    body = SubElement(content_root, f"{{{ns_office}}}body")
+    text = SubElement(body, f"{{{ns_office}}}text")
+
+    # Add a fill-image with invalid base64
+    fill_img = SubElement(text, f"{{{ns_draw}}}fill-image")
+    binary_data = SubElement(fill_img, f"{{{ns_office}}}binary-data")
+    binary_data.text = "!!!invalid_base64!!!"
+
+    styles_root = Element(f"{{{ns_office}}}document-styles")
+    image_parts: dict[str, bytes] = {}
+
+    # Should not raise, just print warning and continue
+    result = container._process_fill_images(
+        content_root, styles_root, image_parts, 0, "{http://www.w3.org/1999/xlink}"
+    )
+
+    # Counter not incremented due to error
+    assert result == 0
+    assert image_parts == {}
