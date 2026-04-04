@@ -2918,3 +2918,15 @@ def test_do_backup_rmtree_oserror(tmp_path, capsys):
 
     captured = capsys.readouterr()
     assert "Warning: forced rmtree error" in captured.err
+
+
+def test_do_unlink_oserror(tmp_path, capsys):
+    """Test _do_unlink handles OSError during rmtree."""
+    target = tmp_path / "test.folder"
+    target.mkdir()
+
+    with patch("shutil.rmtree", side_effect=OSError("forced error")):
+        Container._do_unlink(target)
+
+    captured = capsys.readouterr()
+    assert "Warning: forced error" in captured.err
