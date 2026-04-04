@@ -1581,10 +1581,10 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             if read_cell is None:
                 raise ValueError
             cell = read_cell
-            if not keep_repeated:
-                repeated = cell.repeated or 1
-                if repeated >= 2:
-                    cell.repeated = None
+            if not keep_repeated and cell.get_attribute(
+                "table:number-columns-repeated"
+            ):
+                cell._set_repeated(None)
         cell.x = x
         cell.y = y
         return cell
