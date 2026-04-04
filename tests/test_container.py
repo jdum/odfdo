@@ -293,9 +293,6 @@ def test_manifest_rdf_3(tmp_path, samples):
     assert content2 == content
 
 
-# New tests for improved coverage
-
-
 def test_open_file_not_found():
     """Test that opening a non-existent file raises FileNotFoundError."""
     container = Container()
@@ -1936,6 +1933,86 @@ def test_save_zip_missing_mimetype():
     buffer = io.BytesIO()
     with pytest.raises(ValueError, match="Mimetype is not defined"):
         container._save_zip(buffer)
+
+
+def test_save_zip_missing_manifest():
+    """Test _save_zip warns when manifest is missing."""
+    container = Container()
+    container._Container__parts["mimetype"] = b"text"
+    container._Container__parts[ODF_CONTENT] = b"<content/>"
+    # manifest is missing
+
+    buffer = io.BytesIO()
+    # Should print warning but succeed
+    container._save_zip(buffer)
+
+    # Check that it is a valid zip
+    with zipfile.ZipFile(buffer) as zf:
+        assert "mimetype" in zf.namelist()
+        assert ODF_CONTENT in zf.namelist()
+
+
+def test_save_zip_missing_standard_parts():
+    """Test _save_zip warns when standard XML parts are missing."""
+    container = Container()
+    container._Container__parts["mimetype"] = b"text"
+    container._Container__parts[ODF_MANIFEST] = b"<manifest/>"
+    # ODF_CONTENT, ODF_META, etc are missing
+
+    buffer = io.BytesIO()
+    # Should print warnings but succeed
+    container._save_zip(buffer)
+
+    with zipfile.ZipFile(buffer) as zf:
+        assert "mimetype" in zf.namelist()
+        assert ODF_MANIFEST in zf.namelist()
+
+
+def test_save_zip_deleted_parts():
+    """Test _save_zip skips deleted parts."""
+    container = Container()
+    container._Container__parts["mimetype"] = b"text"
+    container._Container__parts[ODF_MANIFEST] = b"<manifest/>"
+    container._Container__parts[ODF_CONTENT] = b"<content/>"
+    # Mark a part as deleted
+    container._Container__parts["deleted.txt"] = None  # type: ignore
+
+    buffer = io.BytesIO()
+    container._save_zip(buffer)
+
+    with zipfile.ZipFile(buffer) as zf:
+        assert "deleted.txt" not in zf.namelist()
+        assert ODF_CONTENT in zf.namelist()
+
+
+def test_save_zip_xml_part_none():
+    """Test _save_zip skips XML parts set to None."""
+    container = Container()
+    container._Container__parts["mimetype"] = b"text"
+    container._Container__parts[ODF_MANIFEST] = b"<manifest/>"
+    # Set standard XML part to None
+    container._Container__parts[ODF_CONTENT] = None  # type: ignore
+
+    buffer = io.BytesIO()
+    container._save_zip(buffer)
+
+    with zipfile.ZipFile(buffer) as zf:
+        assert ODF_CONTENT not in zf.namelist()
+
+
+def test_save_zip_manifest_none():
+    """Test _save_zip skips manifest if set to None."""
+    container = Container()
+    container._Container__parts["mimetype"] = b"text"
+    container._Container__parts[ODF_CONTENT] = b"<content/>"
+    # Set manifest to None
+    container._Container__parts[ODF_MANIFEST] = None  # type: ignore
+
+    buffer = io.BytesIO()
+    container._save_zip(buffer)
+
+    with zipfile.ZipFile(buffer) as zf:
+        assert ODF_MANIFEST not in zf.namelist()
 
 
 def test_save_folder_skips_none_data(tmp_path):
