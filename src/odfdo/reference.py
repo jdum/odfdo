@@ -197,16 +197,15 @@ class ReferenceMixin(Element):
                 f"| descendant::text:reference-mark"
                 f'[@text:name="{name}"]'
             )
-            return self._filtered_element(
-                request,
-                position=0,
-            )  # type: ignore[return-value]
-        request = (
-            "descendant::text:reference-mark-start | descendant::text:reference-mark"
-        )
+            position = 0
+        else:
+            request = "descendant::text:reference-mark-start | descendant::text:reference-mark"
         return cast(
             None | ReferenceMark | ReferenceMarkStart,
-            self._filtered_element(request, position),
+            self._filtered_element(
+                request,
+                position=position,
+            ),
         )
 
     def get_references(self, name: str | None = None) -> list[Reference]:
@@ -219,10 +218,9 @@ class ReferenceMixin(Element):
             list[Reference]: A list of `Reference` instances.
         """
         if name is None:
-            return self._filtered_elements(
-                "descendant::text:reference-ref",
-            )  # type: ignore[return-value]
-        request = f'descendant::text:reference-ref[@text:ref-name="{name}"]'
+            request = "descendant::text:reference-ref"
+        else:
+            request = f'descendant::text:reference-ref[@text:ref-name="{name}"]'
         return cast(list[Reference], self._filtered_elements(request))
 
 
@@ -490,9 +488,7 @@ class ReferenceMarkStart(Element):
             Element | list | str | None: The referenced content in the specified format.
         """
         if self.parent is None:
-            raise ValueError(
-                "Reference need some upper document part"
-            )  # pragma: nocover
+            raise ValueError("Reference need some upper document part")
         body: Body | Element = self.document_body or self.parent
         if hasattr(body, "get_reference_mark_end"):
             end = body.get_reference_mark_end(name=self.name)
@@ -527,16 +523,16 @@ class ReferenceMarkStart(Element):
                 is preserved.
         """
         if child is not None:  # act like normal delete
-            return super().delete(child, keep_tail)  # pragma: nocover
+            return super().delete(child, keep_tail)
         name = self.name
         if self.parent is None:
-            raise ValueError("Can't delete the root element")  # pragma: nocover
+            raise ValueError("Can't delete the root element")
         body: Body | Element = self.document_body or self.parent
         if hasattr(body, "get_reference_mark_end"):
             ref_end = body.get_reference_mark_end(name=name)
         else:
             ref_end = None
-        if ref_end:  # pragma: nocover
+        if ref_end:
             ref_end.delete()
         # act like normal delete
         return super().delete()
