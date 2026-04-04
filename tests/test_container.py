@@ -2015,6 +2015,31 @@ def test_save_zip_manifest_none():
         assert ODF_MANIFEST not in zf.namelist()
 
 
+def test_save_zip_mimetype_writestr_error(capsys):
+    """Test _save_zip handles ValueError during mimetype write."""
+    container = Container()
+    container.set_part("mimetype", b"application/vnd.oasis.opendocument.text")
+    container.set_part(ODF_MANIFEST, b"<manifest/>")
+    container.set_part(ODF_CONTENT, b"<content/>")
+
+    with patch("odfdo.container.ZipFile") as mock_zip:
+        mock_zf = mock_zip.return_value.__enter__.return_value
+
+        # To avoid failure on the second attempt in the "Everything else" loop,
+        # raise only when ZIP_STORED is used (which is only for mimetype).
+        def side_effect(name, data, compress_type=None):
+            if name == "mimetype" and compress_type == zipfile.ZIP_STORED:
+                raise ValueError("forced error")
+            return None
+
+        mock_zf.writestr.side_effect = side_effect
+
+        container._save_zip(io.BytesIO())
+
+    captured = capsys.readouterr()
+    assert "Warning: Missing 'mimetype'" in captured.err
+
+
 def test_save_folder_skips_none_data(tmp_path):
     """Test _save_folder skips parts with None data (deleted parts)."""
     container = Container()
