@@ -2937,7 +2937,7 @@ def test_clean_save_target_none():
     """Test _clean_save_target returns self.path if target is None."""
     container = Container()
     container.path = Path("current/path.odt")
-    assert container._clean_save_target(None) == "current/path.odt"
+    assert Path(container._clean_save_target(None)) == Path("current/path.odt")
 
 
 def test_clean_save_target_trailing_sep():
@@ -3004,3 +3004,45 @@ def test_save_as_xml_suffix_fix():
         container._save_as_xml("test.txt", False)
         args, _ = mock_save.call_args
         assert str(args[0]) == "test.fodt"
+
+
+def test_save_as_folder_invalid_target():
+    """Test _save_as_folder raises TypeError for BytesIO."""
+    container = Container()
+    with pytest.raises(TypeError, match="requires a folder name"):
+        container._save_as_folder(io.BytesIO(), False)
+
+
+def test_save_as_folder_success(tmp_path, samples):
+    """Test _save_as_folder success path."""
+    container = Container()
+    container.open(samples("example.odt"))
+    target = tmp_path / "saved_folder"
+    # _save_as_folder will append .folder if missing
+    container._save_as_folder(target, backup=False)
+    assert (tmp_path / "saved_folder.folder").is_dir()
+    assert (tmp_path / "saved_folder.folder" / "mimetype").exists()
+
+
+def test_save_as_folder_already_has_ext(tmp_path, samples):
+    """Test _save_as_folder when target already ends with .folder."""
+    container = Container()
+    container.open(samples("example.odt"))
+    target = tmp_path / "saved_folder.folder"
+    container._save_as_folder(target, backup=False)
+    assert target.is_dir()
+    assert (target / "mimetype").exists()
+
+
+def test_save_as_folder_with_backup(tmp_path, samples):
+    """Test _save_as_folder with backup=True."""
+    container = Container()
+    container.open(samples("example.odt"))
+    target = tmp_path / "saved_folder.folder"
+    target.mkdir()
+    (target / "old").write_text("old")
+    container._save_as_folder(target, backup=True)
+    assert (tmp_path / "saved_folder.backup.folder").is_dir()
+    assert (tmp_path / "saved_folder.backup.folder" / "old").exists()
+    assert target.is_dir()
+    assert not (target / "old").exists()
