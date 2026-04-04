@@ -3010,7 +3010,7 @@ class Element(MDBase):
                 recognized odf_style.
         """
         if isinstance(name_or_element, Element):
-            name = self.get_attribute("style:name")
+            name = name_or_element.get_attribute("style:name")
             if name is not None:
                 return name_or_element  # type: ignore[return-value]
             else:
@@ -3027,13 +3027,21 @@ class Element(MDBase):
                 display_name=display_name,
                 family=family,
             )  # type: ignore[return-value]
-        else:
+        # family is empty
+        if style_name:
+            result = self._filtered_element(tagname, 0, style_name=style_name)
+            if result:
+                return result  # type: ignore[return-value]
             return self._filtered_element(
-                tagname,
-                0,
-                draw_name=style_name or display_name,
-                family=family,
+                tagname, 0, draw_name=style_name
             )  # type: ignore[return-value]
+
+        if display_name:
+            return self._filtered_element(
+                tagname, 0, display_name=display_name
+            )  # type: ignore[return-value]
+
+        return self._filtered_element(tagname, 0)  # type: ignore[return-value]
 
     def _filtered_element(
         self,
