@@ -23,6 +23,7 @@
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 import base64
 import io
+import os
 import shutil
 import zipfile
 from os.path import isfile, join
@@ -2930,3 +2931,24 @@ def test_do_unlink_oserror(tmp_path, capsys):
 
     captured = capsys.readouterr()
     assert "Warning: forced error" in captured.err
+
+
+def test_clean_save_target_none():
+    """Test _clean_save_target returns self.path if target is None."""
+    container = Container()
+    container.path = Path("current/path.odt")
+    assert container._clean_save_target(None) == "current/path.odt"
+
+
+def test_clean_save_target_trailing_sep():
+    """Test _clean_save_target removes trailing separators."""
+    container = Container()
+    target = f"some/path{os.sep}"
+    assert container._clean_save_target(target) == "some/path"
+
+
+def test_clean_save_target_folder_ext():
+    """Test _clean_save_target removes .folder extension."""
+    container = Container()
+    assert container._clean_save_target("my_doc.folder") == "my_doc"
+    assert container._clean_save_target("my_doc.folder.folder") == "my_doc"
