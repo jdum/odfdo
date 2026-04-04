@@ -791,9 +791,9 @@ class Document(MDDocument):
         return clone
 
     def _check_manifest_rdf(self) -> None:
-        manifest = self.manifest
         if not self.container:
             return
+        manifest = self.manifest
         parts = self.container.parts
         if manifest.get_media_type(ODF_MANIFEST_RDF):
             if ODF_MANIFEST_RDF not in parts:
@@ -839,6 +839,8 @@ class Document(MDDocument):
             raise ValueError("Empty Container")
         if packaging not in PACKAGING:
             raise ValueError(f'Packaging of type "{packaging}" is not supported')
+        if target is None and self.path is None:
+            raise ValueError("Saving a document without path requires a target")
         # Some advertising
         self.meta.set_generator_default()
         # Synchronize data with container
@@ -979,6 +981,8 @@ class Document(MDDocument):
             The parent `StyleBase`, or `None` if the style
             has no parent or the parent style cannot be found.
         """
+        if style is None:
+            return None
         family = style.family
         if family is None:
             return None
@@ -997,7 +1001,11 @@ class Document(MDDocument):
             The list `StyleBase` object, or `None` if the style
             has no associated list style or it cannot be found.
         """
-        list_style_name = style.list_style_name  # type: ignore[attr-defined]
+        if style is None:
+            return None
+        if not hasattr(style, "list_style_name"):
+            return None
+        list_style_name = style.list_style_name
         if not list_style_name:
             return None
         return cast(None | StyleBase, self.get_style("list", list_style_name))
@@ -1330,6 +1338,17 @@ class Document(MDDocument):
         document. Then, it deletes all supposedly orphaned styles. Default
         styles are not deleted.
 
+        In the ODF standard, a "default" style is explicitly represented by
+        the <style:default-style> element (see ODF 1.3 Part 3, Section 3.5).
+        These elements provide default formatting properties for an entire
+        style family (like paragraphs or tables) when no other style is
+        applied.
+
+        Here, these default styles are identified by the fact that they do
+        not have a name attribute. While regular common styles or automatic
+        styles use the <style:style> element and require a style:name
+        attribute, <style:default-style> only has a style:family attribute.
+
         Returns:
             The number of deleted styles.
         """
@@ -1351,8 +1370,8 @@ class Document(MDDocument):
                 name = style.name or ""  # type: ignore[union-attr]
             except AttributeError:
                 continue
-                # Don't delete default styles
-            if name is None:
+            # Don't delete default styles or styles without name
+            if not name:
                 continue
             # elif type(style) is odf_master_page:
             #    # Don't suppress header and footer, just styling was removed
