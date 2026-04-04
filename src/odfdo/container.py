@@ -1546,7 +1546,7 @@ class Container:
         path = Path(target)
         if not path.exists():
             return
-        back_file = Path(path.stem + ".backup" + path.suffix)
+        back_file = path.parent / (path.stem + ".backup" + path.suffix)
         if back_file.is_dir():
             try:
                 shutil.rmtree(back_file)
