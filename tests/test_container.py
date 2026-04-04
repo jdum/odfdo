@@ -2829,3 +2829,36 @@ def test_xml_content_form_no_image_data():
     xml = container._xml_content()
     assert b"form:button" in xml
     assert b"office:binary-data" not in xml
+
+
+def test_mimetype_getter_bytes():
+    """Test mimetype getter returns string from bytes."""
+    container = Container()
+    container.mimetype = b"application/vnd.oasis.opendocument.text"
+    assert container.mimetype == "application/vnd.oasis.opendocument.text"
+
+
+def test_mimetype_getter_empty():
+    """Test mimetype getter returns empty string on failure."""
+    container = Container()
+    # No mimetype part set
+    assert container.mimetype == ""
+
+    # mimetype part is not bytes
+    ns_text = "urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+    container.set_part("mimetype", Element(f"{{{ns_text}}}p"))  # type: ignore
+    assert container.mimetype == ""
+
+
+def test_mimetype_setter_accept_bytes():
+    """Test mimetype setter accepts bytes."""
+    container = Container()
+    container.mimetype = b"test/mimetype"
+    assert container.get_part("mimetype") == b"test/mimetype"
+
+
+def test_mimetype_setter_type_error():
+    """Test mimetype setter raises TypeError for invalid types."""
+    container = Container()
+    with pytest.raises(TypeError, match='Wrong mimetype "123"'):
+        container.mimetype = 123  # type: ignore
