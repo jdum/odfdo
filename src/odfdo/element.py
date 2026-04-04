@@ -2798,7 +2798,7 @@ class Element(MDBase):
             list[TextChange]: A list of TextChange instances representing deletions.
         """
         return self._filtered_elements(
-            "descendant::text:text:change",
+            "descendant::text:change",
         )  # type: ignore[return-value]
 
     def get_text_change_deletion(
