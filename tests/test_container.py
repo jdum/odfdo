@@ -1905,6 +1905,28 @@ def test_get_all_zip_part_bad_zipfile(tmp_path):
     assert len(container._Container__parts) == 0
 
 
+def test_get_zip_part_no_path():
+    """Test _get_zip_part raises ValueError when path is None."""
+    container = Container()
+    # path is None by default
+    with pytest.raises(ValueError, match="Document path is not defined"):
+        container._get_zip_part("content.xml")
+
+
+def test_get_zip_part_bad_zipfile(tmp_path):
+    """Test _get_zip_part handles BadZipFile exception."""
+    # Create a file that is not a valid zip
+    bad_zip_path = tmp_path / "not_a_zip.odt"
+    bad_zip_path.write_text("This is not a zip file")
+
+    container = Container()
+    container.path = bad_zip_path
+
+    # Should not raise, just return None
+    result = container._get_zip_part("content.xml")
+    assert result is None
+
+
 def test_save_zip_missing_mimetype():
     """Test _save_zip raises ValueError when mimetype is missing."""
     container = Container()
