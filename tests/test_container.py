@@ -2862,3 +2862,59 @@ def test_mimetype_setter_type_error():
     container = Container()
     with pytest.raises(TypeError, match='Wrong mimetype "123"'):
         container.mimetype = 123  # type: ignore
+
+
+def test_do_backup_exists(tmp_path):
+    """Test _do_backup moves file to backup name."""
+    target = tmp_path / "test.odt"
+    target.write_text("original")
+    Container._do_backup(target)
+    assert not target.exists()
+    backup = tmp_path / "test.backup.odt"
+    assert backup.exists()
+    assert backup.read_text() == "original"
+
+
+def test_do_backup_not_exists(tmp_path):
+    """Test _do_backup does nothing if target doesn't exist."""
+    target = tmp_path / "nonexistent.odt"
+    Container._do_backup(target)
+    assert not (tmp_path / "test.backup.odt").exists()
+
+
+def test_do_backup_back_file_is_dir(tmp_path):
+    """Test _do_backup removes backup directory before moving."""
+    target = tmp_path / "test.odt"
+    target.write_text("original")
+    backup = tmp_path / "test.backup.odt"
+    backup.mkdir()
+    Container._do_backup(target)
+    assert not target.exists()
+    assert backup.is_file()
+    assert backup.read_text() == "original"
+
+
+def test_do_backup_oserror(tmp_path, capsys):
+    """Test _do_backup handles OSError during move."""
+    target = tmp_path / "test.odt"
+    target.write_text("original")
+
+    with patch("shutil.move", side_effect=OSError("forced move error")):
+        Container._do_backup(target)
+
+    captured = capsys.readouterr()
+    assert "Warning: forced move error" in captured.err
+
+
+def test_do_backup_rmtree_oserror(tmp_path, capsys):
+    """Test _do_backup handles OSError during rmtree of backup dir."""
+    target = tmp_path / "test.odt"
+    target.write_text("original")
+    backup = tmp_path / "test.backup.odt"
+    backup.mkdir()
+
+    with patch("shutil.rmtree", side_effect=OSError("forced rmtree error")):
+        Container._do_backup(target)
+
+    captured = capsys.readouterr()
+    assert "Warning: forced rmtree error" in captured.err
