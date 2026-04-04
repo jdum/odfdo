@@ -25,6 +25,7 @@ import contextlib
 from typing import Any, ClassVar
 from warnings import warn
 
+from .const import _OFFICE_PREFIX_EXTENSIONS_NAMES, USE_LO_EXTENSIONS
 from .element import Element
 from .style_base import PropDict, StyleBase
 from .style_utils import _expand_properties_dict, _expand_properties_list, _merge_dicts
@@ -176,13 +177,16 @@ class StyleProps(StyleBase):
         allowed = STYLE_ATTRIBUTES.get(area)
         if allowed:
             for key, value in properties.items():
-                if key in allowed:
+                if key in allowed or (
+                    USE_LO_EXTENSIONS
+                    and ":" in key
+                    and key.split(":", 1)[0] in _OFFICE_PREFIX_EXTENSIONS_NAMES
+                ):
                     if isinstance(value, (str, bool, tuple)):
                         properties_element.set_attribute(key, value)
                 else:
                     msg = f"{key!r} property not allowed in <{properties_element.tag}>"
                     warn(msg, stacklevel=2)
-
         else:
             for key, value in properties.items():
                 if isinstance(value, (str, bool, tuple)):

@@ -201,6 +201,11 @@ _OFFICE_PREFIX_EXTENSIONS = [
     b'  xmlns:chartooo="http://openoffice.org/2010/chart"',
 ]
 
+_OFFICE_PREFIX_EXTENSIONS_NAMES = {
+    line.split(b":", 1)[1].split(b"=", 1)[0].decode()
+    for line in _OFFICE_PREFIX_EXTENSIONS
+}
+
 
 def _generate_office_prefix() -> bytes:
     lines = _OFFICE_PREFIX_CORE[:]
