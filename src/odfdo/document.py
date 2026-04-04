@@ -424,7 +424,7 @@ class Document(MDDocument):
         # XML part overwritten
         if cls is not None:
             with suppress(KeyError):
-                self.__xmlparts[path]
+                del self.__xmlparts[path]
         self.container.set_part(path, data)
 
     def del_part(self, path: str) -> None:
