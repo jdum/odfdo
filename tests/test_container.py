@@ -2755,6 +2755,60 @@ def test_get_parts_invalid_packaging():
         container.get_parts()
 
 
+def test_get_part_folder_outdated_cache(tmp_path, samples):
+    """Test get_part() with folder packaging when cache is outdated."""
+    container = Container()
+    container.open(samples("example.odt"))
+    folder_path = tmp_path / "test_folder"
+    container.save(folder_path, packaging=FOLDER)
+
+    # Open the folder
+    folder_container = Container()
+    folder_container.open(tmp_path / "test_folder.folder")
+
+    # Get content.xml to populate cache
+    part1 = folder_container.get_part(ODF_CONTENT)
+
+    # Update the file on disk
+    (tmp_path / "test_folder.folder" / ODF_CONTENT).write_bytes(b"new content")
+
+    # Force the next get_part to think the timestamp has changed
+    # We mock _get_folder_part_timestamp to return a value different from cache
+    current_ts = folder_container._get_folder_part_timestamp(ODF_CONTENT)
+    with patch.object(
+        Container, "_get_folder_part_timestamp", return_value=current_ts + 1
+    ):
+        # get_part should detect timestamp change and reload
+        part2 = folder_container.get_part(ODF_CONTENT)
+
+    assert part2 == b"new content"
+    assert part2 != part1
+
+
+def test_get_folder_part_timestamp_missing_file(tmp_path):
+    """Test _get_folder_part_timestamp() returns -1 for missing files."""
+    container = Container()
+    container.path = tmp_path
+    # File does not exist
+    ts = container._get_folder_part_timestamp("nonexistent.xml")
+    assert ts == -1
+
+
+def test_get_part_xml_not_found(tmp_path):
+    """Test get_part() returns None for missing parts in XML packaging."""
+    flat_odf = b'<?xml version="1.0" encoding="UTF-8"?><office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" office:mimetype="text" office:version="1.2"><office:body><office:text/></office:body></office:document>'
+    path = tmp_path / "test.fodt"
+    path.write_bytes(flat_odf)
+
+    container = Container()
+    container.open(path)
+    assert container._Container__packaging == XML
+
+    # "nonexistent.xml" is not in __parts and it is not a ZIP or FOLDER container
+    result = container.get_part("nonexistent.xml")
+    assert result is None
+
+
 def test_xml_content_form_no_image_data():
     """Test _xml_content form processing when image-data attribute is missing."""
     container = Container()
