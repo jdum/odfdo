@@ -161,10 +161,7 @@ class Styles(XmlPart):
             s for s in self.default_styles if s.family in {"graphic", "paragraph"}
         ]
         for style in styles:
-            props = style.get_properties(area="text") or {}
-            props["language"] = lang
-            props["country"] = country
-            style.set_properties(props, area="text")
+            style.set_properties(area="text", language=lang, country=country)
 
     @property
     def default_language(self) -> str:
