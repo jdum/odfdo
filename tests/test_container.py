@@ -2124,3 +2124,113 @@ def test_encoded_object_no_path():
 
     result = container._encoded_object(obj_elem)
     assert result is None
+
+
+def test_parse_folder_basic(tmp_path):
+    # Setup a folder structure
+    folder = tmp_path / "test.folder"
+    folder.mkdir()
+    (folder / "mimetype").write_text("application/vnd.oasis.opendocument.text")
+    (folder / "content.xml").write_text("<xml/>")
+
+    subfolder = folder / "Pictures"
+    subfolder.mkdir()
+    (subfolder / "image.png").write_bytes(b"fake png")
+
+    container = Container()
+    container.path = folder
+
+    parts = container._parse_folder("")
+
+    assert "mimetype" in parts
+    assert "content.xml" in parts
+    assert "Pictures/image.png" in parts
+    assert len(parts) == 3
+
+
+def test_parse_folder_recursive(tmp_path):
+    folder = tmp_path / "test.folder"
+    folder.mkdir()
+    (folder / "mimetype").write_text("text")
+
+    d1 = folder / "dir1"
+    d1.mkdir()
+    (d1 / "file1").write_text("1")
+
+    d2 = d1 / "dir2"
+    d2.mkdir()
+    (d2 / "file2").write_text("2")
+
+    container = Container()
+    container.path = folder
+
+    parts = container._parse_folder("")
+
+    assert "mimetype" in parts
+    assert "dir1/file1" in parts
+    assert "dir1/dir2/file2" in parts
+    assert len(parts) == 3
+
+
+def test_parse_folder_ignore_hidden(tmp_path):
+    folder = tmp_path / "test.folder"
+    folder.mkdir()
+    (folder / "mimetype").write_text("text")
+    (folder / ".hidden").write_text("hidden")
+
+    sub = folder / "sub"
+    sub.mkdir()
+    (sub / ".hidden_in_sub").write_text("hidden")
+    (sub / "visible").write_text("visible")
+
+    container = Container()
+    container.path = folder
+
+    parts = container._parse_folder("")
+
+    assert "mimetype" in parts
+    assert "sub/visible" in parts
+    assert ".hidden" not in parts
+    assert "sub/.hidden_in_sub" not in parts
+    assert len(parts) == 2
+
+
+def test_parse_folder_leaf_directory(tmp_path):
+    folder = tmp_path / "test.folder"
+    folder.mkdir()
+    (folder / "mimetype").write_text("text")
+
+    empty_dir = folder / "empty_dir"
+    empty_dir.mkdir()
+
+    container = Container()
+    container.path = folder
+
+    parts = container._parse_folder("")
+
+    assert "mimetype" in parts
+    assert "empty_dir/" in parts
+    assert len(parts) == 2
+
+
+def test_parse_folder_complex(tmp_path):
+    folder = tmp_path / "test.folder"
+    folder.mkdir()
+    (folder / "mimetype").write_text("text")
+
+    # Nested empty dirs
+    (folder / "a" / "b" / "c").mkdir(parents=True)
+
+    # Mixed content
+    (folder / "docs").mkdir()
+    (folder / "docs" / "doc1.xml").write_text("doc1")
+    (folder / "docs" / "images").mkdir()
+    (folder / "docs" / "images" / "img1.png").write_bytes(b"img1")
+
+    container = Container()
+    container.path = folder
+
+    parts = container._parse_folder("")
+
+    expected = {"mimetype", "a/b/c/", "docs/doc1.xml", "docs/images/img1.png"}
+    assert set(parts) == expected
