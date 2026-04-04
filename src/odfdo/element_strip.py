@@ -96,10 +96,7 @@ def strip_tags(
     if modified and isinstance(result, list) and default:
         new: Element = Element.from_tag(default)
         for content in result:
-            if isinstance(content, Element):
-                new._Element__append(content)  # type: ignore[attr-defined]
-            else:
-                new.text = content
+            new._Element__append(content)  # type: ignore[attr-defined]
         result = new
     return result
 
@@ -144,7 +141,7 @@ def _strip_tags(
     tail = element_clone.tail
     if not protected and strip and element.tag in strip:
         element_result: list[Element | str] = []
-        if text is not None:
+        if text:
             element_result.append(text)
         for child2 in children:
             element_result.append(child2)
@@ -160,7 +157,7 @@ def _strip_tags(
                 element.set_attribute(key, value)
         except ValueError:
             sys.stderr.write(f"strip_tags(): bad attribute in {element_clone}\n")
-        if text is not None:
+        if text:
             element._Element__append(text)  # type: ignore[attr-defined]
         for child3 in children:
             element._Element__append(child3)  # type: ignore[attr-defined]
