@@ -2277,7 +2277,9 @@ def test_encoded_fill_image_success():
 
     assert result is not None
     assert result.tag == f"{{{ns_draw}}}fill-image"
-    binary_data = result.find(".//{urn:oasis:names:tc:opendocument:xmlns:office:1.0}binary-data")
+    binary_data = result.find(
+        ".//{urn:oasis:names:tc:opendocument:xmlns:office:1.0}binary-data"
+    )
     assert binary_data is not None
     assert base64.standard_b64decode(binary_data.text.strip()) == content
 
@@ -2301,3 +2303,248 @@ def test_encoded_fill_image_with_names():
     assert result is not None
     assert result.get(f"{{{ns_draw}}}name") == "image_name"
     assert result.get(f"{{{ns_draw}}}display-name") == "Display Name"
+
+
+def test_encoded_object_success():
+    """Test _encoded_object with full ODF object structure."""
+    container = Container()
+    ns_draw = "{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}"
+    ns_office = "{urn:oasis:names:tc:opendocument:xmlns:office:1.0}"
+    xlink = "{http://www.w3.org/1999/xlink}"
+
+    elem = Element(f"{ns_draw}object")
+    elem.set(f"{xlink}href", "./Object 1")
+
+    # Mock object parts
+    content_xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">
+        <office:automatic-styles><style:style style:name="P1" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"/></office:automatic-styles>
+        <office:body><office:text><text:p>Object Content</text:p></office:text></office:body>
+    </office:document-content>"""
+
+    styles_xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document-styles xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0">
+        <office:automatic-styles><style:style style:name="S1" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"/></office:automatic-styles>
+    </office:document-styles>"""
+
+    meta_xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document-meta xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0">
+        <office:meta><meta:generator>Test</meta:generator></office:meta>
+    </office:document-meta>"""
+
+    container.set_part("Object 1/content.xml", content_xml)
+    container.set_part("Object 1/styles.xml", styles_xml)
+    container.set_part("Object 1/meta.xml", meta_xml)
+
+    result = container._encoded_object(elem)
+
+    assert result is not None
+    assert result.tag == f"{ns_draw}object"
+    doc = result.find(f"{ns_office}document")
+    assert doc is not None
+    assert doc.get(f"{ns_office}mimetype") == "application/vnd.oasis.opendocument.chart"
+    assert b"Object Content" in tostring(result)
+
+
+def test_encoded_object_no_body():
+    """Test _encoded_object when content.xml has no office:body."""
+    container = Container()
+    ns_draw = "{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}"
+    xlink = "{http://www.w3.org/1999/xlink}"
+
+    elem = Element(f"{ns_draw}object")
+    elem.set(f"{xlink}href", "Object1")
+
+    # content.xml without office:body
+    content_xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">
+        <text:p>Direct Content</text:p>
+    </office:document-content>"""
+
+    container.set_part("Object1/content.xml", content_xml)
+
+    result = container._encoded_object(elem)
+
+    assert result is not None
+    assert b"Direct Content" in tostring(result)
+
+
+def test_encoded_object_errors():
+    """Test _encoded_object handles errors in meta/styles parts."""
+    container = Container()
+    ns_draw = "{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}"
+    xlink = "{http://www.w3.org/1999/xlink}"
+
+    elem = Element(f"{ns_draw}object")
+    elem.set(f"{xlink}href", "Object1")
+
+    content_xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0">
+        <office:body><office:text/></office:body>
+    </office:document-content>"""
+
+    container.set_part("Object1/content.xml", content_xml)
+    # Invalid XML for meta and styles
+    container.set_part("Object1/meta.xml", b"invalid xml")
+    container.set_part("Object1/styles.xml", b"invalid xml")
+
+    # Should not raise exception
+    result = container._encoded_object(elem)
+    assert result is not None
+
+
+def test_encoded_object_invalid_content_xml():
+    """Test _encoded_object returns None if content.xml is invalid."""
+    container = Container()
+    ns_draw = "{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}"
+    xlink = "{http://www.w3.org/1999/xlink}"
+
+    elem = Element(f"{ns_draw}object")
+    elem.set(f"{xlink}href", "Object1")
+
+    container.set_part("Object1/content.xml", b"invalid xml")
+
+    result = container._encoded_object(elem)
+    assert result is None
+
+
+def test_encoded_object_no_body_with_auto_styles():
+    """Test _encoded_object when content.xml has no office:body but has automatic-styles."""
+    container = Container()
+    ns_draw = "{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}"
+    xlink = "{http://www.w3.org/1999/xlink}"
+
+    elem = Element(f"{ns_draw}object")
+    elem.set(f"{xlink}href", "Object1")
+
+    # content.xml without office:body but WITH office:automatic-styles
+    content_xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0">
+        <office:automatic-styles><style:style style:name="P1"/></office:automatic-styles>
+        <office:something-else/>
+    </office:document-content>"""
+
+    container.set_part("Object1/content.xml", content_xml)
+
+    result = container._encoded_object(elem)
+
+    assert result is not None
+    # Verify office:something-else is in body, but automatic-styles is not (it should be before body)
+    res_str = tostring(result).decode()
+    assert "something-else" in res_str
+    # Find office:body in the result
+    body_start = res_str.find("<office:body")
+    auto_style_start = res_str.find("<office:automatic-styles")
+    assert auto_style_start < body_start
+
+
+def test_encoded_object_styles_no_auto():
+    """Test _encoded_object when styles.xml exists but has no automatic-styles."""
+    container = Container()
+    ns_draw = "{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}"
+    xlink = "{http://www.w3.org/1999/xlink}"
+
+    elem = Element(f"{ns_draw}object")
+    elem.set(f"{xlink}href", "Object1")
+
+    container.set_part(
+        "Object1/content.xml",
+        b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0">
+        <office:body><office:text/></office:body>
+    </office:document-content>""",
+    )
+
+    # styles.xml without automatic-styles
+    container.set_part(
+        "Object1/styles.xml",
+        b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document-styles xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0">
+        <office:master-styles/>
+    </office:document-styles>""",
+    )
+
+    result = container._encoded_object(elem)
+    assert result is not None
+    assert b"automatic-styles" not in tostring(result)
+
+
+def test_encoded_object_content_not_in_parts():
+    """Test _encoded_object returns None when content.xml is missing."""
+    container = Container()
+    ns_draw = "{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}"
+    xlink = "{http://www.w3.org/1999/xlink}"
+
+    elem = Element(f"{ns_draw}object")
+    elem.set(f"{xlink}href", "MissingObject")
+
+    # MissingObject/content.xml is NOT in parts
+    result = container._encoded_object(elem)
+    assert result is None
+
+
+def test_encoded_object_no_body_mixed_children():
+    """Test _encoded_object when office:body is missing and it has mixed children."""
+    container = Container()
+    ns_draw = "{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}"
+    xlink = "{http://www.w3.org/1999/xlink}"
+
+    elem = Element(f"{ns_draw}object")
+    elem.set(f"{xlink}href", "Object1")
+
+    # content.xml without office:body, with automatic-styles and other children
+    content_xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0">
+        <office:automatic-styles/>
+        <office:meta/>
+        <office:settings/>
+    </office:document-content>"""
+
+    container.set_part("Object1/content.xml", content_xml)
+
+    result = container._encoded_object(elem)
+
+    assert result is not None
+    res_str = tostring(result).decode()
+    # The body should contain meta and settings, but NOT automatic-styles (which is outside body)
+    # Find office:body
+    body_content = res_str.split("<office:body")[1].split("</office:body>")[0]
+    assert "office:meta" in body_content
+    assert "office:settings" in body_content
+    assert "office:automatic-styles" not in body_content
+
+
+def test_encoded_object_duplicate_auto_styles():
+    """Test _encoded_object with duplicate automatic-styles to hit the skip logic.
+
+    The first automatic-styles is moved to obj_doc.
+    The second one remains in content_doc and should be skipped by the loop.
+    """
+    container = Container()
+    ns_draw = "{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}"
+    xlink = "{http://www.w3.org/1999/xlink}"
+
+    elem = Element(f"{ns_draw}object")
+    elem.set(f"{xlink}href", "Object1")
+
+    # content.xml with TWO automatic-styles and no body
+    content_xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0">
+        <office:automatic-styles/>
+        <office:automatic-styles/>
+        <office:meta/>
+    </office:document-content>"""
+
+    container.set_part("Object1/content.xml", content_xml)
+
+    result = container._encoded_object(elem)
+
+    assert result is not None
+    res_str = tostring(result).decode()
+    # The body should contain meta, but NOT the second automatic-styles
+    body_content = res_str.split("<office:body")[1].split("</office:body>")[0]
+    assert "office:meta" in body_content
+    assert "office:automatic-styles" not in body_content
+    # The first one should be outside body
+    assert res_str.count("office:automatic-styles") == 1
+    assert res_str.find("<office:automatic-styles") < res_str.find("<office:body")
