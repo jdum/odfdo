@@ -2952,3 +2952,55 @@ def test_clean_save_target_folder_ext():
     container = Container()
     assert container._clean_save_target("my_doc.folder") == "my_doc"
     assert container._clean_save_target("my_doc.folder.folder") == "my_doc"
+
+
+def test_save_as_xml_invalid_target():
+    """Test _save_as_xml raises TypeError for invalid types."""
+    container = Container()
+    with pytest.raises(TypeError, match="requires a path name"):
+        container._save_as_xml(123, False)  # type: ignore
+
+
+def test_save_as_xml_bytesio():
+    """Test _save_as_xml with BytesIO target."""
+    container = Container()
+    container.mimetype = "application/vnd.oasis.opendocument.text"
+    container.set_part(
+        ODF_CONTENT,
+        b'<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"/>',
+    )
+    buffer = io.BytesIO()
+    # No backup for BytesIO
+    container._save_as_xml(buffer, backup=False)
+    assert buffer.getvalue().startswith(b"<?xml")
+
+
+def test_save_as_xml_with_backup(tmp_path):
+    """Test _save_as_xml with backup=True."""
+    target = tmp_path / "test.fodt"
+    target.write_text("original content")
+
+    container = Container()
+    container.mimetype = "application/vnd.oasis.opendocument.text"
+    container.set_part(
+        ODF_CONTENT,
+        b'<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"/>',
+    )
+
+    container._save_as_xml(target, backup=True)
+
+    assert (tmp_path / "test.backup.fodt").exists()
+    assert (tmp_path / "test.backup.fodt").read_text() == "original content"
+    assert target.read_text().startswith("<?xml")
+
+
+def test_save_as_xml_suffix_fix():
+    """Test _save_as_xml fixes suffix for flat XML."""
+    container = Container()
+    container.mimetype = "application/vnd.oasis.opendocument.text"
+
+    # We mock _save_xml to check the target path
+    with patch.object(container, "_save_xml") as mock_save:
+        container._save_as_xml("test.txt", False)
+        args, _ = mock_save.call_args
+        assert str(args[0]) == "test.fodt"
