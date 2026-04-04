@@ -2548,3 +2548,185 @@ def test_encoded_object_duplicate_auto_styles():
     # The first one should be outside body
     assert res_str.count("office:automatic-styles") == 1
     assert res_str.find("<office:automatic-styles") < res_str.find("<office:body")
+
+
+def test_xml_content_default_mimetype():
+    """Test _xml_content uses default mimetype when missing."""
+    container = Container()
+    container._Container__parts["mimetype"] = None  # type: ignore
+    container.set_part(
+        ODF_CONTENT,
+        b'<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"/>',
+    )
+
+    xml = container._xml_content()
+    assert b'office:mimetype="application/vnd.oasis.opendocument.text"' in xml
+
+
+def test_xml_content_missing_part_warning(capsys):
+    """Test _xml_content warns when a standard part is missing."""
+    container = Container()
+    container.set_part("mimetype", b"text")
+    container.set_part(
+        ODF_CONTENT,
+        b'<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"/>',
+    )
+    # ODF_META, ODF_SETTINGS, ODF_STYLES are missing
+
+    container._xml_content()
+    captured = capsys.readouterr()
+    assert "Warning: Missing 'meta.xml'" in captured.err
+    assert "Warning: Missing 'settings.xml'" in captured.err
+    assert "Warning: Missing 'styles.xml'" in captured.err
+
+
+def test_xml_content_part_none():
+    """Test _xml_content skips parts set to None."""
+    container = Container()
+    container.set_part("mimetype", b"text")
+    container.set_part(
+        ODF_CONTENT,
+        b'<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"/>',
+    )
+    container.set_part(ODF_META, None)  # type: ignore
+
+    xml = container._xml_content()
+    assert b"office:document-meta" not in xml
+
+
+def test_xml_content_with_already_parsed_part():
+    """Test _xml_content handles parts that are already parsed elements."""
+    container = Container()
+    container.set_part("mimetype", b"text")
+
+    # Create an element instead of bytes
+    ns_office = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    content_elem = Element(f"{{{ns_office}}}document-content")
+    SubElement(content_elem, f"{{{ns_office}}}body")
+
+    container.set_part(ODF_CONTENT, content_elem)  # type: ignore
+
+    xml = container._xml_content()
+    assert b"office:body" in xml
+
+
+def test_xml_content_not_pretty():
+    """Test _xml_content with pretty=False."""
+    container = Container()
+    container.set_part("mimetype", b"text")
+    container.set_part(
+        ODF_CONTENT,
+        b'<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"/>',
+    )
+    xml = container._xml_content(pretty=False)
+    # Lxml might use single or double quotes
+    assert b"<?xml version=" in xml
+    assert b"encoding='UTF-8'?>" in xml or b'encoding="UTF-8"?>' in xml
+    assert b"office:document" in xml
+    # Non-pretty should not have newlines/indentation between elements (mostly)
+    assert b">\n  <" not in xml
+
+
+def test_xml_content_full_processing():
+    """Test _xml_content with all types of processing (images, fill-images, objects, forms)."""
+    container = Container()
+    container.set_part("mimetype", b"text")
+
+    # Content with draw:image, draw:fill-image, draw:object, and form element
+    # Remove comments because pretty_indent crashes on them (it expects .tag to be a string)
+    content_xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document-content
+        xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+        xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0">
+        <office:body>
+            <office:text>
+                <draw:frame><draw:image xlink:href="Pictures/img.png"/></draw:frame>
+                <draw:fill-image xlink:href="Pictures/fill.png"/>
+                <draw:object xlink:href="Object1"/>
+                <form:button form:image-data="Pictures/form.png"/>
+                <form:button/>
+            </office:text>
+        </office:body>
+    </office:document-content>"""
+
+    # Styles with draw:image and draw:fill-image
+    styles_xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document-styles
+        xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+        xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <office:styles>
+            <draw:fill-image xlink:href="Pictures/style_fill.png"/>
+        </office:styles>
+    </office:document-styles>"""
+
+    container.set_part(ODF_CONTENT, content_xml)
+    container.set_part(ODF_STYLES, styles_xml)
+    container.set_part("Pictures/img.png", b"img")
+    container.set_part("Pictures/fill.png", b"fill")
+    container.set_part("Pictures/form.png", b"form")
+    container.set_part("Pictures/style_fill.png", b"style_fill")
+    container.set_part(
+        "Object1/content.xml",
+        b'<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"><office:body><office:text/></office:body></office:document-content>',
+    )
+
+    xml = container._xml_content()
+    assert b"office:binary-data" in xml
+    # 4 elements each have <office:binary-data> and </office:binary-data>
+    assert xml.count(b"office:binary-data") == 8
+
+
+def test_xml_content_processing_none_returns():
+    """Test _xml_content when encoders return None (e.g. missing parts)."""
+    container = Container()
+    container.set_part("mimetype", b"text")
+    content_xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document-content
+        xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+        xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <office:body>
+            <office:text>
+                <draw:frame><draw:image xlink:href="MissingImg"/></draw:frame>
+                <draw:fill-image xlink:href="MissingFill"/>
+                <draw:object xlink:href="MissingObj"/>
+            </office:text>
+        </office:body>
+    </office:document-content>"""
+    container.set_part(ODF_CONTENT, content_xml)
+
+    # We must explicitly set them to None to avoid KeyError, or encoders return None
+    container.set_part("MissingImg", None)  # type: ignore
+    container.set_part("MissingFill", None)  # type: ignore
+    # Object is special, it checks if path/content.xml is in parts
+
+    xml = container._xml_content()
+    assert b"draw:image" in xml
+    assert b"draw:fill-image" in xml
+    assert b"draw:object" in xml
+    assert b"office:binary-data" not in xml
+
+
+def test_xml_content_form_no_image_data():
+    """Test _xml_content form processing when image-data attribute is missing."""
+    container = Container()
+    container.set_part("mimetype", b"text")
+
+    content_xml = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <office:document-content
+        xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+        xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0">
+        <office:body>
+            <office:text>
+                <form:button form:image-data=""/>
+            </office:text>
+        </office:body>
+    </office:document-content>"""
+    container.set_part(ODF_CONTENT, content_xml)
+
+    xml = container._xml_content()
+    assert b"form:button" in xml
+    assert b"office:binary-data" not in xml
