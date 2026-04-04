@@ -2259,3 +2259,45 @@ def test_parse_folder_complex(tmp_path):
 
     expected = {"mimetype", "a/b/c/", "docs/doc1.xml", "docs/images/img1.png"}
     assert set(parts) == expected
+
+
+def test_encoded_fill_image_success():
+    """Test _encoded_fill_image with valid href and content."""
+    container = Container()
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+    xlink = "http://www.w3.org/1999/xlink"
+
+    elem = Element(f"{{{ns_draw}}}fill-image")
+    elem.set(f"{{{xlink}}}href", "./Pictures/test.png")
+
+    content = b"fake image content"
+    container.set_part("Pictures/test.png", content)
+
+    result = container._encoded_fill_image(elem)
+
+    assert result is not None
+    assert result.tag == f"{{{ns_draw}}}fill-image"
+    binary_data = result.find(".//{urn:oasis:names:tc:opendocument:xmlns:office:1.0}binary-data")
+    assert binary_data is not None
+    assert base64.standard_b64decode(binary_data.text.strip()) == content
+
+
+def test_encoded_fill_image_with_names():
+    """Test _encoded_fill_image with name and display-name attributes."""
+    container = Container()
+    ns_draw = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+    xlink = "http://www.w3.org/1999/xlink"
+
+    elem = Element(f"{{{ns_draw}}}fill-image")
+    elem.set(f"{{{xlink}}}href", "Pictures/test.png")
+    elem.set(f"{{{ns_draw}}}name", "image_name")
+    elem.set(f"{{{ns_draw}}}display-name", "Display Name")
+
+    content = b"content"
+    container.set_part("Pictures/test.png", content)
+
+    result = container._encoded_fill_image(elem)
+
+    assert result is not None
+    assert result.get(f"{{{ns_draw}}}name") == "image_name"
+    assert result.get(f"{{{ns_draw}}}display-name") == "Display Name"
