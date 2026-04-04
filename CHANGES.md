@@ -1,5 +1,31 @@
 # Odfdo Release Notes
 
+## [3.22.4] - 2026-04-04
+
+-   Detection of style properties from ODF extensions (LibreOffice loext, etc.) to not issue unwanted warnings.
+-   Small fixes in `Document.delete_styles()`, `Document.set_part()`, `Element.get_text_change_deletions()`, and document's backup.
+-   Improve tests coverage.
+
+### Added
+
+-   Add tests for `Container` module methods: `_save_as_folder`, `_save_as_xml`, `_clean_save_target`, `_do_unlink`, `_do_backup`, `_get_part` on folders, `get_parts`, `_xml_content` edge cases, `_encoded_object`, `_encoded_fill_image`, `_parse_folder`, `_save_zip`, `_get_zip`.
+-   Add edge case test for exception handling in `_save_zip` mimetype write.
+
+### Changed
+
+-   Refactor `Element.get_style()` for improved clarity.
+-   Refactor `table.py` for better code structure.
+-   Refactor `element_strip.py` for improved maintainability.
+-   Refactor `reference.py` for cleaner implementation.
+-   Optimize `set_default_styles_language_country()`.
+
+### Fixed
+
+-   Fix `Document.delete_styles()` to ensure default styles are not deleted.
+-   Fix `Document.set_part()`.
+-   Fix `Element.get_text_change_deletions()` xpath request.
+-   Fix `_do_backup()` to write backup in original directory.
+
 ## [3.22.3] - 2026-03-29
 
 -   Drop Python 3.9 support. A `support/python3.9` branch is maintained for critical fixes.
