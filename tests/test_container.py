@@ -42,6 +42,7 @@ from odfdo.const import (
     ODF_SETTINGS,
     ODF_STYLES,
     ODF_TEXT,
+    XML,
     ZIP,
 )
 from odfdo.container import (
@@ -2708,6 +2709,50 @@ def test_xml_content_processing_none_returns():
     assert b"draw:fill-image" in xml
     assert b"draw:object" in xml
     assert b"office:binary-data" not in xml
+
+
+def test_get_parts_xml_with_path(tmp_path):
+    """Test get_parts() with XML packaging and a defined path."""
+    flat_odf = b'<?xml version="1.0" encoding="UTF-8"?><office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" office:mimetype="text" office:version="1.2"><office:body><office:text/></office:body></office:document>'
+    path = tmp_path / "test.fodt"
+    path.write_bytes(flat_odf)
+
+    container = Container()
+    container.open(path)
+    # Open() should set packaging to XML for .fodt
+    assert container._Container__packaging == XML
+
+    parts = container.get_parts()
+    assert ODF_CONTENT in parts
+    assert "mimetype" in parts
+
+
+def test_get_parts_folder_with_path(tmp_path, samples):
+    """Test get_parts() with FOLDER packaging and a defined path."""
+    container = Container()
+    container.open(samples("example.odt"))
+    folder_path = tmp_path / "test_folder"
+    container.save(folder_path, packaging=FOLDER)
+
+    # Open the folder
+    folder_container = Container()
+    folder_container.open(tmp_path / "test_folder.folder")
+    assert folder_container._Container__packaging == FOLDER
+
+    parts = folder_container.get_parts()
+    assert ODF_CONTENT in parts
+    assert "mimetype" in parts
+
+
+def test_get_parts_invalid_packaging():
+    """Test get_parts() raises ValueError for invalid packaging type."""
+    container = Container()
+    container.path = Path("fake.odt")
+    # Manually set an invalid packaging
+    container._Container__packaging = "INVALID"  # type: ignore
+
+    with pytest.raises(ValueError, match="Unable to provide parts"):
+        container.get_parts()
 
 
 def test_xml_content_form_no_image_data():
