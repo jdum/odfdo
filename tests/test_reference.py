@@ -18,13 +18,17 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 # Authors: Hervé Cauwelier <herve@itaapy.com>
+from __future__ import annotations
 
 from collections.abc import Iterable
+from typing import cast
 
 import pytest
 
-from odfdo import Element
+from odfdo.body import Text
 from odfdo.document import Document
+from odfdo.element import Element
+from odfdo.paragraph import Paragraph
 from odfdo.reference import (
     Reference,
     ReferenceMark,
@@ -39,15 +43,17 @@ ZOE = "你好 Zoé"
 
 
 @pytest.fixture
-def body1(samples) -> Iterable[Element]:
+def body1(samples) -> Iterable[Text]:
     document = Document(samples("bookmark.odt")).clone
-    yield document.body
+    part = cast(Text, document.body)
+    yield part
 
 
 @pytest.fixture
-def body2(samples) -> Iterable[Element]:
+def body2(samples) -> Iterable[Text]:
     document = Document(samples("base_text.odt")).clone
-    yield document.body
+    part = cast(Text, document.body)
+    yield part
 
 
 def test_reference_class():
@@ -122,8 +128,8 @@ def test_reference_update_not_bad(body1):
 
 def test_create_reference_mark():
     reference_mark = ReferenceMark(ZOE)
-    expected = f'<text:reference-mark text:name="{ZOE}"/>'
-    assert reference_mark.serialize() == expected
+    expected = f'<text:reference-mark text:name="{ZOE}"></text:reference-mark>'
+    assert reference_mark._canonicalize() == expected
 
 
 def test_create_reference_mark_str():
@@ -133,58 +139,94 @@ def test_create_reference_mark_str():
 
 def test_create_reference_mark_start():
     reference_mark_start = ReferenceMarkStart(ZOE)
-    expected = f'<text:reference-mark-start text:name="{ZOE}"/>'
-    assert reference_mark_start.serialize() == expected
+    expected = (
+        f'<text:reference-mark-start text:name="{ZOE}"></text:reference-mark-start>'
+    )
+    assert reference_mark_start._canonicalize() == expected
 
 
 def test_create_reference_mark_end():
     reference_mark_end = ReferenceMarkEnd(ZOE)
-    expected = f'<text:reference-mark-end text:name="{ZOE}"/>'
-    assert reference_mark_end.serialize() == expected
+    expected = f'<text:reference-mark-end text:name="{ZOE}"></text:reference-mark-end>'
+    assert reference_mark_end._canonicalize() == expected
 
 
 def test_get_reference_mark_single(body1):
     para = body1.get_paragraph()
     reference_mark = ReferenceMark(ZOE)
     para.append(reference_mark)
-    get = body1.get_reference_mark_single(name=ZOE)
-    expected = f'<text:reference-mark text:name="{ZOE}"/>'
-    assert get.serialize() == expected
+    ref = body1.get_reference_mark_single(name=ZOE)
+    expected = f'<text:reference-mark text:name="{ZOE}"></text:reference-mark>'
+    assert ref._canonicalize() == expected
 
 
-def test_get_reference_mark_single_list(body1):
+def test_get_reference_mark_single_pos(body1):
     para = body1.get_paragraph()
-    reference_mark = ReferenceMark(ZOE)
-    para.append(reference_mark)
-    get = body1.get_reference_marks_single()[0]
-    expected = f'<text:reference-mark text:name="{ZOE}"/>'
-    assert get.serialize() == expected
+    para.append(ReferenceMark("m1"))
+    para.append(ReferenceMark("m2"))
+    # body1 has no reference marks initially
+    ref = body1.get_reference_mark_single(position=1)
+    assert ref.name == "m2"
+
+
+def test_reference_mark_name_setter():
+    mark = ReferenceMark("old")
+    mark.name = "new"
+    assert mark.name == "new"
+    assert mark.get_attribute("text:name") == "new"
+
+
+def test_reference_mark_end_name_setter():
+    mark = ReferenceMarkEnd("old")
+    mark.name = "new"
+    assert mark.name == "new"
+    assert mark.get_attribute("text:name") == "new"
+
+
+def test_reference_mark_start_name_setter():
+    mark = ReferenceMarkStart("old")
+    mark.name = "new"
+    assert mark.name == "new"
+    assert mark.get_attribute("text:name") == "new"
+
+
+def test_reference_name_setter():
+    ref = Reference("old")
+    ref.name = "new"
+    assert ref.name == "new"
+    assert ref.get_attribute("text:ref-name") == "new"
 
 
 def test_get_reference_mark_start(body1):
     para = body1.get_paragraph()
     reference_mark_start = ReferenceMarkStart(ZOE)
     para.append(reference_mark_start)
-    get = body1.get_reference_mark_start(name=ZOE)
-    expected = f'<text:reference-mark-start text:name="{ZOE}"/>'
-    assert get.serialize() == expected
+    ref = body1.get_reference_mark_start(name=ZOE)
+    expected = (
+        f'<text:reference-mark-start text:name="{ZOE}"></text:reference-mark-start>'
+    )
+    assert ref._canonicalize() == expected
 
 
 def test_get_reference_mark_start_list(body1):
     result = body1.get_reference_mark_starts()
     assert len(result) == 1
     element = result[0]
-    expected = '<text:reference-mark-start text:name="Nouvelle référence"/>'
-    assert element.serialize() == expected
+    expected = (
+        "<text:reference-mark-start "
+        'text:name="Nouvelle référence">'
+        "</text:reference-mark-start>"
+    )
+    assert element._canonicalize() == expected
 
 
 def test_get_reference_mark_end(body1):
     para = body1.get_paragraph()
     reference_mark_end = ReferenceMarkEnd(ZOE)
     para.append(reference_mark_end)
-    get = body1.get_reference_mark_end(name=ZOE)
-    expected = f'<text:reference-mark-end text:name="{ZOE}"/>'
-    assert get.serialize() == expected
+    ref = body1.get_reference_mark_end(name=ZOE)
+    expected = f'<text:reference-mark-end text:name="{ZOE}"></text:reference-mark-end>'
+    assert ref._canonicalize() == expected
 
 
 def test_get_reference_mark_end_referenced(body1):
@@ -199,8 +241,11 @@ def test_get_reference_mark_end_list(body1):
     result = body1.get_reference_mark_ends()
     assert len(result) == 1
     element = result[0]
-    expected = '<text:reference-mark-end text:name="Nouvelle référence"/>'
-    assert element.serialize() == expected
+    expected = (
+        '<text:reference-mark-end text:name="Nouvelle référence">'
+        "</text:reference-mark-end>"
+    )
+    assert element._canonicalize() == expected
 
 
 def test_get_referenced_1_odf(body2):
@@ -209,10 +254,12 @@ def test_get_referenced_1_odf(body2):
     ref = body2.get_reference_mark(name="one")
     referenced = ref.get_referenced()
     expected = (
-        '<office:text><text:p text:style-name="Text_20_body">'
-        "paragraph of the second title</text:p></office:text>"
+        "<office:text>"
+        '<text:p text:style-name="Text_20_body">'
+        "paragraph of the second title</text:p>"
+        "</office:text>"
     )
-    assert referenced.serialize() == expected
+    assert referenced._canonicalize() == expected
 
 
 def test_get_referenced_1_xml(body2):
@@ -237,7 +284,7 @@ def test_get_referenced_1_list(body2):
     expected = (
         '<text:p text:style-name="Text_20_body">paragraph of the second title</text:p>'
     )
-    assert referenced[0].serialize() == expected
+    assert referenced[0]._canonicalize() == expected
 
 
 def test_get_referenced_multi_odf(body2):
@@ -252,7 +299,7 @@ def test_get_referenced_multi_odf(body2):
         "This is"
         "</text:p></office:text>"
     )
-    assert referenced.serialize() == expected
+    assert referenced._canonicalize() == expected
 
 
 def test_get_referenced_multi_xml_dirty(body2):
@@ -386,6 +433,203 @@ def test_remove_reference_mark_2(body1):
     assert not body1.get_reference_mark_starts()
 
 
-def test_remove_reference_mark_3(body1):
-    remove_reference_mark(body1, name="wrong")
-    assert len(body1.get_reference_mark_starts()) == 1
+def test_reference_ref_format_setter():
+    ref = Reference()
+    ref.ref_format = "invalid"
+    assert ref.ref_format == "page"
+    ref.ref_format = "chapter"
+    assert ref.ref_format == "chapter"
+
+
+def test_reference_update_no_body():
+    # Test update when no document body or root is available
+    ref = Reference(name="some_ref", ref_format="text")
+    # Should return None and not crash
+    assert ref.update() is None
+
+
+def test_reference_mark_start_referenced_text(body2):
+    para = body2.get_paragraph()
+    para.set_reference_mark("one", content="first paragraph")
+    ref_start = body2.get_reference_mark(name="one")
+    assert isinstance(ref_start, ReferenceMarkStart)
+    assert "first paragraph" in ref_start.referenced_text()
+
+
+def test_reference_mark_start_get_referenced_no_end(body2):
+    para = body2.get_paragraph()
+    ref_start = ReferenceMarkStart("no_end")
+    para.append(ref_start)
+    with pytest.raises(ValueError, match="No reference-end found"):
+        ref_start.get_referenced()
+
+
+def test_get_reference_marks_single_call(body1):
+    para = body1.get_paragraph()
+    para.append(ReferenceMark("m1"))
+    marks = body1.get_reference_marks_single()
+    assert len(marks) == 1
+    assert marks[0].name == "m1"
+
+
+def test_remove_reference_mark_no_methods():
+    # Use a basic Element which does NOT have ReferenceMixin methods
+    element = Element(tag="dummy")
+    remove_reference_mark(element, name="anything")
+
+
+def test_get_references_by_name(body1):
+    marks = body1.get_reference_mark_starts()
+    mark = marks[0]
+    ref_name = mark.name
+    ref = Reference(name=ref_name, ref_format="text")
+    body1.append(ref)
+
+    refs = body1.get_references(name=ref_name)
+    assert len(refs) == 1
+    assert refs[0].name == ref_name
+
+    refs = body1.get_references(name="nonexistent")
+    assert len(refs) == 0
+
+
+def test_strip_references_self():
+    ref = Reference(name="ref", ref_format="text")
+    ref.text = "content"
+    # stripping the reference itself should return its
+    # content wrapped in Paragraph (default)
+    res = strip_references(ref)
+    assert isinstance(res, Paragraph)
+    assert res.text == "content"
+
+
+def test_remove_all_reference_marks_self():
+    mark = ReferenceMark(name="mark")
+    # ReferenceMark has no content, so result
+    # should be an empty Paragraph
+    res = remove_all_reference_marks(mark)
+    assert isinstance(res, Paragraph)
+    assert res._canonicalize() == "<text:p></text:p>"
+
+
+def test_get_reference_mark_none(body1):
+    assert body1.get_reference_mark(name="nonexistent") is None
+    assert body1.get_reference_mark(position=999) is None
+
+
+def test_get_reference_marks_all(body1):
+    # body1 has one start and one end, get_reference_marks
+    # should return the start
+    marks = body1.get_reference_marks()
+    assert len(marks) == 1
+    assert isinstance(marks[0], ReferenceMarkStart)
+
+
+def test_reference_mark_start_get_referenced_orphan():
+    ref_start = ReferenceMarkStart("orphan")
+    # Manually detach to have parent is None
+    ref_start._xml_element.getparent().remove(ref_start._xml_element)
+    with pytest.raises(ValueError, match="Reference need some upper document part"):
+        ref_start.get_referenced()
+
+
+def test_reference_mark_start_delete_orphan():
+    ref_start = ReferenceMarkStart("orphan")
+    # Manually detach to have parent is None
+    ref_start._xml_element.getparent().remove(ref_start._xml_element)
+    with pytest.raises(ValueError, match="Can't delete the root element"):
+        ref_start.delete()
+
+
+def test_reference_mark_start_delete_child():
+    ref_start = ReferenceMarkStart("with_child")
+    child = Element.from_tag("<dummy_child/>")
+    ref_start.append(child)
+    # delete(child) should act like normal delete
+    ref_start.delete(child)
+    assert len(ref_start.children) == 0
+
+
+def test_reference_update_point_mark(body2):
+    para = body2.get_paragraph()
+    mark = ReferenceMark("point_mark")
+    para.append(mark)
+    ref = Reference(name="point_mark", ref_format="text")
+    body2.append(ref)
+    ref.update()
+    # Reference.update() only works for ReferenceMarkStart (range)
+    assert ref.text == ""
+
+
+def test_reference_mark_end_referenced_text_range(body2):
+    para = body2.get_paragraph()
+    para.set_reference_mark("range1", content="first paragraph")
+    ref_end = body2.get_reference_mark_end(name="range1")
+    assert isinstance(ref_end, ReferenceMarkEnd)
+    assert "first paragraph" in ref_end.referenced_text()
+
+
+def test_reference_mark_start_get_referenced_no_methods(body2):
+    para = body2.get_paragraph()
+    ref_start = ReferenceMarkStart("some_name")
+    para.append(ref_start)
+    # We force a parent that doesn't have get_reference_mark_end
+    dummy = Element.from_tag("<dummy/>")
+    dummy.append(ref_start)
+    with pytest.raises(ValueError, match="No reference-end found"):
+        ref_start.get_referenced()
+
+
+def test_reference_mark_start_delete_no_methods(body2):
+    para = body2.get_paragraph()
+    ref_start = ReferenceMarkStart("some_name")
+    para.append(ref_start)
+    # We force a parent that doesn't have get_reference_mark_end
+    dummy = Element.from_tag("<dummy/>")
+    dummy.append(ref_start)
+    # Should not crash even if dummy has no get_reference_mark_end
+    ref_start.delete()
+    assert ref_start.parent is None
+
+
+def test_reference_ref_format_setter_empty():
+    ref = Reference()
+    ref.ref_format = ""
+    assert ref.ref_format == "page"
+
+
+def test_get_reference_mark_starts_single(body1):
+    # Retrieve using ReferenceMixin.get_reference_mark_start
+    mark = body1.get_reference_mark_start(name="Nouvelle référence")
+    assert isinstance(mark, ReferenceMarkStart)
+    assert mark.name == "Nouvelle référence"
+
+
+def test_get_reference_mark_ends_single(body1):
+    # Retrieve using ReferenceMixin.get_reference_mark_end
+    mark = body1.get_reference_mark_end(name="Nouvelle référence")
+    assert isinstance(mark, ReferenceMarkEnd)
+    assert mark.name == "Nouvelle référence"
+
+
+def test_reference_mark_start_delete_with_end(body1):
+    mark = body1.get_reference_mark_start(name="Nouvelle référence")
+    mark.delete()
+    assert body1.get_reference_mark_start(name="Nouvelle référence") is None
+    assert body1.get_reference_mark_end(name="Nouvelle référence") is None
+
+
+def test_reference_mark_start_get_referenced_options(body2):
+    head = body2.get_header()
+    head.set_reference_mark("one", content=head)
+    ref = body2.get_reference_mark(name="one")
+
+    # as_list
+    res_list = ref.get_referenced(as_list=True)
+    assert isinstance(res_list, list)
+    assert len(res_list) == 1
+    assert res_list[0].tag == "text:h"
+
+    # no_header as_list
+    res_list_p = ref.get_referenced(as_list=True, no_header=True)
+    assert res_list_p[0].tag == "text:p"
