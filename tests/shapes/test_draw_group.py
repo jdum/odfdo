@@ -17,7 +17,6 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -25,6 +24,8 @@ from collections.abc import Iterable
 import pytest
 
 from odfdo import Element
+from odfdo.body import Drawing
+from odfdo.paragraph import Paragraph
 from odfdo.shapes import DrawGroup
 
 
@@ -50,6 +51,27 @@ def group() -> Iterable[DrawGroup]:
     )
     shape.svg_title = "title"
     yield shape
+
+
+@pytest.fixture
+def drawing_container() -> Iterable[Drawing]:
+    container = Drawing()
+    group1 = DrawGroup(name="group1")
+    group1.svg_title = "Title 1"
+    group1.svg_description = "Desc 1"
+    # match content
+    p1 = Paragraph("Text in group 1")
+    group1.append(p1)
+
+    group2 = DrawGroup(name="group2")
+    group2.svg_title = "Title 2"
+    group2.svg_description = "Desc 2"
+    p2 = Paragraph("Content in group 2")
+    group2.append(p2)
+
+    container.append(group1)
+    container.append(group2)
+    yield container
 
 
 def test_drawgroup_minimal():
@@ -128,3 +150,101 @@ def test_drawgroup_complete_16(group):
 
 def test_drawgroup_complete_formatted_text(group):
     assert group.get_formatted_text() == "title\n\n"
+
+
+def test_get_draw_groups_none():
+    container = Drawing()
+    groups = container.get_draw_groups()
+    assert len(groups) == 0
+
+
+def test_get_draw_groups_all(drawing_container):
+    groups = drawing_container.get_draw_groups()
+    assert len(groups) == 2
+    assert groups[0].name == "group1"
+    assert groups[1].name == "group2"
+
+
+def test_get_draw_groups_1(drawing_container):
+    groups = drawing_container.get_draw_groups(title="Title 1")
+    assert len(groups) == 1
+    assert groups[0].name == "group1"
+
+
+def test_get_draw_groups_2(drawing_container):
+    groups = drawing_container.get_draw_groups(description="Desc 2")
+    assert len(groups) == 1
+    assert groups[0].name == "group2"
+
+
+def test_get_draw_groups_desc(drawing_container):
+    groups = drawing_container.get_draw_groups(description="Desc 2")
+    assert len(groups) == 1
+    assert groups[0].name == "group2"
+
+
+def test_get_draw_groups_content(drawing_container):
+    groups = drawing_container.get_draw_groups(content="Text")
+    assert len(groups) == 1
+    assert groups[0].name == "group1"
+
+
+def test_get_draw_group_none():
+    container = Drawing()
+    group = container.get_draw_group()
+    assert group is None
+
+
+def test_get_draw_group_any(drawing_container):
+    group = drawing_container.get_draw_group()
+    assert group.name == "group1"
+
+
+def test_get_draw_group_none_pos(drawing_container):
+    group = drawing_container.get_draw_group(position=999)
+    assert group is None
+
+
+def test_get_draw_group_pos(drawing_container):
+    group = drawing_container.get_draw_group(position=1)
+    assert group.name == "group2"
+
+
+def test_get_draw_group_name_none(drawing_container):
+    group = drawing_container.get_draw_group(name="no name")
+    assert group is None
+
+
+def test_get_draw_group_name(drawing_container):
+    group = drawing_container.get_draw_group(name="group2")
+    assert group.name == "group2"
+
+
+def test_get_draw_group_title_none(drawing_container):
+    group = drawing_container.get_draw_group(title="Title unknown")
+    assert group is None
+
+
+def test_get_draw_group_title(drawing_container):
+    group = drawing_container.get_draw_group(title="Title 1")
+    assert group.name == "group1"
+
+
+def test_get_draw_group_desc_none(drawing_container):
+    group = drawing_container.get_draw_group(description="bad")
+    assert group is None
+
+
+def test_get_draw_group_desc(drawing_container):
+    group = drawing_container.get_draw_group(description="Desc 2")
+    assert group.name == "group2"
+
+
+def test_get_draw_group_content_none(drawing_container):
+    group = drawing_container.get_draw_group(content="unknown content")
+    assert group is None
+
+
+def test_get_draw_group_content(drawing_container):
+    group = drawing_container.get_draw_group(content="Content")
+    assert group.name == "group2"
