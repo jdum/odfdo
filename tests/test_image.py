@@ -19,6 +19,7 @@
 # https://github.com/lpod/lpod-python
 # Authors: Romain Gauthier <romain@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
+from __future__ import annotations
 
 from collections.abc import Iterable
 
@@ -40,18 +41,30 @@ def sample_body(samples) -> Iterable[Element]:
     yield document.body
 
 
-def test__draw_fill_image_class():
+def test_draw_fill_image_class():
     dfi = DrawFillImage()
     assert isinstance(dfi, DrawFillImage)
+
+
+def test_draw_image_as_str():
+    image = DrawFillImage()
+    assert str(image).startswith("()")
 
 
 def test_create_image():
     image = DrawImage(IMG_PATH)
     expected = (
-        f'<draw:image xlink:href="{IMG_PATH}" xlink:type="simple" '
-        'xlink:show="embed" xlink:actuate="onLoad"/>'
+        '<draw:image xlink:actuate="onLoad" xlink:href='
+        f'"{IMG_PATH}"'
+        ' xlink:show="embed" xlink:type="simple">'
+        "</draw:image>"
     )
-    assert image.serialize() == expected
+    assert image._canonicalize() == expected
+
+
+def test_image_as_str():
+    image = DrawImage(IMG_PATH)
+    assert str(image).startswith("(Pictures/")
 
 
 def test_get_image_list(sample_body):
@@ -131,7 +144,7 @@ def test_draw_marker_xml():
         svg_d="some geometry",
         view_box="some vb",
     )
-    assert marker._canonicalize() == (
+    expected = (
         "<draw:marker "
         'draw:display-name="display name" '
         'draw:name="name" '
@@ -139,6 +152,7 @@ def test_draw_marker_xml():
         'svg:viewBox="some vb">'
         "</draw:marker>"
     )
+    assert marker._canonicalize() == expected
 
 
 def test_draw_marker_name():
