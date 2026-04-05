@@ -89,7 +89,7 @@ def _tree_remove_tag(
     try:
         for key, value in buffer.attributes.items():
             element.set_attribute(key, value)
-    except ValueError:  # pragma: nocover
+    except ValueError:
         print(f"Incorrect attribute in {buffer}")
     text = buffer.text
     tail = buffer.tail
