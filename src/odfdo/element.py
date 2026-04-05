@@ -2048,7 +2048,9 @@ class Element(MDBase):
         Returns:
             str: The normalized XML content as a string.
         """
-        return self._strip_namespaces(canonicalize(tostring(self.__element)))
+        return self._strip_namespaces(
+            canonicalize(tostring(self.__element, with_tail=False))
+        )
 
     # Element helpers usable from any context
 
@@ -3032,14 +3034,10 @@ class Element(MDBase):
             result = self._filtered_element(tagname, 0, style_name=style_name)
             if result:
                 return result  # type: ignore[return-value]
-            return self._filtered_element(
-                tagname, 0, draw_name=style_name
-            )  # type: ignore[return-value]
+            return self._filtered_element(tagname, 0, draw_name=style_name)  # type: ignore[return-value]
 
         if display_name:
-            return self._filtered_element(
-                tagname, 0, display_name=display_name
-            )  # type: ignore[return-value]
+            return self._filtered_element(tagname, 0, display_name=display_name)  # type: ignore[return-value]
 
         return self._filtered_element(tagname, 0)  # type: ignore[return-value]
 
