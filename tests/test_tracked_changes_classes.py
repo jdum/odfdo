@@ -17,6 +17,7 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
+from __future__ import annotations
 
 from collections import namedtuple
 from collections.abc import Iterable
@@ -45,13 +46,17 @@ Sample = namedtuple("Sample", ["doc", "changes"])
 @pytest.fixture
 def sample(samples) -> Iterable[Sample]:
     document = Document(samples("tracked_changes.odt"))
-    yield Sample(doc=document, changes=document.body.get_tracked_changes())
+    yield Sample(
+        doc=document,
+        changes=document.body.get_tracked_changes(),
+    )
 
 
 @pytest.fixture
 def sample_doc() -> Iterable[Document]:
     doc = Document("odt")
     body = doc.body
+    body.clear()
     body.append(Header(1, "Title"))
     body.append(Paragraph("Some text."))
     yield doc
@@ -524,6 +529,46 @@ def test_text_change_get(sample):
     assert len(changes) == 3
 
 
+def test_text_changes_property(sample):
+    body = sample.doc.body
+    changes = body.text_changes
+    assert len(changes) == 3
+
+
+def test_get_text_change(sample):
+    body = sample.doc.body
+    change = body.get_text_change(0)
+    assert isinstance(change, TextChange)
+    assert change.get_id() == "ct140266191788864"
+
+
+def test_get_text_change_idx(sample):
+    body = sample.doc.body
+    change = body.get_text_change(idx="ct140266191788864")
+    assert isinstance(change, TextChange)
+    assert change.get_id() == "ct140266191788864"
+
+
+def test_get_text_change_idx_start(sample):
+    body = sample.doc.body
+    # ct140266193096576 is a change-start in the sample
+    change = body.get_text_change(idx="ct140266193096576")
+    assert isinstance(change, TextChangeStart)
+    assert change.get_id() == "ct140266193096576"
+
+
+def test_get_text_change_none(sample_doc):
+    body = sample_doc.body
+    change = body.get_text_change(0)
+    assert change is None
+
+
+def test_get_text_change_idx_none(sample_doc):
+    body = sample_doc.body
+    change = body.get_text_change(idx="nonexistent")
+    assert change is None
+
+
 def test_text_change_get_id(sample):
     body = sample.doc.body
     change = body.get_text_changes()[0]
@@ -720,3 +765,42 @@ def test_text_change_start_get_deleted(sample):
     body = sample.doc.body
     start = body.get_text_change(0)
     assert isinstance(start.get_deleted()[0], Paragraph)
+
+
+def test_get_text_change_deletions(sample):
+    body = sample.doc.body
+    deletions = body.get_text_change_deletions()
+    assert len(deletions) == 2
+    assert isinstance(deletions[0], TextChange)
+
+
+def test_get_text_change_deletion(sample):
+    body = sample.doc.body
+    deletion = body.get_text_change_deletion(0)
+    assert isinstance(deletion, TextChange)
+    assert deletion.get_id() == "ct140266191788864"
+
+
+def test_get_text_change_deletion_idx(sample):
+    body = sample.doc.body
+    deletion = body.get_text_change_deletion(idx="ct140266191788864")
+    assert isinstance(deletion, TextChange)
+    assert deletion.get_id() == "ct140266191788864"
+
+
+def test_get_text_change_deletions_empty(sample_doc):
+    body = sample_doc.body
+    deletions = body.get_text_change_deletions()
+    assert deletions == []
+
+
+def test_get_text_change_deletion_none(sample_doc):
+    body = sample_doc.body
+    deletion = body.get_text_change_deletion(0)
+    assert deletion is None
+
+
+def test_get_text_change_deletion_idx_none(sample_doc):
+    body = sample_doc.body
+    deletion = body.get_text_change_deletion(idx="nonexistent")
+    assert deletion is None
