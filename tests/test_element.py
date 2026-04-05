@@ -24,9 +24,14 @@ from __future__ import annotations
 import re
 from collections import namedtuple
 from collections.abc import Iterable
+from datetime import datetime
+from typing import cast
 
 import pytest
 
+import odfdo
+import odfdo.element
+from odfdo.body import Drawing
 from odfdo.const import ODF_CONTENT
 from odfdo.container import Container
 from odfdo.element import (
@@ -35,14 +40,17 @@ from odfdo.element import (
     PREV_SIBLING,
     Element,
     _decode_qname,
+    _generate_odf_namespaces,
     _uri_to_prefix,
     _xpath_text_descendant_no_annotation,
     register_element_class,
     xpath_compile,
 )
+from odfdo.image import DrawImage
 from odfdo.named_range import NamedRange
 from odfdo.paragraph import Paragraph
 from odfdo.section import Section
+from odfdo.tracked_changes import TextChangedRegion
 from odfdo.xmlpart import XmlPart
 
 SPECIAL_CHARS = 'using < & " characters'
@@ -74,9 +82,27 @@ def span_styles(samples) -> Iterable[Sample]:
     yield Sample(container=container, content=content, para=para, anno=anno, span=span)
 
 
-def test_element_init_completude_vs_registry():
-    import odfdo
+@pytest.fixture
+def drawing_test() -> Iterable[tuple[Drawing, DrawImage, TextChangedRegion]]:
+    container = Drawing()
+    # Image with URL
+    img_tag = '<draw:image xlink:href="http://example.com/img.png"/>'
+    img = cast(DrawImage, Element.from_tag(img_tag))
+    container.append(img)
+    # Element with dc:creator and dc:date
+    region = TextChangedRegion()
+    info = Element.from_tag("<office:change-info/>")
+    creator = Element.from_tag("<dc:creator>John Doe</dc:creator>")
+    date_val = "2024-03-30T12:00:00"
+    date_ele = Element.from_tag(f"<dc:date>{date_val}</dc:date>")
+    info.append(creator)
+    info.append(date_ele)
+    region.append(info)
+    container.append(region)
+    yield (container, img, region)
 
+
+def test_element_init_completude_vs_registry():
     all_imported = set(odfdo.__all__)
     registry = odfdo.element._class_registry
     for klass in registry.values():
@@ -86,18 +112,18 @@ def test_element_init_completude_vs_registry():
 def test_create_simple():
     data = "<p>Template Element</p>"
     element = Element.from_tag(data)
-    assert element.serialize() == data
+    assert element._canonicalize() == data
 
 
 def test_create_namespace():
     data = "<text:p>Template Element</text:p>"
     element = Element.from_tag(data)
-    assert element.serialize() == data
+    assert element._canonicalize() == data
 
 
 def test_create_qname():
     element = Element.from_tag("text:p")
-    assert element.serialize() == "<text:p/>"
+    assert element._canonicalize() == "<text:p></text:p>"
 
 
 def test_decode_qname_bad():
@@ -271,42 +297,45 @@ def test_delete_child():
     element = Element.from_tag("<text:p><text:span/></text:p>")
     child = element.get_element("//text:span")
     element.delete(child)
-    assert element.serialize() == "<text:p/>"
+    assert element._canonicalize() == "<text:p></text:p>"
 
 
 def test_delete_self():
     element = Element.from_tag("<text:p><text:span/></text:p>")
     child = element.get_element("//text:span")
     child.delete()
-    assert element.serialize() == "<text:p/>"
+    assert element._canonicalize() == "<text:p></text:p>"
 
 
 def test_delete_self_2():
     element = Element.from_tag("<text:p><text:span/>keep</text:p>")
     child = element.get_element("//text:span")
     child.delete()
-    assert element.serialize() == "<text:p>keep</text:p>"
+    assert element._canonicalize() == "<text:p>keep</text:p>"
 
 
 def test_delete_self_3():
     element = Element.from_tag("<text:p>before<text:span/>keep</text:p>")
     child = element.get_element("//text:span")
     child.delete()
-    assert element.serialize() == "<text:p>beforekeep</text:p>"
+    expected = "<text:p>beforekeep</text:p>"
+    assert element._canonicalize() == expected
 
 
 def test_delete_self_4():
     element = Element.from_tag("<text:p><tag>x</tag>before<text:span/>keep</text:p>")
     child = element.get_element("//text:span")
     child.delete()
-    assert element.serialize() == "<text:p><tag>x</tag>beforekeep</text:p>"
+    expected = "<text:p><tag>x</tag>beforekeep</text:p>"
+    assert element._canonicalize() == expected
 
 
 def test_delete_self_5():
     element = Element.from_tag("<text:p><tag>x</tag><text:span/>keep</text:p>")
     child = element.get_element("//text:span")
     child.delete()
-    assert element.serialize() == "<text:p><tag>x</tag>keep</text:p>"
+    expected = "<text:p><tag>x</tag>keep</text:p>"
+    assert element._canonicalize() == expected
 
 
 def test_delete_root():
@@ -394,13 +423,14 @@ def test_del_attribute_namespace(sample):
 def test_set_attribute_str_default_1():
     element = Element.from_tag("text:p")
     element._set_attribute_str_default("test", "value", "default_value")
-    assert element.serialize() == '<text:p test="value"/>'
+    expected = '<text:p test="value"></text:p>'
+    assert element._canonicalize() == expected
 
 
 def test_set_attribute_str_default_2():
     element = Element.from_tag("text:p")
     element._set_attribute_str_default("test", "default_value", "default_value")
-    assert element.serialize() == "<text:p/>"
+    assert element._canonicalize() == "<text:p></text:p>"
 
 
 def test_get_attribute_str_default_1():
@@ -418,13 +448,15 @@ def test_get_attribute_str_default_2():
 def test_set_attr_transparent_1():
     element = Element.from_tag("<text:p/>")
     element.set_attribute("dr3d:ambient-color", "blue")
-    assert element.serialize() == '<text:p dr3d:ambient-color="#0000FF"/>'
+    expected = '<text:p dr3d:ambient-color="#0000FF"></text:p>'
+    assert element._canonicalize() == expected
 
 
 def test_set_attr_transparent_2():
     element = Element.from_tag("<text:p/>")
     element.set_attribute("dr3d:ambient-color", "transparent")
-    assert element.serialize() == '<text:p dr3d:ambient-color="transparent"/>'
+    expected = '<text:p dr3d:ambient-color="transparent"></text:p>'
+    assert element._canonicalize() == expected
 
 
 def test_get_text(sample):
@@ -454,7 +486,7 @@ def test_set_text_special(sample):
 def test_get_text_content(sample):
     element = sample.anno
     text = element.text_content
-    print(element.serialize())
+    print(element._canonicalize())
     print(repr(text))
     expected = "This is an annotation.\nWith diacritical signs: éè"
     assert text == expected
@@ -487,25 +519,31 @@ def test_insert_element_first_child():
     element = Element.from_tag("<office:text><text:p/><text:p/></office:text>")
     child = Element.from_tag("<text:h/>")
     element.insert(child, FIRST_CHILD)
-    expected = "<office:text><text:h/><text:p/><text:p/></office:text>"
-    assert element.serialize() == expected
+    expected = (
+        "<office:text><text:h></text:h><text:p></text:p><text:p></text:p></office:text>"
+    )
+    assert element._canonicalize() == expected
 
 
 def test_insert_element_last_child():
     element = Element.from_tag("<office:text><text:p/><text:p/></office:text>")
     child = Element.from_tag("<text:h/>")
-    expected = "<office:text><text:p/><text:p/><text:h/></office:text>"
+    expected = (
+        "<office:text><text:p></text:p><text:p></text:p><text:h></text:h></office:text>"
+    )
     element.append(child)
-    assert element.serialize() == expected
+    assert element._canonicalize() == expected
 
 
 def test_insert_element_next_sibling():
     root = Element.from_tag("<office:text><text:p/><text:p/></office:text>")
     element = root.get_elements("//text:p")[0]
     sibling = Element.from_tag("<text:h/>")
-    expected = "<office:text><text:p/><text:h/><text:p/></office:text>"
+    expected = (
+        "<office:text><text:p></text:p><text:h></text:h><text:p></text:p></office:text>"
+    )
     element.insert(sibling, NEXT_SIBLING)
-    assert root.serialize() == expected
+    assert root._canonicalize() == expected
 
 
 def test_insert_element_next_sibling_xpath_query():
@@ -513,9 +551,11 @@ def test_insert_element_next_sibling_xpath_query():
     xpath_query = xpath_compile("//text:p")
     element = root.get_elements(xpath_query)[0]
     sibling = Element.from_tag("<text:h/>")
-    expected = "<office:text><text:p/><text:h/><text:p/></office:text>"
+    expected = (
+        "<office:text><text:p></text:p><text:h></text:h><text:p></text:p></office:text>"
+    )
     element.insert(sibling, NEXT_SIBLING)
-    assert root.serialize() == expected
+    assert root._canonicalize() == expected
 
 
 def test_insert_element_prev_sibling():
@@ -523,7 +563,10 @@ def test_insert_element_prev_sibling():
     element = root.get_elements("//text:p")[0]
     sibling = Element.from_tag("<text:h/>")
     element.insert(sibling, PREV_SIBLING)
-    assert root.serialize() == "<office:text><text:h/><text:p/><text:p/></office:text>"
+    expected = (
+        "<office:text><text:h></text:h><text:p></text:p><text:p></text:p></office:text>"
+    )
+    assert root._canonicalize() == expected
 
 
 def test_insert_element_start_1():
@@ -533,13 +576,13 @@ def test_insert_element_start_1():
     element = root.get_elements("//text:p")[0]
     item = Element.from_tag("<text:span>new</text:span>")
     element.insert(item, start=True)
-    print(root.serialize())
-    assert root.serialize() == (
+    expected = (
         "<office:text>"
         "<text:p><text:span>new</text:span>abc</text:p>"
         "<text:p>def</text:p>"
         "</office:text>"
     )
+    assert root._canonicalize() == expected
 
 
 def test_insert_element_start_2():
@@ -549,13 +592,13 @@ def test_insert_element_start_2():
     element = root.get_elements("//text:p")[0]
     item = Element.from_tag("<text:span>new</text:span>tail")
     element.insert(item, start=True)
-    print(root.serialize())
-    assert root.serialize() == (
+    expected = (
         "<office:text>"
         "<text:p><text:span>new</text:span>tailabc</text:p>"
         "<text:p>def</text:p>"
         "</office:text>"
     )
+    assert root._canonicalize() == expected
 
 
 def test_insert_element_bad_element():
@@ -645,8 +688,8 @@ def test_append_element():
     element.append(Element.from_tag("text:line-break"))
     element.append("f")
     element.append("oo2")
-    expected = "<text:p>foo1<text:line-break/>foo2</text:p>"
-    assert element.serialize() == expected
+    expected = "<text:p>foo1<text:line-break></text:line-break>foo2</text:p>"
+    assert element._canonicalize() == expected
 
 
 def test_append_wrong_item():
@@ -760,11 +803,11 @@ def test_failing_match(span_styles):
 
 def test_count(span_styles):
     paragraph = span_styles.para
-    expected = paragraph.serialize()
+    expected = paragraph._canonicalize()
     count = paragraph.replace("ou")
     assert count == 2
     # Ensure the orignal was not altered
-    assert paragraph.serialize() == expected
+    assert paragraph._canonicalize() == expected
 
 
 def test_replace(span_styles):
@@ -776,7 +819,7 @@ def test_replace(span_styles):
     assert str(clone) == expected + "\n"
     assert clone.inner_text == expected
     # Ensure the orignal was not altered
-    assert clone.serialize() != paragraph.serialize()
+    assert clone._canonicalize() != paragraph._canonicalize()
 
 
 def test_replace_bad(span_styles):
@@ -824,7 +867,8 @@ def test_is_bound():
 def test_content_setter_empty():
     element = Element.from_tag("<office:text><text:p>abc</text:p></office:text>")
     element.text_content = None
-    assert element.serialize() == "<office:text><text:p></text:p></office:text>"
+    expected = "<office:text><text:p></text:p></office:text>"
+    assert element._canonicalize() == expected
 
 
 def test_is_empty_1():
@@ -861,7 +905,7 @@ def test_xpath_no_bool():
 
 def test_serialize():
     element = Element.from_tag("<text:span>abc</text:span>")
-    assert element.serialize() == "<text:span>abc</text:span>"
+    assert element._canonicalize() == "<text:span>abc</text:span>"
 
 
 def test_serialize_with_ns():
@@ -876,13 +920,15 @@ def test_serialize_with_ns():
 def test_set_inner_text_exists():
     element = Element.from_tag("<text:p>x <text:span>abc</text:span> y</text:p>")
     element._set_inner_text("text:span", "new")
-    assert element.serialize() == "<text:p>x <text:span>new</text:span> y</text:p>"
+    expected = "<text:p>x <text:span>new</text:span> y</text:p>"
+    assert element._canonicalize() == expected
 
 
 def test_set_inner_text_none():
     element = Element.from_tag("<text:p>x y</text:p>")
     element._set_inner_text("text:span", "new")
-    assert element.serialize() == "<text:p>x y<text:span>new</text:span></text:p>"
+    expected = "<text:p>x y<text:span>new</text:span></text:p>"
+    assert element._canonicalize() == expected
 
 
 def test_get_inner_text_content():
@@ -940,3 +986,75 @@ def test_element_get_attribute_int_default_3():
     element._set_attribute_int_default("form:tab-index", "not_an_int", 0)
     result = element._get_attribute_int_default("form:tab-index", 0)
     assert result == 0
+
+
+def test_generate_odf_namespaces():
+    original_use_lo = odfdo.element.USE_LO_EXTENSIONS
+    try:
+        odfdo.element.USE_LO_EXTENSIONS = False
+        ns = _generate_odf_namespaces()
+        assert "office" in ns
+        assert "loext" not in ns
+
+        odfdo.element.USE_LO_EXTENSIONS = True
+        ns = _generate_odf_namespaces()
+        assert "office" in ns
+        assert "loext" in ns
+    finally:
+        odfdo.element.USE_LO_EXTENSIONS = original_use_lo
+
+
+def test_filtered_drawing_1(drawing_test):
+    drawing, img, _region = drawing_test
+    # Test URL filter
+    res = drawing._filtered_elements("descendant::draw:image", url=r"example\.com")
+    assert len(res) == 1
+    assert res[0]._canonicalize() == img._canonicalize()
+
+
+def test_filtered_drawing_2(drawing_test):
+    drawing, img, _region = drawing_test
+    # Test URL filter
+    res = drawing._filtered_elements("descendant::draw:image", url=r"example\.com")
+    assert len(res) == 1
+    assert res[0]._canonicalize() == img._canonicalize()
+
+
+def test_filtered_drawing_3(drawing_test):
+    drawing, _img, _region = drawing_test
+    res = drawing._filtered_elements("descendant::draw:image", url="other")
+    assert len(res) == 0
+
+
+def test_filtered_drawing_4(drawing_test):
+    drawing, _img, region = drawing_test
+    # Test dc_creator filter
+    res = drawing._filtered_elements(
+        "descendant::text:changed-region", dc_creator="John"
+    )
+    assert len(res) == 1
+    assert res[0]._canonicalize() == region._canonicalize()
+
+
+def test_filtered_drawing_5(drawing_test):
+    drawing, _img, _region = drawing_test
+    res = drawing._filtered_elements(
+        "descendant::text:changed-region", dc_creator="Jane"
+    )
+    assert len(res) == 0
+
+
+def test_filtered_drawing_6(drawing_test):
+    drawing, _img, region = drawing_test
+    # Test dc_date filter
+    dt = datetime(2024, 3, 30, 12, 0, 0)
+    res = drawing._filtered_elements("descendant::text:changed-region", dc_date=dt)
+    assert len(res) == 1
+    assert res[0]._canonicalize() == region._canonicalize()
+
+
+def test_filtered_drawing_7(drawing_test):
+    drawing, _img, _region = drawing_test
+    dt2 = datetime(2024, 3, 30, 12, 0, 1)
+    res = drawing._filtered_elements("descendant::text:changed-region", dc_date=dt2)
+    assert len(res) == 0
