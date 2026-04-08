@@ -21,12 +21,15 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
+from __future__ import annotations
 
 from collections.abc import Iterable
+from unittest.mock import patch
 
 import pytest
 
 from odfdo.document import Document
+from odfdo.element import Element
 from odfdo.table import Table
 
 
@@ -1264,3 +1267,120 @@ def test_span_bigger_outside_merge_property(table):
         [False, False, False, False, False, False, False, False, False],
         [False, False, False, False, False, False, False, False, False],
     ]
+
+
+def test_set_span_malformed():
+    table = Table("T")
+    # convert_coordinates("1") -> (None, 0)
+    with pytest.raises(ValueError):
+        table.set_span("1:B2")
+    # "A:B2" -> (0, None, 1, 1)
+    with pytest.raises(ValueError):
+        table.set_span("A:B2")
+    # "A1:B" -> (0, 0, 1, None)
+    with pytest.raises(ValueError):
+        table.set_span("A1:B")
+    # "A1:2" -> (0, 0, None, 1)
+    with pytest.raises(ValueError):
+        table.set_span("A1:2")
+
+
+def test_del_span_malformed():
+    table = Table("T")
+    with pytest.raises(ValueError):
+        table.del_span("1")
+    with pytest.raises(ValueError):
+        table.del_span("A")
+
+
+def test_del_span_no_span():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    assert table.del_span("A1") is False
+
+
+def test_del_span_no_rows_spanned():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    cell = table.get_cell("A1", clone=False)
+    cell.set_attribute("table:number-columns-spanned", 2)
+    # table:number-rows-spanned is missing.
+    assert table.del_span("A1") is False
+
+
+def test_set_span_merge_single():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    # Only A1 is non-empty.
+    table.set_span("A1:B1", merge=True)
+    assert table.get_value("A1") == "v1"
+
+
+def test_set_span_merge_non_string():
+    table = Table("Test")
+    table.set_value("A1", 123)
+    table.set_value("B1", 456)
+    table.set_span("A1:B1", merge=True)
+    assert table.get_value("A1") == "123 456"
+
+
+def test_set_span_merge_branch():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    table.set_value("B1", "v2")
+    table.set_span("A1:B1", merge=True)
+    assert table.get_value("A1") == "v1 v2"
+
+
+def test_set_span_merge_none_mock():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    table.set_value("B1", "v2")
+    cell1 = table.get_cell("A1")
+    with patch.object(Table, "get_cells", return_value=[cell1, None]):
+        table.set_span("A1:B1", merge=True)
+
+
+def test_set_span_branch_gaps():
+    table = Table("T")
+    table.set_value("A1", "v1")
+    table.set_value("B1", "v2")
+    # We need to mock get_cells to return [cell, None]
+    c1 = table.get_cell("A1")
+    with patch.object(Table, "get_cells", return_value=[c1, None]):
+        table.set_span("A1:B1", merge=True)
+
+
+def test_set_span_merge_val_is_not_none_branch():
+    table = Table("T")
+    table.set_value("A1", "v1")
+    table.set_value("B1", "v2")
+    table.set_span("A1:B1", merge=True)
+    assert table.get_value("A1") == "v1 v2"
+
+
+def test_set_span_merge_val_is_none_branch():
+    table = Table("T")
+    table.set_value("A1", "v1")
+    table.set_value("B1", "v2")
+    # We need a cell that is NOT empty aggressively
+    # but get_value() is None.
+    c2 = table.get_cell("B1", clone=False)
+    c2.set_value(None)
+    # Add a child so it's not empty aggressively
+    c2.append(Element.from_tag("text:p"))
+    table.set_span("A1:B1", merge=True)
+    assert table.get_value("A1") == "v1"
+
+
+def test_set_span_one_cell():
+    table = Table("Test")
+    assert table.set_span("A1") is False
+
+
+def test_delete_span_single_coord():
+    table = Table("Test")
+    table.set_span("A1:B2")
+    assert table.del_span("A1") is True
+    cell = table.get_cell("A1")
+    assert cell.get_attribute("table:number-columns-spanned") is None
