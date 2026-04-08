@@ -21,13 +21,17 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
+from __future__ import annotations
 
 from collections.abc import Iterable
+from unittest.mock import patch
 
 import pytest
 
 from odfdo.document import Document
-from odfdo.table import Row, Table
+from odfdo.element import Element
+from odfdo.row import Row
+from odfdo.table import Table
 
 
 @pytest.fixture
@@ -266,3 +270,69 @@ def test_is_row_empty_no():
     table = Table("Not Empty", width=10, height=20)
     table.set_value((4, 9), "Bouh !")
     assert table.is_row_empty(9) is False
+
+
+def test_get_row_none_internal():
+    table = Table("Test")
+    # We force a situation where _get_row2_base returns None
+    # despite y < height
+    table.set_value("A1", "v1")
+    with patch.object(Table, "_get_element_idx2", return_value=None):
+        table._table_cache.row_elements = {}
+        # Restore height
+        table._table_cache.row_map = [0]
+        with pytest.raises(ValueError, match="Row not found"):
+            table.get_row(0)
+
+
+def test_get_row_none_error():
+    table = Table("Test")
+    with pytest.raises(ValueError, match="Row not found"):
+        table.get_row(10, create=False)
+
+
+def test_set_row_none():
+    table = Table("Test")
+    row = table.set_row(0, row=None)
+    assert isinstance(row, Row)
+
+
+def test_get_row_sub_elements():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    cell = table.get_cell("A1")
+    cell.append(Element.from_tag("text:p"))
+    subs = table.get_row_sub_elements(0)
+    assert len(subs) >= 1
+
+
+def test_set_row_values():
+    table = Table("Test")
+    table.set_row_values(0, ["a", "b", "c"])
+    assert table.get_value("A1") == "a"
+    assert table.get_value("B1") == "b"
+    assert table.get_value("C1") == "c"
+
+
+def test_set_cell_repeated_row():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    row = Row(repeated=2)
+    table.set_row(1, row)
+    table.set_value("A2", "v2")
+    assert table.get_value("A2") == "v2"
+    assert table.get_value("A3") is None
+
+
+def test_get_row2_base_none():
+    table = Table("Test")
+    assert table._get_row2_base(10) is None
+
+
+def test_get_row_none_internal_direct():
+    table = Table("T")
+    table.set_value("A1", "v1")
+    # patch the _get_row2 method
+    with patch.object(Table, "_get_row2", return_value=None):
+        with pytest.raises(ValueError, match="Row not found"):
+            table.get_row(0)
