@@ -1474,7 +1474,7 @@ class Document(MDDocument):
             name_or_element="odfdopagebreak",
         ):
             properties = existing.get_properties()  # type: ignore
-            if properties and properties["fo:break-after"] == "page":
+            if properties and properties.get("fo:break-after") == "page":
                 return
         style = (
             '<style:style style:family="paragraph" style:parent-style-name="Standard" '
