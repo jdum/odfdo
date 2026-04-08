@@ -21,13 +21,17 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
+from __future__ import annotations
 
 from collections.abc import Iterable
+from unittest.mock import PropertyMock, patch
 
 import pytest
 
+from odfdo.body import Metadata
 from odfdo.document import Document
 from odfdo.element import Element
+from odfdo.mixin_named_range import TableNamedExpressions
 from odfdo.named_range import NamedRange
 from odfdo.table import Table
 
@@ -574,3 +578,208 @@ def test_body_set_named_range_bad_table_name(samples):
     document = Document(samples("simple_table_named_range.ods"))
     with pytest.raises(ValueError):
         document.body.set_named_range("name", "", "")
+
+
+def test_get_named_ranges_filter():
+    table = Table("Test")
+    table._local_set_named_range("local_range_one", "A1:B2")
+    res = table.get_named_ranges(table_name=["Test"], global_scope=False)
+    assert len(res) == 1
+    with pytest.raises(ValueError, match="table_name must be string or Iterable"):
+        table.get_named_ranges(table_name=True, global_scope=False)
+
+
+def test_named_range_no_body_errors():
+    table = Table("Test")
+    with pytest.raises(ValueError, match="Table is not inside a document"):
+        table.get_named_range("some", global_scope=True)
+    nr = NamedRange("name_nr", crange="A1:B2", table_name="Test")
+    with pytest.raises(ValueError, match="Table is not inside a document"):
+        table.append_named_range(nr, global_scope=True)
+    with pytest.raises(ValueError, match="Table is not inside a document"):
+        table.set_named_range("name_nr", "A1:B2", global_scope=True)
+    with pytest.raises(ValueError, match="Table is not inside a document"):
+        table.delete_named_range("name_nr", global_scope=True)
+    with pytest.raises(ValueError, match="Name required"):
+        table.delete_named_range("", global_scope=False)
+
+
+def test_named_range_with_body():
+    doc = Document("ods")
+    table = doc.body.get_table(0)
+    # global append
+    nr = NamedRange("global_nr", crange="A1:B2", table_name=table.name)
+    table.append_named_range(nr, global_scope=True)
+
+    # global get
+    got = table.get_named_range("global_nr", global_scope=True)
+    assert got.name == "global_nr"
+
+    # global delete
+    table.delete_named_range("global_nr", global_scope=True)
+    assert table.get_named_range("global_nr", global_scope=True) is None
+
+
+def test_named_range_with_body_error():
+    doc = Document("ods")
+    # replace body child by something that don't allow named range
+    body_node = doc.content.root.get_element("office:body")
+    old_body_child = body_node.children[0]
+    table = old_body_child.get_table(0)
+    new_child = Metadata()
+    body_node.delete(old_body_child)
+    body_node.append(new_child)
+    new_child.append(table)
+
+    nr = NamedRange("nr_err", crange="A1", table_name="T")
+    # Metadata doesn't allow named ranges
+    with pytest.raises(TypeError, match="Document must be of type"):
+        table.append_named_range(nr, global_scope=True)
+
+    # set_named_range
+    with pytest.raises(TypeError, match="Document must be of type"):
+        table.set_named_range("nr_err", "A1", global_scope=True)
+
+    # delete_named_range
+    with pytest.raises(TypeError, match="Document must be of type"):
+        table.delete_named_range("nr_err", global_scope=True)
+
+
+def test_get_named_range_none_internal():
+    table = Table("Test")
+    doc = Document("ods")
+    doc.body.append(table)
+    with patch.object(Table, "document_body", new_callable=PropertyMock) as mock_body:
+        mock_body.return_value = doc.body
+        with patch.object(doc.body, "get_named_range", return_value=None):
+            assert table.get_named_range("none") is None
+    assert table.get_named_range("none", global_scope=False) is None
+
+
+def test_append_named_range_local():
+    table = Table("Test")
+    nr = NamedRange("local_nr", crange="A1", table_name="Test")
+    table.append_named_range(nr, global_scope=False)
+    assert table.get_named_range("local_nr", global_scope=False) is not None
+
+
+def test_set_named_range_local():
+    table = Table("Test")
+    table.set_named_range("local_nr", "A1", global_scope=False)
+    assert table.get_named_range("local_nr", global_scope=False) is not None
+
+
+def test_delete_named_range_local():
+    table = Table("Test")
+    table.set_named_range("local_nr", "A1", global_scope=False)
+    table.delete_named_range("local_nr", global_scope=False)
+    assert table.get_named_range("local_nr", global_scope=False) is None
+
+
+def test_get_named_range_no_body_try_valueError():
+    table = Table("T")
+    with pytest.raises(ValueError, match="Table is not inside a document"):
+        table.get_named_range("nr", global_scope=True)
+
+
+def test_get_named_range_unsupported_body_branch():
+    doc = Document("ods")
+    table = doc.body.get_table(0)
+    # We mock allow_named_range to False
+    with patch.object(Element, "tag", new_callable=PropertyMock) as mock_tag:
+        mock_tag.return_value = "office:other"
+        assert table.get_named_range("nr", global_scope=True) is None
+
+
+def test_local_named_ranges():
+    table = Table("Test")
+    table._local_set_named_range("nr_one", "A1:B2")
+    table._local_set_named_range("nr_two", "C1:D2")
+    res = table._local_named_ranges()
+    assert len(res) == 2
+
+
+def test_local_delete_named_range_exit():
+    table = Table("T")
+    table._local_set_named_range("nr_one", "A1")
+    table._local_set_named_range("nr_two", "B2")
+    # Delete nr_one. named_expressions will still have nr_two.
+    table._local_delete_named_range("nr_one")
+
+    container = table.get_element(TableNamedExpressions._tag)
+    assert container is not None
+    assert not container.is_empty()
+
+
+def test_local_delete_named_range_no_container_at_all():
+    table = Table("T")
+    table._local_set_named_range("nr_one", "A1")
+    with patch.object(Table, "get_element", return_value=None):
+        table._local_delete_named_range("nr_one")
+
+
+def test_local_named_range_more():
+    table = Table("Test")
+    table._local_set_named_range("local_range_more", "A1:B2")
+    got = table._local_named_range("local_range_more")
+    assert got.crange == (0, 0, 1, 1)
+    table._local_delete_named_range("local_range_more")
+    assert table._local_named_range("local_range_more") is None
+    table._local_delete_named_range("none_nr")
+    table._local_set_named_range("local_range_2", "A1:B2")
+    table._local_delete_named_range("local_range_2")
+
+    assert table.get_element(TableNamedExpressions._tag) is None
+
+
+def test_local_named_range_delete_empty_container():
+    table = Table("Test")
+    table._local_set_named_range("nr_one", "A1")
+
+    assert table.get_element(TableNamedExpressions._tag) is not None
+    # delete the only NR
+    table._local_delete_named_range("nr_one")
+    assert table.get_element(TableNamedExpressions._tag) is None
+
+
+def test_local_named_range_delete_no_container():
+    table = Table("Test")
+    table._local_set_named_range("nr_one", "A1")
+
+    container = table.get_element(TableNamedExpressions._tag)
+    # move nr_one out of container
+    nr_one = container.get_element("table:named-range")
+    table.append(nr_one)
+    table.delete(container)
+    table._local_delete_named_range("nr_one")
+    assert table._local_named_range("nr_one") is None
+
+
+def test_local_append_named_range_replace_internal():
+    table = Table("Test")
+    table._local_set_named_range("nr_one", "A1")
+    nr2 = NamedRange("nr_one", crange="B2", table_name="Test")
+    table._local_append_named_range(nr2)
+    assert table._local_named_range("nr_one").crange == (1, 1, 1, 1)
+
+
+def test_named_range_set_table_name_same():
+    nr = NamedRange("nr", crange="A1", table_name="T")
+    # Coverage for set_table_name if name == self.table_name
+    nr.set_table_name("T")
+    assert nr.table_name == "T"
+
+
+def test_local_delete_named_range_no_container_after_delete():
+    table = Table("T")
+    table._local_set_named_range("nr_one", "A1")
+
+    container = table.get_element(TableNamedExpressions._tag)
+    nr = container.get_element("table:named-range")
+    # put nr outside
+    table.append(nr)
+    table.delete(container)
+    table._local_delete_named_range("nr_one")
+    # Check it still exists because _local_delete_named_range failed
+    # before delete
+    assert table.get_element("table:named-range") is not None
