@@ -21,13 +21,17 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
+from __future__ import annotations
 
 from collections.abc import Iterable
+from unittest.mock import patch
 
 import pytest
 
 from odfdo.cell import Cell
 from odfdo.document import Document
+from odfdo.element import Element
+from odfdo.row import Row
 from odfdo.table import Table
 
 
@@ -153,3 +157,112 @@ def test_delete_cell(table):
     ]
     # Test columns are synchronized
     assert table.width == 7
+
+
+def test_get_cell_none_internal():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    with patch.object(Table, "_get_row2_base", return_value=None):
+        with pytest.raises(ValueError):
+            table.get_cell((0, 0))
+    _row = table.get_row(0, clone=False)
+    with patch.object(Row, "get_cell", return_value=None):
+        with pytest.raises(ValueError):
+            table.get_cell((0, 0))
+
+
+def test_get_value_none_internal():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    with patch.object(Table, "_get_row2_base", return_value=None):
+        with pytest.raises(ValueError):
+            table.get_value((0, 0))
+
+
+def test_set_cell_none_internal():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    with patch.object(Table, "_get_row2_base", return_value=None):
+        with pytest.raises(ValueError):
+            table.set_cell((0, 0), Cell("v"))
+
+
+def test_insert_cell_none_internal():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    with patch.object(Table, "_get_row2_base", return_value=None):
+        with pytest.raises(ValueError):
+            table.insert_cell((0, 0), Cell("v"))
+
+
+def test_delete_cell_none_internal():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    with patch.object(Table, "_get_row2_base", return_value=None):
+        with pytest.raises(ValueError):
+            table.delete_cell((0, 0))
+
+
+def test_get_values_coord():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    table.set_value("B1", "v2")
+    vals = table.get_values(coord="A1:B1")
+    assert vals == [["v1", "v2"]]
+
+
+def test_get_cells_options():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    table.set_value("B1", "v2")
+    table.set_value("A2", "v3")
+    table.set_value("B2", 123)
+    cells = table.get_cells(flat=True)
+    assert len(cells) == 4
+    cells = table.get_cells(coord="A1:B2", cell_type="string", flat=True)
+    assert len(cells) == 3
+    cells = table.get_cells(coord="A1:B2")
+    assert len(cells) == 2
+    assert len(cells[0]) == 2
+
+
+def test_get_cell_malformed():
+    table = Table("T")
+    with pytest.raises(ValueError):
+        table.get_cell("A")
+
+
+def test_get_value_malformed():
+    table = Table("T")
+    with pytest.raises(ValueError):
+        table.get_value("1")
+    with pytest.raises(ValueError):
+        table.get_value("A")
+
+
+def test_insert_cell_malformed():
+    table = Table("T")
+    with pytest.raises(ValueError):
+        table.insert_cell("1", Cell())
+    with pytest.raises(ValueError):
+        table.insert_cell("A", Cell())
+
+
+def test_get_cell_keep_repeated_fix():
+    xml = (
+        '<table:table table:name="T1" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" '
+        'xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" '
+        'xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">'
+        "<table:table-row>"
+        '<table:table-cell table:number-columns-repeated="5" office:value-type="string">'
+        "<text:p>v</text:p>"
+        "</table:table-cell>"
+        "</table:table-row>"
+        "</table:table>"
+    )
+    table = Element.from_tag(xml)
+    c = table.get_cell((0, 0), keep_repeated=True)
+    assert c.get_attribute("table:number-columns-repeated") == "5"
+
+    c2 = table.get_cell((0, 0), keep_repeated=False)
+    assert c2.get_attribute("table:number-columns-repeated") is None
