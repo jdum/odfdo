@@ -1030,7 +1030,9 @@ class Document(MDDocument):
                 continue
             if not hasattr(existing_style, "name"):
                 continue
-            if not existing_style.name.startswith(AUTOMATIC_PREFIX):  # type: ignore[union-attr]
+            if not existing_style.name or not existing_style.name.startswith(
+                AUTOMATIC_PREFIX
+            ):  # type: ignore[union-attr]
                 continue
             try:
                 index = int(existing_style.name[len(AUTOMATIC_PREFIX) :])  # type: ignore
