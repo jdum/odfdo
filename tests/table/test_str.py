@@ -16,13 +16,14 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
+from __future__ import annotations
 
 from collections.abc import Iterable
 
 import pytest
 
-from odfdo import Table
 from odfdo.document import Document
+from odfdo.table import Table
 
 
 @pytest.fixture
@@ -57,3 +58,13 @@ def test_str_sample3(table3):
     result = str(table3)
     assert '"A float"' in result
     assert "3.14" in result
+
+
+def test_table_str_with_none():
+    table = Table("TestTable")
+    table.set_value("A1", "cell1")
+    table.set_value("B1", None)
+    table.set_value("C1", "cell3")
+    result = str(table)
+    assert "cell1" in result
+    assert "cell3" in result
