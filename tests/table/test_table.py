@@ -21,14 +21,16 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
+from __future__ import annotations
 
 from collections.abc import Iterable
 
 import pytest
 
-from odfdo import Element
 from odfdo.document import Document
-from odfdo.table import Row, Table
+from odfdo.element import Element
+from odfdo.row import Row
+from odfdo.table import Table
 
 
 @pytest.fixture
