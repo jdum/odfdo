@@ -21,10 +21,11 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
+from __future__ import annotations
 
 import csv
 from collections.abc import Iterable
-from io import StringIO
+from io import BytesIO, StringIO
 
 import pytest
 
@@ -109,3 +110,35 @@ def test_export_to_csv_file_delimiters(tmp_path, table):
     result = path.read_bytes()
     expected = b'"A float";"3.14"\r\n"A date";"1975-05-07 00:00:00"\r\n'
     assert result == expected
+
+
+def test_import_from_csv_path(tmp_path):
+    path = tmp_path / "test.csv"
+    path.write_text("v1,v2\nv3,v4")
+    table = import_from_csv(path, "Test")
+    assert table.get_value("A1") == "v1"
+
+
+def test_write_csv_path(tmp_path):
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    table.set_value("B1", None)
+    path = tmp_path / "test.csv"
+    table.to_csv(path)
+    content = path.read_text()
+    assert "v1" in content
+
+
+def test_from_csv_rstrip():
+    csv_content = "v1,v2, ,\n"
+    table = Table.from_csv(csv_content, "Test")
+    assert table.width == 2
+
+
+def test_import_from_csv_various():
+    s = StringIO("v1,v2\nv3,v4")
+    table = import_from_csv(s, "Test")
+    assert table.get_value("A1") == "v1"
+    b = BytesIO(b"v1,v2")
+    table = import_from_csv(b, "Test")
+    assert table.get_value("A1") == "v1"
