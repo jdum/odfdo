@@ -592,7 +592,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
                         ref = f"|img{counter}|"
                         result.append(ref)
                         images = context.get("images") or []
-                        images.append((ref, filename, width, height))
+                        images.append((ref, filename, (width, height)))
                         context["images"] = images
                     else:
                         result.append(f"\n.. image:: {filename}\n")
