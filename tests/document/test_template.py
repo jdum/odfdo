@@ -21,8 +21,6 @@
 #          Luis Belmar-Letelier <luis@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-
-
 import pytest
 
 from odfdo.const import ODF_EXTENSIONS
@@ -118,3 +116,8 @@ def test_clone():
     container = _container_from_template("text")
     clone = container.clone
     assert clone.path is None
+
+
+def test_container_from_template_internal():
+    with pytest.raises(FileNotFoundError):
+        _container_from_template("nonexistent")

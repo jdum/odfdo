@@ -17,9 +17,11 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-
 from collections.abc import Iterable
+from io import BytesIO
 from os.path import isfile
+from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -27,6 +29,7 @@ from odfdo.const import (
     FOLDER,
     ODF_CONTENT,
     ODF_MANIFEST,
+    ODF_MANIFEST_NAME,
     ODF_MANIFEST_RDF,
     ODF_META,
     ODF_SETTINGS,
@@ -35,7 +38,16 @@ from odfdo.const import (
     ZIP,
 )
 from odfdo.container import Container
-from odfdo.document import Document
+from odfdo.content import Content
+from odfdo.document import (
+    Document,
+    _get_part_class,
+    _get_part_path,
+)
+from odfdo.manifest import Manifest
+from odfdo.meta import Meta
+from odfdo.settings import Settings
+from odfdo.styles import Styles
 
 
 @pytest.fixture
@@ -124,3 +136,112 @@ def test_manifest_rdf_2(tmp_path, samples):
     assert isfile(path_m1)
     path_m2 = tmp_path / "example.odt.folder" / ODF_MANIFEST_RDF
     assert isfile(path_m2)
+
+
+def test_get_part_path():
+    assert _get_part_path("content") == ODF_CONTENT
+    assert _get_part_path("meta") == ODF_META
+    assert _get_part_path("settings") == ODF_SETTINGS
+    assert _get_part_path("styles") == ODF_STYLES
+    assert _get_part_path("manifest") == ODF_MANIFEST
+    assert _get_part_path("other") == "other"
+
+
+def test_get_part_class():
+    assert _get_part_class(ODF_CONTENT) == Content
+    assert _get_part_class(ODF_META) == Meta
+    assert _get_part_class(ODF_SETTINGS) == Settings
+    assert _get_part_class(ODF_STYLES) == Styles
+    assert _get_part_class(ODF_MANIFEST_NAME) == Manifest
+    assert _get_part_class("other.xml") is None
+
+
+def test_document_init_bytes():
+    doc = Document(b"text")
+    assert doc.container is not None
+
+
+def test_document_init_path(tmp_path):
+    # Create a dummy ODT file
+    doc1 = Document("text")
+    path = tmp_path / "test.odt"
+    doc1.save(path)
+    doc2 = Document(str(path))
+    assert doc2.container is not None
+    assert doc2.path == path
+
+
+def test_document_init_container():
+    container = Container()
+    doc = Document(container)
+    assert doc.container is container
+
+
+def test_document_init_bytesio():
+    doc1 = Document("text")
+    buf = BytesIO()
+    doc1.save(buf)
+    buf.seek(0)
+    doc2 = Document(buf)
+    assert doc2.container is not None
+
+
+def test_document_init_none():
+    doc = Document(None)
+    assert doc.container is not None
+    assert doc.container.path is None
+
+
+def test_document_init_error():
+    with pytest.raises(TypeError, match="Unknown Document source type"):
+        Document(123)
+
+
+def test_document_repr():
+    doc = Document("text")
+    assert "Document" in repr(doc)
+    assert "type=text" in repr(doc)
+
+
+def test_document_str_not_implemented():
+    doc = Document("text")
+    with patch.object(Document, "get_formatted_text", side_effect=NotImplementedError):
+        res = str(doc)
+        assert len(res) >= 0
+
+
+def test_document_path_property():
+    doc = Document("text")
+    doc.path = "new/path"
+    assert doc.path == Path("new/path")
+    doc.container = None
+    assert doc.path is None
+    doc.path = "other/path"  # returns safely
+
+
+def test_document_get_parts_no_container():
+    doc = Document("text")
+    doc.container = None
+    with pytest.raises(ValueError, match="Empty Container"):
+        doc.get_parts()
+
+
+def test_document_get_part_non_xml():
+    doc = Document("text")
+    doc.container.set_part("Pictures/test.png", b"data")
+    res = doc.get_part("Pictures/test.png")
+    assert res == b"data"
+
+
+def test_document_get_part_xml_cached():
+    doc = Document("text")
+    p1 = doc.get_part("content")
+    p2 = doc.get_part("content")
+    assert p1 is p2
+
+
+def test_document_get_part_no_container():
+    doc = Document("text")
+    doc.container = None
+    with pytest.raises(ValueError, match="Empty Container"):
+        doc.get_part("content")

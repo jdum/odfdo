@@ -17,9 +17,8 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-
 import base64
-import io
+from io import BytesIO
 
 from odfdo.document import Blob
 
@@ -75,7 +74,7 @@ def test_blob_jpg_content(samples):
 
 def test_blob_io(samples):
     png = samples("image.png")
-    with io.BytesIO() as bytes_content:
+    with BytesIO() as bytes_content:
         bytes_content.write(png.read_bytes())
         bytes_content.seek(0)
         blob = Blob.from_io(bytes_content)
@@ -86,7 +85,7 @@ def test_blob_io(samples):
 def test_blob_io_content(samples):
     png = samples("image.png")
     expected = png.read_bytes()
-    with io.BytesIO() as bytes_content:
+    with BytesIO() as bytes_content:
         bytes_content.write(png.read_bytes())
         bytes_content.seek(0)
         blob = Blob.from_io(bytes_content)

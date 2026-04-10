@@ -17,8 +17,6 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-
-
 import pytest
 
 from odfdo.document import Document

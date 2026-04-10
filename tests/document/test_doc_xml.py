@@ -17,12 +17,13 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-import io
 from collections.abc import Iterable
+from io import BytesIO
 
 import pytest
 
 from odfdo import Document, Frame, Paragraph
+from odfdo.const import XML
 
 
 @pytest.fixture
@@ -38,7 +39,7 @@ def doc_xml(samples) -> Iterable:
     paragraph = Paragraph()
     paragraph.append(image_frame)
     doc.body.append(paragraph)
-    with io.BytesIO() as bytes_content:
+    with BytesIO() as bytes_content:
         doc.save(bytes_content, packaging="xml")
         xml_content = bytes_content.getvalue()
     yield xml_content.decode()
@@ -97,3 +98,36 @@ def test_save_xml_content_4(doc_xml):
         """hkbURB7PoCAhFR0bz/EXZ7JPVMSkBEgml5zuMUwo1moOKorWguyVhzeISVkKDbCxGN\n             UzWNqnRGbIfMI8bzeWyjgUs47CfqaNil6wJJrkPIBFi/SiwnhpJEuFmx2vNjm6BSoO\n             jw2AcUXtrC57rMOFUA1nEsXwy0DS836Bex0zmEW4c2MxYWmnZlk7TbO8psQCkFYqbm\n             bfGRioTF7e1k0LzdTRyXRrpPQ/aapClaKORetzz3eOB4BNm4iKyWaw5ihB4xIcAr4F\n             RbDmJyJm+Spui8eRW2TUR3uB2qGIbcneOLjyjZMNgvQnKAH/t6cmjLN+Bctd1Xy2mu\n             wFrh2O8FEukiITFzIiwFlq9c51gMoWIifw3Ge2aEHd+GkwAAAAASUVORK5CYII=\n            </office:binary-data>\n          </draw:image>\n        </draw:frame>\n      </text:p>\n    </office:text>\n  </office:body>\n</office:document>\n"""
         in doc_xml
     )
+
+
+def test_document_set_part_xml_overwritten():
+    doc = Document("text")
+    p1 = doc.get_part("content")  # Cache it
+    new_data = (
+        b'<?xml version="1.0" encoding="UTF-8"?>\n'
+        b"<office:document-content "
+        b'xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" office:version="1.3">'
+        b"<office:body><office:text/>"
+        b"</office:body>"
+        b"</office:document-content>"
+    )
+    doc.set_part("content", new_data)
+    p2 = doc.get_part("content")
+    assert p1 is not p2
+
+
+def test_save_xml_packaging():
+    doc = Document("text")
+    out = BytesIO()
+    doc.save(target=out, packaging=XML)
+    assert out.getvalue() != b""
+
+
+def test_clone_xmlparts_old_old():
+    doc = Document("text")
+    _ = doc.content
+    _ = doc.meta
+    assert "content.xml" in doc._Document__xmlparts
+    clone = doc.clone
+    assert clone.container is not doc.container
+    assert clone._Document__xmlparts == {}

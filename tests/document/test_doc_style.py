@@ -22,15 +22,27 @@
 #          Luis Belmar-Letelier <luis@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
-
 from importlib import resources as rso
+from unittest.mock import MagicMock, patch
 
-from odfdo.const import ODF_CONTENT, ODF_EXTENSIONS, ODF_MANIFEST, ODF_META, ODF_STYLES
+from odfdo.const import (
+    ODF_CONTENT,
+    ODF_EXTENSIONS,
+    ODF_MANIFEST,
+    ODF_META,
+    ODF_STYLES,
+)
 from odfdo.content import Content
-from odfdo.document import Document
+from odfdo.document import (
+    AUTOMATIC_PREFIX,
+    Document,
+    _show_styles,
+    _underline_string,
+)
 from odfdo.element import Element
 from odfdo.manifest import Manifest
 from odfdo.meta import Meta
+from odfdo.style import Style
 from odfdo.styles import Styles
 
 
@@ -293,3 +305,79 @@ def test_bg_image_show_styles(samples):
     assert "common used:" not in automatic_styles
     no_styles = document.show_styles(automatic=False, common=False)
     assert no_styles == ""
+
+
+def test_underline_string():
+    assert _underline_string(0, "test") == "===="
+    assert _underline_string(1, "test") == "----"
+    assert _underline_string(11, "test") == "\n"
+
+
+def test_show_styles_empty():
+    el = Element.from_tag("<style:style/>")
+    assert _show_styles(el) is None
+
+
+def test_show_styles_complex():
+    el = Element.from_tag(
+        '<style:style style:name="s1" style:family="paragraph">'
+        '<style:paragraph-properties style:font-name="Arial"/>'
+        "</style:style>"
+    )
+    res = _show_styles(el)
+    assert "style:style" in res
+    assert "style:name: s1" in res
+    assert "style:family: paragraph" in res
+    assert "style:paragraph-properties" in res
+    assert "style:font-name: Arial" in res
+
+
+def test_show_styles_no_attrs():
+    el = Element.from_tag(
+        '<style:style><style:text-properties style:font-name="Arial"/></style:style>'
+    )
+    res = _show_styles(el)
+    assert "style:style" in res
+    assert "style:text-properties" in res
+
+
+def test_show_styles_recursion():
+    el = Element.from_tag(
+        '<style:style style:name="s1">'
+        '<style:style style:name="s2" style:family="text"/>'
+        "<style:empty/></style:style>"
+    )
+    res = _show_styles(el)
+    assert "style:style" in res
+    assert "style:name: s1" in res
+    assert "style:name: s2" in res
+
+
+def test_get_parent_style_family_none():
+    doc = Document("text")
+    style = MagicMock(spec=Style)
+    style.family = None
+    assert doc.get_parent_style(style) is None
+
+
+def test_get_list_style_no_hasattr():
+    doc = Document("text")
+    elem = Element.from_tag("dc:title")
+    assert doc.get_list_style(elem) is None
+
+
+def test_set_automatic_name_none_existing():
+    doc = Document("text")
+    style = Style("paragraph")
+    with patch.object(Document, "get_styles", return_value=[None]):
+        doc._set_automatic_name(style, "paragraph")
+    assert style.name.startswith(AUTOMATIC_PREFIX)
+
+
+def test_set_automatic_name_no_hasattr_name():
+    doc = Document("text")
+    style = Style("paragraph")
+    elem = Element.from_tag("office:automatic-styles")
+    with patch.object(Document, "get_styles", return_value=[elem]):
+        doc._set_automatic_name(style, "paragraph")
+    assert style.name.startswith(AUTOMATIC_PREFIX)
