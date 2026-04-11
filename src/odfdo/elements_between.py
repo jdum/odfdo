@@ -204,7 +204,7 @@ def _get_between_base(
                 # before tag1 : forget element, go to next one
                 current, target = _get_successor(current, target)  # type: ignore
                 continue
-        elif state == 1:  # collect elements
+        else:  # collect elements
             further = False
             if current.xpath(f"descendant-or-self::{path2}"):
                 if current.xpath(f"self::{path2}"):
