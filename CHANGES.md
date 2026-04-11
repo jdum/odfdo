@@ -1,5 +1,37 @@
 # Odfdo Release Notes
 
+## [3.22.5] - 2026-04-11
+
+-   Improved test coverage across multiple modules.
+-   Small refactoring for code clarity.
+
+### Added
+
+-   Add tests for `table` module: rows, columns, cells, named ranges, cell spans, CSV import/export, string representation, formatted text.
+-   Add tests for `document` module.
+-   Add tests for `element` module.
+-   Add tests for `element_strip` module.
+-   Add tests for `tracked_changes` module.
+-   Add tests for `reference` module.
+-   Add tests for `Content` class.
+-   Add tests for `remove_tree` function.
+-   Add tests for `DrawGroup`, `DrawImage`, and `DrawFillImage`.
+-   Add tests for `get_styles()` methods.
+-   Add tests for `Style` and style-related modules: `style_props`, `style_utils`, `BackgroundImage`, master page.
+-   Add tests for `mixin_paragraph` and `mixin_paragraph_formatted` modules.
+-   Add tests for `elements_between` module.
+-   Add tests for `odfdo-flat` script.
+
+### Changed
+
+-   Refactor `elements_between` module for simplification.
+-   Refactor `Document` for clarity using `get()` method.
+-   Refactor internal util method `Element._canonicalize()` to not use tail.
+
+### Fixed
+
+-   Fix `Frame` to use tuple for width and height parameters.
+
 ## [3.22.4] - 2026-04-04
 
 -   Detection of style properties from ODF extensions (LibreOffice loext, etc.) to not issue unwanted warnings.
