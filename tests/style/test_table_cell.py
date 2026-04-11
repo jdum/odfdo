@@ -173,3 +173,35 @@ def test_odf_create_table_cell_style_padding_some():
             "</style:style>"
         ),
     )
+
+
+def test_create_table_cell_style_borders_1():
+    style = create_table_cell_style(border="1pt solid #ff0000", color="blue")
+    assert style.get_properties(area="table-cell")["fo:border"] == "1pt solid #ff0000"
+    assert style.get_properties(area="text")["fo:color"] == "#0000FF"
+
+
+def test_create_table_cell_style_borders_2():
+    style2 = create_table_cell_style(border_top="1pt solid #000000")
+    props = style2.get_properties(area="table-cell")
+    assert props["fo:border-top"] == "1pt solid #000000"
+    assert props["fo:border-bottom"] == "none"
+
+
+def test_create_table_cell_style_borders_3():
+    style3 = create_table_cell_style(border="default")
+    expected = "0.06pt solid #000000"
+    assert style3.get_properties(area="table-cell")["fo:border"] == expected
+
+
+def test_create_table_cell_style_padding_1():
+    style = create_table_cell_style(padding="1mm")
+    props = style.get_properties(area="table-cell")
+    assert props["fo:padding"] == "1mm"
+
+
+def test_create_table_cell_style_padding_2():
+    style2 = create_table_cell_style(padding_left="2mm")
+    props2 = style2.get_properties(area="table-cell")
+    assert props2["fo:padding-left"] == "2mm"
+    assert props2["fo:padding-right"] == "none"
