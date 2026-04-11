@@ -16,7 +16,6 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-from __future__ import annotations
 
 from collections.abc import Iterable
 
@@ -26,6 +25,7 @@ from odfdo.const import ODF_STYLES
 from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.page_layout import StylePageLayout
+from odfdo.style import Style, _new_master_page, _new_page_layout
 from odfdo.styles import Styles
 
 
@@ -287,3 +287,23 @@ def test_get_style_page_layout_set_footer_style_2(styles):
     style = spl.get_footer_style()
     assert style.tag == "style:footer-style"
     assert style.children == []
+
+
+def test_new_master_page_no_family():
+    res = _new_master_page("MasterName", name="M1")
+    assert res.tag == "style:master-page"
+
+
+def test_new_page_layout_no_family():
+    res = _new_page_layout("LayoutName", name="L1")
+    assert res.tag == "style:page-layout"
+
+
+def test_style_factory_master_page():
+    style = Style(family="master-page", name="M1")
+    assert style.tag == "style:master-page"
+
+
+def test_style_factory_page_layout():
+    style = Style(family="page-layout", name="L1")
+    assert style.tag == "style:page-layout"
