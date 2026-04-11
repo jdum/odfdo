@@ -20,10 +20,12 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 
 from collections.abc import Iterable
+from unittest.mock import patch
 
 import pytest
 
-from odfdo.style import Style
+from odfdo.element import Element
+from odfdo.style import BackgroundImage, Style
 
 
 @pytest.fixture
@@ -106,3 +108,42 @@ def test_image_full(style):
         "</style:style>"
     )
     assert style.serialize() == expected
+
+
+def test_set_background_coverage():
+    style = Style(family="paragraph")
+    style.set_background(color="red")
+    assert style.get_properties()["fo:background-color"] == "#FF0000"
+
+
+def test_background_image_init():
+    with patch("odfdo.style.Style.set_properties"):
+        bg = BackgroundImage(
+            name="BG1",
+            display_name="Disp",
+            position="pos",
+            repeat="rep",
+            opacity="op",
+            filter="filt",
+            svg_font_family="Arial",
+        )
+        assert bg.name == "BG1"
+        assert bg.display_name == "Disp"
+        assert bg.position == "filt"
+        assert bg.get_attribute("svg:font-family") == "Arial"
+
+        bg2 = BackgroundImage()
+        assert bg2.name is None
+        assert bg2.display_name is None
+        assert bg2.position is None
+
+
+def test_background_image_no_init():
+    class NoInitBG(BackgroundImage):
+        def __init__(self):
+            self._do_init = False
+            elem = Element.from_tag("style:background-image")
+            super().__init__(tag_or_elem=elem._Element__element)
+
+    res = NoInitBG()
+    assert res.name is None
