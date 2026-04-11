@@ -31,6 +31,7 @@ from odfdo.style_utils import (
     _check_position,
     _check_repeat,
     _erase_background,
+    _expand_properties_dict,
     _map_key,
     _set_background,
     _set_background_color,
@@ -244,3 +245,10 @@ def test_map_key_mapped_no_mapped_no_col_known():
     key = "border-left"
     odf_key = _map_key(key)
     assert odf_key == "fo:border-left"
+
+
+def test_expand_properties_dict_duplicate_key():
+    props = {"color": "red", "fo:color": "blue"}
+    # 'color' comes before 'fo:color' in sorted keys
+    res = _expand_properties_dict(props)
+    assert res["fo:color"] == "red"
