@@ -49,14 +49,17 @@ theme:
 plugins:
     - search:
 
+    - autorefs:
+          resolve_closest: true
+
     - mkdocstrings:
           default_handler: python
           handlers:
               python:
                   options:
                       filters:
-                          - '!^_'
-                          - '^__init__$'
+                          - "!^_$"
+                          - "^__init__$"
                       show_if_no_docstring: true
                       summary:
                           attributes: true
@@ -66,9 +69,8 @@ plugins:
                       show_signature: true
                       separate_signature: true
                       show_signature_annotations: true
-                      signature_crossrefs: true
-          #rendering:
-          #    show_source: true
+                      signature_crossrefs: false
+                      show_bases: true
 
     - include-markdown:
           preserve_includer_indent: true
@@ -82,5 +84,89 @@ plugins:
 nav:
     - Readme: README.md
     - Changes: CHANGES.md
-    - Reference: reference.md
+    - Reference:
+          - annotation: reference_annotation.md
+          - body: reference_body.md
+          - bookmark: reference_bookmark.md
+          - cell: reference_cell.md
+          - column: reference_column.md
+          - config_elements: reference_config_elements.md
+          - const: reference_const.md
+          - container: reference_container.md
+          - content: reference_content.md
+          - datatype: reference_datatype.md
+          - document: reference_document.md
+          - draw_page: reference_draw_page.md
+          - element: reference_element.md
+          - element_strip: reference_element_strip.md
+          - element_typed: reference_element_typed.md
+          - elements_between: reference_elements_between.md
+          - form: reference_form.md
+          - form_controls: reference_form_controls.md
+          - form_controls_mixins: reference_form_controls_mixins.md
+          - form_properties: reference_form_properties.md
+          - frame: reference_frame.md
+          - header: reference_header.md
+          - header_rows: reference_header_rows.md
+          - image: reference_image.md
+          - line_break: reference_line_break.md
+          - link: reference_link.md
+          - list: reference_list.md
+          - manifest: reference_manifest.md
+          - master_page: reference_master_page.md
+          - meta: reference_meta.md
+          - meta_auto_reload: reference_meta_auto_reload.md
+          - meta_field: reference_meta_field.md
+          - meta_hyperlink_behaviour: reference_meta_hyperlink_behaviour.md
+          - meta_template: reference_meta_template.md
+          - meta_user_defined: reference_meta_user_defined.md
+          - named_range: reference_named_range.md
+          - note: reference_note.md
+          - office_forms: reference_office_forms.md
+          - page_layout: reference_page_layout.md
+          - paragraph: reference_paragraph.md
+          - presentation_notes: reference_presentation_notes.md
+          - reference: reference_reference.md
+          - row: reference_row.md
+          - row_group: reference_row_group.md
+          - ruby_base: reference_ruby_base.md
+          - section: reference_section.md
+          - settings: reference_settings.md
+          - shapes: reference_shapes.md
+          - smil: reference_smil.md
+          - spacer: reference_spacer.md
+          - span: reference_span.md
+          - style: reference_style.md
+          - style_base: reference_style_base.md
+          - style_containers: reference_style_containers.md
+          - style_defaults: reference_style_defaults.md
+          - style_props: reference_style_props.md
+          - style_utils: reference_style_utils.md
+          - styles: reference_styles.md
+          - svg: reference_svg.md
+          - tab: reference_tab.md
+          - table: reference_table.md
+          - table_cache: reference_table_cache.md
+          - text_index: reference_text_index.md
+          - toc: reference_toc.md
+          - tracked_changes: reference_tracked_changes.md
+          - unit: reference_unit.md
+          - user_field: reference_user_field.md
+          - user_field_declaration: reference_user_field_declaration.md
+          - variable: reference_variable.md
+          - variable_declaration: reference_variable_declaration.md
+          - version: reference_version.md
+          - xmlpart: reference_xmlpart.md
+          - mixin_dc_creator: reference_mixin_dc_creator.md
+          - mixin_dc_date: reference_mixin_dc_date.md
+          - mixin_link: reference_mixin_link.md
+          - mixin_list: reference_mixin_list.md
+          - mixin_named_range: reference_mixin_named_range.md
+          - mixin_paragraph: reference_mixin_paragraph.md
+          - mixin_paragraph_formatted: reference_mixin_paragraph_formatted.md
+          - mixin_toc: reference_mixin_toc.md
+          - utils: reference_utils.md
     - Recipes: recipes.md
+
+validation:
+    unrecognized_links: ignore
