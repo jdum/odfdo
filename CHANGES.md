@@ -1,5 +1,17 @@
 # Odfdo Release Notes
 
+## [3.22.6] - 2026-04-18
+
+-   Documentation now split into multiple smaller pages, one per module.
+-   One more test for markdown export.
+
+### Changed
+
+-   Documentation generation split into individual module pages for easier navigation.
+-   `mkdocs.yml` navigation now auto-generated from module list.
+-   Test file for markdown export (`test_md.py`).
+-   Include lxml v6.1.0 in test matrix.
+
 ## [3.22.5] - 2026-04-11
 
 -   Improved test coverage across multiple modules.
