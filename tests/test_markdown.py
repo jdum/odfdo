@@ -46,6 +46,12 @@ def document_bookmark(samples) -> Iterable[Document]:
 
 
 @pytest.fixture
+def document_md_sample(samples) -> Iterable[Document]:
+    document = Document(samples("md_sample.odt"))
+    yield document
+
+
+@pytest.fixture
 def document_i28(samples) -> Iterable[Document]:
     document = Document(samples("issue_28_pretty.odt"))
     yield document
@@ -226,6 +232,54 @@ def test_md_example_text(document_example):
     """
     ).strip()
     # First paragraphAuteur inconnu2009-06-22T17:18:42This is an annotation.With diacritical signs: éè
+    assert md.strip() == expected
+
+
+def test_md_sample(document_md_sample):
+    md = document_md_sample.to_markdown()
+    expected = dedent("""\
+    # Document Title
+
+    ## Introduction
+
+    This is a normal paragraph with **bold text**, \\
+    _italic text_, and \\
+    ***bold italic text***.\\
+
+
+    This has ~~strikethrough~~ and \\
+    `inline code`.\\
+
+
+    Visit [Example Site](https://example.com) for more info.\\
+
+
+    ## Features
+
+     -  Fast parsing
+     -  Clean output
+     -  Django integration
+     -  LLM\\-ready markdown
+
+    ### Nested List
+
+     -  Parent item
+        -  Child A
+        -  Child B
+     -  Another parent
+
+    ## Data Table
+
+    | Name  | Age | City   |
+    |-------|-----|--------|
+    | Alice | 30  | Paris  |
+    | Bob   | 25  | London |
+
+
+    ## Conclusion
+
+    This document tests the ODT to Markdown conversion pipeline.
+    """).strip()
     assert md.strip() == expected
 
 
