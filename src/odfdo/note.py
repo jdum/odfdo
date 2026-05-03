@@ -167,6 +167,8 @@ class Note(MDNote, LinkMixin, Element):
         """
         note_citation = self.get_element("text:note-citation")
         if note_citation:
+            # without that line note_citation doesn't work
+            note_citation.set_attribute("text:label", text)
             note_citation.text = text
 
     @property

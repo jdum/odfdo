@@ -785,6 +785,7 @@ ODF_PROPERTIES = {
     "text:dont-balance-text-columns",
     "text:id",  # ODF v1.0
     "text:label-followed-by",
+    "text:label",  # without that line note_citation doesn't work
     "text:line-break",
     "text:line-number",
     "text:list-id",
