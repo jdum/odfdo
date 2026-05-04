@@ -121,6 +121,7 @@ class Note(MDNote, LinkMixin, Element):
         note_class: str = "footnote",
         note_id: str | None = None,
         citation: str | None = None,
+        label: str | None = None,
         body: str | None = None,
         **kwargs: Any,
     ) -> None:
@@ -130,7 +131,10 @@ class Note(MDNote, LinkMixin, Element):
             note_class: The class of the note ("footnote" or "endnote").
                 Defaults to "footnote".
             note_id: A unique ID for the note. If None, one is generated.
-            citation: The citation text for the note.
+            citation: The display text of the note citation. If provided alone,
+                the note is auto-numbered (no text:label attribute).
+            label: The fixed label value (text:label attribute). When provided
+                without citation, the display text defaults to this value.
             body: The content of the note body. Can be a string or an `Element`.
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
@@ -141,7 +145,13 @@ class Note(MDNote, LinkMixin, Element):
             self.note_class = note_class
             if note_id is not None:
                 self.note_id = note_id
-            if citation is not None:
+            if label is not None and citation is None:
+                self.label = label
+                self.citation = label
+            elif label is not None and citation is not None:
+                self.label = label
+                self.citation = citation
+            elif citation is not None:
                 self.citation = citation
             if body is not None:
                 self.note_body = body
@@ -167,8 +177,6 @@ class Note(MDNote, LinkMixin, Element):
         """
         note_citation = self.get_element("text:note-citation")
         if note_citation:
-            # without that line note_citation doesn't work
-            note_citation.set_attribute("text:label", text)
             note_citation.text = text
 
     @property
