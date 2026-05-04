@@ -172,6 +172,30 @@ class Note(MDNote, LinkMixin, Element):
             note_citation.text = text
 
     @property
+    def label(self) -> str:
+        """Get the text:label attribute of the note citation.
+
+        Returns:
+            str: The label value, or an empty string if not found.
+        """
+        note_citation = self.get_element("text:note-citation")
+        if note_citation:
+            value = note_citation.get_attribute("text:label")
+            return str(value or "")
+        return ""
+
+    @label.setter
+    def label(self, text: str | None) -> None:
+        """Set the text:label attribute of the note citation.
+
+        Args:
+            text: The new label value, or None to remove the attribute.
+        """
+        note_citation = self.get_element("text:note-citation")
+        if note_citation:
+            note_citation.set_attribute("text:label", text)
+
+    @property
     def note_body(self) -> str:
         """Get the text content of the note body.
 
