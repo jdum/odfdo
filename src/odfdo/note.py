@@ -127,6 +127,17 @@ class Note(MDNote, LinkMixin, Element):
     ) -> None:
         """Initialize a Note element (footnote or endnote).
 
+        A note can be either auto-numbered or have a fixed label:
+
+        - **Auto-numbered**: the consumer (e.g. LibreOffice) generates the
+          citation number from <text:notes-configuration>. Create this by
+          providing only "citation" (pre-filled display text) or nothing at
+          all. No "text:label" attribute is written.
+
+        - **Labeled**: the note carries a fixed label. Create this by providing
+          "label" (sets the "text:label" attribute). If "citation" is not
+          given, the display text defaults to the label value.
+
         Args:
             note_class: The class of the note ("footnote" or "endnote").
                 Defaults to "footnote".
