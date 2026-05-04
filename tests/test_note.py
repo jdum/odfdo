@@ -368,3 +368,59 @@ def test_get_formatted_text(document):
         "(i) Les apparences sont trompeuses !\n"
     )
     assert document.get_formatted_text() == expected
+
+
+def test_note_label_only():
+    note = Note(note_id="note1", label="*", body="content")
+    assert note.label == "*"
+    assert note.citation == "*"
+    expected = (
+        '<text:note text:id="note1" text:note-class="footnote">'
+        '<text:note-citation text:label="*">*</text:note-citation>'
+        "<text:note-body>"
+        "<text:p>content</text:p>"
+        "</text:note-body>"
+        "</text:note>"
+    )
+    assert note._canonicalize() == expected
+
+
+def test_note_label_and_citation():
+    note = Note(note_id="note1", label="*", citation="[*]", body="content")
+    assert note.label == "*"
+    assert note.citation == "[*]"
+    expected = (
+        '<text:note text:id="note1" text:note-class="footnote">'
+        '<text:note-citation text:label="*">[*]</text:note-citation>'
+        "<text:note-body>"
+        "<text:p>content</text:p>"
+        "</text:note-body>"
+        "</text:note>"
+    )
+    assert note._canonicalize() == expected
+
+
+def test_note_label_getter_no_citation_tag():
+    note = Element.from_tag('<text:note text:note-class="footnote"/>')
+    assert note.label == ""
+
+
+def test_note_label_setter_no_citation_tag():
+    note = Element.from_tag('<text:note text:note-class="footnote"/>')
+    note.label = "no place to store this"
+    assert note.label == ""
+
+
+def test_note_label_remove():
+    note = Note(note_id="note1", label="*", body="content")
+    assert note.label == "*"
+    note.label = None
+    assert note.label == ""
+    assert "text:label" not in note._canonicalize()
+
+
+def test_note_auto_numbered_citation_only():
+    note = Note(note_id="note1", citation="1", body="content")
+    assert note.citation == "1"
+    assert note.label == ""
+    assert "text:label" not in note._canonicalize()
