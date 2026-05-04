@@ -1,5 +1,21 @@
 # Odfdo Release Notes
 
+## [3.22.7] - 2026-05-04
+
+-   Improve the Note class: a note can now be either auto-numbered or have a fixed label (PR #66).
+-   **Auto-numbered** notes: the consumer (e.g. LibreOffice) generates the citation number from<text:notes-configuration>. Create this by providing only "citation" (pre-filled display text) or nothing at all. No "text:label" attribute is written. That was the previous behaviour, no change required.
+
+-   **Labeled** notes: the note carries a fixed label. Create this by providing "label" (sets the "text:label" attribute). If "citation" is not given, the display text defaults to the label value.
+
+### Added
+
+-   Add `Note.label` property.
+-   Add tests for `Note.label`.
+
+### Fixed
+
+-   Fix missing labeled `Note` feature.
+ 
 ## [3.22.6] - 2026-04-18
 
 -   Documentation now split into multiple smaller pages, one per module.
