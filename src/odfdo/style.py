@@ -394,20 +394,30 @@ class Style(StyleProps):
     ) -> None:
         """Create a style of the given family.
 
-        A Style of a given family (example: 'paragraph') may have a sub element (example: <style:paragraph-properties>) containing the relevant details.
-        A Style may also have sub elements for other areas, however the Style initialisation method manages at most one area at creation time (see note 2).
+        A Style of a given family (example: 'paragraph') may have a sub
+        element (example: <style:paragraph-properties>) containing the
+        relevant details.
+        A Style may also have sub elements for other areas, however the
+        Style initialisation method manages at most one area at creation
+        time (see note 2).
 
-        In brief, this initilisation method permits to create relatively simple styles like the below examples, but defining by program complex style hierarchies requires a lot of code.
+        In brief, this initilisation method permits to create relatively
+        simple styles like the below examples, but defining by program
+        complex style hierarchies requires a lot of code.
 
         Style("table-column", width="5cm")
         Style("paragraph", area="text", color="#ff0000")
 
 
-        Note 1: for "master-page" and "page-layout" style families, use the dedicated classes StyleMasterPage and StylePageLayout.
+        Note 1: for "master-page" and "page-layout" style families, use
+        the dedicated classes StyleMasterPage and StylePageLayout.
 
-        Note 2: it is possible to add or modify area sub elements (ie: <style:paragraph-properties>) after the initialisation with the method Style.set_properties().
+        Note 2: it is possible to add or modify area sub elements
+        (ie: <style:paragraph-properties>) after the initialisation with
+        the method Style.set_properties().
 
-        Note 3: a helper function is provided for a specialized styles for table cells, see create_table_cell_style().
+        Note 3: a helper function is provided for a specialized styles
+        for table cells, see create_table_cell_style().
 
         family: str | None = None,
         name: str | None = None,
@@ -418,79 +428,88 @@ class Style(StyleProps):
 
 
         The name is not mandatory at this
-        point but will become required when inserting in a document as a common
-        style.
+        point but will become required when inserting in a document as a
+        common style.
 
-        The display name is the name the user sees in an office application.
+        The display name is the name the user sees in an office
+        application.
 
-        The parent_style is the name of the style this style will inherit from.
+        The parent_style is the name of the style this style will
+        inherit from.
 
-        To set properties, pass them as keyword arguments. The area properties
-        apply to is optional and defaults to the family.
+        To set properties, pass them as keyword arguments. The area
+        properties apply to is optional and defaults to the family.
 
         For attributes of style:{area}-properties (for example
         "style:paragraph-properties"), pass the attributes as keywords.
-        You can safely remove the "fo:" or "style:" prefix and replace "-"
-        by "_", so use "padding_let" for "fo:padding-left" value.
+        You can safely remove the "fo:" or "style:" prefix and replace
+        "-" by "_", so use "padding_let" for "fo:padding-left" value.
 
         Args:
             family: The style family. Can be 'paragraph', 'text',
-                'section', 'table', 'table-column', 'table-row', 'table-cell',
-                'table-page', 'chart', 'drawing-page', 'graphic', 'presentation',
-                'control', 'ruby', 'list', 'number', 'page-layout', 'font-face',
-                or 'master-page'.
+                'section', 'table', 'table-column', 'table-row',
+                'table-cell', 'table-page', 'chart', 'drawing-page',
+                'graphic', 'presentation', 'control', 'ruby', 'list',
+                'number', 'page-layout', 'font-face', or 'master-page'.
             name: The programmatic name of the style.
             display_name: The display name of the style.
             parent_style: The name of the parent style.
             area: The specific area to which properties apply.
                 Defaults to the style's family.
-
-        'text' Properties:
             color: Text color (e.g., "#RRGGBB" or "red").
-            background_color: Background color (e.g., "#RRGGBB" or "red").
-            italic: If True, applies italic formatting.
-            bold: If True, applies bold formatting.
-
-        'paragraph' Properties:
+                ('text' property)
+            background_color: Background color (e.g., "#RRGGBB" or
+                "red"). ('text' property)
+            italic: If True, applies italic formatting. ('text'
+                property)
+            bold: If True, applies bold formatting. ('text' property)
+            text_shadow: Text shadow specification. ('text' property)
             master_page: The master page to use for the paragraph.
-
-        'table-cell' Properties:
+                ('paragraph' property)
             data_style: The data style for the cell. (unused)
-            border: Style string for all four borders (e.g., "0.002cm solid #000000").
-            border_top: Style string for the top border.
+                ('table-cell' property)
+            border: Style string for all four borders (e.g.,
+                "0.002cm solid #000000"). ('table-cell' property)
+            border_top: Style string for the top border. ('table-cell'
+                property)
             border_right: Style string for the right border.
+                ('table-cell' property)
             border_bottom: Style string for the bottom border.
-            border_left: Style string for the left border.
-            padding: Style string for padding on all four sides (e.g., "0.002cm").
-            padding_top: Style string for top padding.
+                ('table-cell' property)
+            border_left: Style string for the left border. ('table-cell'
+                property)
+            padding: Style string for padding on all four sides (e.g.,
+                "0.002cm"). ('table-cell' property)
+            padding_top: Style string for top padding. ('table-cell'
+                property)
             padding_bottom: Style string for bottom padding.
-            padding_left: Style string for left padding.
-            padding_right: Style string for right padding.
-            shadow: Shadow specification (e.g., "#808080 0.176cm 0.176cm").
-
-        'table-row' Properties:
-            height: Row height (e.g., '5cm').
+                ('table-cell' property)
+            padding_left: Style string for left padding. ('table-cell'
+                property)
+            padding_right: Style string for right padding. ('table-cell'
+                property)
+            shadow: Shadow specification (e.g.,
+                "#808080 0.176cm 0.176cm"). ('table-cell' property)
+            height: Row height (e.g., '5cm'). ('table-row' property)
             use_optimal_height: If True, use optimal row height.
-
-        'table-column' Properties:
-            width: Column width (e.g., '5cm').
-            break_before: Page or column break before ('page', 'column', or 'auto').
-            break_after: Page or column break after ('page', 'column', or 'auto').
-
-        'table' Properties:
-            width: Table width (e.g., '5cm').
-            align: Table alignment ('left', 'center', 'margins', or 'right').
-
-        'graphic' Properties:
+                ('table-row' property)
+            break_before: Page or column break before ('page', 'column',
+                or 'auto'). ('table-column' property)
+            break_after: Page or column break after ('page', 'column',
+                or 'auto'). ('table-column' property)
+            align: Table alignment ('left', 'center', 'margins', or
+                'right'). ('table' property)
+            width: Column or table width (e.g., '5cm'). ('table-column'
+                or 'table' property)
             min_height: Minimum height for the graphic (e.g., '1cm').
-
-        'font-face' Properties:
-            font_name: The font name.
-            font_family: The font family.
-            font_family_generic: Generic font family.
-            font_pitch: Font pitch ('variable' or 'fixed'). Defaults to 'variable'.
-
-        **kwargs: Additional properties to set on the style.
+                ('graphic' property)
+            font_name: The font name. ('font-face' property)
+            font_family: The font family. ('font-face' property)
+            font_family_generic: Generic font family. ('font-face'
+                property)
+            font_pitch: Font pitch ('variable' or 'fixed'). Defaults to
+                'variable'. ('font-face' property)
+            **kwargs: Additional properties to set on the style.
         """
         self._family: str | None = None
         tag_or_elem = kwargs.get("tag_or_elem")
