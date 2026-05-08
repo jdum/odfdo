@@ -97,10 +97,35 @@ def test_note_body_setter_element():
     assert str(note.note_body) == "content"
 
 
+def test_note_body_setter_empty_list():
+    note = Note()
+    note.note_body = []
+    assert note.note_body == ""
+
+
+def test_note_body_setter_several_elements():
+    content = [Paragraph("content"), Paragraph("another content")]
+    note = Note()
+    note.note_body = "initial"
+    assert note.note_body == "initial"
+    note.note_body = content
+    assert str(note.note_body) == "content\nanother content"
+
+
+def test_note_body_setter_ignore_non_element():
+    content = [Paragraph("content"), "oops", Paragraph("another content")]
+    note = Note()
+    note.note_body = "initial"
+    assert note.note_body == "initial"
+    note.note_body = content
+    assert str(note.note_body) == "content\nanother content"
+
+
 def test_note_body_setter_wrong_type():
+    content = 42
     note = Note()
     with pytest.raises(TypeError):
-        note.note_body = []
+        note.note_body = content
 
 
 def test_note_check_valid_no_class_0():
