@@ -256,7 +256,14 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         family_generic: str | None = None,
         pitch: str = "variable",
     ) -> None:
-        """This method is not applicable to `StyleMasterPage` and does nothing."""
+        """This method is not applicable to `StyleMasterPage` and does nothing.
+
+        Args:
+            name: The font name.
+            family: The font family. If None, defaults to `name`.
+            family_generic: The generic font family (e.g., 'swiss', 'roman').
+            pitch: The font pitch ('variable' or 'fixed'). Defaults to 'variable'.
+        """
 
 
 StyleMasterPage._define_attribut_property()
