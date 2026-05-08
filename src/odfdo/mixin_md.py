@@ -27,7 +27,7 @@ from copy import deepcopy
 from itertools import chain
 from typing import Any, NamedTuple
 
-MD_GLOBAL = {}
+MD_GLOBAL: dict[str, Any] = {}
 
 RE_STAR6 = re.compile(r"(?<!\\)(\*{6})")
 RE_STAR4 = re.compile(r"(?<!\\)(\*{4})")
