@@ -1,5 +1,26 @@
 # Odfdo Release Notes
 
+## [3.22.8] - 2026-05-08
+
+-   The `Note.note_body` setter now accepts an `Iterable` of `Element`
+    objects, allowing multiple paragraphs (or other elements) in a note
+    body (PR #67).
+-   Added missing docstring for `Header.get_formatted_text`.
+-   Completed parameter documentation for `StyleMasterPage.set_font`.
+-   Fixed undocumented parameters in `Style.__init__` docstring.
+
+### Added
+
+-   Allow multiple elements in `Note.note_body` (PR #67).
+-   Tests for `Note.note_body` with multiple elements, empty list, and
+    non-element filtering.
+
+### Fixed
+
+-   Add missing docstring to `Header.get_formatted_text`.
+-   Add missing parameter docs to `StyleMasterPage.set_font`.
+-   Fix undocumented parameters in `Style.__init__`.
+
 ## [3.22.7] - 2026-05-04
 
 -   Improve the Note class: a note can now be either auto-numbered or have a fixed label (PR #66).
