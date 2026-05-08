@@ -99,6 +99,21 @@ class Header(Paragraph, MDHeader):
         context: dict | None = None,
         simple: bool = False,
     ) -> str:
+        """Return the formatted text content of the header.
+
+        In reStructuredText mode (when ``rst_mode`` is True in the
+        context), the header is formatted with an underline appropriate
+        to its outline level.
+
+        Args:
+            context: A dictionary providing context for formatting. If
+                None, a default context is created.
+            simple: Present for API compatibility with paragraph-like
+                elements; ignored by this method.
+
+        Returns:
+            str: The formatted text content of the header.
+        """
         if not context:
             context = {
                 "document": None,
