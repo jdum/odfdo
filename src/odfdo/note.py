@@ -24,8 +24,8 @@
 
 from __future__ import annotations
 
-from typing import Any, ClassVar, cast, Iterable
-import collections.abc
+from collections.abc import Iterable
+from typing import Any, ClassVar, cast
 
 from .annotation import Annotation, AnnotationEnd, get_unique_office_name  # noqa: F401
 from .element import Element, PropDef, PropDefBool, register_element_class
@@ -72,17 +72,19 @@ class NoteMixin(Element):
         note_class: str | None = None,
         content: str | None = None,
     ) -> Note | None:
-        """Retrieve a specific note (`text:note`) that matches the specified criteria.
+        """Retrieve a specific note (`text:note`) that matches the specified
+           criteria.
 
         Args:
-            position: The 0-based index of the matching note to retrieve if multiple match
-                the other criteria. Defaults to 0.
+            position: The 0-based index of the matching note to retrieve if
+                multiple match the other criteria. Defaults to 0.
             note_id: The unique ID of the note.
             note_class: Filter by note class ("footnote" or "endnote").
             content: A regular expression to match against the note's content.
 
         Returns:
-            Note | None: A `Note` instance matching the criteria, or `None` if not found.
+            Note | None: A `Note` instance matching the criteria, or `None`
+                if not found.
         """
         return cast(
             None | Note,
@@ -220,7 +222,8 @@ class Note(MDNote, LinkMixin, Element):
         """Get the text content of the note body.
 
         Returns:
-            str: The content of the note body, or an empty string if not found.
+            str: The content of the note body, or an empty string if not
+                 found.
         """
         note_body = self.get_element("text:note-body")
         if note_body:
@@ -228,12 +231,15 @@ class Note(MDNote, LinkMixin, Element):
         return ""
 
     @note_body.setter
-    def note_body(self, text_or_element: Iterable[Element] | Element | str | None) -> None:
+    def note_body(
+        self, text_or_element: Iterable[Element] | Element | str | None
+    ) -> None:
         """Set the content of the note body.
 
         Args:
             text_or_element: The new content for the note body.
-                Can be a string, an `Element`, an Iterable of `Element` or None to clear the content.
+                Can be a string, an `Element`, an Iterable of `Element` or
+                None to clear the content.
         """
         note_body = self.get_element("text:note-body")
         if not note_body:
@@ -245,7 +251,7 @@ class Note(MDNote, LinkMixin, Element):
         elif isinstance(text_or_element, Element):
             note_body.clear()
             note_body.append(text_or_element)
-        elif isinstance(text_or_element, collections.abc.Iterable):
+        elif isinstance(text_or_element, Iterable):
             note_body.clear()
             for element in text_or_element:
                 if isinstance(element, Element):
@@ -260,7 +266,8 @@ class Note(MDNote, LinkMixin, Element):
         are not empty.
 
         Raises:
-            ValueError: If `note_class` is invalid, or if `note_id` or `citation` are empty.
+            ValueError: If `note_class` is invalid, or if `note_id` or
+                `citation` are empty.
         """
         if not self.note_class or self.note_class not in self.NOTE_CLASS:
             raise ValueError('Note class must be "footnote" or "endnote"')
