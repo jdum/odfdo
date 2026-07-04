@@ -1,5 +1,13 @@
 # Odfdo Release Notes
 
+## [3.22.9] - 2026-07-04
+
+-   Update of dependencies, include lxml v6.1.1 in test matrix.
+
+### Changed
+
+-   Include lxml v6.1.1 in test matrix.
+
 ## [3.22.8] - 2026-05-08
 
 -   The `Note.note_body` setter now accepts an `Iterable` of `Element`

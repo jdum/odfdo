@@ -1,6 +1,6 @@
 [project]
 name = "odfdo"
-version = "3.22.8"
+version = "3.22.9"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 readme = "README.md"
@@ -73,6 +73,7 @@ dev = [
     "mypy>=1.19.1",
     "mypy-extensions>=1.1.0",
     "typing-extensions>=4.15.0",
+    "ty>=0.0.56",
 ]
 
 [tool.uv]
