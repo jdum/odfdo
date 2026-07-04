@@ -1511,7 +1511,7 @@ class Element(MDBase):
         Returns:
             str | None: The tail text, or None if no tail text is present.
         """
-        return self.__element.tail  # ty: ignore[no-any-return]
+        return self.__element.tail  # ty: ignore
 
     @tail.setter
     def tail(self, text: str | None) -> None:

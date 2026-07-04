@@ -114,7 +114,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         clone = Element.clone.fget(self)  # ty: ignore
         clone.y = self.y
         clone.x = self.x
-        return clone  # ty: ignore[no-any-return]
+        return clone  # ty: ignore
 
     @property
     def value(
