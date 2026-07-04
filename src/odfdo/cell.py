@@ -234,7 +234,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
     @float.setter
     def float(self, value: str | _float | _int | Decimal | None) -> None:
         try:
-            value_float = _float(value)  # ty: ignore[arg-type]
+            value_float = _float(value)  # ty: ignore[invalid-argument-type]
         except (ValueError, TypeError, ConversionSyntax):
             value_float = 0.0
         value_str = str(value_float)
@@ -267,7 +267,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
     @decimal.setter
     def decimal(self, value: str | _float | _int | Decimal | None) -> None:
         try:
-            value_decimal = Decimal(value)  # ty: ignore[arg-type]
+            value_decimal = Decimal(value)  # ty: ignore[invalid-argument-type]
         except (ValueError, TypeError, ConversionSyntax, InvalidOperation):
             value_decimal = Decimal("0.0")
         value_str = str(value_decimal)

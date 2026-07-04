@@ -79,7 +79,7 @@ class XmlPart:
         """
         if self.__tree is None:
             part = self.container.get_part(self.part_name)
-            self.__tree = parse(BytesIO(part))  # ty: ignore[arg-type]
+            self.__tree = parse(BytesIO(part))  # ty: ignore[invalid-argument-type]
         return self.__tree
 
     def __repr__(self) -> str:

@@ -50,7 +50,7 @@ def _get_successor(
     parent = element.parent
     if parent is None:
         return None, None
-    return _get_successor(parent, target.parent)  # ty: ignore[arg-type]
+    return _get_successor(parent, target.parent)  # ty: ignore[invalid-argument-type]
 
 
 def _find_any_id(element: Element) -> tuple[str, str, str]:

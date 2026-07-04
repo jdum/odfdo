@@ -336,7 +336,7 @@ class ParaFormattedTextMixin:
                 "images": [],
                 "no_img_level": 0,
             }
-        content = _formatted_text(self, context)  # ty:ignore[arg-type]
+        content = _formatted_text(self, context)  # ty:ignore[invalid-argument-type]
         if simple:
             return content
         else:

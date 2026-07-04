@@ -2624,7 +2624,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                         cell.clear()
             if val_list:
                 if len(val_list) == 1:
-                    cells[0][0].set_value(val_list[0])  # ty: ignore[arg-type]
+                    cells[0][0].set_value(val_list[0])  # ty: ignore[invalid-argument-type]
                 else:
                     value = " ".join([str(v) for v in val_list if v])
                     cells[0][0].set_value(value)

@@ -63,7 +63,7 @@ def _from_dict(data: dict[str, str | int | bool | dict[str, Any]]) -> Element:
     """
     class_tag: str = data.pop("class")  # ty: ignore[assignment]
     if class_tag == "config:config-item":
-        return ConfigItem.from_dict(data)  # ty: ignore[arg-type]
+        return ConfigItem.from_dict(data)  # ty: ignore[invalid-argument-type]
     kwargs: dict[str, str | int | bool] = {}
     if "config:name" in data:
         kwargs["name"] = data.pop("config:name")  # ty: ignore[assignment]
@@ -535,7 +535,7 @@ class ConfigItem(Element):
         if config_type == "boolean":
             self.text = Boolean.encode(value)
         elif config_type in {"short", "int", "long", "double"}:
-            self.text = str(int(value))  # ty: ignore[arg-type]
+            self.text = str(int(value))  # ty: ignore[invalid-argument-type]
         else:
             self.text = str(value or "")
 
@@ -563,8 +563,8 @@ class ConfigItem(Element):
             A ConfigItem instance."
         """
         return cls(
-            name=data["config:name"],  # ty: ignore[arg-type]
-            config_type=data.get("config:type"),  # ty: ignore[arg-type]
+            name=data["config:name"],  # ty: ignore[invalid-argument-type]
+            config_type=data.get("config:type"),  # ty: ignore[invalid-argument-type]
             value=data.get("value"),
         )
 
