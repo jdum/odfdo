@@ -224,7 +224,7 @@ def _erase_background(element: Element) -> None:
     Args:
         element: The element from which to erase background properties.
     """
-    family = element.family  # ty: ignore[attr-defined]
+    family = element.family  # ty: ignore[unresolved-attribute]
     properties = element.get_element(f"style:{family}-properties")
     if properties is None:
         return
@@ -244,7 +244,7 @@ def _set_background_color(element: Element, color: str) -> None:
         element: The element to set the background color for.
         color: The color string (e.g., "#RRGGBB" or "red").
     """
-    family = element.family  # ty: ignore[attr-defined]
+    family = element.family  # ty: ignore[unresolved-attribute]
     properties = element.get_element(f"style:{family}-properties")
     if properties is None:
         properties = Element.from_tag(f"style:{family}-properties")
@@ -278,7 +278,7 @@ def _set_background_image(
     _check_position(position)
     _check_repeat(repeat)
     _check_opacity(opacity)
-    family = element.family  # ty: ignore[attr-defined]
+    family = element.family  # ty: ignore[unresolved-attribute]
     properties = element.get_element(f"style:{family}-properties")
     if properties is None:
         properties = Element.from_tag(f"style:{family}-properties")
@@ -329,7 +329,7 @@ def _set_background(
     Raises:
         TypeError: If a background image is specified for a text style.
     """
-    family = element.family  # ty: ignore[attr-defined]
+    family = element.family  # ty: ignore[unresolved-attribute]
     _check_background_support(family)
     if url is not None and family == "text":
         raise TypeError("No background image for text styles")

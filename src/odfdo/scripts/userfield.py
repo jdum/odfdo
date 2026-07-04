@@ -197,7 +197,7 @@ def show_fields(document: Document, args: Namespace) -> None:
 
 
 def _change_field(body: Element, name: str, value: str) -> None:
-    field = body.get_user_field_decl(name)  # ty: ignore[attr-defined]
+    field = body.get_user_field_decl(name)  # ty: ignore[unresolved-attribute]
     if not field:
         print(f"Warning: unknown user-field {name!r}", file=sys.stderr)
         return

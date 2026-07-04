@@ -229,7 +229,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                     if isinstance(value, str):
                         value = value.strip()
                     line.append(value)
-                csv_writer.writerow(line)  # ty: ignore[attr-defined]
+                csv_writer.writerow(line)  # ty: ignore[unresolved-attribute]
 
         out = StringIO(newline=os.linesep)
         csv_writer = csv.writer(
@@ -2394,7 +2394,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             body = self.document_body
             if not body or not body.allow_named_range:
                 return []
-            named_ranges = body.get_named_ranges()  # ty: ignore[attr-defined]
+            named_ranges = body.get_named_ranges()  # ty: ignore[unresolved-attribute]
         else:
             named_ranges = self._local_named_ranges()
         if not table_name:
@@ -2431,7 +2431,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 raise ValueError("Table is not inside a document")
             if not body.allow_named_range:
                 return None
-            nr: NamedRange | None = body.get_named_range(name)  # ty: ignore[attr-defined]
+            nr: NamedRange | None = body.get_named_range(name)  # ty: ignore[unresolved-attribute]
 
         else:
             nr = self._local_named_range(name)
@@ -2460,7 +2460,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                     "Presentation, Spreadsheet or Text"
                 )
                 raise TypeError(msg)
-            body.append_named_range(named_range)  # ty: ignore[attr-defined]
+            body.append_named_range(named_range)  # ty: ignore[unresolved-attribute]
         else:
             self._local_append_named_range(named_range)
 
@@ -2501,7 +2501,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 raise TypeError(msg)
             if not table_name:
                 table_name = self.name
-            body.set_named_range(  # ty: ignore[attr-defined]
+            body.set_named_range(  # ty: ignore[unresolved-attribute]
                 name=name,
                 crange=crange,
                 table_name=table_name,
@@ -2534,7 +2534,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                     "Presentation, Spreadsheet or Text"
                 )
                 raise TypeError(msg)
-            body.delete_named_range(name)  # ty: ignore[attr-defined]
+            body.delete_named_range(name)  # ty: ignore[unresolved-attribute]
         else:
             self._local_delete_named_range(name)
 
@@ -2715,7 +2715,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                     if value is None:
                         value = ""
                     line.append(value)
-                csv_writer.writerow(line)  # ty: ignore[attr-defined]
+                csv_writer.writerow(line)  # ty: ignore[unresolved-attribute]
 
         content = StringIO(newline="")
         csv_writer = csv.writer(content, dialect=dialect, **fmtparams)
@@ -2795,7 +2795,7 @@ def import_from_csv(
         content_b = path_or_file.getvalue()
     else:
         # Leave the file we were given open
-        content_b = path_or_file.read()  # ty: ignore[attr-defined]
+        content_b = path_or_file.read()  # ty: ignore[unresolved-attribute]
     if isinstance(content_b, bytes):
         content = content_b.decode()
     else:

@@ -232,7 +232,7 @@ class OfficeSettings(Body):
         conf: dict[str, str | int | bool | dict[str, Any] | list[Any]] = {
             "class": self._tag
         }
-        children = [child.as_dict() for child in self.children]  # ty: ignore[attr-defined]
+        children = [child.as_dict() for child in self.children]  # ty: ignore[unresolved-attribute]
         if children:
             conf["children"] = children
         return conf

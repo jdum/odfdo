@@ -397,7 +397,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             self.delete(child, keep_tail=False)
         self.text = None
         for element in content:
-            self._Element__append(element)  # ty: ignore[attr-defined]
+            self._Element__append(element)  # ty: ignore[unresolved-attribute]
 
     @staticmethod
     def _unformatted(text: str | bytes | None) -> str:
@@ -437,7 +437,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
                 self.append_plain_text(str(str_or_element))
                 self.append_plain_text(str_or_element.tail)
             else:
-                self._Element__append(str_or_element)  # ty: ignore[attr-defined]
+                self._Element__append(str_or_element)  # ty: ignore[unresolved-attribute]
         elif formatted:
             self.append_plain_text(str_or_element)
         else:

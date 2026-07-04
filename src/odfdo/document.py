@@ -986,7 +986,7 @@ class Document(MDDocument):
         family = style.family
         if family is None:
             return None
-        parent_style_name = style.parent_style  # ty: ignore [attr-defined]
+        parent_style_name = style.parent_style  # ty: ignore [unresolved-attribute]
         if not parent_style_name:
             return None
         return self.get_style(family, parent_style_name)

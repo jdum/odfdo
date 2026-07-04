@@ -51,7 +51,7 @@ def _as_dict(
     if element.name:
         conf["config:name"] = element.name
     # all children are known to be classes with as_dict()
-    children = [child.as_dict() for child in element.children]  # ty: ignore[attr-defined]
+    children = [child.as_dict() for child in element.children]  # ty: ignore[unresolved-attribute]
     if children:
         conf["children"] = children
     return conf

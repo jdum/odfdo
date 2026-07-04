@@ -550,7 +550,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
                 return
             # parent may be group of rows, not table
             if isinstance(upper, Element) and upper._tag == "table:table-row":
-                upper._compute_row_cache()  # ty:ignore[attr-defined]
+                upper._compute_row_cache()  # ty:ignore[unresolved-attribute]
                 return
             child = upper
 

@@ -1659,7 +1659,7 @@ class Element(MDBase):
                     "text:p",
                     "text:span",
                 }:
-                    container.append_plain_text("")  # ty: ignore[attr-defined]
+                    container.append_plain_text("")  # ty: ignore[unresolved-attribute]
                 count += number
         return count
 

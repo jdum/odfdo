@@ -164,7 +164,7 @@ class Row(Element):
     @property
     def clone(self) -> Row:
         """Return a copy of the row."""
-        cloned_row: Row = Element.clone.fget(self)  # ty: ignore[attr-defined]
+        cloned_row: Row = Element.clone.fget(self)  # ty: ignore[unresolved-attribute]
         cloned_row.y = self.y
         cloned_row._table_cache = TableCache.copy(self._table_cache)
         cloned_row._row_cache = RowCache.copy(self._row_cache)
@@ -211,8 +211,8 @@ class Row(Element):
                 return
             # parent may be group of rows, not table
             if isinstance(upper, Element) and upper._tag == "table:table":
-                upper._table_cache = self._table_cache  # ty: ignore[attr-defined]
-                upper._compute_table_cache()  # ty: ignore[attr-defined]
+                upper._table_cache = self._table_cache  # ty: ignore[unresolved-attribute]
+                upper._compute_table_cache()  # ty: ignore[unresolved-attribute]
                 return
             current = upper
 

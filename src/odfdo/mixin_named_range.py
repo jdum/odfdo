@@ -96,7 +96,7 @@ class NRMixin(Element):
             named_expressions = cast(
                 TableNamedExpressions, Element.from_tag("table:named-expressions")
             )
-            self._Element__append(named_expressions)  # ty: ignore[attr-defined]
+            self._Element__append(named_expressions)  # ty: ignore[unresolved-attribute]
         # exists ?
         current = cast(
             None | NamedRange,
@@ -106,7 +106,7 @@ class NRMixin(Element):
         )
         if current:
             named_expressions.delete(current)
-        named_expressions._Element__append(named_range)  # ty: ignore[attr-defined]
+        named_expressions._Element__append(named_range)  # ty: ignore[unresolved-attribute]
 
     def set_named_range(
         self,
