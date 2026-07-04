@@ -827,7 +827,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         span.text = ""
         span.append_plain_text(kwargs["match_string"])
         span.style = style
-        return span  # ty: ignore[return-value]
+        return span  # ty: ignore[invalid-return-type]
 
     def remove_spans(self, keep_heading: bool = True) -> Element:
         """Remove all `text:span` elements from a copy of the paragraph.
@@ -845,7 +845,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             protect = ("text:h",)
         else:
             protect = None
-        return strip_tags(self, strip=strip, protect=protect)  # ty: ignore [return-value]
+        return strip_tags(self, strip=strip, protect=protect)  # ty: ignore [invalid-return-type]
 
     def remove_span(self, spans: Element | list[Element]) -> Element:
         """Remove specific `text:span` elements from a copy of the paragraph.
@@ -857,7 +857,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             Element: A new `Element` instance representing the paragraph
                 with the specified `text:span` elements removed.
         """
-        return strip_elements(self, spans)  # ty: ignore [return-value]
+        return strip_elements(self, spans)  # ty: ignore [invalid-return-type]
 
     @_by_regex_offset
     def set_link(
@@ -885,7 +885,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
                 a hyperlink.
         """
 
-        return Link(url, text=kwargs["match_string"])  # ty: ignore[return-value]
+        return Link(url, text=kwargs["match_string"])  # ty: ignore[invalid-return-type]
 
     def remove_links(self) -> Element:
         """Remove all `text:a` (hyperlink) elements from a copy of the paragraph.
@@ -895,7 +895,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
                 without hyperlink elements.
         """
         strip = (Link._tag,)
-        return strip_tags(self, strip=strip)  # ty: ignore [return-value]
+        return strip_tags(self, strip=strip)  # ty: ignore [invalid-return-type]
 
     def remove_link(self, links: Link | list[Link]) -> Element:
         """Remove specific `text:a` (hyperlink) elements from a copy of the paragraph.
@@ -907,7 +907,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             Element: A new `Element` instance representing the paragraph
                 with the specified hyperlink elements removed.
         """
-        return strip_elements(self, links)  # ty: ignore [return-value]
+        return strip_elements(self, links)  # ty: ignore [invalid-return-type]
 
     def insert_reference(
         self,

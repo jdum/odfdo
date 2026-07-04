@@ -69,7 +69,7 @@ class LinkMixin(Element):
             office_title=title,
             url=url,
             content=content,
-        )  # ty: ignore [return-value]
+        )  # ty: ignore [invalid-return-type]
 
     def get_link(
         self,
@@ -98,4 +98,4 @@ class LinkMixin(Element):
             office_title=title,
             url=url,
             content=content,
-        )  # ty: ignore [return-value]
+        )  # ty: ignore [invalid-return-type]

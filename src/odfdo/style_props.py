@@ -165,7 +165,7 @@ class StyleProps(StyleBase):
         """
         props = self.get_properties(area="text") or {}
         self._update_boolean_styles(props)  # ty: ignore[invalid-argument-type]
-        return props  # ty: ignore[return-value]
+        return props  # ty: ignore[invalid-return-type]
 
     @staticmethod
     def _apply_valid_properties(

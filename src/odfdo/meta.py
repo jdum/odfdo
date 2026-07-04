@@ -71,7 +71,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         Returns:
             Metadata: The `office:meta` element.
         """
-        return self.get_element("//office:meta")  # ty: ignore[return-value]
+        return self.get_element("//office:meta")  # ty: ignore[invalid-return-type]
 
     get_meta_body = _get_body
 

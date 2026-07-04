@@ -344,7 +344,7 @@ class RowCache:
             clone,
         )
         self.cell_map = emap
-        return new_cell  # ty: ignore[return-value]
+        return new_cell  # ty: ignore[invalid-return-type]
 
     def insert_cell_in_cache(
         self,
@@ -370,7 +370,7 @@ class RowCache:
             self.cell_map,
         )
         self.cell_map = emap
-        return new_cell  # ty: ignore[return-value]
+        return new_cell  # ty: ignore[invalid-return-type]
 
     def delete_cell_in_cache(
         self,
@@ -525,7 +525,7 @@ class TableCache:
             clone,
         )
         self.row_map = emap
-        return new_row  # ty: ignore[return-value]
+        return new_row  # ty: ignore[invalid-return-type]
 
     def insert_row_in_cache(
         self,
@@ -551,7 +551,7 @@ class TableCache:
             self.row_map,
         )
         self.row_map = emap
-        return new_row  # ty: ignore[return-value]
+        return new_row  # ty: ignore[invalid-return-type]
 
     def delete_row_in_cache(
         self,
@@ -600,7 +600,7 @@ class TableCache:
             _XP_COLUMN_IDX,
         )
         self.col_map = emap
-        return new_col  # ty: ignore[return-value]
+        return new_col  # ty: ignore[invalid-return-type]
 
     def insert_col_in_cache(
         self,
@@ -626,7 +626,7 @@ class TableCache:
             self.col_map,
         )
         self.col_map = emap
-        return new_col  # ty: ignore[return-value]
+        return new_col  # ty: ignore[invalid-return-type]
 
     def delete_col_in_cache(
         self,

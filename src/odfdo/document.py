@@ -504,7 +504,7 @@ class Document(MDDocument):
         """
         if self.__body is None:
             self.__body = self.content.body
-        return self.__body  # ty: ignore[return-value]
+        return self.__body  # ty: ignore[invalid-return-type]
 
     @property
     def meta(self) -> Meta:

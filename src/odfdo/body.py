@@ -69,7 +69,7 @@ class Body(Element):
         Returns:
             list[Table]: A list of matching Table elements.
         """
-        return self._filtered_elements(  # ty: ignore[return-value]
+        return self._filtered_elements(  # ty: ignore[invalid-return-type]
             "descendant::table:table",
             table_style=style,
             content=content,
@@ -118,7 +118,7 @@ class Body(Element):
                 table_name=name,
                 content=content,
             )
-        return result  # ty: ignore[return-value]
+        return result  # ty: ignore[invalid-return-type]
 
     get_sheet = get_table
 
