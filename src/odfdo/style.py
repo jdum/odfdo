@@ -794,7 +794,7 @@ class Style(StyleProps):
         if start_value:
             level_style.set_attribute("text:start-value", str(start_value))
         if style:
-            level_style.text_style = style  # ty: ignore
+            level_style.text_style = style
         # Commit the creation
         if was_created:
             self.append(level_style)

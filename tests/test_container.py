@@ -1278,7 +1278,7 @@ def test_read_zip_with_path_none_and_non_bytesio(tmp_path, samples):
 
     # Create container and manually set up state to trigger the branch
     container = Container()
-    container._Container__packaging = "zip"  # ty: ignore
+    container._Container__packaging = "zip"
     container._Container__path_like = open(zip_path, "rb")  # noqa: SIM115
     # path is None (default), __path_like is a file object (not BytesIO)
     try:
@@ -1288,7 +1288,7 @@ def test_read_zip_with_path_none_and_non_bytesio(tmp_path, samples):
     finally:
         # Clean up the file handle
         if hasattr(container._Container__path_like, "close"):
-            container._Container__path_like.close()  # ty: ignore
+            container._Container__path_like.close()
 
 
 def test_read_folder_with_invalid_mimetype_no_content_xml(tmp_path):
@@ -1983,7 +1983,7 @@ def test_save_zip_deleted_parts():
     container._Container__parts[ODF_MANIFEST] = b"<manifest/>"
     container._Container__parts[ODF_CONTENT] = b"<content/>"
     # Mark a part as deleted
-    container._Container__parts["deleted.txt"] = None  # ty: ignore
+    container._Container__parts["deleted.txt"] = None
 
     buffer = io.BytesIO()
     container._save_zip(buffer)
@@ -1999,7 +1999,7 @@ def test_save_zip_xml_part_none():
     container._Container__parts["mimetype"] = b"text"
     container._Container__parts[ODF_MANIFEST] = b"<manifest/>"
     # Set standard XML part to None
-    container._Container__parts[ODF_CONTENT] = None  # ty: ignore
+    container._Container__parts[ODF_CONTENT] = None
 
     buffer = io.BytesIO()
     container._save_zip(buffer)
@@ -2014,7 +2014,7 @@ def test_save_zip_manifest_none():
     container._Container__parts["mimetype"] = b"text"
     container._Container__parts[ODF_CONTENT] = b"<content/>"
     # Set manifest to None
-    container._Container__parts[ODF_MANIFEST] = None  # ty: ignore
+    container._Container__parts[ODF_MANIFEST] = None
 
     buffer = io.BytesIO()
     container._save_zip(buffer)
@@ -2054,7 +2054,7 @@ def test_save_folder_skips_none_data(tmp_path):
     # Set mimetype
     container._Container__parts["mimetype"] = ODF_EXTENSIONS["odt"].encode()
     # Add a part with None data (marked for deletion)
-    container._Container__parts["deleted.xml"] = None  # ty: ignore
+    container._Container__parts["deleted.xml"] = None
     # Add a normal part
     container._Container__parts["content.xml"] = b"<content/>"
 
@@ -2561,7 +2561,7 @@ def test_encoded_object_duplicate_auto_styles():
 def test_xml_content_default_mimetype():
     """Test _xml_content uses default mimetype when missing."""
     container = Container()
-    container._Container__parts["mimetype"] = None  # ty: ignore
+    container._Container__parts["mimetype"] = None
     container.set_part(
         ODF_CONTENT,
         b'<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"/>',
@@ -2756,7 +2756,7 @@ def test_get_parts_invalid_packaging():
     container = Container()
     container.path = Path("fake.odt")
     # Manually set an invalid packaging
-    container._Container__packaging = "INVALID"  # ty: ignore
+    container._Container__packaging = "INVALID"
 
     with pytest.raises(ValueError, match="Unable to provide parts"):
         container.get_parts()

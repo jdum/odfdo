@@ -193,8 +193,8 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         for item in elem_list:
             if isinstance(item, str):
                 paragraph = Element.from_tag("text:p")
-                paragraph.append_plain_text(item)  # ty: ignore
-                paragraph.style = style  # ty: ignore
+                paragraph.append_plain_text(item)
+                paragraph.style = style
                 header_or_footer.append(paragraph)
             elif isinstance(item, Element):
                 header_or_footer.append(item)

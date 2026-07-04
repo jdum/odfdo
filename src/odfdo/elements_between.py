@@ -196,7 +196,7 @@ def _get_between_base(
                     new_target.delete(child)
                 new_target.text = ""
                 new_target.tail = ""
-                target._Element__append(new_target)  # ty: ignore[unresolved-attribute]
+                target._Element__append(new_target)
                 target = new_target
                 current = current.children[0]
                 continue
@@ -219,12 +219,12 @@ def _get_between_base(
                     new_target.delete(child)
                 new_target.text = ""
                 new_target.tail = ""
-                target._Element__append(new_target)  # ty: ignore[unresolved-attribute]
+                target._Element__append(new_target)
                 target = new_target
                 current = current.children[0]
                 continue
             # collect
-            target._Element__append(current.clone)  # ty: ignore[unresolved-attribute]
+            target._Element__append(current.clone)
             current, target = _get_successor(current, target)  # ty: ignore
             continue
     # Now resu should be the "parent" of inserted parts

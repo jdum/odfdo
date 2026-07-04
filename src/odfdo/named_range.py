@@ -246,7 +246,7 @@ class NamedRange(Element):
             # We know the body should contains NR mixin if
             # not exception.
             if body := self.document_body:
-                named_range = body.get_named_range(name)  # ty: ignore[unresolved-attribute]
+                named_range = body.get_named_range(name)
                 if named_range:
                     named_range.delete()
         self.set_attribute("table:name", name)

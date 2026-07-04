@@ -96,7 +96,7 @@ def strip_tags(
     if modified and isinstance(result, list) and default:
         new: Element = Element.from_tag(default)
         for content in result:
-            new._Element__append(content)  # ty: ignore[unresolved-attribute]
+            new._Element__append(content)
         result = new
     return result
 
@@ -158,9 +158,9 @@ def _strip_tags(
         except ValueError:
             sys.stderr.write(f"strip_tags(): bad attribute in {element_clone}\n")
         if text:
-            element._Element__append(text)  # ty: ignore[unresolved-attribute]
+            element._Element__append(text)
         for child3 in children:
-            element._Element__append(child3)  # ty: ignore[unresolved-attribute]
+            element._Element__append(child3)
         if tail is not None:
             element.tail = tail
         return (element, True)

@@ -70,10 +70,10 @@ class FormAsDictMixin:
             The Form content as a Python dict.
         """
         return {
-            "tag": self.tag,  # ty: ignore[unresolved-attribute]
-            "name": self.name,  # ty: ignore[unresolved-attribute]
-            "xml_id": self.xml_id,  # ty: ignore[unresolved-attribute]
-            "value": self.value,  # ty: ignore[unresolved-attribute]
+            "tag": self.tag,
+            "name": self.name,
+            "xml_id": self.xml_id,
+            "value": self.value,
             "current_value": self.current_value
             if hasattr(self, "current_value")
             else None,

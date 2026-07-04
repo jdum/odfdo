@@ -986,7 +986,7 @@ class Document(MDDocument):
         family = style.family
         if family is None:
             return None
-        parent_style_name = style.parent_style  # ty: ignore [unresolved-attribute]
+        parent_style_name = style.parent_style
         if not parent_style_name:
             return None
         return self.get_style(family, parent_style_name)
@@ -1328,7 +1328,7 @@ class Document(MDDocument):
                 line += " display_name:" + info["display_name"]  # ty: ignore
             output.append(line)
             if info["properties"]:
-                for name, value in info["properties"].items():  # ty: ignore
+                for name, value in info["properties"].items():
                     output.append(f"   - {name}: {value}")
         output.append("")
         return "\n".join(output)
@@ -1473,7 +1473,7 @@ class Document(MDDocument):
             family="paragraph",
             name_or_element="odfdopagebreak",
         ):
-            properties = existing.get_properties()  # ty: ignore
+            properties = existing.get_properties()
             if properties and properties.get("fo:break-after") == "page":
                 return
         style = (
@@ -1501,7 +1501,7 @@ class Document(MDDocument):
         style = self.get_style(family, name)
         if style is None:
             return None
-        return style.get_properties(area=area)  # ty: ignore
+        return style.get_properties(area=area)
 
     def _get_table(self, table: int | str) -> Table | None:
         if not isinstance(table, (int, str)):
@@ -1662,12 +1662,12 @@ class Document(MDDocument):
             self.insert_style(orig_style, automatic=True)  # ty:ignore
         new_style = orig_style.clone
         new_name = self._unique_style_name("ta")
-        new_style.name = new_name  # ty:ignore
+        new_style.name = new_name
         self.insert_style(new_style, automatic=True)  # ty:ignore
         sheet = self._get_table(table)
         sheet.style = new_name  # ty: ignore
         properties = {"table:display": Boolean.encode(displayed)}
-        new_style.set_properties(properties)  # ty: ignore
+        new_style.set_properties(properties)
 
     def get_language(self) -> str:
         """Get the default language of the document from its styles.

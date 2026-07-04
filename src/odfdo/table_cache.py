@@ -204,10 +204,10 @@ def _set_item_in_vault(
             delete_item = vault._get_element_idx2(vault_scheme, target_idx + 1)
             if delete_item is None:
                 break
-            is_repeated = delete_item.repeated or 1  # ty: ignore
+            is_repeated = delete_item.repeated or 1
             is_repeated += deleting
             if is_repeated > 1:
-                delete_item._set_repeated(is_repeated)  # ty: ignore
+                delete_item._set_repeated(is_repeated)
             else:
                 vault.delete(delete_item)
             deleting = is_repeated

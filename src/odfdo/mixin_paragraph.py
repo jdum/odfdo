@@ -99,7 +99,7 @@ def _by_offset_wrapper(
         if container is None:
             continue
         upper = container.parent
-        is_text = text.is_text()  # ty: ignore
+        is_text = text.is_text()
         start = offset - counted
         end = start + length
         # Do not use the text node as it changes at each loop
@@ -159,7 +159,7 @@ def _by_regex_wrapper(
         if container is None:
             continue
         upper = container.parent
-        is_text = text.is_text()  # ty: ignore
+        is_text = text.is_text()
         # Group positions are calculated and static, so apply in
         # reverse order to preserve positions
         for group in reversed(list(pattern.finditer(str(text)))):
@@ -397,7 +397,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             self.delete(child, keep_tail=False)
         self.text = None
         for element in content:
-            self._Element__append(element)  # ty: ignore[unresolved-attribute]
+            self._Element__append(element)
 
     @staticmethod
     def _unformatted(text: str | bytes | None) -> str:
@@ -437,7 +437,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
                 self.append_plain_text(str(str_or_element))
                 self.append_plain_text(str_or_element.tail)
             else:
-                self._Element__append(str_or_element)  # ty: ignore[unresolved-attribute]
+                self._Element__append(str_or_element)
         elif formatted:
             self.append_plain_text(str_or_element)
         else:

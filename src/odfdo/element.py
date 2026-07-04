@@ -665,7 +665,7 @@ class Element(MDBase):
 
         def getter(self: Element) -> str | bool | None:
             try:
-                if family and self.family != family:  # ty: ignore
+                if family and self.family != family:
                     return None
             except AttributeError:
                 return None
@@ -693,7 +693,7 @@ class Element(MDBase):
 
         def setter(self: Element, value: Any) -> None:
             try:
-                if family and self.family != family:  # ty: ignore
+                if family and self.family != family:
                     return None
             except AttributeError:
                 return None
@@ -988,8 +988,8 @@ class Element(MDBase):
         text_after = text[pos:] if text[pos:] else None
 
         # Insert!
-        parent = text.getparent()  # ty: ignore
-        if text.is_text:  # ty: ignore
+        parent = text.getparent()
+        if text.is_text:
             parent.text = text_before
             element.tail = text_after
             parent.insert(0, xelement)
@@ -1650,7 +1650,7 @@ class Element(MDBase):
                 container = text.parent
                 if not container:  # pragma: nocover
                     continue
-                if text.is_text():  # ty: ignore
+                if text.is_text():
                     container.text = new_text
                 else:
                     container.tail = new_text
@@ -1659,7 +1659,7 @@ class Element(MDBase):
                     "text:p",
                     "text:span",
                 }:
-                    container.append_plain_text("")  # ty: ignore[unresolved-attribute]
+                    container.append_plain_text("")
                 count += number
         return count
 

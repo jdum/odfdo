@@ -417,7 +417,7 @@ class TextChangedRegion(Element):
         child = self.get_change_element()
         if not child:
             raise ValueError("Empty TextChangedRegion")
-        child.set_change_info(  # ty: ignore
+        child.set_change_info(
             change_info=change_info, creator=creator, date=date, comments=comments
         )
 
@@ -507,7 +507,7 @@ class TrackedChanges(MDZap, Element):
             return changed_regions
         result: list[Element] = []
         for region in changed_regions:
-            changed = region.get_change_element()  # ty: ignore
+            changed = region.get_change_element()
             if not changed:
                 continue  # pragma: nocover
             if changed.tag.endswith(role):
@@ -594,7 +594,7 @@ class TextChange(Element):
         if not tracked_changes:
             tracked_changes = self._get_tracked_changes()
         idx = self.get_id()
-        return tracked_changes.get_changed_region(text_id=idx)  # ty: ignore
+        return tracked_changes.get_changed_region(text_id=idx)
 
     def get_change_info(
         self,
@@ -611,7 +611,7 @@ class TextChange(Element):
         changed_region = self.get_changed_region(tracked_changes=tracked_changes)
         if not changed_region:
             return None  # pragma: nocover
-        return changed_region.get_change_info()  # ty: ignore
+        return changed_region.get_change_info()
 
     def get_change_element(
         self,
@@ -630,7 +630,7 @@ class TextChange(Element):
         changed_region = self.get_changed_region(tracked_changes=tracked_changes)
         if not changed_region:
             return None  # pragma: nocover
-        return changed_region.get_change_element()  # ty: ignore
+        return changed_region.get_change_element()
 
     def get_deleted(
         self,
@@ -656,7 +656,7 @@ class TextChange(Element):
         changed = self.get_change_element(tracked_changes=tracked_changes)
         if not changed:
             return None  # pragma: nocover
-        return changed.get_deleted(  # ty: ignore
+        return changed.get_deleted(
             as_text=as_text,
             no_header=no_header,
         )

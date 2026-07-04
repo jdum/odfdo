@@ -255,7 +255,7 @@ class MDDocument:
 
 class MDBase(MDStyle):
     def _md_format(self, post_styler: Callable = _as_none) -> str:
-        return _as_none(self.inner_text) + post_styler(self.tail)  # ty: ignore
+        return _as_none(self.inner_text) + post_styler(self.tail)
 
     def _md_collect(self) -> list[str]:
         return list(chain.from_iterable(child._md_collect() for child in self.children))
@@ -295,7 +295,7 @@ class MDNote(MDBase):
 
 class MDTail(MDStyle):
     def _md_format(self, post_styler: Callable = _as_none) -> str:
-        return post_styler(self.tail)  # ty: ignore
+        return post_styler(self.tail)
 
 
 class MDZap(MDStyle):
@@ -308,12 +308,12 @@ class MDZap(MDStyle):
 
 class MDSpacer(MDStyle):
     def _md_format(self, post_styler: Callable = _as_none) -> str:
-        return self.text + post_styler(self.tail)  # ty: ignore
+        return self.text + post_styler(self.tail)
 
 
 class MDTab(MDStyle):
     def _md_format(self, post_styler: Callable = _as_none) -> str:
-        return "    " + post_styler(self.tail)  # ty: ignore
+        return "    " + post_styler(self.tail)
 
 
 class MDLineBreak(MDStyle):
