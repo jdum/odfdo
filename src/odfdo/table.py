@@ -457,7 +457,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     def _get_formatted_text_rst(self, context: dict) -> str:
         context["no_img_level"] += 1
         # Strip the table => We must clone
-        table: Table = self.clone  # ty: ignore[assignment]
+        table: Table = self.clone  # ty: ignore[invalid-assignment]
         table.rstrip(aggressive=True)
 
         # Fill the rows
@@ -1209,7 +1209,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             return None
         row: Row | None = self._table_cache.cached_row(idx)
         if row is None:
-            row = self._get_element_idx2(_XP_ROW_IDX, idx)  # ty: ignore[assignment]
+            row = self._get_element_idx2(_XP_ROW_IDX, idx)  # ty: ignore[invalid-assignment]
             if row is None:
                 return None
             self._table_cache.store_row(row, idx)
@@ -1773,7 +1773,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         if y is None:
             raise ValueError
         cell = self.get_cell((x, y))
-        image_frame = image_frame.clone  # ty: ignore[assignment]
+        image_frame = image_frame.clone  # ty: ignore[invalid-assignment]
         # Remove any previous paragraph, frame, etc.
         for child in cell.children:
             cell.delete(child)
@@ -1982,7 +1982,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             return None
         column = self._table_cache.cached_col(idx)
         if column is None:
-            column = self._get_element_idx2(_XP_COLUMN_IDX, idx)  # ty:ignore[assignment]
+            column = self._get_element_idx2(_XP_COLUMN_IDX, idx)  # ty:ignore[invalid-assignment]
             if column is None:
                 return None
             self._table_cache.store_col(column, idx)

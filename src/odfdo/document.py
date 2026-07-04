@@ -1653,7 +1653,7 @@ class Document(MDDocument):
         orig_style = self.get_table_style(table)
         if not orig_style:
             name = self._unique_style_name("ta")
-            orig_style = Element.from_tag(  # ty:ignore[assignment]
+            orig_style = Element.from_tag(  # ty:ignore[invalid-assignment]
                 f'<style:style style:name="{name}" style:family="table" '
                 'style:master-page-name="Default">'
                 '<style:table-properties table:display="true" '

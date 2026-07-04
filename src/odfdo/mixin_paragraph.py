@@ -823,7 +823,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             list[Span]: A list of generated `Span` instances, each representing
                 a styled portion of text.
         """
-        span: Span = Element.from_tag("text:span")  # ty: ignore[assignment]
+        span: Span = Element.from_tag("text:span")  # ty: ignore[invalid-assignment]
         span.text = ""
         span.append_plain_text(kwargs["match_string"])
         span.style = style

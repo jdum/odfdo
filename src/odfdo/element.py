@@ -36,7 +36,12 @@ from typing import TYPE_CHECKING, Any, NamedTuple
 from xml.etree.ElementTree import canonicalize
 
 from lxml.etree import Element as lxml_Element  # ty: ignore[unresolved-import]
-from lxml.etree import XPath, _Element, fromstring, tostring  # ty: ignore[unresolved-import]
+from lxml.etree import (  # ty: ignore[unresolved-import]
+    XPath,
+    _Element,
+    fromstring,
+    tostring,
+)
 
 from .const import (
     ODF_COLOR_PROPERTY,

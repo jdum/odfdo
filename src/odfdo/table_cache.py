@@ -329,7 +329,7 @@ class RowCache:
             raise ValueError
         current_cached_cell: Cell | None = self.cached_cell(idx)
         if current_cached_cell is None:
-            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)  # ty: ignore[assignment]
+            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)  # ty: ignore[invalid-assignment]
         if not current_cached_cell:
             raise ValueError  # pragma: nocover
         self.clear_cell_indexes()
@@ -357,7 +357,7 @@ class RowCache:
             raise ValueError
         current_cached_cell: Cell | None = self.cached_cell(idx)
         if current_cached_cell is None:
-            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)  # ty: ignore[assignment]
+            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)  # ty: ignore[invalid-assignment]
         if not current_cached_cell:
             raise ValueError  # pragma: nocover
         self.clear_cell_indexes()
@@ -382,7 +382,7 @@ class RowCache:
             raise ValueError
         current_cached_cell: Cell | None = self.cached_cell(idx)
         if current_cached_cell is None:
-            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)  # ty: ignore[assignment]
+            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)  # ty: ignore[invalid-assignment]
         if not current_cached_cell:
             raise ValueError  # pragma: nocover
         self.clear_cell_indexes()
@@ -510,7 +510,7 @@ class TableCache:
             raise ValueError
         current_cached_row: Row | None = self.cached_row(idx)
         if current_cached_row is None:
-            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)  # ty: ignore[assignment]
+            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)  # ty: ignore[invalid-assignment]
         if not current_cached_row:
             raise ValueError  # pragma: nocover
         self.clear_row_indexes()
@@ -538,7 +538,7 @@ class TableCache:
             raise ValueError
         current_cached_row: Row | None = self.cached_row(idx)
         if current_cached_row is None:
-            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)  # ty: ignore[assignment]
+            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)  # ty: ignore[invalid-assignment]
         if not current_cached_row:
             raise ValueError  # pragma: nocover
         self.clear_row_indexes()
@@ -563,7 +563,7 @@ class TableCache:
             raise ValueError
         current_cached_row: Row | None = self.cached_row(idx)
         if current_cached_row is None:
-            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)  # ty: ignore[assignment]
+            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)  # ty: ignore[invalid-assignment]
         if not current_cached_row:
             raise ValueError  # pragma: nocover
         self.clear_row_indexes()
@@ -586,7 +586,7 @@ class TableCache:
             raise ValueError
         current_cached_col: Column | None = self.cached_col(idx)
         if current_cached_col is None:
-            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)  # ty: ignore[assignment]
+            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)  # ty: ignore[invalid-assignment]
         if not current_cached_col:
             raise ValueError  # pragma: nocover
         self.clear_col_indexes()
@@ -613,7 +613,7 @@ class TableCache:
             raise ValueError
         current_cached_col: Column | None = self.cached_col(idx)
         if current_cached_col is None:
-            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)  # ty: ignore[assignment]
+            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)  # ty: ignore[invalid-assignment]
         if not current_cached_col:
             raise ValueError  # pragma: nocover
         self.clear_col_indexes()
@@ -638,7 +638,7 @@ class TableCache:
             raise ValueError
         current_cached_col: Column | None = self.cached_col(idx)
         if current_cached_col is None:
-            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)  # ty: ignore[assignment]
+            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)  # ty: ignore[invalid-assignment]
         if not current_cached_col:
             raise ValueError  # pragma: nocover
         self.clear_col_indexes()

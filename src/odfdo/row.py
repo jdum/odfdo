@@ -364,7 +364,7 @@ class Row(Element):
             return None
         cell: Cell | None = self._row_cache.cached_cell(idx)
         if cell is None:
-            cell = self._get_element_idx2(_XP_CELL_IDX, idx)  # ty: ignore[assignment]
+            cell = self._get_element_idx2(_XP_CELL_IDX, idx)  # ty: ignore[invalid-assignment]
             if cell is None:  # pragma: no cover
                 return None
             self._row_cache.store_cell(cell, idx)
@@ -569,7 +569,7 @@ class Row(Element):
         return cell
 
     # fix for unit test and typos
-    append = append_cell  # ty:ignore[assignment]
+    append = append_cell  # ty:ignore[invalid-assignment]
 
     def delete_cell(self, x: int | str) -> None:
         """Delete the cell at the given position "x". Alphabetical positions

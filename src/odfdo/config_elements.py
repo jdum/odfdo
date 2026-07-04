@@ -61,13 +61,13 @@ def _from_dict(data: dict[str, str | int | bool | dict[str, Any]]) -> Element:
     """Internal helper to deserialize a dictionary into a configuration
     element.
     """
-    class_tag: str = data.pop("class")  # ty: ignore[assignment]
+    class_tag: str = data.pop("class")  # ty: ignore[invalid-assignment]
     if class_tag == "config:config-item":
         return ConfigItem.from_dict(data)  # ty: ignore[invalid-argument-type]
     kwargs: dict[str, str | int | bool] = {}
     if "config:name" in data:
-        kwargs["name"] = data.pop("config:name")  # ty: ignore[assignment]
-    children: list[Any] = data.pop("children", [])  # ty: ignore[assignment]
+        kwargs["name"] = data.pop("config:name")  # ty: ignore[invalid-assignment]
+    children: list[Any] = data.pop("children", [])  # ty: ignore[invalid-assignment]
     klass = class_from_tag(class_tag)
     result = klass(**kwargs)
     for child in children:

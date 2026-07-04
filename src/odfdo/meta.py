@@ -358,7 +358,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         Returns:
             A MetaTemplate instance or None.
         """
-        element: MetaTemplate | None = self.get_element("//meta:template")  # ty: ignore[assignment]
+        element: MetaTemplate | None = self.get_element("//meta:template")  # ty: ignore[invalid-assignment]
         return element
 
     @property
@@ -398,7 +398,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         Returns:
             A MetaAutoReload instance or None.
         """
-        element: MetaAutoReload | None = self.get_element("//meta:auto-reload")  # ty: ignore[assignment]
+        element: MetaAutoReload | None = self.get_element("//meta:auto-reload")  # ty: ignore[invalid-assignment]
         return element
 
     @property
@@ -434,7 +434,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         Returns:
             A MetaHyperlinkBehaviour instance or None.
         """
-        element: MetaHyperlinkBehaviour | None = self.get_element(  # ty: ignore[assignment]
+        element: MetaHyperlinkBehaviour | None = self.get_element(  # ty: ignore[invalid-assignment]
             "//meta:hyperlink-behaviour"
         )
         return element
@@ -1354,7 +1354,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
                     for v in current_dict.values()
                     if v["value"] is not None
                 }
-                self.user_defined_metadata = new_ud  # ty: ignore[assignment]
+                self.user_defined_metadata = new_ud  # ty: ignore[invalid-assignment]
 
     def strip(
         self,

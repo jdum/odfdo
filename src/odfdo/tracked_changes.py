@@ -571,7 +571,7 @@ class TextChange(Element):
         self.set_attribute("text:change-id", idx)
 
     def _get_tracked_changes(self) -> TrackedChanges | None:
-        body: Text | None = self.document_body  # ty: ignore[assignment]
+        body: Text | None = self.document_body  # ty: ignore[invalid-assignment]
         if body and body.tag == "office:text":
             return body.get_tracked_changes()
         raise ValueError
