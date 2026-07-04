@@ -164,8 +164,8 @@ class StyleProps(StyleBase):
             dict[str, str | bool]: A dictionary containing text properties.
         """
         props = self.get_properties(area="text") or {}
-        self._update_boolean_styles(props)  # ty: ignore[invalid-argument-type]
-        return props  # ty: ignore[invalid-return-type]
+        self._update_boolean_styles(props)
+        return props
 
     @staticmethod
     def _apply_valid_properties(

@@ -1982,7 +1982,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             return None
         column = self._table_cache.cached_col(idx)
         if column is None:
-            column = self._get_element_idx2(_XP_COLUMN_IDX, idx)  # ty:ignore[invalid-assignment]
+            column = self._get_element_idx2(_XP_COLUMN_IDX, idx)
             if column is None:
                 return None
             self._table_cache.store_col(column, idx)
