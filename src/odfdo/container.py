@@ -1374,7 +1374,7 @@ class Container:
             ).encode("utf8")
             return XML_TAG + bytes_tree
         else:
-            return tostring(  # ty: ignore
+            return tostring(
                 root,
                 encoding="UTF-8",
                 xml_declaration=True,

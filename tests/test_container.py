@@ -1442,7 +1442,7 @@ def test_detect_mimetype_from_folder_no_content_xml(tmp_path):
     folder_path.mkdir()
     # No content.xml
     container = Container()
-    container.path = folder_path  # ty: ignore
+    container.path = folder_path
     result = container._detect_mimetype_from_folder()
     assert result is None
 
@@ -1459,7 +1459,7 @@ def test_detect_mimetype_from_folder_with_content_xml(tmp_path):
         </office:body>
     </office:document>""")
     container = Container()
-    container.path = folder_path  # ty: ignore
+    container.path = folder_path
     result = container._detect_mimetype_from_folder()
     assert result == ODF_EXTENSIONS["ods"]
 
@@ -1471,7 +1471,7 @@ def test_detect_mimetype_from_folder_bad_xml(tmp_path):
     content_xml = folder_path / "content.xml"
     content_xml.write_text("not valid xml")
     container = Container()
-    container.path = folder_path  # ty: ignore
+    container.path = folder_path
     result = container._detect_mimetype_from_folder()
     # Should catch exception and return None
     assert result is None
@@ -2606,7 +2606,7 @@ def test_xml_content_with_already_parsed_part():
     content_elem = Element(f"{{{ns_office}}}document-content")
     SubElement(content_elem, f"{{{ns_office}}}body")
 
-    container.set_part(ODF_CONTENT, content_elem)  # ty: ignore
+    container.set_part(ODF_CONTENT, content_elem)
 
     xml = container._xml_content()
     assert b"office:body" in xml
@@ -2847,7 +2847,7 @@ def test_mimetype_getter_empty():
 
     # mimetype part is not bytes
     ns_text = "urn:oasis:names:tc:opendocument:xmlns:text:1.0"
-    container.set_part("mimetype", Element(f"{{{ns_text}}}p"))  # ty: ignore
+    container.set_part("mimetype", Element(f"{{{ns_text}}}p"))
     assert container.mimetype == ""
 
 

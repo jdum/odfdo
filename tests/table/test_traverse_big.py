@@ -30,7 +30,7 @@ from odfdo.table import _XP_ROW_IDX, Table
 @pytest.fixture
 def table(samples) -> Iterable[Table]:
     document = Document(samples("big.ods"))
-    yield document.body.tables[0]  # ty: ignore
+    yield document.body.tables[0]
 
 
 def test_count_height(table):

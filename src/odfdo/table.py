@@ -2398,7 +2398,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         else:
             named_ranges = self._local_named_ranges()
         if not table_name:
-            return named_ranges  # ty: ignore
+            return named_ranges
         filter_ = []
         if isinstance(table_name, str):
             filter_.append(table_name)
