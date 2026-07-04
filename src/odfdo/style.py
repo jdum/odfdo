@@ -234,7 +234,7 @@ def create_table_cell_style(
     )
     if color:
         cell_style.set_properties(area="text", color=color)
-    return cell_style
+    return cell_style  # ty: ignore[invalid-return-type]
 
 
 def _new_master_page(*args: Any, **kwargs: Any) -> StyleBase:
@@ -322,7 +322,7 @@ class Style(StyleProps):
         PropDef("style_num_format", "style:num-format"),
     )
 
-    def __new__(cls, *args: Any, **kwargs: Any) -> StyleBase:  # ty: ignore[misc]
+    def __new__(cls, *args: Any, **kwargs: Any) -> StyleBase:
         """Create a new Style instance, delegating to specialized classes for
         'master-page' or 'page-layout' families.
 

@@ -251,10 +251,10 @@ class Styles(XmlPart):
         if master_styles is None:
             return []
         return [
-            e  # ty: ignore[misc]
+            e
             for e in master_styles.children
             if isinstance(e, StyleBase) and e.tag == "style:master-page"
-        ]
+        ]  # ty: ignore[invalid-return-type]
 
     def get_master_page(self, position: int = 0) -> StyleMasterPage | None:
         """Get a master page by its position.
