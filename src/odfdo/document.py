@@ -1030,12 +1030,12 @@ class Document(MDDocument):
                 continue
             if not hasattr(existing_style, "name"):
                 continue
-            if not existing_style.name or not existing_style.name.startswith(  # ty: ignore[possibly-missing-attribute]
+            if not existing_style.name or not existing_style.name.startswith(
                 AUTOMATIC_PREFIX
             ):
                 continue
             try:
-                index = int(existing_style.name[len(AUTOMATIC_PREFIX) :])  # ty: ignore
+                index = int(existing_style.name[len(AUTOMATIC_PREFIX) :])
             except ValueError:
                 continue
             max_index = max(max_index, index)
@@ -1275,7 +1275,7 @@ class Document(MDDocument):
         infos = []
         for style in self.get_styles():
             try:
-                name: str = style.name or ""  # ty: ignore [possibly-missing-attribute]
+                name: str = style.name or ""
             except AttributeError:
                 print("Style error:")
                 print(style.__class__)
@@ -1369,7 +1369,7 @@ class Document(MDDocument):
         deleted = 0
         for style in self.get_styles():
             try:
-                name = style.name or ""  # ty: ignore[possibly-missing-attribute]
+                name = style.name or ""
             except AttributeError:
                 continue
             # Don't delete default styles or styles without name
@@ -1660,7 +1660,7 @@ class Document(MDDocument):
                 'style:writing-mode="lr-tb"/></style:style>'
             )
             self.insert_style(orig_style, automatic=True)  # ty:ignore
-        new_style = orig_style.clone  # ty: ignore[possibly-missing-attribute]
+        new_style = orig_style.clone
         new_name = self._unique_style_name("ta")
         new_style.name = new_name  # ty:ignore
         self.insert_style(new_style, automatic=True)  # ty:ignore

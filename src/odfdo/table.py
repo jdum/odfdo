@@ -913,7 +913,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         # Step 1: remove empty rows below the table
         for row in reversed(self._get_rows()):
             if row.is_empty(aggressive=aggressive):
-                row.parent.delete(row)  # ty: ignore[possibly-missing-attribute]
+                row.parent.delete(row)
             else:
                 break
         # Step 2: rstrip remaining rows
@@ -940,7 +940,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                     column.repeated = repeated
                     break
                 else:
-                    column.parent.delete(column)  # ty: ignore[possibly-missing-attribute]
+                    column.parent.delete(column)
                     diff = -repeated
                     if diff == 0:
                         break
@@ -968,7 +968,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 break
         if count > 0:
             for row in reversed(self._get_rows()):  # pragma: nocover
-                row.parent.delete(row)  # ty: ignore[possibly-missing-attribute]
+                row.parent.delete(row)
                 count -= 1
                 if count <= 0:
                     break
@@ -1008,7 +1008,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                     column.repeated = repeated
                     break
                 else:
-                    column.parent.delete(column)  # ty: ignore[possibly-missing-attribute]
+                    column.parent.delete(column)
                     diff = -repeated
                     if diff == 0:
                         break
