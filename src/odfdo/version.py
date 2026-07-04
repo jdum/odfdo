@@ -25,7 +25,7 @@ from __future__ import annotations
 try:
     from importlib.metadata import version as __version
 except (AttributeError, ImportError):  # pragma: no cover
-    import importlib
+    import importlib.metadata
 
     __version = importlib.metadata.version
 
