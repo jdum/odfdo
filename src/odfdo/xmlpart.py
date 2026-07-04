@@ -31,7 +31,12 @@ from copy import deepcopy
 from io import BytesIO
 from typing import TYPE_CHECKING
 
-from lxml.etree import _Element, _ElementTree, parse, tostring
+from lxml.etree import (  # ty: ignore[unresolved-import]
+    _Element,
+    _ElementTree,
+    parse,
+    tostring,
+)
 
 from .container import Container, pretty_indent
 from .element import Element, EText

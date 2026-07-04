@@ -35,7 +35,7 @@ from textwrap import wrap
 from typing import TYPE_CHECKING, Any, cast
 from warnings import warn
 
-from lxml.etree import XPath
+from lxml.etree import XPath  # ty: ignore[unresolved-import]
 
 from .cell import Cell
 from .column import Column

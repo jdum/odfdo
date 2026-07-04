@@ -40,7 +40,7 @@ from .table_cache import _XP_CELL_IDX, RowCache, TableCache
 from .utils import convert_coordinates, increment, translate_from_any
 
 if TYPE_CHECKING:
-    from lxml.etree import XPath
+    from lxml.etree import XPath  # ty: ignore[unresolved-import]
 
     from .style import Style
 

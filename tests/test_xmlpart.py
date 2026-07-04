@@ -23,7 +23,7 @@
 from collections.abc import Iterable
 
 import pytest
-from lxml.etree import _ElementTree
+from lxml.etree import _ElementTree  # ty: ignore[unresolved-import]
 
 from odfdo.const import ODF_CONTENT, ODF_META
 from odfdo.container import Container

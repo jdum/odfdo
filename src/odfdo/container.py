@@ -36,7 +36,7 @@ from functools import cache
 from pathlib import Path, PurePath
 from zipfile import ZIP_DEFLATED, ZIP_STORED, BadZipfile, ZipFile, is_zipfile
 
-from lxml.etree import (
+from lxml.etree import (  # ty: ignore[unresolved-import]
     Element,
     XMLSyntaxError,
     _Element,

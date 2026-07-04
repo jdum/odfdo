@@ -27,7 +27,7 @@ from typing import TYPE_CHECKING
 from .element import xpath_compile
 
 if TYPE_CHECKING:
-    from lxml.etree import XPath
+    from lxml.etree import XPath  # ty: ignore[unresolved-import]
 
     from .cell import Cell
     from .column import Column

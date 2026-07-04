@@ -32,7 +32,13 @@ from textwrap import dedent
 from unittest.mock import patch
 
 import pytest
-from lxml.etree import Element, SubElement, fromstring, register_namespace, tostring
+from lxml.etree import (  # ty: ignore[unresolved-import]
+    Element,
+    SubElement,
+    fromstring,
+    register_namespace,
+    tostring,
+)
 
 from odfdo.const import (
     FOLDER,
