@@ -159,8 +159,7 @@ def convert_coordinates(
     """
     # By (1, 2) ?
     if isiterable(obj):
-        return tuple(obj)
-    # Or by 'B3' notation ?
+        return tuple(int(x) if x is not None else None for x in obj)
     if not isinstance(obj, str):
         raise TypeError(f'Bad coordinates type: "{type(obj)}"')
     coordinates = []
