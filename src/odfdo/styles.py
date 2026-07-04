@@ -251,7 +251,7 @@ class Styles(XmlPart):
         if master_styles is None:
             return []
         return [
-            e  # type: ignore[misc]
+            e  # ty: ignore[misc]
             for e in master_styles.children
             if isinstance(e, StyleBase) and e.tag == "style:master-page"
         ]

@@ -79,7 +79,7 @@ class XmlPart:
         """
         if self.__tree is None:
             part = self.container.get_part(self.part_name)
-            self.__tree = parse(BytesIO(part))  # type: ignore[arg-type]
+            self.__tree = parse(BytesIO(part))  # ty: ignore[arg-type]
         return self.__tree
 
     def __repr__(self) -> str:
@@ -219,7 +219,7 @@ class XmlPart:
         xml_header = b'<?xml version="1.0" encoding="UTF-8"?>\n'
         tree = self._get_tree()
         bytes_tree = tostring(tree, encoding="unicode").encode("utf8")
-        return xml_header + bytes_tree  # type: ignore[no-any-return]
+        return xml_header + bytes_tree  # ty: ignore[no-any-return]
 
     def pretty_serialize(self) -> bytes:
         """Serializes the XML part to bytes with pretty-printing.
@@ -233,7 +233,7 @@ class XmlPart:
             self.custom_pretty_tree(),
             encoding="unicode",
         ).encode("utf8")
-        return xml_header + bytes_tree  # type: ignore[no-any-return]
+        return xml_header + bytes_tree  # ty: ignore[no-any-return]
 
     def custom_pretty_tree(self) -> _ElementTree | _Element:
         """Returns a pretty-printed version of the XML tree.

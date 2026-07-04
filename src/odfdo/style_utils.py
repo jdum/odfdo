@@ -224,7 +224,7 @@ def _erase_background(element: Element) -> None:
     Args:
         element: The element from which to erase background properties.
     """
-    family = element.family  # type: ignore[attr-defined]
+    family = element.family  # ty: ignore[attr-defined]
     properties = element.get_element(f"style:{family}-properties")
     if properties is None:
         return
@@ -244,7 +244,7 @@ def _set_background_color(element: Element, color: str) -> None:
         element: The element to set the background color for.
         color: The color string (e.g., "#RRGGBB" or "red").
     """
-    family = element.family  # type: ignore[attr-defined]
+    family = element.family  # ty: ignore[attr-defined]
     properties = element.get_element(f"style:{family}-properties")
     if properties is None:
         properties = Element.from_tag(f"style:{family}-properties")
@@ -278,7 +278,7 @@ def _set_background_image(
     _check_position(position)
     _check_repeat(repeat)
     _check_opacity(opacity)
-    family = element.family  # type: ignore[attr-defined]
+    family = element.family  # ty: ignore[attr-defined]
     properties = element.get_element(f"style:{family}-properties")
     if properties is None:
         properties = Element.from_tag(f"style:{family}-properties")
@@ -290,15 +290,15 @@ def _set_background_image(
     if bg_image is None:
         bg_image = Element.from_tag("style:background-image")
         properties.append(bg_image)
-    bg_image.url = url  # type:ignore
+    bg_image.url = url  # ty:ignore
     if position:
-        bg_image.position = position  # type:ignore
+        bg_image.position = position  # ty:ignore
     if repeat:
-        bg_image.repeat = repeat  # type:ignore
+        bg_image.repeat = repeat  # ty:ignore
     if opacity:
-        bg_image.opacity = str(opacity)  # type:ignore
+        bg_image.opacity = str(opacity)  # ty:ignore
     if filter:
-        bg_image.filter = filter  # type:ignore
+        bg_image.filter = filter  # ty:ignore
 
 
 def _set_background(
@@ -329,7 +329,7 @@ def _set_background(
     Raises:
         TypeError: If a background image is specified for a text style.
     """
-    family = element.family  # type: ignore[attr-defined]
+    family = element.family  # ty: ignore[attr-defined]
     _check_background_support(family)
     if url is not None and family == "text":
         raise TypeError("No background image for text styles")

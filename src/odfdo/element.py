@@ -660,7 +660,7 @@ class Element(MDBase):
 
         def getter(self: Element) -> str | bool | None:
             try:
-                if family and self.family != family:  # type: ignore
+                if family and self.family != family:  # ty: ignore
                     return None
             except AttributeError:
                 return None
@@ -688,7 +688,7 @@ class Element(MDBase):
 
         def setter(self: Element, value: Any) -> None:
             try:
-                if family and self.family != family:  # type: ignore
+                if family and self.family != family:  # ty: ignore
                     return None
             except AttributeError:
                 return None
@@ -983,8 +983,8 @@ class Element(MDBase):
         text_after = text[pos:] if text[pos:] else None
 
         # Insert!
-        parent = text.getparent()  # type: ignore
-        if text.is_text:  # type: ignore
+        parent = text.getparent()  # ty: ignore
+        if text.is_text:  # ty: ignore
             parent.text = text_before
             element.tail = text_after
             parent.insert(0, xelement)
@@ -1511,7 +1511,7 @@ class Element(MDBase):
         Returns:
             str | None: The tail text, or None if no tail text is present.
         """
-        return self.__element.tail  # type: ignore[no-any-return]
+        return self.__element.tail  # ty: ignore[no-any-return]
 
     @tail.setter
     def tail(self, text: str | None) -> None:
@@ -1645,7 +1645,7 @@ class Element(MDBase):
                 container = text.parent
                 if not container:  # pragma: nocover
                     continue
-                if text.is_text():  # type: ignore
+                if text.is_text():  # ty: ignore
                     container.text = new_text
                 else:
                     container.tail = new_text
@@ -1654,7 +1654,7 @@ class Element(MDBase):
                     "text:p",
                     "text:span",
                 }:
-                    container.append_plain_text("")  # type: ignore[attr-defined]
+                    container.append_plain_text("")  # ty: ignore[attr-defined]
                 count += number
         return count
 
@@ -2063,7 +2063,7 @@ class Element(MDBase):
         Returns:
             Body | None: The first child Element of `office:body`, or None if not found.
         """
-        return self.get_element("//office:body/*[1]")  # type: ignore[return-value]
+        return self.get_element("//office:body/*[1]")  # ty: ignore[return-value]
 
     def get_formatted_text(self, context: dict | None = None) -> str:
         """Returns a formatted version of the element's text.
@@ -2149,7 +2149,7 @@ class Element(MDBase):
         """
         return self._filtered_elements(
             "descendant::text:p", text_style=style, content=content
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     @property
     def paragraphs(self) -> list[Paragraph]:
@@ -2160,7 +2160,7 @@ class Element(MDBase):
         """
         return self.get_elements(
             "descendant::text:p",
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_paragraph(
         self,
@@ -2180,7 +2180,7 @@ class Element(MDBase):
             "descendant::text:p",
             position,
             content=content,
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     # Span
 
@@ -2200,7 +2200,7 @@ class Element(MDBase):
         """
         return self._filtered_elements(
             "descendant::text:span", text_style=style, content=content
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     @property
     def spans(self) -> list[Span]:
@@ -2209,7 +2209,7 @@ class Element(MDBase):
         Returns:
             list[Span]: A list of all Span instances that are descendants of this element.
         """
-        return self.get_elements("descendant::text:span")  # type: ignore[return-value]
+        return self.get_elements("descendant::text:span")  # ty: ignore[return-value]
 
     def get_span(
         self,
@@ -2227,7 +2227,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::text:span", position, content=content
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     # Headers
 
@@ -2252,7 +2252,7 @@ class Element(MDBase):
             text_style=style,
             outline_level=outline_level,
             content=content,
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     @property
     def headers(self) -> list[Header]:
@@ -2261,7 +2261,7 @@ class Element(MDBase):
         Returns:
             list[Header]: A list of all Header instances that are descendants of this element.
         """
-        return self.get_elements("descendant::text:h")  # type: ignore[return-value]
+        return self.get_elements("descendant::text:h")  # ty: ignore[return-value]
 
     def get_header(
         self,
@@ -2284,7 +2284,7 @@ class Element(MDBase):
             position,
             outline_level=outline_level,
             content=content,
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     # Frames
 
@@ -2315,7 +2315,7 @@ class Element(MDBase):
             svg_title=title,
             svg_desc=description,
             content=content,
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     @property
     def frames(self) -> list[Frame]:
@@ -2324,7 +2324,7 @@ class Element(MDBase):
         Returns:
             list[Frame]: A list of all Frame instances that are descendants of this element.
         """
-        return self.get_elements("descendant::draw:frame")  # type: ignore[return-value]
+        return self.get_elements("descendant::draw:frame")  # ty: ignore[return-value]
 
     def get_frame(
         self,
@@ -2356,7 +2356,7 @@ class Element(MDBase):
             svg_title=title,
             svg_desc=description,
             content=content,
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     # Images
 
@@ -2378,7 +2378,7 @@ class Element(MDBase):
         """
         return self._filtered_elements(
             "descendant::draw:image", text_style=style, url=url, content=content
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     @property
     def images(self) -> list[DrawImage]:
@@ -2387,7 +2387,7 @@ class Element(MDBase):
         Returns:
             list[DrawImage]: A list of all DrawImage instances that are descendants of this element.
         """
-        return self.get_elements("descendant::draw:image")  # type: ignore[return-value]
+        return self.get_elements("descendant::draw:image")  # ty: ignore[return-value]
 
     def get_image(
         self,
@@ -2415,10 +2415,10 @@ class Element(MDBase):
             if frame is None:
                 return None
             # The name is supposedly unique
-            return frame.get_element("draw:image")  # type: ignore[return-value]
+            return frame.get_element("draw:image")  # ty: ignore[return-value]
         return self._filtered_element(
             "descendant::draw:image", position, url=url, content=content
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     # office:names
 
@@ -2446,7 +2446,7 @@ class Element(MDBase):
         return self._filtered_elements(
             "descendant::text:variable-set",
             text_name=name,
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_variable_set(self, name: str, position: int = -1) -> VarSet | None:
         """Returns a single variable set that matches the specified criteria.
@@ -2461,7 +2461,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::text:variable-set", position, text_name=name
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_variable_set_value(
         self,
@@ -2484,7 +2484,7 @@ class Element(MDBase):
         variable_set = self.get_variable_set(name)
         if not variable_set:
             return None
-        return variable_set.get_value(value_type)  # type: ignore[return-value]
+        return variable_set.get_value(value_type)  # ty: ignore[return-value]
 
     # Draw Pages
 
@@ -2504,7 +2504,7 @@ class Element(MDBase):
         """
         return self._filtered_elements(
             "descendant::draw:page", draw_style=style, content=content
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_draw_page(
         self,
@@ -2524,7 +2524,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::draw:page", position, draw_name=name, content=content
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     # Shapes elements
 
@@ -2551,7 +2551,7 @@ class Element(MDBase):
             svg_title=title,
             svg_desc=description,
             content=content,
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_draw_group(
         self,
@@ -2580,7 +2580,7 @@ class Element(MDBase):
             svg_title=title,
             svg_desc=description,
             content=content,
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     # Lines
 
@@ -2605,7 +2605,7 @@ class Element(MDBase):
             draw_style=draw_style,
             draw_text_style=draw_text_style,
             content=content,
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_draw_line(
         self,
@@ -2625,7 +2625,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::draw:line", position, draw_id=id, content=content
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     # Rectangles
 
@@ -2650,7 +2650,7 @@ class Element(MDBase):
             draw_style=draw_style,
             draw_text_style=draw_text_style,
             content=content,
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_draw_rectangle(
         self,
@@ -2670,7 +2670,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::draw:rect", position, draw_id=id, content=content
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     # Ellipse
 
@@ -2695,7 +2695,7 @@ class Element(MDBase):
             draw_style=draw_style,
             draw_text_style=draw_text_style,
             content=content,
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_draw_ellipse(
         self,
@@ -2715,7 +2715,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::draw:ellipse", position, draw_id=id, content=content
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     # Connectors
 
@@ -2740,7 +2740,7 @@ class Element(MDBase):
             draw_style=draw_style,
             draw_text_style=draw_text_style,
             content=content,
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_draw_connector(
         self,
@@ -2760,7 +2760,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::draw:connector", position, draw_id=id, content=content
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_orphan_draw_connectors(self) -> list[ConnectorShape]:
         """Returns a list of connectors that are not connected to any shapes.
@@ -2801,7 +2801,7 @@ class Element(MDBase):
         """
         return self._filtered_elements(
             "descendant::text:change",
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_text_change_deletion(
         self,
@@ -2821,7 +2821,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::text:change", position, change_id=idx
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_text_change_starts(self) -> list[TextChangeStart]:
         """Returns all text change-start elements (text:change-start tags).
@@ -2833,7 +2833,7 @@ class Element(MDBase):
         """
         return self._filtered_elements(
             "descendant::text:change-start",
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_text_change_start(
         self,
@@ -2853,7 +2853,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::text:change-start", position, change_id=idx
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_text_change_ends(self) -> list[TextChangeEnd]:
         """Returns all text change-end elements (text:change-end tags).
@@ -2865,7 +2865,7 @@ class Element(MDBase):
         """
         return self._filtered_elements(
             "descendant::text:change-end",
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_text_change_end(
         self,
@@ -2885,7 +2885,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::text:change-end", position, change_id=idx
-        )  # type: ignore[return-value]
+        )  # ty: ignore[return-value]
 
     def get_text_changes(self) -> list[TextChange | TextChangeStart]:
         """Returns all text changes, including single deletions (text:change) and
@@ -2895,7 +2895,7 @@ class Element(MDBase):
             list[TextChange | TextChangeStart]: A list of TextChange or TextChangeStart instances.
         """
         request = "descendant::text:change-start | descendant::text:change"
-        return self._filtered_elements(request)  # type: ignore[return-value]
+        return self._filtered_elements(request)  # ty: ignore[return-value]
 
     @property
     def text_changes(self) -> list[TextChange | TextChangeStart]:
@@ -2931,10 +2931,10 @@ class Element(MDBase):
                 f'descendant::text:change-start[@text:change-id="{idx}"] '
                 f'| descendant::text:change[@text:change-id="{idx}"]'
             )
-            return self._filtered_element(request, 0)  # type: ignore[return-value]
+            return self._filtered_element(request, 0)  # ty: ignore[return-value]
 
         request = "descendant::text:change-start | descendant::text:change"
-        return self._filtered_element(request, position)  # type: ignore[return-value]
+        return self._filtered_element(request, position)  # ty: ignore[return-value]
 
     # Styles
 
@@ -2981,7 +2981,7 @@ class Element(MDBase):
         """
         # Both common and default styles
         tagname = self._get_style_tagname(family)
-        return self._filtered_elements(tagname, family=family)  # type: ignore[return-value]
+        return self._filtered_elements(tagname, family=family)  # ty: ignore[return-value]
 
     def get_style(
         self,
@@ -3014,7 +3014,7 @@ class Element(MDBase):
         if isinstance(name_or_element, Element):
             name = name_or_element.get_attribute("style:name")
             if name is not None:
-                return name_or_element  # type: ignore[return-value]
+                return name_or_element  # ty: ignore[return-value]
             else:
                 raise ValueError(f"Not a odf_style ? {name_or_element!r}")
         style_name = name_or_element
@@ -3028,18 +3028,18 @@ class Element(MDBase):
                 style_name=style_name,
                 display_name=display_name,
                 family=family,
-            )  # type: ignore[return-value]
+            )  # ty: ignore[return-value]
         # family is empty
         if style_name:
             result = self._filtered_element(tagname, 0, style_name=style_name)
             if result:
-                return result  # type: ignore[return-value]
-            return self._filtered_element(tagname, 0, draw_name=style_name)  # type: ignore[return-value]
+                return result  # ty: ignore[return-value]
+            return self._filtered_element(tagname, 0, draw_name=style_name)  # ty: ignore[return-value]
 
         if display_name:
-            return self._filtered_element(tagname, 0, display_name=display_name)  # type: ignore[return-value]
+            return self._filtered_element(tagname, 0, display_name=display_name)  # ty: ignore[return-value]
 
-        return self._filtered_element(tagname, 0)  # type: ignore[return-value]
+        return self._filtered_element(tagname, 0)  # ty: ignore[return-value]
 
     def _filtered_element(
         self,

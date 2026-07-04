@@ -112,7 +112,7 @@ class UserFieldDeclMixin(Element):
         if user_field_decl is None:
             return None
         value = user_field_decl.get_value(value_type)
-        return value  # type: ignore
+        return value  # ty: ignore
 
 
 class UserFieldDeclContMixin(UserFieldDeclMixin):

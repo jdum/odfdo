@@ -88,7 +88,7 @@ class DrawPage(SvgMixin, OfficeFormsMixin, Element):
             AnimPar | None: The animation transition element (`anim:par`),
                 or `None` if no transition is defined.
         """
-        return self.get_element("anim:par")  # type: ignore
+        return self.get_element("anim:par")  # ty: ignore
 
     def set_transition(
         self,

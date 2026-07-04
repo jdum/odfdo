@@ -87,19 +87,19 @@ def _by_offset_wrapper(
     length = int(kwargs.get("length", 0))
     counted = 0
     for text in element.xpath("descendant::text()"):
-        if len(text) + counted <= offset:  # type: ignore
-            counted += len(text)  # type: ignore
+        if len(text) + counted <= offset:  # ty: ignore
+            counted += len(text)  # ty: ignore
             continue
         if length > 0:
-            length = min(length, len(text))  # type: ignore
+            length = min(length, len(text))  # ty: ignore
         else:
-            length = len(text)  # type: ignore
+            length = len(text)  # ty: ignore
         # Static information about the text node
         container = text.parent
         if container is None:
             continue
         upper = container.parent
-        is_text = text.is_text()  # type: ignore
+        is_text = text.is_text()  # ty: ignore
         start = offset - counted
         end = start + length
         # Do not use the text node as it changes at each loop
@@ -159,7 +159,7 @@ def _by_regex_wrapper(
         if container is None:
             continue
         upper = container.parent
-        is_text = text.is_text()  # type: ignore
+        is_text = text.is_text()  # ty: ignore
         # Group positions are calculated and static, so apply in
         # reverse order to preserve positions
         for group in reversed(list(pattern.finditer(str(text)))):
@@ -397,7 +397,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             self.delete(child, keep_tail=False)
         self.text = None
         for element in content:
-            self._Element__append(element)  # type: ignore[attr-defined]
+            self._Element__append(element)  # ty: ignore[attr-defined]
 
     @staticmethod
     def _unformatted(text: str | bytes | None) -> str:
@@ -437,7 +437,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
                 self.append_plain_text(str(str_or_element))
                 self.append_plain_text(str_or_element.tail)
             else:
-                self._Element__append(str_or_element)  # type: ignore[attr-defined]
+                self._Element__append(str_or_element)  # ty: ignore[attr-defined]
         elif formatted:
             self.append_plain_text(str_or_element)
         else:
@@ -823,11 +823,11 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             list[Span]: A list of generated `Span` instances, each representing
                 a styled portion of text.
         """
-        span: Span = Element.from_tag("text:span")  # type: ignore[assignment]
+        span: Span = Element.from_tag("text:span")  # ty: ignore[assignment]
         span.text = ""
         span.append_plain_text(kwargs["match_string"])
         span.style = style
-        return span  # type: ignore[return-value]
+        return span  # ty: ignore[return-value]
 
     def remove_spans(self, keep_heading: bool = True) -> Element:
         """Remove all `text:span` elements from a copy of the paragraph.
@@ -845,7 +845,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             protect = ("text:h",)
         else:
             protect = None
-        return strip_tags(self, strip=strip, protect=protect)  # type: ignore [return-value]
+        return strip_tags(self, strip=strip, protect=protect)  # ty: ignore [return-value]
 
     def remove_span(self, spans: Element | list[Element]) -> Element:
         """Remove specific `text:span` elements from a copy of the paragraph.
@@ -857,7 +857,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             Element: A new `Element` instance representing the paragraph
                 with the specified `text:span` elements removed.
         """
-        return strip_elements(self, spans)  # type: ignore [return-value]
+        return strip_elements(self, spans)  # ty: ignore [return-value]
 
     @_by_regex_offset
     def set_link(
@@ -885,7 +885,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
                 a hyperlink.
         """
 
-        return Link(url, text=kwargs["match_string"])  # type: ignore[return-value]
+        return Link(url, text=kwargs["match_string"])  # ty: ignore[return-value]
 
     def remove_links(self) -> Element:
         """Remove all `text:a` (hyperlink) elements from a copy of the paragraph.
@@ -895,7 +895,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
                 without hyperlink elements.
         """
         strip = (Link._tag,)
-        return strip_tags(self, strip=strip)  # type: ignore [return-value]
+        return strip_tags(self, strip=strip)  # ty: ignore [return-value]
 
     def remove_link(self, links: Link | list[Link]) -> Element:
         """Remove specific `text:a` (hyperlink) elements from a copy of the paragraph.
@@ -907,7 +907,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             Element: A new `Element` instance representing the paragraph
                 with the specified hyperlink elements removed.
         """
-        return strip_elements(self, links)  # type: ignore [return-value]
+        return strip_elements(self, links)  # ty: ignore [return-value]
 
     def insert_reference(
         self,

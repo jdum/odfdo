@@ -320,8 +320,8 @@ class TextDeletion(ListMixin, TocMixin, SectionMixin, TextInsertion):
                 Header, or a list of such elements representing the deleted
                 content.
         """
-        for element in self.get_deleted():  # type: ignore
-            self.delete(element)  # type: ignore
+        for element in self.get_deleted():  # ty: ignore
+            self.delete(element)  # ty: ignore
         if isinstance(paragraph_or_list, Element):
             paragraph_or_list = [paragraph_or_list]
         for element in paragraph_or_list:
@@ -417,7 +417,7 @@ class TextChangedRegion(Element):
         child = self.get_change_element()
         if not child:
             raise ValueError("Empty TextChangedRegion")
-        child.set_change_info(  # type: ignore
+        child.set_change_info(  # ty: ignore
             change_info=change_info, creator=creator, date=date, comments=comments
         )
 
@@ -507,7 +507,7 @@ class TrackedChanges(MDZap, Element):
             return changed_regions
         result: list[Element] = []
         for region in changed_regions:
-            changed = region.get_change_element()  # type: ignore
+            changed = region.get_change_element()  # ty: ignore
             if not changed:
                 continue  # pragma: nocover
             if changed.tag.endswith(role):
@@ -571,7 +571,7 @@ class TextChange(Element):
         self.set_attribute("text:change-id", idx)
 
     def _get_tracked_changes(self) -> TrackedChanges | None:
-        body: Text | None = self.document_body  # type: ignore[assignment]
+        body: Text | None = self.document_body  # ty: ignore[assignment]
         if body and body.tag == "office:text":
             return body.get_tracked_changes()
         raise ValueError
@@ -594,7 +594,7 @@ class TextChange(Element):
         if not tracked_changes:
             tracked_changes = self._get_tracked_changes()
         idx = self.get_id()
-        return tracked_changes.get_changed_region(text_id=idx)  # type: ignore
+        return tracked_changes.get_changed_region(text_id=idx)  # ty: ignore
 
     def get_change_info(
         self,
@@ -611,7 +611,7 @@ class TextChange(Element):
         changed_region = self.get_changed_region(tracked_changes=tracked_changes)
         if not changed_region:
             return None  # pragma: nocover
-        return changed_region.get_change_info()  # type: ignore
+        return changed_region.get_change_info()  # ty: ignore
 
     def get_change_element(
         self,
@@ -630,7 +630,7 @@ class TextChange(Element):
         changed_region = self.get_changed_region(tracked_changes=tracked_changes)
         if not changed_region:
             return None  # pragma: nocover
-        return changed_region.get_change_element()  # type: ignore
+        return changed_region.get_change_element()  # ty: ignore
 
     def get_deleted(
         self,
@@ -656,7 +656,7 @@ class TextChange(Element):
         changed = self.get_change_element(tracked_changes=tracked_changes)
         if not changed:
             return None  # pragma: nocover
-        return changed.get_deleted(  # type: ignore
+        return changed.get_deleted(  # ty: ignore
             as_text=as_text,
             no_header=no_header,
         )
@@ -798,7 +798,7 @@ class TextChangeStart(TextChangeEnd):
                 "Can not find end tag: no parent available."
             )  # pragma: nocover
         body: Body | Element = self.document_body or self.root
-        return body.get_text_change_end(idx=idx)  # type: ignore
+        return body.get_text_change_end(idx=idx)  # ty: ignore
 
     def delete(
         self,

@@ -175,11 +175,11 @@ class MetaUserDefined(Element):
             if isinstance(value, datetime):
                 text = str(DateTime.encode(value))
             else:
-                text = str(Date.encode(value))  # type: ignore[arg-type]
+                text = str(Date.encode(value))  # ty: ignore[arg-type]
         elif value_type == "float":
             text = str(value or 0)
         elif value_type == "time":
-            text = str(Duration.encode(value))  # type: ignore[arg-type]
+            text = str(Duration.encode(value))  # ty: ignore[arg-type]
         else:
             text = str(value or "")
         self.text = text

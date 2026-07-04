@@ -121,7 +121,7 @@ def dump_pictures(document: Document, target: str | Path) -> None:
             path.mkdir(parents=False, exist_ok=False)
         data = document.get_part(part_name)
         path = Path(target, part_name)
-        path.write_bytes(data)  # type: ignore
+        path.write_bytes(data)  # ty: ignore
 
 
 def spreadsheet_to_stdout(document: Document) -> None:

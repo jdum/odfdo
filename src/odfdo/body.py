@@ -69,7 +69,7 @@ class Body(Element):
         Returns:
             list[Table]: A list of matching Table elements.
         """
-        return self._filtered_elements(  # type: ignore[return-value]
+        return self._filtered_elements(  # ty: ignore[return-value]
             "descendant::table:table",
             table_style=style,
             content=content,
@@ -118,7 +118,7 @@ class Body(Element):
                 table_name=name,
                 content=content,
             )
-        return result  # type: ignore[return-value]
+        return result  # ty: ignore[return-value]
 
     get_sheet = get_table
 
@@ -232,7 +232,7 @@ class OfficeSettings(Body):
         conf: dict[str, str | int | bool | dict[str, Any] | list[Any]] = {
             "class": self._tag
         }
-        children = [child.as_dict() for child in self.children]  # type: ignore[attr-defined]
+        children = [child.as_dict() for child in self.children]  # ty: ignore[attr-defined]
         if children:
             conf["children"] = children
         return conf

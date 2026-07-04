@@ -1272,7 +1272,7 @@ def test_read_zip_with_path_none_and_non_bytesio(tmp_path, samples):
 
     # Create container and manually set up state to trigger the branch
     container = Container()
-    container._Container__packaging = "zip"  # type: ignore
+    container._Container__packaging = "zip"  # ty: ignore
     container._Container__path_like = open(zip_path, "rb")  # noqa: SIM115
     # path is None (default), __path_like is a file object (not BytesIO)
     try:
@@ -1282,7 +1282,7 @@ def test_read_zip_with_path_none_and_non_bytesio(tmp_path, samples):
     finally:
         # Clean up the file handle
         if hasattr(container._Container__path_like, "close"):
-            container._Container__path_like.close()  # type: ignore
+            container._Container__path_like.close()  # ty: ignore
 
 
 def test_read_folder_with_invalid_mimetype_no_content_xml(tmp_path):
@@ -1442,7 +1442,7 @@ def test_detect_mimetype_from_folder_no_content_xml(tmp_path):
     folder_path.mkdir()
     # No content.xml
     container = Container()
-    container.path = folder_path  # type: ignore
+    container.path = folder_path  # ty: ignore
     result = container._detect_mimetype_from_folder()
     assert result is None
 
@@ -1459,7 +1459,7 @@ def test_detect_mimetype_from_folder_with_content_xml(tmp_path):
         </office:body>
     </office:document>""")
     container = Container()
-    container.path = folder_path  # type: ignore
+    container.path = folder_path  # ty: ignore
     result = container._detect_mimetype_from_folder()
     assert result == ODF_EXTENSIONS["ods"]
 
@@ -1471,7 +1471,7 @@ def test_detect_mimetype_from_folder_bad_xml(tmp_path):
     content_xml = folder_path / "content.xml"
     content_xml.write_text("not valid xml")
     container = Container()
-    container.path = folder_path  # type: ignore
+    container.path = folder_path  # ty: ignore
     result = container._detect_mimetype_from_folder()
     # Should catch exception and return None
     assert result is None
@@ -1977,7 +1977,7 @@ def test_save_zip_deleted_parts():
     container._Container__parts[ODF_MANIFEST] = b"<manifest/>"
     container._Container__parts[ODF_CONTENT] = b"<content/>"
     # Mark a part as deleted
-    container._Container__parts["deleted.txt"] = None  # type: ignore
+    container._Container__parts["deleted.txt"] = None  # ty: ignore
 
     buffer = io.BytesIO()
     container._save_zip(buffer)
@@ -1993,7 +1993,7 @@ def test_save_zip_xml_part_none():
     container._Container__parts["mimetype"] = b"text"
     container._Container__parts[ODF_MANIFEST] = b"<manifest/>"
     # Set standard XML part to None
-    container._Container__parts[ODF_CONTENT] = None  # type: ignore
+    container._Container__parts[ODF_CONTENT] = None  # ty: ignore
 
     buffer = io.BytesIO()
     container._save_zip(buffer)
@@ -2008,7 +2008,7 @@ def test_save_zip_manifest_none():
     container._Container__parts["mimetype"] = b"text"
     container._Container__parts[ODF_CONTENT] = b"<content/>"
     # Set manifest to None
-    container._Container__parts[ODF_MANIFEST] = None  # type: ignore
+    container._Container__parts[ODF_MANIFEST] = None  # ty: ignore
 
     buffer = io.BytesIO()
     container._save_zip(buffer)
@@ -2048,7 +2048,7 @@ def test_save_folder_skips_none_data(tmp_path):
     # Set mimetype
     container._Container__parts["mimetype"] = ODF_EXTENSIONS["odt"].encode()
     # Add a part with None data (marked for deletion)
-    container._Container__parts["deleted.xml"] = None  # type: ignore
+    container._Container__parts["deleted.xml"] = None  # ty: ignore
     # Add a normal part
     container._Container__parts["content.xml"] = b"<content/>"
 
@@ -2555,7 +2555,7 @@ def test_encoded_object_duplicate_auto_styles():
 def test_xml_content_default_mimetype():
     """Test _xml_content uses default mimetype when missing."""
     container = Container()
-    container._Container__parts["mimetype"] = None  # type: ignore
+    container._Container__parts["mimetype"] = None  # ty: ignore
     container.set_part(
         ODF_CONTENT,
         b'<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"/>',
@@ -2590,7 +2590,7 @@ def test_xml_content_part_none():
         ODF_CONTENT,
         b'<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"/>',
     )
-    container.set_part(ODF_META, None)  # type: ignore
+    container.set_part(ODF_META, None)  # ty: ignore
 
     xml = container._xml_content()
     assert b"office:document-meta" not in xml
@@ -2606,7 +2606,7 @@ def test_xml_content_with_already_parsed_part():
     content_elem = Element(f"{{{ns_office}}}document-content")
     SubElement(content_elem, f"{{{ns_office}}}body")
 
-    container.set_part(ODF_CONTENT, content_elem)  # type: ignore
+    container.set_part(ODF_CONTENT, content_elem)  # ty: ignore
 
     xml = container._xml_content()
     assert b"office:body" in xml
@@ -2701,8 +2701,8 @@ def test_xml_content_processing_none_returns():
     container.set_part(ODF_CONTENT, content_xml)
 
     # We must explicitly set them to None to avoid KeyError, or encoders return None
-    container.set_part("MissingImg", None)  # type: ignore
-    container.set_part("MissingFill", None)  # type: ignore
+    container.set_part("MissingImg", None)  # ty: ignore
+    container.set_part("MissingFill", None)  # ty: ignore
     # Object is special, it checks if path/content.xml is in parts
 
     xml = container._xml_content()
@@ -2750,7 +2750,7 @@ def test_get_parts_invalid_packaging():
     container = Container()
     container.path = Path("fake.odt")
     # Manually set an invalid packaging
-    container._Container__packaging = "INVALID"  # type: ignore
+    container._Container__packaging = "INVALID"  # ty: ignore
 
     with pytest.raises(ValueError, match="Unable to provide parts"):
         container.get_parts()
@@ -2847,7 +2847,7 @@ def test_mimetype_getter_empty():
 
     # mimetype part is not bytes
     ns_text = "urn:oasis:names:tc:opendocument:xmlns:text:1.0"
-    container.set_part("mimetype", Element(f"{{{ns_text}}}p"))  # type: ignore
+    container.set_part("mimetype", Element(f"{{{ns_text}}}p"))  # ty: ignore
     assert container.mimetype == ""
 
 
@@ -2862,7 +2862,7 @@ def test_mimetype_setter_type_error():
     """Test mimetype setter raises TypeError for invalid types."""
     container = Container()
     with pytest.raises(TypeError, match='Wrong mimetype "123"'):
-        container.mimetype = 123  # type: ignore
+        container.mimetype = 123  # ty: ignore
 
 
 def test_do_backup_exists(tmp_path):
@@ -2958,7 +2958,7 @@ def test_save_as_xml_invalid_target():
     """Test _save_as_xml raises TypeError for invalid types."""
     container = Container()
     with pytest.raises(TypeError, match="requires a path name"):
-        container._save_as_xml(123, False)  # type: ignore
+        container._save_as_xml(123, False)  # ty: ignore
 
 
 def test_save_as_xml_bytesio():

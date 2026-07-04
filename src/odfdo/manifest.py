@@ -57,7 +57,7 @@ class Manifest(XmlPart):
         result = self.xpath(xpath_query)
         if not result:
             raise KeyError(f"Path not found: '{full_path}'")
-        return result[0]  # type: ignore
+        return result[0]  # ty: ignore
 
     def get_path_medias(self) -> list[tuple[str | None, str | None]]:
         """Get a list of all (full_path, media_type) pairs declared in the manifest.

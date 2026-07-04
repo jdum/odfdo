@@ -504,7 +504,7 @@ class Document(MDDocument):
         """
         if self.__body is None:
             self.__body = self.content.body
-        return self.__body  # type: ignore[return-value]
+        return self.__body  # ty: ignore[return-value]
 
     @property
     def meta(self) -> Meta:
@@ -882,7 +882,7 @@ class Document(MDDocument):
         Raises:
             ValueError: If the content part is empty or cannot be retrieved.
         """
-        content: Content | None = self.get_part(ODF_CONTENT)  # type:ignore
+        content: Content | None = self.get_part(ODF_CONTENT)  # ty:ignore
         if content is None:
             raise ValueError("Empty Content")
         return content
@@ -897,7 +897,7 @@ class Document(MDDocument):
         Raises:
             ValueError: If the styles part is empty or cannot be retrieved.
         """
-        styles: Styles | None = self.get_part(ODF_STYLES)  # type:ignore
+        styles: Styles | None = self.get_part(ODF_STYLES)  # ty:ignore
         if styles is None:
             raise ValueError("Empty Styles")
         return styles
@@ -986,7 +986,7 @@ class Document(MDDocument):
         family = style.family
         if family is None:
             return None
-        parent_style_name = style.parent_style  # type: ignore [attr-defined]
+        parent_style_name = style.parent_style  # ty: ignore [attr-defined]
         if not parent_style_name:
             return None
         return self.get_style(family, parent_style_name)
@@ -1030,12 +1030,12 @@ class Document(MDDocument):
                 continue
             if not hasattr(existing_style, "name"):
                 continue
-            if not existing_style.name or not existing_style.name.startswith(  # type: ignore[union-attr]
+            if not existing_style.name or not existing_style.name.startswith(  # ty: ignore[union-attr]
                 AUTOMATIC_PREFIX
             ):
                 continue
             try:
-                index = int(existing_style.name[len(AUTOMATIC_PREFIX) :])  # type: ignore
+                index = int(existing_style.name[len(AUTOMATIC_PREFIX) :])  # ty: ignore
             except ValueError:
                 continue
             max_index = max(max_index, index)
@@ -1190,7 +1190,7 @@ class Document(MDDocument):
 
         # if style is a str, assume it is the Style definition
         if isinstance(style, str):
-            style_element: StyleBase = Element.from_tag(style)  # type: ignore
+            style_element: StyleBase = Element.from_tag(style)  # ty: ignore
         else:
             style_element = style
         if not isinstance(style_element, Element):
@@ -1275,7 +1275,7 @@ class Document(MDDocument):
         infos = []
         for style in self.get_styles():
             try:
-                name: str = style.name or ""  # type: ignore [union-attr]
+                name: str = style.name or ""  # ty: ignore [union-attr]
             except AttributeError:
                 print("Style error:")
                 print(style.__class__)
@@ -1312,8 +1312,8 @@ class Document(MDDocument):
         infos.sort(key=itemgetter("family", "name"))
         # Show common and used first
         infos.sort(key=itemgetter("type", "used"), reverse=True)
-        max_family = str(max(len(x["family"]) for x in infos))  # type: ignore
-        max_parent = str(max(len(x["parent"]) for x in infos))  # type: ignore
+        max_family = str(max(len(x["family"]) for x in infos))  # ty: ignore
+        max_parent = str(max(len(x["parent"]) for x in infos))  # ty: ignore
         formater = (
             "%(type)s used:%(used)s family:%(family)-0"
             + max_family
@@ -1325,10 +1325,10 @@ class Document(MDDocument):
         for info in infos:
             line = formater % info
             if info["display_name"]:
-                line += " display_name:" + info["display_name"]  # type: ignore
+                line += " display_name:" + info["display_name"]  # ty: ignore
             output.append(line)
             if info["properties"]:
-                for name, value in info["properties"].items():  # type: ignore
+                for name, value in info["properties"].items():  # ty: ignore
                     output.append(f"   - {name}: {value}")
         output.append("")
         return "\n".join(output)
@@ -1369,7 +1369,7 @@ class Document(MDDocument):
         deleted = 0
         for style in self.get_styles():
             try:
-                name = style.name or ""  # type: ignore[union-attr]
+                name = style.name or ""  # ty: ignore[union-attr]
             except AttributeError:
                 continue
             # Don't delete default styles or styles without name
@@ -1473,7 +1473,7 @@ class Document(MDDocument):
             family="paragraph",
             name_or_element="odfdopagebreak",
         ):
-            properties = existing.get_properties()  # type: ignore
+            properties = existing.get_properties()  # ty: ignore
             if properties and properties.get("fo:break-after") == "page":
                 return
         style = (
@@ -1501,7 +1501,7 @@ class Document(MDDocument):
         style = self.get_style(family, name)
         if style is None:
             return None
-        return style.get_properties(area=area)  # type: ignore
+        return style.get_properties(area=area)  # ty: ignore
 
     def _get_table(self, table: int | str) -> Table | None:
         if not isinstance(table, (int, str)):
@@ -1537,13 +1537,13 @@ class Document(MDDocument):
                 self.get_style_properties("table-cell", cell.style, "table-cell") or {}
             )
         try:
-            row = sheet.get_row(cell.y, clone=False, create=False)  # type: ignore
+            row = sheet.get_row(cell.y, clone=False, create=False)  # ty: ignore
             if row.style:  # noqa: SIM102
                 if props := self.get_style_properties(
                     "table-row", row.style, "table-cell"
                 ):
                     return props
-            column = sheet.get_column(cell.x)  # type: ignore
+            column = sheet.get_column(cell.x)  # ty: ignore
             style = column.default_cell_style
             if style:  # noqa: SIM102
                 if props := self.get_style_properties(
@@ -1592,7 +1592,7 @@ class Document(MDDocument):
         """
         if not (sheet := self._get_table(table)):
             return None
-        return self.get_style("table", sheet.style)  # type: ignore
+        return self.get_style("table", sheet.style)  # ty: ignore
 
     def get_table_displayed(self, table: str | int) -> bool:
         """Return the `table:display` property of the table's style.
@@ -1653,21 +1653,21 @@ class Document(MDDocument):
         orig_style = self.get_table_style(table)
         if not orig_style:
             name = self._unique_style_name("ta")
-            orig_style = Element.from_tag(  # type:ignore[assignment]
+            orig_style = Element.from_tag(  # ty:ignore[assignment]
                 f'<style:style style:name="{name}" style:family="table" '
                 'style:master-page-name="Default">'
                 '<style:table-properties table:display="true" '
                 'style:writing-mode="lr-tb"/></style:style>'
             )
-            self.insert_style(orig_style, automatic=True)  # type:ignore
-        new_style = orig_style.clone  # type: ignore[union-attr]
+            self.insert_style(orig_style, automatic=True)  # ty:ignore
+        new_style = orig_style.clone  # ty: ignore[union-attr]
         new_name = self._unique_style_name("ta")
-        new_style.name = new_name  # type:ignore
-        self.insert_style(new_style, automatic=True)  # type:ignore
+        new_style.name = new_name  # ty:ignore
+        self.insert_style(new_style, automatic=True)  # ty:ignore
         sheet = self._get_table(table)
-        sheet.style = new_name  # type: ignore
+        sheet.style = new_name  # ty: ignore
         properties = {"table:display": Boolean.encode(displayed)}
-        new_style.set_properties(properties)  # type: ignore
+        new_style.set_properties(properties)  # ty: ignore
 
     def get_language(self) -> str:
         """Get the default language of the document from its styles.

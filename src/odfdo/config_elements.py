@@ -51,7 +51,7 @@ def _as_dict(
     if element.name:
         conf["config:name"] = element.name
     # all children are known to be classes with as_dict()
-    children = [child.as_dict() for child in element.children]  # type: ignore[attr-defined]
+    children = [child.as_dict() for child in element.children]  # ty: ignore[attr-defined]
     if children:
         conf["children"] = children
     return conf
@@ -61,13 +61,13 @@ def _from_dict(data: dict[str, str | int | bool | dict[str, Any]]) -> Element:
     """Internal helper to deserialize a dictionary into a configuration
     element.
     """
-    class_tag: str = data.pop("class")  # type: ignore[assignment]
+    class_tag: str = data.pop("class")  # ty: ignore[assignment]
     if class_tag == "config:config-item":
-        return ConfigItem.from_dict(data)  # type: ignore[arg-type]
+        return ConfigItem.from_dict(data)  # ty: ignore[arg-type]
     kwargs: dict[str, str | int | bool] = {}
     if "config:name" in data:
-        kwargs["name"] = data.pop("config:name")  # type: ignore[assignment]
-    children: list[Any] = data.pop("children", [])  # type: ignore[assignment]
+        kwargs["name"] = data.pop("config:name")  # ty: ignore[assignment]
+    children: list[Any] = data.pop("children", [])  # ty: ignore[assignment]
     klass = class_from_tag(class_tag)
     result = klass(**kwargs)
     for child in children:
@@ -535,7 +535,7 @@ class ConfigItem(Element):
         if config_type == "boolean":
             self.text = Boolean.encode(value)
         elif config_type in {"short", "int", "long", "double"}:
-            self.text = str(int(value))  # type: ignore[arg-type]
+            self.text = str(int(value))  # ty: ignore[arg-type]
         else:
             self.text = str(value or "")
 
@@ -547,7 +547,7 @@ class ConfigItem(Element):
         """
         return {
             "class": self._tag,
-            "config:name": self.name,  # type: ignore[dict-item]
+            "config:name": self.name,  # ty: ignore[dict-item]
             "config:type": self.config_type,
             "value": self.value,
         }
@@ -563,8 +563,8 @@ class ConfigItem(Element):
             A ConfigItem instance."
         """
         return cls(
-            name=data["config:name"],  # type: ignore[arg-type]
-            config_type=data.get("config:type"),  # type: ignore[arg-type]
+            name=data["config:name"],  # ty: ignore[arg-type]
+            config_type=data.get("config:type"),  # ty: ignore[arg-type]
             value=data.get("value"),
         )
 

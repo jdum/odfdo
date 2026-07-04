@@ -120,7 +120,7 @@ class UserDefinedMixin(Element):
         user_defined = self.get_user_defined(name)
         if user_defined is None:
             return None
-        return user_defined.get_value(value_type)  # type: ignore[return-value]
+        return user_defined.get_value(value_type)  # ty: ignore[return-value]
 
 
 class UserFieldGet(ElementTyped):

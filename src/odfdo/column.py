@@ -83,7 +83,7 @@ class Column(Element):
     @property
     def clone(self) -> Column:
         """Return a clone of the column."""
-        clone: Column = Element.clone.fget(self)  # type: ignore[attr-defined]
+        clone: Column = Element.clone.fget(self)  # ty: ignore[attr-defined]
         clone.x = self.x
         return clone
 

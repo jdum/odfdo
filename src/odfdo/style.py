@@ -322,7 +322,7 @@ class Style(StyleProps):
         PropDef("style_num_format", "style:num-format"),
     )
 
-    def __new__(cls, *args: Any, **kwargs: Any) -> StyleBase:  # type: ignore[misc]
+    def __new__(cls, *args: Any, **kwargs: Any) -> StyleBase:  # ty: ignore[misc]
         """Create a new Style instance, delegating to specialized classes for
         'master-page' or 'page-layout' families.
 
@@ -707,7 +707,7 @@ class Style(StyleProps):
             "|text:list-level-style-bullet"
             "|text:list-level-style-image)"
         )
-        return self._filtered_element(level_styles, 0, level=level)  # type: ignore
+        return self._filtered_element(level_styles, 0, level=level)  # ty: ignore
 
     def set_level_style(
         self,
@@ -762,12 +762,12 @@ class Style(StyleProps):
         # Cloning or reusing an existing element
         level_style: Style | None = None
         if clone is not None:
-            level_style = clone.clone  # type: ignore
+            level_style = clone.clone  # ty: ignore
             was_created = True
         else:
             level_style = self.get_level_style(level)
             if level_style is None:
-                level_style = Element.from_tag(level_style_name)  # type: ignore
+                level_style = Element.from_tag(level_style_name)  # ty: ignore
                 was_created = True
         if level_style is None:
             return None
@@ -794,7 +794,7 @@ class Style(StyleProps):
         if start_value:
             level_style.set_attribute("text:start-value", str(start_value))
         if style:
-            level_style.text_style = style  # type: ignore
+            level_style.text_style = style  # ty: ignore
         # Commit the creation
         if was_created:
             self.append(level_style)

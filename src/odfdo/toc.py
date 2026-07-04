@@ -398,7 +398,7 @@ class TOC(MDToc, Element):
             if not text_style:
                 index_title_paragraph = index_title.get_element("text:p")
                 if index_title_paragraph:
-                    text_style = index_title_paragraph.style  # type: ignore[attr-defined]
+                    text_style = index_title_paragraph.style  # ty: ignore[attr-defined]
             name = index_title.name
             index_title.delete()
         else:
@@ -508,9 +508,9 @@ class TOC(MDToc, Element):
             number_str = self._header_numbering(level_indexes, level)
             # Make the title with "1.2.3. Title" format
             paragraph = Element.from_tag("text:p")
-            paragraph.append_plain_text(f"{number_str} {header}")  # type: ignore[attr-defined]
+            paragraph.append_plain_text(f"{number_str} {header}")  # ty: ignore[attr-defined]
             if use_default_styles:
-                paragraph.style = _toc_entry_style_name(level)  # type: ignore[attr-defined]
+                paragraph.style = _toc_entry_style_name(level)  # ty: ignore[attr-defined]
             index_body.append(paragraph)
 
 
@@ -663,8 +663,8 @@ class IndexTitle(ListMixin, TocMixin, SectionMixin):
         if current:
             current.delete()
         title = Element.from_tag("text:p")
-        title.append_plain_text(title_text)  # type: ignore[attr-defined]
-        title.style = title_text_style  # type: ignore[attr-defined]
+        title.append_plain_text(title_text)  # ty: ignore[attr-defined]
+        title.style = title_text_style  # ty: ignore[attr-defined]
         self.append(title)
 
 

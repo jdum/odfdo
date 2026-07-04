@@ -50,7 +50,7 @@ def _get_successor(
     parent = element.parent
     if parent is None:
         return None, None
-    return _get_successor(parent, target.parent)  # type: ignore[arg-type]
+    return _get_successor(parent, target.parent)  # ty: ignore[arg-type]
 
 
 def _find_any_id(element: Element) -> tuple[str, str, str]:
@@ -187,7 +187,7 @@ def _get_between_base(
                     if tail:
                         # got a tail => the parent should be either text:p or text:h
                         target.text = tail
-                    current, target = _get_successor(current, target)  # type: ignore
+                    current, target = _get_successor(current, target)  # ty: ignore
                     state = 1
                     continue
                 # got T1 in children, need further analysis
@@ -196,13 +196,13 @@ def _get_between_base(
                     new_target.delete(child)
                 new_target.text = ""
                 new_target.tail = ""
-                target._Element__append(new_target)  # type: ignore[attr-defined]
+                target._Element__append(new_target)  # ty: ignore[attr-defined]
                 target = new_target
                 current = current.children[0]
                 continue
             else:
                 # before tag1 : forget element, go to next one
-                current, target = _get_successor(current, target)  # type: ignore
+                current, target = _get_successor(current, target)  # ty: ignore
                 continue
         else:  # collect elements
             further = False
@@ -219,13 +219,13 @@ def _get_between_base(
                     new_target.delete(child)
                 new_target.text = ""
                 new_target.tail = ""
-                target._Element__append(new_target)  # type: ignore[attr-defined]
+                target._Element__append(new_target)  # ty: ignore[attr-defined]
                 target = new_target
                 current = current.children[0]
                 continue
             # collect
-            target._Element__append(current.clone)  # type: ignore[attr-defined]
-            current, target = _get_successor(current, target)  # type: ignore
+            target._Element__append(current.clone)  # ty: ignore[attr-defined]
+            current, target = _get_successor(current, target)  # ty: ignore
             continue
     # Now resu should be the "parent" of inserted parts
     # - a text:h or text:p single item (simple case)

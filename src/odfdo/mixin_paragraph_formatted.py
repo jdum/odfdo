@@ -151,7 +151,7 @@ def _add_object_text_note(
         context: The formatting context.
         result: The list to append the formatted text to.
     """
-    if obj.note_class == "footnote":  # type:ignore
+    if obj.note_class == "footnote":  # ty:ignore
         return _add_object_text_note_foot(obj, context, result)
     return _add_object_text_note_end(obj, context, result)
 
@@ -172,11 +172,11 @@ def _add_object_text_note_foot(
         result: The list to append the formatted text to.
     """
     container = context["footnotes"]
-    citation = obj.citation  # type:ignore
+    citation = obj.citation  # ty:ignore
     if not citation:
         # Would only happen with hand-made documents
         citation = len(container)
-    body = obj.note_body  # type:ignore
+    body = obj.note_body  # ty:ignore
     container.append((citation, body))
     if context.get("rst_mode"):
         marker = " [#]_ "
@@ -201,11 +201,11 @@ def _add_object_text_note_end(
         result: The list to append the formatted text to.
     """
     container = context["endnotes"]
-    citation = obj.citation  # type:ignore
+    citation = obj.citation  # ty:ignore
     if not citation:
         # Would only happen with hand-made documents
         citation = len(container)
-    body = obj.note_body  # type:ignore
+    body = obj.note_body  # ty:ignore
     container.append((citation, body))
     if context.get("rst_mode"):
         marker = " [*]_ "
@@ -229,7 +229,7 @@ def _add_object_text_annotation(
         context: The formatting context, including 'annotations' and 'rst_mode'.
         result: The list to append the formatted text to.
     """
-    context["annotations"].append(obj.note_body)  # type:ignore
+    context["annotations"].append(obj.note_body)  # ty:ignore
     if context.get("rst_mode"):
         result.append(" [#]_ ")
     else:
@@ -336,7 +336,7 @@ class ParaFormattedTextMixin:
                 "images": [],
                 "no_img_level": 0,
             }
-        content = _formatted_text(self, context)  # type:ignore[arg-type]
+        content = _formatted_text(self, context)  # ty:ignore[arg-type]
         if simple:
             return content
         else:

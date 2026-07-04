@@ -204,10 +204,10 @@ def _set_item_in_vault(
             delete_item = vault._get_element_idx2(vault_scheme, target_idx + 1)
             if delete_item is None:
                 break
-            is_repeated = delete_item.repeated or 1  # type: ignore
+            is_repeated = delete_item.repeated or 1  # ty: ignore
             is_repeated += deleting
             if is_repeated > 1:
-                delete_item._set_repeated(is_repeated)  # type: ignore
+                delete_item._set_repeated(is_repeated)  # ty: ignore
             else:
                 vault.delete(delete_item)
             deleting = is_repeated
@@ -329,7 +329,7 @@ class RowCache:
             raise ValueError
         current_cached_cell: Cell | None = self.cached_cell(idx)
         if current_cached_cell is None:
-            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)  # type: ignore[assignment]
+            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)  # ty: ignore[assignment]
         if not current_cached_cell:
             raise ValueError  # pragma: nocover
         self.clear_cell_indexes()
@@ -344,7 +344,7 @@ class RowCache:
             clone,
         )
         self.cell_map = emap
-        return new_cell  # type: ignore[return-value]
+        return new_cell  # ty: ignore[return-value]
 
     def insert_cell_in_cache(
         self,
@@ -357,7 +357,7 @@ class RowCache:
             raise ValueError
         current_cached_cell: Cell | None = self.cached_cell(idx)
         if current_cached_cell is None:
-            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)  # type: ignore[assignment]
+            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)  # ty: ignore[assignment]
         if not current_cached_cell:
             raise ValueError  # pragma: nocover
         self.clear_cell_indexes()
@@ -370,7 +370,7 @@ class RowCache:
             self.cell_map,
         )
         self.cell_map = emap
-        return new_cell  # type: ignore[return-value]
+        return new_cell  # ty: ignore[return-value]
 
     def delete_cell_in_cache(
         self,
@@ -382,7 +382,7 @@ class RowCache:
             raise ValueError
         current_cached_cell: Cell | None = self.cached_cell(idx)
         if current_cached_cell is None:
-            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)  # type: ignore[assignment]
+            current_cached_cell = vault._get_element_idx2(_XP_CELL_IDX, idx)  # ty: ignore[assignment]
         if not current_cached_cell:
             raise ValueError  # pragma: nocover
         self.clear_cell_indexes()
@@ -510,7 +510,7 @@ class TableCache:
             raise ValueError
         current_cached_row: Row | None = self.cached_row(idx)
         if current_cached_row is None:
-            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)  # type: ignore[assignment]
+            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)  # ty: ignore[assignment]
         if not current_cached_row:
             raise ValueError  # pragma: nocover
         self.clear_row_indexes()
@@ -525,7 +525,7 @@ class TableCache:
             clone,
         )
         self.row_map = emap
-        return new_row  # type: ignore[return-value]
+        return new_row  # ty: ignore[return-value]
 
     def insert_row_in_cache(
         self,
@@ -538,7 +538,7 @@ class TableCache:
             raise ValueError
         current_cached_row: Row | None = self.cached_row(idx)
         if current_cached_row is None:
-            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)  # type: ignore[assignment]
+            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)  # ty: ignore[assignment]
         if not current_cached_row:
             raise ValueError  # pragma: nocover
         self.clear_row_indexes()
@@ -551,7 +551,7 @@ class TableCache:
             self.row_map,
         )
         self.row_map = emap
-        return new_row  # type: ignore[return-value]
+        return new_row  # ty: ignore[return-value]
 
     def delete_row_in_cache(
         self,
@@ -563,7 +563,7 @@ class TableCache:
             raise ValueError
         current_cached_row: Row | None = self.cached_row(idx)
         if current_cached_row is None:
-            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)  # type: ignore[assignment]
+            current_cached_row = vault._get_element_idx2(_XP_ROW_IDX, idx)  # ty: ignore[assignment]
         if not current_cached_row:
             raise ValueError  # pragma: nocover
         self.clear_row_indexes()
@@ -586,7 +586,7 @@ class TableCache:
             raise ValueError
         current_cached_col: Column | None = self.cached_col(idx)
         if current_cached_col is None:
-            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)  # type: ignore[assignment]
+            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)  # ty: ignore[assignment]
         if not current_cached_col:
             raise ValueError  # pragma: nocover
         self.clear_col_indexes()
@@ -600,7 +600,7 @@ class TableCache:
             _XP_COLUMN_IDX,
         )
         self.col_map = emap
-        return new_col  # type: ignore[return-value]
+        return new_col  # ty: ignore[return-value]
 
     def insert_col_in_cache(
         self,
@@ -613,7 +613,7 @@ class TableCache:
             raise ValueError
         current_cached_col: Column | None = self.cached_col(idx)
         if current_cached_col is None:
-            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)  # type: ignore[assignment]
+            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)  # ty: ignore[assignment]
         if not current_cached_col:
             raise ValueError  # pragma: nocover
         self.clear_col_indexes()
@@ -626,7 +626,7 @@ class TableCache:
             self.col_map,
         )
         self.col_map = emap
-        return new_col  # type: ignore[return-value]
+        return new_col  # ty: ignore[return-value]
 
     def delete_col_in_cache(
         self,
@@ -638,7 +638,7 @@ class TableCache:
             raise ValueError
         current_cached_col: Column | None = self.cached_col(idx)
         if current_cached_col is None:
-            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)  # type: ignore[assignment]
+            current_cached_col = vault._get_element_idx2(_XP_COLUMN_IDX, idx)  # ty: ignore[assignment]
         if not current_cached_col:
             raise ValueError  # pragma: nocover
         self.clear_col_indexes()

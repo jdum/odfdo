@@ -111,10 +111,10 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def clone(self) -> Cell:
-        clone = Element.clone.fget(self)  # type: ignore
+        clone = Element.clone.fget(self)  # ty: ignore
         clone.y = self.y
         clone.x = self.x
-        return clone  # type: ignore[no-any-return]
+        return clone  # ty: ignore[no-any-return]
 
     @property
     def value(
@@ -234,7 +234,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
     @float.setter
     def float(self, value: str | _float | _int | Decimal | None) -> None:
         try:
-            value_float = _float(value)  # type: ignore[arg-type]
+            value_float = _float(value)  # ty: ignore[arg-type]
         except (ValueError, TypeError, ConversionSyntax):
             value_float = 0.0
         value_str = str(value_float)
@@ -267,7 +267,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
     @decimal.setter
     def decimal(self, value: str | _float | _int | Decimal | None) -> None:
         try:
-            value_decimal = Decimal(value)  # type: ignore[arg-type]
+            value_decimal = Decimal(value)  # ty: ignore[arg-type]
         except (ValueError, TypeError, ConversionSyntax, InvalidOperation):
             value_decimal = Decimal("0.0")
         value_str = str(value_decimal)
@@ -288,7 +288,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
     @int.setter
     def int(self, value: str | _float | _int | Decimal | None) -> None:
         try:
-            value_int = _int(value)  # type:ignore
+            value_int = _int(value)  # ty:ignore
         except (ValueError, TypeError, ConversionSyntax):
             value_int = 0
         value_str = str(value_int)
@@ -550,7 +550,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
                 return
             # parent may be group of rows, not table
             if isinstance(upper, Element) and upper._tag == "table:table-row":
-                upper._compute_row_cache()  # type:ignore[attr-defined]
+                upper._compute_row_cache()  # ty:ignore[attr-defined]
                 return
             child = upper
 

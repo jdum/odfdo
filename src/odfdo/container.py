@@ -380,7 +380,7 @@ class Container:
     def _read_zip(self) -> None:
         if isinstance(self.__path_like, io.BytesIO):
             self.__path_like.seek(0)
-        with ZipFile(self.__path_like) as zf:  # type: ignore
+        with ZipFile(self.__path_like) as zf:  # ty: ignore
             mimetype = bytes_to_str(zf.read("mimetype"))
             if mimetype not in ODF_MIMETYPES:
                 raise ValueError(f"Document of unknown type {mimetype}")
@@ -389,7 +389,7 @@ class Container:
             if isinstance(self.__path_like, io.BytesIO):
                 self.__path_like.seek(0)
             # read the full file at once and forget file
-            with ZipFile(self.__path_like) as zf:  # type: ignore
+            with ZipFile(self.__path_like) as zf:  # ty: ignore
                 for name in zf.namelist():
                     upath = normalize_path(name)
                     self.__parts[upath] = zf.read(name)
@@ -1374,7 +1374,7 @@ class Container:
             ).encode("utf8")
             return XML_TAG + bytes_tree
         else:
-            return tostring(  # type: ignore[no-any-return]
+            return tostring(  # ty: ignore[no-any-return]
                 root,
                 encoding="UTF-8",
                 xml_declaration=True,
@@ -1588,7 +1588,7 @@ class Container:
                 target = target[:-1]
             while target.endswith(".folder"):
                 target = target.split(".folder", 1)[0]
-        return target  # type: ignore
+        return target  # ty: ignore
 
     def _save_as_zip(
         self,
