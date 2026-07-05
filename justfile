@@ -1,9 +1,13 @@
 test:
     uv run pytest -n 8 --dist loadfile
 
-lint:
+ty:
+    ty check src
+
+ruff:
     ruff check src tests
-    mypy
+
+lint: ruff ty
 
 doclint:
     uv run python doc_src/doclint.py
