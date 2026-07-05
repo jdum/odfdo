@@ -102,9 +102,14 @@ def testconvert_coordinates_bad_2():
     assert convert_coordinates((None, None)) == (None, None)
 
 
-def testconvert_coordinates_bad_3():
+def testconvert_coordinates_bad_value_error():
     with pytest.raises(ValueError):
         convert_coordinates((1, "bad"))
+
+
+def testconvert_coordinates_bad_type_error():
+    with pytest.raises(TypeError):
+        convert_coordinates((1, ["bad"]))
 
 
 def testconvert_coordinates_bad_string():
