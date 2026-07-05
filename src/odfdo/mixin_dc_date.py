@@ -57,8 +57,9 @@ class DcDateMixin:
         element = self.get_element("//dc:date")
         if element is None:
             element = Element.from_tag("dc:date")
-            if hasattr(self, "get_meta_body"):
-                self.get_meta_body().append(element)
+            method = getattr(self, "get_meta_body", None)
+            if callable(method):
+                method().append(element)
             else:
                 self.append(element)
         if date is None:
