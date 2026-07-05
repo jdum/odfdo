@@ -952,8 +952,9 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         if display is None and ref_format == "text":
             # get reference content
             body: Body | Element = self.document_body or self.root
-            if hasattr(body, "get_reference_mark"):
-                mark = body.get_reference_mark(name=name)
+            method = getattr(body, "get_reference_mark", None)
+            if callable(method):
+                mark = method(name=name)
             else:
                 mark = None
             if isinstance(mark, ReferenceMarkStart):
