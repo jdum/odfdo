@@ -1884,7 +1884,7 @@ class Element(MDBase):
         """
         return self.__element
 
-    def __append(self, str_or_element: Element | str) -> None:
+    def __append(self, str_or_element: Element | str) -> Any:
         """Appends an element or text to the end of the current element.
 
         If `str_or_element` is a string, it is appended as text. If it is an
@@ -1892,6 +1892,10 @@ class Element(MDBase):
 
         Args:
             str_or_element: The string or Element to append.
+
+        Returns:
+            Any: For typing compatibility, some classes that redefine `append`
+                may return the added element.
 
         Raises:
             TypeError: If the provided argument is neither a string nor an Element.
