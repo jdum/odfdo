@@ -100,7 +100,11 @@ def testconvert_coordinates_bad_1():
 def testconvert_coordinates_bad_2():
     assert convert_coordinates((None,)) == (None,)
     assert convert_coordinates((None, None)) == (None, None)
-    assert convert_coordinates((1, "bad")) == (1, "bad")
+
+
+def testconvert_coordinates_bad_3():
+    with pytest.raises(ValueError):
+        convert_coordinates((1, "bad"))
 
 
 def testconvert_coordinates_bad_string():
