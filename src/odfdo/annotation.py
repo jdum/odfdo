@@ -122,14 +122,11 @@ class AnnotationMixin(Element):
                     "descendant::office:annotation", 0, office_name=name
                 ),
             )
-        annotations: list[Annotation] = cast(
-            list[Annotation],
-            self.get_annotations(
-                creator=creator,
-                start_date=start_date,
-                end_date=end_date,
-                content=content,
-            ),
+        annotations: list[Annotation] = self.get_annotations(
+            creator=creator,
+            start_date=start_date,
+            end_date=end_date,
+            content=content,
         )
         if not annotations:
             return None
@@ -315,8 +312,9 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
         if parent is None:  # pragma: nocover
             raise ValueError("Can't find end tag: no parent available")
         body: Body | Element = self.document_body or parent
-        if hasattr(body, "get_annotation_end"):
-            return cast(None | AnnotationEnd, body.get_annotation_end(name=name))
+        method = getattr(body, "get_annotation_end", None)
+        if callable(method):
+            return cast(None | AnnotationEnd, method(name=name))
         return None
 
     def get_annotated(
@@ -451,8 +449,9 @@ class AnnotationEnd(MDTail, Element):
                 "Can't find start tag: no parent available"
             )  # pragma: nocover
         body: Body | Element = self.document_body or parent
-        if hasattr(body, "get_annotation"):  # pragma: nocover
-            return cast(None | Annotation, body.get_annotation(name=name))
+        method = getattr(body, "get_annotation", None)
+        if callable(method):  # pragma: nocover
+            return cast(None | Annotation, method(name=name))
         return None  # pragma: nocover
 
     @property
