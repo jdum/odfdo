@@ -348,14 +348,13 @@ class TOC(MDToc, Element):
         return cast(None | IndexBody, self.get_element(IndexBody._tag))
 
     @body.setter
-    def body(self, body: Element | None = None) -> Element | None:
+    def body(self, body: Element | None = None) -> None:
         old_body = self.body
         if old_body is not None:
             self.delete(old_body)
         if body is None:
             body = Element.from_tag("text:index-body")
         self.append(body)
-        return body
 
     def get_title(self) -> str:
         """Returns the title of the TOC.
