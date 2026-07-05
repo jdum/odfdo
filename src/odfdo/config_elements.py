@@ -539,7 +539,7 @@ class ConfigItem(Element):
         else:
             self.text = str(value or "")
 
-    def as_dict(self) -> dict[str, str | int | bool]:
+    def as_dict(self) -> dict[str, str | int | bool | None]:
         """Serialize the element to a dictionary.
 
         Returns:
@@ -553,7 +553,7 @@ class ConfigItem(Element):
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, str | int | bool]) -> ConfigItem:
+    def from_dict(cls, data: dict[str, str | int | bool | None]) -> ConfigItem:
         """Create an element from a dictionary.
 
         Args:
