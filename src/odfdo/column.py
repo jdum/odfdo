@@ -26,7 +26,7 @@
 from __future__ import annotations
 
 import contextlib
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from .element import Element, register_element_class
 
@@ -85,7 +85,7 @@ class Column(Element):
         """Return a clone of the column."""
         clone: Column = Element.clone.fget(self)
         clone.x = self.x
-        return clone
+        return cast(Column, clone)
 
     def get_default_cell_style(self) -> str | None:
         """Get the default cell style for the column.
