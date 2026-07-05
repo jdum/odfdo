@@ -1,5 +1,27 @@
 # Odfdo Release Notes
 
+## [3.22.10] - 2026-07-05
+
+-   Migrated type-checker configuration and inline suppressions from mypy to
+    ty.
+-   Minor fixes and refactoring.
+
+### Changed
+
+-   Updated `justfile` to use ty for static type checking.
+-   Replaced mypy-style `# type: ignore` comments with ty-style `# ty: ignore`
+    comments across the codebase.
+-   Adjusted type annotations and casts for compatibility with ty, including
+    `Style.__new__`, `ListHeader` argument types, `Element.__append` return
+    type, and `ConfigItem.as_dict`/`from_dict`.
+-   Replaced `hasattr` checks followed by dynamic method calls with
+    `getattr(..., None)` and `callable()` guards in several modules.
+
+### Fixed
+
+-   Fixed the `TOC.body` setter return type to respect the property setter
+    contract.
+
 ## [3.22.9] - 2026-07-04
 
 -   Update of dependencies, include lxml v6.1.1 in test matrix.
