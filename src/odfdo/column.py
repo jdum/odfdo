@@ -83,9 +83,9 @@ class Column(Element):
     @property
     def clone(self) -> Column:
         """Return a clone of the column."""
-        clone: Column = Element.clone.fget(self)
+        clone: Column = cast(Column, Element.clone.fget(self))
         clone.x = self.x
-        return cast(Column, clone)
+        return clone
 
     def get_default_cell_style(self) -> str | None:
         """Get the default cell style for the column.
