@@ -69,7 +69,7 @@ class FormAsDictMixin:
         Returns:
             The Form content as a Python dict.
         """
-        return {
+        return {  # ty: ignore[invalid-return-type]
             "tag": self.tag,
             "name": self.name,
             "xml_id": self.xml_id,
