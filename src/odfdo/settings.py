@@ -28,7 +28,6 @@ from typing import Any, cast
 
 from .body import OfficeSettings
 from .config_elements import ConfigItemSet
-from .element import Element
 from .xmlpart import XmlPart
 
 
@@ -53,9 +52,7 @@ class Settings(XmlPart):
         Returns:
             str: The "office:version" value, or an empty string if not found.
         """
-        odsettings = cast(
-            None | Element, self.get_element("//office:document-settings")
-        )
+        odsettings = self.get_element("//office:document-settings")
         # "office:version" should be always present
         if odsettings:
             return odsettings.get_attribute_string("office:version") or ""
