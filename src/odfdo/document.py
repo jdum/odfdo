@@ -1003,9 +1003,7 @@ class Document(MDDocument):
         """
         if style is None:
             return None
-        if not hasattr(style, "list_style_name"):
-            return None
-        list_style_name = style.list_style_name
+        list_style_name = getattr(style, "list_style_name", None)
         if not list_style_name:
             return None
         return cast(None | StyleBase, self.get_style("list", list_style_name))
@@ -1020,22 +1018,26 @@ class Document(MDDocument):
 
     def _set_automatic_name(self, style: StyleBase, family: str) -> None:
         """Generate a name for the new automatic style."""
-        if not hasattr(style, "name"):
+        try:
+            name = style.name
+        except AttributeError:
             # do nothing
             return
+        if not name:
+            name = None
         styles = self.get_styles(family=family, automatic=True)
         max_index = 0
         for existing_style in styles:
             if existing_style is None:
                 continue
-            if not hasattr(existing_style, "name"):
+            try:
+                existing_name = existing_style.name
+            except AttributeError:
                 continue
-            if not existing_style.name or not existing_style.name.startswith(
-                AUTOMATIC_PREFIX
-            ):
+            if not existing_name or not existing_name.startswith(AUTOMATIC_PREFIX):
                 continue
             try:
-                index = int(existing_style.name[len(AUTOMATIC_PREFIX) :])
+                index = int(existing_name[len(AUTOMATIC_PREFIX) :])
             except ValueError:
                 continue
             max_index = max(max_index, index)
@@ -1060,7 +1062,7 @@ class Document(MDDocument):
         style_container = self.content.get_element("office:automatic-styles")
         # A name ?
         if name:
-            if hasattr(style, "name"):
+            with contextlib.suppress(AttributeError):
                 style.name = name
             existing = self.content.get_style(family, name)
         else:
@@ -1411,10 +1413,7 @@ class Document(MDDocument):
             family = style.family
             if family is None:
                 continue
-            if hasattr(style, "name"):
-                stylename = style.name
-            else:
-                stylename = None
+            stylename = getattr(style, "name", None)
             container = style.parent
             if container is None:
                 continue
