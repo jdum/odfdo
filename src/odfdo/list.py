@@ -80,7 +80,7 @@ class ListHeader(ListMixin, Element):
 
     def __init__(
         self,
-        text_or_element: str | Element | Iterable[str | Element] | None = None,
+        text_or_element: str | Element | list[str | Element] | tuple[str | Element, ...] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize the ListHeader, "text:list-header".
@@ -197,7 +197,7 @@ class List(MDList, Element):
 
     @list_header.setter
     def list_header(
-        self, text_or_element: str | Element | Iterable[str | Element] | None = None
+        self, text_or_element: str | Element | list[str | Element] | tuple[str | Element, ...] | None = None
     ) -> None:
         current = cast(None | ListHeader, self.get_element("text:list-header"))
         if current:
@@ -207,7 +207,7 @@ class List(MDList, Element):
 
     def set_list_header(
         self,
-        text_or_element: str | Element | Iterable[str | Element],
+        text_or_element: str | Element | list[str | Element] | tuple[str | Element, ...],
     ) -> None:
         """Set the header of the list.
 
