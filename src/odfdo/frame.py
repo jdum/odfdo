@@ -71,16 +71,13 @@ def default_frame_position_style(
     Returns:
         Style: The generated style.
     """
-    return cast(
-        Style,
-        Style(
-            family="graphic",
-            name=name,
-            horizontal_pos=horizontal_pos,
-            horizontal_rel=horizontal_rel,
-            vertical_pos=vertical_pos,
-            vertical_rel=vertical_rel,
-        ),
+    return Style(
+        family="graphic",
+        name=name,
+        horizontal_pos=horizontal_pos,
+        horizontal_rel=horizontal_rel,
+        vertical_pos=vertical_pos,
+        vertical_rel=vertical_rel,
     )
 
 
@@ -172,10 +169,7 @@ class ZMix(Element):
     @property
     def z_index(self) -> int | None:
         """Get or set the z index "draw:z-index"."""
-        return cast(
-            None | int,
-            self.get_attribute_integer("draw:z-index"),
-        )
+        return self.get_attribute_integer("draw:z-index")
 
     @z_index.setter
     def z_index(self, z_index: int | None) -> None:
