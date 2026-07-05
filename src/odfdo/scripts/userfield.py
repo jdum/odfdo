@@ -187,8 +187,10 @@ def show_fields(document: Document, args: Namespace) -> None:
     if not args.all and args.fields:
         field_set = set(args.fields)
     body = document.body
-    if hasattr(body, "get_user_field_decl_list"):
-        for field in body.get_user_field_decl_list():
+    method = getattr(body, "get_user_field_decl_list", None)
+    if callable(method):
+        user_fields = method()
+        for field in user_fields:
             if not args.all and field.name not in field_set:
                 continue
             print(_field_string(field, args))
