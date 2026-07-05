@@ -27,6 +27,7 @@ from one ODF document to another.
 
 from __future__ import annotations
 
+import io
 import sys
 from argparse import ArgumentParser, Namespace
 from io import BytesIO
@@ -131,7 +132,7 @@ def show_styles(
 
 def delete_styles(
     document: Document,
-    target: str | Path,
+    target: str | Path | io.BytesIO | None,
     pretty: bool = False,
 ) -> None:
     number_deleted = document.delete_styles()
