@@ -348,8 +348,9 @@ class Reference(Element):
             return None
         body: Body | Element = self.document_body or self.root
         name = self.name
-        if hasattr(body, "get_reference_mark"):
-            reference = body.get_reference_mark(name=name)
+        method = getattr(body, "get_reference_mark", None)
+        if callable(method):
+            reference = method(name=name)
             if isinstance(reference, ReferenceMarkStart):
                 self.text = reference.referenced_text()
 
@@ -490,8 +491,9 @@ class ReferenceMarkStart(Element):
         if self.parent is None:
             raise ValueError("Reference need some upper document part")
         body: Body | Element = self.document_body or self.parent
-        if hasattr(body, "get_reference_mark_end"):
-            end = body.get_reference_mark_end(name=self.name)
+        method = getattr(body, "get_reference_mark_end", None)
+        if callable(method):
+            end = method(name=self.name)
         else:
             end = None
         if end is None:
@@ -528,8 +530,9 @@ class ReferenceMarkStart(Element):
         if self.parent is None:
             raise ValueError("Can't delete the root element")
         body: Body | Element = self.document_body or self.parent
-        if hasattr(body, "get_reference_mark_end"):
-            ref_end = body.get_reference_mark_end(name=name)
+        method = getattr(body, "get_reference_mark_end", None)
+        if callable(method):
+            ref_end = method(name=name)
         else:
             ref_end = None
         if ref_end:
@@ -602,12 +605,14 @@ def remove_reference_mark(
         position: The index of the mark to remove if `name` is not provided.
         name: The name of the reference mark to remove.
     """
-    if hasattr(element, "get_reference_mark"):
-        start_ref = element.get_reference_mark(position=position, name=name)
+    method = getattr(element, "get_reference_mark", None)
+    if callable(method):
+        start_ref = method(position=position, name=name)
     else:
         start_ref = None
-    if hasattr(element, "get_reference_mark_end"):
-        end_ref = element.get_reference_mark_end(position=position, name=name)
+    method = getattr(element, "get_reference_mark_end", None)
+    if callable(method):
+        end_ref = method(position=position, name=name)
     else:
         end_ref = None
     to_strip: list[ReferenceMark | ReferenceMarkStart | ReferenceMarkEnd] = []
