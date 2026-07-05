@@ -569,7 +569,7 @@ class Row(Element):
         return cell
 
     # fix for unit test and typos
-    append = append_cell
+    append = append_cell  # ty: ignore[invalid-method-override]
 
     def delete_cell(self, x: int | str) -> None:
         """Delete the cell at the given position "x". Alphabetical positions
