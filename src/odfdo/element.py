@@ -1884,7 +1884,7 @@ class Element(MDBase):
         """
         return self.__element
 
-    def __append(self, str_or_element: str | Element) -> None:
+    def __append(self, str_or_element: Element | str) -> None:
         """Appends an element or text to the end of the current element.
 
         If `str_or_element` is a string, it is appended as text. If it is an

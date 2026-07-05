@@ -587,22 +587,22 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     # Public API
     #
 
-    def append(self, something: Element | str) -> None:
+    def append(self, str_or_element: Element | str) -> None:
         """Append a Row or Column to the table.
 
         This method dispatches the call to `append_row` or `append_column` based
         on the type of the provided element.
 
         Args:
-            something (Element | str): The Row or Column to append.
+            str_or_element (Element | str): The Row or Column to append.
         """
-        if isinstance(something, Row):
-            self.append_row(something)
-        elif isinstance(something, Column):
-            self.append_column(something)
+        if isinstance(str_or_element, Row):
+            self.append_row(str_or_element)
+        elif isinstance(str_or_element, Column):
+            self.append_column(str_or_element)
         else:
             # probably still an error
-            self._append(something)
+            self._append(str_or_element)
 
     @property
     def height(self) -> int:
