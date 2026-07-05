@@ -186,6 +186,11 @@ def _get_between_base(
                     tail = current.tail
                     if tail:
                         # got a tail => the parent should be either text:p or text:h
+                        if target is None:  # pragma: nocover
+                            # should never happen
+                            raise RuntimeError(
+                                f"No target for {elem1_tag!r} and {elem2_tag!r}"
+                            )
                         target.text = tail
                     current, target = _get_successor(current, target)  # ty: ignore
                     state = 1
