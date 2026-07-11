@@ -93,7 +93,7 @@ def collect_images() -> list[ImageInfo]:
     return pool
 
 
-def make_presentation(images_pool: list[ImageInfo]) -> Document:
+def make_presentation(images_pool: list[ImageInfo]) -> Document | None:
     """Return a presentation made of images."""
     if not images_pool:  # unable to find images
         print("No image found !")
