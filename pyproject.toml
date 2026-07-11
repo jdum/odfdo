@@ -94,6 +94,7 @@ include = ["recipes"]
 
 [tool.ty.overrides.rules]
 invalid-argument-type = "ignore"
+not-subscriptable = "ignore"
 
 
 [tool.isort]
