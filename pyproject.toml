@@ -70,8 +70,6 @@ dev = [
     "tox>=4.51.0",
     "ruff>=0.15.4",
     "isort>=6.1.0",
-    "mypy>=1.19.1",
-    "mypy-extensions>=1.1.0",
     "typing-extensions>=4.15.0",
     "ty>=0.0.56",
 ]
@@ -175,32 +173,6 @@ ignore = [
 "tests/*/test_*" = ["S101", "S404", "RUF005", "B007", "UP017", "YTT204","SIM117"]
 "recipes/*" = ["S101", "SIM102", "B903"]
 "recipes/accessing_a_single_element.py" = ["RUF001"]
-
-[tool.mypy]
-files = ["src/odfdo"]
-disallow_untyped_defs = true
-disallow_any_unimported = false
-no_implicit_optional = true
-check_untyped_defs = true
-warn_return_any = true
-warn_unused_ignores = true
-show_error_codes = true
-
-[[tool.mypy.overrides]]
-module = "lxml.etree"
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = "odfdo.mixin_md"
-disable_error_code = ["attr-defined"]
-
-[[tool.mypy.overrides]]
-module = "odfdo.mixin_dc_date"
-disable_error_code = ["attr-defined"]
-
-[[tool.mypy.overrides]]
-module = "odfdo.mixin_dc_creator"
-disable_error_code = ["attr-defined"]
 
 [tool.pytest]
 minversion = "8.0"

@@ -33,8 +33,6 @@ from decimal import Decimal
 from functools import cache
 from re import search
 from typing import TYPE_CHECKING, Any, NamedTuple, cast
-
-from typing_extensions import Self
 from xml.etree.ElementTree import canonicalize
 
 from lxml.etree import Element as lxml_Element  # ty: ignore[unresolved-import]
@@ -44,6 +42,7 @@ from lxml.etree import (  # ty: ignore[unresolved-import]
     fromstring,
     tostring,
 )
+from typing_extensions import Self  # noqa: UP035
 
 from .const import (
     ODF_COLOR_PROPERTY,
