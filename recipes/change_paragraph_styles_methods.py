@@ -164,9 +164,10 @@ def apply_styles(document: Document) -> None:
 
     def change_some_paragraph() -> None:
         style = document.get_style(family="paragraph", display_name="italic-red")
-        document.body.get_paragraph(3).style = style.name
-        document.body.get_paragraph(5).style = style.name
-        document.body.get_paragraph(7).style = style.name
+        for idx in (3, 5, 7):
+            para = document.body.get_paragraph(idx)
+            if para is not None:
+                para.style = style.name
 
     def apply_span_regex() -> None:
         yellow = document.get_style(family="text", display_name="bold-yellow-blue")
@@ -182,7 +183,8 @@ def apply_styles(document: Document) -> None:
 
     def apply_custom_style() -> None:
         para = document.body.get_paragraph(13)
-        para.style = "custom"
+        if para is not None:
+            para.style = "custom"
 
     def apply_imported_style() -> None:
         para = document.body.get_paragraph(14)
