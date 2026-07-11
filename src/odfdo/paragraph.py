@@ -73,6 +73,7 @@ class Paragraph(
     _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("style", "text:style-name"),
     )
+    style: str | None
 
     def __init__(
         self,
