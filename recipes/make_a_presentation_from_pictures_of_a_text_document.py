@@ -8,6 +8,7 @@ import io
 import os
 import sys
 from pathlib import Path
+from typing import cast
 
 # analyzing embedded image requires the Pillow library
 from PIL import Image
@@ -82,7 +83,7 @@ def generate_document(source: Document) -> Document:
         uri = image.url
         # weight = len(doc_source.get_part(uri))  # only for info
         # print "image %s , size in bytes: %s" % (uri, weight)
-        content: bytes = source.get_part(uri)  # actual image content
+        content: bytes = cast(bytes, source.get_part(uri))  # actual image content
         name = uri.split("/")[-1]  # lets make a file name for image
 
         # Compute the display size of the image on the final page
