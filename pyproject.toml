@@ -89,6 +89,13 @@ exclude = ["tests"]
 [tool.ty.rules]
 unresolved-attribute = "ignore"
 
+[[tool.ty.overrides]]
+include = ["recipes"]
+
+[tool.ty.overrides.rules]
+invalid-argument-type = "ignore"
+
+
 [tool.isort]
 profile = "black"
 
