@@ -762,7 +762,7 @@ class Style(StyleProps):
         # Cloning or reusing an existing element
         level_style: Style | None = None
         if clone is not None:
-            level_style = clone.clone  # ty: ignore
+            level_style = clone.clone
             was_created = True
         else:
             level_style = self.get_level_style(level)
@@ -794,7 +794,10 @@ class Style(StyleProps):
         if start_value:
             level_style.set_attribute("text:start-value", str(start_value))
         if style:
-            level_style.text_style = style
+            if level_style is not None:
+                level_style.text_style = style
+            else:  # pragma: nocover
+                raise ValueError("No level style available")
         # Commit the creation
         if was_created:
             self.append(level_style)

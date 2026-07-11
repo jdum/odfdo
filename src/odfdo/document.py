@@ -57,6 +57,7 @@ from .manifest import Manifest
 from .meta import Meta
 from .mixin_md import MDDocument
 from .settings import Settings
+from .style import Style
 from .style_base import StyleBase
 from .styles import Styles
 from .table import Table
@@ -1659,10 +1660,10 @@ class Document(MDDocument):
                 'style:writing-mode="lr-tb"/></style:style>'
             )
             self.insert_style(orig_style, automatic=True)  # ty:ignore
-        new_style = orig_style.clone
+        new_style = cast(Style, orig_style.clone)
         new_name = self._unique_style_name("ta")
         new_style.name = new_name
-        self.insert_style(new_style, automatic=True)  # ty:ignore
+        self.insert_style(new_style, automatic=True)
         sheet = self._get_table(table)
         sheet.style = new_name  # ty: ignore
         properties = {"table:display": Boolean.encode(displayed)}

@@ -32,7 +32,9 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from functools import cache
 from re import search
-from typing import TYPE_CHECKING, Any, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple, cast
+
+from typing_extensions import Self
 from xml.etree.ElementTree import canonicalize
 
 from lxml.etree import Element as lxml_Element  # ty: ignore[unresolved-import]
@@ -1999,16 +2001,16 @@ class Element(MDBase):
         self.__element.clear()
 
     @property
-    def clone(self) -> Element:
+    def clone(self) -> Self:
         """Creates a deep copy of the current element.
 
         Returns:
-            Element: A new Element instance that is a deep copy of the original.
+            Self: A new instance of the same class that is a deep copy of the original.
         """
         clone = deepcopy(self.__element)
         root = lxml_Element("ROOT", nsmap=ODF_NAMESPACES)
         root.append(clone)
-        return self.from_tag(clone)
+        return cast(Self, self.from_tag(clone))
 
         # slow data = tostring(self.__element, encoding='unicode')
         # return self.from_tag(data)

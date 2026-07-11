@@ -457,7 +457,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     def _get_formatted_text_rst(self, context: dict) -> str:
         context["no_img_level"] += 1
         # Strip the table => We must clone
-        table: Table = self.clone  # ty: ignore[invalid-assignment]
+        table: Table = self.clone
         table.rstrip(aggressive=True)
 
         # Fill the rows
@@ -1773,7 +1773,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         if y is None:
             raise ValueError
         cell = self.get_cell((x, y))
-        image_frame = image_frame.clone  # ty: ignore[invalid-assignment]
+        image_frame = image_frame.clone
         # Remove any previous paragraph, frame, etc.
         for child in cell.children:
             cell.delete(child)
