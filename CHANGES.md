@@ -1,5 +1,32 @@
 # Odfdo Release Notes
 
+## [3.22.11] - 2026-07-11
+
+-   Continued the migration from mypy to ty: `Element.clone()` now returns
+    `Self`, recipe files are included in ty and ruff checks, and the
+    remaining mypy configuration was removed.
+-   Minor fixes and refactoring.
+
+### Changed
+
+-   Updated `Element.clone` type hint to return `Self` instead of `Element`.
+-   Included the `recipes` directory in ty and ruff checks via the
+    `justfile` and `pyproject.toml`.
+-   Added `tool.ty.overrides` rules for the `recipes` directory.
+-   Updated `justfile` with `code` and `all` targets.
+-   Removed remaining mypy and mypy-extensions dependencies and the
+    `[tool.mypy]` configuration from `pyproject.toml`.
+-   Added `Paragraph.style` type annotation.
+-   Updated recipe type hints and added null checks in
+    `recipes/change_paragraph_styles_methods.py`.
+
+### Fixed
+
+-   Guarded against a `None` level style when setting the outline text style
+    in `Style._set_outline_style()`.
+-   Fixed `ConfigItem.config_type` getter and setter to handle a missing or
+    `None` `config:type` attribute without triggering a ty type error.
+
 ## [3.22.10] - 2026-07-05
 
 -   Migrated type-checker configuration and inline suppressions from mypy to
