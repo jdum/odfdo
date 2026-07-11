@@ -83,7 +83,7 @@ def test_unit(document: Document) -> None:
 
     meta = document.meta
     assert meta.keyword.strip() == "Douglas Adams"
-    assert meta.statistic["meta:page-count"] == 20  # ty: ignore[not-subscriptable]
+    assert meta.statistic["meta:page-count"] == 20
 
 
 if __name__ == "__main__":
