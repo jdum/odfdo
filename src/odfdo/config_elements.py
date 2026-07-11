@@ -495,7 +495,7 @@ class ConfigItem(Element):
     @property
     def config_type(self) -> str:
         """Get the data type of the configuration item's value."""
-        config_type = self.get_attribute_string("config:type")
+        config_type = self.get_attribute_string("config:type") or "string"
         if config_type not in self.TYPES:
             return "string"
         return config_type
@@ -503,7 +503,7 @@ class ConfigItem(Element):
     @config_type.setter
     def config_type(self, config_type: str | None) -> None:
         """Set the data type of the configuration item's value."""
-        if config_type not in self.TYPES:
+        if not config_type or config_type not in self.TYPES:
             config_type = "string"
         self._set_attribute_str("config:type", config_type)
 
