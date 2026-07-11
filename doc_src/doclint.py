@@ -162,7 +162,7 @@ def parse_classes(package: object) -> None:
         check_class(klass)
 
 
-def check_method(meth: griffe.Method) -> None:
+def check_method(meth: Any) -> None:
     def fail(msg: str) -> None:
         add_issue("E", meth, msg)
 
