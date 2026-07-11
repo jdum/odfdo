@@ -2,10 +2,10 @@ test:
     uv run pytest -n 8 --dist loadfile
 
 ty:
-    ty check src
+    ty check src recipes
 
 ruff:
-    ruff check src tests
+    ruff check src tests recipes
 
 lint: ruff ty
 
@@ -21,5 +21,9 @@ lock:
 sync:
     uv sync
 
-doc: sync
+doc: sync doclint
     cd doc_src && python generate_doc.py
+
+code: lock sync lint test cov
+
+all: code doc
