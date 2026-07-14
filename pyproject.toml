@@ -1,8 +1,9 @@
 [project]
 name = "odfdo"
-version = "3.22.11"
+version = "3.22.12"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE.txt"]
 readme = "README.md"
 authors = [{ name = "Jérôme Dumonteil", email = "jerome.dumonteil@gmail.com" }]
 keywords = ["python", "library", "ODF", "OpenDocument"]
@@ -76,6 +77,9 @@ dev = [
 
 [tool.uv]
 default-groups = ["doc", "dev"]
+
+[tool.uv.build-backend]
+source-exclude = [".DS_Store"]
 
 [build-system]
 requires = ["uv_build>=0.9.0,<0.12.0"]

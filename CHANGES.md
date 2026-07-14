@@ -1,5 +1,14 @@
 # Odfdo Release Notes
 
+## [3.22.12] - 2026-07-14
+
+Fix the `pyproject.html` to ensure `LICENSE` and `NOTICE.txt` in the source distribution and wheel, and no remaining `.DS_Store` (issue #69)
+
+### Fixed
+
+-   Included `LICENSE` and `NOTICE.txt` in the source distribution and wheel.
+-   Removed `.DS_Store` files from the package and excluded them from future builds.
+
 ## [3.22.11] - 2026-07-11
 
 -   Continued the migration from mypy to ty: `Element.clone()` now returns
