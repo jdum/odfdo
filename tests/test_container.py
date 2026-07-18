@@ -57,6 +57,7 @@ from odfdo.container import (
     normalize_path,
     pretty_indent,
 )
+from odfdo.security import SecurityError, security
 from odfdo.utils import to_bytes
 
 
@@ -3052,3 +3053,106 @@ def test_save_as_folder_with_backup(tmp_path, samples):
     assert (tmp_path / "saved_folder.backup.folder" / "old").exists()
     assert target.is_dir()
     assert not (target / "old").exists()
+
+
+# _read_zip_entry tests
+
+
+def test_read_zip_entry_size_limit_exceeded(tmp_path):
+    """Test _read_zip_entry raises SecurityError when entry exceeds size limit."""
+
+    # Create a ZIP with a large uncompressed entry
+    zip_path = tmp_path / "test.zip"
+    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("mimetype", "application/vnd.oasis.opendocument.text")
+        zf.writestr("large.txt", "X" * 1000)  # 1000 bytes uncompressed
+
+    original_limit = security.max_uncompressed_size
+    try:
+        security.max_uncompressed_size = 500  # Limit lower than 1000
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            with pytest.raises(
+                SecurityError, match=r"ZIP entry 'large.txt' decompressed size"
+            ):
+                Container._read_zip_entry(zf, "large.txt")
+    finally:
+        security.max_uncompressed_size = original_limit
+
+
+def test_read_zip_entry_size_limit_ok(tmp_path):
+    """Test _read_zip_entry succeeds when entry is under size limit."""
+    from odfdo.security import security
+
+    zip_path = tmp_path / "test.zip"
+    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("mimetype", "application/vnd.oasis.opendocument.text")
+        zf.writestr("small.txt", "Hello World")  # Small content
+
+    original_limit = security.max_uncompressed_size
+    try:
+        security.max_uncompressed_size = 500
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            result = Container._read_zip_entry(zf, "small.txt")
+            assert result == b"Hello World"
+    finally:
+        security.max_uncompressed_size = original_limit
+
+
+def test_read_zip_entry_exact_limit(tmp_path):
+    """Test _read_zip_entry succeeds when entry is exactly at size limit."""
+    from odfdo.security import security
+
+    zip_path = tmp_path / "test.zip"
+    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("test.txt", "X" * 100)  # Exactly 100 bytes
+
+    original_limit = security.max_uncompressed_size
+    try:
+        security.max_uncompressed_size = 100
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            result = Container._read_zip_entry(zf, "test.txt")
+            assert result == b"X" * 100
+    finally:
+        security.max_uncompressed_size = original_limit
+
+
+def test_read_zip_entry_just_over_limit(tmp_path):
+    """Test _read_zip_entry fails when entry is just over size limit."""
+    from odfdo.security import SecurityError, security
+
+    zip_path = tmp_path / "test.zip"
+    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("test.txt", "Y" * 101)  # 101 bytes
+
+    original_limit = security.max_uncompressed_size
+    try:
+        security.max_uncompressed_size = 100
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            with pytest.raises(SecurityError, match="exceeds limit"):
+                Container._read_zip_entry(zf, "test.txt")
+    finally:
+        security.max_uncompressed_size = original_limit
+
+
+def test_read_zip_entry_error_message_format(tmp_path):
+    """Test _read_zip_entry error message contains expected components."""
+    from odfdo.security import SecurityError, security
+
+    zip_path = tmp_path / "test.zip"
+    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("big.txt", "Z" * 10000)
+
+    original_limit = security.max_uncompressed_size
+    try:
+        security.max_uncompressed_size = 100
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            with pytest.raises(SecurityError) as exc_info:
+                Container._read_zip_entry(zf, "big.txt")
+            message = str(exc_info.value)
+            assert (
+                "odfdo detected a breach of security, see security.py limits" in message
+            )
+            assert "ZIP entry 'big.txt'" in message
+            assert "exceeds limit" in message
+    finally:
+        security.max_uncompressed_size = original_limit
