@@ -1,6 +1,6 @@
 [project]
 name = "odfdo"
-version = "3.22.12"
+version = "3.23.0"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE.txt"]
@@ -70,7 +70,6 @@ dev = [
     "pytest-cov>=7.0.0",
     "tox>=4.51.0",
     "ruff>=0.15.4",
-    "isort>=6.1.0",
     "typing-extensions>=4.15.0",
     "ty>=0.0.56",
 ]

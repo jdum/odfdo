@@ -1,8 +1,21 @@
 # Odfdo Release Notes
 
+## [3.23.0] - 2026-07-18
+
+Add security-related limits for ODF document processing. Checks total uncompressed size, compression ratio, and file count
+against security configuration. Modify attributes at runtime to customize security thresholds.
+
+### Added
+
+-   New class `SecurityConfig` holding security-related limits.
+
+### Changed
+
+-   ZIP files are now loaded incrementally to mitigate the risk of stack overflow associated with "zip bombs".
+ 
 ## [3.22.12] - 2026-07-14
 
-Fix the `pyproject.html` to ensure `LICENSE` and `NOTICE.txt` in the source distribution and wheel, and no remaining `.DS_Store` (issue #69)
+Fix the `pyproject.toml` to ensure `LICENSE` and `NOTICE.txt` in the source distribution and wheel, and no remaining `.DS_Store` (issue #69)
 
 ### Fixed
 
