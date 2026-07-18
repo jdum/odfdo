@@ -166,6 +166,7 @@ __all__ = [  # noqa: RUF022
     "RubyBase",
     "Section",
     "SectionMixin",
+    "SecurityError",
     "Settings",
     "SizeMix",
     "Spacer",
@@ -375,6 +376,7 @@ from .row import Row
 from .row_group import RowGroup
 from .ruby_base import RubyBase
 from .section import Section, SectionMixin
+from .security import SecurityError
 from .settings import Settings
 from .shapes import (
     AngleMix,

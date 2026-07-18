@@ -63,8 +63,10 @@ from .const import (
     ZIP,
 )
 from .element import NAMESPACES_XML, xpath_compile
+from .security import SecurityError, security, validate_zip_safety
 from .utils import bytes_to_str, str_to_bytes
 
+CHUNK_SIZE = 65536  # 64KB for incremental ZIP reading
 TAB = "  "
 TEXT_CONTENT = {
     "config:config-item",
@@ -381,7 +383,9 @@ class Container:
         if isinstance(self.__path_like, io.BytesIO):
             self.__path_like.seek(0)
         with ZipFile(self.__path_like) as zf:  # ty: ignore
-            mimetype = bytes_to_str(zf.read("mimetype"))
+            # Security check for zip bombs
+            validate_zip_safety(zf)
+            mimetype = bytes_to_str(self._read_zip_entry(zf, "mimetype"))
             if mimetype not in ODF_MIMETYPES:
                 raise ValueError(f"Document of unknown type {mimetype}")
             self.__parts["mimetype"] = str_to_bytes(mimetype)
@@ -392,7 +396,7 @@ class Container:
             with ZipFile(self.__path_like) as zf:  # ty: ignore
                 for name in zf.namelist():
                     upath = normalize_path(name)
-                    self.__parts[upath] = zf.read(name)
+                    self.__parts[upath] = self._read_zip_entry(zf, name)
             self.__path_like = None
 
     def _read_folder(self) -> None:
@@ -1028,8 +1032,10 @@ class Container:
             raise ValueError("Document path is not defined")
         try:
             with ZipFile(self.path) as zf:
+                # Security check for zip bombs
+                validate_zip_safety(zf)
                 upath = normalize_path(name)
-                self.__parts[upath] = zf.read(name)
+                self.__parts[upath] = self._read_zip_entry(zf, name)
                 return self.__parts[upath]
         except BadZipfile:
             return None
@@ -1043,9 +1049,11 @@ class Container:
             raise ValueError("Document path is not defined")
         try:
             with ZipFile(self.path) as zf:
+                # Security check for zip bombs
+                validate_zip_safety(zf)
                 for name in zf.namelist():
                     upath = normalize_path(name)
-                    self.__parts[upath] = zf.read(name)
+                    self.__parts[upath] = self._read_zip_entry(zf, name)
         except BadZipfile:
             pass
 
@@ -1117,6 +1125,42 @@ class Container:
                 # Deleted
                 continue
             dump(part_path, data)
+
+    @staticmethod
+    def _read_zip_entry(zf: ZipFile, name: str) -> bytes:
+        """Safely read a ZIP entry with incremental decompression.
+
+        Reads the entry in chunks while checking size limits to prevent
+        memory exhaustion from decompression bombs.
+
+        Args:
+            zf: An opened ZipFile object.
+            name: Name of the entry to read.
+
+        Returns:
+            The decompressed entry data.
+
+        Raises:
+            SecurityError: If decompressed size exceeds security limits.
+        """
+        total_size = 0
+        chunks: list[bytes] = []
+
+        with zf.open(name) as f:
+            while True:
+                chunk = f.read(CHUNK_SIZE)
+                if not chunk:
+                    break
+                total_size += len(chunk)
+                if total_size > security.max_uncompressed_size:
+                    raise SecurityError(
+                        f"odfdo detected a breach of security, see security.py limits. "
+                        f"ZIP entry '{name}' decompressed size ({total_size} bytes) "
+                        f"exceeds limit ({security.max_uncompressed_size} bytes)."
+                    )
+                chunks.append(chunk)
+
+        return b"".join(chunks)
 
     def _encoded_image(self, elem: _Element) -> _Element | None:
         mime_type = elem.get(
