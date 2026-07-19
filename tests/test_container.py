@@ -3193,3 +3193,58 @@ def test_load_prior_odf_version_and_save_as_14(tmp_path, version):
     reloaded_content = reloaded.get_part(ODF_CONTENT)
     assert b'office:version="1.4"' in reloaded_content
     assert f"Hello from ODF {version}".encode() in reloaded_content
+
+
+def test_preserve_digital_signatures_on_save(tmp_path):
+    """Digital-signature XML parts are preserved on load/save round-trip."""
+
+    sig_content = b'<?xml version="1.0" encoding="UTF-8"?><dsig:document-signatures xmlns:dsig="urn:oasis:names:tc:opendocument:xmlns:digitalsignature:1.0"><Signature>test</Signature></dsig:document-signatures>'
+    path = tmp_path / "signed.odt"
+    with zipfile.ZipFile(path, "w") as zf:
+        zf.writestr("mimetype", b"application/vnd.oasis.opendocument.text")
+        zf.writestr(
+            "content.xml",
+            b'<?xml version="1.0" encoding="UTF-8"?><office:document-content '
+            b'xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" '
+            b'office:version="1.2"><office:body><office:text/></office:body></office:document-content>',
+        )
+        zf.writestr(
+            "styles.xml",
+            b'<?xml version="1.0" encoding="UTF-8"?><office:document-styles '
+            b'xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" office:version="1.2"/>',
+        )
+        zf.writestr(
+            "meta.xml",
+            b'<?xml version="1.0" encoding="UTF-8"?><office:document-meta '
+            b'xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" office:version="1.2">'
+            b"<office:meta/></office:document-meta>",
+        )
+        zf.writestr(
+            "settings.xml",
+            b'<?xml version="1.0" encoding="UTF-8"?><office:document-settings '
+            b'xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" office:version="1.2"/>',
+        )
+        zf.writestr(
+            "META-INF/manifest.xml",
+            b'<?xml version="1.0" encoding="UTF-8"?><manifest:manifest '
+            b'xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0">'
+            b'<manifest:file-entry manifest:media-type="application/vnd.oasis.opendocument.text" manifest:full-path="/"/>'
+            b'<manifest:file-entry manifest:media-type="text/xml" manifest:full-path="content.xml"/>'
+            b'<manifest:file-entry manifest:media-type="text/xml" manifest:full-path="styles.xml"/>'
+            b'<manifest:file-entry manifest:media-type="text/xml" manifest:full-path="meta.xml"/>'
+            b'<manifest:file-entry manifest:media-type="text/xml" manifest:full-path="settings.xml"/>'
+            b'<manifest:file-entry manifest:media-type="text/xml" manifest:full-path="META-INF/documentsignatures.xml"/>'
+            b"</manifest:manifest>",
+        )
+        zf.writestr("META-INF/documentsignatures.xml", sig_content)
+
+    container = Container()
+    container.open(path)
+    assert "META-INF/documentsignatures.xml" in container.parts
+
+    out_path = tmp_path / "signed_out.odt"
+    container.save(out_path, packaging=ZIP)
+
+    with zipfile.ZipFile(out_path, "r") as zf:
+        assert "META-INF/documentsignatures.xml" in zf.namelist()
+        assert zf.read("META-INF/documentsignatures.xml") == sig_content
