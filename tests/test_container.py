@@ -3156,3 +3156,40 @@ def test_read_zip_entry_error_message_format(tmp_path):
             assert "exceeds limit" in message
     finally:
         security.max_uncompressed_size = original_limit
+
+
+@pytest.mark.parametrize("version", ["1.0", "1.1", "1.2", "1.3"])
+def test_load_prior_odf_version_and_save_as_14(tmp_path, version):
+    """Older ODF documents can be loaded and are saved as ODF 1.4."""
+    flat_odf = dedent(f"""\
+        <?xml version="1.0" encoding="UTF-8"?>
+        <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+                         xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+                         office:mimetype="application/vnd.oasis.opendocument.text"
+                         office:version="{version}">
+            <office:meta/>
+            <office:settings/>
+            <office:styles/>
+            <office:body>
+                <office:text>
+                    <text:p>Hello from ODF {version}</text:p>
+                </office:text>
+            </office:body>
+        </office:document>
+    """).encode()
+    path = tmp_path / f"test_{version}.fodt"
+    path.write_bytes(flat_odf)
+
+    container = Container()
+    container.open(path)
+    content = container.get_part(ODF_CONTENT)
+    assert f"Hello from ODF {version}".encode() in content
+
+    out_path = tmp_path / f"test_{version}.odt"
+    container.save(out_path, packaging=ZIP)
+
+    reloaded = Container()
+    reloaded.open(out_path)
+    reloaded_content = reloaded.get_part(ODF_CONTENT)
+    assert b'office:version="1.4"' in reloaded_content
+    assert f"Hello from ODF {version}".encode() in reloaded_content
