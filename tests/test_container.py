@@ -3248,3 +3248,40 @@ def test_preserve_digital_signatures_on_save(tmp_path):
     with zipfile.ZipFile(out_path, "r") as zf:
         assert "META-INF/documentsignatures.xml" in zf.namelist()
         assert zf.read("META-INF/documentsignatures.xml") == sig_content
+
+
+def test_preserve_encrypted_parts_on_save(tmp_path):
+    """Encrypted file entries are preserved on load/save round-trip."""
+
+    encrypted_content = b"ENCRYPTED_BYTES"
+    manifest_xml = (
+        b'<?xml version="1.0" encoding="UTF-8"?>'
+        b'<manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0">'
+        b'<manifest:file-entry manifest:media-type="application/vnd.oasis.opendocument.text" manifest:full-path="/"/>'
+        b'<manifest:file-entry manifest:media-type="text/xml" manifest:full-path="content.xml">'
+        b"<manifest:encryption-data>"
+        b'<manifest:algorithm manifest:algorithm-name="Blowfish CFB" manifest:initialisation-vector="abc="/>'
+        b'<manifest:key-derivation manifest:key-derivation-name="PBKDF2" manifest:salt="def=" manifest:iteration-count="1024"/>'
+        b"</manifest:encryption-data>"
+        b"</manifest:file-entry>"
+        b"</manifest:manifest>"
+    )
+
+    path = tmp_path / "encrypted.odt"
+    with zipfile.ZipFile(path, "w") as zf:
+        zf.writestr("mimetype", b"application/vnd.oasis.opendocument.text")
+        zf.writestr("content.xml", encrypted_content, compress_type=zipfile.ZIP_STORED)
+        zf.writestr("META-INF/manifest.xml", manifest_xml)
+
+    container = Container()
+    container.open(path)
+    assert container.get_part("content.xml") == encrypted_content
+
+    out_path = tmp_path / "encrypted_out.odt"
+    container.save(out_path, packaging=ZIP)
+
+    with zipfile.ZipFile(out_path, "r") as zf:
+        assert zf.read("content.xml") == encrypted_content
+        saved_manifest = zf.read("META-INF/manifest.xml")
+        assert b"manifest:encryption-data" in saved_manifest
+        assert b"Blowfish CFB" in saved_manifest
