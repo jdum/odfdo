@@ -1507,29 +1507,31 @@ class Container:
 
     @property
     def default_manifest_rdf(self) -> str:
+        # The RDF metadata namespaces are versioned independently from the
+        # office:version attribute and remain at "1.2" for ODF 1.3/1.4.
         return (
             '<?xml version="1.0" encoding="utf-8"?>\n'
             '<rdf:RDF xmlns:rdf="http://www.w3.org/'
             '1999/02/22-rdf-syntax-ns#">\n'
             '  <rdf:Description rdf:about="styles.xml">\n'
             '    <rdf:type rdf:resource="http://docs.oasis-open.org/'
-            f'ns/office/{OFFICE_VERSION}/meta/odf#StylesFile"/>\n'
+            'ns/office/1.2/meta/odf#StylesFile"/>\n'
             "  </rdf:Description>\n"
             '  <rdf:Description rdf:about="">\n'
             '    <ns0:hasPart xmlns:ns0="http://docs.oasis-open.org/ns/'
-            f'office/{OFFICE_VERSION}/meta/pkg#" rdf:resource="styles.xml"/>\n'
+            'office/1.2/meta/pkg#" rdf:resource="styles.xml"/>\n'
             "  </rdf:Description>\n"
             '  <rdf:Description rdf:about="content.xml">\n'
             '    <rdf:type rdf:resource="http://docs.oasis-open.org/'
-            f'ns/office/{OFFICE_VERSION}/meta/odf#ContentFile"/>\n'
+            'ns/office/1.2/meta/odf#ContentFile"/>\n'
             "  </rdf:Description>\n"
             '  <rdf:Description rdf:about="">\n'
             '    <ns0:hasPart xmlns:ns0="http://docs.oasis-open.org/ns/office'
-            f'/{OFFICE_VERSION}/meta/pkg#" rdf:resource="content.xml"/>\n'
+            '/1.2/meta/pkg#" rdf:resource="content.xml"/>\n'
             "  </rdf:Description>\n"
             '  <rdf:Description rdf:about="">\n'
             '    <rdf:type rdf:resource="http://docs.oasis-open.org/ns/office'
-            f'/{OFFICE_VERSION}/meta/pkg#Document"/>\n'
+            '/1.2/meta/pkg#Document"/>\n'
             "  </rdf:Description>\n"
             "</rdf:RDF>\n"
         )

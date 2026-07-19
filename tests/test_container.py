@@ -240,7 +240,12 @@ def test_str(samples):
 
 def test_default_manifest_rdf():
     container = Container()
-    assert "rdf:RDF" in container.default_manifest_rdf
+    rdf = container.default_manifest_rdf
+    assert "rdf:RDF" in rdf
+    # The RDF metadata namespaces stay at "1.2" even when office:version is 1.4.
+    assert "ns/office/1.2/meta/odf#" in rdf
+    assert "ns/office/1.2/meta/pkg#" in rdf
+    assert "ns/office/1.4/meta/" not in rdf
 
 
 def test_manifest_rdf_0(tmp_path, samples):
