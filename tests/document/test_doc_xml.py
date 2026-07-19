@@ -51,7 +51,7 @@ def test_save_xml_header(doc_xml):
 
 def test_save_xml_header_2(doc_xml):
     assert (
-        'office:version="1.2" office:mimetype="application/vnd.oasis.opendocument.text">'
+        'office:version="1.4" office:mimetype="application/vnd.oasis.opendocument.text">'
         in doc_xml
     )
 

@@ -141,7 +141,7 @@ ODF_MANIFEST_NAME = "manifest.xml"
 ODF_MANIFEST_RDF = "manifest.rdf"
 ODF_MANIFEST_RDF_TYPE = "application/rdf+xml"
 
-OFFICE_VERSION = "1.2"
+OFFICE_VERSION = "1.4"
 
 # LibreOffice and OpenOffice extensions
 USE_LO_EXTENSIONS = True
