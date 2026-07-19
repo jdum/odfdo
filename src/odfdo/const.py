@@ -385,6 +385,7 @@ ODF_PROPERTIES = {
     "dr3d:shadow",
     "dr3d:shininess",
     "dr3d:specular-color",
+    "dr3d:transform",  # ODF v1.3
     "dr3d:texture-filter",
     "dr3d:texture-generation-mode-x",
     "dr3d:texture-generation-mode-y",
@@ -404,14 +405,18 @@ ODF_PROPERTIES = {
     "draw:caption-line-length",
     "draw:caption-type",
     "draw:color-inversion",
+    "draw:concave",  # ODF v1.3
+    "draw:corners",  # ODF v1.3
     "draw:color-mode",
     "draw:contrast",
+    "draw:decorative",  # ODF v1.4
     "draw:decimal-places",
     "draw:display-name",  # ODF v1.2
     "draw:draw-aspect",
     "draw:end-guide",
     "draw:end-line-spacing-horizontal",
     "draw:end-line-spacing-vertical",
+    "draw:enhanced-path",  # ODF v1.3
     "draw:escape-direction",
     "draw:fill",
     "draw:fill-color",
@@ -435,6 +440,7 @@ ODF_PROPERTIES = {
     "draw:green",
     "draw:guide-distance",
     "draw:guide-overhang",
+    "draw:handle-position",  # ODF v1.3
     "draw:id",  # ODF v1.0
     "draw:image-opacity",
     "draw:line-distance",
@@ -446,6 +452,7 @@ ODF_PROPERTIES = {
     "draw:marker-start-center",
     "draw:marker-start-width",
     "draw:measure-align",
+    "draw:mime-type",  # ODF v1.3
     "draw:measure-vertical-align",
     "draw:name",  # ODF v1.0
     "draw:ole-draw-aspect",
@@ -460,6 +467,7 @@ ODF_PROPERTIES = {
     "draw:shadow-offset-x",
     "draw:shadow-offset-y",
     "draw:shadow-opacity",
+    "draw:sharpness",  # ODF v1.3
     "draw:show-unit",
     "draw:start-guide",
     "draw:start-line-spacing-horizontal",
@@ -472,6 +480,7 @@ ODF_PROPERTIES = {
     "draw:textarea-horizontal-align",
     "draw:textarea-vertical-align",
     "draw:tile-repeat-offset",
+    "draw:transform",  # ODF v1.3
     "draw:unit",
     "draw:visible-area-height",
     "draw:visible-area-left",
@@ -747,6 +756,7 @@ ODF_PROPERTIES = {
     "svg:stroke-linecap",
     "svg:stroke-opacity",
     "svg:stroke-width",
+    "svg:viewBox",  # ODF v1.3
     "svg:width",
     "svg:x",
     "svg:y",

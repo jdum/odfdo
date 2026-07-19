@@ -223,6 +223,18 @@ def test_map_key_known():
     assert odf_key == key
 
 
+def test_map_key_odf14_decorative():
+    key = "draw:decorative"
+    odf_key = _map_key(key)
+    assert odf_key == key
+
+
+def test_map_key_odf13_draw_transform():
+    key = "draw:transform"
+    odf_key = _map_key(key)
+    assert odf_key == key
+
+
 def test_map_key_mapped_col():
     key = "display"
     odf_key = _map_key(key)
