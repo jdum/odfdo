@@ -11,6 +11,8 @@ OpenDocument Format (ODF, ISO/IEC 26300) library for Python
 
 `odfdo` is a Python library for programmatically creating, parsing, and editing OpenDocument Format (ODF) files.  It provides an interface for interacting with `.odt`, `.ods`, `.odp`, and other ODF file types. The library comes with a set of utilities and recipes for common actions to make it easier to use.
 
+`odfdo` saves documents as **ODF 1.4** and can load documents created with ODF 1.0, 1.1, 1.2, 1.3 or 1.4.
+
 -   Document Creation: Generate new ODF documents.
 -   Content Manipulation: Add, modify, or delete text, paragraphs or tables.
 -   Table Operations: Create, populate, and modify tables.

@@ -1,5 +1,22 @@
 # Odfdo Release Notes
 
+## [Unreleased]
+
+Migrate odfdo to ODF 1.4. New documents are saved with `office:version="1.4"`.
+
+### Added
+
+-   Load and save as 1.4 regression tests for ODF 1.0/1.1/1.2/1.3 documents.
+-   Preservation of digital-signature XML parts (`META-INF/*signatures*.xml`) on round-trip.
+-   Preservation of encrypted XML parts on round-trip when credentials are not supplied.
+-   ODF 1.3/1.4 attributes added to the allowed-attributes lists (e.g. `draw:enhanced-path`, `svg:viewBox`, `draw:decorative`, `draw:transform`, `dr3d:transform`, …).
+
+### Changed
+
+-   Default `office:version` emitted by odfdo is now `"1.4"`.
+-   Built-in ODF templates refreshed to ODF 1.4.
+-   The RDF metadata namespaces (`odf` and `pkg`) are kept at their fixed `1.2` URI while the document itself is saved as ODF 1.4.
+
 ## [3.23.1] - 2026-07-22
 
 Add missing dependency `typing-extensions` (issue #70).

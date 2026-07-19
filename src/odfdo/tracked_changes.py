@@ -377,7 +377,7 @@ class TextChangedRegion(Element):
 
     Warning:
         This implementation expects that a 'text:changed-region' is
-        referenced only once, which differs from the ODF 1.2 specification.
+        referenced only once, which differs from the ODF specification.
     """
 
     _tag = "text:changed-region"
