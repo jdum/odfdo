@@ -1,5 +1,13 @@
 # Odfdo Release Notes
 
+## [3.23.1] - 2026-07-22
+
+Add missing dependency `typing-extensions` (issue #70).
+
+### Fixed
+
+-   Fix missing dependency `typing-extensions`.
+
 ## [3.23.0] - 2026-07-18
 
 Add security-related limits for ODF document processing. Checks total uncompressed size, compression ratio, and file count
