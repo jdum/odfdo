@@ -73,7 +73,7 @@ class StyleProps(StyleBase):
             area = self.family
         if area not in StyleProps.AREAS:
             raise ValueError(f"Unexpected area value: {area!r}")
-        return area
+        return area  # ty: ignore[invalid-return-type]
 
     def get_properties(self, area: str | None = None) -> PropDict | None:
         """Get the mapping of all properties of this style.

@@ -1060,6 +1060,7 @@ class Document(MDDocument):
         family: str,
         name: str,
     ) -> tuple[Any, Any]:
+        # fixme: manage forbidden family None (see also v1.4)
         style_container = self.content.get_element("office:automatic-styles")
         # A name ?
         if name:
@@ -1223,7 +1224,11 @@ class Document(MDDocument):
         # Common style
         elif family in FAMILY_MAPPING:
             existing, style_container = self._insert_style_standard(
-                style_element, name, family, automatic, default
+                style_element,
+                name,
+                family,  # ty: ignore[invalid-argument-type]
+                automatic,
+                default,
             )
         elif not family and style_element.__class__.__name__ == "DrawFillImage":
             # special case for 'draw:fill-image' pseudo style
