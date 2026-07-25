@@ -276,6 +276,13 @@ def test_style_set_level_style_other_args():
     assert level1.text_style == "T1"
 
 
+def test_style_set_level_style_start_value_zero():
+    style = Style(family="list")
+    style.set_level_style(1, num_format="1", start_value=0)
+    level1 = style.get_level_style(1)
+    assert level1.get_attribute("text:start-value") == "0"
+
+
 def test_style_set_level_style_none_return():
     style = Style(family="list")
     with patch.object(Element, "from_tag", return_value=None):
