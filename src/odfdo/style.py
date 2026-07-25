@@ -791,7 +791,7 @@ class Style(StyleProps):
             level_style.set_attribute("style:num-suffix", suffix)
         if display_levels:
             level_style.set_attribute("text:display-levels", str(display_levels))
-        if start_value:
+        if start_value is not None:
             level_style.set_attribute("text:start-value", str(start_value))
         if style:
             if level_style is not None:
