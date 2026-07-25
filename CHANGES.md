@@ -10,6 +10,7 @@ Migrate odfdo to ODF 1.4. New documents are saved with `office:version="1.4"`.
 -   Preservation of digital-signature XML parts (`META-INF/*signatures*.xml`) on round-trip.
 -   Preservation of encrypted XML parts on round-trip when credentials are not supplied.
 -   ODF 1.3/1.4 attributes added to the allowed-attributes lists (e.g. `draw:enhanced-path`, `svg:viewBox`, `draw:decorative`, `draw:transform`, `dr3d:transform`, …).
+-   Support for the ODF 1.4 `draw:decorative` accessibility property on graphic styles (`Style("graphic", decorative=True)`).
 
 ### Changed
 
