@@ -412,6 +412,15 @@ def test_style_init_various_families_5():
     assert props["fo:min-height"] == "3cm"
 
 
+def test_style_graphic_decorative():
+    style = Style("graphic", decorative=True)
+    props = style.get_properties()
+    assert props["draw:decorative"] == "true"
+    style.set_properties(decorative=False)
+    props = style.get_properties()
+    assert props["draw:decorative"] == "false"
+
+
 def test_style_set_level_style_url_and_clone():
     style = Style("list")
     style.set_level_style(1, url="img.png", prefix="(", suffix=")")
