@@ -118,6 +118,7 @@ _BASE_PROPERTY_MAPPING = {  # text
     # TODO 'page-break-before': 'fo:page-break-before',
     # TODO 'page-break-after': 'fo:page-break-after',
     # Graphic
+    "decorative": "draw:decorative",
     "fill_color": "draw:fill-color",
     "fill_image_height": "draw:fill-image-height",
     "fill_image_width": "draw:fill-image-width",
@@ -454,6 +455,7 @@ STYLE_ATTRIBUTES = {
         "draw:color-mode",
         "draw:contrast",
         "draw:decimal-places",
+        "draw:decorative",
         "draw:draw-aspect",
         "draw:end-guide",
         "draw:end-line-spacing-horizontal",
