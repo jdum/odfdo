@@ -12,6 +12,7 @@ Migrate odfdo to ODF 1.4. New documents are saved with `office:version="1.4"`.
 -   ODF 1.3/1.4 attributes added to the allowed-attributes lists (e.g. `draw:enhanced-path`, `svg:viewBox`, `draw:decorative`, `draw:transform`, `dr3d:transform`, …).
 -   Support for the ODF 1.4 `draw:decorative` accessibility property on graphic styles (`Style("graphic", decorative=True)`).
 -   Support for list numbering starting at 0 (`Style(..., start_value=0)`).
+-   Support for the ODF 1.4 `draw:allow-overlap` property on graphic styles (`Style("graphic", allow_overlap=False)`).
 
 ### Changed
 
