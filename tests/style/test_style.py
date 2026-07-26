@@ -419,6 +419,13 @@ def test_style_init_various_families_5():
     assert props["fo:min-height"] == "3cm"
 
 
+def test_style_odd_even_page_breaks():
+    s = Style("paragraph", break_before="odd-page", break_after="even-page")
+    props = s.get_properties()
+    assert props["fo:break-before"] == "odd-page"
+    assert props["fo:break-after"] == "even-page"
+
+
 def test_style_graphic_decorative():
     style = Style("graphic", decorative=True)
     props = style.get_properties()
