@@ -30,6 +30,7 @@ from odfdo.element import Element
 from odfdo.frame import (
     DrawTextBox,
     Frame,
+    default_frame_position_style,
 )
 from odfdo.header import Header
 from odfdo.image import DrawImage
@@ -491,3 +492,16 @@ def test_draw_text_box_get_tables():
     tables = text_box.get_tables()
     assert len(tables) == 1
     assert tables[0].name == "Table3"
+
+
+def test_frame_position_relative_to_page_margins():
+    style = default_frame_position_style(
+        name="PageMarginPosition",
+        horizontal_pos="left",
+        horizontal_rel="page-start-margin",
+        vertical_pos="top",
+        vertical_rel="page-end-margin",
+    )
+    props = style.get_properties()
+    assert props["style:horizontal-rel"] == "page-start-margin"
+    assert props["style:vertical-rel"] == "page-end-margin"

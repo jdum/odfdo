@@ -67,7 +67,11 @@ def default_frame_position_style(
         horizontal_pos: Position horizontal, default to "from-left".
         vertical_pos: Position vertical, default to "from-top".
         horizontal_rel: Relative position horizontal, default to "paragraph".
+            ODF 1.4 adds "page-start-margin" and "page-end-margin" for
+            positioning relative to page margins.
         vertical_rel: Relative position vertical, default to "paragraph".
+            ODF 1.4 adds "page-start-margin" and "page-end-margin" for
+            positioning relative to page margins.
 
     Returns:
         Style: The generated style.
