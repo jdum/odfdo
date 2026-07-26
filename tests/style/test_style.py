@@ -428,6 +428,15 @@ def test_style_graphic_decorative():
     assert props["draw:decorative"] == "false"
 
 
+def test_style_graphic_allow_overlap():
+    style = Style("graphic", allow_overlap=False)
+    props = style.get_properties()
+    assert props["draw:allow-overlap"] == "false"
+    style.set_properties(allow_overlap=True)
+    props = style.get_properties()
+    assert props["draw:allow-overlap"] == "true"
+
+
 def test_style_set_level_style_url_and_clone():
     style = Style("list")
     style.set_level_style(1, url="img.png", prefix="(", suffix=")")
