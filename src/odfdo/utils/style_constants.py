@@ -118,6 +118,7 @@ _BASE_PROPERTY_MAPPING = {  # text
     # TODO 'page-break-before': 'fo:page-break-before',
     # TODO 'page-break-after': 'fo:page-break-after',
     # Graphic
+    "allow_overlap": "draw:allow-overlap",
     "decorative": "draw:decorative",
     "fill_color": "draw:fill-color",
     "fill_image_height": "draw:fill-image-height",
@@ -440,6 +441,7 @@ STYLE_ATTRIBUTES = {
         "dr3d:texture-kind",
         "dr3d:texture-mode",
         "dr3d:vertical-segments",
+        "draw:allow-overlap",
         "draw:auto-grow-height",
         "draw:auto-grow-width",
         "draw:blue",

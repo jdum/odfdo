@@ -392,6 +392,7 @@ ODF_PROPERTIES = {
     "dr3d:texture-kind",
     "dr3d:texture-mode",
     "dr3d:vertical-segments",
+    "draw:allow-overlap",  # ODF v1.4
     "draw:auto-grow-height",
     "draw:auto-grow-width",
     "draw:background-size",
