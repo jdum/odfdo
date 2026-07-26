@@ -51,6 +51,7 @@ class StylePageLayout(StyleProps):
         self,
         name: str | None = None,
         page_usage: str | None = None,
+        first_page_number: int | str | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize a StylePageLayout element.
@@ -62,6 +63,10 @@ class StylePageLayout(StyleProps):
             name: The name of the page layout style.
             page_usage: The type of pages the layout applies to.
                 Allowed values are "all" (default), "left", "mirrored", "right".
+            first_page_number: The page number to use for the first page.
+                Use an integer (e.g. 0 for slide/page numbering from zero) or
+                the string "continue" to continue from the previous page
+                sequence.
             **kwargs: Additional keyword arguments for the parent `Element` class.
         """
         self._family = "page-layout"
@@ -76,6 +81,8 @@ class StylePageLayout(StyleProps):
                 self.name = name
             if page_usage:
                 self.page_usage = page_usage
+            if first_page_number is not None:
+                self.set_properties(first_page_number=str(first_page_number))
 
     @property
     def family(self) -> str | None:
