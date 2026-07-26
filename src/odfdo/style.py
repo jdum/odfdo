@@ -494,9 +494,11 @@ class Style(StyleProps):
             use_optimal_height: If True, use optimal row height.
                 ('table-row' property)
             break_before: Page or column break before ('page', 'column',
-                or 'auto'). ('table-column' property)
+                'auto', 'odd-page' or 'even-page'). ('paragraph' and
+                'table-column' property)
             break_after: Page or column break after ('page', 'column',
-                or 'auto'). ('table-column' property)
+                'auto', 'odd-page' or 'even-page'). ('paragraph' and
+                'table-column' property)
             align: Table alignment ('left', 'center', 'margins', or
                 'right'). ('table' property)
             width: Column or table width (e.g., '5cm'). ('table-column'
@@ -536,6 +538,10 @@ class Style(StyleProps):
             if family == "paragraph":
                 if master_page:
                     self.master_page = master_page
+                if break_before:
+                    kwargs["fo:break-before"] = break_before
+                if break_after:
+                    kwargs["fo:break-after"] = break_after
             # Font face
             elif family == "font-face":
                 if not font_name:
