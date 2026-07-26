@@ -314,3 +314,15 @@ def test_page_layout_margin_gutter():
     layout.set_properties(margin_gutter="1.5cm")
     props = layout.get_properties()
     assert props["style:margin-gutter"] == "1.5cm"
+
+
+def test_page_layout_first_page_number_zero():
+    layout = StylePageLayout(name="FromZero", first_page_number=0)
+    props = layout.get_properties()
+    assert props["style:first-page-number"] == "0"
+
+
+def test_page_layout_first_page_number_continue():
+    layout = StylePageLayout(name="Continue", first_page_number="continue")
+    props = layout.get_properties()
+    assert props["style:first-page-number"] == "continue"
