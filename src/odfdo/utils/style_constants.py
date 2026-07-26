@@ -300,6 +300,7 @@ STYLE_ATTRIBUTES = {
         "style:border-line-width-top",
         "style:first-page-number",
         "style:footnote-max-height",
+        "style:margin-gutter",
         "style:footnote-sep",
         "style:layout-grid-base-height",
         "style:layout-grid-base-width",

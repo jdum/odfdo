@@ -663,6 +663,7 @@ ODF_PROPERTIES = {
     "style:line-spacing",
     "style:list-level",
     "style:master-page-name",  # ODF v1.0
+    "style:margin-gutter",  # ODF v1.4
     "style:may-break-between-rows",
     "style:min-row-height",
     "style:mirror",
