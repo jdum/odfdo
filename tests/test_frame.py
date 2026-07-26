@@ -494,6 +494,24 @@ def test_draw_text_box_get_tables():
     assert tables[0].name == "Table3"
 
 
+def test_frame_get_tables_empty():
+    frame = Frame()
+    assert frame.get_tables() == []
+
+
+def test_frame_set_table_replace():
+    table1 = Table("Table1", width=2, height=2)
+    table2 = Table("Table2", width=3, height=3)
+    frame = Frame()
+    frame.set_table(table1)
+    assert len(frame.get_tables()) == 1
+    assert frame.get_tables()[0].name == "Table1"
+    frame.set_table(table2)
+    tables = frame.get_tables()
+    assert len(tables) == 1
+    assert tables[0].name == "Table2"
+
+
 def test_frame_position_relative_to_page_margins():
     style = default_frame_position_style(
         name="PageMarginPosition",
