@@ -28,11 +28,13 @@ import pytest
 from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.frame import (
+    DrawTextBox,
     Frame,
 )
 from odfdo.header import Header
 from odfdo.image import DrawImage
 from odfdo.paragraph import Paragraph
+from odfdo.table import Table
 
 ZOE = "你好 Zoé"
 
@@ -460,3 +462,32 @@ def test_frame_get_formatted_text_image_rst_no_img():
         )
         == expected
     )
+
+
+def test_frame_set_table():
+    table = Table("Table1", width=2, height=2)
+    frame = Frame()
+    text_box = frame.set_table(table)
+    assert text_box.tag == "draw:text-box"
+    tables = frame.get_tables()
+    assert len(tables) == 1
+    assert tables[0].name == "Table1"
+
+
+def test_frame_table_frame():
+    table = Table("Table2", width=3, height=2)
+    frame = Frame.table_frame(table, size=("10cm", "5cm"))
+    assert frame.tag == "draw:frame"
+    assert frame.size == ("10cm", "5cm")
+    tables = frame.get_tables()
+    assert len(tables) == 1
+    assert tables[0].name == "Table2"
+
+
+def test_draw_text_box_get_tables():
+    table = Table("Table3", width=2, height=3)
+    text_box = DrawTextBox()
+    text_box.append(table)
+    tables = text_box.get_tables()
+    assert len(tables) == 1
+    assert tables[0].name == "Table3"
