@@ -15,6 +15,7 @@ Migrate odfdo to ODF 1.4. New documents are saved with `office:version="1.4"`.
 -   Support for the ODF 1.4 `draw:allow-overlap` property on graphic styles (`Style("graphic", allow_overlap=False)`).
 -   Support for ODF 1.4 odd/even page breaks (`Style("paragraph", break_before="odd-page")`).
 -   Support for the ODF 1.4 page-layout gutter margin (`StylePageLayout(...).set_properties(margin_gutter="1cm")`).
+-   Support for slide/page numbering from zero via `StylePageLayout(..., first_page_number=0)`.
 
 ### Changed
 
