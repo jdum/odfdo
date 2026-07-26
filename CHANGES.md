@@ -13,6 +13,7 @@ Migrate odfdo to ODF 1.4. New documents are saved with `office:version="1.4"`.
 -   Support for the ODF 1.4 `draw:decorative` accessibility property on graphic styles (`Style("graphic", decorative=True)`).
 -   Support for list numbering starting at 0 (`Style(..., start_value=0)`).
 -   Support for the ODF 1.4 `draw:allow-overlap` property on graphic styles (`Style("graphic", allow_overlap=False)`).
+-   Support for ODF 1.4 odd/even page breaks (`Style("paragraph", break_before="odd-page")`).
 
 ### Changed
 
