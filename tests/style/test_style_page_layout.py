@@ -307,3 +307,10 @@ def test_style_factory_master_page():
 def test_style_factory_page_layout():
     style = Style(family="page-layout", name="L1")
     assert style.tag == "style:page-layout"
+
+
+def test_page_layout_margin_gutter():
+    layout = StylePageLayout(name="GutterLayout")
+    layout.set_properties(margin_gutter="1.5cm")
+    props = layout.get_properties()
+    assert props["style:margin-gutter"] == "1.5cm"
