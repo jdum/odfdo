@@ -41,6 +41,7 @@ from .unit import Unit
 
 if TYPE_CHECKING:
     from .element import PropDefBool
+    from .table import Table
 
 # This DPI is computed to have:
 # 640 px (width of your wiki) <==> 17 cm (width of a normal ODT page)
@@ -526,6 +527,94 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
                 text_box.append(item)
         return text_box
 
+    def get_tables(self) -> list[Table]:
+        """Return all tables contained in the frame's text box.
+
+        Returns:
+            list[Table]: The list of tables found inside the text box.
+        """
+        text_box = self.get_text_box()
+        if text_box is None:
+            return []
+        return text_box.get_tables()
+
+    def set_table(self, table: Table) -> DrawTextBox:
+        """Place a table inside the frame's text box.
+
+        Args:
+            table: A Table element to insert into the frame.
+
+        Returns:
+            DrawTextBox: The text box element containing the table.
+        """
+        text_box = self.get_text_box()
+        if text_box is None:
+            text_box = DrawTextBox()
+            self.append(text_box)
+        else:
+            text_box.clear()
+        text_box.append(table)
+        return text_box
+
+    @classmethod
+    def table_frame(
+        cls,
+        table: Table,
+        name: str | None = None,
+        draw_id: str | None = None,
+        style: str | None = None,
+        position: tuple | None = None,
+        size: tuple = ("1cm", "1cm"),
+        z_index: int = 0,
+        presentation_class: str | None = None,
+        anchor_type: str | None = None,
+        anchor_page: int | None = None,
+        layer: str | None = None,
+        presentation_style: str | None = None,
+        **kwargs: Any,
+    ) -> Frame:
+        """Create a ready-to-use table frame.
+
+        The table is wrapped in a ``draw:text-box`` inside the frame, which is
+        the structure used by ODF 1.4 for tables inside shapes.
+
+        Args:
+            table: A Table element to insert into the frame.
+            name: The name of the frame.
+            draw_id: The ID of the drawing object.
+            style: The name of the style to apply to the frame.
+            position: The position of the frame as a (x, y) tuple of strings
+                including units (e.g., ('1cm', '1cm')).
+            size: The size of the frame as a (width, height) tuple of strings
+                including units (e.g., ('1cm', '1cm')). Defaults to ('1cm', '1cm').
+            z_index: The z-index for stacking order. Defaults to 0.
+            presentation_class: The presentation class of the frame.
+            anchor_type: How the frame is anchored to the document. Can be
+                'page', 'frame', 'paragraph', 'char', or 'as-char'.
+            anchor_page: The page number if `anchor_type` is 'page'.
+            layer: The drawing layer to which the frame belongs.
+            presentation_style: The presentation style of the frame.
+
+        Returns:
+            Frame: The created Frame element containing the table.
+        """
+        frame = cls(
+            name=name,
+            draw_id=draw_id,
+            style=style,
+            position=position,
+            size=size,
+            z_index=z_index,
+            presentation_class=presentation_class,
+            anchor_type=anchor_type,
+            anchor_page=anchor_page,
+            layer=layer,
+            presentation_style=presentation_style,
+            **kwargs,
+        )
+        frame.set_table(table)
+        return frame
+
     @staticmethod
     def _get_formatted_text_subresult(context: dict, element: Element) -> str:
         """Get formatted text from a child element with indentation.
@@ -614,6 +703,14 @@ class DrawTextBox(MDDrawTextBox, ListMixin, TocMixin, SectionMixin):
     """
 
     _tag = "draw:text-box"
+
+    def get_tables(self) -> list[Table]:
+        """Return all tables contained in this text box.
+
+        Returns:
+            list[Table]: The list of tables found inside the text box.
+        """
+        return cast(list["Table"], self.get_elements("descendant::table:table"))
 
 
 register_element_class(Frame)
