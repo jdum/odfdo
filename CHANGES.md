@@ -1,8 +1,8 @@
 # Odfdo Release Notes
 
-## [Unreleased]
+## [3.24.0] - 2026-08-01
 
-Migrate odfdo to ODF 1.4. New documents are saved with `office:version="1.4"`.
+Migrate odfdo to ODF 1.4. New documents are saved with `office:version="1.4"`. (Encryption features are not currently supported.)
 
 ### Added
 
