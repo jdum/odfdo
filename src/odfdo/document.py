@@ -61,7 +61,13 @@ from .style import Style
 from .style_base import StyleBase
 from .styles import Styles
 from .table import Table
-from .utils import FAMILY_MAPPING, Blob, bytes_to_str, is_RFC3066
+from .utils import (
+    FAMILY_LESS_STYLE_TAGS,
+    FAMILY_MAPPING,
+    Blob,
+    bytes_to_str,
+    is_RFC3066,
+)
 from .xmlpart import XmlPart
 
 if TYPE_CHECKING:
@@ -1123,14 +1129,48 @@ class Document(MDDocument):
         existing = self.styles.get_style(family, name)
         return existing, style_container
 
-    def _insert_style_get_draw_fill_image(
+    @staticmethod
+    def _get_style_element_name(style_element: Element) -> str:
+        """Get the internal name or identifier of a style or resource element."""
+        if hasattr(style_element, "name") and style_element.name:
+            return str(style_element.name)
+        for attr in ("style:name", "draw:name", "svg:name", "xml:id"):
+            val = style_element.get_attribute(attr)
+            if val:
+                return str(val)
+        return ""
+
+    def _insert_style_get_family_less(
         self,
+        style_element: Element,
         name: str,
-    ) -> tuple[Any, Any]:
-        # special case for 'draw:fill-image' pseudo style
-        # not family and style_element.__class__.__name__ == "DrawFillImage"
-        style_container = self.styles.get_element("office:styles")
-        existing = self.styles.get_style("", name)
+        automatic: bool,
+    ) -> tuple[Element | None, Element]:
+        """Get existing element and target container for family-less styles/resources."""
+        if automatic:
+            style_container = self.styles.get_element(
+                "office:automatic-styles"
+            ) or self.content.get_element("office:automatic-styles")
+        else:
+            style_container = self.styles.get_element("office:styles")
+
+        if style_container is None:
+            raise ValueError("Target style container not found in document")
+
+        if not name:
+            name = self._get_style_element_name(style_element)
+
+        existing = None
+        tag = style_element.tag
+        if name:
+            for attr in ("style:name", "draw:name", "svg:name", "xml:id"):
+                element = style_container.get_element(f"{tag}[@{attr}='{name}']")
+                if element is not None:
+                    existing = element
+                    break
+        else:
+            existing = style_container.get_element(tag)
+
         return existing, style_container
 
     def _insert_style_standard(
@@ -1201,9 +1241,12 @@ class Document(MDDocument):
             raise TypeError(f"Unknown Style type: '{style!r}'")
 
         # Get family and name
-        family = style_element.family
+        raw_family = getattr(
+            style_element, "family", None
+        ) or style_element.get_attribute("style:family")
+        family: str | None = str(raw_family) if isinstance(raw_family, str) else None
         if not name:
-            name = self._pseudo_style_attribute(style_element, "name")
+            name = self._get_style_element_name(style_element)
 
         # Master page style
         if family == "master-page":
@@ -1221,18 +1264,20 @@ class Document(MDDocument):
         # page layout style
         elif family == "page-layout":
             existing, style_container = self._insert_style_get_page_layout(family, name)
-        # Common style
-        elif family in FAMILY_MAPPING:
+        # Common style with family
+        elif family and family in FAMILY_MAPPING:
             existing, style_container = self._insert_style_standard(
                 style_element,
                 name,
-                family,  # ty: ignore[invalid-argument-type]
+                family,
                 automatic,
                 default,
             )
-        elif not family and style_element.__class__.__name__ == "DrawFillImage":
-            # special case for 'draw:fill-image' pseudo style
-            existing, style_container = self._insert_style_get_draw_fill_image(name)
+        # Elements without a family attribute (draw:marker, draw:gradient, number:*, etc.)
+        elif not family or style_element.tag in FAMILY_LESS_STYLE_TAGS:
+            existing, style_container = self._insert_style_get_family_less(
+                style_element, name, automatic
+            )
         # Invalid style
         else:
             raise ValueError(
@@ -1244,7 +1289,7 @@ class Document(MDDocument):
         if existing is not None:
             style_container.delete(existing)
         style_container.append(style_element)
-        return self._pseudo_style_attribute(style_element, "name")
+        return name or self._get_style_element_name(style_element)
 
     def get_styled_elements(self, name: str = "") -> list[Element]:
         """Search for elements (paragraphs, tables, etc.) using a given style name.

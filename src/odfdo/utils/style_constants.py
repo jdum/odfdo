@@ -90,6 +90,40 @@ SUBCLASSED_STYLES = {
 }
 STYLES_TO_REGISTER = (set(FAMILY_MAPPING.values()) | OTHER_STYLES) - SUBCLASSED_STYLES
 
+REQUIRES_FAMILY_STYLE_TAGS = {
+    "style:style",
+    "style:default-style",
+}
+
+FAMILY_LESS_STYLE_TAGS = {
+    "draw:fill-image",
+    "draw:gradient",
+    "draw:hatch",
+    "draw:marker",
+    "draw:opacity",
+    "draw:stroke-dash",
+    "number:boolean-style",
+    "number:currency-style",
+    "number:date-style",
+    "number:number-style",
+    "number:percentage-style",
+    "number:text-style",
+    "number:time-style",
+    "style:font-face",
+    "style:footer-style",
+    "style:header-style",
+    "style:master-page",
+    "style:page-layout",
+    "style:presentation-page-layout",
+    "svg:linearGradient",
+    "svg:radialGradient",
+    "text:bibliography-configuration",
+    "text:linenumbering-configuration",
+    "text:list-style",
+    "text:notes-configuration",
+    "text:outline-style",
+}
+
 # This mapping is not exhaustive, it only contains cases where
 # replacing '_' with '-' and adding the "fo:" prefix is not enough
 _BASE_PROPERTY_MAPPING = {  # text

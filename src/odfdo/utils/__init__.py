@@ -35,8 +35,10 @@ from .rfc3066 import is_RFC3066
 from .str_convert import bytes_to_str, str_to_bytes, to_bytes, to_str
 from .style_constants import (
     FALSE_FAMILY_MAP_REVERSE,
+    FAMILY_LESS_STYLE_TAGS,
     FAMILY_MAPPING,
     FAMILY_ODF_STD,
+    REQUIRES_FAMILY_STYLE_TAGS,
     STYLES_TO_REGISTER,
     SUBCLASSED_STYLES,
 )
@@ -44,8 +46,10 @@ from .xpath_query import make_xpath_query
 
 __all__ = [
     "FALSE_FAMILY_MAP_REVERSE",
+    "FAMILY_LESS_STYLE_TAGS",
     "FAMILY_MAPPING",
     "FAMILY_ODF_STD",
+    "REQUIRES_FAMILY_STYLE_TAGS",
     "STYLES_TO_REGISTER",
     "SUBCLASSED_STYLES",
     "Blob",
