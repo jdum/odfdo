@@ -381,3 +381,29 @@ def test_set_automatic_name_no_hasattr_name():
     with patch.object(Document, "get_styles", return_value=[elem]):
         doc._set_automatic_name(style, "paragraph")
     assert style.name.startswith(AUTOMATIC_PREFIX)
+
+
+def test_insert_style_element_without_family():
+    doc = Document("text")
+    marker_xml = '<draw:marker draw:name="Arrow" svg:d="M 0 0 L 10 5 L 0 10 z"/>'
+    inserted_name = doc.insert_style(marker_xml)
+    assert inserted_name == "Arrow"
+    inserted = doc.styles.get_element('//draw:marker[@draw:name="Arrow"]')
+    assert inserted is not None
+    assert inserted.get_attribute("svg:d") == "M 0 0 L 10 5 L 0 10 z"
+
+
+def test_insert_style_element_without_family_automatic():
+    doc = Document("text")
+    gradient_elem = Element.from_tag(
+        '<draw:gradient draw:name="BlueGrad" draw:style="linear"/>'
+    )
+    inserted_name = doc.insert_style(gradient_elem, automatic=True)
+    assert inserted_name == "BlueGrad"
+    inserted = doc.styles.get_element(
+        '//office:automatic-styles/draw:gradient[@draw:name="BlueGrad"]'
+    ) or doc.content.get_element(
+        '//office:automatic-styles/draw:gradient[@draw:name="BlueGrad"]'
+    )
+    assert inserted is not None
+

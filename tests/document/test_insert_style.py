@@ -564,3 +564,40 @@ def test_show_styles_attribute_error():
         with patch.object(Document, "get_styles", return_value=[style]):
             with pytest.raises(AttributeError):
                 doc.show_styles()
+
+
+def test_insert_style_family_less_container_none():
+    doc = Document("text")
+    style_elem = Element.from_tag('<draw:marker draw:name="Arrow"/>')
+    with patch.object(doc.styles, "get_element", return_value=None):
+        with pytest.raises(ValueError, match="Target style container not found"):
+            doc._insert_style_get_family_less(style_elem, name="", automatic=False)
+
+
+def test_insert_style_family_less_unnamed_element():
+    doc = Document("text")
+    config1 = Element.from_tag('<draw:opacity foo="1"/>')
+    config2 = Element.from_tag('<draw:opacity foo="2"/>')
+    doc.insert_style(config1)
+    doc.insert_style(config2)
+    res = doc.styles.get_element("office:styles").get_element("draw:opacity")
+    assert res is not None
+    assert res.get_attribute("foo") == "2"
+
+
+def test_insert_style_unknown_family_tag():
+    doc = Document("text")
+    style = Element.from_tag('<style:style style:name="bad" style:family="unknown_family"/>')
+    with pytest.raises(ValueError, match="Invalid style"):
+        doc.insert_style(style)
+
+
+def test_set_automatic_name_coverage():
+    doc = Document("text")
+    s1 = Style("paragraph", name="custom_style_name")
+    s2 = Style("paragraph", name="odfdo_auto_non_int")
+    s3 = Style("paragraph", name="odfdo_auto_10")
+    with patch.object(Document, "get_styles", return_value=[s1, s2, s3]):
+        new_style = Style("paragraph")
+        doc._set_automatic_name(new_style, "paragraph")
+        assert new_style.name == "odfdo_auto_11"
