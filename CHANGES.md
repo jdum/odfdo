@@ -18,6 +18,7 @@ Migrate odfdo to ODF 1.4. New documents are saved with `office:version="1.4"`.
 -   Support for slide/page numbering from zero via `StylePageLayout(..., first_page_number=0)`.
 -   Support for tables inside shapes via `Frame.table_frame(table)` and `Frame.set_table(table)`.
 -   Documentation and tests for frame positioning relative to page margins (`page-start-margin`, `page-end-margin`).
+-   Support for inserting elements without a `style:family` attribute (such as `<draw:marker>`, `<draw:gradient>`, `<draw:hatch>`, `<draw:opacity>`, etc.) via `Document.insert_style()`.
 
 ### Changed
 
