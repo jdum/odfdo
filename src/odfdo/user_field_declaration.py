@@ -85,7 +85,7 @@ class UserFieldDeclMixin(Element):
             declaration matches the criteria.
         """
         return cast(
-            None | UserFieldDecl,
+            UserFieldDecl | None,
             self._filtered_element(
                 "descendant::text:user-field-decl", position, text_name=name
             ),

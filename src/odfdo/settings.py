@@ -38,7 +38,7 @@ class Settings(XmlPart):
     """
 
     def _get_body(self) -> OfficeSettings:
-        body = cast(None | OfficeSettings, self.get_element("//office:settings"))
+        body = cast(OfficeSettings | None, self.get_element("//office:settings"))
         if isinstance(body, OfficeSettings):
             return body
         raise TypeError("No OfficeSettings found")  # pragma: nocover

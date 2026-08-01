@@ -193,13 +193,13 @@ class List(MDList, Element):
     @property
     def list_header(self) -> ListHeader | None:
         """Get or set the list header."""
-        return cast(None | ListHeader, self.get_element("text:list-header"))
+        return cast(ListHeader | None, self.get_element("text:list-header"))
 
     @list_header.setter
     def list_header(
         self, text_or_element: str | Element | list[str | Element] | tuple[str | Element, ...] | None = None
     ) -> None:
-        current = cast(None | ListHeader, self.get_element("text:list-header"))
+        current = cast(ListHeader | None, self.get_element("text:list-header"))
         if current:
             current.delete()
         new_header = ListHeader(text_or_element)

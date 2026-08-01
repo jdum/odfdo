@@ -87,7 +87,7 @@ class NoteMixin(Element):
                 if not found.
         """
         return cast(
-            None | Note,
+            Note | None,
             self._filtered_element(
                 "descendant::text:note",
                 position,

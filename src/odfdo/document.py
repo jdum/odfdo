@@ -1013,7 +1013,7 @@ class Document(MDDocument):
         list_style_name = getattr(style, "list_style_name", None)
         if not list_style_name:
             return None
-        return cast(None | StyleBase, self.get_style("list", list_style_name))
+        return cast(StyleBase | None, self.get_style("list", list_style_name))
 
     @staticmethod
     def _pseudo_style_attribute(

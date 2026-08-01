@@ -89,7 +89,7 @@ class NRMixin(Element):
             named_range: The `NamedRange` object to append.
         """
         named_expressions = cast(
-            None | TableNamedExpressions,
+            TableNamedExpressions | None,
             self.get_element("table:named-expressions"),
         )
         if not named_expressions:
@@ -99,7 +99,7 @@ class NRMixin(Element):
             self._Element__append(named_expressions)
         # exists ?
         current = cast(
-            None | NamedRange,
+            NamedRange | None,
             named_expressions.get_element(
                 f'table:named-range[@table:name="{named_range.name}"][1]'
             ),

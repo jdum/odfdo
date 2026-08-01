@@ -117,7 +117,7 @@ class AnnotationMixin(Element):
         """
         if name is not None:
             return cast(
-                None | Annotation,
+                Annotation | None,
                 self._filtered_element(
                     "descendant::office:annotation", 0, office_name=name
                 ),
@@ -164,7 +164,7 @@ class AnnotationMixin(Element):
                 None if not found.
         """
         return cast(
-            None | AnnotationEnd,
+            AnnotationEnd | None,
             self._filtered_element(
                 "descendant::office:annotation-end", position, office_name=name
             ),
@@ -314,7 +314,7 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
         body: Body | Element = self.document_body or parent
         method = getattr(body, "get_annotation_end", None)
         if callable(method):
-            return cast(None | AnnotationEnd, method(name=name))
+            return cast(AnnotationEnd | None, method(name=name))
         return None
 
     def get_annotated(
@@ -451,7 +451,7 @@ class AnnotationEnd(MDTail, Element):
         body: Body | Element = self.document_body or parent
         method = getattr(body, "get_annotation", None)
         if callable(method):  # pragma: nocover
-            return cast(None | Annotation, method(name=name))
+            return cast(Annotation | None, method(name=name))
         return None  # pragma: nocover
 
     @property

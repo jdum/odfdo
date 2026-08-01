@@ -63,7 +63,7 @@ class BookmarkMixin(Element):
             Bookmark or None: The found Bookmark or None if not found.
         """
         return cast(
-            None | Bookmark,
+            Bookmark | None,
             self._filtered_element(
                 "descendant::text:bookmark", position, text_name=name
             ),
@@ -97,7 +97,7 @@ class BookmarkMixin(Element):
             BookmarkStart or None: The found BookmarkStart or None if not found.
         """
         return cast(
-            None | BookmarkStart,
+            BookmarkStart | None,
             self._filtered_element(
                 "descendant::text:bookmark-start", position, text_name=name
             ),
@@ -131,7 +131,7 @@ class BookmarkMixin(Element):
             BookmarkEnd or None: The found BookmarkEnd or None if not found.
         """
         return cast(
-            None | BookmarkEnd,
+            BookmarkEnd | None,
             self._filtered_element(
                 "descendant::text:bookmark-end", position, text_name=name
             ),

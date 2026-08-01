@@ -92,7 +92,7 @@ class VarDeclMixin(Element):
             VarDecls | None: A VarDecls instance, or None if no declaration matches the criteria.
         """
         return cast(
-            None | VarDecls,
+            VarDecls | None,
             self._filtered_element(
                 "descendant::text:variable-decl", position, text_name=name
             ),

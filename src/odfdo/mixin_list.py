@@ -93,6 +93,6 @@ class ListMixin(Element):
                 criteria.
         """
         return cast(
-            "None | List",
+            "List | None",
             self._filtered_element("descendant::text:list", position, content=content),
         )

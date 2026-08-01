@@ -300,7 +300,7 @@ class TOC(MDToc, Element):
         Returns:
             str: The formatted text of the TOC.
         """
-        index_body = cast(None | IndexBody, self.get_element(IndexBody._tag))
+        index_body = cast(IndexBody | None, self.get_element(IndexBody._tag))
 
         if index_body is None:
             return ""
@@ -345,7 +345,7 @@ class TOC(MDToc, Element):
         This property provides access to the 'text:index-body' element, which
         contains the actual entries of the table of contents.
         """
-        return cast(None | IndexBody, self.get_element(IndexBody._tag))
+        return cast(IndexBody | None, self.get_element(IndexBody._tag))
 
     @body.setter
     def body(self, body: Element | None = None) -> None:
@@ -366,7 +366,7 @@ class TOC(MDToc, Element):
         if index_body is None:
             return ""
         index_title = cast(
-            None | IndexTitle, index_body.get_element(IndexTitle._tag)
+            IndexTitle | None, index_body.get_element(IndexTitle._tag)
         )
         if index_title is None:
             return ""
@@ -390,7 +390,7 @@ class TOC(MDToc, Element):
             self.body = None  # this ceates a new index_body
             index_body = cast(IndexBody, self.body)
         index_title = cast(
-            None | IndexTitle, index_body.get_element(IndexTitle._tag)
+            IndexTitle | None, index_body.get_element(IndexTitle._tag)
         )
         if index_title:
             style = style or index_title.style
@@ -472,7 +472,7 @@ class TOC(MDToc, Element):
             title = None
         else:
             title = cast(
-                None | IndexTitle, index_body.get_element(IndexTitle._tag)
+                IndexTitle | None, index_body.get_element(IndexTitle._tag)
             )
 
         # Clean the old index-body

@@ -26,7 +26,7 @@ from typing import TYPE_CHECKING, Any
 from .element import Element
 
 if TYPE_CHECKING:
-    PropDict = dict[str, str | bool | tuple | None | "PropDict"]
+    PropDict = dict[str, str | bool | tuple | "PropDict" | None]
 else:
     PropDict = dict
 

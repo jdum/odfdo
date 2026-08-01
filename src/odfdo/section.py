@@ -99,7 +99,7 @@ class SectionMixin(Element):
             Section or None: The matching Section element, or None if not found.
         """
         return cast(
-            None | Section,
+            Section | None,
             self._filtered_element(
                 "descendant::text:section", position, content=content
             ),

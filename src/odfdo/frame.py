@@ -461,7 +461,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
         Returns:
             DrawImage | None: The image element if found, None otherwise.
         """
-        return cast(None | DrawImage, self.get_element("draw:image"))
+        return cast(DrawImage | None, self.get_element("draw:image"))
 
     def set_image(self, url_or_element: DrawImage | str) -> DrawImage:
         """Set or replace the image in the frame.
@@ -497,7 +497,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
         Returns:
             DrawTextBox | None: The text box element if found, None otherwise.
         """
-        return cast(None | DrawTextBox, self.get_element("draw:text-box"))
+        return cast(DrawTextBox | None, self.get_element("draw:text-box"))
 
     def set_text_box(
         self,

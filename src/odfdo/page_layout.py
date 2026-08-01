@@ -210,7 +210,7 @@ class StylePageLayout(StyleProps):
             StyleBase | None: The `StyleBase` instance representing the header
                 style, or `None` if no header style is defined.
         """
-        return cast(None | StyleBase, self.get_element("style:header-style"))
+        return cast(StyleBase | None, self.get_element("style:header-style"))
 
     def set_header_style(self, new_style: StyleBase) -> None:
         """Set or replace the `style:header-style` element within the page layout.
@@ -230,7 +230,7 @@ class StylePageLayout(StyleProps):
             StyleBase | None: The `StyleBase` instance representing the footer
                 style, or `None` if no footer style is defined.
         """
-        return cast(None | StyleBase, self.get_element("style:footer-style"))
+        return cast(StyleBase | None, self.get_element("style:footer-style"))
 
     def set_footer_style(self, new_style: StyleBase) -> None:
         """Set or replace the `style:footer-style` element within the page layout.

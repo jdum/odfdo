@@ -225,7 +225,7 @@ class Styles(XmlPart):
             OfficeMasterStyles | None: The "office:master-styles" element, or None if not found.
         """
         return cast(
-            None | OfficeMasterStyles, self.get_element("//office:master-styles")
+            OfficeMasterStyles | None, self.get_element("//office:master-styles")
         )
 
     @office_master_styles.setter
@@ -281,7 +281,7 @@ class Styles(XmlPart):
             or None if not found.
         """
         return cast(
-            None | OfficeAutomaticStyles,
+            OfficeAutomaticStyles | None,
             self.get_element("//office:automatic-styles"),
         )
 

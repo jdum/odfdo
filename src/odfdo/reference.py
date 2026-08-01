@@ -73,7 +73,7 @@ class ReferenceMixin(Element):
             ReferenceMark | None: The `ReferenceMark` instance if found, otherwise `None`.
         """
         return cast(
-            None | ReferenceMark,
+            ReferenceMark | None,
             self._filtered_element(
                 "descendant::text:reference-mark", position, text_name=name
             ),
@@ -111,7 +111,7 @@ class ReferenceMixin(Element):
             ReferenceMarkStart | None: The `ReferenceMarkStart` instance if found, otherwise `None`.
         """
         return cast(
-            None | ReferenceMarkStart,
+            ReferenceMarkStart | None,
             self._filtered_element(
                 "descendant::text:reference-mark-start", position, text_name=name
             ),
@@ -149,7 +149,7 @@ class ReferenceMixin(Element):
             ReferenceMarkEnd | None: The `ReferenceMarkEnd` instance if found, otherwise `None`.
         """
         return cast(
-            None | ReferenceMarkEnd,
+            ReferenceMarkEnd | None,
             self._filtered_element(
                 "descendant::text:reference-mark-end", position, text_name=name
             ),
@@ -201,7 +201,7 @@ class ReferenceMixin(Element):
         else:
             request = "descendant::text:reference-mark-start | descendant::text:reference-mark"
         return cast(
-            None | ReferenceMark | ReferenceMarkStart,
+            ReferenceMark | ReferenceMarkStart | None,
             self._filtered_element(
                 request,
                 position=position,

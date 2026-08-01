@@ -95,7 +95,7 @@ class UserDefinedMixin(Element):
             UserDefined | None: A UserDefined instance, or None if no declaration matches the criteria.
         """
         return cast(
-            None | UserDefined,
+            UserDefined | None,
             self._filtered_element(
                 "descendant::text:user-defined", position, text_name=name
             ),
