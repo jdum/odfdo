@@ -242,6 +242,15 @@ def test_bool_decode():
     assert Boolean.decode("false") is False
 
 
+def test_bool_decode_idem():
+    assert Boolean.decode(True) is True
+    assert Boolean.decode(False) is False
+
+
+def test_bool_decode_none():
+    assert Boolean.decode(None) is False
+
+
 def test_bool_bad_decode_true():
     with pytest.raises(ValueError):
         Boolean.decode("True")
