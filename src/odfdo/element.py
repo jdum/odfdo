@@ -42,7 +42,7 @@ from lxml.etree import (  # ty: ignore[unresolved-import]
     fromstring,
     tostring,
 )
-from typing_extensions import Self  # noqa: UP035
+from typing_extensions import Self
 
 from .const import (
     ODF_COLOR_PROPERTY,
