@@ -167,7 +167,7 @@ def document_userfields(args: Namespace) -> None:
 
 
 def _field_string(field: UserFieldDecl, args: Namespace) -> str:
-    value, tpe = field.get_value(get_type=True)
+    value, tpe = field.get_value(get_type=True)  # ty: ignore[not-iterable]
     if args.repr:
         repr_value = repr(value)
     else:

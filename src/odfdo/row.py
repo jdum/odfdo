@@ -30,6 +30,7 @@ from collections.abc import Iterable, Iterator
 from typing import TYPE_CHECKING, Any, cast
 
 from .cell import Cell
+from .const import CellValue
 from .element import (
     Element,
     register_element_class,
@@ -396,7 +397,7 @@ class Row(Element):
         self,
         x: int | str,
         get_type: bool = False,
-    ) -> Any | tuple[Any, str]:
+    ) -> CellValue | tuple[CellValue | None, str | None] | None:
         """Shortcut to get the value of the cell at position "x".
 
         If `get_type` is True, returns a tuple (value, ODF type).
@@ -407,7 +408,8 @@ class Row(Element):
             get_type: Whether to return the ODF type of the value.
 
         Returns:
-            Any | tuple[Any, str]: The value of the cell, or a tuple (value, type).
+            CellValue | tuple[CellValue | None, str | None] | None: The value
+                of the cell, or a tuple (value, type).
         """
         if get_type:
             x = self._translate_x_from_any(x)
@@ -464,7 +466,7 @@ class Row(Element):
     def set_value(
         self,
         x: int | str,
-        value: Any,
+        value: CellValue | None,
         style: str | None = None,
         cell_type: str | None = None,
         currency: str | None = None,
@@ -592,10 +594,10 @@ class Row(Element):
         cell_type: str | None = None,
         complete: bool = False,
         get_type: bool = False,
-    ) -> list[Any | tuple[Any, Any]]:
-        """Shortcut to get the cell values in this row.
+    ) -> list[CellValue | tuple[CellValue | None, str | None] | None]:
+        """Shortcut to get the cell values in this row|None]
 
-        - Filter by `cell_type`: with 'all' will retrieve cells of any type
+        - Filter by `cell_type`: with 'all' will retri|None]s of any type
           (non-empty).
         - If `cell_type` is used and `complete` is True, missing values are
           replaced by None.
@@ -616,7 +618,8 @@ class Row(Element):
             get_type: Whether to return the ODF type of the value.
 
         Returns:
-            list[Any | tuple[Any, Any]]: A list of values, or a list of (value, type) tuples.
+            list[CellValue | tuple[CellValue | None, str | None] | None]:
+                A list of values, or a list of (value, type) tuples.
         """
         if coord:
             x, z = self._translate_row_coordinates(coord)
@@ -625,7 +628,7 @@ class Row(Element):
             z = None
         if cell_type:
             cell_type = cell_type.lower().strip()
-            values: list[Any | tuple[Any, Any]] = []
+            values: list[CellValue | tuple[CellValue | None, str | None] | None] = []
             for cell in self.iter_cells(start=x, end=z):
                 # Filter the cells by cell_type
                 ctype = cell.type
@@ -654,7 +657,7 @@ class Row(Element):
         to the length of the row.
 
         Returns:
-            list[Any]: A list of elements.
+            list[Element]: A list of elements.
         """
         return [cell.children for cell in self.iter_cells()]
 
@@ -692,7 +695,7 @@ class Row(Element):
 
     def set_values(
         self,
-        values: list[Any],
+        values: list[CellValue | None],
         start: int | str = 0,
         style: str | None = None,
         cell_type: str | None = None,
