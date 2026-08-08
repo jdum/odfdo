@@ -178,7 +178,7 @@ def make_order_table(
     row = Row()
     row_number += 1
     row.set_value(0, "Total:")
-    total = sum(table.get_column_values(3)[1:-1])
+    total = sum(table.get_column_values(3)[1:-1])  # ty: ignore
     # note: total is a Decimal
     cell = Cell()
     cell.set_value(
