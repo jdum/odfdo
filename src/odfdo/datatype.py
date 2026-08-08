@@ -42,24 +42,31 @@ class Boolean:
     """
 
     @staticmethod
-    def decode(data: str) -> bool:
+    def decode(data: str | bool | None) -> bool:
         """Decode an ODF boolean string to a Python boolean.
 
         Args:
-            data: The string to decode, expected to be 'true' or 'false'.
+            data: The string to decode, expected to be 'true' or 'false',
+            or a bool or None.
 
         Returns:
             bool: `True` if data is 'true', `False` if data is 'false'.
 
         Raises:
-            ValueError: If the input string is not a valid ODF boolean
-                ('true' or 'false').
+            ValueError: If the input string is not a valid ODF boolean ('true'
+            or 'false'), neither a bool or None.
         """
-        if data == "true":
-            return True
-        elif data == "false":
-            return False
-        raise ValueError(f"boolean {data!r} is invalid")
+        match data:
+            case bool():
+                return data
+            case None:
+                return False
+            case "true":
+                return True
+            case "false":
+                return False
+            case _:
+                raise ValueError(f"boolean {data!r} is invalid")
 
     @staticmethod
     def encode(value: bool | str | bytes | int | None) -> str:
