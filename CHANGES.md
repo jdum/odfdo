@@ -1,5 +1,21 @@
 # Odfdo Release Notes
 
+## [3.24.1] - 2026-08-08
+
+Improvements to type hints and minor refactoring.
+
+### Added
+
+-   New `CellValue` type alias in `odfdo.const` for the union of Python types
+    accepted as cell values.
+
+### Changed
+
+-   `Boolean.decode()` accepts `bool` and `None`, `Boolean.encode()` accepts any number.
+-   Type hints across `Cell`, `Row`, `element_typed`, and `Table` use the
+    new `CellValue` alias.
+-   `convert_coordinates()` has been rewritten.
+
 ## [3.24.0] - 2026-08-01
 
 Migrate odfdo to ODF 1.4. New documents are saved with `office:version="1.4"`. (Encryption features are not currently supported.)

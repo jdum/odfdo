@@ -1,6 +1,6 @@
 [project]
 name = "odfdo"
-version = "3.24.0"
+version = "3.24.1"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE.txt"]
@@ -81,7 +81,7 @@ default-groups = ["doc", "dev"]
 source-exclude = [".DS_Store"]
 
 [build-system]
-requires = ["uv_build>=0.9.0,<0.12.0"]
+requires = ["uv_build>=0.9.0,<0.13.0"]
 build-backend = "uv_build"
 
 [tool.ty.environment]
