@@ -37,8 +37,8 @@ DURATION_FORMAT = "PT%02dH%02dM%02dS"
 
 
 class Boolean:
-    """Handles conversion between ODF boolean string representation ('true', 'false')
-    and Python's native `bool` type.
+    """Handles conversion between ODF boolean string representation
+    ('true', 'false') and Python's native `bool` type.
     """
 
     @staticmethod
@@ -52,7 +52,8 @@ class Boolean:
             bool: `True` if data is 'true', `False` if data is 'false'.
 
         Raises:
-            ValueError: If the input string is not a valid ODF boolean ('true' or 'false').
+            ValueError: If the input string is not a valid ODF boolean
+                ('true' or 'false').
         """
         if data == "true":
             return True
@@ -62,10 +63,12 @@ class Boolean:
 
     @staticmethod
     def encode(value: bool | str | bytes | int | None) -> str:
-        """Encode a Python boolean (or boolean-like string/bytes) to an ODF boolean string.
+        """Encode a Python boolean (or boolean-like string/bytes) to an ODF
+        boolean string.
 
         Args:
-            value: The value to encode. Can be a Python `bool`, a string ('true', 'false' case-insensitive), or bytes.
+            value: The value to encode. Can be a Python `bool`, a string
+                ('true', 'false' case-insensitive), or bytes.
 
         Returns:
             str: The ODF boolean string ('true' or 'false').
@@ -83,7 +86,9 @@ class Boolean:
 
 
 class Date:
-    """Handles conversion between ODF date string representation and Python's `datetime.date` type.
+    """Handles conversion between ODF date string representation and Python's
+    `datetime.date` type.
+
     Assumes ISO 8601 format (YYYY-MM-DD) for ODF dates.
     """
 
@@ -92,7 +97,8 @@ class Date:
         """Decode an ODF date string to a Python `datetime` object.
 
         Args:
-            data: The date string to decode, expected in ISO 8601 format (YYYY-MM-DD).
+            data: The date string to decode, expected in ISO 8601 format
+                (YYYY-MM-DD).
 
         Returns:
             datetime: A `datetime` object representing the decoded date.
@@ -118,22 +124,28 @@ class Date:
 
 
 class DateTime:
-    """Handles conversion between ODF date-time string representation and Python's `datetime.datetime` type.
+    """Handles conversion between ODF date-time string representation and
+    Python's `datetime.datetime` type.
+
     Assumes ISO 8601 format for ODF date-times.
     """
 
     @staticmethod
     def decode(data: str) -> datetime:
-        """Decode an ODF date-time string to a Python `datetime.datetime` object.
+        """Decode an ODF date-time string to a Python `datetime.datetime`
+        object.
 
-        Handles various ISO 8601 formats and provides compatibility for Python 3.9/3.10
+        Handles various ISO 8601 formats and provides compatibility for
+        Python 3.9/3.10
         specific `fromisoformat` behaviors.
 
         Args:
-            data: The date-time string to decode, expected in ISO 8601 format.
+            data: The date-time string to decode, expected in ISO 8601
+                format.
 
         Returns:
-            datetime: A `datetime.datetime` object representing the decoded date-time.
+            datetime: A `datetime.datetime` object representing the
+                decoded date-time.
         """
 
         def _decode_39_310(data1: str) -> datetime:  # pragma: nocover
@@ -161,10 +173,11 @@ class DateTime:
 
     @staticmethod
     def encode(value: datetime) -> str:
-        """Encode a Python `datetime.datetime` object to an ODF date-time string.
+        """Encode a Python `datetime.datetime` object to an ODF date-time
+        string.
 
-        The output string is formatted in ISO 8601. UTC offsets (e.g., "+00:00")
-        are converted to the canonical 'Z' representation.
+        The output string is formatted in ISO 8601. UTC offsets
+        (e.g., "+00:00") are converted to the canonical 'Z' representation.
 
         Args:
             value: The `datetime.datetime` object to encode.
@@ -180,22 +193,25 @@ class DateTime:
 
 
 class Duration:
-    """Handles conversion between ODF duration string representation (ISO 8601 format)
-    and Python's `datetime.timedelta` type.
+    """Handles conversion between ODF duration string representation
+    (ISO 8601 format) and Python's `datetime.timedelta` type.
     """
 
     @staticmethod
     def decode(data: str) -> timedelta:
-        """Decode an ODF duration string (ISO 8601) to a Python `datetime.timedelta` object.
+        """Decode an ODF duration string (ISO 8601) to a Python
+        `datetime.timedelta` object.
 
         Args:
             data: The duration string to decode (e.g., "PT1H30M0S", "-P5D").
 
         Returns:
-            timedelta: A `datetime.timedelta` object representing the decoded duration.
+            timedelta: A `datetime.timedelta` object representing the decoded
+                duration.
 
         Raises:
-            ValueError: If the input string is not a valid ISO 8601 duration format.
+            ValueError: If the input string is not a valid ISO 8601 duration
+                format.
         """
         if data.startswith("P"):
             sign = 1
@@ -238,7 +254,8 @@ class Duration:
 
     @staticmethod
     def encode(value: timedelta) -> str:
-        """Encode a Python `datetime.timedelta` object to an ODF duration string (ISO 8601).
+        """Encode a Python `datetime.timedelta` object to an ODF duration
+        string (ISO 8601).
 
         Args:
             value: The `datetime.timedelta` object to encode.
@@ -247,7 +264,8 @@ class Duration:
             str: The ODF duration string (e.g., "PT1H30M0S", "-P5D").
 
         Raises:
-            TypeError: If the input value is not a `datetime.timedelta` object.
+            TypeError: If the input value is not a `datetime.timedelta`
+            object.
         """
         if not isinstance(value, timedelta):
             raise TypeError(f"duration must be a timedelta: {value!r}")
