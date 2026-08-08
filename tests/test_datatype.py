@@ -232,9 +232,20 @@ def test_bool_encode_bytes():
     assert Boolean.encode(b"True") == "true"
 
 
-def test_bool_bad_encode_one():
-    with pytest.raises(TypeError):
-        Boolean.encode(1)
+def test_bool_no_more_bad_encode_one():
+    assert Boolean.encode(1) == "true"
+
+
+def test_bool_no_more_bad_encode_float():
+    assert Boolean.encode(1.2) == "true"
+
+
+def test_bool_no_more_bad_encode_decimal():
+    assert Boolean.encode(Decimal("2.0")) == "true"
+
+
+def test_bool_no_more_bad_encode_zero():
+    assert Boolean.encode(0) == "false"
 
 
 def test_bool_decode():
@@ -254,6 +265,11 @@ def test_bool_decode_none():
 def test_bool_bad_decode_true():
     with pytest.raises(ValueError):
         Boolean.decode("True")
+
+
+def test_bool_bad_decode_other_type():
+    with pytest.raises(ValueError):
+        Boolean.decode([])
 
 
 def test_bool_bad_encode_pne():

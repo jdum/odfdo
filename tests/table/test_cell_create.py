@@ -883,6 +883,16 @@ def test_bool_property_as_bool():
     assert cell.decimal == dec("1")
 
 
+def test_bool_property_text_set():
+    cell = Cell(0, cell_type="boolean")
+    result_text = cell.set_value_and_type(2, value_type="boolean", text="TRUE")
+    assert cell.bool is True
+    assert cell.int == 1
+    assert cell.float == 1.0
+    assert cell.decimal == dec("1")
+    assert result_text == "TRUE"
+
+
 def test_bool_property_style():
     cell = Cell("before", cell_type="string", style="bold")
     cell.value = True
