@@ -145,34 +145,38 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
                 changing the cell type, use the low level property cell.text
 
         Returns:
-            Union[str, bool, int, float, Decimal, date, datetime, timedelta, None]:
-                The value of the cell in its appropriate Python type.
+            Union[str, bool, int, float, Decimal, date, datetime, timedelta,
+                None]: The value of the cell in its appropriate Python type.
         """
         value_type = self.get_attribute_string("office:value-type")
-        if value_type == "boolean":
-            return self.bool
-        if value_type in {"float", "percentage", "currency"}:
-            value_decimal = Decimal(str(self.get_attribute_string("office:value")))
-            # Return 3 instead of 3.0 if possible
-            if int(value_decimal) == value_decimal:
-                return int(value_decimal)
-            return value_decimal
-        if value_type == "date":
-            value_str = str(self.get_attribute_string("office:date-value"))
-            if "T" in value_str:
-                return DateTime.decode(value_str)
-            return Date.decode(value_str)
-        if value_type == "time":
-            return Duration.decode(str(self.get_attribute_string("office:time-value")))
-        if value_type == "string":
-            value = self.get_attribute_string("office:string-value")
-            if value is not None:
-                return value
-            value_list = []
-            for para in self.get_elements("text:p"):
-                value_list.append(para.inner_text)
-            return "\n".join(value_list)
-        return None
+        match value_type:
+            case "boolean":
+                return self.bool
+            case "float" | "percentage" | "currency":
+                value_decimal = Decimal(str(self.get_attribute_string("office:value")))
+                # Return 3 instead of 3.0 if possible
+                if int(value_decimal) == value_decimal:
+                    return int(value_decimal)
+                return value_decimal
+            case "date":
+                value_str = str(self.get_attribute_string("office:date-value"))
+                if "T" in value_str:
+                    return DateTime.decode(value_str)
+                return Date.decode(value_str)
+            case "time":
+                return Duration.decode(
+                    str(self.get_attribute_string("office:time-value"))
+                )
+            case "string":
+                value = self.get_attribute_string("office:string-value")
+                if value is not None:
+                    return value
+                value_list = []
+                for para in self.get_elements("text:p"):
+                    value_list.append(para.inner_text)
+                return "\n".join(value_list)
+            case _:
+                return None
 
     @value.setter
     def value(self, value: CellValue | None) -> None:
