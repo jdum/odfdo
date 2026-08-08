@@ -48,14 +48,14 @@ class Boolean:
 
         Args:
             data: The string to decode, expected to be 'true' or 'false',
-            or a bool or None.
+                or a bool or None.
 
         Returns:
             bool: `True` if data is 'true', `False` if data is 'false'.
 
         Raises:
-            ValueError: If the input string is not a valid ODF boolean ('true'
-            or 'false'), neither a bool or None.
+            ValueError: If the input string is not a valid ODF boolean
+                ('true' or 'false'), and is neither a bool nor None.
         """
         match data:
             case bool():
@@ -275,7 +275,7 @@ class Duration:
 
         Raises:
             TypeError: If the input value is not a `datetime.timedelta`
-            object.
+                object.
         """
         if not isinstance(value, timedelta):
             raise TypeError(f"duration must be a timedelta: {value!r}")
