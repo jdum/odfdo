@@ -176,26 +176,27 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
     @value.setter
     def value(self, value: CellValue | None) -> None:
-        if value is None:
-            self.clear()
-        elif isinstance(value, (str, bytes)):
-            self.string = value
-        elif isinstance(value, _bool):
-            self.bool = value
-        elif isinstance(value, _float):
-            self.float = value
-        elif isinstance(value, Decimal):
-            self.decimal = value
-        elif isinstance(value, _int):
-            self.int = value
-        elif isinstance(value, timedelta):
-            self.duration = value
-        elif isinstance(value, _datetime):
-            self.datetime = value
-        elif isinstance(value, _date):
-            self.date = value
-        else:
-            raise TypeError(f"Unknown value type, try with set_value() : {value!r}")
+        match value:
+            case None:
+                self.clear()
+            case str() | bytes():
+                self.string = value
+            case bool():
+                self.bool = value
+            case float():
+                self.float = value
+            case Decimal():
+                self.decimal = value
+            case int():
+                self.int = value
+            case timedelta():
+                self.duration = value
+            case _datetime():
+                self.datetime = value
+            case _date():
+                self.date = value
+            case _:
+                raise TypeError(f"Unknown value type, try with set_value() : {value!r}")
 
     @property
     def _bool_string(self) -> str:
