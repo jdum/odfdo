@@ -26,6 +26,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 from typing import Any
 
+from .const import CellValue
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element
 from .utils import bytes_to_str
@@ -68,7 +69,7 @@ class ElementTyped(Element):
 
     def set_value_and_type(
         self,
-        value: Any,
+        value: CellValue | None,
         value_type: str | None = None,
         text: str | None = None,
         currency: str | None = None,
@@ -81,13 +82,12 @@ class ElementTyped(Element):
 
         Args:
             value: The value to set.
-            value_type: The ODF value type (e.g., "float",
-                "date", "string"). If not provided, it is inferred from the
-                type of `value`.
-            text: The textual representation of the value.
-                If not provided, it is generated automatically.
-            currency: The currency symbol, used when
-                `value_type` is "currency".
+            value_type: The ODF value type (e.g., "float", "date", "string").
+                If not provided, it is inferred from the type of `value`.
+            text: The textual representation of the value. If not provided,
+                it is generated automatically.
+            currency: The currency symbol, used when `value_type` is
+                "currency".
 
         Returns:
             str | None: The textual representation of the value that was set,
@@ -120,9 +120,14 @@ class ElementTyped(Element):
                 text = f"{int(value * 100)} %"
             if value_type is None:
                 value_type = "float"
-            if text is None:
-                text = str(value)
-            value = str(value)
+            if value_type == "boolean":
+                if text is None:
+                    text = "true" if bool(value) else "false"
+                value = Boolean.encode(value)
+            else:
+                if text is None:
+                    text = str(value)
+                value = str(value)
         elif isinstance(value, datetime):
             if value_type is None:
                 value_type = "date"
@@ -169,9 +174,9 @@ class ElementTyped(Element):
 
         return text
 
-    def _get_typed_value_boolean(self) -> Any:
+    def _get_typed_value_boolean(self) -> bool:
         """Get the boolean value from the 'office:boolean-value' attribute."""
-        return self.get_attribute("office:boolean-value")
+        return Boolean.decode(self.get_attribute("office:boolean-value"))
 
     def _get_typed_value_number_type(self) -> Decimal | int | float:
         """Get the numeric value from the 'office:value' attribute.
@@ -262,7 +267,7 @@ class ElementTyped(Element):
 
     def _get_value_and_type(
         self, value_type: str | None = None, try_get_text: bool = True
-    ) -> tuple[Any, str | None]:
+    ) -> tuple[CellValue | None, str | None]:
         """Get the value and its ODF type.
 
         If `value_type` is not provided, it is read from the element's
@@ -296,23 +301,23 @@ class ElementTyped(Element):
         value_type: str | None = None,
         try_get_text: bool = True,
         get_type: bool = False,
-    ) -> Any | tuple[Any, str]:
+    ) -> CellValue | tuple[CellValue | None, str | None] | None:
         """Get the Python-typed value of the element.
 
-        This method is for elements that have an `office:value-type` attribute.
-        It does not apply to meta fields.
+        This method is for elements that have an `office:value-type`
+        attribute. It does not apply to meta fields.
 
         Args:
-            value_type: The expected ODF value type. If not
-                provided, it's inferred from the 'office:value-type' attribute.
+            value_type: The expected ODF value type. If not provided, it's
+                inferred from the 'office:value-type' attribute.
             try_get_text: For string types, whether to fall back to
                 reading text from child paragraphs.
             get_type: If True, returns a tuple of (value, type_string)
                 instead of just the value.
 
         Returns:
-            Any | tuple[Any, str]: The Python-typed value, or a tuple of
-                (value, type_string) if `get_type` is True.
+            The Python-typed value, or a tuple of (value, type_string) if
+            `get_type` is True.
         """
         value, actual_type = self._get_value_and_type(
             value_type=value_type, try_get_text=try_get_text
