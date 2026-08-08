@@ -34,6 +34,7 @@ from decimal import ConversionSyntax, Decimal, InvalidOperation
 from typing import TYPE_CHECKING, Any
 
 from .annotation import AnnotationMixin
+from .const import CellValue
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element, register_element_class_list
 from .element_typed import ElementTyped
@@ -55,7 +56,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
     def __init__(
         self,
-        value: Any = None,
+        value: CellValue | None = None,
         text: str | None = None,
         cell_type: str | None = None,
         currency: str | None = None,
@@ -76,7 +77,8 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
         Args:
             value: The Python value to set for the cell. Can be
-                a boolean, int, float, Decimal, date, datetime, str, or timedelta.
+                a boolean, int, float, Decimal, date, datetime, str, timedelta
+                or None.
             text: The textual representation of the cell's
                 content. If not provided, it is generated from the value.
             cell_type: The explicit type of the cell. Valid
@@ -117,9 +119,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         return clone
 
     @property
-    def value(
-        self,
-    ) -> str | _bool | _int | _float | Decimal | _date | _datetime | timedelta | None:
+    def value(self) -> CellValue | None:
         """Get or set the value of the cell.
 
         When getting, the type is inferred from the 'office:value-type'
@@ -175,21 +175,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         return None
 
     @value.setter
-    def value(
-        self,
-        value: (
-            str
-            | bytes
-            | _bool
-            | _int
-            | _float
-            | Decimal
-            | timedelta
-            | _datetime
-            | _date
-            | None
-        ),
-    ) -> None:
+    def value(self, value: CellValue | None) -> None:
         if value is None:
             self.clear()
         elif isinstance(value, (str, bytes)):
@@ -431,18 +417,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
     def set_value(
         self,
-        value: (
-            str
-            | bytes
-            | _float
-            | _int
-            | Decimal
-            | _bool
-            | _datetime
-            | _date
-            | timedelta
-            | None
-        ),
+        value: CellValue | None,
         text: str | None = None,
         cell_type: str | None = None,
         currency: str | None = None,
