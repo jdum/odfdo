@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import sys
 from datetime import date, datetime, timedelta
+from decimal import Decimal
 
 # for compatibility:
 from .unit import Unit  # noqa: F401
@@ -69,7 +70,7 @@ class Boolean:
                 raise ValueError(f"boolean {data!r} is invalid")
 
     @staticmethod
-    def encode(value: bool | str | bytes | int | None) -> str:
+    def encode(value: bool | str | bytes | int | float | Decimal | None) -> str:
         """Encode a Python boolean (or boolean-like string/bytes) to an ODF
         boolean string.
 
@@ -85,6 +86,8 @@ class Boolean:
         """
         if isinstance(value, bytes):
             value = value.decode()
+        elif isinstance(value, int | float | Decimal):
+            value = bool(value)
         if value is True or str(value).lower() == "true":
             return "true"
         elif value is False or str(value).lower() == "false":
