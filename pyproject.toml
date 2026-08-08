@@ -166,7 +166,7 @@ ignore = [
     # Use ternary operator
     "SIM108",
     # Use of `assert` detected
-    "S101",
+    # "S101",
     # is too complex (12 > 10)
     "C901",
     # Within an `except` clause, raise exceptions with `raise ... from err`

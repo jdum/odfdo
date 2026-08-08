@@ -30,7 +30,9 @@ and numeric indices.
 
 from __future__ import annotations
 
-from .isiterable import isiterable
+import re
+
+_ALPHA_PREFIX_RE = re.compile(r"^[A-Za-z]*")
 
 
 def translate_from_any(x: str | int, length: int, idx: int) -> int:
@@ -130,9 +132,7 @@ def increment(value: int, step: int) -> int:
     return value
 
 
-def convert_coordinates(
-    obj: tuple | list | str,
-) -> tuple[int | None, ...]:
+def convert_coordinates(obj: tuple | list | str) -> tuple[int | None, ...]:
     """Translates various coordinate formats into a tuple of 0-based integers.
 
     This function can handle formats like "A1", "A1:C3", or tuples like (0, 0).
@@ -157,36 +157,40 @@ def convert_coordinates(
         >>> convert_coordinates("A1:B3")
         (0, 0, 1, 2)
     """
-    if isiterable(obj):
-        try:
-            return tuple(int(x) if x is not None else None for x in obj)
-        except TypeError as exc:
-            raise TypeError(f'Bad coordinates type: "{type(obj)}"') from exc
-        except ValueError as exc:
-            raise ValueError(f'Bad coordinates value: "{obj}"') from exc
-    if not isinstance(obj, str):
-        raise TypeError(f'Bad coordinates type: "{type(obj)}"')
-    coordinates = []
-    for coord in [x.strip() for x in obj.split(":", 1)]:
+    if isinstance(obj, str):
+        return _convert_coordinates_from_string(obj)
+    if isinstance(obj, tuple | list):
+        return _convert_coordinates_from_iterable(obj)
+    raise TypeError(f'Bad coordinates type: "{type(obj)}"')
+
+
+def _convert_coordinates_from_iterable(obj: tuple | list) -> tuple[int | None, ...]:
+    """Translates coordinate as iterable into a tuple of 0-based integers."""
+    try:
+        return tuple(int(x) if x is not None else None for x in obj)
+    except TypeError as exc:
+        raise TypeError(f'Bad coordinates type: "{type(obj)}"') from exc
+    except ValueError as exc:
+        raise ValueError(f'Bad coordinates value: "{obj}"') from exc
+
+
+def _convert_coordinates_from_string(obj: str) -> tuple[int | None, ...]:
+    """Translates coordinate as string into a tuple of 0-based integers."""
+    coordinates: list[int | None] = []
+    for coord in (x.strip() for x in obj.split(":", 1)):
         # First "A"
-        alpha = ""
-        for c in coord:
-            if c.isalpha():
-                alpha += c
-            else:
-                break
+        alpha = _ALPHA_PREFIX_RE.match(coord).group(0)
         try:
             column = alpha_to_digit(alpha)
         except ValueError:
-            # raise ValueError, 'coordinates "%s" malformed' % obj
             # maybe '1:4' table row coordinates
             column = None
         coordinates.append(column)
         # Then "1"
+        digits = coord[len(alpha) :]
         try:
-            line = int(coord[len(alpha) :]) - 1
+            line = int(digits) - 1 if digits else None
         except ValueError:
-            # raise ValueError, 'coordinates "%s" malformed' % obj
             # maybe 'A:C' row coordinates
             line = None
         if line and line < 0:
