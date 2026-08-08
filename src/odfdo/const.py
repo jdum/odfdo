@@ -23,8 +23,14 @@
 
 from __future__ import annotations
 
+from datetime import date, datetime, timedelta
+from decimal import Decimal
+
 # import for compatibility with previous version:
 from .utils.css3_colormap import CSS3_COLORMAP  # noqa: F401
+
+CellValue = str | bytes | bool | int | float | Decimal | date | datetime | timedelta
+"""Union of Python types accepted as a cell value."""
 
 ODF_TEMPLATES = {
     "text": "text.ott",
