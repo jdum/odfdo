@@ -935,8 +935,12 @@ class Document(MDDocument):
             pretty = packaging in {"folder", "xml"}
         pretty = bool(pretty)
         backup = bool(backup)
-        self._ensure_odf14()
-        self._check_manifest_rdf()
+        # Folder packaging is intended for debugging/analysis: preserve the
+        # original parts (version, missing files, manifest.rdf) as much as
+        # possible, but still pretty-print XML when requested.
+        if packaging != FOLDER:
+            self._ensure_odf14()
+            self._check_manifest_rdf()
         if pretty and packaging != XML:
             for path, part in self.__xmlparts.items():
                 if part is not None:

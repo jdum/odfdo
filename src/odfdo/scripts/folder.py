@@ -82,14 +82,18 @@ def main_convert_folder(args: Namespace) -> None:
 
 def convert_folder(path_str: str) -> None:
     path = Path(path_str)
+    pretty = False
     if path.is_file():
         out_packaging = FOLDER
+        pretty = True
     elif path.is_dir():
         out_packaging = ZIP
     else:
         raise ValueError(f"Not a file or folder: {path}")
     document = Document(path)
-    document.save(packaging=out_packaging, pretty=True)
+    # Folder packaging skips version upgrades, missing-part creation and
+    # generator updates, but pretty-print modified parts to ease debugging.
+    document.save(packaging=out_packaging, pretty=pretty)
 
 
 if __name__ == "__main__":
