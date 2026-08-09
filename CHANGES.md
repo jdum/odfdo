@@ -1,6 +1,15 @@
 # Odfdo Release Notes
 
-## [3.24.2] - 2026-08-09
+## [3.24.3] - 2026-08-09 
+
+The manifest version is now updated upon saving. Fix yanked version 3.24.3 (issue #71).
+
+### Fixed
+
+-   Now updates `manifest:version` to `1.4` alongside `office:version`, fixing LibreOffice "corrupt file" errors when saving
+    older documents as ODF 1.4.
+
+## [3.24.2] - 2026-08-09 (yanked)
 
 Fixes for cell value handling, breaking changes:
 
