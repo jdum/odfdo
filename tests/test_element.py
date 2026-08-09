@@ -871,6 +871,13 @@ def test_content_setter_empty():
     assert element._canonicalize() == expected
 
 
+def test_content_setter_element():
+    element = Element.from_tag("<office:text><text:p>abc</text:p></office:text>")
+    new_paragraph = Element.from_tag("<text:p>replacement</text:p>")
+    element.text_content = new_paragraph
+    assert element.text_content == "replacement"
+
+
 def test_is_empty_1():
     element = Element.from_tag("<text:span>abc</text:span>def")
     assert element.is_empty() is False

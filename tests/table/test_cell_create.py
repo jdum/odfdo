@@ -272,7 +272,7 @@ def test_timedelta_style():
         'office:value-type="time" '
         'table:style-name="bold" '
         'calcext:value-type="time">'
-        "PT02H15M00S"
+        "<text:p>PT02H15M00S</text:p>"
         "</table:table-cell>"
     )
     assert cell._canonicalize() == expected

@@ -181,7 +181,7 @@ def test_value_property_set_datetime_styled():
         'office:date-value="2009-06-30T00:00:00" '
         'office:value-type="date" '
         'table:style-name="bold">'
-        "2009-06-30T00:00:00"
+        "<text:p>2009-06-30T00:00:00</text:p>"
         "</table:table-cell>"
     )
     assert cell._canonicalize() == expected
@@ -216,7 +216,7 @@ def test_value_property_set_date_styled():
         'office:date-value="2009-06-30" '
         'office:value-type="date" '
         'table:style-name="bold">'
-        "2009-06-30"
+        "<text:p>2009-06-30</text:p>"
         "</table:table-cell>"
     )
     assert cell._canonicalize() == expected
@@ -263,6 +263,16 @@ def test_value_property_none_4():
     assert cell._canonicalize() == expected
 
 
+def test_value_property_set_text_content():
+    cell = Cell(datetime(2009, 6, 30), style="hop")
+    cell.clear_attrinutes()
+    cell.set_text_content(None)
+    expected = (
+        '<table:table-cell table:style-name="hop"><text:p></text:p></table:table-cell>'
+    )
+    assert cell._canonicalize() == expected
+
+
 def test_value_property_false():
     cell = Cell()
     cell.clear()
@@ -294,7 +304,7 @@ def test_value_property2():
         "<table:table-cell "
         'office:string-value="3" '
         'office:value-type="string">'
-        "3"
+        "<text:p>3</text:p>"
         "</table:table-cell>"
     )
     assert cell._canonicalize() == expected
@@ -307,7 +317,7 @@ def test_string_property2():
         "<table:table-cell "
         'office:string-value="Le changement" '
         'office:value-type="string">'
-        "Le changement"
+        "<text:p>Le changement</text:p>"
         "</table:table-cell>"
     )
     assert cell._canonicalize() == expected
@@ -322,7 +332,7 @@ def test_string_property_style():
         'office:value-type="string" '
         'table:style-name="some_style" '
         'calcext:value-type="string">'
-        "changed"
+        "<text:p>changed</text:p>"
         "</table:table-cell>"
     )
     assert cell._canonicalize() == expected
@@ -387,7 +397,7 @@ def test_decimal_value_property_4():
         'office:value="3.14" '
         'office:value-type="float" '
         'table:style-name="bold">'
-        "3.14"
+        "<text:p>3.14</text:p>"
         "</table:table-cell>"
     )
     assert cell._canonicalize() == expected
@@ -424,7 +434,7 @@ def test_int_property_4():
         'office:value="12" '
         'office:value-type="float" '
         'table:style-name="bold">'
-        "12"
+        "<text:p>12</text:p>"
         "</table:table-cell>"
     )
     assert cell._canonicalize() == expected
@@ -435,7 +445,8 @@ def test_float_property_2():
     cell.float = 12
     expected = (
         '<table:table-cell office:value="12.0" '
-        'office:value-type="float">12.0'
+        'office:value-type="float">'
+        "<text:p>12.0</text:p>"
         "</table:table-cell>"
     )
     assert cell._canonicalize() == expected
@@ -449,7 +460,7 @@ def test_float_property_3():
         'office:value="12.0" '
         'office:value-type="float" '
         'table:style-name="bold">'
-        "12.0"
+        "<text:p>12.0</text:p>"
         "</table:table-cell>"
     )
     assert cell._canonicalize() == expected
@@ -608,7 +619,7 @@ def test_bool_property_style():
         'office:boolean-value="true" '
         'office:value-type="boolean" '
         'table:style-name="bold">'
-        "true"
+        "<text:p>true</text:p>"
         "</table:table-cell>"
     )
     assert cell._canonicalize() == expected
