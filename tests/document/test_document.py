@@ -1523,6 +1523,28 @@ def test_save_upgrades_older_odf_version(samples):
         assert part.root.get_attribute("office:version") == "1.4"
 
 
+def test_save_upgrades_manifest_version(samples):
+    """Saving upgrades manifest:version alongside office:version.
+
+    LibreOffice rejects documents where office:version is 1.4 but the
+    manifest still declares manifest:version 1.3.
+    """
+    doc = Document(samples("simple_table.ods"))
+    original_manifest = doc.get_part(ODF_MANIFEST)
+    assert original_manifest.root.get_attribute("manifest:version") != "1.4"
+    out = BytesIO()
+    doc.save(out)
+    out.seek(0)
+    saved = Document(out)
+    manifest = saved.get_part(ODF_MANIFEST)
+    assert manifest.root.get_attribute("manifest:version") == "1.4"
+    root_entry = manifest.root.get_element(
+        "//manifest:file-entry[@manifest:full-path='/']"
+    )
+    assert root_entry is not None
+    assert root_entry.get_attribute("manifest:version") == "1.4"
+
+
 def test_save_creates_missing_core_parts(samples):
     doc = Document(samples("legacy_content.ods"))
     assert ODF_SETTINGS not in doc.container.parts
@@ -1575,6 +1597,16 @@ def test_ensure_odf14_manifest_not_manifest(samples):
     result = doc._ensure_odf14()
     assert result is None
     assert isinstance(doc._Document__xmlparts[ODF_MANIFEST], MagicMock)
+
+
+def test_ensure_odf14_missing_root_file_entry(samples):
+    """Upgrading still works when the manifest lacks a root file-entry."""
+    doc = Document(samples("simple_table.ods"))
+    manifest = doc.get_part(ODF_MANIFEST)
+    manifest.del_full_path("/")
+    result = doc._ensure_odf14()
+    assert result is None
+    assert manifest.root.get_attribute("manifest:version") == "1.4"
 
 
 def test_ensure_odf14_unknown_type_no_template(tmp_path, samples):
