@@ -39,8 +39,9 @@ from odfdo.const import (
     ODF_SETTINGS,
     ODF_STYLES,
 )
+from odfdo.container import Container
 from odfdo.content import Content
-from odfdo.document import Document, _get_part_class
+from odfdo.document import Document, _get_part_class, _template_container
 from odfdo.element import Element
 from odfdo.frame import Frame
 from odfdo.header import Header
@@ -1543,3 +1544,103 @@ def test_save_manifest_lists_missing_part_after_creation(samples):
     saved = Document(out)
     manifest = saved.manifest
     assert manifest.get_media_type(ODF_SETTINGS) == "text/xml"
+
+
+def test_template_container_unknown_type():
+    assert _template_container("unknown") is None
+
+
+def test_ensure_odf14_no_container():
+    doc = Document("text")
+    doc.container = None
+    result = doc._ensure_odf14()
+    assert result is None
+    assert doc.container is None
+
+
+def test_ensure_odf14_content_part_not_xmlpart(samples):
+    doc = Document(samples("example.odt"))
+    doc._Document__xmlparts[ODF_CONTENT] = MagicMock()  # type: ignore[assignment]
+    result = doc._ensure_odf14()
+    assert result is None
+    # _ensure_odf14 bailed out, so the cached XmlPart was not recreated.
+    assert isinstance(doc._Document__xmlparts[ODF_CONTENT], MagicMock)
+    # The container was not upgraded.
+    assert doc.container.get_part(ODF_CONTENT) is not None
+
+
+def test_ensure_odf14_manifest_not_manifest(samples):
+    doc = Document(samples("example.odt"))
+    doc._Document__xmlparts[ODF_MANIFEST] = MagicMock()  # type: ignore[assignment]
+    result = doc._ensure_odf14()
+    assert result is None
+    assert isinstance(doc._Document__xmlparts[ODF_MANIFEST], MagicMock)
+
+
+def test_ensure_odf14_unknown_type_no_template(tmp_path, samples):
+    doc = Document(samples("legacy_content.ods"))
+    doc.container.mimetype = "application/vnd.oasis.opendocument.unknown"
+    result = doc._ensure_odf14()
+    assert result is None
+    # No template is available for the unknown type, so missing parts stay
+    # missing and no manifest entry is added.
+    assert ODF_SETTINGS not in doc.container.parts
+
+
+def test_ensure_odf14_template_missing_part(samples):
+    doc = Document(samples("legacy_content.ods"))
+    fake_container = Container()
+    fake_container.open(samples("example.odt"))
+    with patch.object(fake_container, "get_part", return_value=None):
+        with patch("odfdo.document._template_container", return_value=fake_container):
+            result = doc._ensure_odf14()
+    assert result is None
+    # The fake template returns None for every part, so settings.xml is not
+    # created.
+    assert ODF_SETTINGS not in doc.container.parts
+
+
+def test_save_pretty_skips_missing_core_parts(samples, tmp_path):
+    doc = Document(samples("legacy_content.ods"))
+    # Folder packaging skips _ensure_odf14(), so the pretty-print branch
+    # has to deal with the missing settings.xml itself.
+    folder_path = tmp_path / "legacy_folder"
+    doc.save(folder_path, packaging="folder", pretty=True)
+    actual_folder = folder_path.with_suffix(".folder")
+    assert (actual_folder / "content.xml").exists()
+    assert not (actual_folder / "settings.xml").exists()
+
+
+def test_ensure_odf14_part_not_xmlpart_in_loop(samples):
+    doc = Document(samples("example.odt"))
+    # A non-XmlPart value in the loop reaches the false branch of the
+    # isinstance check without bailing out early.
+    doc._Document__xmlparts[ODF_SETTINGS] = MagicMock()  # type: ignore[assignment]
+    original_content_version = doc.get_part(ODF_CONTENT).root.get_attribute(
+        "office:version"
+    )
+    result = doc._ensure_odf14()
+    assert result is None
+    # The content part is still upgraded even though settings was skipped.
+    assert doc.get_part(ODF_CONTENT).root.get_attribute("office:version") == "1.4"
+    assert original_content_version != "1.4"
+
+
+def test_save_pretty_with_none_xmlpart(samples, tmp_path):
+    doc = Document(samples("example.odt"))
+    doc._Document__xmlparts[ODF_CONTENT] = None  # type: ignore[assignment]
+    folder_path = tmp_path / "legacy_folder"
+    doc.save(folder_path, packaging="folder", pretty=True)
+    actual_folder = folder_path.with_suffix(".folder")
+    assert actual_folder.exists()
+    assert (actual_folder / "content.xml").exists()
+
+
+def test_save_not_pretty_with_none_xmlpart(samples, tmp_path):
+    doc = Document(samples("example.odt"))
+    doc._Document__xmlparts[ODF_CONTENT] = None  # type: ignore[assignment]
+    folder_path = tmp_path / "legacy_folder"
+    doc.save(folder_path, packaging="folder", pretty=False)
+    actual_folder = folder_path.with_suffix(".folder")
+    assert actual_folder.exists()
+    assert (actual_folder / "content.xml").exists()

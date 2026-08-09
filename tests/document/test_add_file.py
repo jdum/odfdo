@@ -135,7 +135,9 @@ def test_manifest_rdf_2(tmp_path, samples):
     path_m1 = tmp_path / "example.odt.folder" / ODF_MANIFEST
     assert isfile(path_m1)
     path_m2 = tmp_path / "example.odt.folder" / ODF_MANIFEST_RDF
-    assert isfile(path_m2)
+    # Folder packaging preserves the original parts; it does not add a
+    # missing manifest.rdf even if the manifest references it.
+    assert not isfile(path_m2)
 
 
 def test_get_part_path():
