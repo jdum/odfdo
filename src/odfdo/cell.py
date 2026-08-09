@@ -182,7 +182,8 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
     def value(self, value: CellValue | None) -> None:
         match value:
             case None:
-                self.clear()
+                self.delete_children()
+                self.clear_attrinutes()
             case str() | bytes():
                 self.string = value
             case bool():
