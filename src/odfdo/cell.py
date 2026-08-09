@@ -76,20 +76,19 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         repeated across a given number of columns.
 
         Args:
-            value: The Python value to set for the cell. Can be
-                a boolean, int, float, Decimal, date, datetime, str, timedelta
-                or None.
-            text: The textual representation of the cell's
-                content. If not provided, it is generated from the value.
-            cell_type: The explicit type of the cell. Valid
-                options include 'boolean', 'currency', 'date', 'float',
-                'percentage', 'string', or 'time'. If not provided, it's
-                guessed from the value.
-            currency: A three-letter currency code (e.g., "EUR",
-                "USD") if the cell_type is 'currency'.
+            value: The Python value to set for the cell. Can be a boolean,
+                int, float, Decimal, date, datetime, str, timedelta or None.
+            text: The textual representation of the cell's content. If not
+                provided, it is generated from the value.
+            cell_type: The explicit type of the cell. Valid options include
+                'boolean', 'currency', 'date', 'float', 'percentage',
+                'string', or 'time'. If not provided, it's guessed from the
+                value.
+            currency: A three-letter currency code (e.g., "EUR", "USD") if
+                the cell_type is 'currency'.
             formula: The formula for the cell.
-            repeated: The number of times this cell should be
-                repeated across columns. Must be greater than 1.
+            repeated: The number of times this cell should be repeated across
+                columns. Must be greater than 1.
             style: The name of the style to apply to the cell.
         """
         super().__init__(**kwargs)
@@ -128,9 +127,9 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         'office:value-type' of the cell. The style of the cell is kept, to
         clear completely the cell, use cell.clear().
 
-        Note: the cell content is only cleared when using "cell.value = None".
+        Note: the cell style content is kepts when using "cell.value = None".
         To ensure an absolute empty cell, use cell.clear() that will remove
-        all componants (style, span property, xml:id, ...).
+        all componants (style, xml:id, ...).
 
         Warning:
             *   For `date`, `datetime`, and `timedelta`, a default text value
@@ -454,19 +453,21 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         The cell type is guessed unless explicitly provided.
         For monetary values, the name of the currency must be provided.
 
+        The style of the cell is kept, to clear completely the cell, use
+        cell.clear().
+
         Args:
             value:
                 The Python value to assign to the cell.
-            text: The explicit textual representation of the
-                cell's content. If None, it is derived from the `value`.
-            cell_type: The explicit type of the cell's value.
-                Can be 'boolean', 'float', 'date', 'string', 'time', 'currency',
-                or 'percentage'.
-            currency: A string representing the currency, e.g.,
-                "EUR" or "USD", required if `cell_type` is 'currency'.
+            text: The explicit textual representation of the cell's content.
+                If None, it is derived from the `value`.
+            cell_type: The explicit type of the cell's value. Can be
+                'boolean', 'float', 'date', 'string', 'time', 'currency', or
+                'percentage'.
+            currency: A string representing the currency, e.g., "EUR" or
+                "USD", required if `cell_type` is 'currency'.
             formula: The formula to set for the cell.
         """
-        self.clear()
         text = self.set_value_and_type(
             value=value,
             text=text,
@@ -507,15 +508,15 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         self.set_attribute("office:currency", currency)
 
     def _set_repeated(self, repeated: _int | None) -> None:
-        """Set the number of times the cell is repeated.
+        """Set the number of times the cell is repeated (internal).
 
-        Internal method that sets the 'table:number-columns-repeated' attribute,
-        or removes it if `repeated` is None or less than 2, without
-        triggering cache updates.
+        Internal method that sets the 'table:number-columns-repeated'
+        attribute, or removes it if `repeated` is None or less than 2,
+        without triggering cache updates.
 
         Args:
-            repeated: The number of times the cell should be
-                repeated. If None or less than 2, the attribute is removed.
+            repeated: The number of times the cell should be repeated. If
+                None or less than 2, the attribute is removed.
         """
         if repeated is None or repeated < 2:
             with contextlib.suppress(KeyError):
@@ -589,8 +590,8 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         spanned. By default, cells with a style are not considered empty.
 
         Args:
-            aggressive: If True, a cell with a style but no
-                content is also considered empty. Defaults to False.
+            aggressive: If True, a cell with a style but no content is also
+                considered empty. Defaults to False.
 
         Returns:
             bool: True if the cell is empty, False otherwise.
@@ -644,7 +645,8 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         """Return the dimensions of the area spanned by the cell.
 
         Returns a tuple `(nb_columns, nb_rows)` indicating how many columns
-        and rows the cell spans. If the cell is not spanned, it returns `(0, 0)`.
+        and rows the cell spans. If the cell is not spanned, it returns
+        `(0, 0)`.
 
         Returns:
             tuple[int, int]: A tuple containing the number of spanned columns

@@ -28,7 +28,7 @@ from typing import Any
 
 from .const import CellValue
 from .datatype import Boolean, Date, DateTime, Duration
-from .element import FIRST_CHILD, Element
+from .element import Element
 from .utils import bytes_to_str
 
 
@@ -50,7 +50,7 @@ class ElementTyped(Element):
             for obsolete in paragraphs:
                 obsolete.delete()
 
-    def set_text_content(self, text: str | None) -> None:
+    def set_text_content(self, text: str | Element | None) -> None:
         """Sets the text content of the embedded paragraph.
 
         This operation overwrites all existing text nodes and children
@@ -60,11 +60,7 @@ class ElementTyped(Element):
             text: The new text content.
         """
         self.delete_children()
-        paragraph = Element.from_tag("text:p")
-        self.insert(paragraph, FIRST_CHILD)
-        if text is None:
-            text = ""
-        paragraph.text = str(text)
+        self.text_content = text
 
     def clear_attrinutes(self) -> None:
         """Clear attrinutes defining type and value of the Cell."""

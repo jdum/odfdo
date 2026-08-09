@@ -1743,7 +1743,17 @@ class Element(MDBase):
 
     @property
     def text_content(self) -> str:
-        """Gets the text content of embedded paragraphs, including annotations and cells.
+        """Get or set the text content of embedded paragraphs, including
+        annotations and cells.
+
+        If no paragraph exists, one is created. This operation overwrites all
+        existing text nodes and children that may contain text.
+        If a complete Element is provided to the setter, it completely
+        replaces the previous content.
+
+        Args:
+            text: The new text content. Can be a string, another `Element`,
+            or None (clears content).
 
         Returns:
             str: The concatenated text content of all embedded paragraphs.
@@ -1757,34 +1767,30 @@ class Element(MDBase):
 
     @text_content.setter
     def text_content(self, text: str | Element | None) -> None:
-        """Sets the text content of the embedded paragraphs.
-
-        If no paragraph exists, one is created. This operation overwrites all
-        existing text nodes and children that may contain text.
-
-        Args:
-            text: The new text content. Can be a string,
-                another `Element`, or None (clears content).
-        """
-        paragraphs = self.get_elements("text:p")
-        if not paragraphs:
-            # E.g., text:p in draw:text-box in draw:frame
-            paragraphs = self.get_elements("*/text:p")
-        if paragraphs:
-            paragraph = paragraphs.pop(0)
-            for obsolete in paragraphs:
-                obsolete.delete()
+        if isinstance(text, str):
+            paragraphs = self.get_elements("text:p")
+            if not paragraphs:
+                # E.g., text:p in draw:text-box in draw:frame
+                paragraphs = self.get_elements("*/text:p")
+            if paragraphs:
+                paragraph = paragraphs.pop(0)
+                for obsolete in paragraphs:
+                    obsolete.delete()
+            else:
+                paragraph = Element.from_tag("text:p")
+                self.insert(paragraph, FIRST_CHILD)
+            # As "text_content" returned all text nodes, "text_content"
+            # will overwrite all text nodes and children that may contain them
+            element = paragraph.__element
+            # Clear but the attributes
+            del element[:]
+            element.text = str(text)
         else:
-            paragraph = Element.from_tag("text:p")
-            self.insert(paragraph, FIRST_CHILD)
-        # As "text_content" returned all text nodes, "text_content"
-        # will overwrite all text nodes and children that may contain them
-        element = paragraph.__element
-        # Clear but the attributes
-        del element[:]
-        if text is None:
-            text = ""
-        element.text = str(text)
+            for child in self.children:
+                self.delete(child, keep_tail=False)
+            if text is None:
+                text = Element.from_tag("text:p")
+            self.insert(text, FIRST_CHILD)
 
     def is_empty(self) -> bool:
         """Checks if the element is empty (no text, no children, no tail).
