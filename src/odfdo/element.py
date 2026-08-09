@@ -1751,10 +1751,6 @@ class Element(MDBase):
         If a complete Element is provided to the setter, it completely
         replaces the previous content.
 
-        Args:
-            text: The new text content. Can be a string, another `Element`,
-            or None (clears content).
-
         Returns:
             str: The concatenated text content of all embedded paragraphs.
         """

@@ -1,5 +1,49 @@
 # Odfdo Release Notes
 
+## [3.24.2] - 2026-08-09
+
+Fixes for cell value handling, breaking changes:
+
+- The Cell.value setters now create a paragraph in the cell to store the representation of its value.
+- The method Cell.set_value() preserves the cell style (issue #71).
+    
+Ensure migration of Document version to ODF 1.4 when saving document, except when using FOLDER packaging (ie: odfdo-folder script) where original content is preserved.
+
+### Added
+
+-   Older ODF documents (1.0/1.1/1.2/1.3) are automatically upgraded to ODF 1.4
+    when saved; missing core parts (`content.xml`, `styles.xml`, `meta.xml`,
+    `settings.xml`) are recreated from the document-type template.
+-   New `ElementTyped.delete_children()` method and extended list of attributes
+    cleared by `ElementTyped` operations.
+-   `Table.set_values()`, `set_row_values()`, `set_row_cells()`, `set_cells()`,
+    `set_column_cells()`, and `set_column_values()` now accept an iterable
+    argument.
+-   `Row.set_cells()` and `Row.set_values()` now accept an iterable argument.
+
+### Changed
+
+-   `Cell.value = None` now deletes all value content while preserving the cell
+    style.
+-   `Cell.value` setter creates a `text:p` paragraph in the cell and preserves
+    the existing cell style.
+-   `Container.get_part()` raises `KeyError` for missing parts in ZIP packaging
+    and `FileNotFoundError` for missing parts in folder packaging.
+-   FOLDER packaging now preserves the original document: no generator rewrite,
+    no ODF version bump, no missing-part creation, and no `manifest.rdf`
+    adjustment. XML parts are still pretty-printed when requested.
+-   Refactored type hints and docstrings for `Cell`, `Element.text_content`,
+    `ElementTyped`, and internal row helpers.
+
+### Fixed
+
+-   `Cell.set_value()` preserves the cell style (issue #71).
+-   Opening malformed files with missing core parts no longer crashes.
+-   `Container._read_folder()` handles a missing `mimetype` file without
+    crashing.
+-   `Document.save()` no longer fails when `_ensure_odf14()` cannot upgrade a
+    document.
+
 ## [3.24.1] - 2026-08-08
 
 Improvements to type hints and minor refactoring.
