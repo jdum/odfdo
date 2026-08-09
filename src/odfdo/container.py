@@ -1003,15 +1003,19 @@ class Container:
         """Get the list of members in the ODF folder."""
         return self._parse_folder("")
 
-    def _get_folder_part(self, name: str) -> tuple[bytes, int]:
+    def _get_folder_part(self, name: str) -> tuple[bytes | None, int]:
         """Get bytes of a part from the ODF folder, with timestamp."""
         if self.path is None:
-            raise ValueError("Document path is not defined")
+            raise ValueError(f"Document path is not defined {name!r}")
         path = self.path / name
-        timestamp = int(path.stat().st_mtime)
-        if path.is_dir():
-            return (b"", timestamp)
-        return (path.read_bytes(), timestamp)
+        try:
+            timestamp = int(path.stat().st_mtime)
+            if path.is_dir():
+                return (b"", timestamp)
+            return (path.read_bytes(), timestamp)
+        except OSError as e:
+            printwarn(f"{e}")
+            return (None, 0)
 
     def _get_folder_part_timestamp(self, name: str) -> int:
         if self.path is None:
@@ -1037,7 +1041,7 @@ class Container:
                 upath = normalize_path(name)
                 self.__parts[upath] = self._read_zip_entry(zf, name)
                 return self.__parts[upath]
-        except BadZipfile:
+        except (BadZipfile, KeyError):
             return None
 
     def _get_all_zip_part(self) -> None:
@@ -1500,9 +1504,10 @@ class Container:
             return self._get_zip_part(path)
         if self.__packaging == FOLDER:
             part, timestamp = self._get_folder_part(path)
-            self.__parts[path] = part
-            self.__parts_ts[path] = timestamp
-            return part
+            if part is not None:
+                self.__parts[path] = part
+                self.__parts_ts[path] = timestamp
+                return part
         return None
 
     @property
