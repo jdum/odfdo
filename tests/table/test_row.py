@@ -44,6 +44,7 @@ def table(samples) -> Iterable[Table]:
 
 @pytest.fixture
 def row() -> Iterable[Row]:
+    # [None, None, 1, 1, None]
     row = Row(width=2, repeated=3, style="ro1")
     # Add repeated cell
     row.append(Cell(1, repeated=2))
@@ -283,3 +284,20 @@ def test_get_elements():
     row = Row()
     result = row.get_elements("wrong")
     assert result == []
+
+
+def test_get_sub_elements():
+    row = Row()
+    result = row.get_sub_elements()
+    assert result == []
+
+
+def test_get_sub_elements_2(row):
+    result = row.get_sub_elements()
+    assert isinstance(result, list)
+    assert len(result) == row.width
+    assert result[0] == []
+    assert result[1] == []
+    assert len(result[2]) == 1
+    assert len(result[3]) == 1
+    assert result[4] == []
