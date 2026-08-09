@@ -649,15 +649,14 @@ class Row(Element):
 
     def get_sub_elements(
         self,
-    ) -> list[Any]:
-        """Shortcut to get the Elements inside cells in this row.
+    ) -> list[list[Element]]:
+        """Shortcut to get the Elements inside cells in this row (internal).
 
-        Missing values are replaced by None. Cell type should be always
-        'string' when using this method, the length of the list is equal
-        to the length of the row.
+        The length of the list is equal to the length of the row. Each item
+        of the list is a list of Elements.
 
         Returns:
-            list[Any]: A list of elements.
+            list[list[Element]]: The elements of each cell of the row.
         """
         return [cell.children for cell in self.iter_cells()]
 

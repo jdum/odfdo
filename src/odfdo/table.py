@@ -1409,20 +1409,21 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 values.extend([None] * (self.width - len(values)))
         return values
 
-    def get_row_sub_elements(self, y: int | str) -> list[Any]:
-        """Get the list of Element values for the cells of the row at the
-        given 'y' position.
+    def get_row_sub_elements(self, y: int | str) -> list[list[Element]]:
+        """Get the list of Elements of the cells of the row at the given 'y'
+        position (internal).
 
-        Missing values are replaced by None.
+        Missing values are replaced by [].
 
         Args:
             y: The 0-based index of the row.
 
         Returns:
-            list[Any]: A list of sub-elements from each cell in the row.
+            list[list[Element]]: A list of sub-elements from each cell in the
+                row.
         """
         values = self.get_row(y, clone=False).get_sub_elements()
-        values.extend([None] * (self.width - len(values)))
+        values.extend([] * (self.width - len(values)))
         return values
 
     def set_row_values(
