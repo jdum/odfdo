@@ -36,6 +36,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, BinaryIO, cast
 
 from .const import (
+    FOLDER,
     ODF_CONTENT,
     ODF_MANIFEST,
     ODF_MANIFEST_NAME,
@@ -849,7 +850,8 @@ class Document(MDDocument):
         if target is None and self.path is None:
             raise ValueError("Saving a document without path requires a target")
         # Some advertising
-        self.meta.set_generator_default()
+        if packaging != FOLDER:
+            self.meta.set_generator_default()
         # Synchronize data with container
         container = self.container
         if pretty is None:
