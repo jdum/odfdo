@@ -407,7 +407,7 @@ class Container:
             printwarn(msg)
             mimetype = b""
             timestamp = int(time.time())
-        if bytes_to_str(mimetype) not in ODF_MIMETYPES:
+        if bytes_to_str(mimetype) not in ODF_MIMETYPES:  # ty: ignore[invalid-argument-type]
             # Try to detect from content.xml if available
             detected = self._detect_mimetype_from_folder()
             if detected:

@@ -30,6 +30,7 @@ import io
 import posixpath
 from contextlib import suppress
 from copy import deepcopy
+from functools import cache
 from importlib import resources as rso
 from operator import itemgetter
 from pathlib import Path
@@ -45,6 +46,7 @@ from .const import (
     ODF_SETTINGS,
     ODF_STYLES,
     ODF_TEMPLATES,
+    OFFICE_VERSION,
     PACKAGING,
     XML,
     ZIP,
@@ -221,6 +223,20 @@ def _container_from_template(template: str | Path | io.BytesIO) -> Container:
     manifest = Manifest(ODF_MANIFEST, container)
     manifest.set_media_type("/", mimetype)
     container.set_part(ODF_MANIFEST, manifest.serialize())
+    return container
+
+
+@cache
+def _template_container(doc_type: str) -> Container | None:
+    """Return a raw template container for the given document type."""
+    template_file = ODF_TEMPLATES.get(doc_type)
+    if not template_file:
+        return None
+    container = Container()
+    with rso.as_file(
+        rso.files("odfdo.templates").joinpath(template_file)
+    ) as template_path:
+        container.open(template_path)
     return container
 
 
@@ -812,6 +828,67 @@ class Document(MDDocument):
             if ODF_MANIFEST_RDF in parts:
                 self.container.del_part(ODF_MANIFEST_RDF)
 
+    def _ensure_odf14(self) -> None:
+        """Upgrade older ODF documents to ODF 1.4 and create missing core
+        parts.
+
+        Existing XML parts get their `office:version` attribute set to "1.4".
+        Missing core parts (`content.xml`, `styles.xml`, `meta.xml`,
+        `settings.xml`) are copied from the default template for the document
+        type and added to the manifest.
+
+        Note:
+            The ODF 1.4 specification keeps the same namespace URIs as earlier
+            versions for the core vocabularies, so only the `office:version`
+            attribute needs to change; missing extension namespace declarations
+            are added implicitly when those prefixes are actually used.
+        """
+        if not self.container:
+            return
+        if self.container.get_part(ODF_CONTENT) is None:
+            # Too broken to fix automatically.
+            return
+        content_part = self.get_part(ODF_CONTENT)
+        if content_part is None or not isinstance(content_part, XmlPart):
+            return
+        current_version = content_part.root.get_attribute("office:version")
+        all_parts_present = all(
+            self.container.get_part(path) is not None
+            for path in (ODF_META, ODF_SETTINGS, ODF_STYLES)
+        )
+        if current_version == OFFICE_VERSION and all_parts_present:
+            return
+
+        doc_type = self.get_type()
+        template_container = _template_container(doc_type)
+        manifest = self.get_part(ODF_MANIFEST)
+        if not isinstance(manifest, Manifest):
+            return
+        manifest_changed = False
+        for path in (ODF_CONTENT, ODF_META, ODF_SETTINGS, ODF_STYLES):
+            part = self.__xmlparts.get(path)
+            if part is None and self.container.get_part(path) is None:
+                if template_container is None:
+                    continue
+                raw_data = template_container.get_part(path)
+                if raw_data is None:
+                    continue
+                template_data = (
+                    raw_data.encode("utf-8")
+                    if isinstance(raw_data, str)
+                    else raw_data
+                )
+                self.container.set_part(path, template_data)
+                manifest.add_full_path(path, "text/xml")
+                manifest_changed = True
+                part = self.get_part(path)
+            elif part is None:
+                part = self.get_part(path)
+            if part is not None and isinstance(part, XmlPart):
+                part.root.set_attribute("office:version", OFFICE_VERSION)
+        if manifest_changed:
+            self.container.set_part(ODF_MANIFEST, manifest.serialize())
+
     def save(
         self,
         target: str | Path | io.BytesIO | None = None,
@@ -858,6 +935,7 @@ class Document(MDDocument):
             pretty = packaging in {"folder", "xml"}
         pretty = bool(pretty)
         backup = bool(backup)
+        self._ensure_odf14()
         self._check_manifest_rdf()
         if pretty and packaging != XML:
             for path, part in self.__xmlparts.items():
