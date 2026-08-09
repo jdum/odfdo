@@ -1500,29 +1500,14 @@ def test_save_xmlparts_path_known():
     assert out.getvalue() != b""
 
 
-def test_save_container_get_part_none():
+def test_save_container_missing_part():
     doc = Document("text")
-    valid_meta = (
-        b"<office:document-meta xmlns:office="
-        b'"urn:oasis:names:tc:opendocument:xmlns:office:1.0" '
-        b'xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" '
-        b'office:version="1.2">'
-        b"<office:meta>"
-        b"<meta:generator/>"
-        b"</office:meta>"
-        b"</office:document-meta>"
-    )
-
-    def side_effect(path):
-        if path == "settings.xml":
-            return None
-        if path == "meta.xml":
-            return valid_meta
-        return b"<xml/>"
-
-    with patch.object(doc.container, "get_part", side_effect=side_effect):
-        out = BytesIO()
-        doc.save(out, pretty=True)
+    # Simulate a missing core part: it is absent from the container and
+    # get_part now raises instead of returning None.
+    del doc.container._Container__parts["settings.xml"]
+    assert "settings.xml" not in doc.container.parts
+    out = BytesIO()
+    doc.save(out, pretty=True)
     assert out.getvalue() != b""
 
 
@@ -1539,7 +1524,7 @@ def test_save_upgrades_older_odf_version(samples):
 
 def test_save_creates_missing_core_parts(samples):
     doc = Document(samples("legacy_content.ods"))
-    assert doc.container.get_part(ODF_SETTINGS) is None
+    assert ODF_SETTINGS not in doc.container.parts
     out = BytesIO()
     doc.save(out)
     out.seek(0)
