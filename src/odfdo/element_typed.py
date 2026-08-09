@@ -63,9 +63,18 @@ class ElementTyped(Element):
                 "table:formula",
                 "office:currency",
                 "calcext:value-type",
+                "calcext:value",
                 "loext:value-type",
+                "loext:active-table",
+                "loext:location",
+                "loext:target",
             )
         )
+
+    def delete_children(self) -> None:
+        """Delete all children of the ElementType."""
+        for child in self.children:
+            self.delete(child, keep_tail=False)
 
     def set_value_and_type(
         self,
