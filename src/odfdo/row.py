@@ -597,7 +597,7 @@ class Row(Element):
     ) -> list[CellValue | tuple[CellValue | None, str | None] | None]:
         """Shortcut to get the cell values in this row|None]
 
-        - Filter by `cell_type`: with 'all' will retri|None]s of any type
+        - Filter by `cell_type`: with 'all' will retrieve cells of any type
           (non-empty).
         - If `cell_type` is used and `complete` is True, missing values are
           replaced by None.
@@ -657,13 +657,13 @@ class Row(Element):
         to the length of the row.
 
         Returns:
-            list[Element]: A list of elements.
+            list[Any]: A list of elements.
         """
         return [cell.children for cell in self.iter_cells()]
 
     def set_cells(
         self,
-        cells: list[Cell] | tuple[Cell] | None = None,
+        cells: Iterable[Cell] | None = None,
         start: int | str = 0,
         clone: bool = True,
     ) -> None:
