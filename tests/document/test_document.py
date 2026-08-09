@@ -37,6 +37,7 @@ from odfdo.const import (
     ODF_MANIFEST_RDF,
     ODF_META,
     ODF_SETTINGS,
+    ODF_STYLES,
 )
 from odfdo.content import Content
 from odfdo.document import Document, _get_part_class
@@ -1523,3 +1524,37 @@ def test_save_container_get_part_none():
         out = BytesIO()
         doc.save(out, pretty=True)
     assert out.getvalue() != b""
+
+
+def test_save_upgrades_older_odf_version(samples):
+    doc = Document(samples("simple_table.ods"))
+    out = BytesIO()
+    doc.save(out)
+    out.seek(0)
+    saved = Document(out)
+    for path in (ODF_CONTENT, ODF_META, ODF_SETTINGS, ODF_STYLES):
+        part = saved.get_part(path)
+        assert part.root.get_attribute("office:version") == "1.4"
+
+
+def test_save_creates_missing_core_parts(samples):
+    doc = Document(samples("legacy_content.ods"))
+    assert doc.container.get_part(ODF_SETTINGS) is None
+    out = BytesIO()
+    doc.save(out)
+    out.seek(0)
+    saved = Document(out)
+    for path in (ODF_CONTENT, ODF_META, ODF_SETTINGS, ODF_STYLES):
+        assert saved.container.get_part(path) is not None
+        part = saved.get_part(path)
+        assert part.root.get_attribute("office:version") == "1.4"
+
+
+def test_save_manifest_lists_missing_part_after_creation(samples):
+    doc = Document(samples("legacy_content.ods"))
+    out = BytesIO()
+    doc.save(out)
+    out.seek(0)
+    saved = Document(out)
+    manifest = saved.manifest
+    assert manifest.get_media_type(ODF_SETTINGS) == "text/xml"
