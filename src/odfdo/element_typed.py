@@ -28,7 +28,7 @@ from typing import Any
 
 from .const import CellValue
 from .datatype import Boolean, Date, DateTime, Duration
-from .element import Element
+from .element import FIRST_CHILD, Element
 from .utils import bytes_to_str
 
 
@@ -49,6 +49,22 @@ class ElementTyped(Element):
             # paragraphs.pop(0)
             for obsolete in paragraphs:
                 obsolete.delete()
+
+    def set_text_content(self, text: str | None) -> None:
+        """Sets the text content of the embedded paragraph.
+
+        This operation overwrites all existing text nodes and children
+        that may contain text.
+
+        Args:
+            text: The new text content.
+        """
+        self.delete_children()
+        paragraph = Element.from_tag("text:p")
+        self.insert(paragraph, FIRST_CHILD)
+        if text is None:
+            text = ""
+        paragraph.text = str(text)
 
     def clear_attrinutes(self) -> None:
         """Clear attrinutes defining type and value of the Cell."""
