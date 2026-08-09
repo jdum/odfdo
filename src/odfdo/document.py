@@ -864,7 +864,6 @@ class Document(MDDocument):
         manifest = self.get_part(ODF_MANIFEST)
         if not isinstance(manifest, Manifest):
             return
-        manifest_changed = False
         for path in (ODF_CONTENT, ODF_META, ODF_SETTINGS, ODF_STYLES):
             part = self.__xmlparts.get(path)
             if part is None and path not in self.container.parts:
@@ -880,14 +879,21 @@ class Document(MDDocument):
                 )
                 self.container.set_part(path, template_data)
                 manifest.add_full_path(path, "text/xml")
-                manifest_changed = True
                 part = self.get_part(path)
             elif part is None:
                 part = self.get_part(path)
             if part is not None and isinstance(part, XmlPart):
                 part.root.set_attribute("office:version", OFFICE_VERSION)
-        if manifest_changed:
-            self.container.set_part(ODF_MANIFEST, manifest.serialize())
+        # Keep manifest:version in sync with office:version. LibreOffice is
+        # strict about this attribute and may report a corrupt document when
+        # office:version is "1.4" but manifest:version is still "1.3".
+        manifest.root.set_attribute("manifest:version", OFFICE_VERSION)
+        root_entry = manifest.root.get_element(
+            "//manifest:file-entry[@manifest:full-path='/']"
+        )
+        if root_entry is not None:
+            root_entry.set_attribute("manifest:version", OFFICE_VERSION)
+        self.container.set_part(ODF_MANIFEST, manifest.serialize())
 
     def save(
         self,
