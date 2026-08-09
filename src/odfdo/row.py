@@ -666,11 +666,13 @@ class Row(Element):
         start: int | str = 0,
         clone: bool = True,
     ) -> None:
-        """Set the cells in the row, from the 'start' column. This method does
-        not clear the row, use row.clear() before to start with an empty row.
+        """Set the cells in the row, from the 'start' column.
+
+        This method does not clear the row, use row.clear() before to start
+        from an empty row.
 
         Args:
-            cells: The cells to set.
+            cells: An iterable of cells to set.
             start: The starting column index or name.
             clone: Whether to clone the cells before setting them.
         """
@@ -680,32 +682,36 @@ class Row(Element):
             start = 0
         else:
             start = self._translate_x_from_any(start)
-        if start == 0 and clone is False and (len(cells) >= self.width):
-            self.clear()
-            self.extend_cells(cells)
-        else:
-            x = start
-            for cell in cells:
-                self.set_cell(x, cell, clone=clone)
-                if cell:
-                    x += cell.repeated or 1
-                else:
-                    x += 1
+        if start == 0 and clone is False:
+            cells_list = list(cells)  # we need to know the length of cells
+            if len(cells_list) >= self.width:
+                self.clear()
+                self.extend_cells(cells_list)
+                return
+        x = start
+        for cell in cells:
+            self.set_cell(x, cell, clone=clone)
+            if cell:
+                x += cell.repeated or 1
+            else:
+                x += 1
 
     def set_values(
         self,
-        values: list[CellValue | None],
+        values: Iterable[CellValue | None],
         start: int | str = 0,
         style: str | None = None,
         cell_type: str | None = None,
         currency: str | None = None,
     ) -> None:
         """Shortcut to set the value of cells in the row, from the 'start'
-        column with values. This method does not clear the row, use row.clear()
-        before to start with an empty row.
+        column with values.
+
+        This method does not clear the row, use row.clear() before to start
+        from an empty row.
 
         Args:
-            values: A list of values to set.
+            values: An iterable of values to set.
             start: The starting column index or name.
             style: The style to apply to the cells.
             cell_type: The type of the cells. Can be
@@ -719,16 +725,17 @@ class Row(Element):
             start = 0
         else:
             start = self._translate_x_from_any(start)
-        if start == 0 and (len(values) >= self.width):
+        values_list = list(values)  # we need the number of values
+        if start == 0 and (len(values_list) >= self.width):
             self.clear()
             cells = [
                 Cell(value, style=style, cell_type=cell_type, currency=currency)
-                for value in values
+                for value in values_list
             ]
             self.extend_cells(cells)
         else:
             x = start
-            for value in values:
+            for value in values_list:
                 self.set_cell(
                     x,
                     Cell(value, style=style, cell_type=cell_type, currency=currency),
