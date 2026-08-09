@@ -845,7 +845,7 @@ class Document(MDDocument):
         """
         if not self.container:
             return
-        if self.container.get_part(ODF_CONTENT) is None:
+        if ODF_CONTENT not in self.container.parts:
             # Too broken to fix automatically.
             return
         content_part = self.get_part(ODF_CONTENT)
@@ -853,7 +853,7 @@ class Document(MDDocument):
             return
         current_version = content_part.root.get_attribute("office:version")
         all_parts_present = all(
-            self.container.get_part(path) is not None
+            path in self.container.parts
             for path in (ODF_META, ODF_SETTINGS, ODF_STYLES)
         )
         if current_version == OFFICE_VERSION and all_parts_present:
@@ -867,7 +867,7 @@ class Document(MDDocument):
         manifest_changed = False
         for path in (ODF_CONTENT, ODF_META, ODF_SETTINGS, ODF_STYLES):
             part = self.__xmlparts.get(path)
-            if part is None and self.container.get_part(path) is None:
+            if part is None and path not in self.container.parts:
                 if template_container is None:
                     continue
                 raw_data = template_container.get_part(path)
@@ -945,7 +945,7 @@ class Document(MDDocument):
                 if path in self.__xmlparts:
                     continue
                 # Only create and serialize the part if it exists in the container
-                if container.get_part(path) is None:
+                if path not in container.parts:
                     continue
                 cls = _get_part_class(path)
                 if cls is None:

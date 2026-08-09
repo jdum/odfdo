@@ -400,14 +400,13 @@ class Container:
             self.__path_like = None
 
     def _read_folder(self) -> None:
-        try:
-            mimetype, timestamp = self._get_folder_part("mimetype")
-        except OSError:
+        mimetype, timestamp = self._get_folder_part("mimetype")
+        if mimetype is None:
             msg = "Corrupted or not an OpenDocument folder (missing mimetype)"
             printwarn(msg)
             mimetype = b""
             timestamp = int(time.time())
-        if bytes_to_str(mimetype) not in ODF_MIMETYPES:  # ty: ignore[invalid-argument-type]
+        if bytes_to_str(mimetype) not in ODF_MIMETYPES:
             # Try to detect from content.xml if available
             detected = self._detect_mimetype_from_folder()
             if detected:
@@ -1485,7 +1484,13 @@ class Container:
             path: path of the required part.
 
         Returns:
-            The actual content of the part.
+            The actual content of the part, or None for missing parts when
+            the container uses XML (Flat ODF) packaging.
+
+        Raises:
+            KeyError: If the part is not found in a ZIP container.
+            FileNotFoundError: If the part is not found in a folder container.
+            ValueError: If the part was explicitly deleted from the container.
         """
         path = str(path)
         if path in self.__parts:
@@ -1497,17 +1502,23 @@ class Container:
                 current_ts = self._get_folder_part_timestamp(path)
                 if current_ts != cache_ts:
                     part, timestamp = self._get_folder_part(path)
+                    if part is None:
+                        raise FileNotFoundError(path)
                     self.__parts[path] = part
                     self.__parts_ts[path] = timestamp
             return part
         if self.__packaging == ZIP:
-            return self._get_zip_part(path)
+            part = self._get_zip_part(path)
+            if part is None:
+                raise KeyError(path)
+            return part
         if self.__packaging == FOLDER:
             part, timestamp = self._get_folder_part(path)
-            if part is not None:
-                self.__parts[path] = part
-                self.__parts_ts[path] = timestamp
-                return part
+            if part is None:
+                raise FileNotFoundError(path)
+            self.__parts[path] = part
+            self.__parts_ts[path] = timestamp
+            return part
         return None
 
     @property
