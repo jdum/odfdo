@@ -22,6 +22,7 @@
 #          Luis Belmar-Letelier <luis@itaapy.com>
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
+from decimal import Decimal
 from importlib import resources as rso
 from io import BytesIO
 from unittest.mock import MagicMock, PropertyMock, patch
@@ -312,6 +313,25 @@ def test_str_spreadsheet(samples):
     assert "1 1 1 2 3 3 3" in result
     assert "A float" in result
     assert "3.14" in result
+
+
+def test_legavy_spreadsheet(samples):
+    document = Document(samples("legacy_content.ods"))
+    table0 = document.body.tables[0]
+    table1 = document.body.tables[1]
+    assert table0.name == "Employees"
+    assert table1.name == "Figures"
+    assert table0.get_values() == [
+        ["Name", "Country"],
+        ["Alice", "USA"],
+        ["Gaël", "France"],
+    ]
+    assert table1.get_values() == [
+        ["Number", "Bool"],
+        [1, True],
+        [-2, False],
+        [Decimal("3.14"), ""],
+    ]
 
 
 def test_document_meta_error():
