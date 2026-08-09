@@ -1858,10 +1858,12 @@ class Element(MDBase):
             raise ValueError("(xml)position must be defined")
 
     def extend(self, odf_elements: Iterable[Element]) -> None:
-        """Appends multiple ODF elements efficiently to the end of the current element.
+        """Appends multiple ODF elements efficiently to the end of the current
+        element.
 
         Args:
-            odf_elements: An iterable (e.g., list) of Element instances to append.
+            odf_elements: An iterable (e.g., list) of Element instances to
+                append.
         """
         if odf_elements:
             current = self.__element

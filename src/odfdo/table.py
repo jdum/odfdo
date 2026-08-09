@@ -94,7 +94,8 @@ def _get_python_value(
 
     This function attempts to convert data (typically from a CSV analyzer)
     into a Python integer, float, Date, DateTime, Duration, or Boolean. If
-    none of these conversions are successful, the data is returned as a string.
+    none of these conversions are successful, the data is returned as a
+    string.
 
     Args:
         data: The input data.
@@ -850,7 +851,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
     def set_values(
         self,
-        values: list,
+        values: Iterable[Iterable[CellValue | None]],
         coord: tuple | list | str | None = None,
         style: str | None = None,
         cell_type: str | None = None,
@@ -858,12 +859,12 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     ) -> None:
         """Set cell values in the table, starting from a specified coordinate.
 
-        The table is not cleared before this operation. To reset the table,
-        call `table.clear()` first. The input `values` should be a list of
-        lists, where each inner list represents a row.
+        The table is not cleared before this operation. To reset the table, call
+        `table.clear()` first. The input `values` should be an iterable of
+        iterables, where each inner iterable represents a row.
 
         Args:
-            values: A list of lists of Python types to set.
+            values: An iterable of iterables of Python types to set.
             coord: The coordinate of the top-left
                 cell where values should be set (e.g., "A1" or (0, 0)).
                 Defaults to "A1".
@@ -1019,9 +1020,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Swap rows and columns of the table in-place.
 
         Args:
-            coord: The coordinates of a specific
-                area to transpose. If None, the entire table is transposed.
-                If the area is not square, some cells may be overwritten.
+            coord: The coordinates of a specific area to transpose. If None,
+                the entire table is transposed. If the area is not square,
+                some cells may be overwritten.
         """
         data = []
         if coord is None:
@@ -1106,9 +1107,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     ) -> Iterator[Row]:
         """Yield row elements, expanding repetitions.
 
-        This method produces individual row objects. The same row
-        object is yielded as many times as it is repeated. The yielded
-        columns are copies; use `set_row()` to apply changes.
+        This method produces individual row objects. The same row object is
+        yielded as many times as it is repeated. The yielded columns are
+        copies; use `set_row()` to apply changes.
 
         Args:
             start: The starting row index (0-based). Defaults to 0.
@@ -1145,11 +1146,11 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Get a list of rows matching the specified criteria.
 
         Args:
-            coord: The coordinates of the rows
-                to retrieve (e.g., (0, 2) for the first three rows).
+            coord: The coordinates of the rows to retrieve
+                (e.g., (0, 2) for the first three rows).
             style: The name of a style to filter rows by.
-            content: A regular expression to match against the
-                content of the rows.
+            content: A regular expression to match against the content of
+                the rows.
 
         Returns:
             list[Row]: A list of matching Row elements.
@@ -1305,11 +1306,11 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         self._update_width(row_back)
         return row_back
 
-    def extend_rows(self, rows: list[Row] | None = None) -> None:
+    def extend_rows(self, rows: Iterable[Row] | None = None) -> None:
         """Append a list of rows to the end of the table.
 
         Args:
-            rows: A list of Row elements to append.
+            rows: An iterable of Row elements to append.
         """
         if rows is None:
             rows = []
@@ -1384,7 +1385,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         cell_type: str | None = None,
         complete: bool = True,
         get_type: bool = False,
-    ) -> list:
+    ) -> list[CellValue | tuple[CellValue | None, str | None] | None]:
         """Get the list of Python values for the cells of the row at the
         given 'y' position.
 
@@ -1429,7 +1430,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     def set_row_values(
         self,
         y: int | str,
-        values: list,
+        values: Iterable[CellValue | None],
         cell_type: str | None = None,
         currency: str | None = None,
         style: str | None = None,
@@ -1438,7 +1439,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
         Args:
             y: The 0-based index of the row.
-            values: A list of Python types to set as cell values.
+            values: An iterable of Python types to set as cell values.
             cell_type: The value type for the cells (e.g., 'float').
             currency: A three-letter currency code.
             style: The name of a cell style to apply.
@@ -1450,12 +1451,12 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         row.set_values(values, style=style, cell_type=cell_type, currency=currency)
         return self.set_row(y, row)  # needed if clones rows
 
-    def set_row_cells(self, y: int | str, cells: list | None = None) -> Row:
+    def set_row_cells(self, y: int | str, cells: Iterable[Cell] | None = None) -> Row:
         """Set all the cells of the row at the given 'y' position.
 
         Args:
             y: The 0-based index of the row.
-            cells: A list of Cell elements to set.
+            cells: An iterable of Cell elements to set.
 
         Returns:
             Row: The modified row, with its `y` attribute updated.
@@ -1686,19 +1687,17 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
     def set_cells(
         self,
-        cells: Iterable[list[Cell]] | Iterable[tuple[Cell]],
+        cells: Iterable[Iterable[Cell]],
         coord: tuple | list | str | None = None,
         clone: bool = True,
     ) -> None:
-        """Set a matrix of cells in the table, starting from a specified
-        coordinate.
+        """Set a matrix of cells in the table, starting from a specified coordinate.
 
-        The table is not cleared before this operation. The `cells` argument
-        should be a list of lists, where each inner list represents a row.
+        The table is not cleared before this operation. The `cells` argument should
+        be an iterable of iterables, where each inner iterable represents a row.
 
         Args:
-            cells: A list of lists
-                of Cell elements.
+            cells: An iterable of iterables of Cell elements.
             coord: The top-left coordinate for
                 placing the cells. Defaults to "A1".
             clone: If True (default), copies of the provided cells are used.
@@ -2267,21 +2266,21 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             values.append(cell.get_value(get_type=get_type))
         return values
 
-    def set_column_cells(self, x: int | str, cells: list[Cell]) -> None:
-        """Set the list of cells for the column at the given 'x' position.
+    def set_column_cells(self, x: int | str, cells: Iterable[Cell]) -> None:
+        """Set the cells for the column at the given 'x' position.
 
-        The provided list of cells must have the same length as the table's
-        height.
+        The provided iterable of cells must yield the same number of items as
+        the table's height.
 
         Args:
-            x: The 0-based index or alphabetical representation
-                of the column.
-            cells: A list of Cell elements to set.
+            x: The 0-based index or alphabetical representation of the column.
+            cells: An iterable of Cell elements to set.
         """
+        cells_list = list(cells)
         height = self.height
-        if len(cells) != height:
+        if len(cells_list) != height:
             raise ValueError(f"col mismatch: {height} cells expected")
-        cells_iterator = iter(cells)
+        cells_iterator = iter(cells_list)
         for y, row in enumerate(self.iter_rows()):
             row.set_cell(x, next(cells_iterator))
             self.set_row(y, row)
@@ -2289,20 +2288,20 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     def set_column_values(
         self,
         x: int | str,
-        values: list,
+        values: Iterable[CellValue | None],
         cell_type: str | None = None,
         currency: str | None = None,
         style: str | None = None,
     ) -> None:
-        """Set the list of Python values for the cells in the column at the
-        given 'x' position.
+        """Set the Python values for the cells in the column at the given 'x'
+        position.
 
-        The provided list of values must have the same length as the
+        The provided iterable of values must yield the same number of items as the
         table's height.
 
         Args:
             x: The 0-based index or alphabetical representation of the column.
-            values: A list of Python types to set as cell values.
+            values: An iterable of Python types to set as cell values.
             cell_type: The value type for the cells.
             currency: A three-letter currency code.
             style: The name of a cell style to apply.
@@ -2404,7 +2403,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
         Named ranges can be local to a table or global to the document. Global
         named ranges are stored at the body level, so this method should not
-        be called on a cloned table if access to global named ranges is required.
+        be called on a cloned table if access to global named ranges is
+        required.
 
         Args:
             table_name: A name or list of names
@@ -2681,8 +2681,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         The `area` should specify the top-left cell of the spanned area.
 
         Args:
-            area: The coordinates of the top-left cell
-                of the spanned area.
+            area: The coordinates of the top-left cell of the spanned area.
 
         Returns:
             bool: True if the span was successfully deleted, False otherwise.
