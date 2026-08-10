@@ -483,11 +483,21 @@ class Row(Element):
             currency: The currency symbol if the type is
                 'currency'.
         """
-        self.set_cell(
-            x,
-            Cell(value, style=style, cell_type=cell_type, currency=currency),
-            clone=False,
-        )
+        x_int = self._translate_x_from_any(x)
+        if x_int < self.width:
+            current = self._get_cell2_base(x_int)
+            if current is not None:
+                cell = current.clone
+                cell.repeated = None
+                cell.set_value(value, cell_type=cell_type, currency=currency)
+                if style:
+                    cell.style = style
+                self.set_cell(x_int, cell, clone=False)
+                return
+            else:  # pragma: nocover
+                pass
+        cell = Cell(value, style=style, cell_type=cell_type, currency=currency)
+        self.set_cell(x_int, cell, clone=False)
 
     def insert_cell(
         self,

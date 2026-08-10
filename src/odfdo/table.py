@@ -1740,11 +1740,15 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             currency: A three-letter currency code.
             style: The name of a cell style to apply.
         """
-        self.set_cell(
-            coord,
-            Cell(value, cell_type=cell_type, currency=currency, style=style),
-            clone=False,
-        )
+        # raise VAlue Error in get_cell if wrong coordinates
+        # always returns a Cell
+        current = self.get_cell(coord, clone=False)
+        cell = current.clone
+        cell.repeated = None
+        cell.set_value(value, cell_type=cell_type, currency=currency)
+        if style:
+            cell.style = style
+        self.set_cell(coord, cell, clone=False)
 
     def set_cell_image(
         self,
