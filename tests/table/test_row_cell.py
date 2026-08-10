@@ -691,3 +691,86 @@ def test_set_values_on_row_curency(row):
     assert row.get_values() == [1, 1, 1, 10, 20, 3, 3]
     assert row.get_cell(4).get_value(get_type=True) == (20, "currency")
     assert row.get_cell(4).currency == "EUR"
+
+
+def test_cell_set_value_keeps_span(samples):
+    doc = Document(samples("styled_cell_replace.ods"))
+    table = doc.body.get_table(0)
+    # Use table.cells to obtain a direct reference (not a clone).
+    cell = table.cells[0][0]
+    cell.set_value("replaced")
+    assert cell.get_attribute("table:number-columns-spanned") == "3"
+    assert cell.get_attribute("table:number-rows-spanned") == "2"
+
+
+def test_table_set_value_keeps_span(samples):
+    doc = Document(samples("styled_cell_replace.ods"))
+    table = doc.body.get_table(0)
+    table.set_value("A1", "replaced")
+    table.set_value("E1", 42.0)
+    cell_a1 = table.get_cell("A1")
+    cell_e1 = table.get_cell("E1")
+    assert cell_a1.text_content == "replaced"
+    assert cell_a1.get_attribute("table:number-columns-spanned") == "3"
+    assert cell_a1.get_attribute("table:number-rows-spanned") == "2"
+    assert cell_e1.value == 42
+    assert cell_e1.get_attribute("table:number-columns-spanned") == "2"
+    assert cell_e1.get_attribute("table:number-rows-spanned") == "2"
+
+
+def test_row_set_value_keeps_span(samples):
+    doc = Document(samples("styled_cell_replace.ods"))
+    table = doc.body.get_table(0)
+    row = table.get_row(0, clone=False)
+    row.set_value(0, "replaced")
+    row.set_value(4, 42.0)
+    cell_a1 = table.get_cell("A1")
+    cell_e1 = table.get_cell("E1")
+    assert cell_a1.text_content == "replaced"
+    assert cell_a1.get_attribute("table:number-columns-spanned") == "3"
+    assert cell_a1.get_attribute("table:number-rows-spanned") == "2"
+    assert cell_e1.value == 42
+    assert cell_e1.get_attribute("table:number-columns-spanned") == "2"
+    assert cell_e1.get_attribute("table:number-rows-spanned") == "2"
+
+
+def test_cell_set_value_keeps_style(samples):
+    doc = Document(samples("styled_cell_replace.ods"))
+    table = doc.body.get_table(0)
+    # Use table.cells to obtain a direct reference (not a clone).
+    cell = table.get_cell("A4", clone=False)
+    style = cell.style
+    cell.set_value("still blue")
+    cell = table.get_cell("A4", clone=False)
+    assert cell.value == "still blue"
+    assert cell.style == style
+
+
+def test_row_set_value_keeps_style(samples):
+    doc = Document(samples("styled_cell_replace.ods"))
+    table = doc.body.get_table(0)
+    row = table.get_row(3, clone=False)
+    row.set_value(0, "still blue")
+    cell = table.get_cell("A4", clone=False)
+    assert cell.value == "still blue"
+    assert bool(cell.style)
+
+
+def test_row_set_value_and_style(samples):
+    doc = Document(samples("styled_cell_replace.ods"))
+    table = doc.body.get_table(0)
+    row = table.get_row(3, clone=False)
+    row.set_value(x=0, value="now yellow", style="yellow")
+    cell = table.get_cell("A4", clone=False)
+    assert cell.value == "now yellow"
+    assert cell.style == "yellow"
+
+
+def test_table_set_value_keeps_style(samples):
+    doc = Document(samples("styled_cell_replace.ods"))
+    table = doc.body.get_table(0)
+    style = table.get_cell("A4", clone=False).style
+    table.set_value("A4", "still blue")
+    cell = table.get_cell("A4", clone=False)
+    assert cell.value == "still blue"
+    assert cell.style == style
