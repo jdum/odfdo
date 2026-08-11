@@ -754,6 +754,42 @@ class Row(Element):
 
                 x += 1
 
+    @property
+    def values(self) -> list[CellValue | None]:
+        """Get or set the list of cell values of the row.
+
+        When getting, the type of each cell value is inferred from the
+        'office:value-type' attribute.
+        When setting, the type of the provided Python value determines the
+        'office:value-type' of the cell. The style of the cell is kept, to
+        clear completely the cell, use Row.clear().
+
+        Note: the cell style content is kepts when using "cell.value = None".
+        To ensure an absolute empty cell, use Row.clear() that will remove
+        all cells.
+
+        Warning:
+            *   For `date`, `datetime`, and `timedelta`, a default text value
+                is automatically generated.
+            *   For boolean types, the text value will be either 'True' or
+                'False'.
+            *   For numeric types, the return value is typically `Decimal` or
+                `int`.
+            *   To customize the text representation, use the `set_value()`
+                method.
+            *   To change the string representation of the cell without
+                changing the cell type, use the low level property cell.text
+
+        Returns:
+            list[str, bool, int, Decimal, date, datetime, timedelta, None]:
+                The list of values of cells in their appropriate Python type.
+        """
+        return [cell.value for cell in self.iter_cells()]
+
+    @values.setter
+    def values(self, values: Iterable[CellValue | None]) -> None:
+        self.set_values(values)
+
     def rstrip(self, aggressive: bool = False) -> None:
         """Remove empty cells at the right of the row, in-place.
 
