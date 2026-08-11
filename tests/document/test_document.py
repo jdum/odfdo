@@ -617,6 +617,58 @@ def test_document_get_table():
         doc._get_table(None)
 
 
+def test_document_get_table_by_name_1(samples):
+    doc = Document(samples("styled_table.ods"))
+    table = doc.body.get_table_by_name("Feuille1")
+    assert isinstance(table, Table)
+    assert table.get_value("A3") == "foo1"
+
+
+def test_document_get_sheet_by_name_1(samples):
+    doc = Document(samples("styled_table.ods"))
+    table = doc.body.get_sheet_by_name("Feuille1")
+    assert isinstance(table, Table)
+    assert table.get_value("A3") == "foo1"
+
+
+def test_document_get_table_by_name_none(samples):
+    doc = Document(samples("styled_table.ods"))
+    table = doc.body.get_table_by_name(None)
+    assert table is None
+
+
+def test_document_get_table_by_name_empty(samples):
+    doc = Document(samples("styled_table.ods"))
+    table = doc.body.get_table_by_name("")
+    assert table is None
+
+
+def test_document_get_table_by_name_not_found(samples):
+    doc = Document(samples("styled_table.ods"))
+    table = doc.body.get_table_by_name("unknown")
+    assert table is None
+
+
+def test_document_get_table_by_name_no_arg(samples):
+    doc = Document(samples("styled_table.ods"))
+    with pytest.raises(TypeError):
+        doc.body.get_table_by_name()
+
+
+def test_document_get_table_by_name_2(samples):
+    doc = Document(samples("styled_table.ods"))
+    table = doc.body.get_table_by_name("Feuille2")
+    assert isinstance(table, Table)
+    assert table.get_value("A1") == "val2"
+
+
+def test_document_get_table_by_name_3(samples):
+    doc = Document(samples("styled_table.ods"))
+    table = doc.body.get_table_by_name("Feuille 3 3")
+    assert isinstance(table, Table)
+    assert table.get_value("A1") == "val3"
+
+
 def test_document_get_cell_style_properties():
     doc = Document("spreadsheet")
     table = Table("T1")
