@@ -4,7 +4,7 @@
 
 ### Fixed
 
--   Clean up Row.set_value and Table.set_value to properly handle repeated cells and preserve spans/styles
+-   Clean up Row.set_value, Table.set_value, Row.set_values and Table.set_row_values to properly handle repeated cells and preserve spans/styles
 
 ## [3.24.3] - 2026-08-09 
 
