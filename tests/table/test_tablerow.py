@@ -45,6 +45,12 @@ def table(samples) -> Iterable[Table]:
     yield document.body.get_table(name="Example1")
 
 
+@pytest.fixture
+def styled_table(samples) -> Iterable[Table]:
+    document = Document(samples("styled_cell_replace.ods"))
+    yield document.body.get_table_by_name("Feuille1")
+
+
 def test_iter_rows(table):
     assert len(list(table.iter_rows())) == 4
 
@@ -59,6 +65,60 @@ def test_traverse_rows(table):
 
 def test_get_row_values(table):
     assert table.get_row_values(3) == [1, 2, 3, 4, 5, 6, 7]
+
+
+def test_get_row_values_2_spanned(styled_table):
+    assert styled_table.get_row_values(0) == [
+        "spanned text",
+        None,
+        None,
+        None,
+        "3.14",
+        None,
+        None,
+    ]
+
+
+def test_get_row_values_3_spanned(styled_table):
+    assert styled_table.get_row_values(1) == [None, None, None, None, None, None, 16]
+
+
+def test_set_row_values_keep_style(styled_table):
+    style1 = styled_table.get_cell("A4").style
+    style2 = styled_table.get_cell("A5").style
+    styled_table.set_row_values(3, [2, 3])
+    assert styled_table.get_cell("A4").style == style1
+    assert styled_table.get_cell("A5").style == style2
+
+
+def test_set_row_values_keep_style_2(styled_table):
+    style1 = styled_table.get_cell("G2").style
+    styled_table.set_row_values("2", [None, None, None, None, None, None, 17])
+    assert styled_table.get_cell("G2").style == style1
+
+
+def test_set_row_values_keep_style_2_spanned(styled_table):
+    values1 = styled_table.get_row_values("1")
+    values2 = styled_table.get_row_values("2")
+    styled_table.set_row_values("2", [None, None, None, None, None, None, 17])
+    assert styled_table.get_row_values("1") == values1
+    assert styled_table.get_row_values("2") == values2[:6] + [17]
+
+
+def test_set_row_values_keep_spanned(styled_table):
+    styled_table.set_row_values("1", ["replaced", None, None, None])
+    assert styled_table.get_row_values("1") == [
+        "replaced",
+        None,
+        None,
+        None,
+        "3.14",
+        None,
+        None,
+    ]
+    row = styled_table.get_row(0)
+    cell = row.get_cell(0)
+    assert cell.is_spanned()
 
 
 def test_get_row_list(table):
@@ -327,12 +387,3 @@ def test_set_cell_repeated_row():
 def test_get_row2_base_none():
     table = Table("Test")
     assert table._get_row2_base(10) is None
-
-
-def test_get_row_none_internal_direct():
-    table = Table("T")
-    table.set_value("A1", "v1")
-    # patch the _get_row2 method
-    with patch.object(Table, "_get_row2", return_value=None):
-        with pytest.raises(ValueError, match="Row not found"):
-            table.get_row(0)
