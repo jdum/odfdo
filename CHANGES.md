@@ -1,8 +1,14 @@
 # Odfdo Release Notes
 
+## [3.24.4] - Unreleased
+
+### Fixed
+
+-   Clean up Row.set_value and Table.set_value to properly handle repeated cells and preserve spans/styles
+
 ## [3.24.3] - 2026-08-09 
 
-The manifest version is now updated upon saving. Fix yanked version 3.24.3 (issue #71).
+The manifest version is now updated upon saving. Fix yanked version 3.24.2 (issue #71).
 
 ### Fixed
 
