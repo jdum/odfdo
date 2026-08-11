@@ -2,6 +2,10 @@
 
 ## [3.24.4] - Unreleased
 
+### Added
+
+-   Add methods Body.get_table_by_name() Body.get_sheet_by_name() 
+
 ### Fixed
 
 -   Clean up Row.set_value, Table.set_value, Row.set_values and Table.set_row_values to properly handle repeated cells and preserve spans/styles
