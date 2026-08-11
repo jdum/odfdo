@@ -122,6 +122,26 @@ class Body(Element):
 
     get_sheet = get_table
 
+    def get_table_by_name(self, name: str) -> Table | None:
+        """Return the table that matches the name.
+
+        The method is also accessible via the alias `get_sheet_by_name()`.
+
+        Args:
+            name: The name of the table to match.
+
+        Returns:
+            Table or None: The matching Table element, or None if not found.
+        """
+        if not name:
+            return None
+        result = self._filtered_element(
+            "descendant::table:table", position=0, table_name=name
+        )
+        return result  # ty: ignore[invalid-return-type]
+
+    get_sheet_by_name = get_table_by_name
+
     @property
     def allow_named_range(self) -> bool:
         """Return True if the current body allows named ranges."""
