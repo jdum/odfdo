@@ -1218,7 +1218,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     def get_row(self, y: int | str, clone: bool = True, create: bool = True) -> Row:
         """Get the row at the given 'y' position (0-based).
 
-        A copy of the row is returned; use `set_row()` to apply any changes.
+        By default, a copy of the row is returned; use `set_row()` to apply
+        any changes.
 
         Args:
             y: The 0-based index or string representation of the row.
@@ -1232,8 +1233,6 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         # fixme : keep repeat ? maybe an option to functions : "raw=False"
         y = self._translate_y_from_any(y)
         row = self._get_row2(y, clone=clone, create=create)
-        if row is None:
-            raise ValueError("Row not found")
         row.y = y
         return row
 
@@ -1447,7 +1446,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         Returns:
             Row: The modified row, with its `y` attribute updated.
         """
-        row = Row()  # needed if clones rows
+        row = self.get_row(y)
         row.set_values(values, style=style, cell_type=cell_type, currency=currency)
         return self.set_row(y, row)  # needed if clones rows
 

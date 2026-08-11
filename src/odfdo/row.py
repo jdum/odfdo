@@ -736,14 +736,7 @@ class Row(Element):
         else:
             start = self._translate_x_from_any(start)
         values_list = list(values)  # we need the number of values
-        if start == 0 and (len(values_list) >= self.width):
-            self.clear()
-            cells = [
-                Cell(value, style=style, cell_type=cell_type, currency=currency)
-                for value in values_list
-            ]
-            self.extend_cells(cells)
-        else:
+        if start >= self.width:
             x = start
             for value in values_list:
                 self.set_cell(
@@ -751,6 +744,14 @@ class Row(Element):
                     Cell(value, style=style, cell_type=cell_type, currency=currency),
                     clone=False,
                 )
+                x += 1
+        else:
+            x = start
+            for value in values_list:
+                self.set_value(
+                    x, value=value, style=style, cell_type=cell_type, currency=currency
+                )
+
                 x += 1
 
     def rstrip(self, aggressive: bool = False) -> None:
