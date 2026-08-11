@@ -97,6 +97,10 @@ def test_get_cell_values(row):
     assert row.get_values() == [None, None, 1, 1, None]
 
 
+def test_get_cell_values_values_getter(row):
+    assert row.values == [None, None, 1, 1, None]
+
+
 def test_is_empty():
     row = Row(width=100)
     assert row.is_empty() is True
@@ -153,6 +157,15 @@ def test_force_width_1():
     assert row.get_values() == [1, 2, 3]
 
 
+def test_force_width_1_values_getter():
+    row = Row(width=3)
+    row.set_value(0, 1)
+    row.set_value(1, 2)
+    row.set_value(2, 3)
+    row.force_width(3)
+    assert row.values == [1, 2, 3]
+
+
 def test_force_width_2():
     row = Row(width=3)
     row.set_value(0, 1)
@@ -186,6 +199,16 @@ def test_force_width_3_b():
     row.append_cell(cell)
     cell = row.last_cell()
     assert row.get_values() == [1, 2, 3, None, None, None, None]
+
+
+def test_force_width_3_b_values_getter():
+    row = Row()
+    row.set_value(0, 1)
+    row.set_value(1, 2)
+    row.set_value(2, 3)
+    cell = Cell(repeated=4)
+    row.append_cell(cell)
+    assert row.values == [1, 2, 3, None, None, None, None]
 
 
 def test_force_width_3_c():

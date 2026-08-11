@@ -65,8 +65,17 @@ def test_on_empty_row():
     assert row.get_values((2, 3), complete=True) == []
 
 
+def test_on_empty_row_values_getter():
+    row = Row()
+    assert row.values == []
+
+
 def test_get_values_count(row):
     assert len(row.get_values()) == 7
+
+
+def test_get_values_count_values_getter(row):
+    assert len(row.values) == 7
 
 
 def test_get_values_coord(row):
@@ -126,6 +135,13 @@ def test_get_values_cell_type2(row):
     assert values == ["bob", "bob2"]
 
 
+def test_get_values_cell_type2_values_getter(row):
+    row.append_cell(Cell(value="bob"), clone=False)
+    row.append_cell(Cell(value=14, cell_type="percentage"))
+    row.append_cell(Cell(value="bob2"), clone=False)
+    assert len(row.values) == 7 + 3
+
+
 def test_get_values_cell_type2_with_hole(row):
     row.append_cell(Cell(value="bob"), clone=False)
     row.append_cell(Cell(value=14, cell_type="percentage"))
@@ -182,6 +198,15 @@ def test_get_values_cell_type2_with_hole(row):
     values = row.get_values(cell_type="string")
     assert len(values) == 3
     assert values == ["bob", "bob2", "far"]
+
+
+def test_get_values_cell_type2_with_hole_values_getter(row):
+    row.append_cell(Cell(value="bob"), clone=False)
+    row.append_cell(Cell(value=14, cell_type="percentage"))
+    row.append_cell(Cell(value="bob2"), clone=False)
+    row.set_cell(12, Cell(value="far"), clone=False)
+    assert len(row.values) == 13
+    assert row.values == [1, 1, 1, 2, 3, 3, 3, "bob", 14, "bob2", None, None, "far"]
 
 
 def test_get_values_cell_type2_with_hole_and_get_type(row):
