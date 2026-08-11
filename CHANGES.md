@@ -5,6 +5,7 @@
 ### Added
 
 -   Add methods Body.get_table_by_name() Body.get_sheet_by_name() 
+-   Add property Row.values 
 
 ### Fixed
 
