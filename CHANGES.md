@@ -5,7 +5,7 @@
 ### Added
 
 -   Add methods `Body.get_table_by_name()` and `Body.get_sheet_by_name()`.
--   Add property `Row.values` (getter and setter for row cell values).
+-   Add properties `Row.values` and `Table.values` (getters and setters for cell values).
 
 ### Fixed
 
