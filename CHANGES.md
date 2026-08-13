@@ -4,12 +4,13 @@
 
 ### Added
 
--   Add methods Body.get_table_by_name() Body.get_sheet_by_name() 
--   Add property Row.values 
+-   Add methods `Body.get_table_by_name()` and `Body.get_sheet_by_name()`.
+-   Add property `Row.values` (getter and setter for row cell values).
 
 ### Fixed
 
--   Clean up Row.set_value, Table.set_value, Row.set_values and Table.set_row_values to properly handle repeated cells and preserve spans/styles
+-   `Table.set_value()` and `Row.set_value()` now preserve the `table:number-columns-spanned`, `table:number-rows-spanned`, and existing `table:style-name` attributes of replaced cells.
+-   `Row.set_value()`, `Table.set_value()`, `Row.set_values()`, and `Table.set_row_values()` now properly handle repeated cells (`table:number-columns-repeated`).
 
 ## [3.24.3] - 2026-08-09 
 
