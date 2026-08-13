@@ -755,18 +755,16 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         area.
 
         Args:
-            coord: The coordinates of the area
-                to parse (e.g., "A1:C3" or (0, 0, 2, 2)). If None, the entire
-                table is parsed.
-            cell_type: Filters cells by their value type
-                (e.g., 'boolean', 'float', 'string'). 'all' retrieves any
-                non-empty cell.
-            complete: If True (default), missing values in the specified
-                area are replaced by None to ensure a complete matrix.
-            get_type: If True, returns tuples of (value, odf_type). For
-                empty cells with `complete=True`, this will be (None, None).
-            flat: If True, returns a single flat list of values instead
-                of a list of lists. Defaults to False.
+            coord: The coordinates of the area to parse (e.g., "A1:C3" or
+                (0, 0, 2, 2)). If None, the entire table is parsed.
+            cell_type: Filters cells by their value type (e.g., 'boolean',
+                'float', 'string'). 'all' retrieves any non-empty cell.
+            complete: If True (default), missing values in the specified area
+                are replaced by None to ensure a complete matrix.
+            get_type: If True, returns tuples of (value, odf_type). For empty
+                cells with `complete=True`, this will be (None, None).
+            flat: If True, returns a single flat list of values instead of a
+                list of lists. Defaults to False.
 
         Returns:
             list: A list of lists of Python types representing cell values,
@@ -865,9 +863,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
         Args:
             values: An iterable of iterables of Python types to set.
-            coord: The coordinate of the top-left
-                cell where values should be set (e.g., "A1" or (0, 0)).
-                Defaults to "A1".
+            coord: The coordinate of the top-left cell where values should be
+                set (e.g., "A1" or (0, 0)). Defaults to "A1".
             style: The name of a cell style to apply.
             cell_type: The value type for the cells (e.g., 'float').
             currency: A three-letter currency code (e.g., 'USD').
@@ -907,8 +904,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         evaluates to False) and no style.
 
         Args:
-            aggressive: If True, empty cells with styles are also
-                considered empty and will be removed.
+            aggressive: If True, empty cells with styles are also considered
+                empty and will be removed.
         """
         # Step 1: remove empty rows below the table
         for row in reversed(self._get_rows()):
