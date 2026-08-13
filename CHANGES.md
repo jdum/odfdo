@@ -4,6 +4,7 @@
 
 ### Added
 
+-   Add argument "formula" to methods `Table.set_value()` and `Row.set_value()`.
 -   Add methods `Body.get_table_by_name()` and `Body.get_sheet_by_name()`.
 -   Add properties `Row.values` and `Table.values` (getters and setters for cell values).
 
