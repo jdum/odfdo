@@ -43,7 +43,9 @@ def change(document: Document) -> None:
     table = body.get_table(0)
 
     # if needed, get the values:
-    values = table.get_values()
+    # values = table.get_values()
+    # or use the property getter :
+    values = table.values
     print(values)
     # -> [
     #     [None, "", "Column 2", "Column 3"],

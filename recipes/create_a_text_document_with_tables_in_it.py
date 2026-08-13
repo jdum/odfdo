@@ -126,7 +126,9 @@ def make_order_table(
 
     # Header of table
     row = Row()
-    row.set_values(["Product", "Price", "Quantity", "Amount"])
+    # row.set_values(["Product", "Price", "Quantity", "Amount"])
+    # or use the property setter:
+    row.values = ["Product", "Price", "Quantity", "Amount"]
     table.set_row("A1", row)
     # or: table.set_row(0, row)
 
