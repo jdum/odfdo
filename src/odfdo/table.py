@@ -800,6 +800,28 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 data.append(values)
         return data
 
+    @property
+    def values(self) -> list[list[CellValue | None]]:
+        """Get or set the matrix of cell values of the table.
+
+        When getting, the type of each cell value is inferred from the
+        'office:value-type' attribute.
+        When setting, the type of the provided Python value determines the
+        'office:value-type' of each cell.
+
+        Note: the cell style content is kept when using cell values.
+        To ensure an absolute empty table, use Table.clear().
+
+        Returns:
+            list[list[CellValue | None]]:
+                The 2D matrix of values of cells in their appropriate Python type.
+        """
+        return self.get_values()
+
+    @values.setter
+    def values(self, values: Iterable[Iterable[CellValue | None]]) -> None:
+        self.set_values(values)
+
     def iter_values(
         self,
         coord: tuple | list | str | None = None,
