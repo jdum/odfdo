@@ -268,3 +268,56 @@ def test_set_table_values_small_type(table):
             (None, None),
         ],
     ]
+
+
+def test_table_values_getter(table):
+    assert table.values == [
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_values_setter():
+    t = Table("Test")
+    t.values = [[1, 2], [3, 4]]
+    assert t.values == [[1, 2], [3, 4]]
+
+
+def test_table_values_property_styled_cell_replace(samples):
+    doc = Document(samples("styled_cell_replace.ods"))
+    table = doc.body.tables[0]
+    expected_initial = [
+        ["spanned text", None, None, None, "3.14", None, None],
+        [None, None, None, None, None, None, 16],
+        [None, None, None, None, None, None, None],
+        ["blue", "orange", None, None, None, None, None],
+    ]
+    assert table.values == expected_initial
+    style_e1 = table.get_cell("E1").style
+    style_a4 = table.get_cell("A4").style
+    style_b4 = table.get_cell("B4").style
+    values = table.values
+    values[0][0] = "modified span"
+    values[1][-1] = 17
+    values[3][1] = "still"
+    table.values = values
+
+    expected_after = [
+        ["modified span", None, None, None, "3.14", None, None],
+        [None, None, None, None, None, None, 17],
+        [None, None, None, None, None, None, None],
+        ["blue", "still", None, None, None, None, None],
+    ]
+    assert table.values == expected_after
+    cell_a1 = table.get_cell("A1")
+    assert cell_a1.value == "modified span"
+    assert cell_a1.get_attribute("table:number-columns-spanned") == "3"
+    assert cell_a1.get_attribute("table:number-rows-spanned") == "2"
+    assert table.get_cell("E1").style == style_e1
+    assert table.get_cell("A4").style == style_a4
+    assert table.get_cell("B4").style == style_b4
+    assert table.get_cell("A1").is_spanned()
+    assert table.get_cell("E1").is_spanned()
+    assert table.get_cell("B1").is_spanned(covered=True)
