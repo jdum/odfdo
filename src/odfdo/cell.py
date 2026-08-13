@@ -143,6 +143,11 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
                 method.
             *   To change the string representation of the cell without
                 changing the cell type, use the low level property cell.text
+            *   If modifying a repeated cell directly (`cell.repeated > 1`),
+                changing its value will affect all repeated instances sharing
+                this cell XML element node. To modify a single repeated cell
+                without affecting others, use `Table.set_value()` or
+                `Row.set_value()`.
 
         Returns:
             Union[str, bool, int, float, Decimal, date, datetime, timedelta,
@@ -218,7 +223,15 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         The style of the cell is kept, to clear completely the cell, use
         cell.clear().
 
-        When setting the value, force the cell type to "float"."""
+        When setting the value, force the cell type to "float".
+
+        Warning:
+            If modifying a repeated cell directly ("cell.repeated > 1"),
+            changing its value will affect all repeated instances sharing
+            this cell XML element node. To modify a single repeated cell
+            without affecting others, use "Table.set_value()" or
+            "Row.set_value()".
+        """
         for tag in ("office:value", "office:string-value"):
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
@@ -253,7 +266,15 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         The style of the cell is kept, to clear completely the cell, use
         cell.clear().
 
-        When setting the value, force the cell type to "float"."""
+        When setting the value, force the cell type to "float".
+
+        Warning:
+            If modifying a repeated cell directly ("cell.repeated > 1"),
+            changing its value will affect all repeated instances sharing
+            this cell XML element node. To modify a single repeated cell
+            without affecting others, use "Table.set_value()" or
+            "Row.set_value()".
+        """
         for tag in ("office:value", "office:string-value"):
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
@@ -277,7 +298,15 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         The style of the cell is kept, to clear completely the cell, use
         cell.clear().
 
-        When setting the value, force the cell type to "float"."""
+        When setting the value, force the cell type to "float".
+
+        Warning:
+            If modifying a repeated cell directly ("cell.repeated > 1"),
+            changing its value will affect all repeated instances sharing
+            this cell XML element node. To modify a single repeated cell
+            without affecting others, use "Table.set_value()" or
+            "Row.set_value()".
+        """
         for tag in ("office:value", "office:string-value"):
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
@@ -301,7 +330,15 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         The style of the cell is kept, to clear completely the cell, use
         cell.clear().
 
-        When setting the value, force the cell type to "string"."""
+        When setting the value, force the cell type to "string".
+
+        Warning:
+            If modifying a repeated cell directly ("cell.repeated > 1"),
+            changing its value will affect all repeated instances sharing
+            this cell XML element node. To modify a single repeated cell
+            without affecting others, use "Table.set_value()" or
+            "Row.set_value()".
+        """
         value = self.get_attribute_string("office:string-value")
         if isinstance(value, str):
             return value
@@ -336,7 +373,15 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         The style of the cell is kept, to clear completely the cell, use
         cell.clear().
 
-        When setting the value, force the cell type to "boolean"."""
+        When setting the value, force the cell type to "boolean".
+
+        Warning:
+            If modifying a repeated cell directly ("cell.repeated > 1"),
+            changing its value will affect all repeated instances sharing
+            this cell XML element node. To modify a single repeated cell
+            without affecting others, use "Table.set_value()" or
+            "Row.set_value()".
+        """
         value = self.get_attribute_string("office:boolean-value")
         if isinstance(value, str):
             return value == "true"
@@ -368,7 +413,15 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         The style of the cell is kept, to clear completely the cell, use
         cell.clear().
 
-        When setting the value, force the cell type to "time"."""
+        When setting the value, force the cell type to "time".
+
+        Warning:
+            If modifying a repeated cell directly ("cell.repeated > 1"),
+            changing its value will affect all repeated instances sharing
+            this cell XML element node. To modify a single repeated cell
+            without affecting others, use "Table.set_value()" or
+            "Row.set_value()".
+        """
         value = self.get_attribute("office:time-value")
         if isinstance(value, str):
             return Duration.decode(value)
@@ -394,7 +447,15 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         The style of the cell is kept, to clear completely the cell, use
         cell.clear().
 
-        When setting the value, force the cell type to "date"."""
+        When setting the value, force the cell type to "date".
+
+        Warning:
+            If modifying a repeated cell directly ("cell.repeated > 1"),
+            changing its value will affect all repeated instances sharing
+            this cell XML element node. To modify a single repeated cell
+            without affecting others, use "Table.set_value()" or
+            "Row.set_value()".
+        """
         value = self.get_attribute("office:date-value")
         if isinstance(value, str):
             return DateTime.decode(value)
@@ -420,7 +481,15 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         The style of the cell is kept, to clear completely the cell, use
         cell.clear().
 
-        When setting the value, force the cell type to "date"."""
+        When setting the value, force the cell type to "date".
+
+        Warning:
+            If modifying a repeated cell directly ("cell.repeated > 1"),
+            changing its value will affect all repeated instances sharing
+            this cell XML element node. To modify a single repeated cell
+            without affecting others, use "Table.set_value()" or
+            "Row.set_value()".
+        """
         value = self.get_attribute("office:date-value")
         if isinstance(value, str):
             return Date.decode(value).date()
@@ -455,6 +524,13 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
         The style of the cell is kept, to clear completely the cell, use
         cell.clear().
+
+        Warning:
+            If modifying a repeated cell directly ("cell.repeated > 1"),
+            changing its value will affect all repeated instances sharing
+            this cell XML element node. To modify a single repeated cell
+            without affecting others, use "Table.set_value()" or
+            "Row.set_value()".
 
         Args:
             value:
@@ -497,6 +573,13 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
     @property
     def currency(self) -> str | None:
         """Get or set the currency used for monetary values.
+
+        Warning:
+            If modifying a repeated cell directly ("cell.repeated > 1"),
+            changing its value will affect all repeated instances sharing
+            this cell XML element node. To modify a single repeated cell
+            without affecting others, use "Table.set_value()" or
+            "Row.set_value()".
 
         Returns:
             str or None: The currency code (e.g., "EUR", "USD").
