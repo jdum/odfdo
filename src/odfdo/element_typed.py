@@ -72,7 +72,6 @@ class ElementTyped(Element):
                 "office:date-value",
                 "office:string-value",
                 "office:time-value",
-                "table:formula",
                 "office:currency",
                 "calcext:value-type",
                 "calcext:value",

@@ -1748,6 +1748,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         cell_type: str | None = None,
         currency: str | None = None,
         style: str | None = None,
+        formula: str | None = None,
     ) -> None:
         """Set the Python value of the cell at the given coordinates.
 
@@ -1757,13 +1758,19 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             cell_type: The value type (e.g., 'float', 'string').
             currency: A three-letter currency code.
             style: The name of a cell style to apply.
+            formula: The formula to set for the cell.
         """
         # raise VAlue Error in get_cell if wrong coordinates
         # always returns a Cell
         current = self.get_cell(coord, clone=False)
         cell = current.clone
         cell.repeated = None
-        cell.set_value(value, cell_type=cell_type, currency=currency)
+        cell.set_value(
+            value,
+            cell_type=cell_type,
+            currency=currency,
+            formula=formula,
+        )
         if style:
             cell.style = style
         self.set_cell(coord, cell, clone=False)

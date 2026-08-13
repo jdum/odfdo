@@ -470,6 +470,7 @@ class Row(Element):
         style: str | None = None,
         cell_type: str | None = None,
         currency: str | None = None,
+        formula: str | None = None,
     ) -> None:
         """Shortcut to set the value of the cell at position "x".
 
@@ -482,6 +483,7 @@ class Row(Element):
                 'percentage'.
             currency: The currency symbol if the type is
                 'currency'.
+            formula: The formula to set for the cell.
         """
         x_int = self._translate_x_from_any(x)
         if x_int < self.width:
@@ -489,14 +491,25 @@ class Row(Element):
             if current is not None:
                 cell = current.clone
                 cell.repeated = None
-                cell.set_value(value, cell_type=cell_type, currency=currency)
+                cell.set_value(
+                    value,
+                    cell_type=cell_type,
+                    currency=currency,
+                    formula=formula,
+                )
                 if style:
                     cell.style = style
                 self.set_cell(x_int, cell, clone=False)
                 return
             else:  # pragma: nocover
                 pass
-        cell = Cell(value, style=style, cell_type=cell_type, currency=currency)
+        cell = Cell(
+            value,
+            style=style,
+            cell_type=cell_type,
+            currency=currency,
+            formula=formula,
+        )
         self.set_cell(x_int, cell, clone=False)
 
     def insert_cell(
