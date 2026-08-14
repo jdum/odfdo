@@ -1,6 +1,11 @@
 # Odfdo Release Notes
 
-## [3.24.4] - Unreleased
+## [3.24.4] - 2026-08-14
+
+-   Finalized fixes for preserving styles and spans when changing a cell's value, and verified the handling of repeated cells.
+-   Added argument "formula" to methods `Table.set_value()` and `Row.set_value()`.
+-   Added the `Body.get_table_by_name()` function and its alias `Body.get_sheet_by_name()`.
+-   Added the `Row.values` and `Table.values` properties.
 
 ### Added
 

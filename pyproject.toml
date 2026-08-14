@@ -12,8 +12,6 @@ classifiers = [
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -24,7 +22,7 @@ classifiers = [
 ]
 requires-python = ">=3.10, <4"
 dependencies = [
-    "lxml >=4.8.0, <5.1.1; python_version == '3.10'",
+    "lxml >=4.8.0, <7; python_version == '3.10'",
     "lxml >=4.9.4, <7; python_version >= '3.11' and python_version < '3.13'",
     "lxml >=5.3.0, <7; python_version >= '3.13'",
     "typing-extensions >=4.15.0",
@@ -38,20 +36,20 @@ documentation = "https://jdum.github.io/odfdo/"
 
 [project.scripts]
 odfdo-diff = "odfdo.scripts.diff:main"
-odfdo-folder = 'odfdo.scripts.folder:main'
-odfdo-flat = 'odfdo.scripts.flat:main'
-odfdo-highlight = 'odfdo.scripts.highlight:main'
-odfdo-show = 'odfdo.scripts.show:main'
-odfdo-styles = 'odfdo.scripts.styles:main'
-odfdo-replace = 'odfdo.scripts.replace:main'
-odfdo-headers = 'odfdo.scripts.headers:main'
-odfdo-table-shrink = 'odfdo.scripts.table_shrink:main'
-odfdo-userfield = 'odfdo.scripts.userfield:main'
-odfdo-markdown = 'odfdo.scripts.to_markdown:main'
-odfdo-from-csv = 'odfdo.scripts.from_csv:main'
-odfdo-to-csv = 'odfdo.scripts.to_csv:main'
-odfdo-meta-print = 'odfdo.scripts.meta_print:main'
-odfdo-meta-update = 'odfdo.scripts.meta_update:main'
+odfdo-folder = "odfdo.scripts.folder:main"
+odfdo-flat = "odfdo.scripts.flat:main"
+odfdo-highlight = "odfdo.scripts.highlight:main"
+odfdo-show = "odfdo.scripts.show:main"
+odfdo-styles = "odfdo.scripts.styles:main"
+odfdo-replace = "odfdo.scripts.replace:main"
+odfdo-headers = "odfdo.scripts.headers:main"
+odfdo-table-shrink = "odfdo.scripts.table_shrink:main"
+odfdo-userfield = "odfdo.scripts.userfield:main"
+odfdo-markdown = "odfdo.scripts.to_markdown:main"
+odfdo-from-csv = "odfdo.scripts.from_csv:main"
+odfdo-to-csv = "odfdo.scripts.to_csv:main"
+odfdo-meta-print = "odfdo.scripts.meta_print:main"
+odfdo-meta-update = "odfdo.scripts.meta_update:main"
 
 [dependency-groups]
 doc = [
@@ -69,9 +67,9 @@ dev = [
     "pytest-xdist>=3.8.0",
     "coverage>=7.10.0",
     "pytest-cov>=7.0.0",
-    "tox>=4.51.0",
-    "ruff>=0.15.4",
-    "ty>=0.0.65",
+    "tox>=4.60.0",
+    "ruff>=0.16.3",
+    "ty>=0.0.71",
 ]
 
 [tool.uv]
@@ -100,9 +98,6 @@ include = ["recipes"]
 invalid-argument-type = "ignore"
 not-subscriptable = "ignore"
 
-
-[tool.isort]
-profile = "black"
 
 [tool.ruff]
 target-version = "py310"
@@ -175,11 +170,11 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/test_*" = ["S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117"]
-"tests/*/test_*" = ["S101", "S404", "RUF005", "B007", "UP017", "YTT204","SIM117"]
+"tests/*/test_*" = ["S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117"]
 "recipes/*" = ["S101", "SIM102", "B903"]
 "recipes/accessing_a_single_element.py" = ["RUF001"]
 
-[tool.pytest]
+[tool.pytest.ini_options]
 minversion = "8.0"
 testpaths = ["tests"]
 
