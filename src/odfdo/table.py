@@ -806,15 +806,19 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
         When getting, the type of each cell value is inferred from the
         'office:value-type' attribute.
+
         When setting, the type of the provided Python value determines the
-        'office:value-type' of each cell.
+        'office:value-type' of each cell. If the provided values do not cover
+        the entire area of the table, the previous values are retained.
+        Objects of type "str" are not treated as iterables.
 
         Note: the cell style content is kept when using cell values.
         To ensure an absolute empty table, use Table.clear().
 
         Returns:
             list[list[CellValue | None]]:
-                The 2D matrix of values of cells in their appropriate Python type.
+                The 2D matrix of values of cells in their appropriate Python
+                type.
         """
         return self.get_values()
 
@@ -879,9 +883,12 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     ) -> None:
         """Set cell values in the table, starting from a specified coordinate.
 
-        The table is not cleared before this operation. To reset the table, call
-        `table.clear()` first. The input `values` should be an iterable of
-        iterables, where each inner iterable represents a row.
+        The table is not cleared before this operation. To reset the table,
+        call `table.clear()` first. The input `values` should be an iterable
+        of iterables, where each inner iterable represents a row. If the
+        provided values do not cover the entire area of the table, the
+        previous values are retained. Objects of type "str" are not treated
+        as iterables.
 
         Args:
             values: An iterable of iterables of Python types to set.
@@ -900,6 +907,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         if x is None:
             x = 0
         y -= 1
+        if not isiterable(values):
+            # guard against str iterable
+            values = [values]  # ty: ignore
         for row_values in values:
             y += 1
             if not row_values:

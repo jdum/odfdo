@@ -38,7 +38,7 @@ from .element import (
     xpath_return_elements,
 )
 from .table_cache import _XP_CELL_IDX, RowCache, TableCache
-from .utils import convert_coordinates, increment, translate_from_any
+from .utils import convert_coordinates, increment, isiterable, translate_from_any
 
 if TYPE_CHECKING:
     from lxml.etree import XPath  # ty: ignore[unresolved-import]
@@ -731,7 +731,9 @@ class Row(Element):
         column with values.
 
         This method does not clear the row, use row.clear() before to start
-        from an empty row.
+        from an empty row. If the provided values do not cover the entire row,
+        the previous values are retained. Objects of type "str" are not
+        treated as iterables.
 
         Args:
             values: An iterable of values to set.
@@ -748,7 +750,13 @@ class Row(Element):
             start = 0
         else:
             start = self._translate_x_from_any(start)
-        values_list = list(values)  # we need the number of values
+        values_list: list[CellValue | None]
+        if not isiterable(values):
+            # guard against str iterable
+            values_list = [cast(CellValue | None, values)]
+        else:
+            # we need the number of values
+            values_list = [cast(CellValue | None, v) for v in cast(Iterable[Any], values)]
         if start >= self.width:
             x = start
             for value in values_list:
@@ -773,9 +781,12 @@ class Row(Element):
 
         When getting, the type of each cell value is inferred from the
         'office:value-type' attribute.
+
         When setting, the type of the provided Python value determines the
         'office:value-type' of the cell. The style of the cell is kept, to
-        clear completely the cell, use Row.clear().
+        clear completely the cell, use Row.clear(). If the provided values do
+        not cover the entire row, the previous values are retained. Objects
+        of type "str" are not treated as iterables.
 
         Note: the cell style content is kepts when using "cell.value = None".
         To ensure an absolute empty cell, use Row.clear() that will remove
