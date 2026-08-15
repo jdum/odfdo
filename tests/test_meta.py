@@ -375,11 +375,57 @@ def test_get_editing_duration(meta):
     assert duration == expected
 
 
-def test_set_editing_duration(meta):
+def test_user_defined_date_from_datetime(meta):
     clone = meta.clone
-    duration = timedelta(1, 2, 0, 0, 5, 6, 7)
-    clone.set_editing_duration(duration)
-    assert clone.get_editing_duration() == duration
+    dt = datetime(2024, 7, 14, 15, 30, 0)
+    clone.set_user_defined_metadata("MyDate", dt)
+    assert clone.get_user_defined_metadata()["MyDate"] == dt
+
+
+def test_meta_from_dict_template_no_date(meta):
+    clone = meta.clone
+    clone.set_template(href="http://example.org/template.ott", title="My Template")
+    tmpl = clone.template
+    tmpl.del_attribute("meta:date")
+    exported = clone.as_dict(full=True)
+    assert "meta:date" not in exported["meta:template"]
+    clone.from_dict(exported)
+    assert clone.template.href == "http://example.org/template.ott"
+
+
+def test_meta_from_dict_template_dict_without_date(meta):
+    clone = meta.clone
+    dict_data = {
+        "meta:template": {
+            "xlink:href": "http://example.org/custom.ott",
+            "xlink:title": "Custom Template",
+        }
+    }
+    clone.from_dict(dict_data)
+    assert clone.template.href == "http://example.org/custom.ott"
+    assert clone.template.title == "Custom Template"
+
+
+def test_meta_from_dict_auto_reload_without_delay(meta):
+    clone = meta.clone
+    dict_data = {
+        "meta:auto-reload": {
+            "xlink:href": "http://example.org/reload.odt",
+        }
+    }
+    clone.from_dict(dict_data)
+    assert clone.auto_reload.href == "http://example.org/reload.odt"
+
+
+def test_meta_from_dict_hyperlink_behaviour_without_keys(meta):
+    clone = meta.clone
+    dict_data = {
+        "meta:hyperlink-behaviour": {
+            "xlink:show": "replace",
+        }
+    }
+    clone.from_dict(dict_data)
+    assert clone.hyperlink_behaviour.show == "replace"
 
 
 def test_editing_duration_property(meta):
