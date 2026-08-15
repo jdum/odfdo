@@ -410,7 +410,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """
         return self.get_auto_reload()
 
-    def set_auto_reload(self, delay: timedelta, href: str = "") -> None:
+    def set_auto_reload(self, delay: timedelta | None = None, href: str = "") -> None:
         """Set or replace the `meta:auto-reload` element.
 
         This specifies whether a document is reloaded or replaced by another
@@ -1318,25 +1318,25 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         value = _value_delete(key)
         if value is not None:
             self.set_template(
-                date=value["meta:date"],
-                href=value["xlink:href"],
-                title=value["xlink:title"],
+                date=value.get("meta:date"),
+                href=value.get("xlink:href", ""),
+                title=value.get("xlink:title", ""),
             )
 
         key = "meta:auto-reload"
         value = _value_delete(key)
         if value is not None:
             self.set_auto_reload(
-                delay=value["meta:delay"],
-                href=value["xlink:href"],
+                delay=value.get("meta:delay"),
+                href=value.get("xlink:href", ""),
             )
 
         key = "meta:hyperlink-behaviour"
         value = _value_delete(key)
         if value is not None:
             self.set_hyperlink_behaviour(
-                target_frame_name=value["office:target-frame-name"],
-                show=value["xlink:show"],
+                target_frame_name=value.get("office:target-frame-name", "_blank"),
+                show=value.get("xlink:show", "replace"),
             )
 
         key = "meta:user-defined"
@@ -1346,13 +1346,17 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
                 self.clear_user_defined_metadata()
             else:
                 data_list = self._user_defined_metadata_list()
-                current_dict = {d["meta:name"]: d for d in data_list}
-                current_value = {d["meta:name"]: d for d in value}
+                current_dict = {
+                    d["meta:name"]: d for d in data_list if isinstance(d, dict) and "meta:name" in d
+                }
+                current_value = {
+                    d["meta:name"]: d for d in value if isinstance(d, dict) and "meta:name" in d
+                }
                 current_dict.update(current_value)
                 new_ud = {
-                    v["meta:name"]: v["value"]
+                    v["meta:name"]: v.get("value")
                     for v in current_dict.values()
-                    if v["value"] is not None
+                    if isinstance(v, dict) and "meta:name" in v and v.get("value") is not None
                 }
                 self.user_defined_metadata = new_ud  # ty: ignore[invalid-assignment]
 
