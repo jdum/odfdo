@@ -1,5 +1,19 @@
 # Odfdo Release Notes
 
+## [3.24.5] - 2026-08-15
+
+Fixes: 
+
+-   Fix of error when `Document.meta.from_dict()` argument does not contain optional keys.
+-   `str` object was treated as iterable in `Table.set_values()` and `Row.set_values()`.
+-   Markdown export now ignores whitespace-only tails caused by pretty-printed XML.
+
+### Fixed
+
+-   Use default values for `Document.meta.from_dict()` when the meta dict is missing optional fields.
+-   For `Table.set_values()`, `Row.set_values()` and their values setters, objects of type str are not treated as iterable.
+-   Markdown export now ignorse whitespace-only tails from pretty-printed XML.
+
 ## [3.24.4] - 2026-08-14
 
 -   Finalized fixes for preserving styles and spans when changing a cell's value, and verified the handling of repeated cells.

@@ -47,7 +47,7 @@ Installation from sources:
 uv sync
 ```
 
-After installation from sources, you can check everything is working. The tests should run for a few seconds and issue no error.
+After installation from sources, you can check everything is working. The tests should run for a few seconds and issue no error. Test coverage should be close to 100%.
 
 ```bash
 uv sync --dev
