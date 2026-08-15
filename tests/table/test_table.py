@@ -321,3 +321,75 @@ def test_table_values_property_styled_cell_replace(samples):
     assert table.get_cell("A1").is_spanned()
     assert table.get_cell("E1").is_spanned()
     assert table.get_cell("B1").is_spanned(covered=True)
+
+
+def test_table_values_setter_partiel_1(table):
+    # [
+    # [1, 1, 1, 2, 3, 3, 3],
+    # [1, 1, 1, 2, 3, 3, 3],
+    # [1, 1, 1, 2, 3, 3, 3],
+    # [1, 2, 3, 4, 5, 6, 7],
+    # ]
+
+    # guard agains str iterable
+    table.values = ["ab", "cd", "ef"]
+    assert table.values == [
+        ["ab", 1, 1, 2, 3, 3, 3],
+        ["cd", 1, 1, 2, 3, 3, 3],
+        ["ef", 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_values_setter_partiel_2(table):
+    # [
+    # [1, 1, 1, 2, 3, 3, 3],
+    # [1, 1, 1, 2, 3, 3, 3],
+    # [1, 1, 1, 2, 3, 3, 3],
+    # [1, 2, 3, 4, 5, 6, 7],
+    # ]
+
+    # guard agains str iterable
+    table.values = [["ab", "cd", "ef"]]
+    assert table.values == [
+        ["ab", "cd", "ef", 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_values_setter_partiel_3(table):
+    # [
+    # [1, 1, 1, 2, 3, 3, 3],
+    # [1, 1, 1, 2, 3, 3, 3],
+    # [1, 1, 1, 2, 3, 3, 3],
+    # [1, 2, 3, 4, 5, 6, 7],
+    # ]
+
+    # guard agains str iterable
+    table.values = ["abcd"]
+    assert table.values == [
+        ["abcd", 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
+
+
+def test_table_values_setter_partiel_4(table):
+    # [
+    # [1, 1, 1, 2, 3, 3, 3],
+    # [1, 1, 1, 2, 3, 3, 3],
+    # [1, 1, 1, 2, 3, 3, 3],
+    # [1, 2, 3, 4, 5, 6, 7],
+    # ]
+
+    # guard agains str iterable
+    table.values = "abcd"
+    assert table.values == [
+        ["abcd", 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 1, 1, 2, 3, 3, 3],
+        [1, 2, 3, 4, 5, 6, 7],
+    ]
