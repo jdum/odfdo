@@ -26,6 +26,94 @@ import pytest
 from odfdo.document import Document
 from odfdo.paragraph import Paragraph
 
+EXPECT_MD_SAMPLE = dedent("""\
+# Document Title
+
+## Introduction
+
+This is a normal paragraph with **bold text**, \\
+_italic text_, and \\
+***bold italic text***.\\
+
+
+This has ~~strikethrough~~ and \\
+`inline code`.\\
+
+
+Visit [Example Site](https://example.com) for more info.\\
+
+
+## Features
+
+ -  Fast parsing
+ -  Clean output
+ -  Django integration
+ -  LLM\\-ready markdown
+
+### Nested List
+
+ -  Parent item
+    -  Child A
+    -  Child B
+ -  Another parent
+
+## Data Table
+
+| Name  | Age | City   |
+|-------|-----|--------|
+| Alice | 30  | Paris  |
+| Bob   | 25  | London |
+
+
+## Conclusion
+
+This document tests the ODT to Markdown conversion pipeline.
+""").strip()
+
+EXPECT_MD_SAMPLE_LO = dedent("""\
+# Document Title
+
+## Introduction
+
+This is a normal paragraph with **bold text**, \\
+_italic text_, and \\
+***bold italic text***.\\
+
+
+This has ~~strikethrough~~ and \\
+`inline code`.\\
+
+
+Visit [Example Site](https://example.com/) for more info.\\
+
+
+## Features
+
+ 1. Fast parsing
+ 2. Clean output
+ 3. Django integration
+ 4. LLM\\-ready markdown
+
+### Nested List
+
+ 1. Parent item
+    1. Child A
+    2. Child B
+ 2. Another parent
+
+## Data Table
+
+| Name  | Age | City   |
+|-------|-----|--------|
+| Alice | 30  | Paris  |
+| Bob   | 25  | London |
+
+
+## Conclusion
+
+This document tests the ODT to Markdown conversion pipeline.
+""").strip()
+
 
 @pytest.fixture
 def document_base(samples) -> Iterable[Document]:
@@ -48,6 +136,18 @@ def document_bookmark(samples) -> Iterable[Document]:
 @pytest.fixture
 def document_md_sample(samples) -> Iterable[Document]:
     document = Document(samples("md_sample.odt"))
+    yield document
+
+
+@pytest.fixture
+def document_md_sample_14(samples) -> Iterable[Document]:
+    document = Document(samples("md_sample_14.odt"))
+    yield document
+
+
+@pytest.fixture
+def document_md_sample_14_lo(samples) -> Iterable[Document]:
+    document = Document(samples("md_sample_14_lo.odt"))
     yield document
 
 
@@ -182,8 +282,7 @@ def test_md_doc_minimal():
 
 def test_md_base_text(document_base):
     md = document_base.to_markdown()
-    expected = dedent(
-        """\
+    expected = dedent("""\
     # odfdo Test Case Document
 
     This is the first paragraph.
@@ -203,8 +302,7 @@ def test_md_base_text(document_base):
     First paragraph of the second section.
 
     This is the second paragraph with [an external link](https://github.com/jdum/odfdo) inside.
-    """
-    ).strip()
+    """).strip()
     assert md.strip() == expected
 
 
@@ -237,50 +335,20 @@ def test_md_example_text(document_example):
 
 def test_md_sample(document_md_sample):
     md = document_md_sample.to_markdown()
-    expected = dedent("""\
-    # Document Title
-
-    ## Introduction
-
-    This is a normal paragraph with **bold text**, \\
-    _italic text_, and \\
-    ***bold italic text***.\\
+    assert md.strip() == EXPECT_MD_SAMPLE
 
 
-    This has ~~strikethrough~~ and \\
-    `inline code`.\\
+def test_md_sample_14(document_md_sample_14):
+    md = document_md_sample_14.to_markdown()
+    assert md.strip() == EXPECT_MD_SAMPLE
 
 
-    Visit [Example Site](https://example.com) for more info.\\
-
-
-    ## Features
-
-     -  Fast parsing
-     -  Clean output
-     -  Django integration
-     -  LLM\\-ready markdown
-
-    ### Nested List
-
-     -  Parent item
-        -  Child A
-        -  Child B
-     -  Another parent
-
-    ## Data Table
-
-    | Name  | Age | City   |
-    |-------|-----|--------|
-    | Alice | 30  | Paris  |
-    | Bob   | 25  | London |
-
-
-    ## Conclusion
-
-    This document tests the ODT to Markdown conversion pipeline.
-    """).strip()
-    assert md.strip() == expected
+def test_md_sample_14_lo(document_md_sample_14_lo):
+    md = document_md_sample_14_lo.to_markdown()
+    # Problems:
+    # LibreOffice/26.2.5.2 replaces https://example.com by https://example.com/
+    # local default config of lists is with numbers ?
+    assert md.strip() == EXPECT_MD_SAMPLE_LO
 
 
 def test_md_bookmark_text(document_bookmark):
