@@ -160,6 +160,16 @@ def _as_none(text: str | None) -> str:
     return _md_escape(text)
 
 
+def _md_tail(tail: str | None, post_styler: Callable = _as_none) -> str:
+    """Return the styled tail, but drop whitespace-only formatting artifacts.
+
+    Pretty-printed XML adds whitespace text nodes between block-level
+    elements. These must not become extra blank lines in Markdown output.
+    """
+    text = post_styler(tail)
+    return text if text.strip() else ""
+
+
 class MDStyle:
     def _md_is_fixed_paragraph(self) -> bool:
         if self.tag != "text:p" or not self.style:
@@ -329,7 +339,7 @@ class MDParagraph(MDStyle):
         styler = self._md_styling()
         acc = [styler(self.text)]
         acc.extend([child._md_format(styler) for child in self.children])
-        acc.append(post_styler(self.tail))
+        acc.append(_md_tail(self.tail, post_styler))
         return _strip_left_spaces("".join(x for x in acc if x))
 
     def _md_collect_fixed_text(self) -> str:
@@ -372,7 +382,7 @@ class MDHeader(MDParagraph):
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         acc = [_as_none(self.text)]
         acc.extend([child._md_format() for child in self.children])
-        acc.append(post_styler(self.tail))
+        acc.append(_md_tail(self.tail, post_styler))
         content = _strip_left_spaces("".join(x for x in acc if x))
         level = self.get_attribute_integer("text:outline-level") or 0
         if not level:
@@ -403,7 +413,7 @@ class MDListItem(MDParagraph):
                 acc.append(self._md_list_marker(level, li_style) + child._md_format())
             else:
                 acc.append(self._md_list_marker(level) + child._md_format())
-        acc.append(post_styler(self.tail))
+        acc.append(_md_tail(self.tail, post_styler))
         content = "\n".join(x for x in acc if x)
         return content
 
@@ -418,7 +428,7 @@ class MDList(MDStyle):
             if child.tag != "text:list-item":
                 continue
             acc.append(child._md_format(level=level))
-        acc.append(post_styler(self.tail))
+        acc.append(_md_tail(self.tail, post_styler))
         _release_list_counter(level + 1)
         content = "\n".join(x for x in acc if x)
         return content
