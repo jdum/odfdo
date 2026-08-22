@@ -114,13 +114,13 @@ def _get_python_value(
     # A float ?
     with contextlib.suppress(ValueError):
         return float(data)
+    # A DateTime ?
+    if "T" in data or " " in data:
+        with contextlib.suppress(ValueError):
+            return DateTime.decode(data.replace(" ", "T"))
     # A Date ?
     with contextlib.suppress(ValueError):
         return Date.decode(data)
-    # A DateTime ?
-    with contextlib.suppress(ValueError):
-        # Two tests: "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-ddThh:mm:ss"
-        return DateTime.decode(data.replace(" ", "T"))
     # A Duration ?
     with contextlib.suppress(ValueError):
         return Duration.decode(data)
@@ -613,7 +613,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
     @property
     def width(self) -> int:
-        """Get the current width of the table, based on the column definitions.
+        """Get the current width of the table, based on the column
+        definitions.
 
         Note that individual rows may have different widths. It is recommended
         to use the Table API to maintain a consistent width.
