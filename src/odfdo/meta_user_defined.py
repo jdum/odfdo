@@ -26,7 +26,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Any
 
-from .datatype import Boolean, Date, DateTime, Duration
+from .datatype import Boolean, Date, DateTime, Duration, date_decode_heuristic
 from .element import Element, register_element_class
 
 
@@ -134,11 +134,7 @@ class MetaUserDefined(Element):
         if value_type == "boolean":
             return Boolean.decode(text)
         if value_type == "date":
-            # ODF date can be either datetime or date
-            if "T" in text:
-                return DateTime.decode(text)
-            else:
-                return Date.decode(text)
+            return date_decode_heuristic(text)
         if value_type == "float":
             return Decimal(text)
         if value_type == "time":
@@ -174,9 +170,9 @@ class MetaUserDefined(Element):
             text: str = "true" if value else "false"
         elif value_type == "date":
             if isinstance(value, datetime):
-                text = str(DateTime.encode(value))
+                text = DateTime.encode(value)
             else:
-                text = str(Date.encode(value))  # ty: ignore[invalid-argument-type]
+                text = Date.encode(value)  # ty: ignore[invalid-argument-type]
         elif value_type == "float":
             text = str(value or 0)
         elif value_type == "time":
