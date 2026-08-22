@@ -82,13 +82,13 @@ def test_meta_user_defined_create_bool():
 def test_meta_user_defined_create_date():
     dt = dtdate(2025, 1, 2)
     data = MetaUserDefined(name="key", value_type="date", value=dt)
-    assert data.value == datetime(2025, 1, 2)
+    assert data.value == dtdate(2025, 1, 2)
 
 
 def test_meta_user_defined_create_date_datetime():
     dt = datetime(2025, 1, 2)
     data = MetaUserDefined(name="key", value_type="date", value=dt)
-    assert data.value == datetime(2025, 1, 2)
+    assert data.value == dtdate(2025, 1, 2)
 
 
 def test_meta_user_defined_create_date_timedelta():

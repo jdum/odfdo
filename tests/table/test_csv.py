@@ -56,8 +56,8 @@ XML_DATA = (
     "</table:table-cell>"
     '<table:table-cell office:value-type="date" '
     'calcext:value-type="date" '
-    'office:date-value="1975-05-07T00:00:00">'
-    "<text:p>1975-05-07T00:00:00</text:p>"
+    'office:date-value="1975-05-07">'
+    "<text:p>1975-05-07</text:p>"
     "</table:table-cell>"
     "</table:table-row>"
     "</table:table>"
@@ -80,7 +80,7 @@ def test_from_csv_method():
 
 
 def test_export_to_csv(table):
-    expected = "A float,3.14\r\nA date,1975-05-07 00:00:00\r\n"
+    expected = "A float,3.14\r\nA date,1975-05-07\r\n"
     assert table.to_csv() == expected
 
 
@@ -88,7 +88,7 @@ def test_export_to_csv_file(tmp_path, table):
     path = tmp_path / "test.csv"
     table.to_csv(path)
     result = path.read_bytes()
-    expected = b"A float,3.14\r\nA date,1975-05-07 00:00:00\r\n"
+    expected = b"A float,3.14\r\nA date,1975-05-07\r\n"
     assert result == expected
 
 
@@ -96,7 +96,7 @@ def test_export_to_csv_file_unix(tmp_path, table):
     path = tmp_path / "test.csv"
     table.to_csv(path, "unix")
     result = path.read_bytes()
-    expected = b'"A float","3.14"\n"A date","1975-05-07 00:00:00"\n'
+    expected = b'"A float","3.14"\n"A date","1975-05-07"\n'
     assert result == expected
 
 
@@ -108,7 +108,7 @@ def test_export_to_csv_file_delimiters(tmp_path, table):
         quoting=csv.QUOTE_ALL,
     )
     result = path.read_bytes()
-    expected = b'"A float";"3.14"\r\n"A date";"1975-05-07 00:00:00"\r\n'
+    expected = b'"A float";"3.14"\r\n"A date";"1975-05-07"\r\n'
     assert result == expected
 
 

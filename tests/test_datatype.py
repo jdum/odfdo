@@ -152,7 +152,7 @@ def test_datetime_decode_raises():
 
 def test_date_decode():
     date_value = "1999-12-25"
-    expected = datetime(1999, 12, 25)
+    expected = date(1999, 12, 25)
     assert Date.decode(date_value) == expected
 
 

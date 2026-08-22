@@ -93,7 +93,7 @@ def test_get_python_value_bool_false_3():
 
 def test_get_python_value_date():
     value = "2025-01-02"
-    expected = datetime.datetime(2025, 1, 2, 0, 0)
+    expected = datetime.date(2025, 1, 2)
     result = _get_python_value(value, "utf8")
     assert result == expected
 

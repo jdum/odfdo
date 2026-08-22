@@ -191,7 +191,7 @@ def test_value_property_set_date():
     cell = Cell(1.54, cell_type="currency", currency="EUR")
     cell.value = date(2009, 6, 30)
     # return alwais a datetime as value
-    assert cell.value == datetime(2009, 6, 30)
+    assert cell.value == date(2009, 6, 30)
     assert cell.date == date(2009, 6, 30)
 
 

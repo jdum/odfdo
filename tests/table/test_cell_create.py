@@ -140,7 +140,7 @@ def test_date():
 
 def test_date_value():
     cell = Cell(date(2009, 6, 30))
-    assert cell.value == datetime(2009, 6, 30)
+    assert cell.value == date(2009, 6, 30)
     assert cell.date == date(2009, 6, 30)
 
 

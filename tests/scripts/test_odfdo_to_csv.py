@@ -129,7 +129,7 @@ def test_to_csv_2_4(capsys, samples):
     main_to_csv(params)
     captured = capsys.readouterr()
 
-    assert captured.out == '"A float","3.14"\n"A date","1975-05-07 00:00:00"\n'
+    assert captured.out == '"A float","3.14"\n"A date","1975-05-07"\n'
 
 
 def test_to_csv_2_raise(samples):
