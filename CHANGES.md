@@ -2,6 +2,24 @@
 
 ## [3.24.6] - unreleased
 
+-   Allow the creation of unnamed `Table` objects and add a warning to the `Table` docstring regarding unnamed tables.
+-   `Date.decode()` now returns `datetime.date` instead of `datetime.datetime` for date-only values.
+-   Added heuristic date decoders (`decode_heuristic()`, `date_decode_heuristic()`, `DateDecoder`) for flexible conversion of string values to `datetime`, `date`, or `timedelta`.
+-   Metadata date fields (`meta:date`, `dc:date`, `meta:user-defined`) now support `datetime.date` and `datetime.datetime` objects interchangeably.
+
+### Added
+
+-   Add `decode_heuristic()`, `date_decode_heuristic()`, and `DateDecoder` in `odfdo.datatype` for string-to-date/datetime/duration conversion heuristics.
+
+### Fixed
+
+-   Allow the creation of unnamed `Table` objects (issue #55).
+
+### Changed
+
+-   `Date.decode()` returns a `datetime.date` object on Python >= 3.10.
+-   `Meta.from_dict()`, `Meta.as_dict()`, `Meta.as_json()`, and `MetaUserDefined` now accept and preserve both `datetime.date` and `datetime.datetime` values.
+
 ## [3.24.5] - 2026-08-15
 
 Fixes: 
