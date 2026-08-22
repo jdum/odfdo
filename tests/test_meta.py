@@ -1273,6 +1273,15 @@ def test_meta_export_json_full(meta):
     assert exported == expected
 
 
+def test_meta_from_json(meta):
+    json_str = meta.as_json()
+    meta.from_json(json_str)
+    assert meta.editing_duration == timedelta(minutes=1, seconds=36)
+    assert meta.get_user_defined_metadata()["Achevé à la date"] == datetime(
+        2009, 7, 31, 0, 0, 0
+    )
+
+
 def test_meta_from_dict_1(meta):
     imported = {
         "meta:creation-date": datetime(2024, 7, 14, 12, 00, 00),
