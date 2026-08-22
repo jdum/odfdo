@@ -20,7 +20,7 @@
 from __future__ import annotations
 
 from datetime import date as dtdate
-from datetime import datetime, timedelta
+from datetime import timedelta
 from decimal import Decimal
 
 import pytest
@@ -55,7 +55,7 @@ def test_meta_user_defined_create_no_value_bool():
 
 
 def test_meta_user_defined_create_no_value_date():
-    with pytest.raises(AttributeError):
+    with pytest.raises((AttributeError, TypeError)):
         MetaUserDefined(name="key", value_type="date")
 
 

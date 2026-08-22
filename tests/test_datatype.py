@@ -26,10 +26,10 @@ import pytest
 from odfdo.datatype import (
     Boolean,
     Date,
-    DateDecoder,
     DateTime,
     Duration,
     Unit,
+    date_decode_heuristic,
     decode_heuristic,
 )
 
@@ -293,31 +293,30 @@ def test_str_unit_compatibility():
 
 def test_decode_heuristic_date():
     assert decode_heuristic("2016-08-15") == date(2016, 8, 15)
-    assert DateDecoder.decode_heuristic("2016-08-15") == date(2016, 8, 15)
-    assert Date.decode_heuristic("2016-08-15") == date(2016, 8, 15)
+    assert date_decode_heuristic("2016-08-15") == date(2016, 8, 15)
 
 
 def test_decode_heuristic_datetime():
     expected = datetime(2016, 8, 15, 15, 30, 0)
     assert decode_heuristic("2016-08-15T15:30:00") == expected
-    assert decode_heuristic("2016-08-15 15:30:00") == expected
-    assert DateTime.decode_heuristic("2016-08-15T15:30:00") == expected
+    assert date_decode_heuristic("2016-08-15 15:30:00") == expected
 
 
 def test_decode_heuristic_datetime_utc():
     expected = datetime(2016, 8, 15, 15, 30, 0, tzinfo=timezone.utc)
     assert decode_heuristic("2016-08-15T15:30:00Z") == expected
+    assert decode_heuristic("2016-08-15 15:30:00Z") == expected
 
 
 def test_decode_heuristic_duration():
     expected = timedelta(minutes=5, seconds=30)
     assert decode_heuristic("PT00H05M30S") == expected
-    assert Duration.decode_heuristic("PT00H05M30S") == expected
     assert decode_heuristic("-PT02H00M00S") == timedelta(hours=-2)
 
 
 def test_decode_heuristic_bytes():
     assert decode_heuristic(b"2016-08-15") == date(2016, 8, 15)
+    assert date_decode_heuristic(b"2016-08-15") == date(2016, 8, 15)
 
 
 def test_decode_heuristic_already_decoded():
@@ -339,3 +338,63 @@ def test_decode_heuristic_passthrough():
     assert decode_heuristic(b"\xff") == b"\xff"
     assert decode_heuristic("invalid_string_xxx") == "invalid_string_xxx"
     assert decode_heuristic("T_invalid") == "T_invalid"
+
+
+@pytest.mark.parametrize(
+    "invalid_input",
+    [
+        "not-a-date",
+        123,
+        None,
+        True,
+        "",
+        "    ",
+        b"\xff",
+        "invalid_string_xxx",
+        "T_invalid",
+    ],
+)
+def test_date_decode_heuristic_filter(invalid_input):
+    with pytest.raises(TypeError):
+        date_decode_heuristic(invalid_input)
+
+
+def test_date_decode_from_datetime():
+    dt = datetime(2024, 7, 14, 15, 30, 0)
+    assert Date.decode(dt) == date(2024, 7, 14)
+
+
+def test_datetime_decode_from_date():
+    d = date(2024, 7, 14)
+    assert DateTime.decode(d) == datetime(2024, 7, 14, 0, 0, 0)
+    assert DateTime.decode("2024-07-14") == datetime(2024, 7, 14, 0, 0, 0)
+
+
+def test_datetime_encode_from_date():
+    d = date(2024, 7, 14)
+    assert DateTime.encode(d) == "2024-07-14T00:00:00"
+
+
+def test_date_decode_encode_invalid():
+    assert Date.decode(date(2024, 7, 14)) == date(2024, 7, 14)
+    with pytest.raises(TypeError):
+        Date.decode(123)  # type: ignore[arg-type]
+    with pytest.raises(TypeError):
+        Date.encode(123)  # type: ignore[arg-type]
+
+
+def test_datetime_decode_encode_invalid():
+    dt = datetime(2024, 7, 14, 12, 0, 0)
+    assert DateTime.decode(dt) == dt
+    assert DateTime.decode("2024-07-14 15:30:00") == datetime(2024, 7, 14, 15, 30, 0)
+    with pytest.raises(ValueError):
+        DateTime.decode("invalid date with space")
+    with pytest.raises(TypeError):
+        DateTime.decode(123)  # type: ignore[arg-type]
+    with pytest.raises(TypeError):
+        DateTime.encode(123)  # type: ignore[arg-type]
+
+
+def test_duration_decode_timedelta():
+    td = timedelta(hours=1, minutes=30)
+    assert Duration.decode(td) == td

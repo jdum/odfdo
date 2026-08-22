@@ -29,12 +29,11 @@ from textwrap import dedent
 
 import pytest
 
-from odfdo import Meta
 from odfdo.body import Metadata
 from odfdo.const import ODF_META
 from odfdo.datatype import DateTime, Duration
 from odfdo.document import Document
-from odfdo.meta import GENERATOR
+from odfdo.meta import GENERATOR, Meta
 from odfdo.meta_auto_reload import MetaAutoReload
 from odfdo.meta_hyperlink_behaviour import MetaHyperlinkBehaviour
 from odfdo.meta_template import MetaTemplate
@@ -221,9 +220,9 @@ def test_modification_date_property(meta):
 
 def test_set_bad_modication_date(meta):
     clone = meta.clone
-    date = "2009-06-29T14:15:45"
-    with pytest.raises(AttributeError):
-        clone.set_modification_date(date)
+    date_val = 123
+    with pytest.raises((AttributeError, TypeError)):
+        clone.set_modification_date(date_val)  # type: ignore[arg-type]
 
 
 def test_print_date_property(meta):
@@ -251,9 +250,9 @@ def test_print_date_property_none(meta):
 
 
 def test_get_creation_date(meta):
-    date = meta.get_creation_date()
+    date_val = meta.get_creation_date()
     expected = datetime(2009, 7, 31, 15, 57, 37)
-    assert date == expected
+    assert date_val == expected
 
 
 def test_set_creation_date(meta):
@@ -265,9 +264,9 @@ def test_set_creation_date(meta):
 
 def test_set_bad_creation_date(meta):
     clone = meta.clone
-    date = "2009-06-29T14:15:45"
-    with pytest.raises(AttributeError):
-        clone.set_creation_date(date)
+    date_val = 123
+    with pytest.raises((AttributeError, TypeError)):
+        clone.set_creation_date(date_val)  # type: ignore[arg-type]
 
 
 def test_set_creation_date_none(meta):
@@ -377,6 +376,27 @@ def test_keywords_property(meta):
     assert clone.keywords == keywords
 
 
+def test_creation_date_from_date(meta):
+    clone = meta.clone
+    d = dtdate(2024, 7, 14)
+    clone.creation_date = d
+    assert clone.creation_date == datetime(2024, 7, 14, 0, 0, 0)
+
+
+def test_modification_date_from_date(meta):
+    clone = meta.clone
+    d = dtdate(2024, 7, 14)
+    clone.date = d
+    assert clone.date == datetime(2024, 7, 14, 0, 0, 0)
+
+
+def test_print_date_from_date(meta):
+    clone = meta.clone
+    d = dtdate(2024, 7, 14)
+    clone.print_date = d
+    assert clone.print_date == datetime(2024, 7, 14, 0, 0, 0)
+
+
 def test_keyword_property_on_none(meta):
     clone = meta.clone
     element = clone.get_element("//meta:keyword")
@@ -395,12 +415,9 @@ def test_get_editing_duration(meta):
 
 def test_user_defined_date_from_datetime(meta):
     dt = datetime(2024, 7, 14, 15, 30, 0)
-    print(dt)
     meta.set_user_defined_metadata("MyDate", dt)
-    x = meta.get_user_defined_metadata()
-    print("====")
-    print(x)
-    assert meta.get_user_defined_metadata()["MyDate"] == dt
+    result = meta.get_user_defined_metadata()
+    assert result["MyDate"] == dt
 
 
 def test_meta_from_dict_template_no_date(meta):
@@ -1953,3 +1970,29 @@ def test_meta_body_from_no_dict_2(meta):
 
 def test_deprecated_meta_body(meta):
     assert meta.meta_body.serialize() == meta.body.serialize()
+
+
+def test_meta_as_json_with_date_user_defined(meta):
+    meta.set_user_defined_metadata("DateProp", dtdate(2026, 8, 15))
+    js = meta.as_json()
+    assert '"2026-08-15"' in js
+
+
+def test_meta_forced_datetime_1():
+    d = dtdate(2026, 8, 15)
+    assert Meta._forced_datetime(d) == datetime(2026, 8, 15, 0, 0, 0)
+
+
+def test_meta_forced_datetime_2():
+    d = dtdate(2026, 8, 15)
+    assert Meta._forced_datetime(d) == datetime(2026, 8, 15, 0, 0, 0)
+
+
+def test_meta_forced_datetime_3():
+    now = datetime(2026, 8, 15, 12, 0, 0)
+    assert Meta._forced_datetime(None, default=now) == now
+
+
+def test_meta_forced_datetime_4():
+    res = Meta._forced_datetime(None)
+    assert isinstance(res, datetime)
