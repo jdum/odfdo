@@ -492,7 +492,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         """
         value = self.get_attribute("office:date-value")
         if isinstance(value, str):
-            return Date.decode(value).date()
+            return Date.decode(value)
         return _date.fromtimestamp(0)
 
     @date.setter
