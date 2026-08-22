@@ -183,7 +183,7 @@ class Date:
 
         Args:
             data: The date string (YYYY-MM-DD or ISO 8601) or date/datetime
-            object to decode.
+                object to decode.
 
         Returns:
             date: A `datetime.date` object representing the decoded date.
