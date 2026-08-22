@@ -21,6 +21,7 @@
 
 from __future__ import annotations
 
+from datetime import date as dtdate
 from datetime import datetime
 
 from .datatype import DateTime
@@ -36,7 +37,8 @@ class DcDateMixin:
         (Also available as "self.date" property.)
 
         Returns:
-            datetime | None: The last modified date as a datetime object, or None if inexistent.
+            datetime | None: The last modified date as a datetime object, or
+                None if inexistent.
         """
         element = self.clone.get_element("//dc:date")
         if element is None:
@@ -44,7 +46,7 @@ class DcDateMixin:
         dtdate = element.text
         return DateTime.decode(dtdate)
 
-    def set_modification_date(self, date: datetime | None = None) -> None:
+    def set_modification_date(self, date: datetime | dtdate | None = None) -> None:
         """Set the last modified date of the document.
 
         If provided datetime is None, use current time.
@@ -52,7 +54,8 @@ class DcDateMixin:
         (Also available as "self.date" property.)
 
         Args:
-            date: The datetime object to set as the last modified date.
+            date: The datetime or date object to set as the last modified
+                date.
         """
         element = self.get_element("//dc:date")
         if element is None:
@@ -75,12 +78,12 @@ class DcDateMixin:
 
         If provided datetime is None, use current time.
 
-        The <dc:date> element specifies the date and time when the document was
-        last modified (<office:meta>), when an annotation was created
+        The <dc:date> element specifies the date and time when the document
+        was last modified (<office:meta>), when an annotation was created
         (<office:annotation>), when a change was made (<office:change-info>).
         """
         return self.get_modification_date()
 
     @date.setter
-    def date(self, date: datetime | None = None) -> None:
+    def date(self, date: datetime | dtdate | None = None) -> None:
         self.set_modification_date(date)
