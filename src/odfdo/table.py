@@ -161,20 +161,29 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         The table can optionally be pre-filled with a specified number of rows
         and cells.
 
+        The `Table.name` attribute is not mandatory (per ODF 1.4 standard).
+        However, an unnamed table is not recommended for spreadsheet tables:
+        such tables cannot support named cell ranges or be referenced by
+        formulas, and loading the document with certain tools (such as
+        LibreOffice) will result in a default name being assigned to unnamed
+        tables. Similarly, having multiple tables with the same name or no
+        name is discouraged for the same reasons. Finally, setting table name
+        to None on a table with named ranges is not a good idea, as existing
+        named ranges will remain pending with their previous table name.
+
         Args:
-            name: The name of the table. It is required and
-                cannot contain specific characters like `[]*?:/\\`.
-                Apostrophes are also forbidden as the first or last character.
+            name: The name of the table. It is required and cannot contain
+                specific characters like `[]*?:/\\`. Apostrophes are also
+                forbidden as the first or last character.
             width: The initial number of columns for the table.
             height: The initial number of rows for the table.
             protected: If True, the table is protected. A `protection_key`
                 must be provided if this is True.
-            protection_key: A hash value of the password for
-                table protection.
-            printable: If False, the table will not be printed. Defaults to True.
-            print_ranges: A list of cell ranges
-                (e.g., `['E6:K12', 'P6:R12']`) or a raw string specifying the
-                print ranges.
+            protection_key: A hash value of the password for table protection.
+            printable: If False, the table will not be printed. Defaults to
+                True.
+            print_ranges: A list of cell ranges (e.g., `['E6:K12', 'P6:R12']`)
+                or a raw string specifying the print ranges.
             style: The name of the style to apply to the table.
             **kwargs: Additional keyword arguments for the Element base class.
 
@@ -189,7 +198,10 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         super().__init__(**kwargs)
         self._table_cache = TableCache()
         if self._do_init:
-            self.name = name or ""
+            if name is not None:
+                # allow tables with no names. Tables with no names can not
+                # have named ranges
+                self.name = name
             if protected:
                 self.protected = protected
                 if protection_key is None:
@@ -246,8 +258,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         The query is applied to the current table element.
 
         Args:
-            xpath_query: The XPath query string or a compiled
-                XPath object.
+            xpath_query: The XPath query string or a compiled XPath object.
 
         Returns:
             list[Element]: A list of matching elements, cloned from the
@@ -645,12 +656,19 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
     @name.setter
     def name(self, name: str | None) -> None:
-        name = table_name_check(name)
-        # first, update named ranges
+        if name is None:
+            # Setting table name to None on a table with named ranges is not a
+            #  good idea, as existing named ranges will remain pending with
+            # their previous table name.
+            self.del_attribute("table:name")
+            return
+        valid_name = table_name_check(name)
+        # first, update named ranges if table already had a name
         # fixme : delete name ranges when deleting table, too.
-        for named_range in self.get_named_ranges(table_name=self.name):
-            named_range.set_table_name(name)
-        self.set_attribute("table:name", name)
+        if self.name:
+            for named_range in self.get_named_ranges(table_name=self.name):
+                named_range.set_table_name(valid_name)
+        self.set_attribute("table:name", valid_name)
 
     @property
     def protected(self) -> bool:
