@@ -122,7 +122,7 @@ class MetaUserDefined(Element):
         The return type depends on the `meta:value-type` attribute.
 
         Returns:
-            Decimal | datetime | dtdate | timedelta | bool | str: The converted value.
+            Decimal | datetime | date | timedelta | bool | str: The converted value.
 
         Raises:
             TypeError: If the `meta:value-type` is unknown.
@@ -135,7 +135,7 @@ class MetaUserDefined(Element):
             return Boolean.decode(text)
         if value_type == "date":
             if "T" in text:
-                return DateTime.decode(text)
+                return DateTime.decode(text).date()
             else:
                 return Date.decode(text)
         if value_type == "float":
