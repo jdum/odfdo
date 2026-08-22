@@ -34,8 +34,9 @@ def test_default():
 
 
 def test_bad_name_empty():
-    with pytest.raises(ValueError):
-        Table()
+    # now allowed (v3.24.6)
+    table = Table()
+    assert table.name is None
 
 
 def test_bad_name_1():

@@ -783,3 +783,21 @@ def test_local_delete_named_range_no_container_after_delete():
     # Check it still exists because _local_delete_named_range failed
     # before delete
     assert table.get_element("table:named-range") is not None
+
+
+def test_get_named_ranges_no_body_or_not_allowed():
+    # Case 1: Standalone table not attached to a document (body is None)
+    table = Table("Standalone")
+    assert table.document_body is None
+    assert table.get_named_ranges(global_scope=True) == []
+
+    # Case 2: Table in a document body where allow_named_range is False
+    doc = Document("spreadsheet")
+    body = doc.body
+    table_in_doc = body.get_table(position=0)
+    assert table_in_doc is not None
+    with patch.object(
+        type(body), "allow_named_range", new_callable=PropertyMock, return_value=False
+    ):
+        assert body.allow_named_range is False
+        assert table_in_doc.get_named_ranges(global_scope=True) == []
