@@ -23,7 +23,15 @@ from decimal import Decimal
 
 import pytest
 
-from odfdo.datatype import Boolean, Date, DateTime, Duration, Unit
+from odfdo.datatype import (
+    Boolean,
+    Date,
+    DateDecoder,
+    DateTime,
+    Duration,
+    Unit,
+    decode_heuristic,
+)
 
 
 def test_datetime_encode():
@@ -281,3 +289,53 @@ def test_str_unit_compatibility():
     unit = Unit("1.847mm")
     assert unit.value == Decimal("1.847")
     assert unit.unit == "mm"
+
+
+def test_decode_heuristic_date():
+    assert decode_heuristic("2016-08-15") == date(2016, 8, 15)
+    assert DateDecoder.decode_heuristic("2016-08-15") == date(2016, 8, 15)
+    assert Date.decode_heuristic("2016-08-15") == date(2016, 8, 15)
+
+
+def test_decode_heuristic_datetime():
+    expected = datetime(2016, 8, 15, 15, 30, 0)
+    assert decode_heuristic("2016-08-15T15:30:00") == expected
+    assert decode_heuristic("2016-08-15 15:30:00") == expected
+    assert DateTime.decode_heuristic("2016-08-15T15:30:00") == expected
+
+
+def test_decode_heuristic_datetime_utc():
+    expected = datetime(2016, 8, 15, 15, 30, 0, tzinfo=timezone.utc)
+    assert decode_heuristic("2016-08-15T15:30:00Z") == expected
+
+
+def test_decode_heuristic_duration():
+    expected = timedelta(minutes=5, seconds=30)
+    assert decode_heuristic("PT00H05M30S") == expected
+    assert Duration.decode_heuristic("PT00H05M30S") == expected
+    assert decode_heuristic("-PT02H00M00S") == timedelta(hours=-2)
+
+
+def test_decode_heuristic_bytes():
+    assert decode_heuristic(b"2016-08-15") == date(2016, 8, 15)
+
+
+def test_decode_heuristic_already_decoded():
+    d = date(2016, 8, 15)
+    dt = datetime(2016, 8, 15, 15, 30)
+    td = timedelta(hours=3)
+    assert decode_heuristic(d) == d
+    assert decode_heuristic(dt) == dt
+    assert decode_heuristic(td) == td
+
+
+def test_decode_heuristic_passthrough():
+    assert decode_heuristic("not-a-date") == "not-a-date"
+    assert decode_heuristic(123) == 123
+    assert decode_heuristic(None) is None
+    assert decode_heuristic(True) is True
+    assert decode_heuristic("") == ""
+    assert decode_heuristic("   ") == "   "
+    assert decode_heuristic(b"\xff") == b"\xff"
+    assert decode_heuristic("invalid_string_xxx") == "invalid_string_xxx"
+    assert decode_heuristic("T_invalid") == "T_invalid"
