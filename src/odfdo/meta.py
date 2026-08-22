@@ -293,7 +293,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         creation_date = element.text
         return DateTime.decode(creation_date)
 
-    def set_creation_date(self, date: datetime | None = None) -> None:
+    def set_creation_date(self, date: datetime | dtdate | None = None) -> None:
         """Set the creation date of the document.
 
         If provided datetime is None, use current time.
@@ -301,7 +301,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         (Also available as "self.creation_date" property.)
 
         Args:
-            date: The datetime object to set as the creation date.
+            date: The datetime or date object to set as the creation date.
         """
         element = self.get_element("//meta:creation-date")
         if element is None:
@@ -323,7 +323,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return self.get_creation_date()
 
     @creation_date.setter
-    def creation_date(self, date: datetime | None = None) -> None:
+    def creation_date(self, date: datetime | dtdate | None = None) -> None:
         return self.set_creation_date(date)
 
     @property
@@ -343,7 +343,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return DateTime.decode(date)
 
     @print_date.setter
-    def print_date(self, date: datetime | None = None) -> None:
+    def print_date(self, date: datetime | dtdate | None = None) -> None:
         element = self.get_element("//meta:print-date")
         if element is None:
             element = Element.from_tag("meta:print-date")
@@ -1380,7 +1380,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
                 }
                 current_dict.update(current_value)
                 new_ud = {
-                    v["meta:name"]: decode_heuristic(v.get("value"))
+                    v["meta:name"]: decode_heuristic(v.get("value"))  # ty: ignore[invalid-argument-type]
                     for v in current_dict.values()
                     if isinstance(v, dict)
                     and "meta:name" in v
