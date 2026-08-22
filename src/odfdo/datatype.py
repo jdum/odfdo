@@ -22,6 +22,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import sys
 from datetime import date, datetime, timedelta
 from decimal import Decimal
@@ -95,7 +96,67 @@ class Boolean:
         raise TypeError(f"{value!r} is not a boolean")
 
 
-class Date:
+class DateDecoder:
+    """Utility class for data type conversions and heuristics (internal)."""
+
+    @staticmethod
+    def decode_heuristic(
+        data: str | bytes | datetime | date | timedelta | None,
+    ) -> datetime | date | timedelta | str | bytes | None:
+        """Heuristic to convert a string representation (e.g. from JSON) into a
+        Python `date`, `datetime`, or `timedelta` object.
+        """
+        return decode_heuristic(data)
+
+
+def decode_heuristic(
+    data: str | bytes | datetime | date | timedelta | None,
+) -> datetime | date | timedelta | str | bytes | None:
+    """Heuristic to convert a string representation (e.g., from JSON) of a
+    date, date-time, or duration into a Python `date`, `datetime`, or
+    `timedelta` object.
+
+    If `data` is already a `date`, `datetime`, or `timedelta`, it is returned
+    unmodified. If `data` is a string (or bytes), ISO 8601 formats for
+    duration, date-time, and date are attempted in sequence. If no conversion
+    matches or `data` is not a string, `data` is returned unchanged.
+
+    Args:
+        data: Value to decode.
+
+    Returns:
+        datetime | date | timedelta | str | None: Decoded or original `data`.
+    """
+    if isinstance(data, datetime | date | timedelta):
+        return data
+    if isinstance(data, bytes):
+        with contextlib.suppress(UnicodeDecodeError):
+            data = data.decode()
+    if not isinstance(data, str):
+        return data
+
+    data_string = data.strip()
+    if not data_string:
+        return data
+
+    # ISO Duration (starts with P, -P, +P)
+    if data_string.startswith(("P", "-P", "+P")):
+        with contextlib.suppress(ValueError):
+            return Duration.decode(data_string)
+
+    # ISO DateTime (contains T or space between date and time)
+    if "T" in data_string or " " in data_string:
+        with contextlib.suppress(ValueError):
+            return DateTime.decode(data_string.replace(" ", "T"))
+
+    # ISO Date (YYYY-MM-DD)
+    with contextlib.suppress(ValueError):
+        return Date.decode(data_string)
+
+    return data
+
+
+class Date(DateDecoder):
     """Handles conversion between ODF date string representation and Python's
     `datetime.date` type.
 
@@ -133,7 +194,7 @@ class Date:
         return value.isoformat()
 
 
-class DateTime:
+class DateTime(DateDecoder):
     """Handles conversion between ODF date-time string representation and
     Python's `datetime.datetime` type.
 
@@ -146,16 +207,14 @@ class DateTime:
         object.
 
         Handles various ISO 8601 formats and provides compatibility for
-        Python 3.9/3.10
-        specific `fromisoformat` behaviors.
+        Python 3.10 specific `fromisoformat` behaviors.
 
         Args:
-            data: The date-time string to decode, expected in ISO 8601
-                format.
+            data: The date-time string to decode, expected in ISO 8601 format.
 
         Returns:
-            datetime: A `datetime.datetime` object representing the
-                decoded date-time.
+            datetime: A `datetime.datetime` object representing the decoded
+            date-time.
         """
 
         def _decode_39_310(data1: str) -> datetime:  # pragma: nocover
@@ -202,7 +261,7 @@ class DateTime:
         return text
 
 
-class Duration:
+class Duration(DateDecoder):
     """Handles conversion between ODF duration string representation
     (ISO 8601 format) and Python's `datetime.timedelta` type.
     """
@@ -283,21 +342,21 @@ class Duration:
         days = value.days
         if days < 0:
             microseconds = -(
-                (days * 24 * 60 * 60 + value.seconds) * 1000000 + value.microseconds
+                (days * 24 * 60 * 60 + value.seconds) * 1_000_000 + value.microseconds
             )
             sign = "-"
         else:
             microseconds = (
                 days * 24 * 60 * 60 + value.seconds
-            ) * 1000000 + value.microseconds
+            ) * 1_000_000 + value.microseconds
             sign = ""
 
-        hours = microseconds / (60 * 60 * 1000000)
-        microseconds %= 60 * 60 * 1000000
+        hours = microseconds / (60 * 60 * 1_000_000)
+        microseconds %= 60 * 60 * 1_000_000
 
-        minutes = microseconds / (60 * 1000000)
-        microseconds %= 60 * 1000000
+        minutes = microseconds / (60 * 1_000_000)
+        microseconds %= 60 * 1_000_000
 
-        seconds = microseconds / 1000000
+        seconds = microseconds / 1_000_000
 
         return sign + DURATION_FORMAT % (hours, minutes, seconds)
