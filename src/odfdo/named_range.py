@@ -305,7 +305,7 @@ class NamedRange(Element):
 
         Raises:
             ValueError: If the coordinate format is incorrect (propagated from
-            `_set_range`).
+                `_set_range`).
         """
         self._set_range(crange)
         self._update_attributes()
