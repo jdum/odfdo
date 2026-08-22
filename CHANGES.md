@@ -1,6 +1,6 @@
 # Odfdo Release Notes
 
-## [3.24.6] - unreleased
+## [3.24.6] - 2026-08-22
 
 -   Allow the creation of unnamed `Table` objects and add a warning to the `Table` docstring regarding unnamed tables.
 -   `Date.decode()` now returns `datetime.date` instead of `datetime.datetime` for date-only values.
