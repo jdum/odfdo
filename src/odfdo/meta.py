@@ -31,7 +31,7 @@ from decimal import Decimal
 from operator import itemgetter
 from typing import TYPE_CHECKING, Any, cast
 
-from .datatype import DateTime, Duration
+from .datatype import Date, DateTime, Duration
 from .element import Element
 from .meta_auto_reload import MetaAutoReload
 from .meta_hyperlink_behaviour import MetaHyperlinkBehaviour
@@ -1073,6 +1073,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             for key, val in data.items():
                 if isinstance(val, datetime):
                     data[key] = DateTime.encode(val)
+                elif isinstance(val, dtdate):
+                    data[key] = Date.encode(val)
                 elif isinstance(val, timedelta):
                     data[key] = Duration.encode(val)
                 elif isinstance(val, Decimal):
