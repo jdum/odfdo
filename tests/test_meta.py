@@ -43,6 +43,24 @@ from odfdo.meta_template import MetaTemplate
 @pytest.fixture
 def meta(samples) -> Iterable[Meta]:
     document = Document(samples("meta.odt"))
+    #   <office:meta>
+    #     <meta:creation-date>2009-07-31T15:57:37</meta:creation-date>
+    #     <meta:editing-duration>PT00H05M30S</meta:editing-duration>
+    #     <meta:editing-cycles>2</meta:editing-cycles>
+    #     <meta:generator>LibreOffice/6.0.3.2$MacOSX_X86_64 LibreOffice_project/8f48d515416608e3a835360314dac7e47fd0b821</meta:generator>
+    #     <dc:description>Comments
+    # Commentaires
+    # 评论</dc:description>
+    #     <meta:keyword>Mots-clés</meta:keyword>
+    #     <dc:subject>Sujet de sa majesté</dc:subject>
+    #     <dc:title>Intitulé</dc:title>
+    #     <dc:date>2009-07-31T15:59:13</dc:date>
+    #     <meta:document-statistic meta:table-count="0" meta:image-count="0" meta:object-count="0" meta:page-count="1" meta:paragraph-count="1" meta:word-count="4" meta:character-count="27" meta:non-whitespace-character-count="24"/>
+    #     <meta:user-defined meta:name="Achevé à la date" meta:value-type="date">2009-07-31T00:00:00</meta:user-defined>
+    #     <meta:user-defined meta:name="Numéro du document" meta:value-type="float">3</meta:user-defined>
+    #     <meta:user-defined meta:name="Référence" meta:value-type="boolean">true</meta:user-defined>
+    #     <meta:user-defined meta:name="Vérifié par">Moi-même</meta:user-defined>
+    #   </office:meta>
     yield document.get_part(ODF_META)
 
 
@@ -376,10 +394,13 @@ def test_get_editing_duration(meta):
 
 
 def test_user_defined_date_from_datetime(meta):
-    clone = meta.clone
     dt = datetime(2024, 7, 14, 15, 30, 0)
-    clone.set_user_defined_metadata("MyDate", dt)
-    assert clone.get_user_defined_metadata()["MyDate"] == dt
+    print(dt)
+    meta.set_user_defined_metadata("MyDate", dt)
+    x = meta.get_user_defined_metadata()
+    print("====")
+    print(x)
+    assert meta.get_user_defined_metadata()["MyDate"] == dt
 
 
 def test_meta_from_dict_template_no_date(meta):
@@ -394,16 +415,15 @@ def test_meta_from_dict_template_no_date(meta):
 
 
 def test_meta_from_dict_template_dict_without_date(meta):
-    clone = meta.clone
     dict_data = {
         "meta:template": {
             "xlink:href": "http://example.org/custom.ott",
             "xlink:title": "Custom Template",
         }
     }
-    clone.from_dict(dict_data)
-    assert clone.template.href == "http://example.org/custom.ott"
-    assert clone.template.title == "Custom Template"
+    meta.from_dict(dict_data)
+    assert meta.template.href == "http://example.org/custom.ott"
+    assert meta.template.title == "Custom Template"
 
 
 def test_meta_from_dict_auto_reload_without_delay(meta):
@@ -608,7 +628,7 @@ def test_statistic_property_bad_2(meta):
 def test_get_user_defined_metadata(meta):
     metadata = meta.get_user_defined_metadata()
     expected = {
-        "Achevé à la date": dtdate(2009, 7, 31),
+        "Achevé à la date": datetime(2009, 7, 31, 0, 0, 0),
         "Numéro du document": Decimal("3"),
         "Référence": True,
         "Vérifié par": "Moi-même",
@@ -622,7 +642,7 @@ def test_set_user_defined_metadata(meta):
     # Change a value
     meta.set_user_defined_metadata("Référence", False)
     expected = {
-        "Achevé à la date": dtdate(2009, 7, 31),
+        "Achevé à la date": datetime(2009, 7, 31, 0, 0, 0),
         "Numéro du document": Decimal("3"),
         "Référence": False,
         "Vérifié par": "Moi-même",
@@ -638,7 +658,7 @@ def test_user_defined_metadata_property_getter(meta):
     # Change a value
     meta.set_user_defined_metadata("Référence", False)
     expected = {
-        "Achevé à la date": dtdate(2009, 7, 31),
+        "Achevé à la date": datetime(2009, 7, 31, 0, 0, 0),
         "Numéro du document": Decimal("3"),
         "Référence": False,
         "Vérifié par": "Moi-même",
@@ -655,7 +675,7 @@ def test_set_user_defined_metadata_none(meta):
     meta.set_user_defined_metadata("Référence", None)
     meta.set_user_defined_metadata("Vérifié par", None)
     expected = {
-        "Achevé à la date": dtdate(2009, 7, 31),
+        "Achevé à la date": datetime(2009, 7, 31, 0, 0, 0),
         "Numéro du document": Decimal("3"),
         "Prop5": Decimal("2"),
     }
@@ -685,11 +705,12 @@ def test_set_user_defined_metadata_datetime(meta):
     expected = {
         "name": "when",
         "text": "2025-01-02T03:04:05",
-        "value": dtdate(2025, 1, 2),
+        "value": datetime(2025, 1, 2, 3, 4, 5),
         "value_type": "date",
     }
     meta.set_user_defined_metadata("when", dt)
-    assert meta.get_user_defined_metadata_of_name("when") == expected
+    result = meta.get_user_defined_metadata_of_name("when")
+    assert result == expected
 
 
 def test_set_user_defined_metadata_date(meta):
@@ -738,7 +759,7 @@ def test_get_user_defined_metadata_buggy_meta_name(meta):
             break
     metadata = meta.get_user_defined_metadata()
     expected = {
-        "Achevé à la date": dtdate(2009, 7, 31),
+        "Achevé à la date": datetime(2009, 7, 31, 0, 0, 0),
         "Numéro du document": Decimal("3"),
         "Vérifié par": "Moi-même",
         "": True,
@@ -764,7 +785,7 @@ def test_user_defined_metadata_list_buggy_meta_name(meta):
         {
             "meta:name": "Achevé à la date",
             "meta:value-type": "date",
-            "value": dtdate(2009, 7, 31),
+            "value": datetime(2009, 7, 31, 0, 0, 0),
         },
         {
             "meta:name": "Numéro du document",
@@ -788,7 +809,7 @@ def test_user_defined_metadata_list(meta):
         {
             "meta:name": "Achevé à la date",
             "meta:value-type": "date",
-            "value": dtdate(2009, 7, 31),
+            "value": datetime(2009, 7, 31, 0, 0, 0),
         },
         {
             "meta:name": "Numéro du document",
@@ -943,7 +964,7 @@ def test_meta_export_dict(meta):
             {
                 "meta:name": "Achevé à la date",
                 "meta:value-type": "date",
-                "value": dtdate(2009, 7, 31),
+                "value": datetime(2009, 7, 31, 0, 0, 0),
             },
             {
                 "meta:name": "Numéro du document",
@@ -1012,7 +1033,7 @@ def test_meta_export_dict_auto_reload_hyperlink_behaviour(meta):
             {
                 "meta:name": "Achevé à la date",
                 "meta:value-type": "date",
-                "value": dtdate(2009, 7, 31),
+                "value": datetime(2009, 7, 31, 0, 0, 0),
             },
             {
                 "meta:name": "Numéro du document",
@@ -1064,7 +1085,7 @@ def test_meta_export_dict_full(meta):
             {
                 "meta:name": "Achevé à la date",
                 "meta:value-type": "date",
-                "value": dtdate(2009, 7, 31),
+                "value": datetime(2009, 7, 31, 0, 0, 0),
             },
             {
                 "meta:name": "Numéro du document",
@@ -1110,7 +1131,7 @@ def test_meta_export_json(meta):
             {
                 "meta:name": "Achevé à la date",
                 "meta:value-type": "date",
-                "value": "2009-07-31"
+                "value": "2009-07-31T00:00:00"
             },
             {
                 "meta:name": "Numéro du document",
@@ -1170,7 +1191,7 @@ def test_meta_export_json_with_reload(meta):
             {
                 "meta:name": "Achevé à la date",
                 "meta:value-type": "date",
-                "value": "2009-07-31"
+                "value": "2009-07-31T00:00:00"
             },
             {
                 "meta:name": "Numéro du document",
@@ -1229,7 +1250,7 @@ def test_meta_export_json_full(meta):
             {
                 "meta:name": "Achevé à la date",
                 "meta:value-type": "date",
-                "value": "2009-07-31"
+                "value": "2009-07-31T00:00:00"
             },
             {
                 "meta:name": "Numéro du document",
@@ -1292,7 +1313,7 @@ def test_meta_from_dict_1(meta):
             {
                 "meta:name": "Achevé à la date",
                 "meta:value-type": "date",
-                "value": dtdate(2009, 7, 31),
+                "value": datetime(2009, 7, 31, 0, 0, 0),
             },
             {
                 "meta:name": "Numéro du document",
@@ -1403,7 +1424,7 @@ def test_meta_from_dict_3(meta):
             {
                 "meta:name": "Achevé à la date",
                 "meta:value-type": "date",
-                "value": dtdate(2009, 7, 31),
+                "value": datetime(2009, 7, 31, 0, 0, 0),
             },
             {
                 "meta:name": "New property",

@@ -134,8 +134,9 @@ class MetaUserDefined(Element):
         if value_type == "boolean":
             return Boolean.decode(text)
         if value_type == "date":
+            # ODF date can be either datetime or date
             if "T" in text:
-                return DateTime.decode(text).date()
+                return DateTime.decode(text)
             else:
                 return Date.decode(text)
         if value_type == "float":

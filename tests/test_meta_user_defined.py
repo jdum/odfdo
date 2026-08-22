@@ -86,7 +86,7 @@ def test_meta_user_defined_create_date():
 
 
 def test_meta_user_defined_create_date_datetime():
-    dt = datetime(2025, 1, 2)
+    dt = dtdate(2025, 1, 2)
     data = MetaUserDefined(name="key", value_type="date", value=dt)
     assert data.value == dtdate(2025, 1, 2)
 

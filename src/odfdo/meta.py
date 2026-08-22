@@ -25,13 +25,13 @@
 from __future__ import annotations
 
 import json
+from datetime import date, datetime, timedelta
 from datetime import date as dtdate
-from datetime import datetime, timedelta
 from decimal import Decimal
 from operator import itemgetter
 from typing import TYPE_CHECKING, Any, cast
 
-from .datatype import Date, DateTime, Duration
+from .datatype import Date, DateTime, Duration, decode_heuristic
 from .element import Element
 from .meta_auto_reload import MetaAutoReload
 from .meta_hyperlink_behaviour import MetaHyperlinkBehaviour
@@ -1116,6 +1116,17 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             indent=4,
         )
 
+    def from_json(self, content: str) -> None:
+        """Set the metadata of the document from a JSON string.
+
+        The loaded metadata are merged with the existing metadata.
+
+        Args:
+            content: A JSON string of metadata.
+        """
+        data = json.loads(content)
+        self.from_dict(data)
+
     def as_text(self, no_user_defined_msg: str = "") -> str:
         """Return meta information as text, with some formatting for
         printing.
@@ -1199,6 +1210,16 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             new[key] = imported_stats.get(key, current_stats.get(key, 0))
         return new
 
+    @staticmethod
+    def _forced_datetime(data: Any, default: datetime | None = None) -> datetime:
+        if isinstance(data, datetime):
+            return data
+        if isinstance(data, date):
+            return datetime(data.year, data.month, data.day)
+        if default:
+            return default
+        return datetime.now().replace(microsecond=0)
+
     def from_dict(self, data: dict[str, Any]) -> None:
         """Set the metadata of the document from a Python dict.
 
@@ -1233,23 +1254,22 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         self.statistic = new_stats
 
         key = "meta:creation-date"
-        creation_date = data.get(key, current.get(key))
-        if creation_date is None:
-            creation_date = datetime.now().replace(microsecond=0)
-        self.creation_date = creation_date
+        creation_date = decode_heuristic(data.get(key, current.get(key)))
+        creation_date = self._forced_datetime(creation_date)
+        self.creation_date = self._forced_datetime(creation_date)
 
         key = "dc:date"
-        dc_date = data.get(key, current.get(key))
-        if dc_date is None:
-            dc_date = creation_date
+        dc_date = decode_heuristic(data.get(key, current.get(key)))
+        dc_date = self._forced_datetime(dc_date, creation_date)
+
         if dc_date < creation_date:
             dc_date = creation_date
         max_editing = dc_date - creation_date
         self.date = dc_date
 
         key = "meta:editing-duration"
-        editing_duration = data.get(key, current.get(key))
-        if editing_duration is None:
+        editing_duration = decode_heuristic(data.get(key, current.get(key)))
+        if not isinstance(editing_duration, timedelta):
             editing_duration = timedelta(0)
         if editing_duration > max_editing:
             editing_duration = max_editing
@@ -1349,16 +1369,22 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             else:
                 data_list = self._user_defined_metadata_list()
                 current_dict = {
-                    d["meta:name"]: d for d in data_list if isinstance(d, dict) and "meta:name" in d
+                    d["meta:name"]: d
+                    for d in data_list
+                    if isinstance(d, dict) and "meta:name" in d
                 }
                 current_value = {
-                    d["meta:name"]: d for d in value if isinstance(d, dict) and "meta:name" in d
+                    d["meta:name"]: d
+                    for d in value
+                    if isinstance(d, dict) and "meta:name" in d
                 }
                 current_dict.update(current_value)
                 new_ud = {
-                    v["meta:name"]: v.get("value")
+                    v["meta:name"]: decode_heuristic(v.get("value"))
                     for v in current_dict.values()
-                    if isinstance(v, dict) and "meta:name" in v and v.get("value") is not None
+                    if isinstance(v, dict)
+                    and "meta:name" in v
+                    and v.get("value") is not None
                 }
                 self.user_defined_metadata = new_ud  # ty: ignore[invalid-assignment]
 
