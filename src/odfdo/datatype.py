@@ -103,17 +103,17 @@ class Date:
     """
 
     @staticmethod
-    def decode(data: str) -> datetime:
-        """Decode an ODF date string to a Python `datetime` object.
+    def decode(data: str) -> date:
+        """Decode an ODF date string to a Python `date` object.
 
         Args:
             data: The date string to decode, expected in ISO 8601 format
                 (YYYY-MM-DD).
 
         Returns:
-            datetime: A `datetime` object representing the decoded date.
+            date: A `date` object representing the decoded date.
         """
-        return datetime.fromisoformat(data)
+        return date.fromisoformat(data)
 
     @staticmethod
     def encode(value: datetime | date) -> str:
