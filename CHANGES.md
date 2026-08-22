@@ -1,5 +1,7 @@
 # Odfdo Release Notes
 
+## [3.24.6] - unreleased
+
 ## [3.24.5] - 2026-08-15
 
 Fixes: 
