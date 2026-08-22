@@ -44,7 +44,8 @@ def table_name_check(name: Any) -> str:
     """Validate a table name for use in ODF documents.
 
     Ensures the name is a non-empty string and does not contain forbidden
-    characters like single quotes, slashes, asterisks, question marks, or brackets.
+    characters like single quotes, slashes, asterisks, question marks, or
+    brackets.
 
     Args:
         name: The name to validate.
@@ -88,8 +89,8 @@ def _forbidden_in_named_range() -> set[str]:
 class NamedRange(Element):
     """Named range of cells in a table, "table:named-range".
 
-    Identifies inside the spreadsheet
-    a range of cells of a table by a name and the name of the table.
+    Identifies inside the spreadsheet a range of cells of a table by a name
+    and the name of the table.
 
     Name Ranges have the following attributes:
 
@@ -119,18 +120,20 @@ class NamedRange(Element):
         """Initialize a NamedRange element.
 
         A NamedRange element identifies a range of cells in a table by a name
-        and the table's name. The `name` must be alphanumeric with underscores,
-        and not formatted like a cell coordinate (e.g., "A1").
-        The `table_name` must be a valid table name (without single quotes or slashes).
+        and the table's name. The `name` must be alphanumeric with
+        underscores, and not formatted like a cell coordinate (e.g., "A1").
+        The `table_name` must be a valid table name (without single quotes or
+        slashes).
 
         Args:
             name: The name of the named range.
-            crange: The cell or area coordinate,
-                e.g., "A1", "A1:B2", (0, 0), or (0, 0, 1, 1).
+            crange: The cell or area coordinate, e.g., "A1", "A1:B2", (0, 0),
+                or (0, 0, 1, 1).
             table_name: The name of the table the range belongs to.
-            usage: The usage of the named range, one of
-                "print-range", "filter", "repeat-column", "repeat-row", or None.
-            **kwargs: Additional keyword arguments for the parent `Element` class.
+            usage: The usage of the named range, one of "print-range",
+                "filter", "repeat-column", "repeat-row", or None.
+            **kwargs: Additional keyword arguments for the parent `Element`
+                class.
         """
         super().__init__(**kwargs)
         self.usage: str | None = None
@@ -182,8 +185,8 @@ class NamedRange(Element):
     def _check_nr_name(name: str) -> str:
         """Validate a named range name.
 
-        Ensures the name is not empty, contains only alphanumeric characters and
-        underscores, and does not resemble a cell coordinate (e.g., "A1").
+        Ensures the name is not empty, contains only alphanumeric characters
+        and underscores, and does not resemble a cell coordinate (e.g., "A1").
 
         Args:
             name: The name to validate.
@@ -222,8 +225,8 @@ class NamedRange(Element):
     def name(self) -> str | None:
         """Get the name of the named range.
 
-        The name is mandatory, must be alphanumeric with underscores, and cannot
-        be formatted like a cell coordinate (e.g., "A1").
+        The name is mandatory, must be alphanumeric with underscores, and can
+        not be formatted like a cell coordinate (e.g., "A1").
 
         Returns:
             str | None: The name of the named range.
@@ -258,8 +261,10 @@ class NamedRange(Element):
             name: The name of the table.
 
         Raises:
-            TypeError: If `name` is not a string (propagated from `table_name_check`).
-            ValueError: If `name` is empty or contains forbidden characters (propagated from `table_name_check`).
+            TypeError: If `name` is not a string (propagated from
+                `table_name_check`).
+            ValueError: If `name` is empty or contains forbidden characters
+                (propagated from `table_name_check`).
         """
         self.table_name = table_name_check(name)
         self._update_attributes()
@@ -268,8 +273,8 @@ class NamedRange(Element):
         """Internal helper to set the cell range coordinates.
 
         Args:
-            coord: The cell or area coordinate,
-                e.g., "A1", "A1:B2", (0, 0), or (0, 0, 1, 1).
+            coord: The cell or area coordinate, e.g., "A1", "A1:B2", (0, 0),
+                or (0, 0, 1, 1).
 
         Raises:
             ValueError: If the coordinate format is incorrect.
@@ -299,7 +304,8 @@ class NamedRange(Element):
             crange: The cell or area coordinate.
 
         Raises:
-            ValueError: If the coordinate format is incorrect (propagated from `_set_range`).
+            ValueError: If the coordinate format is incorrect (propagated from
+            `_set_range`).
         """
         self._set_range(crange)
         self._update_attributes()
@@ -325,10 +331,12 @@ class NamedRange(Element):
         return f"${name}.${digit_to_alpha(self.start[0])}${self.start[1] + 1}"
 
     def _make_cell_range_address(self) -> str:
-        """Construct the `table:cell-range-address` string for the named range.
+        """Construct the `table:cell-range-address` string for the named
+        range.
 
         Returns:
-            str: The formatted cell range address (e.g., "$'Sheet Name'.A1:$'Sheet Name'.B2").
+            str: The formatted cell range address (e.g.,
+                "$'Sheet Name'.A1:$'Sheet Name'.B2").
         """
         # assuming we got table_name and range
         if " " in self.table_name:
@@ -365,7 +373,8 @@ class NamedRange(Element):
             list: A list of cell values, formatted according to the arguments.
 
         Raises:
-            ValueError: If the named range's table is not found or not inside a document.
+            ValueError: If the named range's table is not found or not inside
+                a document.
         """
         body = self.document_body
         if not body:
@@ -385,11 +394,12 @@ class NamedRange(Element):
             get_type: If True, returns a tuple of (value, type) for the cell.
 
         Returns:
-            Any | tuple[Any, str]: The cell's value, or a tuple of (value, type)
-                if `get_type` is True.
+            Any | tuple[Any, str]: The cell's value, or a tuple of (value,
+                type) if `get_type` is True.
 
         Raises:
-            ValueError: If the named range's table is not found or not inside a document.
+            ValueError: If the named range's table is not found or not inside
+                a document.
         """
         body = self.document_body
         if not body:
@@ -414,11 +424,13 @@ class NamedRange(Element):
         Args:
             values: A list of lists representing the new values for the cells.
             style: The style name to apply to the cells.
-            cell_type: The type to set for the cells (e.g., "string", "float").
+            cell_type: The type to set for the cells (e.g., "string",
+                "float").
             currency: The currency symbol to use for "currency" type cells.
 
         Raises:
-            ValueError: If the named range's table is not found or not inside a document.
+            ValueError: If the named range's table is not found or not inside
+                a document.
         """
         body = self.document_body
         if not body:
@@ -443,8 +455,8 @@ class NamedRange(Element):
     ) -> None:
         """Set the value of the first cell within the named range.
 
-        This is a shortcut to `Table.set_value()` method, applied to the
-        first cell defined by this named range.
+        This is a shortcut to `Table.set_value()` method, applied to the first
+        cell defined by this named range.
 
         Args:
             value: The value to set for the cell.
@@ -453,7 +465,8 @@ class NamedRange(Element):
             style: The style name to apply to the cell.
 
         Raises:
-            ValueError: If the named range's table is not found or not inside a document.
+            ValueError: If the named range's table is not found or not inside
+                a document.
         """
         body = self.document_body
         if not body:

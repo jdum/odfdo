@@ -60,12 +60,16 @@ def _post(text: str) -> str:
 
 
 def _bold_styled(text: str) -> str:
-    """Format a string as bold in Markdown, preserving leading/trailing spaces."""
+    """Format a string as bold in Markdown, preserving leading/trailing
+    spaces.
+    """
     return f"{_pre(text)}**{text.strip()}**{_post(text)}"
 
 
 def _italic_styled(text: str) -> str:
-    """Format a string as italic in Markdown, preserving leading/trailing spaces."""
+    """Format a string as italic in Markdown, preserving leading/trailing
+    spaces.
+    """
     return f"{_pre(text)}*{text.strip()}*{_post(text)}"
 
 
@@ -73,7 +77,8 @@ def _formatted_text(element: Element, context: dict[str, Any]) -> str:
     """Recursively extract and format text from an element and its children.
 
     This function processes the element's direct children and text nodes,
-    applying specific formatting rules based on their type and the provided context.
+    applying specific formatting rules based on their type and the provided
+    context.
 
     Args:
         element: The element from which to extract formatted text.
@@ -141,7 +146,8 @@ def _add_object_text_note(
     context: dict[str, Any],
     result: list[str],
 ) -> None:
-    """Dispatch function to add formatted text for a note (footnote or endnote).
+    """Dispatch function to add formatted text for a note (footnote or
+    endnote).
 
     Delegates to `_add_object_text_note_foot` or `_add_object_text_note_end`
     based on the note's class.
@@ -226,7 +232,8 @@ def _add_object_text_annotation(
 
     Args:
         obj: The annotation element to process.
-        context: The formatting context, including 'annotations' and 'rst_mode'.
+        context: The formatting context, including 'annotations' and
+            'rst_mode'.
         result: The list to append the formatted text to.
     """
     context["annotations"].append(obj.note_body)
@@ -308,7 +315,9 @@ def _add_object_text(
 
 
 class ParaFormattedTextMixin:
-    """Mixin class providing the `get_formatted_text` method for paragraph-like elements."""
+    """Mixin class providing the `get_formatted_text` method for
+    paragraph-like elements.
+    """
 
     def get_formatted_text(
         self,
