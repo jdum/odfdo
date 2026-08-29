@@ -224,6 +224,30 @@ def test_duration_decode_raises_2():
         Duration.decode(duration)
 
 
+def test_duration_decode_raises_3():
+    duration = False
+    with pytest.raises(TypeError):
+        Duration.decode(duration)
+
+
+def test_duration_decode_raises_4():
+    duration = "PT!!!02H00M42"
+    with pytest.raises(ValueError):
+        Duration.decode(duration)
+
+
+def test_duration_decode_raises_5():
+    duration = "PT"
+    with pytest.raises(ValueError):
+        Duration.decode(duration)
+
+
+def test_duration_decode_raises_6():
+    duration = "TP02H00M42"
+    with pytest.raises(ValueError):
+        Duration.decode(duration)
+
+
 def test_bool_encode():
     assert Boolean.encode(True) == "true"
     assert Boolean.encode(False) == "false"
