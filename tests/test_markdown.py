@@ -838,3 +838,24 @@ def test_md_table_text(document_tab):  # FAIL
     ).strip()
     print(repr(md.strip()))
     assert md.strip() == expected
+
+
+def test_md_legacy_content_ods(samples):
+    doc = Document(samples("legacy_content.ods"))
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    assert len(res) == 2
+
+    md1 = res[0]
+    md2 = res[1]
+
+    assert md1.filename == "legacy_content_Employees.md"
+    assert "Alice" in md1.content
+    assert "Gaël" in md1.content
+
+    assert md2.filename == "legacy_content_Figures.md"
+    assert "1" in md2.content
+    assert "True" in md2.content
+    assert "-2" in md2.content
+    assert "False" in md2.content
+    assert "3.14" in md2.content
