@@ -29,6 +29,11 @@ from decimal import Decimal
 # import for compatibility with previous version:
 from .utils.css3_colormap import CSS3_COLORMAP  # noqa: F401
 
+"""Safety limits for Markdown export of tables. Note that LibrOffice limmits
+are higher, about 2**20 rows and 2**14 columns."""
+MAX_MD_LINES: int = 200_000
+MAX_MD_COLUMNS: int = 8048
+
 CellValue = str | bytes | bool | int | float | Decimal | date | datetime | timedelta
 """Union of Python types accepted as a cell value."""
 

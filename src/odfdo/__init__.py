@@ -124,6 +124,8 @@ __all__ = [  # noqa: RUF022
     "ListHeader",
     "ListItem",
     "ListMixin",
+    "MAX_MD_COLUMNS",
+    "MAX_MD_LINES",
     "Manifest",
     "Meta",
     "MetaAutoReload",
@@ -271,6 +273,7 @@ from .config_elements import (
     ConfigItemMapNamed,
     ConfigItemSet,
 )
+from .const import MAX_MD_COLUMNS, MAX_MD_LINES
 from .container import Container
 from .content import Content
 from .document import Document, TableMarkdown
