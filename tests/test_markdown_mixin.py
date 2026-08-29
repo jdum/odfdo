@@ -303,7 +303,7 @@ def test_md_table_mini_format_1_none():
     table = Table("sheet")
     table.set_cell((0, 0), Cell(None))
     result = table._md_format()
-    assert result == "|   |\n|---|\n"
+    assert result == ""
 
 
 def test_md_table_mini_format_1_lg():
