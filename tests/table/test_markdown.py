@@ -57,3 +57,13 @@ def test_export_to_markdown_from_doc(samples):
     md = table.to_markdown()
     assert "Some bar" in md
     assert "Log or" in md
+
+
+def test_export_to_markdown_not_initialized():
+    from odfdo.mixin_md import MD_GLOBAL
+
+    table = Table("Uninit")
+    table.set_value("A1", "val")
+    MD_GLOBAL.pop("document", None)
+    md = table.to_markdown()
+    assert "val" in md

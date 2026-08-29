@@ -366,6 +366,18 @@ def test_get_row_sub_elements():
     assert len(subs) >= 1
 
 
+def test_get_row_sub_elements_short_row():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    table.set_value("E1", "v5")
+    row = Row()
+    row.set_value(0, "short")
+    table.append_row(row)
+    subs = table.get_row_sub_elements(1)
+    assert len(subs) == 5
+    assert subs[1] == []
+
+
 def test_set_row_values():
     table = Table("Test")
     table.set_row_values(0, ["a", "b", "c"])
