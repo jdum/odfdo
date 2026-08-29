@@ -35,7 +35,7 @@ PROG = "odfdo-markdown"
 
 def configure_parser() -> ArgumentParser:
     description = (
-        "Convert an ODF text document to Markdown format and print to standard output."
+        "Convert an ODF text or spreadsheet document to Markdown format and print to standard output."
     )
     epilog = (
         "This tool is useful for extracting the textual content of an ODF "
