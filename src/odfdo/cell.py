@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import builtins
 import contextlib
+import math
 from datetime import date as _date
 from datetime import datetime as _datetime
 from datetime import timedelta
@@ -92,8 +93,8 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
             style: The name of the style to apply to the cell.
         """
         super().__init__(**kwargs)
-        self.x: int | None = None
-        self.y: int | None = None
+        self.x: _int | None = None
+        self.y: _int | None = None
         if self._do_init:
             self.set_value(
                 value,
@@ -154,15 +155,31 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
                 None]: The value of the cell in its appropriate Python type.
         """
         value_type = self.get_attribute_string("office:value-type")
+        if value_type in {"float", "percentage", "currency"} or (
+            value_type is None and self.get_attribute("office:value") is not None
+        ):
+            val_str = self.get_attribute_string("office:value")
+            if val_str is None:
+                return None
+            s_upper = val_str.strip().upper()
+            if s_upper == "NAN":
+                return _float("nan")
+            if s_upper in {"INF", "+INF", "INFINITY", "+INFINITY"}:
+                return _float("inf")
+            if s_upper in {"-INF", "-INFINITY"}:
+                return _float("-inf")
+            with contextlib.suppress(Exception):
+                value_decimal = Decimal(val_str)
+                if _int(value_decimal) == value_decimal:
+                    return _int(value_decimal)
+                return value_decimal
+            try:
+                return _float(val_str)
+            except Exception:
+                return None
         match value_type:
             case "boolean":
                 return self.bool
-            case "float" | "percentage" | "currency":
-                value_decimal = Decimal(str(self.get_attribute_string("office:value")))
-                # Return 3 instead of 3.0 if possible
-                if int(value_decimal) == value_decimal:
-                    return int(value_decimal)
-                return value_decimal
             case "date":
                 value_str = str(self.get_attribute_string("office:date-value"))
                 if "T" in value_str:
@@ -191,13 +208,13 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
                 self.clear_attrinutes()
             case str() | bytes():
                 self.string = value
-            case bool():
+            case _bool():
                 self.bool = value
-            case float():
+            case _float():
                 self.float = value
             case Decimal():
                 self.decimal = value
-            case int():
+            case _int():
                 self.int = value
             case timedelta():
                 self.duration = value
@@ -232,20 +249,46 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
             without affecting others, use "Table.set_value()" or
             "Row.set_value()".
         """
-        for tag in ("office:value", "office:string-value"):
+        for tag in {"office:value", "office:string-value"}:
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
+                s_upper = read_attr.strip().upper()
+                if s_upper == "NAN":
+                    return _float("nan")
+                if s_upper in {"INF", "+INF", "INFINITY", "+INFINITY"}:
+                    return _float("inf")
+                if s_upper in {"-INF", "-INFINITY"}:
+                    return _float("-inf")
                 with contextlib.suppress(ValueError, TypeError):
                     return _float(read_attr)
         return _float(self._bool_string)
 
     @float.setter
     def float(self, value: str | _float | _int | Decimal | None) -> None:
+        if isinstance(value, str):
+            s_upper = value.strip().upper()
+            if s_upper == "NAN":
+                self._set_float_value_str("NaN")
+                return
+            if s_upper in {"INF", "+INF", "INFINITY", "+INFINITY"}:
+                self._set_float_value_str("INF")
+                return
+            if s_upper in {"-INF", "-INFINITY"}:
+                self._set_float_value_str("-INF")
+                return
+
         try:
             value_float = _float(value)  # ty: ignore[invalid-argument-type]
         except (ValueError, TypeError, ConversionSyntax):
             value_float = 0.0
-        value_str = str(value_float)
+
+        if math.isnan(value_float):
+            value_str = "NaN"
+        elif math.isinf(value_float):
+            value_str = "INF" if value_float > 0 else "-INF"
+        else:
+            value_str = str(value_float)
+
         self._set_float_value_str(value_str)
 
     def _set_float_value_str(self, value_str: str) -> None:
@@ -275,21 +318,56 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
             without affecting others, use "Table.set_value()" or
             "Row.set_value()".
         """
-        for tag in ("office:value", "office:string-value"):
+        for tag in {"office:value", "office:string-value"}:
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
+                s_upper = read_attr.strip().upper()
+                if s_upper == "NAN":
+                    return Decimal("nan")
+                if s_upper in {"INF", "+INF", "INFINITY", "+INFINITY"}:
+                    return Decimal("inf")
+                if s_upper in {"-INF", "-INFINITY"}:
+                    return Decimal("-inf")
                 with contextlib.suppress(ValueError, TypeError, ConversionSyntax):
                     return Decimal(read_attr)
         return Decimal(self._bool_string)
 
     @decimal.setter
     def decimal(self, value: str | _float | _int | Decimal | None) -> None:
+        if isinstance(value, str):
+            s_upper = value.strip().upper()
+            if s_upper == "NAN":
+                self._set_float_value_str("NaN")
+                return
+            if s_upper in {"INF", "+INF", "INFINITY", "+INFINITY"}:
+                self._set_float_value_str("INF")
+                return
+            if s_upper in {"-INF", "-INFINITY"}:
+                self._set_float_value_str("-INF")
+                return
+
+        if isinstance(value, float):
+            if math.isnan(value):
+                self._set_float_value_str("NaN")
+                return
+            if math.isinf(value):
+                self._set_float_value_str("INF" if value > 0 else "-INF")
+                return
+
+        if isinstance(value, Decimal):
+            if value.is_nan():
+                self._set_float_value_str("NaN")
+                return
+            if value.is_infinite():
+                self._set_float_value_str("INF" if value > 0 else "-INF")
+                return
+
         try:
-            value_decimal = Decimal(value)  # ty: ignore[invalid-argument-type]
+            value_decimal = Decimal(str(value))
         except (ValueError, TypeError, ConversionSyntax, InvalidOperation):
-            value_decimal = Decimal("0.0")
-        value_str = str(value_decimal)
-        self._set_float_value_str(value_str)
+            value_decimal = Decimal("0")
+
+        self._set_float_value_str(str(value_decimal))
 
     @property
     def int(self) -> _int:
@@ -307,11 +385,11 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
             without affecting others, use "Table.set_value()" or
             "Row.set_value()".
         """
-        for tag in ("office:value", "office:string-value"):
+        for tag in {"office:value", "office:string-value"}:
             read_attr = self.get_attribute(tag)
             if isinstance(read_attr, str):
                 with contextlib.suppress(ValueError, TypeError):
-                    return int(float(read_attr))
+                    return _int(_float(read_attr))
         return _int(self._bool_string)
 
     @int.setter
@@ -395,7 +473,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
         if isinstance(value, (_bool, str, bytes)):
             bvalue = Boolean.encode(value)
         else:
-            bvalue = Boolean.encode(bool(value))
+            bvalue = Boolean.encode(_bool(value))
         if self.type != "boolean":
             # remove attributes that can exist from a previous different cell
             # type.
