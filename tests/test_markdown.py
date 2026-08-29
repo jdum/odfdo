@@ -23,8 +23,11 @@ from textwrap import dedent
 
 import pytest
 
+from odfdo.cell import Cell
 from odfdo.document import Document
 from odfdo.paragraph import Paragraph
+from odfdo.row import Row
+from odfdo.table import Table
 
 EXPECT_MD_SAMPLE = dedent("""\
 # Document Title
@@ -859,3 +862,189 @@ def test_md_legacy_content_ods(samples):
     assert "-2" in md2.content
     assert "False" in md2.content
     assert "3.14" in md2.content
+
+
+def _concatenation_md(md_list: list) -> str:
+    content = []
+    for item in md_list:
+        content.append(f"# {item.name}\n")
+        content.append(item.content)
+    return "\n".join(content)
+
+
+def test_md_unstriped_ods(samples):
+    doc = Document(samples("unstriped.ods"))
+    expected = dedent("""\
+    # unstriped#Sheet1
+
+    | 1 |   |   |   |   |   |
+    |---|---|---|---|---|---|
+    |   | 2 |   |   |   |   |
+    |   |   | 3 |   |   |   |
+    |   |   |   | 4 |   |   |
+    |   |   |   |   |   |   |
+    |   |   |   |   |   |   |
+
+    # unstriped#Sheet2
+
+    |   |   |   |   |   |   |
+    |---|---|---|---|---|---|
+    |   | 2 |   |   |   |   |
+    |   |   | 3 |   |   |   |
+    |   |   |   | 4 |   |   |
+    |   |   |   |   | 5 | 6 |
+    """).strip()
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    assert _concatenation_md(res).strip() == expected
+
+
+def test_md_test_col_cell_ods(samples):
+    doc = Document(samples("test_col_cell.ods"))
+    expected = dedent("""\
+    # test_col_cell#Sheet1
+
+    |   |   |   |   |   |   |   |
+    |---|---|---|---|---|---|---|
+    | r |   |   |   |   |   |   |
+    | s |   |   |   |   |   |   |
+    |   |   |   |   |   |   |   |
+    |   |   |   |   |   |   |   |
+    |   |   |   |   |   |   |   |
+    |   |   |   |   |   |   |   |
+    | a | b | c | d |   |   |   |
+    |   |   |   |   |   |   |   |
+    | e | f |   |   |   |   |   |
+    |   |   |   |   |   |   |   |
+    |   |   |   |   |   |   |   |
+    |   |   |   |   |   |   |   |
+    |   |   |   |   |   | x |   |
+    |   |   |   |   |   |   |   |
+    |   |   |   |   |   |   |   |
+    """).strip()
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    assert _concatenation_md(res).strip() == expected
+
+
+def test_md_styled_table_ods(samples):
+    doc = Document(samples("styled_table.ods"))
+    expected = dedent("""\
+    # styled_table#Feuille1
+
+    | 1    | 2    | 3 | 4 |   |
+    |------|------|---|---|---|
+    | 1    |      | 1 | 1 |   |
+    | foo1 |      |   | 3 |   |
+    | 1    | 2    | 3 | 4 |   |
+    | 2    | foo2 | 4 | 5 |   |
+    | 3    | 4    | 5 | 6 |   |
+    | 4    | 5    | 6 | 7 |   |
+    |      |      |   |   |   |
+    |      |      |   |   |   |
+    |      |      |   |   |   |
+
+    # styled_table#Feuille2
+
+    | val2 |
+    |------|
+
+    # styled_table#Feuille_3_3
+
+    | val3 |
+    |------|
+    """).strip()
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    assert _concatenation_md(res).strip() == expected
+
+
+def test_md_test_flat_ods(samples):
+    doc = Document(samples("test_flat.ods"))
+    expected = dedent("""\
+    # test_flat#Sheet1
+
+    | test |     |
+    |------|-----|
+    |      | 123 |
+
+    # test_flat#Sheet2
+
+    | abc |
+    |-----|
+    | 123 |
+    |     |
+    """).strip()
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    assert _concatenation_md(res).strip() == expected
+
+
+def test_md_spanned_cells_ods(samples):
+    doc = Document(samples("spanned_cells.ods"))
+    expected = dedent("""\
+    # spanned_cells#Feuille1
+
+    |   |     |   |   |      |   |       |   |   |   |
+    |---|-----|---|---|------|---|-------|---|---|---|
+    |   |     |   |   |      |   |       |   |   |   |
+    |   | foo |   |   |      |   | horiz |   |   |   |
+    |   |     |   |   | vert |   |       |   |   |   |
+    |   |     |   |   |      |   |       |   |   |   |
+    |   |     |   |   |      |   |       |   |   |   |
+    """).strip()
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    assert _concatenation_md(res).strip() == expected
+
+
+def test_max_md_lines(monkeypatch):
+    import odfdo.mixin_md
+
+    monkeypatch.setattr(odfdo.mixin_md, "MAX_MD_LINES", 3)
+    table = Table("sheet", width=2, height=10)
+    for i in range(10):
+        table.set_value((0, i), f"val_{i}")
+    with pytest.raises(RuntimeError, match="exceeds limit 3"):
+        table.to_markdown()
+
+
+def test_max_md_columns(monkeypatch):
+    import odfdo.mixin_md
+
+    monkeypatch.setattr(odfdo.mixin_md, "MAX_MD_COLUMNS", 5)
+    table = Table("sheet", width=10, height=2)
+    for i in range(10):
+        table.set_value((i, 0), f"val_{i}")
+    with pytest.raises(RuntimeError, match="exceeds limit 5"):
+        table.to_markdown()
+
+
+def test_row_has_values():
+    row1 = Row()
+    row1.set_cell(0, Cell("hello"))
+    assert row1.has_values() is True
+
+
+def test_row_has_values_2():
+    row2 = Row()
+    cell_styled = Cell(None)
+    cell_styled.style = "ce1"
+    row2.set_cell(0, cell_styled)
+    assert row2.has_values() is False
+
+
+def test_row_has_values_3():
+    row3 = Row()
+    cell_formula = Cell(None)
+    cell_formula.formula = "of:=SUM(A1:A2)"
+    row3.set_cell(0, cell_formula)
+    assert row3.has_values() is False
+
+
+def test_row_has_values_4():
+    row4 = Row()
+    cell_p = Cell()
+    cell_p.append(Paragraph("paragraph text"))
+    row4.set_cell(0, cell_p)
+    assert row4.has_values() is True
