@@ -80,7 +80,8 @@ class Styles(XmlPart):
             automatic: Whether to only search in automatic styles.
 
         Returns:
-            list[Element]: A list of XML elements that are contexts for styles.
+            list[Element]: A list of XML elements that are contexts for
+                styles.
         """
         if automatic:
             elems = [self.get_element("//office:automatic-styles")]
@@ -142,7 +143,8 @@ class Styles(XmlPart):
         """Set the default language and country in styles.
 
         Args:
-            value: The language/country code in RFC3066 format (e.g., "en-US").
+            value: The language/country code in RFC3066 format (e.g.,
+                "en-US").
 
         Raises:
             TypeError: If the language code format is invalid.
@@ -158,24 +160,31 @@ class Styles(XmlPart):
             lang = lc[0]
             country = ""
         styles = [
-            s for s in self.default_styles if s.family in {"graphic", "paragraph"}
+            s
+            for s in self.default_styles
+            if s.family in {"graphic", "paragraph", "table-cell"}
         ]
         for style in styles:
             style.set_properties(area="text", language=lang, country=country)
 
     @property
     def default_language(self) -> str:
-        """Get or set the default language from styles, in "en-US" format."""
-        styles = [s for s in self.default_styles if s.family == "paragraph"]
-        if not styles:
-            return ""
-        style = styles[0]
-        props = style.get_properties(area="text") or {}
-        lang = str(props.get("fo:language", ""))
-        country = str(props.get("fo:country", ""))
-        if lang and country:
-            return f"{lang}-{country}"
-        return lang or country
+        """Get or set the default language from styles, in RFC3066 format
+        (e.g., "en-US")."""
+        styles = [
+            s
+            for s in self.default_styles
+            if s.family in {"paragraph", "graphic", "table-cell"}
+        ]
+        for style in styles:
+            props = style.get_properties(area="text") or {}
+            lang = str(props.get("fo:language", ""))
+            country = str(props.get("fo:country", ""))
+            if lang and country:
+                return f"{lang}-{country}"
+            if lang or country:
+                return lang or country
+        return ""
 
     @default_language.setter
     def default_language(self, value: str) -> None:
@@ -189,10 +198,10 @@ class Styles(XmlPart):
     ) -> StyleBase | DrawFillImage | DrawMarker | None:
         """Return the style uniquely identified by its family and name.
 
-        If the `name_or_element` argument is already a Style object, it will be
-        returned. If `name_or_element` is None, the default style for the given
-        family is fetched. If the name provided is a display name, use the
-        `display_name` argument instead.
+        If the `name_or_element` argument is already a Style object, it will
+        be returned. If `name_or_element` is None, the default style for the
+        given family is fetched. If the name provided is a display name, use
+        the `display_name` argument instead.
 
         Args:
             family: The style family (e.g., 'paragraph', 'text', 'graphic').
@@ -222,7 +231,8 @@ class Styles(XmlPart):
         """Get or set the "office:master-styles" element.
 
         Returns:
-            OfficeMasterStyles | None: The "office:master-styles" element, or None if not found.
+            OfficeMasterStyles | None: The "office:master-styles" element, or
+                None if not found.
         """
         return cast(
             OfficeMasterStyles | None, self.get_element("//office:master-styles")
@@ -263,8 +273,8 @@ class Styles(XmlPart):
             position: The position (index) of the master page. Defaults to 0.
 
         Returns:
-            StyleMasterPage | None: The StyleMasterPage element at the given position,
-            or None if not found.
+            StyleMasterPage | None: The StyleMasterPage element at the given
+                position, or None if not found.
         """
         results = self.master_pages
         try:
@@ -277,8 +287,8 @@ class Styles(XmlPart):
         """Get or set the "office:automatic-styles" element.
 
         Returns:
-            OfficeAutomaticStyles | None: The "office:automatic-styles" element,
-            or None if not found.
+            OfficeAutomaticStyles | None: The "office:automatic-styles"
+                element, or None if not found.
         """
         return cast(
             OfficeAutomaticStyles | None,
@@ -292,8 +302,8 @@ class Styles(XmlPart):
         """Set the "office:automatic-styles" element.
 
         Args:
-            office_automatic_styles: The "office:automatic-styles"
-                element to set.
+            office_automatic_styles: The "office:automatic-styles" element
+                to set.
         """
         current = self.office_automatic_styles
         if isinstance(current, OfficeAutomaticStyles):
