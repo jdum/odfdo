@@ -559,6 +559,7 @@ class MDTable(MDStyle):
             ]
 
         table = self.clone
+        table.optimize_height()
         table.optimize_width()
         if not table.height:
             return ""

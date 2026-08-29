@@ -996,18 +996,25 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         self._table_cache.clear_col_indexes()
         self._compute_table_cache()
 
+    def optimize_height(self) -> None:
+        """Remove bottom empty rows in-place.
+
+        This method keeps the repeated styles of empty cells but minimizes the
+        table height to fit the actual content.
+        """
+        self._optimize_height_trim_rows()
+
     def optimize_width(self) -> None:
-        """Remove empty rows and right-side empty cells in-place.
+        """Remove right-side empty cells in-place.
 
         This method keeps the repeated styles of empty cells but minimizes the
         row width to fit the actual content.
         """
-        self._optimize_width_trim_rows()
         width = self._optimize_width_length()
         self._optimize_width_rstrip_rows(width)
         self._optimize_width_adapt_columns(width)
 
-    def _optimize_width_trim_rows(self) -> None:
+    def _optimize_height_trim_rows(self) -> None:
         for row in reversed(self._get_rows()):
             if not row.has_values():
                 if row.repeated:
