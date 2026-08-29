@@ -932,17 +932,17 @@ def test_md_styled_table_ods(samples):
     expected = dedent("""\
     # styled_table#Feuille1
 
-    | 1    | 2    | 3 | 4 |   |
-    |------|------|---|---|---|
-    | 1    |      | 1 | 1 |   |
-    | foo1 |      |   | 3 |   |
-    | 1    | 2    | 3 | 4 |   |
-    | 2    | foo2 | 4 | 5 |   |
-    | 3    | 4    | 5 | 6 |   |
-    | 4    | 5    | 6 | 7 |   |
-    |      |      |   |   |   |
-    |      |      |   |   |   |
-    |      |      |   |   |   |
+    | 1     | 2    | 3     | 4     |   |
+    |-------|------|-------|-------|---|
+    | **1** |      | **1** | **1** |   |
+    | foo1  |      |       | 3     |   |
+    | 1     | 2    | 3     | 4     |   |
+    | 2     | foo2 | 4     | 5     |   |
+    | 3     | 4    | 5     | 6     |   |
+    | 4     | 5    | 6     | 7     |   |
+    |       |      |       |       |   |
+    |       |      |       |       |   |
+    |       |      |       |       |   |
 
     # styled_table#Feuille2
 
@@ -964,16 +964,16 @@ def test_md_test_flat_ods(samples):
     expected = dedent("""\
     # test_flat#Sheet1
 
-    | test |     |
-    |------|-----|
-    |      | 123 |
+    | test |         |
+    |------|---------|
+    |      | **123** |
 
     # test_flat#Sheet2
 
-    | abc |
-    |-----|
-    | 123 |
-    |     |
+    | abc     |
+    |---------|
+    | **123** |
+    |         |
     """).strip()
     res = doc.to_markdown()
     assert isinstance(res, list)
@@ -1088,3 +1088,96 @@ def test_markdown_export_tables_duplicate_names():
     assert isinstance(results, list)
     names = [r.name for r in results]
     assert names == ["spreadsheet#Sheet", "spreadsheet#Sheet_2", "spreadsheet#Sheet_3"]
+
+
+def test_export_to_markdown_ods_cell_style(samples):
+    doc = Document(samples("md_style_bold_cell.ods"))
+    expected = dedent("""\
+    # md_style_bold_cell#Feuille1
+
+    | a1 |        |          |
+    |----|--------|----------|
+    |    | **b2** |          |
+    |    |        | ***b3*** |
+    """).strip()
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    assert _concatenation_md(res).strip() == expected
+
+
+def test_export_to_markdown_odt_cell_style(samples):
+    doc = Document(samples("md_doc_table.odt"))
+    expected = dedent("""\
+    **test1**
+
+    _test2_
+
+    table:
+
+    | a1 |        |          |
+    |----|--------|----------|
+    |    | **b2** |          |
+    |    |        | ***b3*** |
+    """).strip()
+    res = doc.to_markdown()
+    assert res.strip() == expected
+
+
+def test_export_to_markdown_infinite_style(samples):
+    doc = Document(samples("md_infinity.ods"))
+    expected = dedent("""\
+    # md_infinity#Feuille1
+
+    | **A1** | **B1** | **C1**   | **D1** | **E1** | **F1** |   |
+    |--------|--------|----------|--------|--------|--------|---|
+    | A2     |        |          |        |        |        |   |
+    | A3     | B3     |          |        |        |        |   |
+    | A4     |        | ***C4*** | **D4** |        |        |   |
+    | A5     |        |          |        |        |        |   |
+    |        |        |          |        |        |        |   |
+    |        |        |          |        |        |        |   |
+    """).strip()
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    assert _concatenation_md(res).strip() == expected
+
+
+def test_export_to_markdown_infinite_style_repeat_col(samples):
+    doc = Document(samples("md_infinity_repeat_col.ods"))
+    expected = dedent("""\
+    # md_infinity_repeat_col#Feuille1
+
+    | **A1** | **B1** | **C1**   | **C1**   | **C1**   | **D1** | **E1** | **F1** |   |
+    |--------|--------|----------|----------|----------|--------|--------|--------|---|
+    | A2     |        |          |          |          |        |        |        |   |
+    | A3     | B3     |          |          |          |        |        |        |   |
+    | A4     |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
+    | A5     |        |          |          |          |        |        |        |   |
+    |        |        |          |          |          |        |        |        |   |
+    |        |        |          |          |          |        |        |        |   |
+    """).strip()
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    assert _concatenation_md(res).strip() == expected
+
+
+def test_export_to_markdown_infinite_style_repeat_row(samples):
+    doc = Document(samples("md_infinity_repeat_row.ods"))
+    expected = dedent("""\
+    # md_infinity_repeat_row#Feuille1
+
+    | **A1** | **B1** | **C1**   | **C1**   | **C1**   | **D1** | **E1** | **F1** |   |
+    |--------|--------|----------|----------|----------|--------|--------|--------|---|
+    | A2     |        |          |          |          |        |        |        |   |
+    | A3     | B3     |          |          |          |        |        |        |   |
+    | A4     |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
+    | A4     |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
+    | A4     |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
+    | A4     |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
+    | A4     |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
+    | A5     |        |          |          |          |        |        |        |   |
+    |        |        |          |          |          |        |        |        |   |
+    """).strip()
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    assert _concatenation_md(res).strip() == expected
