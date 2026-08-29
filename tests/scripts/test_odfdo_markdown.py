@@ -84,13 +84,13 @@ def test_to_md_2_no_file():
         assert result.value.code >= 1
 
 
-def test_to_md_2_md_osq_bad(samples):
+def test_to_md_2_ods(capsys, samples):
     source = samples("simple_table.ods")
     params = parse_cli_args([str(source)])
 
-    with pytest.raises(NotImplementedError) as result:
-        main_to_md(params)
-        assert result.value.code >= 1
+    main_to_md(params)
+    captured = capsys.readouterr()
+    assert "# simple_table_Example1.md" in captured.out
 
 
 def test_to_md_2_example(capsys, samples):

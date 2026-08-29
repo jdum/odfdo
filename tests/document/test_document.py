@@ -25,6 +25,7 @@
 from decimal import Decimal
 from importlib import resources as rso
 from io import BytesIO
+from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
@@ -849,9 +850,15 @@ def test_document_to_markdown():
     res = doc.to_markdown()
     assert "test markdown" in res
 
-    doc2 = Document("spreadsheet")
-    with pytest.raises(NotImplementedError):
-        doc2.to_markdown()
+
+def test_document_ods_to_markdown():
+    doc = Document("spreadsheet")
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    assert len(res) >= 1
+    item = res[0]
+    assert item.filename.startswith("spreadsheet_")
+    assert item.filename.endswith(".md")
 
 
 def test_document_add_file(tmp_path):
@@ -1060,9 +1067,10 @@ def test_settings_empty_or_invalid():
 
 
 def test_to_markdown_invalid_type():
-    doc = Document("spreadsheet")
+    doc = Document("presentation")
     with pytest.raises(
-        NotImplementedError, match="Type of document 'spreadsheet' not supported yet"
+        NotImplementedError,
+        match="Type of document 'presentation' not supported yet",
     ):
         doc.to_markdown()
 
@@ -1728,3 +1736,31 @@ def test_save_not_pretty_with_none_xmlpart(samples, tmp_path):
     actual_folder = folder_path.with_suffix(".folder")
     assert actual_folder.exists()
     assert (actual_folder / "content.xml").exists()
+
+
+def test_to_markdown_spreadsheet_details():
+    doc = Document("spreadsheet")
+    doc.path = Path("sales_report.ods")
+    t1 = Table("Sheet 1", width=2, height=2)
+    t1.set_value("A1", "Header A")
+    t1.set_value("B1", "Header B")
+    t2 = Table("Sheet 1", width=2, height=2)
+    t2.set_value("A1", "Value 1")
+
+    doc.body.clear()
+    doc.body.append(t1)
+    doc.body.append(t2)
+
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    assert len(res) == 2
+
+    print(res)
+
+    md1 = res[0]
+    md2 = res[1]
+    assert md1.filename == "sales_report_Sheet_1.md"
+    assert "Header A" in md1.content
+
+    assert md2.filename == "sales_report_Sheet_1_2.md"
+    assert "Value 1" in md2.content

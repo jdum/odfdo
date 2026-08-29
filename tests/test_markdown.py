@@ -255,8 +255,8 @@ def document_tab(samples) -> Iterable[Document]:
 
 def test_md_doc_ods():
     doc = Document("ods")
-    with pytest.raises(NotImplementedError):
-        _md = doc.to_markdown()
+    res = doc.to_markdown()
+    assert isinstance(res, list)
 
 
 def test_md_doc_drawing():
