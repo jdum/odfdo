@@ -154,8 +154,64 @@ def test_language_no_default_style(styles):
     assert styles.default_language == ""
 
 
+def test_language_default_style_without_lang_props(styles):
+    styles = styles.clone
+    defaults = styles.get_elements("//style:default-style")
+    for elem in defaults:
+        text_props = elem.get_element("//style:text-properties")
+        if text_props:
+            text_props.delete()
+    assert styles.default_language == ""
+
+
+def test_language_only_lang(styles):
+    styles = styles.clone
+    styles.default_language = "en"
+    assert styles.default_language == "en"
+
+
 def test_set_office_master_styles_no_exist_master_pages(styles):
     current = styles.office_master_styles
     current.delete()
     mp = styles.master_pages
     assert mp == []
+
+
+def test_get_style_contexts_automatic(styles):
+    contexts = styles._get_style_contexts("", automatic=True)
+    assert len(contexts) == 1
+    assert contexts[0].tag == "office:automatic-styles"
+
+
+def test_office_master_styles_setter(styles):
+    styles = styles.clone
+    old_master = styles.office_master_styles
+    assert old_master is not None
+    styles.office_master_styles = old_master.clone
+    assert styles.office_master_styles is not None
+
+
+def test_office_master_styles_setter_from_none(styles):
+    styles = styles.clone
+    current = styles.office_master_styles
+    current.delete()
+    assert styles.office_master_styles is None
+    styles.office_master_styles = current.clone
+    assert styles.office_master_styles is not None
+
+
+def test_office_automatic_styles_getter_and_setter(styles):
+    styles = styles.clone
+    auto_styles = styles.office_automatic_styles
+    assert auto_styles is not None
+    styles.office_automatic_styles = auto_styles.clone
+    assert styles.office_automatic_styles is not None
+
+
+def test_office_automatic_styles_setter_from_none(styles):
+    styles = styles.clone
+    auto_styles = styles.office_automatic_styles
+    auto_styles.delete()
+    assert styles.office_automatic_styles is None
+    styles.office_automatic_styles = auto_styles.clone
+    assert styles.office_automatic_styles is not None
