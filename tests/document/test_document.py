@@ -857,8 +857,7 @@ def test_document_ods_to_markdown():
     assert isinstance(res, list)
     assert len(res) >= 1
     item = res[0]
-    assert item.filename.startswith("spreadsheet_")
-    assert item.filename.endswith(".md")
+    assert item.name.startswith("spreadsheet#")
 
 
 def test_document_add_file(tmp_path):
@@ -1759,8 +1758,8 @@ def test_to_markdown_spreadsheet_details():
 
     md1 = res[0]
     md2 = res[1]
-    assert md1.filename == "sales_report_Sheet_1.md"
+    assert md1.name == "sales_report#Sheet_1"
     assert "Header A" in md1.content
 
-    assert md2.filename == "sales_report_Sheet_1_2.md"
+    assert md2.name == "sales_report#Sheet_1_2"
     assert "Value 1" in md2.content

@@ -90,7 +90,7 @@ def test_to_md_2_ods(capsys, samples):
 
     main_to_md(params)
     captured = capsys.readouterr()
-    assert "# simple_table_Example1.md" in captured.out
+    assert "# simple_table#Example1" in captured.out
 
 
 def test_to_md_2_example(capsys, samples):

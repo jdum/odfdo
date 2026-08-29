@@ -241,14 +241,14 @@ def _template_container(doc_type: str) -> Container | None:
 
 
 class TableMarkdown(NamedTuple):
-    """NamedTuple representing an exported markdown content for a table.
+    """NamedTuple representing an exported markdown table from a spreadsheet.
 
     Attributes:
-        filename (str): The computed markdown filename (e.g., 'document_Table_1.md').
+        name (str): The computed table identifier (e.g., 'document#Table_1').
         content (str): The markdown string content of the table.
     """
 
-    filename: str
+    name: str
     content: str
 
 
@@ -769,10 +769,10 @@ class Document(MDDocument):
         return self._markdown_export_tables()
 
     @staticmethod
-    def _make_markdown_table_name(
+    def _make_markdown_table_identifier(
         used_names: set[str], doc_stem: str, table: Table
     ) -> str:
-        "Return a unique filename for the Markdown table file."
+        "Return a unique table identifier for the Markdown export."
         raw_table_name = table.name or "table"
         table_name = raw_table_name.replace(" ", "_")
         if table_name in used_names:
@@ -781,7 +781,7 @@ class Document(MDDocument):
                 counter += 1
             table_name = f"{table_name}_{counter}"
         used_names.add(table_name)
-        return f"{doc_stem}_{table_name}.md"
+        return f"{doc_stem}#{table_name}"
 
     def _markdown_export_tables(self) -> list[TableMarkdown]:
         doc_stem = self.path.stem if self.path else "spreadsheet"
@@ -790,9 +790,11 @@ class Document(MDDocument):
         used_names: set[str] = set()
         results: list[TableMarkdown] = []
         for table in tables:
-            filename = self._make_markdown_table_name(used_names, doc_stem, table)
+            identifier = self._make_markdown_table_identifier(
+                used_names, doc_stem, table
+            )
             content = table.to_markdown()
-            results.append(TableMarkdown(filename, content))
+            results.append(TableMarkdown(identifier, content))
         return results
 
     def _add_binary_part(self, blob: Blob) -> str:

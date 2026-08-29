@@ -849,11 +849,11 @@ def test_md_legacy_content_ods(samples):
     md1 = res[0]
     md2 = res[1]
 
-    assert md1.filename == "legacy_content_Employees.md"
+    assert md1.name == "legacy_content#Employees"
     assert "Alice" in md1.content
     assert "Gaël" in md1.content
 
-    assert md2.filename == "legacy_content_Figures.md"
+    assert md2.name == "legacy_content#Figures"
     assert "1" in md2.content
     assert "True" in md2.content
     assert "-2" in md2.content
