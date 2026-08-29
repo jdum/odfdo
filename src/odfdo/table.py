@@ -51,7 +51,7 @@ from .element import (
 )
 from .form import FormMixin
 from .frame import Frame
-from .mixin_md import MDTable
+from .mixin_md import MD_GLOBAL, MDTable, _set_global
 from .mixin_named_range import TableNamedExpressions
 from .named_range import NamedRange, table_name_check
 from .office_forms import OfficeFormsMixin
@@ -2777,7 +2777,20 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         self.set_cells(cells, coord=start, clone=False)
         return True
 
-    # Utilities
+    def to_markdown(self) -> str:
+        """Export the table content as a Markdown string.
+
+        Returns:
+            str: The Markdown representation of the table.
+        """
+        was_initialized = "document" in MD_GLOBAL
+        if not was_initialized:
+            _set_global(None)
+        try:
+            return self._md_format()
+        finally:
+            if not was_initialized:
+                _set_global(None)
 
     def to_csv(
         self,
