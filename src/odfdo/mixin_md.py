@@ -619,10 +619,14 @@ class MDTable(MDStyle):
             col = table.get_column(col_idx)
             if col and col.default_cell_style:
                 column_styles[col_idx] = col.default_cell_style
+
+        all_row_sub_elements = [
+            table.get_row_sub_elements(row) for row in table.iter_rows()
+        ]
         try:
             MD_GLOBAL["current_column_styles"] = column_styles
-            for idx in range(table.height):
-                for i, val in enumerate(table.get_row_sub_elements(idx)):
+            for idx, row_sub in enumerate(all_row_sub_elements):
+                for i, val in enumerate(row_sub):
                     size = len(format_cell(val, x=i, y=idx))
                     if size > sizer[i]:
                         sizer[i] = size
@@ -633,10 +637,10 @@ class MDTable(MDStyle):
         try:
             MD_GLOBAL["current_column_styles"] = column_styles
             result = []
-            result.append(bars(fill_line(table.get_row_sub_elements(0), y=0)))
+            result.append(bars(fill_line(all_row_sub_elements[0], y=0)))
             result.append(bars(fill_line(["-"] * table.width, "-", y=None)))
-            for idx in range(1, table.height):
-                result.append(bars(fill_line(table.get_row_sub_elements(idx), y=idx)))
+            for idx in range(1, len(all_row_sub_elements)):
+                result.append(bars(fill_line(all_row_sub_elements[idx], y=idx)))
             result.append("")
             return "\n".join(result)
         finally:

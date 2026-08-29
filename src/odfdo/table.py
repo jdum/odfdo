@@ -1489,8 +1489,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 values.extend([None] * (self.width - len(values)))
         return values
 
-    def get_row_sub_elements(self, y: int | str) -> list[Any]:
-        """Get the list of cell contents for the row at index "y" (internal).
+    def get_row_sub_elements(self, y: int | str | Row) -> list[Any]:
+        """Get the list of cell contents for the row at index "y" or Row
+        object (internal).
 
         The list is padded to "table.width".
 
@@ -1503,13 +1504,13 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
           "table.width", returns "[]".
 
         Args:
-            y: The row index (0-based).
+            y: The row index (0-based) or Row element.
 
         Returns:
             list[Any]: A list of child element lists, Cell objects, or []
                 padded to match the table's width.
         """
-        row = self.get_row(y, clone=False)
+        row = y if isinstance(y, Row) else self.get_row(y, clone=False)
         cells = row.get_cells()
         values: list[Any] = []
         for cell in cells:
