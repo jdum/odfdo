@@ -41,9 +41,9 @@ def table() -> Iterable[Table]:
 def test_export_to_markdown(table):
     md = table.to_markdown()
     expected = (
-        "| A float | 3.14                  |\n"
-        "|---------|-----------------------|\n"
-        "| A date  | 1975\\-05\\-07T00:00:00 |\n"
+        "| A float | 3.14         |\n"
+        "|---------|--------------|\n"
+        "| A date  | 1975\\-05\\-07 |\n"
     )
     assert md == expected
 
