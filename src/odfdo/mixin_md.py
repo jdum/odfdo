@@ -197,6 +197,8 @@ class MDStyle:
             if not style:
                 style = document.get_style("paragraph", name)
             if not style:
+                style = document.get_style("table-cell", name)
+            if not style:
                 return prop
             parent_style = document.get_parent_style(style)
             if parent_style:
@@ -206,24 +208,38 @@ class MDStyle:
                 prop = style.get_text_properties()
             return prop
 
-        if not self.style:
-            return _as_none
         document = MD_GLOBAL.get("document")
         if not document:
             return _as_none
-        prop = get_text_props(document, self.style)
+        style_name = self.style
+        prop: dict[str, Any] = {}
+        if style_name:
+            prop.update(get_text_props(document, style_name))
+
+        if self.parent and getattr(self.parent, "tag", "").endswith(":table-cell"):
+            cell_style_name = getattr(self.parent, "style", None) or (
+                self.parent.get_attribute_string("table:style-name")
+                if hasattr(self.parent, "get_attribute_string")
+                else None
+            )
+            if cell_style_name:
+                cell_props = get_text_props(document, cell_style_name)
+                for k, v in cell_props.items():
+                    if k not in prop or not prop[k]:
+                        prop[k] = v
+
         if not prop:
             return _as_none
-        if prop["italic"]:
-            if prop["bold"]:
+        if prop.get("italic"):
+            if prop.get("bold"):
                 return _as_bold_italic
             else:
                 return _as_italic
-        elif prop["bold"]:
+        elif prop.get("bold"):
             return _as_bold
-        elif prop["fixed"]:
+        elif prop.get("fixed"):
             return _as_fixed
-        elif prop["strike"]:
+        elif prop.get("strike"):
             return _as_strike
         return _as_none
 

@@ -58,7 +58,7 @@ from .element import Element
 from .image import DrawFillImage, DrawImage, DrawMarker
 from .manifest import Manifest
 from .meta import Meta
-from .mixin_md import MDDocument
+from .mixin_md import MDDocument, _set_global
 from .settings import Settings
 from .style import Style
 from .style_base import StyleBase
@@ -789,12 +789,16 @@ class Document(MDDocument):
         tables = self.body.tables
         used_names: set[str] = set()
         results: list[TableMarkdown] = []
-        for table in tables:
-            identifier = self._make_markdown_table_identifier(
-                used_names, doc_stem, table
-            )
-            content = table.to_markdown()
-            results.append(TableMarkdown(identifier, content))
+        _set_global(self)
+        try:
+            for table in tables:
+                identifier = self._make_markdown_table_identifier(
+                    used_names, doc_stem, table
+                )
+                content = table.to_markdown()
+                results.append(TableMarkdown(identifier, content))
+        finally:
+            _set_global(None)
         return results
 
     def _add_binary_part(self, blob: Blob) -> str:

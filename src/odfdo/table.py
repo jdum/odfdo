@@ -2813,7 +2813,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         Returns:
             str: The Markdown representation of the table.
         """
-        was_initialized = "document" in MD_GLOBAL
+        was_initialized = "document" in MD_GLOBAL and MD_GLOBAL["document"] is not None
         if not was_initialized:
             _set_global(None)
         try:
