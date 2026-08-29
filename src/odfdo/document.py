@@ -790,7 +790,6 @@ class Document(MDDocument):
         used_names: set[str] = set()
         results: list[TableMarkdown] = []
         for table in tables:
-            table.optimize_width()
             identifier = self._make_markdown_table_identifier(
                 used_names, doc_stem, table
             )

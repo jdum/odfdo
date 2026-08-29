@@ -558,28 +558,29 @@ class MDTable(MDStyle):
                 for pos, cell_val in enumerate(cell_values)
             ]
 
-        self.optimize_width()
-        if not self.height:
+        table = self.clone
+        table.optimize_width()
+        if not table.height:
             return ""
-        if self.height > MAX_MD_LINES:
-            msg = f"Table row count {self.height} exceeds limit {MAX_MD_LINES}"
+        if table.height > MAX_MD_LINES:
+            msg = f"Table row count {table.height} exceeds limit {MAX_MD_LINES}"
             raise RuntimeError(msg)
-        if self.width > MAX_MD_COLUMNS:
-            msg = f"Table column count {self.width} exceeds limit {MAX_MD_COLUMNS}"
+        if table.width > MAX_MD_COLUMNS:
+            msg = f"Table column count {table.width} exceeds limit {MAX_MD_COLUMNS}"
             raise RuntimeError(msg)
-        sizer = {i: 3 for i in range(self.width)}  # noqa: C420
+        sizer = {i: 3 for i in range(table.width)}  # noqa: C420
         safe_global = _copy_global()
-        for idx in range(self.height):
-            for i, val in enumerate(self.get_row_sub_elements(idx)):
+        for idx in range(table.height):
+            for i, val in enumerate(table.get_row_sub_elements(idx)):
                 size = len(format_cell(val))
                 if size > sizer[i]:
                     sizer[i] = size
         _restore_global(safe_global)
         result = []
-        result.append(bars(fill_line(self.get_row_sub_elements(0))))
-        result.append(bars(fill_line(["-"] * self.width, "-")))
-        for idx in range(1, self.height):
-            result.append(bars(fill_line(self.get_row_sub_elements(idx))))
+        result.append(bars(fill_line(table.get_row_sub_elements(0))))
+        result.append(bars(fill_line(["-"] * table.width, "-")))
+        for idx in range(1, table.height):
+            result.append(bars(fill_line(table.get_row_sub_elements(idx))))
         result.append("")
         return "\n".join(result)
 
