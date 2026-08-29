@@ -65,7 +65,13 @@ def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
 
 def to_md(args: Namespace) -> None:
     document = read_document(args.document)
-    print(document.to_markdown())
+    result = document.to_markdown()
+    if isinstance(result, str):
+        print(result)
+    else:
+        for item in result:
+            print(f"# {item.filename}\n")
+            print(item.content)
 
 
 def main() -> int:

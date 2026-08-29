@@ -34,7 +34,7 @@ from functools import cache
 from importlib import resources as rso
 from operator import itemgetter
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, BinaryIO, cast
+from typing import TYPE_CHECKING, Any, BinaryIO, NamedTuple, cast
 
 from .const import (
     FOLDER,
@@ -238,6 +238,18 @@ def _template_container(doc_type: str) -> Container | None:
     ) as template_path:
         container.open(template_path)
     return container
+
+
+class TableMarkdown(NamedTuple):
+    """NamedTuple representing an exported markdown content for a table.
+
+    Attributes:
+        filename (str): The computed markdown filename (e.g., 'document_Table_1.md').
+        content (str): The markdown string content of the table.
+    """
+
+    filename: str
+    content: str
 
 
 class Document(MDDocument):
@@ -730,25 +742,58 @@ class Document(MDDocument):
         """
         return self.meta.as_text()
 
-    def to_markdown(self) -> str:
+    def to_markdown(self) -> str | list[TableMarkdown]:
         """Export the document content to Markdown format.
 
-        Currently, only text documents are supported.
+        For text documents (.odt), returns a single Markdown string.
+        For spreadsheet documents (.ods), returns a list of TableMarkdown
+        tuples (one per table) containing the filename and Markdown table
+        string.
 
         Returns:
-            str: The Markdown representation of the document.
+            str | list[TableMarkdown]: The Markdown representation of the
+                document for text documents, or a list of TableMarkdown tuples
+                for spreadsheets.
 
         Raises:
-            NotImplementedError: If the document type is not 'text'.
+            NotImplementedError: If the document type is not 'text' or
+                'spreadsheet'.
         """
         doc_type = self.get_type()
-        if doc_type not in {
-            "text",
-        }:
+        if doc_type not in {"text", "spreadsheet"}:
             raise NotImplementedError(
                 f"Type of document '{doc_type}' not supported yet"
             )
-        return self._markdown_export()
+        if doc_type == "text":
+            return self._markdown_export_text()
+        return self._markdown_export_tables()
+
+    @staticmethod
+    def _make_markdown_table_name(
+        used_names: set[str], doc_stem: str, table: Table
+    ) -> str:
+        "Return a unique filename for the Markdown table file."
+        raw_table_name = table.name or "table"
+        table_name = raw_table_name.replace(" ", "_")
+        if table_name in used_names:
+            counter = 2
+            while f"{table_name}_{counter}" in used_names:
+                counter += 1
+            table_name = f"{table_name}_{counter}"
+        used_names.add(table_name)
+        return f"{doc_stem}_{table_name}.md"
+
+    def _markdown_export_tables(self) -> list[TableMarkdown]:
+        doc_stem = self.path.stem if self.path else "spreadsheet"
+        doc_stem = doc_stem.replace(" ", "_")
+        tables = self.body.tables
+        used_names: set[str] = set()
+        results: list[TableMarkdown] = []
+        for table in tables:
+            filename = self._make_markdown_table_name(used_names, doc_stem, table)
+            content = table.to_markdown()
+            results.append(TableMarkdown(filename, content))
+        return results
 
     def _add_binary_part(self, blob: Blob) -> str:
         if not self.container:
@@ -873,9 +918,7 @@ class Document(MDDocument):
                 if raw_data is None:
                     continue
                 template_data = (
-                    raw_data.encode("utf-8")
-                    if isinstance(raw_data, str)
-                    else raw_data
+                    raw_data.encode("utf-8") if isinstance(raw_data, str) else raw_data
                 )
                 self.container.set_part(path, template_data)
                 manifest.add_full_path(path, "text/xml")

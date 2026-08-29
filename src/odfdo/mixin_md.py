@@ -236,7 +236,7 @@ class MDDocument:
             if item
         ]
 
-    def _markdown_export(self) -> str:
+    def _markdown_export_text(self) -> str:
         def join_fixed_lines(items: list[str]) -> list[str]:
             joined = []
             previous = ""
