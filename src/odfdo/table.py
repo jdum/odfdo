@@ -1008,6 +1008,12 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         self._optimize_width_adapt_columns(width)
 
     def _optimize_width_trim_rows(self) -> None:
+        for row in reversed(self._get_rows()):
+            if not row.has_values():
+                if row.repeated:
+                    row._set_repeated(None)
+            else:
+                break
         count = -1  # to keep one empty row
         for row in reversed(self._get_rows()):
             if row.is_empty(aggressive=False):
@@ -1027,6 +1033,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             pass
         # raz cache of rows
         self._table_cache.clear_row_indexes()
+        self._compute_table_cache()
 
     def _optimize_width_length(self) -> int:
         try:

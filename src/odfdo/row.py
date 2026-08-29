@@ -911,5 +911,21 @@ class Row(Element):
         """
         return all(cell.is_empty(aggressive=aggressive) for cell in self._get_cells())
 
+    def has_values(self) -> bool:
+        """Return whether any cell in the row contains a value or text content.
+
+        Cells that are empty or only contain styles, formatting, or formulas without
+        cached values are not considered as containing values.
+
+        Returns:
+            bool: True if any cell in the row contains a value, False otherwise.
+        """
+        for cell in self._get_cells():
+            if cell.value is not None:
+                return True
+            if cell.text_content and cell.text_content.strip():
+                return True
+        return False
+
 
 register_element_class(Row)
