@@ -27,6 +27,8 @@ from copy import deepcopy
 from itertools import chain
 from typing import Any, NamedTuple
 
+from .const import MAX_MD_COLUMNS, MAX_MD_LINES
+
 MD_GLOBAL: dict[str, Any] = {}
 
 RE_STAR6 = re.compile(r"(?<!\\)(\*{6})")
@@ -559,6 +561,12 @@ class MDTable(MDStyle):
         self.optimize_width()
         if not self.height:
             return ""
+        if self.height > MAX_MD_LINES:
+            msg = f"Table row count {self.height} exceeds limit {MAX_MD_LINES}"
+            raise RuntimeError(msg)
+        if self.width > MAX_MD_COLUMNS:
+            msg = f"Table column count {self.width} exceeds limit {MAX_MD_COLUMNS}"
+            raise RuntimeError(msg)
         sizer = {i: 3 for i in range(self.width)}  # noqa: C420
         safe_global = _copy_global()
         for idx in range(self.height):
