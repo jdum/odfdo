@@ -22,12 +22,15 @@
 #          David Versmisse <david.versmisse@itaapy.com>
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 
+import math
 from datetime import date, datetime, timedelta
 from decimal import Decimal as dec
 
 import pytest
 
 from odfdo.cell import Cell
+from odfdo.element import Element
+from odfdo.row import Row
 
 
 def test_string_value_property():
@@ -403,11 +406,22 @@ def test_decimal_value_property_4():
     assert cell._canonicalize() == expected
 
 
+def test_decimal_value_property_5():
+    cell = Cell(0.0, cell_type="currency", currency="EUR")
+    cell.decimal = 3.14
+    assert cell.float == 3.14
+    assert cell.value == dec("3.14")
+    assert cell.decimal == dec("3.14")
+    assert cell.int == 3
+    assert cell.bool is True
+
+
 def test_int_value_property():
     cell = Cell(0, cell_type="float")
     assert cell.float == 0.0
     assert cell.value == 0
     assert cell.int == 0
+    assert cell.bool is False
 
 
 def test_int_value_property_2():
@@ -416,6 +430,7 @@ def test_int_value_property_2():
     assert cell.float == 4.0
     assert cell.value == 4
     assert cell.int == 4
+    assert cell.bool is True
 
 
 def test_int_value_property_3():
@@ -668,3 +683,221 @@ def test_bad_value():
     cell = Cell(1.54, cell_type="currency", currency="EUR")
     with pytest.raises(TypeError):
         cell.value = []
+
+
+def test_value_property_nan():
+    cell = Cell(float("nan"), cell_type="float")
+    assert math.isnan(cell.value)
+    cell.value = float("nan")
+    assert math.isnan(cell.value)
+
+
+def test_value_property_inf():
+    cell = Cell(float("inf"), cell_type="float")
+    assert cell.value == float("inf")
+    cell.value = float("inf")
+    assert cell.value == float("inf")
+
+
+def test_value_property_minus_inf():
+    cell = Cell(float("-inf"), cell_type="float")
+    assert cell.value == float("-inf")
+    cell.value = float("-inf")
+    assert cell.value == float("-inf")
+
+
+def test_value_property_decimal_nan():
+    cell_nan = Cell(dec("nan"), cell_type="float")
+    assert math.isnan(cell_nan.value)
+
+
+def test_value_property_decimal_inf():
+    cell_inf = Cell(dec("inf"), cell_type="float")
+    assert cell_inf.value == float("inf")
+
+
+def test_value_property_decimal_minus_inf():
+    cell_minf = Cell(dec("-inf"), cell_type="float")
+    assert cell_minf.value == float("-inf")
+
+
+def test_cell_xml_attributes_nan():
+    cell = Cell()
+    cell.set_attribute("office:value-type", "float")
+    for variant in ("NaN", "nan", "NAN"):
+        cell.set_attribute("office:value", variant)
+        assert math.isnan(cell.value)
+
+
+def test_cell_xml_attributes_inf():
+    cell = Cell()
+    cell.set_attribute("office:value-type", "float")
+    for variant in (
+        "INF",
+        "+INF",
+        "inf",
+        "+inf",
+        "Infinity",
+        "+Infinity",
+        "infinity",
+        "+infinity",
+    ):
+        cell.set_attribute("office:value", variant)
+        assert cell.value == float("inf")
+
+
+def test_cell_xml_attributes_minf():
+    cell = Cell()
+    cell.set_attribute("office:value-type", "float")
+    for variant in ("-INF", "-inf", "-Infinity", "-infinity"):
+        cell.set_attribute("office:value", variant)
+        assert cell.value == float("-inf")
+
+
+def test_cell_value_setter_nan_float():
+    cell = Cell()
+    cell.value = float("nan")
+    assert math.isnan(cell.value)
+    assert cell.get_attribute("office:value") == "NaN"
+
+
+def test_cell_value_setter_inf_float():
+    cell = Cell()
+    cell.value = float("inf")
+    assert cell.value == float("inf")
+    assert cell.get_attribute("office:value") == "INF"
+
+
+def test_cell_value_setter_minf_float():
+    cell = Cell()
+    cell.value = float("-inf")
+    assert cell.value == float("-inf")
+    assert cell.get_attribute("office:value") == "-INF"
+
+
+def test_cell_float_setter_string_variants_inf():
+    cell = Cell()
+    cell.float = "infinity"
+    assert cell.value == float("inf")
+    assert cell.get_attribute("office:value") == "INF"
+
+
+def test_cell_float_setter_string_variants_minf():
+    cell = Cell()
+    cell.float = "-infinity"
+    assert cell.value == float("-inf")
+    assert cell.get_attribute("office:value") == "-INF"
+
+
+def test_cell_float_setter_string_variants_nan():
+    cell = Cell()
+    cell.float = "nan"
+    assert math.isnan(cell.value)
+    assert cell.get_attribute("office:value") == "NaN"
+
+
+def test_cell_float_setter_string_pi():
+    cell = Cell()
+    cell.float = "3.14"
+    assert cell.value == dec("3.14")
+    assert cell.get_attribute("office:value") == "3.14"
+
+
+def test_cell_decimal_setter_nan_variants():
+    cell = Cell()
+    for val in ("nan", "NaN", float("nan"), dec("nan")):
+        cell.decimal = val
+        assert math.isnan(cell.float)
+        assert cell.get_attribute("office:value") == "NaN"
+
+
+def test_cell_decimal_setter_inf_variants():
+    cell = Cell()
+    for val in ("inf", "INF", "infinity", "Infinity", float("inf"), dec("inf")):
+        cell.decimal = val
+        assert cell.float == float("inf")
+        assert cell.get_attribute("office:value") == "INF"
+
+
+def test_cell_decimal_setter_minf_variants():
+    cell = Cell()
+    for val in ("-inf", "-INF", "-infinity", "-Infinity", float("-inf"), dec("-inf")):
+        cell.decimal = val
+        assert cell.float == float("-inf")
+        assert cell.get_attribute("office:value") == "-INF"
+
+
+def test_cell_decimal_getter_nan():
+    cell = Cell()
+    cell.set_attribute("office:value-type", "float")
+    cell.set_attribute("office:value", "NaN")
+    assert cell.decimal.is_nan()
+
+
+def test_cell_decimal_getter_inf():
+    cell = Cell()
+    cell.set_attribute("office:value", "INF")
+    assert cell.decimal.is_infinite() and cell.decimal > 0
+
+
+def test_cell_decimal_getter_minf():
+    cell = Cell()
+    cell.set_attribute("office:value", "-INF")
+    assert cell.decimal.is_infinite() and cell.decimal < 0
+
+
+def test_cell_float_getter_from_string_value():
+    cell = Cell()
+    cell.set_attribute("office:string-value", "12.34")
+    assert cell.float == 12.34
+    assert cell.decimal == dec("12.34")
+
+
+def test_cell_decimal_setter_negative_infinity():
+    cell = Cell()
+    cell.decimal = float("-inf")
+    assert cell.float == float("-inf")
+    assert cell.get_attribute("office:value") == "-INF"
+
+
+def test_cell_value_date_with_time():
+    cell = Cell()
+    cell.set_attribute("office:value-type", "date")
+    cell.set_attribute("office:date-value", "2023-01-01T12:34:56")
+    assert cell.value == datetime(2023, 1, 1, 12, 34, 56)
+
+
+def test_cell_value_float_missing_office_value():
+    cell = Cell()
+    cell.set_attribute("office:value-type", "float")
+    assert cell.value is None
+
+
+def test_cell_value_float_invalid_office_value():
+    cell = Cell()
+    cell.set_attribute("office:value-type", "float")
+    cell.set_attribute("office:value", "invalid-float-abc")
+    assert cell.value is None
+
+
+def test_cell_value_string_from_paragraphs():
+    cell = Cell()
+    cell.set_attribute("office:value-type", "string")
+    cell.append(Element.from_tag("<text:p>First Line</text:p>"))
+    cell.append(Element.from_tag("<text:p>Second Line</text:p>"))
+    assert cell.value == "First Line\nSecond Line"
+
+
+def test_cell_repeated_setter_attached_to_row():
+    row = Row()
+    cell = Cell("test")
+    row.append(cell)
+    cell.repeated = 3
+    assert cell.repeated == 3
+
+
+def test_cell_is_empty_with_style():
+    cell = Cell()
+    cell.style = "CustomStyle"
+    assert cell.is_empty(aggressive=False) is False
+    assert cell.is_empty(aggressive=True) is True
