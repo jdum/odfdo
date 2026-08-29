@@ -603,8 +603,7 @@ class MDTable(MDStyle):
             ]
 
         table = self.clone
-        table.optimize_height()
-        table.optimize_width()
+        table.rstrip(aggressive=True)
         if not table.height:
             return ""
         if table.height > MAX_MD_LINES:
