@@ -1048,3 +1048,11 @@ def test_row_has_values_4():
     cell_p.append(Paragraph("paragraph text"))
     row4.set_cell(0, cell_p)
     assert row4.has_values() is True
+
+
+def test_to_markdown_does_not_mutate_document(samples):
+    doc = Document(samples("unstriped.ods"))
+    table = doc.body.tables[0]
+    initial_size = table.size
+    _res = doc.to_markdown()
+    assert table.size == initial_size
