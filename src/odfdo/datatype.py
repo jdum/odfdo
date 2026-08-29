@@ -333,12 +333,19 @@ class Duration:
         """
         if isinstance(data, timedelta):
             return data
+        if not isinstance(data, str):
+            raise TypeError(f"duration not valid {data!r}")
+        if not (data.startswith("P") or data.startswith("-P")):
+            raise ValueError(f"duration not valid {data!r}")
+        if set(data) - set("-+P0123456789.YMWDHST,") or not any(
+            c.isdigit() for c in data
+        ):
+            raise ValueError(f"duration not valid {data!r}")
+
         if data.startswith("P"):
             sign = 1
-        elif data.startswith("-P"):
-            sign = -1
         else:
-            raise ValueError(f"duration not valid {data!r}")
+            sign = -1
 
         days = 0
         hours = 0
