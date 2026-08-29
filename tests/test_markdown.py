@@ -1207,3 +1207,15 @@ def test_export_to_markdown_infinity_col_row_style(samples):
     result = _concatenation_md(res).strip()
     print(result)
     assert result == expected
+
+
+def test_export_to_markdown_large_ods(samples):
+    doc = Document(samples("large_ods.ods"))
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    assert res[0].name == "large_ods#Sheet1"
+    assert res[1].name == "large_ods#Sheet2"
+    assert res[2].name == "large_ods#Sheet3"
+    assert len(res[0].content.split("\n")) >= 5000
+    assert len(res[1].content.split("\n")) >= 5000
+    assert len(res[2].content.split("\n")) >= 5000
