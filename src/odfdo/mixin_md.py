@@ -530,22 +530,18 @@ class MDTable(MDStyle):
                     acc.extend([child._md_format(styler) for child in element.children])
                     acc.append(_as_none(element.tail))
                     result.append(_strip_left_spaces("".join(x for x in acc if x)))
-                sval = " ".join(result)
-                if sval.strip():
-                    return f"{filler}{sval.strip()}{filler}".replace(
-                        "\\\n", " "
-                    ).replace("\n", " ")
+                sval = " ".join(result).strip()
+                return f"{filler}{sval}{filler}".replace("\\\n", " ").replace("\n", " ")
             # support of non-text cell values with no paragraph representation
             if hasattr(val, "value"):
                 c_val = val.value
                 if c_val is not None:
-                    sval = str(c_val)
-                    return f"{filler}{sval.strip()}{filler}".replace(
-                        "\\\n", " "
-                    ).replace("\n", " ")
-            return f"{filler}{str(val).strip()}{filler}".replace("\\\n", " ").replace(
-                "\n", " "
-            )
+                    sval = str(c_val).strip()
+                    return f"{filler}{sval}{filler}".replace("\\\n", " ").replace(
+                        "\n", " "
+                    )
+            sval = str(val).strip()
+            return f"{filler}{sval}{filler}".replace("\\\n", " ").replace("\n", " ")
 
         def fill_cell(pos: int, cell_val: Any, filler: str = " ") -> str:
             sval = format_cell(cell_val, filler)
