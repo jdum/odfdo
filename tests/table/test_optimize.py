@@ -23,12 +23,23 @@ from odfdo.row import Row
 from odfdo.table import Table
 
 
+def test_optimize_height():
+    table = Table("Test")
+    table.set_value("A1", "v1")
+    table.append_row(Row())
+    table.append_row(Row())
+    table.append_row(Row())
+    table.optimize_height()
+    assert table.height == 2
+
+
 def test_optimize_width():
     table = Table("TestTable")
     table.set_value("A1", "content")
     table.set_value("A2", "content")
     table.set_value("B1", "content")
     table.set_value("E10", None)
+    table.optimize_height()
     table.optimize_width()
     assert table.width == 2
     assert table.height >= 2
@@ -42,6 +53,7 @@ def test_optimize_width_many_empty_rows():
     table.append_row(Row())
     table.append_row(Row())
     # Should keep one empty row
+    table.optimize_height()
     table.optimize_width()
     assert table.height == 2
 
@@ -51,6 +63,7 @@ def test_optimize_width_all_empty():
     table.append_row(Row())
     table.append_row(Row())
     # count == self.height (2)
+    table.optimize_height()
     table.optimize_width()
     assert table.height == 1
 
@@ -58,6 +71,7 @@ def test_optimize_width_all_empty():
 def test_optimize_width_cols_internal():
     table = Table("Test", width=2, height=1)
     # width=2 creates columns.
+    table.optimize_height()
     table.optimize_width()
     assert table.width == 2
 
@@ -65,11 +79,13 @@ def test_optimize_width_cols_internal():
 def test_optimize_width_length_internal():
     table = Table("Test")
     table.set_value("A1", "v1")
+    table.optimize_height()
     table.optimize_width()
     assert table.width == 1
 
 
 def test_optimize_width_all_empty_try_except():
     table = Table("Empty")
+    table.optimize_height()
     table.optimize_width()
     assert table.height == 0
