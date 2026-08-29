@@ -1,5 +1,29 @@
 # Odfdo Release Notes
 
+## [3.24.7] - Unreleased
+
+-   Added Markdown export support for `.ods` spreadsheets in `Document.to_markdown()` and the `odfdo-markdown` CLI script.
+-   Added `Table.to_markdown()` method along with `Table.optimize_height()` and `Row.has_values()`.
+-   Added Markdown export safety limits (`MAX_MD_LINES`, `MAX_MD_COLUMNS`) and ensured export operations do not mutate in-memory documents.
+-   Added support for `table-cell` and `graphic` style families in `Styles.default_language`.
+-   Added `_decode_time_string()` helper for decoding time strings to `timedelta`.
+-   Fixed formatting of float special values (`NaN`, `INF`, `-INF`) to canonical ODF XML standard casing.
+
+### Added
+
+-   Add Markdown export support for `.ods` files to `Document.to_markdown()` and `odfdo-markdown` script. Output table identifiers follow the `document#sheet_name` naming convention.
+-   Add method `Table.to_markdown()`.
+-   Add method `Table.optimize_height()` to trim trailing empty rows from a table in-place.
+-   Add method `Row.has_values()` to check whether a row contains actual cell values or text content.
+-   Add safety limits `MAX_MD_LINES` (50,000) and `MAX_MD_COLUMNS` (2,048) in `const.py`, raising a `RuntimeError` if a table exceeds these limits when exporting to Markdown.
+-   Add support for `table-cell` and `graphic` style families in `Styles.default_language`.
+-   Add `_decode_time_string()` helper function for parsing time strings to `timedelta` objects in `odfdo.datatype`.
+ 
+### Fixed
+
+-   Better detection of wrong string for `Duration`.
+-   Explicit detection and canonical ODF XML standard formatting (`NaN`, `INF`, `-INF`) for special float values in `Cell`.
+
 ## [3.24.6] - 2026-08-22
 
 -   Allow the creation of unnamed `Table` objects and add a warning to the `Table` docstring regarding unnamed tables.

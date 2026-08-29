@@ -103,7 +103,7 @@ A few scripts are provided with `odfdo`:
 -   `odfdo-flat`: convert an ODF file (zip archive or folder) to a flat XML ODF file, or convert a flat ODF XML file back to an ODF zip file.
 -   `odfdo-headers`: display the hierarchical headers (headings) of an ODF text document. The headers are printed with their numbering and can be limited by a specified depth.
 -   `odfdo-highlight`: search for a regular expression pattern in an ODF text document and apply a highlighting style to the matching text. The style can include italic, bold, text color, and background color.
--   `odfdo-markdown`: convert an ODF text document to Markdown format and print to standard output.
+-   `odfdo-markdown`: convert an ODF text or spreadsheet document to Markdown format and print to standard output.
 -   `odfdo-replace`: find and replace text in an ODF file using a regular expression pattern.
 -   `odfdo-show`: display various parts of an ODF document, including text content, styles, and metadata, to standard output or a specified directory.
 -   `odfdo-styles`: manipulate styles within OpenDocument files: display, delete, or merge them.
