@@ -190,7 +190,7 @@ class MDStyle:
             prop = style.get_text_properties()
         return bool(prop["fixed"])
 
-    def _md_styling(self) -> Callable:
+    def _md_styling(self, x: int | None = None, y: int | None = None) -> Callable:
         def get_text_props(document: Any, name: str) -> dict[str, Any]:
             prop: dict[str, Any] = {}
             style = document.get_style("text", name)
@@ -217,11 +217,25 @@ class MDStyle:
             prop.update(get_text_props(document, style_name))
 
         if self.parent and getattr(self.parent, "tag", "").endswith(":table-cell"):
-            cell_style_name = getattr(self.parent, "style", None) or (
-                self.parent.get_attribute_string("table:style-name")
-                if hasattr(self.parent, "get_attribute_string")
+            cell = self.parent
+            cell_style_name = getattr(cell, "style", None) or (
+                cell.get_attribute_string("table:style-name")
+                if hasattr(cell, "get_attribute_string")
                 else None
             )
+            if not cell_style_name:
+                row = (
+                    cell.parent
+                    if getattr(cell.parent, "tag", "").endswith(":table-row")
+                    else None
+                )
+                if row and hasattr(row, "get_attribute_string"):
+                    cell_style_name = row.get_attribute_string(
+                        "table:default-cell-style-name"
+                    )
+            if not cell_style_name and x is not None:
+                column_styles = MD_GLOBAL.get("current_column_styles", {})
+                cell_style_name = column_styles.get(x)
             if cell_style_name:
                 cell_props = get_text_props(document, cell_style_name)
                 for k, v in cell_props.items():
@@ -539,11 +553,16 @@ class MDTable(MDStyle):
             items = [""] + values + [""]  # noqa: RUF005
             return "|".join(items)
 
-        def format_cell(val: Any, filler: str = " ") -> str:
+        def format_cell(
+            val: Any,
+            filler: str = " ",
+            x: int | None = None,
+            y: int | None = None,
+        ) -> str:
             if isinstance(val, list):
                 result = []
                 for element in val:  # paragraph
-                    styler = element._md_styling()
+                    styler = element._md_styling(x=x, y=y)
                     acc = [styler(element.text)]
                     acc.extend([child._md_format(styler) for child in element.children])
                     acc.append(_as_none(element.tail))
@@ -561,16 +580,25 @@ class MDTable(MDStyle):
             sval = str(val).strip()
             return f"{filler}{sval}{filler}".replace("\\\n", " ").replace("\n", " ")
 
-        def fill_cell(pos: int, cell_val: Any, filler: str = " ") -> str:
-            sval = format_cell(cell_val, filler)
+        def fill_cell(
+            pos: int,
+            cell_val: Any,
+            filler: str = " ",
+            y: int | None = None,
+        ) -> str:
+            sval = format_cell(cell_val, filler, x=pos, y=y)
             step = sizer[pos] - len(sval)
             if step > 0:
                 return sval + filler * step
             return sval
 
-        def fill_line(cell_values: list[Any], filler: str = " ") -> list[str]:
+        def fill_line(
+            cell_values: list[Any],
+            filler: str = " ",
+            y: int | None = None,
+        ) -> list[str]:
             return [
-                fill_cell(pos, cell_val, filler)
+                fill_cell(pos, cell_val, filler, y=y)
                 for pos, cell_val in enumerate(cell_values)
             ]
 
@@ -587,19 +615,39 @@ class MDTable(MDStyle):
             raise RuntimeError(msg)
         sizer = {i: 3 for i in range(table.width)}  # noqa: C420
         safe_global = _copy_global()
-        for idx in range(table.height):
-            for i, val in enumerate(table.get_row_sub_elements(idx)):
-                size = len(format_cell(val))
-                if size > sizer[i]:
-                    sizer[i] = size
-        _restore_global(safe_global)
-        result = []
-        result.append(bars(fill_line(table.get_row_sub_elements(0))))
-        result.append(bars(fill_line(["-"] * table.width, "-")))
-        for idx in range(1, table.height):
-            result.append(bars(fill_line(table.get_row_sub_elements(idx))))
-        result.append("")
-        return "\n".join(result)
+        column_styles: dict[int, str] = {}
+        for col_idx in range(table.width):
+            col = table.get_column(col_idx)
+            if col and col.default_cell_style:
+                column_styles[col_idx] = col.default_cell_style
+        try:
+            MD_GLOBAL["current_column_styles"] = column_styles
+            for idx in range(table.height):
+                for i, val in enumerate(table.get_row_sub_elements(idx)):
+                    size = len(format_cell(val, x=i, y=idx))
+                    if size > sizer[i]:
+                        sizer[i] = size
+        finally:
+            _restore_global(safe_global)
+
+        safe_global_pass2 = _copy_global()
+        try:
+            MD_GLOBAL["current_column_styles"] = column_styles
+            result = []
+            result.append(bars(fill_line(table.get_row_sub_elements(0), y=0)))
+            result.append(bars(fill_line(["-"] * table.width, "-", y=None)))
+            for idx in range(1, table.height):
+                result.append(bars(fill_line(table.get_row_sub_elements(idx), y=idx)))
+            result.append("")
+            return "\n".join(result)
+        finally:
+            footnotes = MD_GLOBAL.get("footnote", [])
+            endnotes = MD_GLOBAL.get("endnote", [])
+            _restore_global(safe_global_pass2)
+            if "footnote" in MD_GLOBAL:
+                MD_GLOBAL["footnote"] = footnotes
+            if "endnote" in MD_GLOBAL:
+                MD_GLOBAL["endnote"] = endnotes
 
     def _md_collect(self) -> list[str]:
         if content := self._md_format():
