@@ -29,6 +29,7 @@ import contextlib
 import csv
 import os
 from collections.abc import Iterable, Iterator
+from datetime import timedelta
 from io import StringIO
 from itertools import zip_longest
 from pathlib import Path
@@ -86,8 +87,22 @@ _XP_ROW_GROUP = xpath_compile(
 )
 
 
+def _decode_time_string(data: str) -> timedelta:
+    parts = data.strip().split(":")
+    if 2 <= len(parts) <= 3:
+        hours = int(parts[0])
+        minutes = int(parts[1])
+        if not (0 <= hours <= 23 and 0 <= minutes <= 59):
+            raise ValueError
+        seconds = float(parts[2]) if len(parts) == 3 else 0.0
+        if not (0 <= seconds < 60):
+            raise ValueError
+        return timedelta(hours=hours, minutes=minutes, seconds=seconds)
+    raise ValueError(f"Invalid time string: {data!r}")
+
+
 def _get_python_value(
-    data: str | bytes | int | float | bool, encoding: str
+    data: str | bytes | int | float | bool, encoding: str = "utf-8"
 ) -> CellValue:
     """Guess the most appropriate Python type to load data, with regard to ODF
     types.
@@ -124,6 +139,9 @@ def _get_python_value(
     # A Duration ?
     with contextlib.suppress(ValueError):
         return Duration.decode(data)
+    # A time string (HH:MM:SS or HH:MM)?
+    with contextlib.suppress(ValueError, AttributeError):
+        return _decode_time_string(data)
     # A Boolean ?
     with contextlib.suppress(ValueError):
         # "True" or "False" with a .lower
