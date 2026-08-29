@@ -22,6 +22,7 @@
 from __future__ import annotations
 
 import contextlib
+import math
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from typing import Any
@@ -145,9 +146,16 @@ class ElementTyped(Element):
                     text = "true" if bool(value) else "false"
                 value = Boolean.encode(value)
             else:
+                f_val = float(value)
+                if math.isnan(f_val):
+                    val_str = "NaN"
+                elif math.isinf(f_val):
+                    val_str = "INF" if f_val > 0 else "-INF"
+                else:
+                    val_str = str(value)
                 if text is None:
-                    text = str(value)
-                value = str(value)
+                    text = val_str
+                value = val_str
         elif isinstance(value, datetime):
             if value_type is None:
                 value_type = "date"
@@ -208,9 +216,10 @@ class ElementTyped(Element):
             raise ValueError('"office:value" has None value')
         value = Decimal(read_number)
         # Return 3 instead of 3.0 if possible
-        with contextlib.suppress(ValueError):
-            if int(value) == value:
-                return int(value)
+        if not value.is_nan() and not value.is_infinite():
+            with contextlib.suppress(ValueError, OverflowError):
+                if int(value) == value:
+                    return int(value)
         return value
 
     def _get_typed_value_float(self) -> Decimal | int | float:
