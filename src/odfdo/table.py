@@ -1458,33 +1458,36 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         return values
 
     def get_row_sub_elements(self, y: int | str) -> list[Any]:
-        """Get the list of Elements of the cells of the row at the given 'y'
-        position (internal).
+        """Get the list of cell contents for the row at index "y" (internal).
 
-        Missing values are replaced by [].
+        The list is padded to "table.width".
+
+        For each column in the row:
+        - If the cell contains non-empty child text elements ("<text:p>"),
+          returns the list of child elements "[Element, ...]".
+        - If the cell is empty or contains non-text content, returns the
+          Cell object itself.
+        - If the column index extends beyond the row boundary up to
+          "table.width", returns "[]".
 
         Args:
-            y: The 0-based index of the row.
+            y: The row index (0-based).
 
         Returns:
-            list[Any]: A list of sub-elements or Cell objects from each cell
-                in the row.
+            list[Any]: A list of child element lists, Cell objects, or []
+                padded to match the table's width.
         """
         row = self.get_row(y, clone=False)
         cells = row.get_cells()
-        sub_elems = row.get_sub_elements()
         values: list[Any] = []
-        # support non-text cell values (numbers, booleans)
-        for i in range(max(len(sub_elems), len(cells))):
-            elems = sub_elems[i] if i < len(sub_elems) else []
-            cell = cells[i] if i < len(cells) else None
-            if elems and any(getattr(e, "inner_text", "").strip() for e in elems):
-                values.append(elems)
-            elif cell is not None:
-                values.append(cell)
+        for cell in cells:
+            children = cell.children
+            if children and any(getattr(e, "inner_text", "").strip() for e in children):
+                values.append(children)
             else:
-                values.append([])
-        values.extend([[]] * (self.width - len(values)))
+                values.append(cell)
+        if len(values) < self.width:
+            values.extend([[]] * (self.width - len(values)))
         return values
 
     def set_row_values(
