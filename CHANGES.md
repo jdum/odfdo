@@ -1,6 +1,6 @@
 # Odfdo Release Notes
 
-## [3.24.7] - Unreleased
+## [3.24.7] - 2026-08-29
 
 -   Added Markdown export support for `.ods` spreadsheets in `Document.to_markdown()` and the `odfdo-markdown` CLI script.
 -   Added `Table.to_markdown()` method along with `Table.optimize_height()` and `Row.has_values()`.
