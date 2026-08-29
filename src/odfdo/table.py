@@ -1457,7 +1457,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 values.extend([None] * (self.width - len(values)))
         return values
 
-    def get_row_sub_elements(self, y: int | str) -> list[list[Element]]:
+    def get_row_sub_elements(self, y: int | str) -> list[Any]:
         """Get the list of Elements of the cells of the row at the given 'y'
         position (internal).
 
@@ -1467,11 +1467,24 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             y: The 0-based index of the row.
 
         Returns:
-            list[list[Element]]: A list of sub-elements from each cell in the
-                row.
+            list[Any]: A list of sub-elements or Cell objects from each cell
+                in the row.
         """
-        values = self.get_row(y, clone=False).get_sub_elements()
-        values.extend([] * (self.width - len(values)))
+        row = self.get_row(y, clone=False)
+        cells = row.get_cells()
+        sub_elems = row.get_sub_elements()
+        values: list[Any] = []
+        # support non-text cell values (numbers, booleans)
+        for i in range(max(len(sub_elems), len(cells))):
+            elems = sub_elems[i] if i < len(sub_elems) else []
+            cell = cells[i] if i < len(cells) else None
+            if elems and any(getattr(e, "inner_text", "").strip() for e in elems):
+                values.append(elems)
+            elif cell is not None:
+                values.append(cell)
+            else:
+                values.append([])
+        values.extend([[]] * (self.width - len(values)))
         return values
 
     def set_row_values(
