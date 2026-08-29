@@ -1130,10 +1130,10 @@ def test_export_to_markdown_infinite_style(samples):
 
     | **A1** | **B1** | **C1**   | **D1** | **E1** | **F1** |   |
     |--------|--------|----------|--------|--------|--------|---|
-    | A2     |        |          |        |        |        |   |
-    | A3     | B3     |          |        |        |        |   |
-    | A4     |        | ***C4*** | **D4** |        |        |   |
-    | A5     |        |          |        |        |        |   |
+    | **A2** |        |          |        |        |        |   |
+    | **A3** | B3     |          |        |        |        |   |
+    | **A4** |        | ***C4*** | **D4** |        |        |   |
+    | **A5** |        |          |        |        |        |   |
     |        |        |          |        |        |        |   |
     |        |        |          |        |        |        |   |
     """).strip()
@@ -1149,10 +1149,10 @@ def test_export_to_markdown_infinite_style_repeat_col(samples):
 
     | **A1** | **B1** | **C1**   | **C1**   | **C1**   | **D1** | **E1** | **F1** |   |
     |--------|--------|----------|----------|----------|--------|--------|--------|---|
-    | A2     |        |          |          |          |        |        |        |   |
-    | A3     | B3     |          |          |          |        |        |        |   |
-    | A4     |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
-    | A5     |        |          |          |          |        |        |        |   |
+    | **A2** |        |          |          |          |        |        |        |   |
+    | **A3** | B3     |          |          |          |        |        |        |   |
+    | **A4** |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
+    | **A5** |        |          |          |          |        |        |        |   |
     |        |        |          |          |          |        |        |        |   |
     |        |        |          |          |          |        |        |        |   |
     """).strip()
@@ -1168,16 +1168,57 @@ def test_export_to_markdown_infinite_style_repeat_row(samples):
 
     | **A1** | **B1** | **C1**   | **C1**   | **C1**   | **D1** | **E1** | **F1** |   |
     |--------|--------|----------|----------|----------|--------|--------|--------|---|
-    | A2     |        |          |          |          |        |        |        |   |
-    | A3     | B3     |          |          |          |        |        |        |   |
-    | A4     |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
-    | A4     |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
-    | A4     |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
-    | A4     |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
-    | A4     |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
-    | A5     |        |          |          |          |        |        |        |   |
+    | **A2** |        |          |          |          |        |        |        |   |
+    | **A3** | B3     |          |          |          |        |        |        |   |
+    | **A4** |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
+    | **A4** |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
+    | **A4** |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
+    | **A4** |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
+    | **A4** |        | ***C4*** | ***C4*** | ***C4*** | **D4** |        |        |   |
+    | **A5** |        |          |          |          |        |        |        |   |
     |        |        |          |          |          |        |        |        |   |
     """).strip()
     res = doc.to_markdown()
     assert isinstance(res, list)
     assert _concatenation_md(res).strip() == expected
+
+
+def test_export_to_markdown_doc_table_col_row_style(samples):
+    doc = Document(samples("md_doc_table_col_row_style.odt"))
+    expected = dedent("""\
+    test table:
+
+    | **A1** | **B1**   | ***C1***        | **D1**  | **E1** | **F1** |   |
+    |--------|----------|-----------------|---------|--------|--------|---|
+    | **A2** |          |                 |         |        |        |   |
+    | **A3** | B3       |                 |         |        |        |   |
+    | **A4** |          | _C4_            | **D4**  |        |        |   |
+    | **A5** | **bold** | ***bold ital*** | no bold |        |        |   |
+    |        |          | _ital_          |         |        |        |   |
+    |        |          |                 |         |        |        |   |
+    |        |          |                 |         |        |        |   |
+    """).strip()
+    res = doc.to_markdown()
+    assert res.strip() == expected
+
+
+def test_export_to_markdown_infinity_col_row_style(samples):
+    doc = Document(samples("md_infinity_col_row_style.ods"))
+    expected = dedent("""\
+    # md_infinity_col_row_style#Feuille1
+
+    | **A1** | **B1**   | ***C1***        | **D1**  | **E1** | **F1** |   |
+    |--------|----------|-----------------|---------|--------|--------|---|
+    | **A2** |          |                 |         |        |        |   |
+    | **A3** | B3       |                 |         |        |        |   |
+    | **A4** |          | _C4_            | **D4**  |        |        |   |
+    | **A5** | **bold** | ***bold ital*** | no bold |        |        |   |
+    |        |          | _ital_          |         |        |        |   |
+    |        |          |                 |         |        |        |   |
+    |        |          |                 |         |        |        |   |
+    """).strip()
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    result = _concatenation_md(res).strip()
+    print(result)
+    assert result == expected

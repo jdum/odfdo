@@ -25,6 +25,8 @@ from io import StringIO
 import pytest
 
 from odfdo.document import Document
+from odfdo.mixin_md import MD_GLOBAL
+from odfdo.note import Note
 from odfdo.table import Table, import_from_csv
 
 CSV_DATA = '"A float","3.14"\n"A date","1975-05-07"\n'
@@ -60,10 +62,29 @@ def test_export_to_markdown_from_doc(samples):
 
 
 def test_export_to_markdown_not_initialized():
-    from odfdo.mixin_md import MD_GLOBAL
-
     table = Table("Uninit")
     table.set_value("A1", "val")
     MD_GLOBAL.pop("document", None)
     md = table.to_markdown()
+    assert "val" in md
+
+
+def test_export_to_markdown_with_notes():
+    table = Table("Notes")
+    table.set_value("A1", "Cell with note")
+    cell = table.get_row(0).get_cell(0)
+    fn = Note("footnote", note_id="fn1", citation="1", body="Footnote in table")
+    en = Note("endnote", note_id="en1", citation="A", body="Endnote in table")
+    p = cell.get_element("text:p")
+    p.append(fn)
+    p.append(en)
+    md = table.to_markdown()
+    assert "Cell with note" in md
+
+
+def test_export_to_markdown_empty_md_global():
+    table = Table("EmptyGlobal")
+    table.set_value("A1", "val")
+    MD_GLOBAL.clear()
+    md = table._md_format()
     assert "val" in md
