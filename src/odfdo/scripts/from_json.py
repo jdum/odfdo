@@ -31,17 +31,20 @@ from odfdo.utils.script_utils import detect_stdin_timeout, save_document
 
 PROG = "odfdo-from-json"
 STDIN_TIMEOUT = 0.5
+DEFAULT_NAME = "Table"
 
 
 def configure_parser() -> ArgumentParser:
     description = (
-        "Create an ODS (OpenDocument Spreadsheet) file from JSON data. "
-        "The script reads JSON data mapping table names to 2D lists of cell values "
-        "and populates tables in a new ODS document."
+        "Create an ODS document (OpenDocument Spreadsheet) file. "
+        "The script reads JSON data (mapping table names to 2D lists, "
+        "or a single 2D list) and populates tables in the ODS document."
     )
     epilog = (
-        "Input can be from a specified file or standard input. "
-        "Output can be to a specified file or standard output."
+        "Input can be a JSON object mapping table names to 2D lists of cell "
+        "values, or a 2D list of row values. Input can be from a specified "
+        "file or standard input. Output can be to a specified file or "
+        "standard output."
     )
     parser = ArgumentParser(prog=PROG, description=description, epilog=epilog)
     parser.add_argument(
@@ -68,6 +71,15 @@ def configure_parser() -> ArgumentParser:
         required=False,
         help="output ODF file, if option not present, write to stdout",
     )
+    parser.add_argument(
+        "-t",
+        "--table",
+        action="store",
+        dest="table_name",
+        metavar="TABLE",
+        required=False,
+        help=f"table name when input data is a list, default to '{DEFAULT_NAME}'",
+    )
     return parser
 
 
@@ -76,19 +88,19 @@ def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
     return parser.parse_args(cli_args)
 
 
-def read_json_input(input_file: str | None) -> str:
+def read_json_content(input_file: str | None) -> str:
     if input_file:
         return Path(input_file).read_text(encoding="utf-8")
     detect_stdin_timeout()  # pragma: no cover
-    content = io.BytesIO(sys.stdin.buffer.read())  # pragma: no cover
-    json_str = content.getvalue().decode("utf-8")  # pragma: no cover
-    content.close()  # pragma: no cover
-    return json_str  # pragma: no cover
+    content = io.BytesIO(sys.stdin.buffer.read())
+    json_str = content.getvalue().decode("utf-8")
+    content.close()
+    return json_str
 
 
 def from_json(args: Namespace) -> None:
-    json_content = read_json_input(args.input_file)
-    document = Document.from_json(json_content)
+    json_content = read_json_content(args.input_file)
+    document = Document.from_json(json_content, args.table_name or DEFAULT_NAME)
     save_document(document, args.output_file)
 
 

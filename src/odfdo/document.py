@@ -855,12 +855,14 @@ class Document(MDDocument):
     def from_json(
         cls,
         content: str | Path | dict[str, list[list[Any]]],
+        table_name: str | None = None,
     ) -> Document:
         """Create a new spreadsheet Document from JSON content.
 
         Args:
             content: A JSON string, a Path or filename to a JSON file, or a
                 dictionary mapping table names to 2D lists of cell values.
+            table_name: Name of the table if the input is a list.
 
         Returns:
             Document: A new spreadsheet Document containing Table elements
@@ -901,6 +903,7 @@ class Document(MDDocument):
                 body.append(table)
         else:  # list
             table = Table.from_json(data)
+            table.name = table_name
             body.append(table)
 
         return doc
