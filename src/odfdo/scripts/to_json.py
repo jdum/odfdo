@@ -76,12 +76,21 @@ def configure_parser() -> ArgumentParser:
         help="table name, if option not present, export all tables",
     )
     parser.add_argument(
+        "-d",
+        "--hidden",
+        action="store_true",
+        dest="include_hidden",
+        default=False,
+        help="export hidden tables as well (hidden tables omitted by default)",
+    )
+    parser.add_argument(
         "-p",
         "--pretty",
         action="store_true",
         default=False,
         help="pretty-print JSON output with indentation",
     )
+
     return parser
 
 
@@ -97,9 +106,16 @@ def to_json(args: Namespace) -> None:
         if not table:
             msg = f"Table {args.table_name!r} not found"
             raise ValueError(msg)
+        if not args.include_hidden and not document.get_table_displayed(table):
+            msg = f"Table {args.table_name!r} is hidden"
+            raise ValueError(msg)
         content = table.to_json(path_or_file=args.output_file, pretty=args.pretty)
     else:
-        content = document.to_json(path_or_file=args.output_file, pretty=args.pretty)
+        content = document.to_json(
+            path_or_file=args.output_file,
+            include_hidden=args.include_hidden,
+            pretty=args.pretty,
+        )
 
     if content is not None:
         sys.stdout.buffer.write(content.encode())
