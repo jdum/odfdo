@@ -267,3 +267,58 @@ def test_to_json_big_ods(capsys, samples):
     assert len(data["Feuille1"]) == 20100
     assert data["Feuille1"][0] == [1]
     assert data["Feuille1"][-1] == [20000]
+
+
+def test_to_json_hidden_table_default(capsys, samples):
+    source = samples("minimal_hidden.ods")
+    params = parse_cli_args(["-i", str(source)])
+
+    main_to_json(params)
+    captured = capsys.readouterr()
+
+    data = json.loads(captured.out)
+    assert "Tab 1" in data
+    assert "Tab 2" not in data
+
+
+def test_to_json_hidden_table_flag_d(capsys, samples):
+    source = samples("minimal_hidden.ods")
+    params = parse_cli_args(["-i", str(source), "-d"])
+
+    main_to_json(params)
+    captured = capsys.readouterr()
+
+    data = json.loads(captured.out)
+    assert "Tab 1" in data
+    assert "Tab 2" in data
+
+
+def test_to_json_hidden_table_flag_hidden(capsys, samples):
+    source = samples("minimal_hidden.ods")
+    params = parse_cli_args(["-i", str(source), "--hidden"])
+
+    main_to_json(params)
+    captured = capsys.readouterr()
+
+    data = json.loads(captured.out)
+    assert "Tab 1" in data
+    assert "Tab 2" in data
+
+
+def test_to_json_hidden_single_table_without_flag(samples):
+    source = samples("minimal_hidden.ods")
+    params = parse_cli_args(["-i", str(source), "-t", "Tab 2"])
+
+    with pytest.raises(ValueError):
+        main_to_json(params)
+
+
+def test_to_json_hidden_single_table_with_flag(capsys, samples):
+    source = samples("minimal_hidden.ods")
+    params = parse_cli_args(["-i", str(source), "-t", "Tab 2", "-d"])
+
+    main_to_json(params)
+    captured = capsys.readouterr()
+
+    data = json.loads(captured.out)
+    assert "Tab 2" in data

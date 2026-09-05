@@ -222,3 +222,13 @@ def test_from_json_sample_legacy_content(capsysbinary, samples, tmp_path):
         ["Alice", "USA"],
         ["Gaël", "France"],
     ]
+
+
+def test_read_json_content_from_stdin(monkeypatch):
+    class DummyStdin:
+        buffer = io.BytesIO(b'{"Sheet1": [[1, 2]]}')
+
+    monkeypatch.setattr(from_json, "detect_stdin_timeout", lambda: None)
+    monkeypatch.setattr(sys, "stdin", DummyStdin())
+    content = from_json.read_json_content(None)
+    assert content == '{"Sheet1": [[1, 2]]}'

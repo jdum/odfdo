@@ -269,8 +269,56 @@ def test_document_from_json_path_and_filename(tmp_path):
 
 
 def test_document_from_json_invalid_types():
-    with pytest.raises(TypeError):
+    with pytest.raises(
+        TypeError, match="JSON content must be a string, Path, dict or list"
+    ):
         Document.from_json(123)  # type: ignore[arg-type]
+    with pytest.raises(
+        TypeError, match="JSON content must be a string, Path, dict or list"
+    ):
+        Document.from_json(None)  # type: ignore[arg-type]
+
+
+def test_document_from_json_list():
+    rows = [["Header1", "Header2"], [10, 20]]
+    doc = Document.from_json(rows, table_name="CustomTable")
+    assert len(doc.body.tables) == 1
+    t = doc.body.tables[0]
+    assert t.name == "CustomTable"
+    assert t.values == [["Header1", "Header2"], [10, 20]]
+
+
+def test_document_from_json_list_json_str():
+    json_str = '[["ColA", "ColB"], ["X", "Y"]]'
+    doc = Document.from_json(json_str, table_name="ListTable")
+    assert len(doc.body.tables) == 1
+    t = doc.body.tables[0]
+    assert t.name == "ListTable"
+    assert t.values == [["ColA", "ColB"], ["X", "Y"]]
+
+
+def test_document_from_json_primitive_json_str():
+    with pytest.raises(
+        TypeError, match="JSON document content must be a dictionary"
+    ):
+        Document.from_json("123")
+    with pytest.raises(
+        TypeError, match="JSON document content must be a dictionary"
+    ):
+        Document.from_json('"string_value"')
+    with pytest.raises(
+        TypeError, match="JSON document content must be a dictionary"
+    ):
+        Document.from_json("true")
+
+
+def test_document_from_json_primitive_path(tmp_path):
+    p = tmp_path / "primitive.json"
+    p.write_text("123", encoding="utf-8")
+    with pytest.raises(
+        TypeError, match="JSON document content must be a dictionary"
+    ):
+        Document.from_json(p)
 
 
 def test_document_from_json_long_string_oserror():
@@ -541,3 +589,21 @@ def test_json_roundtrip_all_types():
 
     assert row_reimported.get_cell(7).value == timedelta(hours=1, minutes=45)
     assert row_reimported.get_cell(7).type == "time"
+
+
+def test_document_to_json_hidden_table(samples):
+    doc = Document(samples("minimal_hidden.ods"))
+
+    # Default: hidden tables omitted
+    json_default = doc.to_json()
+    assert json_default is not None
+    data_default = json.loads(json_default)
+    assert "Tab 1" in data_default
+    assert "Tab 2" not in data_default
+
+    # include_hidden=True: hidden tables included
+    json_hidden = doc.to_json(include_hidden=True)
+    assert json_hidden is not None
+    data_hidden = json.loads(json_hidden)
+    assert "Tab 1" in data_hidden
+    assert "Tab 2" in data_hidden
