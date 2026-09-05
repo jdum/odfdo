@@ -64,6 +64,7 @@ from .table_cache import _XP_COLUMN_IDX, _XP_ROW_IDX, TableCache
 from .utils import (
     convert_coordinates,
     digit_to_alpha,
+    format_json,
     increment,
     isiterable,
     translate_from_any,
@@ -2926,7 +2927,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     def to_json(
         self,
         path_or_file: str | Path | None = None,
-        indent: int | str | None = None,
+        pretty: bool = False,
         ensure_ascii: bool = False,
     ) -> str | None:
         """Export the table values as a JSON string or file.
@@ -2934,7 +2935,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         Args:
             path_or_file: The path or file to save the JSON content to.
                 If None, the JSON content is returned as a string.
-            indent: Indentation level for formatting the JSON output.
+            pretty: Use pretty formater. Defaults to False.
             ensure_ascii: If True, non-ASCII characters are escaped. Defaults
                 to False.
 
@@ -2944,7 +2945,10 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """
         rows = self._serialize_table_rows()
         data: Any = {self.name or "Table": rows}
-        content = json.dumps(data, indent=indent, ensure_ascii=ensure_ascii)
+        if pretty:
+            content = format_json(data, ensure_ascii=ensure_ascii)
+        else:
+            content = json.dumps(data, ensure_ascii=ensure_ascii)
         if path_or_file:
             Path(path_or_file).write_text(content, encoding="utf-8")
             return None

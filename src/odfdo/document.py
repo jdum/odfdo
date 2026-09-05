@@ -70,6 +70,7 @@ from .utils import (
     FAMILY_MAPPING,
     Blob,
     bytes_to_str,
+    format_json,
     is_RFC3066,
 )
 from .xmlpart import XmlPart
@@ -805,10 +806,10 @@ class Document(MDDocument):
     def to_json(
         self,
         path_or_file: str | Path | None = None,
-        indent: int | str | None = None,
+        pretty: bool = False,
         ensure_ascii: bool = False,
     ) -> str | None:
-        """Export the values ​​from all tables in the document to JSON format.
+        """Export the values from all tables in the document to JSON format.
 
         The JSON output is a dictionary mapping each table's name to its 2D
         list of cell values (list of list of cell values).
@@ -816,7 +817,7 @@ class Document(MDDocument):
         Args:
             path_or_file: The path or file to save the JSON content to.
                 If None, the JSON content is returned as a string.
-            indent: Indentation level for formatting the JSON output.
+            pretty: Use pretty formater. Defaults to False.
             ensure_ascii: If True, non-ASCII characters are escaped.
                 Defaults to False.
 
@@ -838,7 +839,11 @@ class Document(MDDocument):
             used_names.add(name)
             tables_dict[name] = table._serialize_table_rows()
 
-        content_str = json.dumps(tables_dict, indent=indent, ensure_ascii=ensure_ascii)
+        if pretty:
+            content_str = format_json(tables_dict, ensure_ascii=ensure_ascii)
+        else:
+            content_str = json.dumps(tables_dict, ensure_ascii=ensure_ascii)
+
         if path_or_file:
             Path(path_or_file).write_text(content_str, encoding="utf-8")
             return None
