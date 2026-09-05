@@ -27,12 +27,12 @@ from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
 from odfdo import Document, __version__
+from odfdo.utils import get_default_language
 from odfdo.utils.script_utils import detect_stdin_timeout, save_document
 
 PROG = "odfdo-from-json"
 STDIN_TIMEOUT = 0.5
 DEFAULT_NAME = "Table"
-DEFAULT_LANGUAGE = "en-US"
 
 
 def configure_parser() -> ArgumentParser:
@@ -47,6 +47,7 @@ def configure_parser() -> ArgumentParser:
         "file or standard input. Output can be to a specified file or "
         "standard output."
     )
+    default_language = get_default_language()
     parser = ArgumentParser(prog=PROG, description=description, epilog=epilog)
     parser.add_argument(
         "--version",
@@ -88,8 +89,8 @@ def configure_parser() -> ArgumentParser:
         dest="language",
         metavar="LANGUAGE",
         required=False,
-        default=DEFAULT_LANGUAGE,
-        help=f"language of the ODF document, default to '{DEFAULT_LANGUAGE}'",
+        default=default_language,
+        help=f"language of the ODF document, default to '{default_language}'",
     )
     return parser
 
