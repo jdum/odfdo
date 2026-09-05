@@ -805,6 +805,7 @@ class Document(MDDocument):
     def to_json(
         self,
         path_or_file: str | Path | None = None,
+        include_hidden: bool = False,
         pretty: bool = False,
         ensure_ascii: bool = False,
     ) -> str | None:
@@ -816,6 +817,8 @@ class Document(MDDocument):
         Args:
             path_or_file: The path or file to save the JSON content to.
                 If None, the JSON content is returned as a string.
+            include_hidden: If True, include hidden tables in the export.
+                Defaults to False.
             pretty: Use pretty formater. Defaults to False.
             ensure_ascii: If True, non-ASCII characters are escaped.
                 Defaults to False.
@@ -828,6 +831,8 @@ class Document(MDDocument):
         used_names: set[str] = set()
 
         for table in self.body.tables:
+            if not include_hidden and not self.get_table_displayed(table):
+                continue
             base_name = table.name or "Table"
             name = base_name
             if name in used_names:

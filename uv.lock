@@ -873,7 +873,7 @@ wheels = [
 
 [[package]]
 name = "odfdo"
-version = "3.24.7"
+version = "3.25.0"
 source = { editable = "." }
 dependencies = [
     { name = "lxml" },
