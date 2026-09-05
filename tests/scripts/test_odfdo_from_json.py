@@ -232,3 +232,63 @@ def test_read_json_content_from_stdin(monkeypatch):
     monkeypatch.setattr(sys, "stdin", DummyStdin())
     content = from_json.read_json_content(None)
     assert content == '{"Sheet1": [[1, 2]]}'
+
+
+def test_from_json_default_language(capsysbinary, tmp_path):
+    json_path = tmp_path / "data.json"
+    json_path.write_text('{"Sheet1": [[1, 2]]}', encoding="utf-8")
+    params = parse_cli_args(["-i", str(json_path)])
+
+    main_from_json(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
+    document = Document(content)
+    content.close()
+
+    assert document.language == "en-US"
+
+
+def test_from_json_custom_language(capsysbinary, tmp_path):
+    json_path = tmp_path / "data.json"
+    json_path.write_text('{"Sheet1": [[1, 2]]}', encoding="utf-8")
+    params = parse_cli_args(["-i", str(json_path), "-l", "fr-FR"])
+
+    main_from_json(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
+    document = Document(content)
+    content.close()
+
+    assert document.language == "fr-FR"
+
+
+def test_from_json_custom_language_long_option(capsysbinary, tmp_path):
+    json_path = tmp_path / "data.json"
+    json_path.write_text('{"Sheet1": [[1, 2]]}', encoding="utf-8")
+    params = parse_cli_args(["-i", str(json_path), "--language", "de-DE"])
+
+    main_from_json(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
+    document = Document(content)
+    content.close()
+
+    assert document.language == "de-DE"
+
+
+def test_from_json_empty_language(capsysbinary, tmp_path):
+    json_path = tmp_path / "data.json"
+    json_path.write_text('{"Sheet1": [[1, 2]]}', encoding="utf-8")
+    params = parse_cli_args(["-i", str(json_path), "--language", ""])
+
+    main_from_json(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
+    document = Document(content)
+    content.close()
+
+    assert document.language == "fr-FR"
