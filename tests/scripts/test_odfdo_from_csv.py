@@ -105,3 +105,59 @@ def test_from_csv_2_text2(capsysbinary, samples):
     assert table.get_row_values(0) in (case1, case2)
     assert table.get_row_values(1) == [1, 2, "some text with, comma", Decimal("-3.14")]
     assert table.get_row_values(2) == [3, 4, "text with space", Decimal("0.01")]
+
+
+def test_from_csv_default_language(capsysbinary, samples):
+    source = samples("text1.csv")
+    params = parse_cli_args(["-i", str(source)])
+
+    main_from_csv(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
+    document = Document(content)
+    content.close()
+
+    assert document.language == from_csv.get_default_language()
+
+
+def test_from_csv_custom_language(capsysbinary, samples):
+    source = samples("text1.csv")
+    params = parse_cli_args(["-i", str(source), "-l", "fr-FR"])
+
+    main_from_csv(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
+    document = Document(content)
+    content.close()
+
+    assert document.language == "fr-FR"
+
+
+def test_from_csv_custom_language_long_option(capsysbinary, samples):
+    source = samples("text1.csv")
+    params = parse_cli_args(["-i", str(source), "--language", "de-DE"])
+
+    main_from_csv(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
+    document = Document(content)
+    content.close()
+
+    assert document.language == "de-DE"
+
+
+def test_from_csv_empty_language(capsysbinary, samples):
+    source = samples("text1.csv")
+    params = parse_cli_args(["-i", str(source), "--language", ""])
+
+    main_from_csv(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
+    document = Document(content)
+    content.close()
+
+    assert document.language == "fr-FR"
