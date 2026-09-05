@@ -32,13 +32,14 @@ PROG = "odfdo-to-json"
 
 def configure_parser() -> ArgumentParser:
     description = (
-        "Export tables from an ODF (OpenDocument) spreadsheet or text file "
-        "to JSON. The script extracts specified or all tables into a JSON "
+        "Export one or all tables from an ODF (OpenDocument) spreadsheet or "
+        "text file to JSON. The script extracts all tables into a JSON "
         "object mapping table names to 2D lists of cell values."
     )
     epilog = (
         "This tool outputs standard JSON formatted data. "
-        "It can output to a file or standard output, with optional pretty-printing formatting."
+        "It can output to a file or standard output, with optional "
+        "pretty-printing formatting."
     )
     parser = ArgumentParser(prog=PROG, description=description, epilog=epilog)
     parser.add_argument(
@@ -91,16 +92,14 @@ def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
 
 def to_json(args: Namespace) -> None:
     document = read_document(args.input_file)
-    indent = 4 if args.pretty else None
-
     if args.table_name:
-        table = document.body.get_table(name=args.table_name)
+        table = document.body.get_table_by_name(args.table_name)
         if not table:
             msg = f"Table {args.table_name!r} not found"
             raise ValueError(msg)
-        content = table.to_json(path_or_file=args.output_file, indent=indent)
+        content = table.to_json(path_or_file=args.output_file, pretty=args.pretty)
     else:
-        content = document.to_json(path_or_file=args.output_file, indent=indent)
+        content = document.to_json(path_or_file=args.output_file, pretty=args.pretty)
 
     if content is not None:
         sys.stdout.buffer.write(content.encode())
