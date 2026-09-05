@@ -31,6 +31,7 @@ from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
 from odfdo import Document, Table, __version__
+from odfdo.utils import get_default_language
 from odfdo.utils.script_utils import detect_stdin_timeout, save_document
 
 PROG = "odfdo-from-csv"
@@ -49,6 +50,7 @@ def configure_parser() -> ArgumentParser:
         "Input can be from a specified file or standard input. "
         "Output can be to a specified file or standard output."
     )
+    default_language = get_default_language()
     parser = ArgumentParser(prog=PROG, description=description, epilog=epilog)
     parser.add_argument(
         "--version",
@@ -84,6 +86,16 @@ def configure_parser() -> ArgumentParser:
         required=False,
         help=f"table name, if option not present, default to '{DEFAULT_NAME}'",
     )
+    parser.add_argument(
+        "-l",
+        "--language",
+        action="store",
+        dest="language",
+        metavar="LANGUAGE",
+        required=False,
+        default=default_language,
+        help=f"language of the ODF document, default to '{default_language}'",
+    )
     return parser
 
 
@@ -106,6 +118,8 @@ def read_document(input_file: str | None) -> str:
 def from_csv(args: Namespace) -> None:
     csv_content = read_document(args.input_file)
     document = Document("ods")
+    if args.language:
+        document.language = args.language
     table = Table.from_csv(
         content=csv_content,
         name=args.table_name or DEFAULT_NAME,
