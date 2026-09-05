@@ -229,3 +229,54 @@ def test_table_from_json_invalid_type():
 
     with pytest.raises(TypeError):
         Table.from_json("123")
+
+
+def test_document_from_json_dict():
+    data = {
+        "Sheet1": [["A", "B"], [1, 2]],
+        "Sheet2": [["C", "D"], [3, 4]],
+    }
+    doc = Document.from_json(data)
+    assert len(doc.body.tables) >= 2
+    table1 = doc.body.get_table(name="Sheet1")
+    assert table1 is not None
+    assert table1.values == [["A", "B"], [1, 2]]
+    table2 = doc.body.get_table(name="Sheet2")
+    assert table2 is not None
+    assert table2.values == [["C", "D"], [3, 4]]
+
+
+def test_document_from_json_string():
+    json_str = json.dumps({"Data": [["Col1", "Col2"], [10, True]]})
+    doc = Document.from_json(json_str)
+    table = doc.body.get_table(name="Data")
+    assert table is not None
+    assert table.values == [["Col1", "Col2"], [10, True]]
+
+
+def test_document_from_json_path_and_filename(tmp_path):
+    data = {"Info": [["Key", "Val"], ["Version", 1]]}
+    file_path = tmp_path / "doc_data.json"
+    file_path.write_text(json.dumps(data), encoding="utf-8")
+
+    # Test with Path object
+    doc1 = Document.from_json(file_path)
+    assert doc1.body.get_table(name="Info") is not None
+
+    # Test with string path to file
+    doc2 = Document.from_json(str(file_path))
+    assert doc2.body.get_table(name="Info") is not None
+
+
+def test_document_from_json_invalid_types():
+    with pytest.raises(TypeError):
+        Document.from_json(123)  # type: ignore[arg-type]
+
+    with pytest.raises(TypeError):
+        Document.from_json("[1, 2, 3]")  # JSON list instead of dict
+
+
+def test_document_from_json_long_string_oserror():
+    long_str = "{" + "a" * 1000 + "}"
+    with pytest.raises(json.JSONDecodeError):
+        Document.from_json(long_str)
