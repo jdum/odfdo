@@ -837,6 +837,7 @@ class Document(MDDocument):
                 name = f"{base_name}_{counter}"
             used_names.add(name)
             cloned_table = table.clone
+            cloned_table.rstrip(aggressive=True)
             cloned_table.optimize_height()
             cloned_table.optimize_width()
             tables_dict[name] = cloned_table._serialize_table_rows()
