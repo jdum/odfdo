@@ -27,9 +27,11 @@ from __future__ import annotations
 
 import contextlib
 import csv
+import json
 import os
 from collections.abc import Iterable, Iterator
-from datetime import timedelta
+from datetime import date, datetime, timedelta
+from decimal import Decimal
 from io import StringIO
 from itertools import zip_longest
 from pathlib import Path
@@ -2919,6 +2921,93 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 cell = Cell(_get_python_value(value, encoding))
                 row.append_cell(cell, clone=False)
             table.append_row(row, clone=False)
+        return table
+
+    def to_json(
+        self,
+        path_or_file: str | Path | None = None,
+        indent: int | str | None = None,
+        ensure_ascii: bool = False,
+    ) -> str | None:
+        """Export the table values as a JSON string or file.
+
+        Args:
+            path_or_file: The path or file to save the JSON content to.
+                If None, the JSON content is returned as a string.
+            indent: Indentation level for formatting the JSON output.
+            ensure_ascii: If True, non-ASCII characters are escaped. Defaults
+                to False.
+
+        Returns:
+            str | None: The JSON content as a string if `path_or_file` is
+                None, otherwise None.
+        """
+        rows = self._serialize_table_rows()
+        data: Any = {self.name or "Table": rows}
+        content = json.dumps(data, indent=indent, ensure_ascii=ensure_ascii)
+        if path_or_file:
+            Path(path_or_file).write_text(content, encoding="utf-8")
+            return None
+        return content
+
+    def _serialize_table_rows(self) -> list[list[CellValue]]:
+        serialized_rows: list[list[CellValue]] = []
+        for row in self.values:
+            serialized_row: list[Any] = []
+            for val in row:
+                if val is None or isinstance(val, (str, int, float, bool)):
+                    serialized_row.append(val)
+                elif isinstance(val, Decimal):
+                    serialized_row.append(int(val) if int(val) == val else float(val))
+                elif isinstance(val, datetime):
+                    serialized_row.append(DateTime.encode(val))
+                elif isinstance(val, date):
+                    serialized_row.append(Date.encode(val))
+                elif isinstance(val, timedelta):
+                    serialized_row.append(Duration.encode(val))
+                else:
+                    serialized_row.append(str(val))
+            serialized_rows.append(serialized_row)
+        return serialized_rows
+
+    @classmethod
+    def from_json(
+        cls,
+        content: str | dict[str, list[list[Any]]] | list[list[Any]],
+        name: str | None = None,
+    ) -> Table:
+        """Import JSON content into a new Table object.
+
+        Args:
+            content: A JSON string, dictionary `{table_name: [[...], ...]}` or
+                2D list `[[...], ...]`.
+            name: Name of table to create. If None, uses key from dict or
+                "Table".
+
+        Returns:
+            Table: A new Table object populated with the JSON data.
+        """
+        if isinstance(content, str):
+            data = json.loads(content)
+        else:
+            data = content
+
+        if isinstance(data, dict):
+            if not data:
+                table_name = name or "Table"
+                rows_data: list[list[Any]] = []
+            else:
+                key = next(iter(data))
+                table_name = name or key
+                rows_data = data[key]
+        elif isinstance(data, list):
+            table_name = name or "Table"
+            rows_data = data
+        else:
+            raise TypeError("JSON content must be a dict, list, or valid JSON string.")
+
+        table = cls(table_name)
+        table.values = rows_data
         return table
 
 
