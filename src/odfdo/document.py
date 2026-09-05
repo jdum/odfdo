@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import json
 import posixpath
 from contextlib import suppress
 from copy import deepcopy
@@ -800,6 +801,48 @@ class Document(MDDocument):
         finally:
             _set_global(None)
         return results
+
+    def to_json(
+        self,
+        path_or_file: str | Path | None = None,
+        indent: int | str | None = None,
+        ensure_ascii: bool = False,
+    ) -> str | None:
+        """Export the values ​​from all tables in the document to JSON format.
+
+        The JSON output is a dictionary mapping each table's name to its 2D
+        list of cell values (list of list of cell values).
+
+        Args:
+            path_or_file: The path or file to save the JSON content to.
+                If None, the JSON content is returned as a string.
+            indent: Indentation level for formatting the JSON output.
+            ensure_ascii: If True, non-ASCII characters are escaped.
+                Defaults to False.
+
+        Returns:
+            str | None: The JSON content as a string if `path_or_file` is
+                None, otherwise None.
+        """
+        tables_dict: dict[str, list[list[Any]]] = {}
+        used_names: set[str] = set()
+
+        for table in self.body.tables:
+            base_name = table.name or "Table"
+            name = base_name
+            if name in used_names:
+                counter = 2
+                while f"{base_name}_{counter}" in used_names:
+                    counter += 1
+                name = f"{base_name}_{counter}"
+            used_names.add(name)
+            tables_dict[name] = table._serialize_table_rows()
+
+        content_str = json.dumps(tables_dict, indent=indent, ensure_ascii=ensure_ascii)
+        if path_or_file:
+            Path(path_or_file).write_text(content_str, encoding="utf-8")
+            return None
+        return content_str
 
     def _add_binary_part(self, blob: Blob) -> str:
         if not self.container:
