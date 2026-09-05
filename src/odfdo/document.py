@@ -875,24 +875,29 @@ class Document(MDDocument):
                 if Path(content).is_file():
                     content = Path(content).read_text(encoding="utf-8")
             data = json.loads(content)
-        elif isinstance(content, dict):
+        elif isinstance(content, dict | list):
             data = content
         else:
-            msg = "JSON content must be a string, Path, or dict."
+            msg = "JSON content must be a string, Path, dict or list."
             raise TypeError(msg)
 
-        if not isinstance(data, dict):
+        if not isinstance(data, dict | list):
             msg = (
-                "JSON document content must be a dictionary mapping table "
-                " names to row lists."
+                "JSON document content must be a dictionary mapping "
+                "table names to row lists or a list of rows."
             )
             raise TypeError(msg)
 
         doc = cls.new("spreadsheet")
         body = doc.body
+        body.clear()
 
-        for table_name, rows in data.items():
-            table = Table.from_json(rows, name=table_name)
+        if isinstance(data, dict):
+            for table_name, rows in data.items():
+                table = Table.from_json(rows, name=table_name)
+                body.append(table)
+        else:  # list
+            table = Table.from_json(data)
             body.append(table)
 
         return doc
