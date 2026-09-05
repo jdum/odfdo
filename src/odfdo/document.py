@@ -1805,15 +1805,18 @@ class Document(MDDocument):
             return None
         return style.get_properties(area=area)
 
-    def _get_table(self, table: int | str) -> Table | None:
+    def _get_table(self, table: int | str | Table) -> Table | None:
+        if isinstance(table, Table):
+            return table
         if not isinstance(table, (int, str)):
-            raise TypeError(f"Table parameter must be int or str: {table!r}")
+            msg = f"Table parameter must be int or str or Table: {table!r}"
+            raise TypeError(msg)
         if isinstance(table, int):
             return self.body.get_table(position=table)
         return self.body.get_table(name=table)
 
     def get_cell_style_properties(
-        self, table: str | int, coord: tuple | list | str
+        self, table: str | int | Table, coord: tuple | list | str
     ) -> dict[str, str]:
         """Return the style properties of a table cell in an ODS document.
 
@@ -1822,7 +1825,7 @@ class Document(MDDocument):
         precedence.
 
         Args:
-            table: The name (str) or index (int) of the table.
+            table: The name (str), index (int), or Table object.
             coord: The coordinates of the cell (e.g., "A1", (0, 0)).
 
         Returns:
@@ -1858,7 +1861,7 @@ class Document(MDDocument):
 
     def get_cell_background_color(
         self,
-        table: str | int,
+        table: str | int | Table,
         coord: tuple | list | str,
         default: str = "#ffffff",
     ) -> str:
@@ -1868,7 +1871,7 @@ class Document(MDDocument):
         If no background color is explicitly defined, the `default` value is returned.
 
         Args:
-            table: The name (str) or index (int) of the table.
+            table: The name (str), index (int), or Table object.
             coord: The coordinates of the cell (e.g., "A1", (0, 0)).
             default: The default color to return if no background color is defined
                 (defaults to "#ffffff").
@@ -1881,12 +1884,12 @@ class Document(MDDocument):
 
     def get_table_style(
         self,
-        table: str | int,
+        table: str | int | Table,
     ) -> StyleBase | None:
         """Return the `StyleBase` instance associated with the table.
 
         Args:
-            table: The name (str) or index (int) of the table.
+            table: The name (str), index (int), or Table object.
 
         Returns:
             The `StyleBase` object for the table, or `None` if the table
@@ -1896,7 +1899,7 @@ class Document(MDDocument):
             return None
         return self.get_style("table", sheet.style)  # ty: ignore
 
-    def get_table_displayed(self, table: str | int) -> bool:
+    def get_table_displayed(self, table: str | int | Table) -> bool:
         """Return the `table:display` property of the table's style.
 
         This property indicates whether the table should be displayed in a
@@ -1904,7 +1907,7 @@ class Document(MDDocument):
         method from previous `odfdo` versions.
 
         Args:
-            table: The name (str) or index (int) of the table.
+            table: The name (str), index (int), or Table object.
 
         Returns:
             `True` if the table is set to be displayed, `False` otherwise.
