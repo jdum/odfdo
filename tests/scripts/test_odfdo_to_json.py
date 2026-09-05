@@ -180,3 +180,38 @@ def test_to_json_single_table_output_file(samples, tmp_path):
     assert out_file.exists()
     data = json.loads(out_file.read_text(encoding="utf-8"))
     assert data == expected
+
+
+def test_to_json_simple_table_1(capsys, samples):
+    source = samples("simple_table.ods")
+    params = parse_cli_args(["-i", str(source), "--pretty"])
+
+    main_to_json(params)
+    captured = capsys.readouterr()
+
+    data = json.loads(captured.out)
+    assert "Example1" in data
+    assert "Example2" in data
+    assert "Example3" in data
+    assert data["Example1"][0] == [1, 1, 1, 2, 3, 3, 3]
+
+
+def test_to_json_simple_table_example3(capsys, samples):
+    source = samples("simple_table.ods")
+    params = parse_cli_args(["-i", str(source), "-t", "Example3", "--pretty"])
+
+    main_to_json(params)
+    captured = capsys.readouterr()
+
+    data = json.loads(captured.out)
+    assert "Example3" in data
+    assert data["Example3"] == [["A float", 3.14], ["A date", "1975-05-07"]]
+
+
+def test_to_json_simple_table_raise(samples):
+    source = samples("simple_table.ods")
+    params = parse_cli_args(["-i", str(source), "-t", "oops"])
+
+    with pytest.raises(ValueError) as result:
+        main_to_json(params)
+        assert result.value.code >= 1

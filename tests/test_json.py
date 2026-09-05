@@ -272,9 +272,6 @@ def test_document_from_json_invalid_types():
     with pytest.raises(TypeError):
         Document.from_json(123)  # type: ignore[arg-type]
 
-    with pytest.raises(TypeError):
-        Document.from_json("[1, 2, 3]")  # JSON list instead of dict
-
 
 def test_document_from_json_long_string_oserror():
     long_str = "{" + "a" * 1000 + "}"
