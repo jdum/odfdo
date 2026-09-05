@@ -32,7 +32,7 @@ from odfdo.table import Table
 
 def test_document_to_json_ods(samples):
     doc = Document(samples("legacy_content.ods"))
-    json_str = doc.to_json(pretty=True)
+    json_str = doc.to_json()
     assert json_str is not None
     data = json.loads(json_str)
 
@@ -67,7 +67,7 @@ def test_document_to_json_file(samples, tmp_path):
     doc = Document(samples("legacy_content.ods"))
     output_path = tmp_path / "output.json"
 
-    res = doc.to_json(path_or_file=output_path, pretty=True)
+    res = doc.to_json(path_or_file=output_path)
     assert res is None
     assert output_path.exists()
 
@@ -79,7 +79,7 @@ def test_document_to_json_file(samples, tmp_path):
 def test_table_to_json(samples):
     doc = Document(samples("legacy_content.ods"))
     table = doc.body.tables[0]
-    json_str = table.to_json(pretty=True)
+    json_str = table.to_json()
     assert json_str is not None
     data = json.loads(json_str)
 
@@ -97,7 +97,7 @@ def test_table_to_json_file(samples, tmp_path):
     table = doc.body.tables[0]
     output_path = tmp_path / "table.json"
 
-    res = table.to_json(path_or_file=output_path, pretty=True)
+    res = table.to_json(path_or_file=output_path)
     assert res is None
     assert output_path.exists()
 
@@ -140,15 +140,15 @@ def test_json_serialization_data_types():
     table.append_row(row)
 
     expected = dedent("""\
-        {
-          "Some table": [
-            ["text", 42, 3.14, 99.99, true, "2026-08-15", "2026-08-15T14:30:00", "PT02H00M00S"]
-          ]
-        }
+    {
+      "Some table": [
+        ["text", 42, 3.14, 99.99, true, "2026-08-15", "2026-08-15T14:30:00", "PT02H00M00S"]
+      ]
+    }
+
     """).strip()
 
     json_str = table.to_json(pretty=True)
-    print(json_str)
     assert json_str.strip() == expected
 
     data = json.loads(json_str)
@@ -238,20 +238,20 @@ def test_document_from_json_dict():
     }
     doc = Document.from_json(data)
     assert len(doc.body.tables) >= 2
-    table1 = doc.body.get_table(name="Sheet1")
-    assert table1 is not None
-    assert table1.values == [["A", "B"], [1, 2]]
-    table2 = doc.body.get_table(name="Sheet2")
-    assert table2 is not None
-    assert table2.values == [["C", "D"], [3, 4]]
+    t1 = doc.body.get_table(name="Sheet1")
+    assert t1 is not None
+    assert t1.values == [["A", "B"], [1, 2]]
+    t2 = doc.body.get_table(name="Sheet2")
+    assert t2 is not None
+    assert t2.values == [["C", "D"], [3, 4]]
 
 
 def test_document_from_json_string():
     json_str = json.dumps({"Data": [["Col1", "Col2"], [10, True]]})
     doc = Document.from_json(json_str)
-    table = doc.body.get_table(name="Data")
-    assert table is not None
-    assert table.values == [["Col1", "Col2"], [10, True]]
+    t = doc.body.get_table(name="Data")
+    assert t is not None
+    assert t.values == [["Col1", "Col2"], [10, True]]
 
 
 def test_document_from_json_path_and_filename(tmp_path):
@@ -309,3 +309,235 @@ def test_serialize_table_rows_all_none_rows():
         rows = table._serialize_table_rows()
         assert rows == []
 
+
+def test_document_roundtrip_legacy_content(samples):
+    doc_orig = Document(samples("legacy_content.ods"))
+    json_str = doc_orig.to_json()
+    assert json_str is not None
+
+    data = json.loads(json_str)
+    new_doc = Document.from_json(data)
+
+    assert len(new_doc.body.tables) == 2
+    assert new_doc.body.tables[0].name == "Employees"
+    assert new_doc.body.tables[1].name == "Figures"
+    assert new_doc.body.tables[0].values == doc_orig.body.tables[0].values
+
+
+def test_document_to_json_styled_table(samples):
+    doc = Document(samples("styled_table.ods"))
+    json_str = doc.to_json()
+    assert json_str is not None
+    data = json.loads(json_str)
+
+    assert "Feuille1" in data
+    assert "Feuille2" in data
+    assert "Feuille 3 3" in data
+
+    rows_feuille1 = data["Feuille1"]
+    assert len(rows_feuille1) == 7
+    assert rows_feuille1[0] == [1, 2, 3, 4]
+    assert rows_feuille1[6] == [4, 5, 6, 7]
+    assert data["Feuille2"] == [["val2"]]
+    assert data["Feuille 3 3"] == [["val3"]]
+
+
+def test_document_to_json_unstriped(samples):
+    doc = Document(samples("unstriped.ods"))
+    json_str = doc.to_json()
+    assert json_str is not None
+    data = json.loads(json_str)
+
+    assert "Sheet1" in data
+    assert "Sheet2" in data
+
+    assert data["Sheet1"] == [
+        [1],
+        [None, 2],
+        [None, None, 3],
+        [None, None, None, 4],
+    ]
+    assert data["Sheet2"] == [
+        [],
+        [None, 2],
+        [None, None, 3],
+        [None, None, None, 4],
+        [None, None, None, None, 5, 6],
+    ]
+
+
+def test_document_to_json_big_ods(samples):
+    doc = Document(samples("big.ods"))
+    json_str = doc.to_json()
+    assert json_str is not None
+    data = json.loads(json_str)
+
+    assert "Feuille1" in data
+    rows = data["Feuille1"]
+    assert len(rows) == 20100
+    assert rows[0] == [1]
+    assert rows[1] == [2]
+    assert rows[-1] == [20000]
+
+
+def test_json_export_numeric_and_boolean_types():
+    table = Table("NumbersAndBools")
+    row = Row()
+    row.set_value(0, 0)
+    row.set_value(1, 100)
+    row.set_value(2, -42)
+    row.set_value(3, 0.0)
+    row.set_value(4, 3.14159)
+    row.set_value(5, -0.001)
+    row.set_value(6, Decimal("100.50"))
+    row.set_value(7, Decimal("42"))
+    row.set_value(8, True)
+    row.set_value(9, False)
+    table.append_row(row)
+
+    json_str = table.to_json()
+    assert json_str is not None
+    data = json.loads(json_str)
+    row_data = data["NumbersAndBools"][0]
+
+    assert row_data[0] == 0
+    assert isinstance(row_data[0], int)
+    assert row_data[1] == 100
+    assert isinstance(row_data[1], int)
+    assert row_data[2] == -42
+    assert isinstance(row_data[2], int)
+
+    assert row_data[3] == 0.0
+    assert row_data[4] == 3.14159
+    assert isinstance(row_data[4], float)
+    assert row_data[5] == -0.001
+
+    assert row_data[6] == 100.5
+    assert row_data[7] == 42
+    assert isinstance(row_data[7], int)
+
+    assert row_data[8] is True
+    assert isinstance(row_data[8], bool)
+    assert row_data[9] is False
+    assert isinstance(row_data[9], bool)
+
+
+def test_json_export_date_and_datetime_types():
+    table = Table("DatesTable")
+    row = Row()
+    row.set_value(0, date(2000, 1, 1))
+    row.set_value(1, date(2026, 12, 31))
+    row.set_value(2, datetime(2026, 8, 14, 15, 30, 45))
+    row.set_value(3, datetime(2030, 5, 10, 8, 0, 0))
+    table.append_row(row)
+
+    json_str = table.to_json()
+    assert json_str is not None
+    data = json.loads(json_str)
+    row_data = data["DatesTable"][0]
+
+    assert row_data[0] == "2000-01-01"
+    assert row_data[1] == "2026-12-31"
+    assert row_data[2] == "2026-08-14T15:30:45"
+    assert row_data[3] == "2030-05-10T08:00:00"
+
+
+def test_json_export_duration_timedelta_types():
+    table = Table("TimeTable")
+    row = Row()
+    row.set_value(0, timedelta(seconds=45))
+    row.set_value(1, timedelta(minutes=30))
+    row.set_value(2, timedelta(hours=5, minutes=12, seconds=34))
+    row.set_value(3, timedelta(days=1, hours=2, minutes=3))
+    table.append_row(row)
+
+    json_str = table.to_json()
+    assert json_str is not None
+    data = json.loads(json_str)
+    row_data = data["TimeTable"][0]
+
+    assert row_data[0] == "PT00H00M45S"
+    assert row_data[1] == "PT00H30M00S"
+    assert row_data[2] == "PT05H12M34S"
+    assert row_data[3] == "PT26H03M00S"
+
+
+def test_json_import_all_primitive_types():
+    json_data = {
+        "ImportTable": [
+            [
+                "hello",
+                123,
+                45.67,
+                True,
+                False,
+                "2026-08-14T12:00:00",
+                "2:15:00",
+                None,
+            ]
+        ]
+    }
+    json_str = json.dumps(json_data)
+    table = Table.from_json(json_str)
+
+    assert table.name == "ImportTable"
+    row = table.rows[0]
+    assert row.get_cell(0).value == "hello"
+    assert row.get_cell(0).type == "string"
+
+    assert row.get_cell(1).value == 123
+
+    assert row.get_cell(2).value == Decimal("45.67")
+
+    assert row.get_cell(3).value is True
+    assert row.get_cell(3).type == "boolean"
+
+    assert row.get_cell(4).value is False
+    assert row.get_cell(4).type == "boolean"
+
+    assert row.get_cell(5).value == datetime(2026, 8, 14, 12, 0, 0)
+    assert row.get_cell(5).type == "date"
+
+    assert row.get_cell(6).value == timedelta(hours=2, minutes=15)
+    assert row.get_cell(6).type == "time"
+
+    assert row.get_cell(7).value is None
+
+
+def test_json_roundtrip_all_types():
+    table = Table("RoundtripTable")
+    row = Row()
+    row.set_value(0, "Sample")
+    row.set_value(1, 999)
+    row.set_value(2, 12.34)
+    row.set_value(3, Decimal("50.25"))
+    row.set_value(4, True)
+    row.set_value(5, False)
+    row.set_value(6, datetime(2026, 8, 14, 10, 20, 30))
+    row.set_value(7, timedelta(hours=1, minutes=45))
+    table.append_row(row)
+
+    json_str = table.to_json()
+    assert json_str is not None
+
+    table_reimported = Table.from_json(json_str)
+    assert table_reimported.name == "RoundtripTable"
+
+    row_reimported = table_reimported.rows[0]
+    assert row_reimported.get_cell(0).value == "Sample"
+    assert row_reimported.get_cell(0).type == "string"
+
+    assert row_reimported.get_cell(1).value == 999
+    assert row_reimported.get_cell(2).value == Decimal("12.34")
+    assert row_reimported.get_cell(3).value == Decimal("50.25")
+
+    assert row_reimported.get_cell(4).value is True
+    assert row_reimported.get_cell(4).type == "boolean"
+    assert row_reimported.get_cell(5).value is False
+    assert row_reimported.get_cell(5).type == "boolean"
+
+    assert row_reimported.get_cell(6).value == datetime(2026, 8, 14, 10, 20, 30)
+    assert row_reimported.get_cell(6).type == "date"
+
+    assert row_reimported.get_cell(7).value == timedelta(hours=1, minutes=45)
+    assert row_reimported.get_cell(7).type == "time"

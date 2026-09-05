@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import csv
 from collections.abc import Iterable
+from datetime import timedelta
 from io import BytesIO, StringIO
 
 import pytest
@@ -142,3 +143,21 @@ def test_import_from_csv_various():
     b = BytesIO(b"v1,v2")
     table = import_from_csv(b, "Test")
     assert table.get_value("A1") == "v1"
+
+
+def test_from_csv_time_guessing():
+    csv_data = (
+        "TimeCol,DateCol\n"
+        "02:15:00,2026-08-14\n"
+        "12:30:45,2026-08-14T12:30:45\n"
+        "PT1H30M,2025-01-01\n"
+    )
+    table = Table.from_csv(csv_data, "TestTime")
+    assert table.get_cell("A2").type == "time"
+    assert table.get_cell("A2").value == timedelta(hours=2, minutes=15)
+    assert table.get_cell("A3").type == "time"
+    assert table.get_cell("A3").value == timedelta(hours=12, minutes=30, seconds=45)
+    assert table.get_cell("A4").type == "time"
+    assert table.get_cell("A4").value == timedelta(hours=1, minutes=30)
+    assert table.get_cell("B2").type == "date"
+    assert table.get_cell("B3").type == "date"

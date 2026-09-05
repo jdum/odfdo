@@ -198,3 +198,27 @@ def test_from_json_sample_text2(capsysbinary, samples, tmp_path):
     content.close()
     table = document.body.tables[0]
     assert table.get_row_values(1)[:2] == [1, 2]
+
+
+def test_from_json_sample_legacy_content(capsysbinary, samples, tmp_path):
+    source_ods = samples("legacy_content.ods")
+    doc_orig = Document(source_ods)
+    json_path = tmp_path / "legacy.json"
+    doc_orig.to_json(path_or_file=json_path)
+
+    params = parse_cli_args(["-i", str(json_path)])
+    main_from_json(params)
+    captured = capsysbinary.readouterr()
+
+    content = io.BytesIO(captured.out)
+    document = Document(content)
+    content.close()
+
+    assert len(document.body.tables) == 2
+    assert document.body.tables[0].name == "Employees"
+    assert document.body.tables[1].name == "Figures"
+    assert document.body.tables[0].values == [
+        ["Name", "Country"],
+        ["Alice", "USA"],
+        ["Gaël", "France"],
+    ]

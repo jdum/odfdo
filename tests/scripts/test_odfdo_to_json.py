@@ -196,6 +196,18 @@ def test_to_json_simple_table_1(capsys, samples):
     assert data["Example1"][0] == [1, 1, 1, 2, 3, 3, 3]
 
 
+def test_to_json_simple_table_example2(capsys, samples):
+    source = samples("simple_table.ods")
+    params = parse_cli_args(["-i", str(source), "-t", "Example2", "--pretty"])
+
+    main_to_json(params)
+    captured = capsys.readouterr()
+
+    data = json.loads(captured.out)
+    assert "Example2" in data
+    assert "Example1" not in data
+
+
 def test_to_json_simple_table_example3(capsys, samples):
     source = samples("simple_table.ods")
     params = parse_cli_args(["-i", str(source), "-t", "Example3", "--pretty"])
@@ -212,6 +224,46 @@ def test_to_json_simple_table_raise(samples):
     source = samples("simple_table.ods")
     params = parse_cli_args(["-i", str(source), "-t", "oops"])
 
-    with pytest.raises(ValueError) as result:
+    with pytest.raises(ValueError):
         main_to_json(params)
-        assert result.value.code >= 1
+
+
+def test_to_json_styled_table(capsys, samples):
+    source = samples("styled_table.ods")
+    params = parse_cli_args(["-i", str(source), "--pretty"])
+
+    main_to_json(params)
+    captured = capsys.readouterr()
+
+    data = json.loads(captured.out)
+    assert "Feuille1" in data
+    assert len(data["Feuille1"]) == 7
+    assert data["Feuille1"][0] == [1, 2, 3, 4]
+
+
+def test_to_json_unstriped(capsys, samples):
+    source = samples("unstriped.ods")
+    params = parse_cli_args(["-i", str(source), "--pretty"])
+
+    main_to_json(params)
+    captured = capsys.readouterr()
+
+    data = json.loads(captured.out)
+    assert "Sheet1" in data
+    assert "Sheet2" in data
+    assert len(data["Sheet1"]) == 4
+    assert len(data["Sheet2"]) == 5
+
+
+def test_to_json_big_ods(capsys, samples):
+    source = samples("big.ods")
+    params = parse_cli_args(["-i", str(source)])
+
+    main_to_json(params)
+    captured = capsys.readouterr()
+
+    data = json.loads(captured.out)
+    assert "Feuille1" in data
+    assert len(data["Feuille1"]) == 20100
+    assert data["Feuille1"][0] == [1]
+    assert data["Feuille1"][-1] == [20000]
