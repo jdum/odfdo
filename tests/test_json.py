@@ -277,3 +277,35 @@ def test_document_from_json_long_string_oserror():
     long_str = "{" + "a" * 1000 + "}"
     with pytest.raises(json.JSONDecodeError):
         Document.from_json(long_str)
+
+
+def test_serialize_table_rows_trailing_none_and_empty_rows():
+    table = Table("TrailingTest")
+    with patch.object(
+        type(table),
+        "values",
+        new_callable=PropertyMock,
+        return_value=[
+            [1, 2, None, None],
+            [None, None, None, None],
+            [None, None],
+        ],
+    ):
+        rows = table._serialize_table_rows()
+        assert rows == [[1, 2]]
+
+
+def test_serialize_table_rows_all_none_rows():
+    table = Table("EmptyTest")
+    with patch.object(
+        type(table),
+        "values",
+        new_callable=PropertyMock,
+        return_value=[
+            [None, None],
+            [None, None],
+        ],
+    ):
+        rows = table._serialize_table_rows()
+        assert rows == []
+
