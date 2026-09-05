@@ -30,9 +30,15 @@ from .coordinates import (
 )
 from .formula import oooc_to_ooow
 from .isiterable import isiterable
+from .json_formater import format_json
 from .remove_tree import remove_tree
 from .rfc3066 import is_RFC3066
-from .str_convert import bytes_to_str, str_to_bytes, to_bytes, to_str
+from .str_convert import (
+    bytes_to_str,
+    str_to_bytes,
+    to_bytes,
+    to_str,
+)
 from .style_constants import (
     FALSE_FAMILY_MAP_REVERSE,
     FAMILY_LESS_STYLE_TAGS,
@@ -57,6 +63,7 @@ __all__ = [
     "bytes_to_str",
     "convert_coordinates",
     "digit_to_alpha",
+    "format_json",
     "hex2rgb",
     "hexa_color",
     "increment",
