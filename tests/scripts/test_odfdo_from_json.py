@@ -32,6 +32,7 @@ from odfdo.scripts import from_json
 from odfdo.scripts.from_json import main as main_script
 from odfdo.scripts.from_json import main_from_json, parse_cli_args
 from odfdo.table import Table
+from odfdo.utils import get_default_language
 
 SCRIPT = Path(from_json.__file__)
 
@@ -238,6 +239,7 @@ def test_from_json_default_language(capsysbinary, tmp_path):
     json_path = tmp_path / "data.json"
     json_path.write_text('{"Sheet1": [[1, 2]]}', encoding="utf-8")
     params = parse_cli_args(["-i", str(json_path)])
+    default_language = get_default_language()
 
     main_from_json(params)
     captured = capsysbinary.readouterr()
@@ -246,7 +248,7 @@ def test_from_json_default_language(capsysbinary, tmp_path):
     document = Document(content)
     content.close()
 
-    assert document.language == "en-US"
+    assert document.language == default_language
 
 
 def test_from_json_custom_language(capsysbinary, tmp_path):

@@ -17,7 +17,7 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-from odfdo.utils import is_RFC3066
+from odfdo.utils import get_default_language, is_RFC3066
 
 
 def test_bad_type():
@@ -54,3 +54,27 @@ def test_bad_4():
 
 def test_bad_5():
     assert is_RFC3066("ab-cd-ef-gh") is False
+
+
+def test_get_default_language_success(monkeypatch):
+    import locale
+
+    monkeypatch.setattr(locale, "getdefaultlocale", lambda: ("fr_FR", "UTF-8"))
+    assert get_default_language() == "fr-FR"
+
+
+def test_get_default_language_none(monkeypatch):
+    import locale
+
+    monkeypatch.setattr(locale, "getdefaultlocale", lambda: (None, None))
+    assert get_default_language() == "en-US"
+
+
+def test_get_default_language_exception(monkeypatch):
+    import locale
+
+    def bad_locale():
+        raise ValueError("locale error")
+
+    monkeypatch.setattr(locale, "getdefaultlocale", bad_locale)
+    assert get_default_language() == "en-US"
