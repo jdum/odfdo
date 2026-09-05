@@ -39,7 +39,9 @@ def get_default_language() -> str:
         warnings.simplefilter("ignore", DeprecationWarning)
         loc = locale.getdefaultlocale()
         if loc and loc[0]:
-            return loc[0].replace("_", "-")
+            lang = loc[0].replace("_", "-")
+            if is_RFC3066(lang):
+                return lang
     return "en-US"
 
 

@@ -78,3 +78,12 @@ def test_get_default_language_exception(monkeypatch):
 
     monkeypatch.setattr(locale, "getdefaultlocale", bad_locale)
     assert get_default_language() == "en-US"
+
+
+def test_get_default_language_c_locale(monkeypatch):
+    import locale
+
+    monkeypatch.setattr(locale, "getdefaultlocale", lambda: ("C", "UTF-8"))
+    assert get_default_language() == "en-US"
+    monkeypatch.setattr(locale, "getdefaultlocale", lambda: ("c", "utf8"))
+    assert get_default_language() == "en-US"
