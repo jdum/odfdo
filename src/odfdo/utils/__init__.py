@@ -32,7 +32,7 @@ from .formula import oooc_to_ooow
 from .isiterable import isiterable
 from .json_formater import format_json
 from .remove_tree import remove_tree
-from .rfc3066 import is_RFC3066
+from .rfc3066 import get_default_language, is_RFC3066
 from .str_convert import (
     bytes_to_str,
     str_to_bytes,
@@ -64,6 +64,7 @@ __all__ = [
     "convert_coordinates",
     "digit_to_alpha",
     "format_json",
+    "get_default_language",
     "hex2rgb",
     "hexa_color",
     "increment",

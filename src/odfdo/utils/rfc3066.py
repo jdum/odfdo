@@ -26,7 +26,21 @@ in ODF documents.
 
 from __future__ import annotations
 
+import contextlib
+import locale
+import warnings
 from string import ascii_letters, digits
+
+
+def get_default_language() -> str:
+    """Fetch default locale language code formatted as RFC 3066 or fall back
+    to 'en-US'."""
+    with contextlib.suppress(Exception), warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        loc = locale.getdefaultlocale()
+        if loc and loc[0]:
+            return loc[0].replace("_", "-")
+    return "en-US"
 
 
 def is_RFC3066(lang: str) -> bool:
