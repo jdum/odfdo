@@ -29,7 +29,6 @@ import contextlib
 import io
 import json
 import posixpath
-from contextlib import suppress
 from copy import deepcopy
 from functools import cache
 from importlib import resources as rso
@@ -461,7 +460,7 @@ class Document(MDDocument):
         cls = _get_part_class(path)
         # XML part overwritten
         if cls is not None:
-            with suppress(KeyError):
+            with contextlib.suppress(KeyError):
                 del self.__xmlparts[path]
         self.container.set_part(path, data)
 
@@ -848,6 +847,55 @@ class Document(MDDocument):
             Path(path_or_file).write_text(content_str, encoding="utf-8")
             return None
         return content_str
+
+    @classmethod
+    def from_json(
+        cls,
+        content: str | Path | dict[str, list[list[Any]]],
+    ) -> Document:
+        """Create a new spreadsheet Document from JSON content.
+
+        Args:
+            content: A JSON string, a Path or filename to a JSON file, or a
+                dictionary mapping table names to 2D lists of cell values.
+
+        Returns:
+            Document: A new spreadsheet Document containing Table elements
+                for each table in the JSON content.
+
+        Raises:
+            TypeError: If content is not a string, Path, or dict, or if the
+                decoded JSON structure is not a dictionary.
+        """
+        data: Any
+        if isinstance(content, Path):
+            data = json.loads(content.read_text(encoding="utf-8"))
+        elif isinstance(content, str):
+            with contextlib.suppress(OSError, ValueError):
+                if Path(content).is_file():
+                    content = Path(content).read_text(encoding="utf-8")
+            data = json.loads(content)
+        elif isinstance(content, dict):
+            data = content
+        else:
+            msg = "JSON content must be a string, Path, or dict."
+            raise TypeError(msg)
+
+        if not isinstance(data, dict):
+            msg = (
+                "JSON document content must be a dictionary mapping table "
+                " names to row lists."
+            )
+            raise TypeError(msg)
+
+        doc = cls.new("spreadsheet")
+        body = doc.body
+
+        for table_name, rows in data.items():
+            table = Table.from_json(rows, name=table_name)
+            body.append(table)
+
+        return doc
 
     def _add_binary_part(self, blob: Blob) -> str:
         if not self.container:
