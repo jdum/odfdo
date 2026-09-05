@@ -32,6 +32,7 @@ from odfdo.utils.script_utils import detect_stdin_timeout, save_document
 PROG = "odfdo-from-json"
 STDIN_TIMEOUT = 0.5
 DEFAULT_NAME = "Table"
+DEFAULT_LANGUAGE = "en-US"
 
 
 def configure_parser() -> ArgumentParser:
@@ -80,6 +81,16 @@ def configure_parser() -> ArgumentParser:
         required=False,
         help=f"table name when input data is a list, default to '{DEFAULT_NAME}'",
     )
+    parser.add_argument(
+        "-l",
+        "--language",
+        action="store",
+        dest="language",
+        metavar="LANGUAGE",
+        required=False,
+        default=DEFAULT_LANGUAGE,
+        help=f"language of the ODF document, default to '{DEFAULT_LANGUAGE}'",
+    )
     return parser
 
 
@@ -101,6 +112,8 @@ def read_json_content(input_file: str | None) -> str:
 def from_json(args: Namespace) -> None:
     json_content = read_json_content(args.input_file)
     document = Document.from_json(json_content, args.table_name or DEFAULT_NAME)
+    if args.language:
+        document.language = args.language
     save_document(document, args.output_file)
 
 
