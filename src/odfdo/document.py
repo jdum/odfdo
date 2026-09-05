@@ -836,7 +836,10 @@ class Document(MDDocument):
                     counter += 1
                 name = f"{base_name}_{counter}"
             used_names.add(name)
-            tables_dict[name] = table._serialize_table_rows()
+            cloned_table = table.clone
+            cloned_table.optimize_height()
+            cloned_table.optimize_width()
+            tables_dict[name] = cloned_table._serialize_table_rows()
 
         if pretty:
             content_str = format_json(tables_dict, ensure_ascii=ensure_ascii)
