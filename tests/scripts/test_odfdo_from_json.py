@@ -161,7 +161,7 @@ def test_from_json_list_import(capsysbinary, tmp_path):
 
     assert len(document.body.tables) == 1
     table = document.body.tables[0]
-    assert table.name == "Table"
+    assert table.name == "Sheet1"
     assert table.values == [["Col1", "Col2"], [100, 200]]
 
 

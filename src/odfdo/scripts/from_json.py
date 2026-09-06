@@ -29,10 +29,10 @@ from pathlib import Path
 from odfdo import Document, __version__
 from odfdo.utils import get_default_language
 from odfdo.utils.script_utils import detect_stdin_timeout, save_document
+from odfdo.utils.unify_name import DEFAULT_TABLE_NAME
 
 PROG = "odfdo-from-json"
 STDIN_TIMEOUT = 0.5
-DEFAULT_NAME = "Table"
 
 
 def configure_parser() -> ArgumentParser:
@@ -80,7 +80,7 @@ def configure_parser() -> ArgumentParser:
         dest="table_name",
         metavar="TABLE",
         required=False,
-        help=f"table name when input data is a list, default to '{DEFAULT_NAME}'",
+        help=f"table name when input data is a list, default to '{DEFAULT_TABLE_NAME}'",
     )
     parser.add_argument(
         "-l",
@@ -112,7 +112,7 @@ def read_json_content(input_file: str | None) -> str:
 
 def from_json(args: Namespace) -> None:
     json_content = read_json_content(args.input_file)
-    document = Document.from_json(json_content, args.table_name or DEFAULT_NAME)
+    document = Document.from_json(json_content, args.table_name or "")
     if args.language:
         document.language = args.language
     save_document(document, args.output_file)

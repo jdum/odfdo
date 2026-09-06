@@ -63,6 +63,7 @@ from .row import Row
 from .row_group import RowGroup
 from .table_cache import _XP_COLUMN_IDX, _XP_ROW_IDX, TableCache
 from .utils import (
+    NameUnifyer,
     convert_coordinates,
     digit_to_alpha,
     format_json,
@@ -2950,7 +2951,11 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         cloned_table = self.clone
         cloned_table.rstrip(aggressive=True)
         rows = cloned_table._serialize_table_rows()
-        data: Any = {self.name or "Table": rows}
+        name = self.name
+        if not name:
+            unifyer = NameUnifyer()
+            name = unifyer.unique()
+        data: Any = {name: rows}
         if pretty:
             content = format_json(data, ensure_ascii=ensure_ascii)
         else:
@@ -3000,7 +3005,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     def from_json(
         cls,
         content: str | dict[str, list[list[Any]]] | list[list[Any]],
-        name: str | None = None,
+        name: str = "",
     ) -> Table:
         """Import JSON content into a new Table object.
 
@@ -3008,7 +3013,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             content: A JSON string, dictionary `{table_name: [[...], ...]}` or
                 2D list `[[...], ...]`.
             name: Name of table to create. If None, uses key from dict or
-                "Table".
+                "Sheet".
 
         Returns:
             Table: A new Table object populated with the JSON data.
@@ -3018,16 +3023,17 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         else:
             data = content
 
+        unifyer = NameUnifyer()
         if isinstance(data, dict):
             if not data:
-                table_name = name or "Table"
+                table_name = unifyer.unique(name)
                 rows_data: list[list[Any]] = []
             else:
                 key = next(iter(data))
-                table_name = name or key
+                table_name = unifyer.unique(key)
                 rows_data = data[key]
         elif isinstance(data, list):
-            table_name = name or "Table"
+            table_name = unifyer.unique(name)
             rows_data = data
         else:
             raise TypeError("JSON content must be a dict, list, or valid JSON string.")

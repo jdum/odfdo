@@ -213,6 +213,21 @@ def test_table_to_json_custom_object():
         assert data["CustomTable"] == [["custom_val"]]
 
 
+def test_table_to_json_custom_object_no_name():
+    class CustomObj:
+        def __str__(self):
+            return "custom_val"
+
+    table = Table()
+    with patch.object(
+        type(table), "values", new_callable=PropertyMock, return_value=[[CustomObj()]]
+    ):
+        js_str = table.to_json()
+        assert js_str is not None
+        data = json.loads(js_str)
+        assert data["Sheet1"] == [["custom_val"]]
+
+
 def test_table_from_json_empty_dict():
     table1 = Table.from_json({})
     assert table1.name == "Sheet1"
