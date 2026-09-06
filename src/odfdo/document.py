@@ -848,7 +848,7 @@ class Document(MDDocument):
         if pretty:
             content_str = format_json(tables_dict, ensure_ascii=ensure_ascii)
         else:
-            content_str = json.dumps(tables_dict, ensure_ascii=ensure_ascii)
+            content_str = json.dumps(tables_dict, ensure_ascii=ensure_ascii, allow_nan=False)
 
         if path_or_file:
             Path(path_or_file).write_text(content_str, encoding="utf-8")

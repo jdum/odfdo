@@ -28,6 +28,7 @@ from __future__ import annotations
 import contextlib
 import csv
 import json
+import math
 import os
 from collections.abc import Iterable, Iterator
 from datetime import date, datetime, timedelta
@@ -2950,7 +2951,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         if pretty:
             content = format_json(data, ensure_ascii=ensure_ascii)
         else:
-            content = json.dumps(data, ensure_ascii=ensure_ascii)
+            content = json.dumps(data, ensure_ascii=ensure_ascii, allow_nan=False)
         if path_or_file:
             Path(path_or_file).write_text(content, encoding="utf-8")
             return None
@@ -2961,10 +2962,18 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         for row in self.values:
             serialized_row: list[Any] = []
             for val in row:
-                if val is None or isinstance(val, (str, int, float, bool)):
+                if val is None or isinstance(val, (str, int, bool)):
                     serialized_row.append(val)
+                elif isinstance(val, float):
+                    if math.isnan(val) or math.isinf(val):
+                        serialized_row.append(None)
+                    else:
+                        serialized_row.append(val)
                 elif isinstance(val, Decimal):
-                    serialized_row.append(int(val) if int(val) == val else float(val))
+                    if val.is_nan() or val.is_infinite():
+                        serialized_row.append(None)
+                    else:
+                        serialized_row.append(int(val) if int(val) == val else float(val))
                 elif isinstance(val, datetime):
                     serialized_row.append(DateTime.encode(val))
                 elif isinstance(val, date):
