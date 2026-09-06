@@ -59,11 +59,12 @@ from .image import DrawFillImage, DrawImage, DrawMarker
 from .manifest import Manifest
 from .meta import Meta
 from .mixin_md import MDDocument, _set_global
+from .row import Row
 from .settings import Settings
 from .style import Style
 from .style_base import StyleBase
 from .styles import Styles
-from .table import Table
+from .table import Table, _get_python_value
 from .utils import (
     FAMILY_LESS_STYLE_TAGS,
     FAMILY_MAPPING,
@@ -848,7 +849,9 @@ class Document(MDDocument):
         if pretty:
             content_str = format_json(tables_dict, ensure_ascii=ensure_ascii)
         else:
-            content_str = json.dumps(tables_dict, ensure_ascii=ensure_ascii, allow_nan=False)
+            content_str = json.dumps(
+                tables_dict, ensure_ascii=ensure_ascii, allow_nan=False
+            )
 
         if path_or_file:
             Path(path_or_file).write_text(content_str, encoding="utf-8")
@@ -901,14 +904,24 @@ class Document(MDDocument):
         body = doc.body
         body.clear()
 
+        tables_dict: dict[str, list[list[Any]]]
         if isinstance(data, dict):
-            for table_name, rows in data.items():
-                table = Table.from_json(rows, name=table_name)
-                body.append(table)
+            tables_dict = data
         else:  # list
-            table = Table.from_json(data)
-            table.name = table_name
+            tables_dict = {table_name or "Table": data}
+
+        for name, rows in tables_dict.items():
+            table = Table(name)
+            table.clear()
             body.append(table)
+            for row in rows:
+                row_elem = Row()
+                row_converted = [
+                    _get_python_value(val) if isinstance(val, str) else val
+                    for val in row
+                ]
+                row_elem.set_values(row_converted)
+                table.append_row(row_elem, clone=False)
 
         return doc
 

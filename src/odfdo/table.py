@@ -301,8 +301,11 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
     def clear(self) -> None:
         """Remove all children, text content, and attributes from the table
-        element."""
+        element (preserving table name if set)."""
+        name = self.name
         self._xml_element.clear()
+        if name:
+            self.name = name
         self._table_cache = TableCache()
 
     def _translate_y_from_any(self, y: str | int) -> int:
@@ -2973,7 +2976,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                     if val.is_nan() or val.is_infinite():
                         serialized_row.append(None)
                     else:
-                        serialized_row.append(int(val) if int(val) == val else float(val))
+                        serialized_row.append(
+                            int(val) if int(val) == val else float(val)
+                        )
                 elif isinstance(val, datetime):
                     serialized_row.append(DateTime.encode(val))
                 elif isinstance(val, date):
@@ -3022,7 +3027,14 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             raise TypeError("JSON content must be a dict, list, or valid JSON string.")
 
         table = cls(table_name)
-        table.values = rows_data
+        table.clear()
+        for row in rows_data:
+            row_elem = Row()
+            row_converted = [
+                _get_python_value(val) if isinstance(val, str) else val for val in row
+            ]
+            row_elem.set_values(row_converted)
+            table.append_row(row_elem, clone=False)
         return table
 
 

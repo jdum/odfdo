@@ -241,6 +241,7 @@ def _get_prefixed_name(tag: str) -> str:
     return f"{prefix}:{name}"
 
 
+@cache
 def _get_lxml_tag(qname: str) -> str:
     """Convert a prefixed qualified name (e.g., "prefix:name") to an lxml-style tag name (e.g., "{uri}name").
 
@@ -254,6 +255,7 @@ def _get_lxml_tag(qname: str) -> str:
     return f"{{{uri}}}{name}"
 
 
+@cache
 def _get_lxml_tag_or_name(qname: str) -> str:
     """Convert a prefixed qualified name to an lxml-style tag name or just the local name.
 
@@ -1445,6 +1447,8 @@ class Element(MDBase):
         Args:
             names: The qualified names of the attributes to delete.
         """
+        if not self.__element.attrib:
+            return
         for name in names:
             with contextlib.suppress(KeyError):
                 del self.__element.attrib[_get_lxml_tag_or_name(name)]
@@ -1764,17 +1768,21 @@ class Element(MDBase):
     @text_content.setter
     def text_content(self, text: str | Element | None) -> None:
         if isinstance(text, str):
-            paragraphs = self.get_elements("text:p")
-            if not paragraphs:
-                # E.g., text:p in draw:text-box in draw:frame
-                paragraphs = self.get_elements("*/text:p")
-            if paragraphs:
-                paragraph = paragraphs.pop(0)
-                for obsolete in paragraphs:
-                    obsolete.delete()
-            else:
+            if not self.children:
                 paragraph = Element.from_tag("text:p")
                 self.insert(paragraph, FIRST_CHILD)
+            else:
+                paragraphs = self.get_elements("text:p")
+                if not paragraphs:
+                    # E.g., text:p in draw:text-box in draw:frame
+                    paragraphs = self.get_elements("*/text:p")
+                if paragraphs:
+                    paragraph = paragraphs.pop(0)
+                    for obsolete in paragraphs:
+                        obsolete.delete()
+                else:
+                    paragraph = Element.from_tag("text:p")
+                    self.insert(paragraph, FIRST_CHILD)
             # As "text_content" returned all text nodes, "text_content"
             # will overwrite all text nodes and children that may contain them
             element = paragraph.__element
