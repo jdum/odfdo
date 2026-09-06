@@ -21,6 +21,8 @@
 
 from __future__ import annotations
 
+DEFAULT_TABLE_NAME = "Sheet"
+
 
 class NameUnifyer:
     """Class for enforcing a unique name series.
@@ -29,7 +31,7 @@ class NameUnifyer:
     a numeric suffix.
     """
 
-    def __init__(self, base_name: str = "Sheet") -> None:
+    def __init__(self, base_name: str = DEFAULT_TABLE_NAME) -> None:
         """Initialize the NameUnifyer generator.
 
         Args:
