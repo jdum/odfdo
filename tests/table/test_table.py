@@ -159,6 +159,29 @@ def test_set_table_values_with_clear(table):
     assert table.get_values() == values
 
 
+def test_table_clear_with_name():
+    table = Table("NamedTable")
+    table.set_value((0, 0), "Data")
+    assert table.name == "NamedTable"
+    assert table.size == (1, 1)
+
+    table.clear()
+    assert table.name == "NamedTable"
+    assert table.size == (0, 0)
+    assert table.values == []
+
+
+def test_table_clear_without_name():
+    table = Table()
+    assert table.name is None
+
+    table.clear()
+    assert table.name is None
+    assert table.size == (0, 0)
+    assert table.values == []
+
+
+
 def test_set_table_values_big(table):
     values = [
         ["a", "b", "c", "d", "e", "f", "g"],

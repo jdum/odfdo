@@ -878,6 +878,38 @@ def test_content_setter_element():
     assert element.text_content == "replacement"
 
 
+def test_text_content_empty_element_returns_empty_string():
+    element = Element.from_tag("<table:table-cell/>")
+    assert element.text_content == ""
+
+
+def test_text_content_setter_multiple_paragraphs_obsolete_deleted():
+    element = Element.from_tag(
+        "<office:text><text:p>First</text:p><text:p>Second</text:p><text:p>Third</text:p></office:text>"
+    )
+    element.text_content = "Single"
+    assert element.text_content == "Single"
+    assert len(element.get_elements("text:p")) == 1
+
+
+def test_text_content_setter_nested_paragraph():
+    element = Element.from_tag(
+        "<draw:frame><draw:text-box><text:p>Nested text</text:p></draw:text-box></draw:frame>"
+    )
+    element.text_content = "Updated nested text"
+    assert element.text_content == "Updated nested text"
+
+
+def test_text_content_setter_children_without_paragraph():
+    element = Element.from_tag(
+        "<table:table><table:table-column/></table:table>"
+    )
+    element.text_content = "Table text"
+    assert element.text_content == "Table text"
+    assert len(element.get_elements("text:p")) == 1
+
+
+
 def test_is_empty_1():
     element = Element.from_tag("<text:span>abc</text:span>def")
     assert element.is_empty() is False
