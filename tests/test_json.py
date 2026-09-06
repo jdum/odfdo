@@ -298,26 +298,18 @@ def test_document_from_json_list_json_str():
 
 
 def test_document_from_json_primitive_json_str():
-    with pytest.raises(
-        TypeError, match="JSON document content must be a dictionary"
-    ):
+    with pytest.raises(TypeError, match="JSON document content must be a dictionary"):
         Document.from_json("123")
-    with pytest.raises(
-        TypeError, match="JSON document content must be a dictionary"
-    ):
+    with pytest.raises(TypeError, match="JSON document content must be a dictionary"):
         Document.from_json('"string_value"')
-    with pytest.raises(
-        TypeError, match="JSON document content must be a dictionary"
-    ):
+    with pytest.raises(TypeError, match="JSON document content must be a dictionary"):
         Document.from_json("true")
 
 
 def test_document_from_json_primitive_path(tmp_path):
     p = tmp_path / "primitive.json"
     p.write_text("123", encoding="utf-8")
-    with pytest.raises(
-        TypeError, match="JSON document content must be a dictionary"
-    ):
+    with pytest.raises(TypeError, match="JSON document content must be a dictionary"):
         Document.from_json(p)
 
 
@@ -607,3 +599,97 @@ def test_document_to_json_hidden_table(samples):
     data_hidden = json.loads(json_hidden)
     assert "Tab 1" in data_hidden
     assert "Tab 2" in data_hidden
+
+
+def test_table_to_json_nan_inf_replaced_with_none():
+    table = Table("FloatSpecial")
+    table.set_value((0, 0), float("nan"))
+    table.set_value((1, 0), float("inf"))
+    table.set_value((2, 0), float("-inf"))
+    table.set_value((3, 0), 10.5)
+
+    json_str = table.to_json()
+    assert json_str is not None
+    data = json.loads(json_str)
+
+    # Standard JSON replaces NaN, INF, -INF with null (None in Python)
+    assert data["FloatSpecial"] == [
+        [None, None, None, 10.5],
+    ]
+
+
+def test_document_to_json_nan_inf_replaced_with_none():
+    doc = Document("spreadsheet")
+    table = doc.body.tables[0]
+    table.set_value((0, 0), "Header")
+    table.set_value((1, 0), float("nan"))
+    table.set_value((2, 0), float("inf"))
+    table.set_value((3, 0), Decimal("nan"))
+
+    json_str = doc.to_json()
+    assert json_str is not None
+    data = json.loads(json_str)
+
+    assert data["Feuille1"] == [
+        ["Header"],
+    ]
+
+
+def test_serialize_table_rows_all_types_and_nan_branches():
+    class DummyObj:
+        def __str__(self):
+            return "dummy"
+
+    row_input = [
+        None,
+        "text",
+        42,
+        True,
+        False,
+        float("nan"),
+        float("inf"),
+        float("-inf"),
+        3.14159,
+        Decimal("nan"),
+        Decimal("inf"),
+        Decimal("-inf"),
+        Decimal("100"),
+        Decimal("2.718"),
+        datetime(2026, 1, 1, 12, 0, 0),
+        date(2026, 1, 1),
+        timedelta(hours=2),
+        DummyObj(),
+        None,
+    ]
+
+    table = Table("FullBranchCoverage")
+    with patch.object(
+        type(table),
+        "values",
+        new_callable=PropertyMock,
+        return_value=[row_input, [None, None]],
+    ):
+        result = table._serialize_table_rows()
+
+    assert result == [
+        [
+            None,
+            "text",
+            42,
+            True,
+            False,
+            None,
+            None,
+            None,
+            3.14159,
+            None,
+            None,
+            None,
+            100,
+            2.718,
+            "2026-01-01T12:00:00",
+            "2026-01-01",
+            "PT02H00M00S",
+            "dummy",
+        ]
+    ]

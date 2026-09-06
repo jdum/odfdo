@@ -29,6 +29,7 @@ from decimal import Decimal as dec
 import pytest
 
 from odfdo.cell import Cell
+from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.row import Row
 
@@ -901,3 +902,39 @@ def test_cell_is_empty_with_style():
     cell.style = "CustomStyle"
     assert cell.is_empty(aggressive=False) is False
     assert cell.is_empty(aggressive=True) is True
+
+
+def test_cell_value_nan_inf_ods_file_roundtrip(tmp_path):
+    doc = Document("spreadsheet")
+    table = doc.body.tables[0]
+
+    c_nan = Cell(float("nan"))
+    c_inf = Cell(float("inf"))
+    c_minf = Cell(float("-inf"))
+
+    table.set_cell((0, 0), c_nan)
+    table.set_cell((1, 0), c_inf)
+    table.set_cell((2, 0), c_minf)
+
+    file_path = tmp_path / "nan_inf_roundtrip.ods"
+    doc.save(file_path)
+
+    doc_loaded = Document(file_path)
+    t_loaded = doc_loaded.body.tables[0]
+
+    cell_nan = t_loaded.get_cell((0, 0))
+    cell_inf = t_loaded.get_cell((1, 0))
+    cell_minf = t_loaded.get_cell((2, 0))
+
+    # XML attribute verification (ODF standard casing)
+    assert cell_nan.get_attribute("office:value-type") == "float"
+    assert cell_nan.get_attribute("office:value") == "NaN"
+    assert math.isnan(cell_nan.value)
+
+    assert cell_inf.get_attribute("office:value-type") == "float"
+    assert cell_inf.get_attribute("office:value") == "INF"
+    assert cell_inf.value == float("inf")
+
+    assert cell_minf.get_attribute("office:value-type") == "float"
+    assert cell_minf.get_attribute("office:value") == "-INF"
+    assert cell_minf.value == float("-inf")
