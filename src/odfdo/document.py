@@ -59,12 +59,11 @@ from .image import DrawFillImage, DrawImage, DrawMarker
 from .manifest import Manifest
 from .meta import Meta
 from .mixin_md import MDDocument, _set_global
-from .row import Row
 from .settings import Settings
 from .style import Style
 from .style_base import StyleBase
 from .styles import Styles
-from .table import Table, _get_python_value
+from .table import Table, _populate_table
 from .utils import (
     FAMILY_LESS_STYLE_TAGS,
     FAMILY_MAPPING,
@@ -884,27 +883,19 @@ class Document(MDDocument):
         body = doc.body
         body.clear()
 
-        tables_dict: dict[str, list[list[Any]]]
         if isinstance(data, dict):
-            tables_dict = data
+            for t_name, rows in data.items():
+                table = Table(t_name)
+                table.clear()
+                body.append(table)
+                _populate_table(table, rows)
         else:  # list
-            if not table_name:
-                unifyer = NameUnifyer()
-                table_name = unifyer.unique()
-            tables_dict = {table_name: data}
-
-        for name, rows in tables_dict.items():
+            unifyer = NameUnifyer()
+            name = unifyer.unique(table_name)
             table = Table(name)
             table.clear()
             body.append(table)
-            for row in rows:
-                row_elem = Row()
-                row_converted = [
-                    _get_python_value(val) if isinstance(val, str) else val
-                    for val in row
-                ]
-                row_elem.set_values(row_converted)
-                table.append_row(row_elem, clone=False)
+            _populate_table(table, data)
 
         return doc
 

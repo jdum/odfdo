@@ -155,6 +155,22 @@ def _get_python_value(
     return data
 
 
+def _populate_table(table: Table, rows: Iterable[Iterable[Any]]) -> None:
+    """Populate a table with rows of values, appending each row in-place.
+
+    Args:
+        table: Target Table instance.
+        rows: 2D iterable of cell values.
+    """
+    for row in rows:
+        row_elem = Row()
+        row_converted = [
+            _get_python_value(val) if isinstance(val, str) else val for val in row
+        ]
+        row_elem.set_values(row_converted)
+        table.append_row(row_elem, clone=False)
+
+
 class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     """A table, typically used in a spreadsheet or other ODF document,
     represented by "table:table".
@@ -3036,17 +3052,12 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             table_name = unifyer.unique(name)
             rows_data = data
         else:
-            raise TypeError("JSON content must be a dict, list, or valid JSON string.")
+            msg = "JSON content must be a dict, list, or valid JSON string."
+            raise TypeError(msg)
 
         table = cls(table_name)
         table.clear()
-        for row in rows_data:
-            row_elem = Row()
-            row_converted = [
-                _get_python_value(val) if isinstance(val, str) else val for val in row
-            ]
-            row_elem.set_values(row_converted)
-            table.append_row(row_elem, clone=False)
+        _populate_table(table, rows_data)
         return table
 
 
