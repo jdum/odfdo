@@ -172,9 +172,9 @@ def test_document_to_json_duplicate_table_names():
     t2.set_value("A1", 2)
     t3 = Table()
     t3.set_value("A1", 3)
-    t4 = Table("Sheet1")
+    t4 = Table("Table1")
     t4.set_value("A1", 4)
-    t5 = Table("Sheet1")
+    t5 = Table("Table1")
     t5.set_value("A1", 5)
 
     doc.body.append(t1)
@@ -186,16 +186,16 @@ def test_document_to_json_duplicate_table_names():
     js_str = doc.to_json()
     assert js_str is not None
     data = json.loads(js_str)
-    assert "Table" in data
-    assert "Table_2" in data
-    assert "Table_3" in data
     assert "Sheet1" in data
-    assert "Sheet1_2" in data
-    assert data["Table"] == [[1]]
-    assert data["Table_2"] == [[2]]
-    assert data["Table_3"] == [[3]]
-    assert data["Sheet1"] == [[4]]
-    assert data["Sheet1_2"] == [[5]]
+    assert "Sheet2" in data
+    assert "Sheet3" in data
+    assert "Table1" in data
+    assert "Table12" in data
+    assert data["Sheet1"] == [[1]]
+    assert data["Sheet2"] == [[2]]
+    assert data["Sheet3"] == [[3]]
+    assert data["Table1"] == [[4]]
+    assert data["Table12"] == [[5]]
 
 
 def test_table_to_json_custom_object():
@@ -215,7 +215,7 @@ def test_table_to_json_custom_object():
 
 def test_table_from_json_empty_dict():
     table1 = Table.from_json({})
-    assert table1.name == "Table"
+    assert table1.name == "Sheet1"
     assert table1.values == []
 
     table2 = Table.from_json({}, name="EmptySheet")
@@ -285,6 +285,15 @@ def test_document_from_json_list():
     assert len(doc.body.tables) == 1
     t = doc.body.tables[0]
     assert t.name == "CustomTable"
+    assert t.values == [["Header1", "Header2"], [10, 20]]
+
+
+def test_document_from_json_list_no_name():
+    rows = [["Header1", "Header2"], [10, 20]]
+    doc = Document.from_json(rows)
+    assert len(doc.body.tables) == 1
+    t = doc.body.tables[0]
+    assert t.name == "Sheet1"
     assert t.values == [["Header1", "Header2"], [10, 20]]
 
 

@@ -816,19 +816,12 @@ class Document(MDDocument):
                 None, otherwise None.
         """
         tables_dict: dict[str, list[list[Any]]] = {}
-        used_names: set[str] = set()
+        unifyer = NameUnifyer()
 
         for table in self.body.tables:
             if not include_hidden and not self.get_table_displayed(table):
                 continue
-            base_name = table.name or "Table"
-            name = base_name
-            if name in used_names:
-                counter = 2
-                while f"{base_name}_{counter}" in used_names:
-                    counter += 1
-                name = f"{base_name}_{counter}"
-            used_names.add(name)
+            name = unifyer.unique(table.name or "")
             cloned_table = table.clone
             cloned_table.rstrip(aggressive=True)
             tables_dict[name] = cloned_table._serialize_table_rows()
@@ -849,7 +842,7 @@ class Document(MDDocument):
     def from_json(
         cls,
         content: str | Path | dict[str, list[list[Any]]],
-        table_name: str | None = None,
+        table_name: str = "",
     ) -> Document:
         """Create a new spreadsheet Document from JSON content.
 
@@ -895,7 +888,10 @@ class Document(MDDocument):
         if isinstance(data, dict):
             tables_dict = data
         else:  # list
-            tables_dict = {table_name or "Table": data}
+            if not table_name:
+                unifyer = NameUnifyer()
+                table_name = unifyer.unique()
+            tables_dict = {table_name: data}
 
         for name, rows in tables_dict.items():
             table = Table(name)
