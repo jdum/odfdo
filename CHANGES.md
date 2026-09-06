@@ -1,6 +1,6 @@
 # Odfdo Release Notes
 
-## [3.25.0] - Unreleased
+## [3.25.0] - 2026-09-06
 
 -   Added JSON export and import support for spreadsheets in `Document` and `Table` APIs (`to_json()`, `from_json()`).
 -   Added CLI scripts `odfdo-to-json` and `odfdo-from-json` for JSON conversion.

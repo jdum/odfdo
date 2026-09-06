@@ -69,9 +69,9 @@ dev = [
     "pytest-xdist>=3.8.0",
     "coverage>=7.16.0",
     "pytest-cov>=7.0.0",
-    "tox>=4.61.1",
-    "ruff>=0.16.5",
-    "ty>=0.0.75",
+    "tox>=4.61.2",
+    "ruff>=0.16.6",
+    "ty>=0.0.78",
 ]
 
 [tool.uv]
