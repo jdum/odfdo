@@ -1,5 +1,27 @@
 # Odfdo Release Notes
 
+## [3.25.0] - Unreleased
+
+-   Added JSON export and import support for spreadsheets in `Document` and `Table` APIs (`to_json()`, `from_json()`).
+-   Added CLI scripts `odfdo-to-json` and `odfdo-from-json` for JSON conversion.
+-   Added helper function `get_default_language()` for system locale detection with RFC 3066 validation.
+
+### Added
+
+-   Add methods `Table.to_json()` and `Table.from_json()`.
+-   Add methods `Document.to_json()` and `Document.from_json()`, accepting either a dict of tables or a list of tables.
+-   Add CLI script `odfdo-to-json` to export `.ods` spreadsheets to JSON files.
+-   Add CLI script `odfdo-from-json` to generate `.ods` spreadsheets from JSON input.
+-   Add helper function `get_default_language()` in `odfdo.datatype` for RFC 3066-compliant system language detection.
+-   Add helper class `NameUnifyer` to generate unique table names.
+-   Add `format_json()` utility function in `odfdo.utils`.
+
+### Changed
+
+-   Methods `Document._get_table`, `get_cell_style_properties`, `get_cell_background_color`, and `get_table_style` now accept a `Table` instance directly as their table argument.
+-   Default table names are in the format "Sheet1".
+-   `Table.clear()` now preserves the existing table name.
+
 ## [3.24.7] - 2026-08-29
 
 -   Added Markdown export support for `.ods` spreadsheets in `Document.to_markdown()` and the `odfdo-markdown` CLI script.
