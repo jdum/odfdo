@@ -2987,7 +2987,13 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                     serialized_row.append(Duration.encode(val))
                 else:
                     serialized_row.append(str(val))
+            while serialized_row and serialized_row[-1] is None:
+                serialized_row.pop()
             serialized_rows.append(serialized_row)
+
+        while serialized_rows and not serialized_rows[-1]:
+            serialized_rows.pop()
+
         return serialized_rows
 
     @classmethod
