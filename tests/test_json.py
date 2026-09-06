@@ -388,6 +388,28 @@ def test_document_roundtrip_legacy_content(samples):
     assert new_doc.body.tables[0].values == doc_orig.body.tables[0].values
 
 
+def test_document_roundtrip_large_ods(samples):
+    doc_orig = Document(samples("large_ods.ods"))
+    json_str = doc_orig.to_json()
+    assert json_str is not None
+
+    data = json.loads(json_str)
+    assert len(data) == 3
+    assert "Sheet1" in data
+    assert "Sheet2" in data
+    assert "Sheet3" in data
+    assert len(data["Sheet1"]) == 5000
+    assert len(data["Sheet2"]) == 5000
+    assert len(data["Sheet3"]) == 5000
+
+    new_doc = Document.from_json(data)
+    assert len(new_doc.body.tables) == 3
+    for orig_table, new_table in zip(doc_orig.body.tables, new_doc.body.tables, strict=True):
+        assert new_table.name == orig_table.name
+        assert new_table.size == orig_table.size
+        assert new_table.values == orig_table.values
+
+
 def test_document_to_json_styled_table(samples):
     doc = Document(samples("styled_table.ods"))
     json_str = doc.to_json()
