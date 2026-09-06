@@ -69,6 +69,7 @@ from .utils import (
     FAMILY_LESS_STYLE_TAGS,
     FAMILY_MAPPING,
     Blob,
+    NameUnifyer,
     bytes_to_str,
     format_json,
     is_RFC3066,
@@ -770,33 +771,19 @@ class Document(MDDocument):
             return self._markdown_export_text()
         return self._markdown_export_tables()
 
-    @staticmethod
-    def _make_markdown_table_identifier(
-        used_names: set[str], doc_stem: str, table: Table
-    ) -> str:
-        "Return a unique table identifier for the Markdown export."
-        raw_table_name = table.name or "table"
-        table_name = raw_table_name.replace(" ", "_")
-        if table_name in used_names:
-            counter = 2
-            while f"{table_name}_{counter}" in used_names:
-                counter += 1
-            table_name = f"{table_name}_{counter}"
-        used_names.add(table_name)
-        return f"{doc_stem}#{table_name}"
-
     def _markdown_export_tables(self) -> list[TableMarkdown]:
         doc_stem = self.path.stem if self.path else "spreadsheet"
         doc_stem = doc_stem.replace(" ", "_")
         tables = self.body.tables
-        used_names: set[str] = set()
+        unifyer = NameUnifyer()
         results: list[TableMarkdown] = []
         _set_global(self)
         try:
             for table in tables:
-                identifier = self._make_markdown_table_identifier(
-                    used_names, doc_stem, table
-                )
+                raw_table_name = table.name or ""
+                table_name = raw_table_name.replace(" ", "_")
+                unique_name = unifyer.unique(table_name)
+                identifier = f"{doc_stem}#{unique_name}"
                 content = table.to_markdown()
                 results.append(TableMarkdown(identifier, content))
         finally:

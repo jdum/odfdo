@@ -1050,21 +1050,6 @@ def test_to_markdown_does_not_mutate_document(samples):
     assert table.size == initial_size
 
 
-def test_make_markdown_table_identifier_multiple_collisions():
-    table1 = Table("Sheet")
-    table2 = Table("Sheet")
-    table3 = Table("Sheet")
-
-    used_names = set()
-    id1 = Document._make_markdown_table_identifier(used_names, "doc", table1)
-    id2 = Document._make_markdown_table_identifier(used_names, "doc", table2)
-    id3 = Document._make_markdown_table_identifier(used_names, "doc", table3)
-
-    assert id1 == "doc#Sheet"
-    assert id2 == "doc#Sheet_2"
-    assert id3 == "doc#Sheet_3"
-
-
 def test_markdown_export_tables_duplicate_names():
     doc = Document("spreadsheet")
     # Clear initial default table or add extra tables with duplicate names
@@ -1079,7 +1064,7 @@ def test_markdown_export_tables_duplicate_names():
     results = doc.to_markdown()
     assert isinstance(results, list)
     names = [r.name for r in results]
-    assert names == ["spreadsheet#Sheet", "spreadsheet#Sheet_2", "spreadsheet#Sheet_3"]
+    assert names == ["spreadsheet#Sheet", "spreadsheet#Sheet2", "spreadsheet#Sheet3"]
 
 
 def test_export_to_markdown_ods_cell_style(samples):

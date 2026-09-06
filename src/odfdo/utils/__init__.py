@@ -48,6 +48,7 @@ from .style_constants import (
     STYLES_TO_REGISTER,
     SUBCLASSED_STYLES,
 )
+from .unify_name import NameUnifyer
 from .xpath_query import make_xpath_query
 
 __all__ = [
@@ -59,6 +60,7 @@ __all__ = [
     "STYLES_TO_REGISTER",
     "SUBCLASSED_STYLES",
     "Blob",
+    "NameUnifyer",
     "alpha_to_digit",
     "bytes_to_str",
     "convert_coordinates",

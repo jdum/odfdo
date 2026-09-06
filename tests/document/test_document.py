@@ -1754,12 +1754,10 @@ def test_to_markdown_spreadsheet_details():
     assert isinstance(res, list)
     assert len(res) == 2
 
-    print(res)
-
     md1 = res[0]
     md2 = res[1]
     assert md1.name == "sales_report#Sheet_1"
     assert "Header A" in md1.content
 
-    assert md2.name == "sales_report#Sheet_1_2"
+    assert md2.name == "sales_report#Sheet_12"
     assert "Value 1" in md2.content
