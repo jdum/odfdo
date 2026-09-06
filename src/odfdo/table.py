@@ -2943,7 +2943,9 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             str | None: The JSON content as a string if `path_or_file` is
                 None, otherwise None.
         """
-        rows = self._serialize_table_rows()
+        cloned_table = self.clone
+        cloned_table.rstrip(aggressive=True)
+        rows = cloned_table._serialize_table_rows()
         data: Any = {self.name or "Table": rows}
         if pretty:
             content = format_json(data, ensure_ascii=ensure_ascii)
