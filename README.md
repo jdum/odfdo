@@ -111,6 +111,8 @@ A few scripts are provided with `odfdo`:
 -   `odfdo-userfield`: inspect and modify user-defined fields within an ODF document.
 -   `odfdo-from-csv`: import data from a CSV file into a new ODS (OpenDocument Spreadsheet) file. 
 -   `odfdo-to-csv`: export a table from an ODS (OpenDocument Spreadsheet) file to a CSV file.
+-   `odfdo-from-json`: import data from a JSON file into a new ODS (OpenDocument Spreadsheet) file. 
+-   `odfdo-to-json`: export one or all tables from an ODF document to a JSON file.
 -   `odfdo-meta-print`: extract and display the metadata from an ODF file.
 -   `odfdo-meta-update`: update the metadata of an ODF file by merging from a JSON file or stripping to minimal content.
 
@@ -136,13 +138,11 @@ Several recipes provide an example of manipulating styles, including: `change_pa
 # Related project
 
 If you work on `.ods` files (spreadsheet), you may be interested by these scripts using
-this library to parse/generate `.ods` files:
+this library to parse/generate `.ods` files with style management:
 [https://github.com/jdum/odsgenerator](https://github.com/jdum/odsgenerator) and [https://github.com/jdum/odsparsator](https://github.com/jdum/odsparsator)
 
 
 # Former lpod-python library
 
-`lpod-python` was written in 2009-2010 as a Python 2.x library,
-see: `https://github.com/lpod/lpod-python`
-
+`lpod-python` was written in 2009-2010 as a Python 2.x library.
 `odfdo` is an adaptation of this former project to Python 3.x with several improvements.

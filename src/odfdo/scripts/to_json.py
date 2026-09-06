@@ -33,11 +33,12 @@ PROG = "odfdo-to-json"
 def configure_parser() -> ArgumentParser:
     description = (
         "Export one or all tables from an ODF (OpenDocument) spreadsheet or "
-        "text file to JSON. The script extracts all tables into a JSON "
+        "text document to JSON. The script extracts all tables into a JSON "
         "object mapping table names to 2D lists of cell values."
     )
     epilog = (
-        "This tool outputs standard JSON formatted data. "
+        "This tool outputs standard JSON formatted data. The styles from the "
+        "source document are not taken into account."
         "It can output to a file or standard output, with optional "
         "pretty-printing formatting."
     )
