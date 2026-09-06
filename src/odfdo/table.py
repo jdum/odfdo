@@ -2933,16 +2933,15 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         # Make the rows
         reader = csv.reader(data, dialect=dialect, **fmtparams)
         table = cls(name, style=style)
-        encoding = fmtparams.get("encoding", "utf-8")
-        for line in reader:
-            row = Row()
-            # rstrip line
-            while line and not line[-1].strip():
-                line.pop()
-            for value in line:
-                cell = Cell(_get_python_value(value, encoding))
-                row.append_cell(cell, clone=False)
-            table.append_row(row, clone=False)
+        table.clear()
+
+        def _read_lines() -> Iterator[list[str]]:
+            for line in reader:
+                while line and not line[-1].strip():
+                    line.pop()
+                yield line
+
+        _populate_table(table, _read_lines())
         return table
 
     def to_json(
