@@ -28,6 +28,7 @@ import pytest
 from odfdo.table import Table
 from odfdo.table_serializer import (
     TableSerializer,
+    _make_serializer,
     _serialize_table_row_json,
     _serialize_table_row_python_typed,
     serialize_table,
@@ -173,5 +174,154 @@ def test_table_serializer_pop_trailing_empty_row():
 
     serializer = TableSerializer(custom_serializer)
     assert serializer.serialize(table) == [["A"]]
+
+
+def test_make_serializer_defaults_and_all():
+    assert _make_serializer(False, False, False) is _serialize_table_row_python_typed
+    assert _make_serializer(True, True, True) is _serialize_table_row_json
+
+
+def test_make_serializer_no_decimal():
+    serializer = _make_serializer(no_decimal=True, no_date=False, no_nan=False)
+    dt = datetime(2025, 6, 15, 12, 0)
+    d = date(2025, 6, 15)
+    td = timedelta(minutes=45)
+    row = [
+        Decimal("10.5"),
+        Decimal("10.0"),
+        Decimal("NaN"),
+        Decimal("Infinity"),
+        3.14,
+        dt,
+        d,
+        td,
+        [1, 2],
+        None,
+        None,
+    ]
+    res = serializer(row)
+    assert res[0] == 10.5
+    assert isinstance(res[0], float)
+    assert res[1] == 10
+    assert isinstance(res[1], int)
+    assert math.isnan(res[2])
+    assert math.isinf(res[3])
+    assert res[4] == 3.14
+    assert res[5] == dt
+    assert res[6] == d
+    assert res[7] == td
+    assert res[8] == "[1, 2]"
+    assert len(res) == 9
+
+
+def test_make_serializer_no_date():
+    serializer = _make_serializer(no_decimal=False, no_date=True, no_nan=False)
+    dt = datetime(2025, 6, 15, 12, 0)
+    d = date(2025, 6, 15)
+    td = timedelta(minutes=45)
+    dec_val = Decimal("10.5")
+    row = [
+        dt,
+        d,
+        td,
+        b"bytes_data",
+        "other",
+        dec_val,
+        Decimal("10.0"),
+        Decimal("NaN"),
+        Decimal("Infinity"),
+        [1],
+        None,
+    ]
+    res = serializer(row)
+    assert res[0] == "2025-06-15T12:00:00"
+    assert res[1] == "2025-06-15"
+    assert res[2] == "PT00H45M00S"
+    assert res[3] == b"bytes_data"
+    assert res[4] == "other"
+    assert res[5] == dec_val
+    assert res[6] == 10
+    assert math.isnan(res[7])
+    assert math.isinf(res[8])
+    assert res[9] == "[1]"
+    assert len(res) == 10
+
+
+def test_make_serializer_no_nan():
+    serializer = _make_serializer(no_decimal=False, no_date=False, no_nan=True)
+    dt = datetime(2025, 6, 15, 12, 0)
+    row = [
+        float("nan"),
+        float("inf"),
+        float("-inf"),
+        Decimal("NaN"),
+        Decimal("Infinity"),
+        Decimal("-Infinity"),
+        3.14,
+        Decimal("42.5"),
+        Decimal("42.0"),
+        dt,
+        [9],
+        None,
+    ]
+    assert serializer(row) == [
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        3.14,
+        Decimal("42.5"),
+        42,
+        dt,
+        "[9]",
+    ]
+
+
+def test_make_serializer_no_decimal_and_no_nan():
+    serializer = _make_serializer(no_decimal=True, no_date=False, no_nan=True)
+    dt = datetime(2025, 6, 15, 12, 0)
+    row = [
+        float("nan"),
+        Decimal("NaN"),
+        Decimal("Infinity"),
+        Decimal("42.5"),
+        Decimal("42.0"),
+        dt,
+        [9],
+        None,
+    ]
+    assert serializer(row) == [
+        None,
+        None,
+        None,
+        42.5,
+        42,
+        dt,
+        "[9]",
+    ]
+
+
+def test_serialize_table_python_with_options():
+    table = Table("TestOptions", width=3, height=2)
+    table.set_value((0, 0), Decimal("12.50"))
+    table.set_value((1, 0), date(2025, 1, 1))
+    table.set_value((2, 0), float("nan"))
+    table.set_value((0, 1), "text_row")
+    result = serialize_table(
+        table,
+        "python",
+        no_decimal=True,
+        no_date=True,
+        no_nan=True,
+    )
+    assert result == [
+        [12.5, "2025-01-01"],
+        ["text_row"],
+    ]
+
+
+
 
 
