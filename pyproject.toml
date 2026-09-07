@@ -147,11 +147,11 @@ ignore = [
     # LineTooLong
     "E501",
     # DoNotAssignLambda
-    "E731",
+    # "E731",
     # Use specific rule codes when ignoring type issues
-    "PGH003",
+    # "PGH003",
     # check for execution of untrusted input
-    "S603",
+    # "S603",
     # Class attribute `open` is shadowing a Python builtin
     "A003",
     # Use `X | Y` in `isinstance` call instead of `(X, Y)`
@@ -171,8 +171,8 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/test_*" = ["S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117"]
-"tests/*/test_*" = ["S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117"]
+"tests/test_*" = ["S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117","S603"]
+"tests/*/test_*" = ["S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117","S603"]
 "recipes/*" = ["S101", "SIM102", "B903"]
 "recipes/accessing_a_single_element.py" = ["RUF001"]
 
