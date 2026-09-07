@@ -3020,7 +3020,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     def from_json(
         cls,
         content: str | dict[str, list[list[Any]]] | list[list[Any]],
-        name: str = "",
+        name: str | None = "",
     ) -> Table:
         """Import JSON content into a new Table object.
 
@@ -3041,14 +3041,14 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         unifyer = NameUnifyer()
         if isinstance(data, dict):
             if not data:
-                table_name = unifyer.unique(name)
+                table_name = unifyer.unique(name or "")
                 rows_data: list[list[Any]] = []
             else:
                 key = next(iter(data))
                 table_name = unifyer.unique(key)
                 rows_data = data[key]
         elif isinstance(data, list):
-            table_name = unifyer.unique(name)
+            table_name = unifyer.unique(name or "")
             rows_data = data
         else:
             msg = "JSON content must be a dict, list, or valid JSON string."
