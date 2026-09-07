@@ -2883,19 +2883,12 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             str | None: The CSV content as a string if `path_or_file` is None,
                 otherwise None.
         """
-
-        def write_content(csv_writer: object) -> None:
-            for values in self.iter_values():
-                line = []
-                for value in values:
-                    if value is None:
-                        value = ""
-                    line.append(value)
-                csv_writer.writerow(line)
-
+        rows = serialize_table(self, "csv")
         content = StringIO(newline="")
         csv_writer = csv.writer(content, dialect=dialect, **fmtparams)
-        write_content(csv_writer)
+        for row in rows:
+            csv_writer.writerow(row)
+
         if path_or_file:
             # windows fix: write file as binary
             Path(path_or_file).write_bytes(content.getvalue().encode())

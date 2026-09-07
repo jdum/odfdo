@@ -49,7 +49,7 @@ def serialize_table(
 
     Args:
         table: The Table object to serialize.
-        mode: The serialization mode ("json" or "python").
+        mode: The serialization mode ("csv", "json", or "python").
         no_decimal: If True in "python" mode, convert Decimal values to float
             or int.
         no_date: If True in "python" mode, convert date, datetime, and
@@ -65,6 +65,8 @@ def serialize_table(
     """
     if mode == "json":
         table_serializer = TableSerializer(_serialize_table_row_json)
+    elif mode == "csv":
+        table_serializer = TableSerializer(_serialize_table_row_csv)
     elif mode == "python":
         serializer = _make_serializer(
             no_decimal=no_decimal,
@@ -154,6 +156,48 @@ def _serialize_table_row_json(
             serialized_row.append(str(val))
     while serialized_row and serialized_row[-1] is None:
         serialized_row.pop()
+    return serialized_row
+
+
+def _serialize_table_row_csv(
+    row: list[CellValue | None],
+) -> list[CellValue | None]:
+    """Serialize a table row into CSV-compatible values.
+
+    Converts dates, datetimes, and durations to ISO/ODF string representations.
+    Converts None, NaN, and infinity numeric values to empty strings.
+    Converts integer-equivalent Decimals to int.
+
+    Args:
+        row: List of cell values for a single row.
+
+    Returns:
+        List of CSV-compatible cell values.
+    """
+    serialized_row: list[Any] = []
+    for val in row:
+        if val is None:
+            serialized_row.append("")
+        elif isinstance(val, (str, bytes, int, bool)):
+            serialized_row.append(val)
+        elif isinstance(val, float):
+            if math.isnan(val) or math.isinf(val):
+                serialized_row.append("")
+            else:
+                serialized_row.append(val)
+        elif isinstance(val, Decimal):
+            if val.is_nan() or val.is_infinite():
+                serialized_row.append("")
+            else:
+                serialized_row.append(int(val) if int(val) == val else val)
+        elif isinstance(val, datetime):
+            serialized_row.append(DateTime.encode(val))
+        elif isinstance(val, date):
+            serialized_row.append(Date.encode(val))
+        elif isinstance(val, timedelta):
+            serialized_row.append(Duration.encode(val))
+        else:
+            serialized_row.append(str(val))
     return serialized_row
 
 

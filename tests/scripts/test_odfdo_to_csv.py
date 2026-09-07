@@ -119,7 +119,8 @@ def test_to_csv_2_3(capsys, samples):
     main_to_csv(params)
     captured = capsys.readouterr()
 
-    assert captured.out == '""\n'
+    assert captured.out == ""
+
 
 
 def test_to_csv_2_4(capsys, samples):

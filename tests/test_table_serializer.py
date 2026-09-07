@@ -29,6 +29,7 @@ from odfdo.table import Table
 from odfdo.table_serializer import (
     TableSerializer,
     _make_serializer,
+    _serialize_table_row_csv,
     _serialize_table_row_json,
     _serialize_table_row_python_typed,
     serialize_table,
@@ -53,6 +54,18 @@ def test_serialize_table_json():
     ]
 
 
+def test_serialize_table_csv():
+    table = Table("Test", width=3, height=2)
+    table.set_value((0, 0), "Hello")
+    table.set_value((1, 0), 123)
+    table.set_value((0, 1), date(2025, 1, 1))
+    result = serialize_table(table, "csv")
+    assert result == [
+        ["Hello", 123],
+        ["2025-01-01", ""],
+    ]
+
+
 def test_serialize_table_python():
     table = Table("Test", width=3, height=2)
     table.set_value((0, 0), "Hello")
@@ -64,6 +77,49 @@ def test_serialize_table_python():
         ["Hello", 123],
         [d],
     ]
+
+
+def test_serialize_table_row_csv_types():
+    row = [
+        "text",
+        1,
+        True,
+        False,
+        3.14,
+        float("nan"),
+        float("inf"),
+        float("-inf"),
+        Decimal("42.00"),
+        Decimal("42.5"),
+        Decimal("NaN"),
+        Decimal("Infinity"),
+        datetime(2025, 5, 12, 10, 30),
+        date(2025, 5, 12),
+        timedelta(hours=2, minutes=30),
+        [1, 2, 3],  # fallback to str
+        None,
+    ]
+    result = _serialize_table_row_csv(row)
+    assert result == [
+        "text",
+        1,
+        True,
+        False,
+        3.14,
+        "",
+        "",
+        "",
+        42,
+        Decimal("42.5"),
+        "",
+        "",
+        "2025-05-12T10:30:00",
+        "2025-05-12",
+        "PT02H30M00S",
+        "[1, 2, 3]",
+        "",
+    ]
+
 
 
 def test_serialize_table_row_json_types():
