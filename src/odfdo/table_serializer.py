@@ -35,7 +35,13 @@ if TYPE_CHECKING:
     from .table import Table
 
 
-def serialize_table(table: Table, mode: str) -> list[list[CellValue | None]]:
+def serialize_table(
+    table: Table,
+    mode: str,
+    no_decimal: bool = False,
+    no_date: bool = False,
+    no_nan: bool = False,
+) -> list[list[CellValue | None]]:
     """Serialize the values of a table according to the specified mode.
 
     The table is cloned and stripped of empty margin cells/rows before
@@ -44,6 +50,12 @@ def serialize_table(table: Table, mode: str) -> list[list[CellValue | None]]:
     Args:
         table: The Table object to serialize.
         mode: The serialization mode ("json" or "python").
+        no_decimal: If True in "python" mode, convert Decimal values to float
+            or int.
+        no_date: If True in "python" mode, convert date, datetime, and
+            timedelta values to ODF/ISO formatted strings.
+        no_nan: If True in "python" mode, convert NaN and infinity values to
+            None.
 
     Returns:
         A 2D list of serialized cell values.
@@ -54,7 +66,12 @@ def serialize_table(table: Table, mode: str) -> list[list[CellValue | None]]:
     if mode == "json":
         table_serializer = TableSerializer(_serialize_table_row_json)
     elif mode == "python":
-        table_serializer = TableSerializer(_serialize_table_row_python_typed)
+        serializer = _make_serializer(
+            no_decimal=no_decimal,
+            no_date=no_date,
+            no_nan=no_nan,
+        )
+        table_serializer = TableSerializer(serializer)
     else:
         msg = f"unknown serializer mode {mode!r}"
         raise ValueError(msg)
@@ -103,9 +120,9 @@ def _serialize_table_row_json(
 ) -> list[CellValue | None]:
     """Serialize a table row into JSON-compatible primitives.
 
-    Converts dates, datetimes, and durations to ISO/ODF string representations.
-    Replaces NaN, infinity, and invalid numeric values with None (null).
-    Strips trailing None values from the row.
+    Converts dates, datetimes, and durations to ISO/ODF string
+    representations. Replaces NaN, infinity, and invalid numeric values with
+    None (null). Strips trailing None values from the row.
 
     Args:
         row: List of cell values for a single row.
@@ -145,9 +162,9 @@ def _serialize_table_row_python_typed(
 ) -> list[CellValue | None]:
     """Serialize a table row while preserving rich Python types.
 
-    Preserves dates, datetimes, timedeltas, floats (including NaN/inf),
-    and Decimals. Converts integer-equivalent Decimals to int.
-    Strips trailing None values from the row.
+    Preserves dates, datetimes, timedeltas, floats (including NaN/inf), and
+    Decimals. Converts integer-equivalent Decimals to int. Strips trailing
+    None values from the row.
 
     Args:
         row: List of cell values for a single row.
@@ -169,3 +186,113 @@ def _serialize_table_row_python_typed(
     while serialized_row and serialized_row[-1] is None:
         serialized_row.pop()
     return serialized_row
+
+
+def _make_serializer(
+    no_decimal: bool = False,
+    no_date: bool = False,
+    no_nan: bool = False,
+) -> Callable[[list[CellValue | None]], list[CellValue | None]]:
+    """Create a row serializer function with specialized type handling.
+
+    Args:
+        no_decimal: If True, convert Decimal values to float or int.
+        no_date: If True, convert date, datetime, and timedelta values to
+            ODF/ISO formatted strings.
+        no_nan: If True, convert NaN and infinity float/Decimal values to
+            None.
+
+    Returns:
+        A row serializer function that converts a list of cell values.
+    """
+    if not (no_decimal or no_date or no_nan):
+        return _serialize_table_row_python_typed
+    if no_decimal and no_date and no_nan:
+        return _serialize_table_row_json
+
+    if no_nan:
+
+        def _handle_float(val: float) -> float | None:
+            return None if math.isnan(val) or math.isinf(val) else val
+
+    else:
+
+        def _handle_float(val: float) -> float:
+            return val
+
+    if no_decimal:
+        if no_nan:
+
+            def _handle_decimal(val: Decimal) -> int | float | None:
+                if val.is_nan() or val.is_infinite():
+                    return None
+                return int(val) if int(val) == val else float(val)
+
+        else:
+
+            def _handle_decimal(val: Decimal) -> int | float:
+                if val.is_nan() or val.is_infinite():
+                    return float(val)
+                return int(val) if int(val) == val else float(val)
+
+    else:
+        if no_nan:
+
+            def _handle_decimal(val: Decimal) -> int | Decimal | None:
+                if val.is_nan() or val.is_infinite():
+                    return None
+                return int(val) if int(val) == val else val
+
+        else:
+
+            def _handle_decimal(val: Decimal) -> int | Decimal | float:
+                if val.is_nan() or val.is_infinite():
+                    return float(val)
+                return int(val) if int(val) == val else val
+
+    if no_date:
+
+        def _handle_datetime(val: datetime) -> str:
+            return DateTime.encode(val)
+
+        def _handle_date(val: date) -> str:
+            return Date.encode(val)
+
+        def _handle_timedelta(val: timedelta) -> str:
+            return Duration.encode(val)
+
+    else:
+
+        def _handle_datetime(val: datetime) -> datetime:
+            return val
+
+        def _handle_date(val: date) -> date:
+            return val
+
+        def _handle_timedelta(val: timedelta) -> timedelta:
+            return val
+
+    def _serialize_row(
+        row: list[CellValue | None],
+    ) -> list[CellValue | None]:
+        serialized_row: list[Any] = []
+        for val in row:
+            if val is None or isinstance(val, (str, bytes, int, bool)):
+                serialized_row.append(val)
+            elif isinstance(val, float):
+                serialized_row.append(_handle_float(val))
+            elif isinstance(val, Decimal):
+                serialized_row.append(_handle_decimal(val))
+            elif isinstance(val, datetime):
+                serialized_row.append(_handle_datetime(val))
+            elif isinstance(val, date):
+                serialized_row.append(_handle_date(val))
+            elif isinstance(val, timedelta):
+                serialized_row.append(_handle_timedelta(val))
+            else:
+                serialized_row.append(str(val))
+        while serialized_row and serialized_row[-1] is None:
+            serialized_row.pop()
+        return serialized_row
+
+    return _serialize_row
