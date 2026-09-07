@@ -28,11 +28,9 @@ from __future__ import annotations
 import contextlib
 import csv
 import json
-import math
 import os
 from collections.abc import Iterable, Iterator
-from datetime import date, datetime, timedelta
-from decimal import Decimal
+from datetime import timedelta
 from io import StringIO
 from itertools import zip_longest
 from pathlib import Path
@@ -62,6 +60,7 @@ from .office_forms import OfficeFormsMixin
 from .row import Row
 from .row_group import RowGroup
 from .table_cache import _XP_COLUMN_IDX, _XP_ROW_IDX, TableCache
+from .table_serializer import serialize_table
 from .utils import (
     NameUnifyer,
     convert_coordinates,
@@ -2963,9 +2962,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             str | None: The JSON content as a string if `path_or_file` is
                 None, otherwise None.
         """
-        cloned_table = self.clone
-        cloned_table.rstrip(aggressive=True)
-        rows = cloned_table._serialize_table_rows()
+        rows = serialize_table(self, "json")
         name = self.name
         if not name:
             unifyer = NameUnifyer()
@@ -2980,41 +2977,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             return None
         return content
 
-    def _serialize_table_rows(self) -> list[list[CellValue]]:
-        serialized_rows: list[list[CellValue]] = []
-        for row in self.values:
-            serialized_row: list[Any] = []
-            for val in row:
-                if val is None or isinstance(val, (str, int, bool)):
-                    serialized_row.append(val)
-                elif isinstance(val, float):
-                    if math.isnan(val) or math.isinf(val):
-                        serialized_row.append(None)
-                    else:
-                        serialized_row.append(val)
-                elif isinstance(val, Decimal):
-                    if val.is_nan() or val.is_infinite():
-                        serialized_row.append(None)
-                    else:
-                        serialized_row.append(
-                            int(val) if int(val) == val else float(val)
-                        )
-                elif isinstance(val, datetime):
-                    serialized_row.append(DateTime.encode(val))
-                elif isinstance(val, date):
-                    serialized_row.append(Date.encode(val))
-                elif isinstance(val, timedelta):
-                    serialized_row.append(Duration.encode(val))
-                else:
-                    serialized_row.append(str(val))
-            while serialized_row and serialized_row[-1] is None:
-                serialized_row.pop()
-            serialized_rows.append(serialized_row)
-
-        while serialized_rows and not serialized_rows[-1]:
-            serialized_rows.pop()
-
-        return serialized_rows
+    def _serialize_table_rows(self) -> list[list[CellValue | None]]:
+        return serialize_table(self, "json")
 
     @classmethod
     def from_json(

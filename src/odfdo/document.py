@@ -64,6 +64,7 @@ from .style import Style
 from .style_base import StyleBase
 from .styles import Styles
 from .table import Table, _populate_table
+from .table_serializer import serialize_table
 from .utils import (
     FAMILY_LESS_STYLE_TAGS,
     FAMILY_MAPPING,
@@ -821,9 +822,7 @@ class Document(MDDocument):
             if not include_hidden and not self.get_table_displayed(table):
                 continue
             name = unifyer.unique(table.name or "")
-            cloned_table = table.clone
-            cloned_table.rstrip(aggressive=True)
-            tables_dict[name] = cloned_table._serialize_table_rows()
+            tables_dict[name] = serialize_table(table, "json")
 
         if pretty:
             content_str = format_json(tables_dict, ensure_ascii=ensure_ascii)
