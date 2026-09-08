@@ -992,8 +992,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Remove empty rows and right-side empty cells from the table
         in-place.
 
-        A cell is considered empty if it has no value (or a value that
-        evaluates to False) and no style.
+        A cell is considered empty if it has no value (value is None) and no
+        style.
 
         Args:
             aggressive: If True, empty cells with styles are also considered
@@ -1041,9 +1041,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Remove top empty rows and left-side empty cells from the table
         in-place.
 
-        A cell is considered empty if it has no value (or a value that
-        evaluates to False) and no style (or style is ignored when
-        `aggressive=True`).
+        A cell is considered empty if it has no value (value is None) and no
+        style (or style is ignored when `aggressive=True`).
 
         Args:
             aggressive: If True, empty cells with styles are also considered
@@ -1238,8 +1237,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     def is_empty(self, aggressive: bool = False) -> bool:
         """Return True if every cell in the table is empty.
 
-        A cell is considered empty if it has no value (or a value that
-        evaluates to False, like an empty string) and no style.
+        A cell is considered empty if it has no value (value is None) and
+        no style.
 
         Args:
             aggressive: If True, empty cells with styles are also
@@ -1653,8 +1652,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Return True if every cell in the row at the given 'y' position is
         empty.
 
-        A cell is considered empty if it has no value (or a value that
-        evaluates to False, like an empty string) and no style.
+        A cell is considered empty if it has no value (value is None) and
+        no style.
 
         Args:
             y: The 0-based index of the row.
@@ -2509,8 +2508,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Return True if every cell in the column at the 'x' position is
         empty.
 
-        A cell is considered empty if it has no value (or a value that
-        evaluates to False) and no style.
+        A cell is considered empty if it has no value (value is None) and
+        no style.
 
         Args:
             x: The 0-based index or alphabetical representation of the column.

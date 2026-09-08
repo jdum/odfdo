@@ -929,9 +929,8 @@ class Row(Element):
     def is_empty(self, aggressive: bool = False) -> bool:
         """Return whether every cell in the row is empty.
 
-        An empty cell has no value (or the value evaluates to False) and no
-        style. If `aggressive` is True, empty cells with style are considered
-        empty.
+        An empty cell has no value (value is None) and no style.
+        If `aggressive` is True, empty cells with style are considered empty.
 
         Args:
             aggressive: If True, ignores cell style.

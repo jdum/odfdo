@@ -32,6 +32,7 @@ from odfdo.cell import Cell
 from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.row import Row
+from odfdo.table import Table
 
 
 def test_string_value_property():
@@ -938,3 +939,33 @@ def test_cell_value_nan_inf_ods_file_roundtrip(tmp_path):
     assert cell_minf.get_attribute("office:value-type") == "float"
     assert cell_minf.get_attribute("office:value") == "-INF"
     assert cell_minf.value == float("-inf")
+
+
+def test_cell_is_empty_falsy_values():
+    assert Cell(0).is_empty() is False
+    assert Cell(0.0).is_empty() is False
+    assert Cell(False).is_empty() is False
+    assert Cell("").is_empty() is False
+    assert Cell().is_empty() is True
+    assert Cell(None).is_empty() is True
+
+
+def test_table_strip_preserves_falsy_values():
+    table = Table("test", width=3, height=3)
+    table.set_value("A1", 1)
+    table.set_value("B1", 0)
+    table.set_value("C1", False)
+    assert (table.height, table.width) == (3, 3)
+    table.rstrip()
+    assert (table.height, table.width) == (1, 3)
+    assert table.get_value("B1") == 0
+    assert table.get_value("C1") is False
+
+    table2 = Table("test2", width=3, height=3)
+    table2.set_value("A1", False)
+    table2.set_value("B1", 0)
+    table2.set_value("C1", 1)
+    table2.strip()
+    assert (table2.height, table2.width) == (1, 3)
+    assert table2.get_value("A1") is False
+    assert table2.get_value("B1") == 0
