@@ -138,6 +138,115 @@ def test_rstrip_empty():
     assert row.width == 0
 
 
+def test_lstrip():
+    row = Row(width=100)
+    row.set_value(2, 1)
+    row.set_value(3, 2)
+    row.set_value(4, 3)
+    row.set_cell(5, Cell(style="ce5"))
+    row.lstrip()
+    assert row.width == 98
+    assert row.get_values()[:4] == [1, 2, 3, None]
+
+
+def test_lstrip_aggressive():
+    row = Row(width=100)
+    row.set_value(2, 1)
+    row.set_value(3, 2)
+    row.set_value(4, 3)
+    row.set_cell(0, Cell(style="ce5"))
+    row.set_cell(1, Cell(style="ce5"))
+    row.lstrip(aggressive=True)
+    assert row.width == 98
+    assert row.get_values()[:3] == [1, 2, 3]
+
+
+def test_lstrip_styled_cell_kept():
+    row = Row(width=100)
+    row.set_cell(0, Cell(style="ce5"))
+    row.set_value(2, 1)
+    row.lstrip()
+    # The styled empty cell is not empty by default: nothing is removed.
+    assert row.width == 100
+    assert row.get_values()[:3] == [None, None, 1]
+
+
+def test_lstrip_no_leading_empty():
+    row = Row(width=100)
+    row.set_value(0, 1)
+    row.lstrip()
+    assert row.width == 100
+
+
+def test_lstrip_empty():
+    row = Row(width=100)
+    row.lstrip(aggressive=True)
+    assert row.width == 0
+
+
+def test_lstrip_keeps_first_value():
+    row = Row(width=5)
+    row.set_value(2, 42)
+    row.lstrip()
+    assert row.width == 3
+    assert row.get_value(0) == 42
+
+
+def test_strip():
+    row = Row(width=100)
+    row.set_value(2, 1)
+    row.set_value(3, 2)
+    row.set_value(4, 3)
+    row.strip()
+    assert row.width == 3
+    assert row.get_values() == [1, 2, 3]
+
+
+def test_strip_aggressive():
+    row = Row(width=100)
+    row.set_value(2, 1)
+    row.set_value(3, 2)
+    row.set_value(4, 3)
+    row.set_cell(0, Cell(style="ce5"))
+    row.set_cell(99, Cell(style="ce5"))
+    row.strip(aggressive=True)
+    assert row.width == 3
+    assert row.get_values() == [1, 2, 3]
+
+
+def test_strip_styled_cells_kept():
+    row = Row(width=5)
+    row.set_cell(0, Cell(style="ce5"))
+    row.set_value(2, 1)
+    row.set_cell(4, Cell(style="ce5"))
+    row.strip()
+    # Styled empty cells are not empty by default: nothing is removed.
+    assert row.width == 5
+
+
+def test_strip_no_empty():
+    row = Row(width=5)
+    row.set_value(0, 1)
+    row.set_value(4, 2)
+    row.strip()
+    assert row.width == 5
+    assert row.get_values() == [1, None, None, None, 2]
+
+
+def test_strip_empty():
+    row = Row(width=100)
+    row.strip(aggressive=True)
+    assert row.width == 0
+
+
+def test_strip_middle_content_only():
+    row = Row(width=5)
+    row.set_value(2, "middle")
+    row.strip()
+    assert row.width == 1
+    assert row.get_values() == ["middle"]
+
+
 def test_table_row_repeated_cache(table):
     row = table.rows[3]
     assert not row.repeated
