@@ -378,6 +378,61 @@ def test_serialize_table_python_with_options():
     ]
 
 
+def test_serialize_table_lstrip_json():
+    # value only in the bottom-right cell
+    table = Table("TestLstrip", width=3, height=3)
+    table.set_value((2, 2), "x")
+    result = serialize_table(table, "json")
+    assert result == [[], [], [None, None, "x"]]
+    result = serialize_table(table, "json", lstrip=True)
+    assert result == [["x"]]
+
+
+def test_serialize_table_lstrip_python():
+    table = Table("TestLstrip", width=3, height=3)
+    table.set_value((2, 2), "x")
+    result = serialize_table(table, "python", lstrip=True)
+    assert result == [["x"]]
+
+
+def test_serialize_table_lstrip_csv():
+    table = Table("TestLstrip", width=3, height=3)
+    table.set_value((2, 2), "x")
+    result = serialize_table(table, "csv", lstrip=True)
+    assert result == [["x"]]
+
+
+def test_serialize_table_lstrip_left_column_only():
+    # value in the left column of the bottom row
+    table = Table("TestLstrip", width=3, height=3)
+    table.set_value((0, 2), "y")
+    result = serialize_table(table, "json")
+    assert result == [[], [], ["y"]]
+    result = serialize_table(table, "json", lstrip=True)
+    assert result == [["y"]]
+
+
+def test_serialize_table_lstrip_does_not_modify_table():
+    table = Table("TestLstrip", width=3, height=3)
+    table.set_value((2, 2), "x")
+    serialize_table(table, "json", lstrip=True)
+    assert table.size == (3, 3)
+    assert table.get_value((2, 2)) == "x"
+
+
+def test_serialize_table_lstrip_empty_table():
+    table = Table("TestLstrip", width=2, height=2)
+    assert serialize_table(table, "json", lstrip=True) == []
+
+
+def test_table_serializer_lstrip_direct():
+    table = Table("TestLstrip", width=3, height=3)
+    table.set_value((2, 2), "x")
+    serializer = TableSerializer(_serialize_table_row_json)
+    assert serializer.serialize(table, lstrip=True) == [["x"]]
+    assert serializer.serialize(table) == [[], [], [None, None, "x"]]
+
+
 
 
 
