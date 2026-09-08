@@ -756,7 +756,9 @@ class Row(Element):
             values_list = [cast(CellValue | None, values)]
         else:
             # we need the number of values
-            values_list = [cast(CellValue | None, v) for v in cast(Iterable[Any], values)]
+            values_list = [
+                cast(CellValue | None, v) for v in cast(Iterable[Any], values)
+            ]
         if start >= self.width:
             x = start
             for value in values_list:
