@@ -1037,6 +1037,69 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         self._table_cache.clear_col_indexes()
         self._compute_table_cache()
 
+    def lstrip(self, aggressive: bool = False) -> None:
+        """Remove top empty rows and left-side empty cells from the table
+        in-place.
+
+        A cell is considered empty if it has no value (or a value that
+        evaluates to False) and no style (or style is ignored when
+        `aggressive=True`).
+
+        Args:
+            aggressive: If True, empty cells with styles are also considered
+                empty and will be removed.
+        """
+        # Step 1: remove empty rows at the top of the table
+        while True:
+            rows = self._get_rows()
+            if not rows:
+                break
+            if rows[0].is_empty(aggressive=aggressive):
+                row0 = rows[0]
+                row0.parent.delete(row0)
+                self._table_cache.clear_row_indexes()
+            else:
+                break
+
+        rows = self._get_rows()
+        if not rows:
+            self._compute_table_cache()
+            return
+
+        # Step 2: find minimum leading empty cells across all rows
+        min_leading_empty: int = 2**30
+        for row in rows:
+            leading = 0
+            for cell in row._get_cells():
+                if cell.is_empty(aggressive=aggressive):
+                    leading += cell.repeated or 1
+                else:
+                    break
+            if leading < min_leading_empty:
+                min_leading_empty = leading
+                if min_leading_empty == 0:
+                    break
+
+        # Step 3: delete min_leading_empty columns from the left
+        if min_leading_empty > 0:
+            for _ in range(min_leading_empty):
+                self.delete_column(0)
+
+        self._table_cache.clear_row_indexes()
+        self._table_cache.clear_col_indexes()
+        self._compute_table_cache()
+
+    def strip(self, aggressive: bool = False) -> None:
+        """Remove empty rows and columns from top, bottom, left, and right
+        in-place.
+
+        Args:
+            aggressive: If True, empty cells with styles are also considered
+                empty and will be removed.
+        """
+        self.rstrip(aggressive=aggressive)
+        self.lstrip(aggressive=aggressive)
+
     def optimize_height(self) -> None:
         """Remove bottom empty rows in-place.
 
