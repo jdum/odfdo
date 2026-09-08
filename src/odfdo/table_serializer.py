@@ -17,7 +17,9 @@
 # Authors (odfdo project): jerome.dumonteil@gmail.com
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
-"""Table serializer for converting ODF table contents to Python or JSON structures."""
+"""Table serializer for converting ODF table contents to Python or JSON
+structures.
+"""
 
 from __future__ import annotations
 
@@ -38,6 +40,7 @@ if TYPE_CHECKING:
 def serialize_table(
     table: Table,
     mode: str,
+    lstrip: bool = False,
     no_decimal: bool = False,
     no_date: bool = False,
     no_nan: bool = False,
@@ -50,6 +53,7 @@ def serialize_table(
     Args:
         table: The Table object to serialize.
         mode: The serialization mode ("csv", "json", or "python").
+        lstrip: If True, also strip empty top rows and left empty columns.
         no_decimal: If True in "python" mode, convert Decimal values to float
             or int.
         no_date: If True in "python" mode, convert date, datetime, and
@@ -77,7 +81,7 @@ def serialize_table(
     else:
         msg = f"unknown serializer mode {mode!r}"
         raise ValueError(msg)
-    return table_serializer.serialize(table)
+    return table_serializer.serialize(table, lstrip=lstrip)
 
 
 class TableSerializer:
@@ -94,16 +98,19 @@ class TableSerializer:
         """Initialize the TableSerializer with a row serializer function.
 
         Args:
-            serializer: A callable that accepts a row of cell values and returns
-                the converted row.
+            serializer: A callable that accepts a row of cell values and
+                returns the converted row.
         """
         self.serializer = serializer
 
-    def serialize(self, table: Table) -> list[list[CellValue | None]]:
+    def serialize(
+        self, table: Table, lstrip: bool = False
+    ) -> list[list[CellValue | None]]:
         """Serialize all rows in the given table.
 
         Args:
             table: The Table object to serialize.
+            lstrip: If True, also strip top empty rows and left empty columns.
 
         Returns:
             A 2D list of serialized cell values.
@@ -111,6 +118,8 @@ class TableSerializer:
         serializer = self.serializer
         cloned_table = table.clone
         cloned_table.rstrip(aggressive=True)
+        if lstrip:
+            cloned_table.lstrip(aggressive=True)
         serialized_rows = [serializer(row) for row in cloned_table.values]
         while serialized_rows and not serialized_rows[-1]:
             serialized_rows.pop()
