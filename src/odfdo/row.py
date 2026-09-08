@@ -832,6 +832,34 @@ class Row(Element):
         self._compute_row_cache()
         self._row_cache.clear_cell_indexes()
 
+    def lstrip(self, aggressive: bool = False) -> None:
+        """Remove empty cells at the left of the row, in-place.
+
+        An empty cell has no value but can have style. If `aggressive` is
+        True, style is ignored.
+
+        Args:
+            aggressive: If True, ignores cell style.
+        """
+        for cell in self._get_cells():
+            if not cell.is_empty(aggressive=aggressive):
+                break
+            self.delete(cell)
+        self._compute_row_cache()
+        self._row_cache.clear_cell_indexes()
+
+    def strip(self, aggressive: bool = False) -> None:
+        """Remove empty cells from both left and right of the row, in-place.
+
+        An empty cell has no value but can have style. If `aggressive` is
+        True, style is ignored.
+
+        Args:
+            aggressive: If True, ignores cell style.
+        """
+        self.rstrip(aggressive=aggressive)
+        self.lstrip(aggressive=aggressive)
+
     def _current_length(self) -> int:
         """Return the current estimated length of the row.
 
