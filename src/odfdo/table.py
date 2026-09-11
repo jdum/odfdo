@@ -3034,13 +3034,6 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         Raises:
             ValueError: If `orient` is not one of "dict", "records", or "matrix".
         """
-        if orient not in {"dict", "records", "matrix"}:
-            msg = (
-                f"Invalid orient parameter: {orient!r}. "
-                "Expected 'dict', 'records', or 'matrix'."
-            )
-            raise ValueError(msg)
-
         match orient:
             case "dict":
                 return self._to_dict_dict(
@@ -3068,7 +3061,6 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                     no_date=no_date,
                     no_nan=no_nan,
                 )
-
             case _:
                 msg = (
                     f"Invalid orient parameter: {orient!r}. "
@@ -3084,7 +3076,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         no_decimal: bool,
         no_date: bool,
         no_nan: bool,
-    ) -> dict[str, Any] | list[dict[str, Any]]:
+    ) -> dict[str, list[Any]]:
         rows = serialize_table(
             self,
             mode=mode,
@@ -3098,7 +3090,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
         if header:
             headers = [
-                str(h) if h is not None and str(h) != "" else f"Unnamed_{i}"
+                str(h) if h is not None and str(h) != "" else f"Unnamed: {i}"
                 for i, h in enumerate(rows[0])
             ]
             data_rows = rows[1:]
@@ -3124,7 +3116,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         no_decimal: bool,
         no_date: bool,
         no_nan: bool,
-    ) -> dict[str, Any] | list[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         rows = serialize_table(
             self,
             mode=mode,
@@ -3159,7 +3151,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
     def _to_dict_matrix(
         self, mode: str, lstrip: bool, no_decimal: bool, no_date: bool, no_nan: bool
-    ) -> dict[str, Any] | list[dict[str, Any]]:
+    ) -> dict[str, list[list[Any]]]:
         rows = serialize_table(
             self,
             mode=mode,
@@ -3214,10 +3206,12 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         cls, data: dict[str, Any], name: str | None, guess_type: bool
     ) -> Table:
         if not data:
-            return Table(name or "Table")
+            return cls(name or "Table")
         first_val = next(iter(data.values()))
-        if isinstance(first_val, list) and (
-            not first_val or isinstance(first_val[0], list)
+        if (
+            len(data) == 1
+            and isinstance(first_val, list)
+            and (not first_val or isinstance(first_val[0], list))
         ):
             table_name = name or next(iter(data.keys()))
             table = cls(table_name)
@@ -3257,12 +3251,16 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         cls, data: list[dict[str, Any]], name: str | None, guess_type: bool
     ) -> Table:
         if not data:
-            return Table(name or "Table")
+            return cls(name or "Table")
         first = data[0]
         if not isinstance(first, dict):
             msg = "List elements must be dictionaries."
             raise TypeError(msg)
-        headers = list(first.keys())
+        headers = list(
+            dict.fromkeys(
+                k for record in data if isinstance(record, dict) for k in record
+            )
+        )
         rows = [headers]
         for record in data:
             if not isinstance(record, dict):
@@ -3270,7 +3268,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 raise TypeError(msg)
             row = [record.get(h) for h in headers]
             rows.append(row)
-        table = Table(name or "Table")
+        table = cls(name or "Table")
         if guess_type:
             _populate_table(table, rows)
         else:
