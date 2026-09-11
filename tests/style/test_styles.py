@@ -119,20 +119,13 @@ def test_insert_style(styles):
     context = styles.get_element("//office:styles")
     context.append(style)
     read_style = styles.get_style("paragraph", "style1")
-    assert read_style.serialize() in (
-        (
-            '<style:style style:name="style1" '
-            'style:family="paragraph">'
-            '<style:text-properties fo:background-color="#ff0000" '
-            'fo:color="#0000ff"/>'
-            "</style:style>"
-        ),
+    assert read_style._canonicalize() == (
         '<style:style style:family="paragraph" '
         'style:name="style1">'
-        "<style:text-properties "
-        'fo:background-color="#ff0000" '
-        'fo:color="#0000ff"/>'
-        "</style:style>",
+        '<style:text-properties fo:background-color="#ff0000" '
+        'fo:color="#0000ff">'
+        "</style:text-properties>"
+        "</style:style>"
     )
 
 

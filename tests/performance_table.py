@@ -55,7 +55,7 @@ class initial_compute:
         base = list(range(self.cols))
         tab = []
         for r in range(self.lines):
-            tab.append([r * self.cols + base[c] for c in base])
+            tab.append([r * self.cols + base[c] for c in base])  # noqa: PERF401
         return tab
 
 

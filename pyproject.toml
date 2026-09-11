@@ -191,13 +191,13 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/test_*" = [
     "S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117","S603",
-    "D103","D100","D101","D401","D205","D400","D415"
+    "D103","D100","D101","D401","D205","D400","D415","PERF401"
 ]
 "tests/*/test_*" = [
     "S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117","S603",
-    "D103","D100","D101","D401","D205","D400","D415"
+    "D103","D100","D101","D401","D205","D400","D415","PERF401"
 ]
-"recipes/*" = ["S101", "SIM102", "B903","D103","D100"]
+"recipes/*" = ["S101", "SIM102", "B903","D103","D100","PERF401"]
 "recipes/accessing_a_single_element.py" = ["RUF001"]
 
 [tool.pytest.ini_options]
