@@ -2911,6 +2911,39 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         self.set_cells(cells, coord=start, clone=False)
         return True
 
+    #
+    # Import/export API
+    #
+
+    @property
+    def shape(self) -> tuple[int, int]:
+        """Return the dimensions (rows, columns) of the table after rstrip
+        optimization.
+
+        The table remains unchanged.
+
+        Returns:
+            The (height, width) tuple of the table.
+        """
+        cloned_table = self.clone
+        cloned_table.rstrip(aggressive=True)
+        return (cloned_table.height, cloned_table.width)
+
+    @property
+    def headers(self) -> list[CellValue | None]:
+        """Return the first row of table values (column headers) after rstrip.
+
+        The table remains unchanged.
+
+        Returns:
+            List of column header values, or empty list if the table has no
+            rows.
+        """
+        cloned_table = self.clone
+        cloned_table.rstrip(aggressive=True)
+        values = cloned_table.values
+        return values[0] if values else []
+
     def to_markdown(self) -> str:
         """Export the table content as a Markdown string.
 
