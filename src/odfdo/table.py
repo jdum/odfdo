@@ -3174,6 +3174,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             name = unifyer.unique()
         return {name: rows}
 
+    @classmethod
     def from_dict(
         cls,
         data: dict[str, Any] | list[dict[str, Any]],
@@ -3251,6 +3252,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             _populate_table_keep_strings(table, rows)
         return table
 
+    @classmethod
     def _from_dict_list(
         cls, data: list[dict[str, Any]], name: str | None, guess_type: bool
     ) -> Table:
