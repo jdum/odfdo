@@ -19,9 +19,9 @@
 # https://github.com/lpod/lpod-python
 from __future__ import annotations
 
-from collections import namedtuple
 from collections.abc import Iterable
 from datetime import datetime
+from typing import Any, NamedTuple
 
 import pytest
 
@@ -40,7 +40,10 @@ from odfdo.tracked_changes import (
     TrackedChanges,
 )
 
-Sample = namedtuple("Sample", ["doc", "changes"])
+
+class Sample(NamedTuple):
+    doc: Document
+    changes: Any
 
 
 @pytest.fixture

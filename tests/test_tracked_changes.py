@@ -20,16 +20,19 @@
 # Authors: Romain Gauthier <romain@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 
-from collections import namedtuple
 from collections.abc import Iterable
 from datetime import datetime
+from typing import Any, NamedTuple
 
 import pytest
 
 from odfdo.document import Document
 from odfdo.tracked_changes import TrackedChanges
 
-Sample = namedtuple("Sample", ["doc", "changes"])
+
+class Sample(NamedTuple):
+    doc: Document
+    changes: Any
 
 
 @pytest.fixture

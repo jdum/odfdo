@@ -22,10 +22,9 @@
 from __future__ import annotations
 
 import re
-from collections import namedtuple
 from collections.abc import Iterable
 from datetime import datetime
-from typing import cast
+from typing import Any, NamedTuple, cast
 
 import pytest
 
@@ -55,7 +54,13 @@ from odfdo.xmlpart import XmlPart
 
 SPECIAL_CHARS = 'using < & " characters'
 
-Sample = namedtuple("Sample", ["container", "content", "para", "anno", "span"])
+
+class Sample(NamedTuple):
+    container: Container
+    content: Any
+    para: Any
+    anno: Any
+    span: Any
 
 
 class DummyElement(Element):
@@ -901,13 +906,10 @@ def test_text_content_setter_nested_paragraph():
 
 
 def test_text_content_setter_children_without_paragraph():
-    element = Element.from_tag(
-        "<table:table><table:table-column/></table:table>"
-    )
+    element = Element.from_tag("<table:table><table:table-column/></table:table>")
     element.text_content = "Table text"
     assert element.text_content == "Table text"
     assert len(element.get_elements("text:p")) == 1
-
 
 
 def test_is_empty_1():
