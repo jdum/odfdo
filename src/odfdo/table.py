@@ -894,7 +894,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             | ref03     | red   | 25,75 |
 
         >>> table.values
-        [['reference', 'color', 'price'], ['ref01', 'white', 10], ['ref02', 'blue', Decimal('20.5')], ['ref03', 'red', Decimal('25.75')]]
+        [['reference', 'color', 'price'], ['ref01', 'white', 10], ['ref02',
+        'blue', Decimal('20.5')], ['ref03', 'red', Decimal('25.75')]]
 
         Returns:
             list[list[CellValue | None]]:
@@ -2982,6 +2983,14 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     def to_markdown(self) -> str:
         """Export the table content as a Markdown string.
 
+        Example:
+
+            | reference | color | price |
+            |-----------|-------|-------|
+            | ref01     | white | 10,00 |
+            | ref02     | blue  | 20,50 |
+            | ref03     | red   | 25,75 |
+
         Returns:
             str: The Markdown representation of the table.
         """
@@ -3008,6 +3017,20 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             dialect: The CSV dialect to use (e.g., 'excel', 'unix').
             **fmtparams: Additional keyword arguments to pass to the
                 `csv.writer` method.
+
+        Example:
+
+            | reference | color | price |
+            |-----------|-------|-------|
+            | ref01     | white | 10,00 |
+            | ref02     | blue  | 20,50 |
+            | ref03     | red   | 25,75 |
+
+        >>> print(table.to_csv())
+        reference,color,price
+        ref01,white,10
+        ref02,blue,20.5
+        ref03,red,25.75
 
         Returns:
             str | None: The CSV content as a string if `path_or_file` is None,
@@ -3080,6 +3103,24 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             pretty: Use pretty formater. Defaults to False.
             ensure_ascii: If True, non-ASCII characters are escaped. Defaults
                 to False.
+
+        Example:
+
+            | reference | color | price |
+            |-----------|-------|-------|
+            | ref01     | white | 10,00 |
+            | ref02     | blue  | 20,50 |
+            | ref03     | red   | 25,75 |
+
+        >>> print(table.to_json(pretty=True))
+        {
+          "product": [
+            ["reference", "color", "price"],
+            ["ref01", "white", 10],
+            ["ref02", "blue", 20.5],
+            ["ref03", "red", 25.75]
+          ]
+        }
 
         Returns:
             str | None: The JSON content as a string if `path_or_file` is
