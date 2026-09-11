@@ -5,6 +5,7 @@ use_directory_urls: false
 markdown_extensions:
     - smarty
     - admonition
+    - tables
     - pymdownx.highlight:
           linenums: false
           use_pygments: true
