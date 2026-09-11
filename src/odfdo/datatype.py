@@ -91,7 +91,7 @@ class Boolean:
             value = bool(value)
         if value is True or str(value).lower() == "true":
             return "true"
-        elif value is False or str(value).lower() == "false":
+        if value is False or str(value).lower() == "false":
             return "false"
         raise TypeError(f"{value!r} is not a boolean")
 

@@ -31,7 +31,6 @@ if TYPE_CHECKING:
 class SecurityError(Exception):
     """Raised when a document exceeds security thresholds (Zip bomb, XML bomb, etc.)."""
 
-    pass
 
 
 @dataclass

@@ -21,10 +21,12 @@
 
 from __future__ import annotations
 
-from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .element import Element, PropDef, PropDefBool, register_element_class
+
+if TYPE_CHECKING:
+    from decimal import Decimal
 
 
 class FormProperties(Element):

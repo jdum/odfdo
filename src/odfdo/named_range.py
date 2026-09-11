@@ -210,12 +210,11 @@ class NamedRange(Element):
             if x in string.ascii_letters and step in ("", "A"):
                 step = "A"
                 continue
-            elif step in ("A", "A1") and x in string.digits:
+            if step in ("A", "A1") and x in string.digits:
                 step = "A1"
                 continue
-            else:
-                step = ""
-                break
+            step = ""
+            break
         if step == "A1":
             msg = f"Name of the type 'ABC123' is not allowed for Named Range: {name!r}"
             raise ValueError(msg)

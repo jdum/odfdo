@@ -50,7 +50,7 @@ class ReferenceMixin(Element):
             A list of `ReferenceMark` instances.
         """
         return cast(
-            list[ReferenceMark],
+            "list[ReferenceMark]",
             self._filtered_elements(
                 "descendant::text:reference-mark",
             ),
@@ -73,7 +73,7 @@ class ReferenceMixin(Element):
             ReferenceMark | None: The `ReferenceMark` instance if found, otherwise `None`.
         """
         return cast(
-            ReferenceMark | None,
+            "ReferenceMark | None",
             self._filtered_element(
                 "descendant::text:reference-mark", position, text_name=name
             ),
@@ -88,7 +88,7 @@ class ReferenceMixin(Element):
             list[ReferenceMarkStart]: A list of `ReferenceMarkStart` instances.
         """
         return cast(
-            list[ReferenceMarkStart],
+            "list[ReferenceMarkStart]",
             self._filtered_elements(
                 "descendant::text:reference-mark-start",
             ),
@@ -111,7 +111,7 @@ class ReferenceMixin(Element):
             ReferenceMarkStart | None: The `ReferenceMarkStart` instance if found, otherwise `None`.
         """
         return cast(
-            ReferenceMarkStart | None,
+            "ReferenceMarkStart | None",
             self._filtered_element(
                 "descendant::text:reference-mark-start", position, text_name=name
             ),
@@ -126,7 +126,7 @@ class ReferenceMixin(Element):
             list[ReferenceMarkEnd]: A list of `ReferenceMarkEnd` instances.
         """
         return cast(
-            list[ReferenceMarkEnd],
+            "list[ReferenceMarkEnd]",
             self._filtered_elements(
                 "descendant::text:reference-mark-end",
             ),
@@ -149,7 +149,7 @@ class ReferenceMixin(Element):
             ReferenceMarkEnd | None: The `ReferenceMarkEnd` instance if found, otherwise `None`.
         """
         return cast(
-            ReferenceMarkEnd | None,
+            "ReferenceMarkEnd | None",
             self._filtered_element(
                 "descendant::text:reference-mark-end", position, text_name=name
             ),
@@ -166,7 +166,7 @@ class ReferenceMixin(Element):
                 `ReferenceMarkStart` instances.
         """
         return cast(
-            list[ReferenceMark | ReferenceMarkStart],
+            "list[ReferenceMark | ReferenceMarkStart]",
             self._filtered_elements(
                 "descendant::text:reference-mark-start | descendant::text:reference-mark"
             ),
@@ -201,7 +201,7 @@ class ReferenceMixin(Element):
         else:
             request = "descendant::text:reference-mark-start | descendant::text:reference-mark"
         return cast(
-            ReferenceMark | ReferenceMarkStart | None,
+            "ReferenceMark | ReferenceMarkStart | None",
             self._filtered_element(
                 request,
                 position=position,
@@ -221,7 +221,7 @@ class ReferenceMixin(Element):
             request = "descendant::text:reference-ref"
         else:
             request = f'descendant::text:reference-ref[@text:ref-name="{name}"]'
-        return cast(list[Reference], self._filtered_elements(request))
+        return cast("list[Reference]", self._filtered_elements(request))
 
 
 class Reference(Element):
@@ -345,7 +345,7 @@ class Reference(Element):
         ref_format = self.ref_format
         if ref_format != "text":
             # only 'text' is implemented
-            return None
+            return
         body: Body | Element = self.document_body or self.root
         name = self.name
         method = getattr(body, "get_reference_mark", None)
@@ -508,8 +508,7 @@ class ReferenceMarkStart(Element):
             referenced.append(chunk)
         if as_xml:
             return referenced.serialize()
-        else:
-            return referenced
+        return referenced
 
     def delete(self, child: Element | None = None, keep_tail: bool = True) -> None:
         """Delete the element from the XML tree.

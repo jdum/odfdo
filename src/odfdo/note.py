@@ -59,7 +59,7 @@ class NoteMixin(Element):
             list[Note]: A list of `Note` instances matching the criteria.
         """
         return cast(
-            list[Note],
+            "list[Note]",
             self._filtered_elements(
                 "descendant::text:note", note_class=note_class, content=content
             ),
@@ -87,7 +87,7 @@ class NoteMixin(Element):
                 if not found.
         """
         return cast(
-            Note | None,
+            "Note | None",
             self._filtered_element(
                 "descendant::text:note",
                 position,
@@ -243,7 +243,7 @@ class Note(MDNote, LinkMixin, Element):
         """
         note_body = self.get_element("text:note-body")
         if not note_body:
-            return None
+            return
         if text_or_element is None:
             note_body.text_content = ""
         elif isinstance(text_or_element, str):

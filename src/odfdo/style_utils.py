@@ -23,12 +23,14 @@ from __future__ import annotations
 
 import contextlib
 from copy import deepcopy
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .const import ODF_PROPERTIES
 from .element import Element
-from .style_base import PropDict
 from .utils.style_constants import _BASE_PROPERTY_MAPPING, STYLE_ATTRIBUTES
+
+if TYPE_CHECKING:
+    from .style_base import PropDict
 
 
 def _merge_dicts(dic_base: dict, *args: dict, **kwargs: Any) -> dict:

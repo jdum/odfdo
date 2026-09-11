@@ -20,13 +20,16 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 import pytest
 
 from odfdo import Element
 from odfdo.document import Document
 from odfdo.form import Form
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 @pytest.fixture

@@ -24,8 +24,7 @@ the existing form contents in a document.)"""
 
 from __future__ import annotations
 
-from decimal import Decimal
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from .element import Element, PropDef, PropDefBool, register_element_class
 from .form_controls_mixins import (
@@ -39,6 +38,9 @@ from .form_controls_mixins import (
     FormSourceListMixin,
     OfficeTargetFrameMixin,
 )
+
+if TYPE_CHECKING:
+    from decimal import Decimal
 
 
 class FormColumn(Element):

@@ -83,7 +83,7 @@ class Column(Element):
     @property
     def clone(self) -> Column:
         """Return a clone of the column."""
-        clone: Column = cast(Column, Element.clone.fget(self))
+        clone: Column = cast("Column", Element.clone.fget(self))
         clone.x = self.x
         return clone
 

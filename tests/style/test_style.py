@@ -40,7 +40,7 @@ from odfdo.style import (
 @pytest.fixture
 def content(samples) -> Iterable[Content]:
     document = Document(samples("span_style.odt"))
-    content = cast(Content, document.get_part(ODF_CONTENT))
+    content = cast("Content", document.get_part(ODF_CONTENT))
     yield content
 
 

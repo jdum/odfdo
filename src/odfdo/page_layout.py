@@ -21,14 +21,16 @@
 
 from __future__ import annotations
 
-from typing import Any, ClassVar, cast
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from .element import Element, PropDef, PropDefBool, register_element_class
-from .style_base import PropDict, StyleBase
 from .style_props import StyleProps
 from .style_utils import (
     _set_background,
 )
+
+if TYPE_CHECKING:
+    from .style_base import PropDict, StyleBase
 
 
 class StylePageLayout(StyleProps):
@@ -98,7 +100,6 @@ class StylePageLayout(StyleProps):
     @family.setter
     def family(self, family: str | None) -> None:
         """Setter for the family property (no-op as family is fixed)."""
-        pass
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} family={self.family} name={self.name}>"
@@ -210,7 +211,7 @@ class StylePageLayout(StyleProps):
             StyleBase | None: The `StyleBase` instance representing the header
                 style, or `None` if no header style is defined.
         """
-        return cast(StyleBase | None, self.get_element("style:header-style"))
+        return cast("StyleBase | None", self.get_element("style:header-style"))
 
     def set_header_style(self, new_style: StyleBase) -> None:
         """Set or replace the `style:header-style` element within the page layout.
@@ -230,7 +231,7 @@ class StylePageLayout(StyleProps):
             StyleBase | None: The `StyleBase` instance representing the footer
                 style, or `None` if no footer style is defined.
         """
-        return cast(StyleBase | None, self.get_element("style:footer-style"))
+        return cast("StyleBase | None", self.get_element("style:footer-style"))
 
     def set_footer_style(self, new_style: StyleBase) -> None:
         """Set or replace the `style:footer-style` element within the page layout.

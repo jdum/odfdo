@@ -19,7 +19,7 @@
 # https://github.com/lpod/lpod-python
 from __future__ import annotations
 
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -32,6 +32,9 @@ from odfdo.paragraph import Paragraph
 from odfdo.spacer import Spacer
 from odfdo.tab import Tab
 from odfdo.utils.remove_tree import remove_tree
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 @pytest.fixture

@@ -23,14 +23,18 @@
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 from __future__ import annotations
 
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 import pytest
 
 from odfdo.document import Document
-from odfdo.element import Element
 from odfdo.row import Row
 from odfdo.table import Table
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from odfdo.element import Element
 
 
 @pytest.fixture
@@ -246,7 +250,6 @@ def test_table_clear_without_name():
     assert table.name is None
     assert table.size == (0, 0)
     assert table.values == []
-
 
 
 def test_set_table_values_big(table):

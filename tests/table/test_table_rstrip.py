@@ -18,14 +18,16 @@
 # https://github.com/lpod/lpod-python
 from __future__ import annotations
 
-from collections.abc import Iterable
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 import pytest
 
 from odfdo.document import Document
 from odfdo.row import Row
 from odfdo.table import Table
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 @pytest.fixture
@@ -36,25 +38,25 @@ def table(samples) -> Iterable[Table]:
     #   1	1	1	2	3	3	3
     #   1   2	3	4	5	6	7
     document = Document(samples("simple_table.ods"))
-    yield cast(Table, document.body.get_table(name="Example1"))
+    yield cast("Table", document.body.get_table(name="Example1"))
 
 
 @pytest.fixture
 def styled_table(samples) -> Iterable[Table]:
     document = Document(samples("styled_table.ods"))
-    yield cast(Table, document.body.get_table(name="Feuille1"))
+    yield cast("Table", document.body.get_table(name="Feuille1"))
 
 
 @pytest.fixture
 def unstriped_table_1(samples) -> Iterable[Table]:
     document = Document(samples("unstriped.ods"))
-    yield cast(Table, document.body.get_table(name="Sheet1"))
+    yield cast("Table", document.body.get_table(name="Sheet1"))
 
 
 @pytest.fixture
 def unstriped_table_2(samples) -> Iterable[Table]:
     document = Document(samples("unstriped.ods"))
-    yield cast(Table, document.body.get_table(name="Sheet2"))
+    yield cast("Table", document.body.get_table(name="Sheet2"))
 
 
 def test_table_rstrip_unstriped_table_1(unstriped_table_1):

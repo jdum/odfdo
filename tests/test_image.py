@@ -21,7 +21,7 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 from __future__ import annotations
 
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -31,6 +31,9 @@ from odfdo.document import Document
 from odfdo.element import NEXT_SIBLING
 from odfdo.frame import Frame
 from odfdo.image import DrawFillImage, DrawImage, DrawMarker
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 IMG_PATH = "Pictures/100002010000012C00000042188DCB81589D2C10.png"
 

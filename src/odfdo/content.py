@@ -26,11 +26,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from odfdo.element import Element
-
 from .xmlpart import XmlPart
 
 if TYPE_CHECKING:
+    from odfdo.element import Element
+
     from .style_base import StyleBase
 
 

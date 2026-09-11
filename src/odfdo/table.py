@@ -52,13 +52,11 @@ from .element import (
     xpath_return_elements,
 )
 from .form import FormMixin
-from .frame import Frame
 from .mixin_md import MD_GLOBAL, MDTable, _set_global
 from .mixin_named_range import TableNamedExpressions
 from .named_range import NamedRange, table_name_check
 from .office_forms import OfficeFormsMixin
 from .row import Row
-from .row_group import RowGroup
 from .table_cache import _XP_COLUMN_IDX, _XP_ROW_IDX, TableCache
 from .table_serializer import serialize_table
 from .utils import (
@@ -72,6 +70,8 @@ from .utils import (
 )
 
 if TYPE_CHECKING:
+    from .frame import Frame
+    from .row_group import RowGroup
     from .style import Style
 
 # for compatibility with version <= 3.18.1
@@ -729,7 +729,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         Returns:
             bool: True if the table is protected, False otherwise.
         """
-        return cast(bool, self.get_attribute("table:protected"))
+        return cast("bool", self.get_attribute("table:protected"))
 
     @protected.setter
     def protected(self, protect: bool) -> None:
@@ -743,7 +743,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             str | None: The protection key (a hash value) as a string, or None
                 if not set.
         """
-        return cast(str | None, self.get_attribute("table:protection-key"))
+        return cast("str | None", self.get_attribute("table:protection-key"))
 
     @protection_key.setter
     def protection_key(self, key: str) -> None:
@@ -770,7 +770,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             list[str]: A list of strings representing the print ranges
                 (e.g., ['A1:C5', 'E1:G5']).
         """
-        print_ranges = cast(str | None, self.get_attribute("table:print-ranges"))
+        print_ranges = cast("str | None", self.get_attribute("table:print-ranges"))
         if print_ranges is None:
             return []
         return print_ranges.split()
@@ -1038,7 +1038,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         # Step 3: trim columns to match max_width
         columns = self._get_columns()
         repeated_cols: list[EText] = cast(
-            list[EText], self.xpath("table:table-column/@table:number-columns-repeated")
+            "list[EText]",
+            self.xpath("table:table-column/@table:number-columns-repeated"),
         )
         unrepeated = len(columns) - len(repeated_cols)
         column_width = sum(int(r) for r in repeated_cols) + unrepeated
@@ -1050,11 +1051,10 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 if repeated > 0:
                     column.repeated = repeated
                     break
-                else:
-                    column.parent.delete(column)
-                    diff = -repeated
-                    if diff == 0:
-                        break
+                column.parent.delete(column)
+                diff = -repeated
+                if diff == 0:
+                    break
         # raz cache of columns
         self._table_cache.clear_col_indexes()
         self._compute_table_cache()
@@ -1181,7 +1181,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         # trim columns to match minimal_width
         columns = self._get_columns()
         repeated_cols: list[EText] = cast(
-            list[EText],
+            "list[EText]",
             self.xpath("table:table-column/@table:number-columns-repeated"),
         )
         unrepeated = len(columns) - len(repeated_cols)
@@ -1194,11 +1194,10 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 if repeated > 0:
                     column.repeated = repeated
                     break
-                else:
-                    column.parent.delete(column)
-                    diff = -repeated
-                    if diff == 0:
-                        break
+                column.parent.delete(column)
+                diff = -repeated
+                if diff == 0:
+                    break
         # raz cache of columns
         self._table_cache.clear_col_indexes()
         self._compute_table_cache()
@@ -1251,7 +1250,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 self.set_values(nones, coord=(x, y, z, t))
             # put transposed
             self.set_cells(
-                cast(Iterable[tuple[Cell]], transposed_data),
+                cast("Iterable[tuple[Cell]]", transposed_data),
                 (x, y, x + h - 1, y + w - 1),
             )
             self._compute_table_cache()
@@ -1282,10 +1281,10 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         Returns:
             list[RowGroup]: A list of RowGroup elements.
         """
-        return cast(list[RowGroup], self.get_elements(_XP_ROW_GROUP))
+        return cast("list[RowGroup]", self.get_elements(_XP_ROW_GROUP))
 
     def _get_rows(self) -> list[Row]:
-        return cast(list[Row], self.get_elements(_XP_ROW))
+        return cast("list[Row]", self.get_elements(_XP_ROW))
 
     def iter_rows(
         self,
@@ -1729,17 +1728,16 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 )
                 cells.extend(row_cells)
             return cells
-        else:
-            lcells: list[list[Cell]] = []
-            for row in self.iter_rows(start=y, end=t):
-                row_cells = row.get_cells(
-                    coord=(x, z),
-                    cell_type=cell_type,
-                    style=style,
-                    content=content,
-                )
-                lcells.append(row_cells)
-            return lcells
+        lcells: list[list[Cell]] = []
+        for row in self.iter_rows(start=y, end=t):
+            row_cells = row.get_cells(
+                coord=(x, z),
+                cell_type=cell_type,
+                style=style,
+                content=content,
+            )
+            lcells.append(row_cells)
+        return lcells
 
     @property
     def cells(self) -> list:
@@ -1826,17 +1824,16 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             if get_type:
                 return (None, None)
             return None
-        else:
-            # Inside the defined table
-            row = self._get_row2_base(y)
-            if row is None:
-                raise ValueError
-            cell = row._get_cell2_base(x)
-            if cell is None:
-                if get_type:
-                    return (None, None)
-                return None
-            return cell.get_value(get_type=get_type)
+        # Inside the defined table
+        row = self._get_row2_base(y)
+        if row is None:
+            raise ValueError
+        cell = row._get_cell2_base(x)
+        if cell is None:
+            if get_type:
+                return (None, None)
+            return None
+        return cell.get_value(get_type=get_type)
 
     def set_cell(
         self,
@@ -2120,7 +2117,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     # Columns
 
     def _get_columns(self) -> list[Column]:
-        return cast(list[Column], self.get_elements(_XP_COLUMN))
+        return cast("list[Column]", self.get_elements(_XP_COLUMN))
 
     def iter_columns(
         self,
@@ -2212,8 +2209,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             column = self._get_element_idx2(_XP_COLUMN_IDX, idx)
             if column is None:
                 return None
-            self._table_cache.store_col(cast(Column, column), idx)
-        return cast(Column, column.clone)
+            self._table_cache.store_col(cast("Column", column), idx)
+        return cast("Column", column.clone)
 
     @property
     def columns(self) -> list[Column]:
@@ -2552,7 +2549,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     def _local_named_ranges(self) -> list[NamedRange]:
         """(internal) Return the list of local Name Ranges."""
         return cast(
-            list[NamedRange],
+            "list[NamedRange]",
             self.get_elements("descendant::table:named-expressions/table:named-range"),
         )
 
@@ -2562,14 +2559,13 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             f'descendant::table:named-expressions/table:named-range[@table:name="{name}"][1]'
         )
         if named_range:
-            return cast(NamedRange, named_range[0])
-        else:
-            return None
+            return cast("NamedRange", named_range[0])
+        return None
 
     def _local_append_named_range(self, named_range: NamedRange) -> None:
         """(internal) Append the named range to the current table."""
         named_expressions = cast(
-            TableNamedExpressions | None,
+            "TableNamedExpressions | None",
             self.get_element(TableNamedExpressions._tag),
         )
         if not named_expressions:
@@ -2599,7 +2595,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             return
         named_range.delete()
         named_expressions = cast(
-            TableNamedExpressions | None,
+            "TableNamedExpressions | None",
             self.get_element(TableNamedExpressions._tag),
         )
         if not named_expressions:

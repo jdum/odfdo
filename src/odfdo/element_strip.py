@@ -22,10 +22,12 @@
 from __future__ import annotations
 
 import sys
-from collections.abc import Iterable
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from .element import Element, _get_lxml_tag
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 def strip_elements(
@@ -134,7 +136,7 @@ def _strip_tags(
         if is_modified:
             modified = True
         if isinstance(striped_child, list):
-            children.extend(cast(list[Element | str], striped_child))
+            children.extend(cast("list[Element | str]", striped_child))
         else:
             children.append(striped_child)
 
@@ -149,19 +151,18 @@ def _strip_tags(
         if tail is not None:
             element_result.append(tail)
         return (element_result, True)
-    else:
-        if not modified:
-            return (element, False)
-        element.clear()
-        try:
-            for key, value in element_clone.attributes.items():
-                element.set_attribute(key, value)
-        except ValueError:
-            sys.stderr.write(f"strip_tags(): bad attribute in {element_clone}\n")
-        if text:
-            element._Element__append(text)
-        for child3 in children:
-            element._Element__append(child3)
-        if tail is not None:
-            element.tail = tail
-        return (element, True)
+    if not modified:
+        return (element, False)
+    element.clear()
+    try:
+        for key, value in element_clone.attributes.items():
+            element.set_attribute(key, value)
+    except ValueError:
+        sys.stderr.write(f"strip_tags(): bad attribute in {element_clone}\n")
+    if text:
+        element._Element__append(text)
+    for child3 in children:
+        element._Element__append(child3)
+    if tail is not None:
+        element.tail = tail
+    return (element, True)

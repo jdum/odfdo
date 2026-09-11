@@ -55,12 +55,10 @@ from .container import Container
 from .content import Content
 from .datatype import Boolean
 from .element import Element
-from .image import DrawFillImage, DrawImage, DrawMarker
 from .manifest import Manifest
 from .meta import Meta
 from .mixin_md import MDDocument, _set_global
 from .settings import Settings
-from .style import Style
 from .style_base import StyleBase
 from .styles import Styles
 from .table import Table, _populate_table
@@ -78,6 +76,8 @@ from .xmlpart import XmlPart
 
 if TYPE_CHECKING:
     from .body import Body
+    from .image import DrawFillImage, DrawImage, DrawMarker
+    from .style import Style
 
 AUTOMATIC_PREFIX = "odfdo_auto_"
 
@@ -1249,7 +1249,7 @@ class Document(MDDocument):
         list_style_name = getattr(style, "list_style_name", None)
         if not list_style_name:
             return None
-        return cast(StyleBase | None, self.get_style("list", list_style_name))
+        return cast("StyleBase | None", self.get_style("list", list_style_name))
 
     @staticmethod
     def _pseudo_style_attribute(
@@ -1421,13 +1421,12 @@ class Document(MDDocument):
         if name and automatic is False and default is False:
             return self._insert_style_get_common_styles(family, name)
         # Automatic style
-        elif automatic is True and default is False:
+        if automatic is True and default is False:
             return self._insert_style_get_automatic_styles(style, family, name)
         # Default style
-        elif automatic is False and default is True:
+        if automatic is False and default is True:
             return self._insert_style_get_default_styles(style, family, name)
-        else:
-            raise AttributeError("Invalid combination of arguments")
+        raise AttributeError("Invalid combination of arguments")
 
     def insert_style(
         self,
@@ -1736,12 +1735,12 @@ class Document(MDDocument):
             # Copy images from the header/footer
             if tagname == "style:master-page":
                 images = cast(
-                    list[DrawImage], style.get_elements("descendant::draw:image")
+                    "list[DrawImage]", style.get_elements("descendant::draw:image")
                 )
                 for image in images:
                     self._copy_image_from_document(document, image.url)
             elif tagname == "draw:fill-image":
-                draw_fill_image = cast(DrawFillImage, style)
+                draw_fill_image = cast("DrawFillImage", style)
                 self._copy_image_from_document(document, draw_fill_image.url)
 
     def add_page_break_style(self) -> None:
@@ -1949,7 +1948,7 @@ class Document(MDDocument):
                 'style:writing-mode="lr-tb"/></style:style>'
             )
             self.insert_style(orig_style, automatic=True)  # ty:ignore
-        new_style = cast(Style, orig_style.clone)
+        new_style = cast("Style", orig_style.clone)
         new_name = self._unique_style_name("ta")
         new_style.name = new_name
         self.insert_style(new_style, automatic=True)

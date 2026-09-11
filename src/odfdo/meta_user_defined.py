@@ -198,16 +198,15 @@ class MetaUserDefined(Element):
         """
         if isinstance(value, bool):
             return "boolean"
-        elif isinstance(value, (int, float, Decimal)):
+        if isinstance(value, (int, float, Decimal)):
             return "float"
-        elif isinstance(value, (datetime, dtdate)):
+        if isinstance(value, (datetime, dtdate)):
             return "date"
-        elif isinstance(value, str):
+        if isinstance(value, str):
             return "string"
-        elif isinstance(value, timedelta):
+        if isinstance(value, timedelta):
             return "time"
-        else:
-            raise TypeError(f'unexpected type "{type(value)}" for value')
+        raise TypeError(f'unexpected type "{type(value)}" for value')
 
     def as_dict(
         self,

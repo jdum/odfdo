@@ -1420,12 +1420,11 @@ class Container:
                 encoding="unicode",
             ).encode("utf8")
             return XML_TAG + bytes_tree
-        else:
-            return tostring(
-                root,
-                encoding="UTF-8",
-                xml_declaration=True,
-            )
+        return tostring(
+            root,
+            encoding="UTF-8",
+            xml_declaration=True,
+        )
 
     def _save_xml(
         self,
@@ -1460,13 +1459,12 @@ class Container:
                     upath = normalize_path(name)
                     parts.append(upath)
             return parts
-        elif self.__packaging == FOLDER:
+        if self.__packaging == FOLDER:
             return self._get_folder_parts()
-        elif self.__packaging == XML:
+        if self.__packaging == XML:
             # For flat XML, parts are stored in memory
             return list(self.__parts.keys())
-        else:
-            raise ValueError("Unable to provide parts of the document")
+        raise ValueError("Unable to provide parts of the document")
 
     @property
     def parts(self) -> list[str]:

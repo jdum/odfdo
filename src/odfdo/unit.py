@@ -36,9 +36,12 @@ Supported units:
 
 from __future__ import annotations
 
-from decimal import Decimal
 from fractions import Fraction
 from functools import total_ordering
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from decimal import Decimal
 
 INCH_CONVERSION = {
     "in": Fraction("1/1"),

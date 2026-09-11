@@ -23,8 +23,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from .element import (
     FIRST_CHILD,
@@ -37,6 +36,9 @@ from .element import (
 from .mixin_list import ListMixin
 from .mixin_md import MDList, MDListItem
 from .paragraph import Paragraph
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 class ListItem(MDListItem, ListMixin, Element):
@@ -80,7 +82,11 @@ class ListHeader(ListMixin, Element):
 
     def __init__(
         self,
-        text_or_element: str | Element | list[str | Element] | tuple[str | Element, ...] | None = None,
+        text_or_element: str
+        | Element
+        | list[str | Element]
+        | tuple[str | Element, ...]
+        | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize the ListHeader, "text:list-header".
@@ -193,13 +199,18 @@ class List(MDList, Element):
     @property
     def list_header(self) -> ListHeader | None:
         """Get or set the list header."""
-        return cast(ListHeader | None, self.get_element("text:list-header"))
+        return cast("ListHeader | None", self.get_element("text:list-header"))
 
     @list_header.setter
     def list_header(
-        self, text_or_element: str | Element | list[str | Element] | tuple[str | Element, ...] | None = None
+        self,
+        text_or_element: str
+        | Element
+        | list[str | Element]
+        | tuple[str | Element, ...]
+        | None = None,
     ) -> None:
-        current = cast(ListHeader | None, self.get_element("text:list-header"))
+        current = cast("ListHeader | None", self.get_element("text:list-header"))
         if current:
             current.delete()
         new_header = ListHeader(text_or_element)
@@ -207,7 +218,10 @@ class List(MDList, Element):
 
     def set_list_header(
         self,
-        text_or_element: str | Element | list[str | Element] | tuple[str | Element, ...],
+        text_or_element: str
+        | Element
+        | list[str | Element]
+        | tuple[str | Element, ...],
     ) -> None:
         """Set the header of the list.
 

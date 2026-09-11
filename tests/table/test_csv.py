@@ -24,13 +24,16 @@
 from __future__ import annotations
 
 import csv
-from collections.abc import Iterable
 from datetime import timedelta
 from io import BytesIO, StringIO
+from typing import TYPE_CHECKING
 
 import pytest
 
 from odfdo.table import Table, import_from_csv
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 CSV_DATA = '"A float","3.14"\n"A date","1975-05-07"\n'
 XML_DATA = (

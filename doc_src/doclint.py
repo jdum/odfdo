@@ -59,10 +59,12 @@ Available section kind values (all lowercase strings):
 
 from __future__ import annotations
 
-from collections.abc import Callable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import griffe
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 MIN_DOC_LEN = 10
 SPACER = 50

@@ -19,8 +19,8 @@
 # https://github.com/lpod/lpod-python
 from __future__ import annotations
 
-from collections.abc import Iterable
 from io import StringIO
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -28,6 +28,9 @@ from odfdo.document import Document
 from odfdo.mixin_md import MD_GLOBAL
 from odfdo.note import Note
 from odfdo.table import Table, import_from_csv
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 CSV_DATA = '"A float","3.14"\n"A date","1975-05-07"\n'
 

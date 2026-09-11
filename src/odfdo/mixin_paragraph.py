@@ -22,8 +22,6 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Callable
-from datetime import datetime
 from functools import wraps
 from typing import TYPE_CHECKING, Any
 
@@ -50,6 +48,9 @@ from .spacer import Spacer
 from .tab import Tab
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+    from datetime import datetime
+
     from .body import Body
     from .paragraph import Span
 
@@ -215,14 +216,13 @@ def _by_regex_offset(method: Callable) -> Callable:
                 *args,
                 **kwargs,
             )
-        else:
-            return _by_regex_wrapper(
-                method,
-                element,
-                str(regex),
-                *args,
-                **kwargs,
-            )
+        return _by_regex_wrapper(
+            method,
+            element,
+            str(regex),
+            *args,
+            **kwargs,
+        )
 
     return wrapper
 

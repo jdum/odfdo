@@ -20,13 +20,16 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 import pytest
 
 from odfdo import Element
 from odfdo.form_properties import FormProperty
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 @pytest.fixture

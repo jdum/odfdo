@@ -26,7 +26,6 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import TYPE_CHECKING, Any, cast
 
 from .element import FIRST_CHILD, LAST_CHILD, Element, register_element_class
@@ -40,6 +39,8 @@ from .paragraph import Paragraph
 from .section import SectionMixin
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from .body import Body, Text
 
 
@@ -58,9 +59,7 @@ class TrackedChangesMixin(Element):
             TrackedChanges or None: The tracked changes element, or None if
                 not found.
         """
-        return cast(
-            TrackedChanges | None, self.get_element("//text:tracked-changes")
-        )
+        return cast("TrackedChanges | None", self.get_element("//text:tracked-changes"))
 
     @property
     def tracked_changes(self) -> TrackedChanges | None:
@@ -211,7 +210,7 @@ class TextInsertion(Element):
             ChangeInfo | None: The ChangeInfo element, or None if not found.
         """
         return cast(
-            ChangeInfo | None, self.get_element("descendant::office:change-info")
+            "ChangeInfo | None", self.get_element("descendant::office:change-info")
         )
 
     def set_change_info(
@@ -392,7 +391,7 @@ class TextChangedRegion(Element):
             ChangeInfo | None: The ChangeInfo element, or None if not found.
         """
         return cast(
-            ChangeInfo | None, self.get_element("descendant::office:change-info")
+            "ChangeInfo | None", self.get_element("descendant::office:change-info")
         )
 
     def set_change_info(

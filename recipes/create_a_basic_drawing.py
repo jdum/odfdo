@@ -55,11 +55,10 @@ def koch(vector_list: list[Vector], cycles: int = 2) -> list[Vector]:
     """Generate a Koch fractal."""
     if cycles <= 0:
         return vector_list
-    else:
-        new_vector_list: list[Vector] = []
-        for vector in vector_list:
-            new_vector_list.extend(vector.koch_split())
-        return koch(new_vector_list, cycles - 1)
+    new_vector_list: list[Vector] = []
+    for vector in vector_list:
+        new_vector_list.extend(vector.koch_split())
+    return koch(new_vector_list, cycles - 1)
 
 
 def make_fractal_coords(

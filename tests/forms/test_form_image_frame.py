@@ -20,12 +20,15 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 import pytest
 
 from odfdo import Element
 from odfdo.form_controls import FormImageFrame
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 @pytest.fixture

@@ -299,19 +299,18 @@ def _add_object_text(
     if tag in ("text:a", "text:p"):
         # Simple tags with text
         return _add_object_text_paragraph(obj, context, result)
-    elif tag == "text:span":
+    if tag == "text:span":
         # Try to convert some styles in rst_mode
         return _add_object_text_span(obj, context, result)
-    elif tag == "text:note":
+    if tag == "text:note":
         return _add_object_text_note(obj, context, result)
-    elif tag == "office:annotation":
+    if tag == "office:annotation":
         return _add_object_text_annotation(obj, context, result)
-    elif tag == "text:tab":
+    if tag == "text:tab":
         return _add_object_text_tab(obj, context, result)
-    elif tag == "text:line-break":
+    if tag == "text:line-break":
         return _add_object_text_line_break(obj, context, result)
-    else:
-        result.append(obj.get_formatted_text(context))
+    result.append(obj.get_formatted_text(context))
 
 
 class ParaFormattedTextMixin:
@@ -348,5 +347,4 @@ class ParaFormattedTextMixin:
         content = _formatted_text(self, context)  # ty:ignore[invalid-argument-type]
         if simple:
             return content
-        else:
-            return content + "\n\n"
+        return content + "\n\n"

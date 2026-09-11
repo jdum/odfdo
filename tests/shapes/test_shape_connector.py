@@ -19,7 +19,7 @@
 # https://github.com/lpod/lpod-python
 from __future__ import annotations
 
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -28,6 +28,9 @@ from odfdo.document import Document
 from odfdo.draw_page import DrawPage
 from odfdo.paragraph import Paragraph
 from odfdo.shapes import ConnectorShape, EllipseShape, RectangleShape
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 @pytest.fixture

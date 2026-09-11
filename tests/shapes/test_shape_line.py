@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -30,6 +30,9 @@ from odfdo import Element
 from odfdo.document import Document
 from odfdo.draw_page import DrawPage
 from odfdo.shapes import LineShape
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 @pytest.fixture

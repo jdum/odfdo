@@ -22,9 +22,8 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Iterable
 from datetime import datetime
-from typing import Any, NamedTuple, cast
+from typing import TYPE_CHECKING, Any, NamedTuple, cast
 
 import pytest
 
@@ -45,12 +44,16 @@ from odfdo.element import (
     register_element_class,
     xpath_compile,
 )
-from odfdo.image import DrawImage
 from odfdo.named_range import NamedRange
 from odfdo.paragraph import Paragraph
 from odfdo.section import Section
 from odfdo.tracked_changes import TextChangedRegion
 from odfdo.xmlpart import XmlPart
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from odfdo.image import DrawImage
 
 SPECIAL_CHARS = 'using < & " characters'
 
@@ -92,7 +95,7 @@ def drawing_test() -> Iterable[tuple[Drawing, DrawImage, TextChangedRegion]]:
     container = Drawing()
     # Image with URL
     img_tag = '<draw:image xlink:href="http://example.com/img.png"/>'
-    img = cast(DrawImage, Element.from_tag(img_tag))
+    img = cast("DrawImage", Element.from_tag(img_tag))
     container.append(img)
     # Element with dc:creator and dc:date
     region = TextChangedRegion()

@@ -205,33 +205,32 @@ def _get_between_base(
                 target = new_target
                 current = current.children[0]
                 continue
-            else:
-                # before tag1 : forget element, go to next one
-                current, target = _get_successor(current, target)  # ty: ignore
-                continue
-        else:  # collect elements
-            further = False
-            if current.xpath(f"descendant-or-self::{path2}"):
-                if current.xpath(f"self::{path2}"):
-                    # end of trip
-                    break
-                # got T2 in children, need further analysis
-                further = True
-            # further analysis needed :
-            if further:
-                new_target = current.clone
-                for child in new_target.children:
-                    new_target.delete(child)
-                new_target.text = ""
-                new_target.tail = ""
-                target._Element__append(new_target)
-                target = new_target
-                current = current.children[0]
-                continue
-            # collect
-            target._Element__append(current.clone)
+            # before tag1 : forget element, go to next one
             current, target = _get_successor(current, target)  # ty: ignore
             continue
+        # collect elements
+        further = False
+        if current.xpath(f"descendant-or-self::{path2}"):
+            if current.xpath(f"self::{path2}"):
+                # end of trip
+                break
+            # got T2 in children, need further analysis
+            further = True
+        # further analysis needed :
+        if further:
+            new_target = current.clone
+            for child in new_target.children:
+                new_target.delete(child)
+            new_target.text = ""
+            new_target.tail = ""
+            target._Element__append(new_target)
+            target = new_target
+            current = current.children[0]
+            continue
+        # collect
+        target._Element__append(current.clone)
+        current, target = _get_successor(current, target)  # ty: ignore
+        continue
     # Now resu should be the "parent" of inserted parts
     # - a text:h or text:p single item (simple case)
     # - a upper element, with some text:p, text:h in it => need to be
@@ -338,5 +337,4 @@ def elements_between(
         inner = _no_header_inner_list(inner)
     if as_text:
         return "\n".join([e.get_formatted_text() for e in inner])
-    else:
-        return inner
+    return inner

@@ -65,7 +65,7 @@ class UserFieldDeclMixin(Element):
             are descendants of this element.
         """
         return cast(
-            list[UserFieldDecl],
+            "list[UserFieldDecl]",
             self._filtered_elements(
                 "descendant::text:user-field-decl",
             ),
@@ -85,7 +85,7 @@ class UserFieldDeclMixin(Element):
             declaration matches the criteria.
         """
         return cast(
-            UserFieldDecl | None,
+            "UserFieldDecl | None",
             self._filtered_element(
                 "descendant::text:user-field-decl", position, text_name=name
             ),
@@ -157,7 +157,7 @@ class UserFieldDeclContMixin(UserFieldDeclMixin):
             body.insert(Element.from_tag("text:user-field-decls"), FIRST_CHILD)
             user_field_decls = body.get_element("//text:user-field-decls")
 
-        return cast(UserFieldDecls, user_field_decls)
+        return cast("UserFieldDecls", user_field_decls)
 
 
 class UserFieldDecls(UserFieldDeclMixin):

@@ -77,7 +77,7 @@ class AnnotationMixin(Element):
         """
         annotations: list[Annotation] = []
         for annotation in cast(
-            list[Annotation],
+            "list[Annotation]",
             self._filtered_elements("descendant::office:annotation", content=content),
         ):
             if creator is not None and creator != annotation.dc_creator:
@@ -117,7 +117,7 @@ class AnnotationMixin(Element):
         """
         if name is not None:
             return cast(
-                Annotation | None,
+                "Annotation | None",
                 self._filtered_element(
                     "descendant::office:annotation", 0, office_name=name
                 ),
@@ -142,7 +142,7 @@ class AnnotationMixin(Element):
             list[AnnotationEnd]: A list of AnnotationEnd elements.
         """
         return cast(
-            list[AnnotationEnd],
+            "list[AnnotationEnd]",
             self._filtered_elements(
                 "descendant::office:annotation-end",
             ),
@@ -164,7 +164,7 @@ class AnnotationMixin(Element):
                 None if not found.
         """
         return cast(
-            AnnotationEnd | None,
+            "AnnotationEnd | None",
             self._filtered_element(
                 "descendant::office:annotation-end", position, office_name=name
             ),
@@ -314,7 +314,7 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
         body: Body | Element = self.document_body or parent
         method = getattr(body, "get_annotation_end", None)
         if callable(method):
-            return cast(AnnotationEnd | None, method(name=name))
+            return cast("AnnotationEnd | None", method(name=name))
         return None
 
     def get_annotated(
@@ -451,7 +451,7 @@ class AnnotationEnd(MDTail, Element):
         body: Body | Element = self.document_body or parent
         method = getattr(body, "get_annotation", None)
         if callable(method):  # pragma: nocover
-            return cast(Annotation | None, method(name=name))
+            return cast("Annotation | None", method(name=name))
         return None  # pragma: nocover
 
     @property

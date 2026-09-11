@@ -62,7 +62,6 @@ class StyleBase(Element):
         Args:
             _family: The style family to set.
         """
-        pass
 
     def get_properties(self, area: str | None = None) -> PropDict | None:
         """Get the mapping of all properties of this style.
@@ -96,7 +95,6 @@ class StyleBase(Element):
                 (e.g., 'text', 'paragraph').
             **kwargs: Arbitrary keyword arguments representing properties to set.
         """
-        pass
 
     def get_list_style_properties(self) -> dict[str, str | bool]:
         """Get list style properties as a dictionary.

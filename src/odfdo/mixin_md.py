@@ -22,12 +22,14 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Callable
 from copy import deepcopy
 from itertools import chain
-from typing import Any, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 from .const import MAX_MD_COLUMNS, MAX_MD_LINES
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 MD_GLOBAL: dict[str, Any] = {}
 
@@ -247,13 +249,12 @@ class MDStyle:
         if prop.get("italic"):
             if prop.get("bold"):
                 return _as_bold_italic
-            else:
-                return _as_italic
-        elif prop.get("bold"):
+            return _as_italic
+        if prop.get("bold"):
             return _as_bold
-        elif prop.get("fixed"):
+        if prop.get("fixed"):
             return _as_fixed
-        elif prop.get("strike"):
+        if prop.get("strike"):
             return _as_strike
         return _as_none
 

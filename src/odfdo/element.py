@@ -26,9 +26,7 @@ from __future__ import annotations
 
 import contextlib
 import re
-from collections.abc import Callable, Iterable
 from copy import deepcopy
-from datetime import datetime, timedelta
 from decimal import Decimal
 from functools import cache
 from re import search
@@ -62,6 +60,9 @@ from .utils import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable
+    from datetime import datetime, timedelta
+
     from .body import Body
     from .draw_page import DrawPage
     from .frame import Frame
@@ -589,7 +590,6 @@ class Element(MDBase):
         Args:
             cache: The cache data to be copied.
         """
-        pass
 
     @staticmethod
     def _make_etree_element(tag: str) -> _Element:
@@ -675,7 +675,7 @@ class Element(MDBase):
             value = self._base_attrib_getter(attr_name)
             if value is None:
                 return None
-            elif value in ("true", "false"):
+            if value in ("true", "false"):
                 return Boolean.decode(value)
             return value
 
@@ -697,9 +697,9 @@ class Element(MDBase):
         def setter(self: Element, value: Any) -> None:
             try:
                 if family and self.family != family:
-                    return None
+                    return
             except AttributeError:
-                return None
+                return
             self._base_attrib_setter(attr_name, value)
 
         return setter
@@ -789,10 +789,9 @@ class Element(MDBase):
         # 1) before xor after is not None
         if before is not None:
             return re.compile(before)
-        else:
-            if after is None:
-                raise ValueError("Both 'before' and 'after' are None")
-            return re.compile(after)
+        if after is None:
+            raise ValueError("Both 'before' and 'after' are None")
+        return re.compile(after)
 
     @staticmethod
     def _search_negative_position(
@@ -1149,7 +1148,7 @@ class Element(MDBase):
         value = element.get(lxml_tag)
         if value is None:
             return None
-        elif value in ("true", "false"):
+        if value in ("true", "false"):
             return Boolean.decode(value)
         return str(value)
 
@@ -1596,10 +1595,9 @@ class Element(MDBase):
             start = 0
         if end is None:
             return self.text_recursive[start:]
-        else:
-            if end < start:
-                end = start
-            return self.text_recursive[start:end]
+        if end < start:
+            end = start
+        return self.text_recursive[start:end]
 
     def match(self, pattern: str) -> bool:
         """Checks if a pattern is found one or more times within the element's text content.
@@ -2021,7 +2019,7 @@ class Element(MDBase):
         clone = deepcopy(self.__element)
         root = lxml_Element("ROOT", nsmap=ODF_NAMESPACES)
         root.append(clone)
-        return cast(Self, self.from_tag(clone))
+        return cast("Self", self.from_tag(clone))
 
         # slow data = tostring(self.__element, encoding='unicode')
         # return self.from_tag(data)
@@ -3037,8 +3035,7 @@ class Element(MDBase):
             name = name_or_element.get_attribute("style:name")
             if name is not None:
                 return name_or_element  # ty: ignore[invalid-return-type]
-            else:
-                raise ValueError(f"Not a odf_style ? {name_or_element!r}")
+            raise ValueError(f"Not a odf_style ? {name_or_element!r}")
         style_name = name_or_element
         is_default = not (style_name or display_name)
         tagname = self._get_style_tagname(family, is_default=is_default)

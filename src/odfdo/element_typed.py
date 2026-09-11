@@ -25,12 +25,14 @@ import contextlib
 import math
 from datetime import date, datetime, timedelta
 from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from .const import CellValue
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element
 from .utils import bytes_to_str
+
+if TYPE_CHECKING:
+    from .const import CellValue
 
 
 class ElementTyped(Element):

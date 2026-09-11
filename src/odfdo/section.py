@@ -68,7 +68,7 @@ class SectionMixin(Element):
             list[Section]: A list of matching Section elements.
         """
         return cast(
-            list[Section],
+            "list[Section]",
             self._filtered_elements("text:section", text_style=style, content=content),
         )
 
@@ -81,7 +81,7 @@ class SectionMixin(Element):
         Returns:
             list[Section]: A list of all Section elements.
         """
-        return cast(list[Section], self.get_elements("text:section"))
+        return cast("list[Section]", self.get_elements("text:section"))
 
     def get_section(
         self,
@@ -99,7 +99,7 @@ class SectionMixin(Element):
             Section or None: The matching Section element, or None if not found.
         """
         return cast(
-            Section | None,
+            "Section | None",
             self._filtered_element(
                 "descendant::text:section", position, content=content
             ),

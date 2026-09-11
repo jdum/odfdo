@@ -137,7 +137,7 @@ class Styles(XmlPart):
         Returns:
             list[StyleBase]: A list of default Style elements.
         """
-        return cast(list[StyleBase], self.get_elements("//style:default-style"))
+        return cast("list[StyleBase]", self.get_elements("//style:default-style"))
 
     def set_default_styles_language_country(self, value: str) -> None:
         """Set the default language and country in styles.
@@ -235,7 +235,7 @@ class Styles(XmlPart):
                 None if not found.
         """
         return cast(
-            OfficeMasterStyles | None, self.get_element("//office:master-styles")
+            "OfficeMasterStyles | None", self.get_element("//office:master-styles")
         )
 
     @office_master_styles.setter
@@ -291,7 +291,7 @@ class Styles(XmlPart):
                 element, or None if not found.
         """
         return cast(
-            OfficeAutomaticStyles | None,
+            "OfficeAutomaticStyles | None",
             self.get_element("//office:automatic-styles"),
         )
 

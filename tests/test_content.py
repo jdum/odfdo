@@ -19,7 +19,7 @@
 # https://github.com/lpod/lpod-python
 from __future__ import annotations
 
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -27,6 +27,9 @@ from odfdo.const import ODF_CONTENT
 from odfdo.container import Container
 from odfdo.content import Content
 from odfdo.style import Style
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 @pytest.fixture

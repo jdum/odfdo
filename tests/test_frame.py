@@ -21,7 +21,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -36,6 +36,9 @@ from odfdo.header import Header
 from odfdo.image import DrawImage
 from odfdo.paragraph import Paragraph
 from odfdo.table import Table
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 ZOE = "你好 Zoé"
 

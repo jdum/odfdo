@@ -5,9 +5,12 @@
 from __future__ import annotations
 
 import re
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from odfdo import Document
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def extract_style_features(fods_path: Path) -> dict:
@@ -123,7 +126,9 @@ def test_flat_roundtrip_preserves_content(tmp_path, samples) -> None:
     doc3.save(tmp_path / "roundtrip.ods.folder", packaging="folder")
 
     # Read content.xml and check structure
-    content_xml = (tmp_path / "roundtrip.ods.folder" / "content.xml").read_text(encoding="utf-8")
+    content_xml = (tmp_path / "roundtrip.ods.folder" / "content.xml").read_text(
+        encoding="utf-8"
+    )
 
     # Verify table elements are present
     assert "<table:table " in content_xml, "Table not found in roundtrip output"

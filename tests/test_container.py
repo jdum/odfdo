@@ -2044,7 +2044,7 @@ def test_save_zip_mimetype_writestr_error(capsys):
         def side_effect(name, data, compress_type=None):
             if name == "mimetype" and compress_type == zipfile.ZIP_STORED:
                 raise ValueError("forced error")
-            return None
+            return
 
         mock_zf.writestr.side_effect = side_effect
 

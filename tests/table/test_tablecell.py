@@ -23,7 +23,7 @@
 #          Jerome Dumonteil <jerome.dumonteil@itaapy.com>
 from __future__ import annotations
 
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
@@ -33,6 +33,9 @@ from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.row import Row
 from odfdo.table import Table
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 @pytest.fixture

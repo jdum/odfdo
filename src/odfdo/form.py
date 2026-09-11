@@ -47,7 +47,7 @@ class FormMixin(Element):
             list[Form]: A list of Form instances matching the criteria.
         """
         return cast(
-            list[Form],
+            "list[Form]",
             self._filtered_elements("descendant::form:form", form_name=name),
         )
 
@@ -58,7 +58,7 @@ class FormMixin(Element):
         Returns:
             list[Form]: A list of Form elements.
         """
-        return cast(list[Form], self._filtered_elements("descendant::form:form"))
+        return cast("list[Form]", self._filtered_elements("descendant::form:form"))
 
 
 class Form(FormMixin, OfficeTargetFrameMixin):

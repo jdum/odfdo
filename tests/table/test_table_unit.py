@@ -41,7 +41,7 @@ def table(samples) -> Iterable[Table]:
     #   1	1	1	2	3	3	3
     #   1   2	3	4	5	6	7
     document = Document(samples("simple_table.ods"))
-    yield cast(Table, document.body.get_table(name="Example1"))
+    yield cast("Table", document.body.get_table(name="Example1"))
 
 
 def test_get_python_value_bytes():

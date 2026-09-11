@@ -42,7 +42,7 @@ class BookmarkMixin(Element):
             list[Bookmark]: All bookmarks in the element's subtree.
         """
         return cast(
-            list[Bookmark],
+            "list[Bookmark]",
             self._filtered_elements(
                 "descendant::text:bookmark",
             ),
@@ -63,7 +63,7 @@ class BookmarkMixin(Element):
             Bookmark or None: The found Bookmark or None if not found.
         """
         return cast(
-            Bookmark | None,
+            "Bookmark | None",
             self._filtered_element(
                 "descendant::text:bookmark", position, text_name=name
             ),
@@ -76,7 +76,7 @@ class BookmarkMixin(Element):
             list[BookmarkStart]: All bookmark start markers in the element's subtree.
         """
         return cast(
-            list[BookmarkStart],
+            "list[BookmarkStart]",
             self._filtered_elements(
                 "descendant::text:bookmark-start",
             ),
@@ -97,7 +97,7 @@ class BookmarkMixin(Element):
             BookmarkStart or None: The found BookmarkStart or None if not found.
         """
         return cast(
-            BookmarkStart | None,
+            "BookmarkStart | None",
             self._filtered_element(
                 "descendant::text:bookmark-start", position, text_name=name
             ),
@@ -110,7 +110,7 @@ class BookmarkMixin(Element):
             list[BookmarkEnd]: All bookmark end markers in the element's subtree.
         """
         return cast(
-            list[BookmarkEnd],
+            "list[BookmarkEnd]",
             self._filtered_elements(
                 "descendant::text:bookmark-end",
             ),
@@ -131,7 +131,7 @@ class BookmarkMixin(Element):
             BookmarkEnd or None: The found BookmarkEnd or None if not found.
         """
         return cast(
-            BookmarkEnd | None,
+            "BookmarkEnd | None",
             self._filtered_element(
                 "descendant::text:bookmark-end", position, text_name=name
             ),

@@ -20,12 +20,10 @@
 # Authors: Hervé Cauwelier <herve@itaapy.com>
 from __future__ import annotations
 
-from collections.abc import Iterable
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 import pytest
 
-from odfdo.body import Text
 from odfdo.document import Document
 from odfdo.element import Element
 from odfdo.paragraph import Paragraph
@@ -39,20 +37,25 @@ from odfdo.reference import (
     strip_references,
 )
 
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from odfdo.body import Text
+
 ZOE = "你好 Zoé"
 
 
 @pytest.fixture
 def body1(samples) -> Iterable[Text]:
     document = Document(samples("bookmark.odt")).clone
-    part = cast(Text, document.body)
+    part = cast("Text", document.body)
     yield part
 
 
 @pytest.fixture
 def body2(samples) -> Iterable[Text]:
     document = Document(samples("base_text.odt")).clone
-    part = cast(Text, document.body)
+    part = cast("Text", document.body)
     yield part
 
 

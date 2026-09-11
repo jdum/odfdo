@@ -56,7 +56,7 @@ class NRMixin(Element):
             list[NamedRange]: A list of `NamedRange` instances found in the document.
         """
         return cast(
-            list[NamedRange],
+            "list[NamedRange]",
             self.get_elements("descendant::table:named-expressions/table:named-range"),
         )
 
@@ -70,15 +70,14 @@ class NRMixin(Element):
             NamedRange | None: The `NamedRange` instance if found, otherwise `None`.
         """
         named_range = cast(
-            list[NamedRange],
+            "list[NamedRange]",
             self.get_elements(
                 f'descendant::table:named-expressions/table:named-range[@table:name="{name}"][1]'
             ),
         )
         if named_range:
             return named_range[0]
-        else:
-            return None
+        return None
 
     def append_named_range(self, named_range: NamedRange) -> None:
         """Append a `NamedRange` object to the document.
@@ -89,17 +88,17 @@ class NRMixin(Element):
             named_range: The `NamedRange` object to append.
         """
         named_expressions = cast(
-            TableNamedExpressions | None,
+            "TableNamedExpressions | None",
             self.get_element("table:named-expressions"),
         )
         if not named_expressions:
             named_expressions = cast(
-                TableNamedExpressions, Element.from_tag("table:named-expressions")
+                "TableNamedExpressions", Element.from_tag("table:named-expressions")
             )
             self._Element__append(named_expressions)
         # exists ?
         current = cast(
-            NamedRange | None,
+            "NamedRange | None",
             named_expressions.get_element(
                 f'table:named-range[@table:name="{named_range.name}"][1]'
             ),
@@ -153,7 +152,7 @@ class NRMixin(Element):
             return
         named_range.delete()
         named_expressions = cast(
-            TableNamedExpressions, self.get_element("table:named-expressions")
+            "TableNamedExpressions", self.get_element("table:named-expressions")
         )
         if named_expressions.is_empty():
             self.delete(named_expressions)

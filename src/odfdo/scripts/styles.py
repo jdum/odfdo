@@ -227,7 +227,7 @@ def style_tools(args: Namespace) -> None:
             )
             print(msg, file=sys.stderr)
             raise SystemExit(1)
-        elif target == "-":
+        if target == "-":
             target = BytesIO()
         else:
             check_target_file(target)

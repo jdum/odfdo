@@ -19,9 +19,8 @@
 # https://github.com/lpod/lpod-python
 from __future__ import annotations
 
-from collections.abc import Iterable
 from datetime import datetime
-from typing import Any, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 import pytest
 
@@ -39,6 +38,9 @@ from odfdo.tracked_changes import (
     TextInsertion,
     TrackedChanges,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 class Sample(NamedTuple):

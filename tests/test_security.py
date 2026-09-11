@@ -17,11 +17,14 @@ from __future__ import annotations
 
 import io
 import zipfile
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
 from odfdo.security import SecurityConfig, SecurityError, security, validate_zip_safety
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def test_security_error_is_exception():

@@ -145,7 +145,6 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
     @family.setter
     def family(self, family: str | None) -> None:
         """Setter for the family property (no-op as family is fixed)."""
-        pass
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} family={self.family} name={self.name}>"

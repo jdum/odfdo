@@ -35,7 +35,6 @@ from decimal import ConversionSyntax, Decimal, InvalidOperation
 from typing import TYPE_CHECKING, Any
 
 from .annotation import AnnotationMixin
-from .const import CellValue
 from .datatype import Boolean, Date, DateTime, Duration
 from .element import Element, register_element_class_list
 from .element_typed import ElementTyped
@@ -47,6 +46,7 @@ _int = builtins.int
 _float = builtins.float
 _bool = builtins.bool
 if TYPE_CHECKING:
+    from .const import CellValue
     from .style import Style
 
 

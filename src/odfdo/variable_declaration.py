@@ -69,7 +69,7 @@ class VarDeclMixin(Element):
             body.insert(Element.from_tag("text:variable-decls"), FIRST_CHILD)
             variable_decls = body.get_element("//text:variable-decls")
 
-        return cast(VarDecls, variable_decls)
+        return cast("VarDecls", variable_decls)
 
     def get_variable_decl_list(self) -> list[VarDecls]:
         """Returns all variable declarations as a list.
@@ -78,7 +78,7 @@ class VarDeclMixin(Element):
             list[VarDecls]: A list of all VarDecls instances that are descendants of this element.
         """
         return cast(
-            list[VarDecls], self._filtered_elements("descendant::text:variable-decl")
+            "list[VarDecls]", self._filtered_elements("descendant::text:variable-decl")
         )
 
     def get_variable_decl(self, name: str, position: int = 0) -> VarDecls | None:
@@ -92,7 +92,7 @@ class VarDeclMixin(Element):
             VarDecls | None: A VarDecls instance, or None if no declaration matches the criteria.
         """
         return cast(
-            VarDecls | None,
+            "VarDecls | None",
             self._filtered_element(
                 "descendant::text:variable-decl", position, text_name=name
             ),

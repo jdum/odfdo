@@ -30,7 +30,6 @@ from collections.abc import Iterable, Iterator
 from typing import TYPE_CHECKING, Any, cast
 
 from .cell import Cell
-from .const import CellValue
 from .element import (
     Element,
     register_element_class,
@@ -43,6 +42,7 @@ from .utils import convert_coordinates, increment, isiterable, translate_from_an
 if TYPE_CHECKING:
     from lxml.etree import XPath  # ty: ignore[unresolved-import]
 
+    from .const import CellValue
     from .style import Style
 
 
@@ -137,7 +137,7 @@ class Row(Element):
         self._row_cache = RowCache()
 
     def _get_cells(self) -> list[Cell]:
-        return cast(list[Cell], self.get_elements(_XPATH_CELL))
+        return cast("list[Cell]", self.get_elements(_XPATH_CELL))
 
     def _translate_row_coordinates(
         self,
@@ -165,7 +165,7 @@ class Row(Element):
     @property
     def clone(self) -> Row:
         """Return a copy of the row."""
-        cloned_row = cast(Row, Element.clone.fget(self))
+        cloned_row = cast("Row", Element.clone.fget(self))
         cloned_row.y = self.y
         cloned_row._table_cache = TableCache.copy(self._table_cache)
         cloned_row._row_cache = RowCache.copy(self._row_cache)
@@ -501,8 +501,7 @@ class Row(Element):
                     cell.style = style
                 self.set_cell(x_int, cell, clone=False)
                 return
-            else:  # pragma: nocover
-                pass
+            # pragma: nocover
         cell = Cell(
             value,
             style=style,
@@ -664,11 +663,10 @@ class Row(Element):
                     continue
                 values.append(cell.get_value(get_type=get_type))
             return values
-        else:
-            return [
-                cell.get_value(get_type=get_type)
-                for cell in self.iter_cells(start=x, end=z)
-            ]
+        return [
+            cell.get_value(get_type=get_type)
+            for cell in self.iter_cells(start=x, end=z)
+        ]
 
     def get_sub_elements(
         self,
@@ -753,11 +751,11 @@ class Row(Element):
         values_list: list[CellValue | None]
         if not isiterable(values):
             # guard against str iterable
-            values_list = [cast(CellValue | None, values)]
+            values_list = [cast("CellValue | None", values)]
         else:
             # we need the number of values
             values_list = [
-                cast(CellValue | None, v) for v in cast(Iterable[Any], values)
+                cast("CellValue | None", v) for v in cast("Iterable[Any]", values)
             ]
         if start >= self.width:
             x = start

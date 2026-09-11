@@ -19,13 +19,16 @@
 # https://github.com/lpod/lpod-python
 from __future__ import annotations
 
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 import pytest
 
 from odfdo import Element
 from odfdo.document import Document
 from odfdo.shapes import EllipseShape
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 @pytest.fixture

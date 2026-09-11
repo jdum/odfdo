@@ -72,7 +72,6 @@ class Tab(MDTab, Element):
     @text.setter
     def text(self, text: str | None) -> None:
         """Setting text for a tab is a no-op as it always represents a tab character."""
-        pass
 
 
 Tab._define_attribut_property()

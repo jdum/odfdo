@@ -24,11 +24,13 @@ This part stores document-wide settings.
 
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from .body import OfficeSettings
-from .config_elements import ConfigItemSet
 from .xmlpart import XmlPart
+
+if TYPE_CHECKING:
+    from .config_elements import ConfigItemSet
 
 
 class Settings(XmlPart):
@@ -38,7 +40,7 @@ class Settings(XmlPart):
     """
 
     def _get_body(self) -> OfficeSettings:
-        body = cast(OfficeSettings | None, self.get_element("//office:settings"))
+        body = cast("OfficeSettings | None", self.get_element("//office:settings"))
         if isinstance(body, OfficeSettings):
             return body
         raise TypeError("No OfficeSettings found")  # pragma: nocover
@@ -70,7 +72,7 @@ class Settings(XmlPart):
         list[ConfigItemSet]: A list of `ConfigItemSet` objects.
         """
         return cast(
-            list[ConfigItemSet], self.body.get_elements("config:config-item-set")
+            "list[ConfigItemSet]", self.body.get_elements("config:config-item-set")
         )
 
     def as_dict(self) -> dict[str, str | int | bool | dict[str, Any] | list[Any]]:
@@ -83,5 +85,5 @@ class Settings(XmlPart):
         Returns:
             dict: A dictionary representing the settings content.
         """
-        body: OfficeSettings = cast(OfficeSettings, self.body)
+        body: OfficeSettings = cast("OfficeSettings", self.body)
         return body.as_dict()

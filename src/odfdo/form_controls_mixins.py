@@ -24,10 +24,12 @@ the existing form contents in a document.)"""
 
 from __future__ import annotations
 
-from decimal import Decimal
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from .element import Element
+
+if TYPE_CHECKING:
+    from decimal import Decimal
 
 
 class FormDelayRepeatMixin(Element):
