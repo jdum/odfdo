@@ -82,10 +82,8 @@ def header_numbering(
     level = header.get_attribute_integer("text:outline-level") or 0
     if level is None or level > depth:
         return None
-    numbers: list[int] = []
-    # before hedaer level
-    for idx in range(1, level):
-        numbers.append(level_indexes.setdefault(idx, 1))
+    # before header level
+    numbers: list[int] = [level_indexes.setdefault(idx, 1) for idx in range(1, level)]
     # header level
     index = level_indexes.get(level, 0) + 1
     level_indexes[level] = index

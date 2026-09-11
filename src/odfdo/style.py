@@ -24,6 +24,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from typing_extensions import Self
+
 from .const import ODF_PROPERTIES
 from .datatype import Boolean
 from .element import (
@@ -324,7 +326,7 @@ class Style(StyleProps):
         PropDef("style_num_format", "style:num-format"),
     )
 
-    def __new__(cls, *args: Any, **kwargs: Any) -> Style:
+    def __new__(cls, *args: Any, **kwargs: Any) -> Self:
         """Create a new Style instance, delegating to specialized classes for
         'master-page' or 'page-layout' families.
 

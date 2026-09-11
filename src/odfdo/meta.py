@@ -1170,9 +1170,9 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         else:
             msg = f" {no_user_defined_msg}"
         result.append(f"User defined metadata:{msg}")
-        for item in user_metadata:
-            result.append(f"  - {item['meta:name']}: {item['value']}")
-
+        result.extend(
+            [f"  - {item['meta:name']}: {item['value']}" for item in user_metadata]
+        )
         return "\n".join(result)
 
     @staticmethod

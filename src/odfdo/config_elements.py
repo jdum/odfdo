@@ -145,7 +145,8 @@ class ConfigItemSet(Element):
             list[ConfigItemMapNamed]: A list of `ConfigItemMapNamed` objects.
         """
         return cast(
-            "list[ConfigItemMapNamed]", self.get_elements("config:config-item-map-named")
+            "list[ConfigItemMapNamed]",
+            self.get_elements("config:config-item-map-named"),
         )
 
     @property
@@ -227,7 +228,8 @@ class ConfigItemMapIndexed(Element):
             list[ConfigItemMapEntry]: A list of `ConfigItemMapEntry` objects.
         """
         return cast(
-            "list[ConfigItemMapEntry]", self.get_elements("config:config-item-map-entry")
+            "list[ConfigItemMapEntry]",
+            self.get_elements("config:config-item-map-entry"),
         )
 
     def as_dict(self) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
@@ -323,7 +325,8 @@ class ConfigItemMapEntry(Element):
             list[ConfigItemMapNamed]: A list of `ConfigItemMapNamed` objects.
         """
         return cast(
-            "list[ConfigItemMapNamed]", self.get_elements("config:config-item-map-named")
+            "list[ConfigItemMapNamed]",
+            self.get_elements("config:config-item-map-named"),
         )
 
     @property
@@ -405,7 +408,8 @@ class ConfigItemMapNamed(Element):
             list[ConfigItemMapEntry]: A list of `ConfigItemMapEntry` objects.
         """
         return cast(
-            "list[ConfigItemMapEntry]", self.get_elements("config:config-item-map-entry")
+            "list[ConfigItemMapEntry]",
+            self.get_elements("config:config-item-map-entry"),
         )
 
     def as_dict(self) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
@@ -451,9 +455,7 @@ class ConfigItem(Element):
     _tag: str = "config:config-item"
     _properties: tuple[PropDef | PropDefBool, ...] = (
         PropDef("name", "config:name"),
-        PropDef("config_type", "config:type"),
     )
-    _properties = (PropDef("name", "config:name"),)
     TYPES: ClassVar = {
         "boolean",
         "short",

@@ -146,8 +146,7 @@ def _strip_tags(
         element_result: list[Element | str] = []
         if text:
             element_result.append(text)
-        for child2 in children:
-            element_result.append(child2)
+        element_result.extend(children)
         if tail is not None:
             element_result.append(tail)
         return (element_result, True)

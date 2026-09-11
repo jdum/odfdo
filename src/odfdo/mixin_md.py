@@ -62,7 +62,7 @@ def _copy_global() -> dict[str, Any]:
 
 def _restore_global(data: dict[str, Any]) -> None:
     for key, val in data.items():
-        MD_GLOBAL[key] = val
+        MD_GLOBAL[key] = val  # noqa:PERF403
 
 
 def _get_list_counter(name: str, level: int) -> int:
@@ -380,8 +380,7 @@ class MDParagraph(MDStyle):
         if tail := _as_none(self.tail):
             acc.append("\n")
             acc.append(tail)
-        content = "".join(x for x in acc if x)
-        return content
+        return "".join(x for x in acc if x)
 
     def _md_collect_list_item_style(self) -> LIStyle:
         if not self.style:
@@ -447,8 +446,7 @@ class MDListItem(MDParagraph):
             else:
                 acc.append(self._md_list_marker(level) + child._md_format())
         acc.append(_md_tail(self.tail, post_styler))
-        content = "\n".join(x for x in acc if x)
-        return content
+        return "\n".join(x for x in acc if x)
 
     def _md_initialize_level(self) -> None:
         _release_list_counter(0)
@@ -463,8 +461,7 @@ class MDList(MDStyle):
             acc.append(child._md_format(level=level))
         acc.append(_md_tail(self.tail, post_styler))
         _release_list_counter(level + 1)
-        content = "\n".join(x for x in acc if x)
-        return content
+        return "\n".join(x for x in acc if x)
 
     def _md_collect(self) -> list[str]:
         if content := self._md_format():
@@ -505,8 +502,7 @@ class MDLink(MDStyle):
 
         acc = [svalue]
         acc.append(post_styler(self.tail))
-        content = "".join(x for x in acc if x)
-        return content
+        return "".join(x for x in acc if x)
 
     def _md_collect(self) -> list[str]:
         return [self._md_format()]
@@ -516,8 +512,7 @@ class MDDrawTextBox:
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         acc = [child._md_format() for child in self.children]
         acc.append(post_styler(self.tail))
-        content = "".join(x for x in acc if x)
-        return content
+        return "".join(x for x in acc if x)
 
     def _md_collect(self) -> list[str]:
         if content := self._md_format():
@@ -539,8 +534,7 @@ class MDDrawFrame(MDStyle):
             [child._md_format() for child in self.children if child.tag != "svg:title"]
         )
         acc.append(post_styler(self.tail))
-        content = "".join(x for x in acc if x)
-        return content
+        return "".join(x for x in acc if x)
 
     def _md_collect(self) -> list[str]:
         if content := self._md_format():
@@ -640,8 +634,12 @@ class MDTable(MDStyle):
             result = []
             result.append(bars(fill_line(all_row_sub_elements[0], y=0)))
             result.append(bars(fill_line(["-"] * table.width, "-", y=None)))
-            for idx in range(1, len(all_row_sub_elements)):
-                result.append(bars(fill_line(all_row_sub_elements[idx], y=idx)))
+            result.extend(
+                [
+                    bars(fill_line(all_row_sub_elements[idx], y=idx))
+                    for idx in range(1, len(all_row_sub_elements))
+                ]
+            )
             result.append("")
             return "\n".join(result)
         finally:

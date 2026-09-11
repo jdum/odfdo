@@ -423,8 +423,7 @@ class ReferenceMarkEnd(Element):
             f"[preceding::text:reference-mark-start[@text:name='{name}'] "
             f"and following::text:reference-mark-end[@text:name='{name}']]"
         )
-        result = " ".join(str(x) for x in self.xpath(request))
-        return result
+        return " ".join(str(x) for x in self.xpath(request))
 
 
 ReferenceMarkEnd._define_attribut_property()
@@ -463,8 +462,7 @@ class ReferenceMarkStart(Element):
             f"[preceding::text:reference-mark-start[@text:name='{name}'] "
             f"and following::text:reference-mark-end[@text:name='{name}']]"
         )
-        result = " ".join(str(x) for x in self.xpath(request))
-        return result
+        return " ".join(str(x) for x in self.xpath(request))
 
     def get_referenced(
         self,

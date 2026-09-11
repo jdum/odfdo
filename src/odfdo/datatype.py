@@ -335,7 +335,7 @@ class Duration:
             return data
         if not isinstance(data, str):
             raise TypeError(f"duration not valid {data!r}")
-        if not (data.startswith("P") or data.startswith("-P")):
+        if not data.startswith(("P", "-P")):
             raise ValueError(f"duration not valid {data!r}")
         if set(data) - set("-+P0123456789.YMWDHST,") or not any(
             c.isdigit() for c in data

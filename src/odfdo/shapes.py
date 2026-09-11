@@ -161,9 +161,9 @@ class ShapeBase(ListMixin, AnchorMix, SvgMixin, ZMix, Element):
         Returns:
             str: The formatted text content.
         """
-        result: list[str] = []
-        for child in self.children:
-            result.append(child.get_formatted_text(context))
+        result: list[str] = [
+            child.get_formatted_text(context) for child in self.children
+        ]
         result.append("\n")
         return "".join(result)
 
@@ -1976,9 +1976,9 @@ class DrawGroup(SvgMixin, AnchorMix, ZMix, Element):
         Returns:
             str: The formatted text content.
         """
-        result: list[str] = []
-        for child in self.children:
-            result.append(child.get_formatted_text(context))
+        result: list[str] = [
+            child.get_formatted_text(context) for child in self.children
+        ]
         result.append("\n")
         return "".join(result)
 

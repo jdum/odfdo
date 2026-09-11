@@ -1565,7 +1565,8 @@ class Element(MDBase):
         return match.start(), match.end()
 
     def search_all(self, pattern: str) -> list[tuple[int, int]]:
-        """Returns all start and end positions of a regex pattern in the element's text content.
+        """Return all start and end positions of a regex pattern in the
+        element's text content.
 
         Python regular expression syntax applies.
 
@@ -1573,11 +1574,13 @@ class Element(MDBase):
             pattern: The regex pattern to search for.
 
         Returns:
-            list[tuple[int, int]]: A list of (start_position, end_position) tuples for all matches.
+            list[tuple[int, int]]: A list of (start_position, end_position)
+                tuples for all matches.
         """
-        results: list[tuple[int, int]] = []
-        for match in re.finditer(pattern, self.text_recursive):
-            results.append((match.start(), match.end()))
+        results: list[tuple[int, int]] = [
+            (match.start(), match.end())
+            for match in re.finditer(pattern, self.text_recursive)
+        ]
         return results
 
     def text_at(self, start: int, end: int | None = None) -> str:

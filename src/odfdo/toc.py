@@ -313,7 +313,7 @@ class TOC(MDToc, Element):
         for element in index_body.children:
             if element.tag == "text:index-title":
                 for child_element in element.children:
-                    result.append(child_element.get_formatted_text(context).strip())
+                    result.append(child_element.get_formatted_text(context).strip())  # noqa: PERF401
             else:
                 result.append(element.get_formatted_text(context).strip())
         return "\n".join(x for x in result if x)
@@ -365,9 +365,7 @@ class TOC(MDToc, Element):
         index_body = self.body
         if index_body is None:
             return ""
-        index_title = cast(
-            "IndexTitle | None", index_body.get_element(IndexTitle._tag)
-        )
+        index_title = cast("IndexTitle | None", index_body.get_element(IndexTitle._tag))
         if index_title is None:
             return ""
         return index_title.text_content
@@ -389,9 +387,7 @@ class TOC(MDToc, Element):
         if index_body is None:
             self.body = None  # this ceates a new index_body
             index_body = cast("IndexBody", self.body)
-        index_title = cast(
-            "IndexTitle | None", index_body.get_element(IndexTitle._tag)
-        )
+        index_title = cast("IndexTitle | None", index_body.get_element(IndexTitle._tag))
         if index_title:
             style = style or index_title.style
             if not text_style:
@@ -422,7 +418,7 @@ class TOC(MDToc, Element):
         numbers: list[int] = []
         # before header level
         for idx in range(1, level):
-            numbers.append(level_indexes.setdefault(idx, 1))
+            numbers.append(level_indexes.setdefault(idx, 1))  # noqa: PERF401
         # header level
         index = level_indexes.get(level, 0) + 1
         level_indexes[level] = index
@@ -471,9 +467,7 @@ class TOC(MDToc, Element):
         if index_body is None:
             title = None
         else:
-            title = cast(
-                "IndexTitle | None", index_body.get_element(IndexTitle._tag)
-            )
+            title = cast("IndexTitle | None", index_body.get_element(IndexTitle._tag))
 
         # Clean the old index-body
         self.body = None  # this ceates a new index_body

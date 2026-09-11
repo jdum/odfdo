@@ -311,6 +311,7 @@ def _add_object_text(
     if tag == "text:line-break":
         return _add_object_text_line_break(obj, context, result)
     result.append(obj.get_formatted_text(context))
+    return None
 
 
 class ParaFormattedTextMixin:

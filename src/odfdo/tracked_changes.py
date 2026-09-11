@@ -826,6 +826,7 @@ class TextChangeStart(TextChangeEnd):
             end.delete()
         # act like normal delete
         super().delete()
+        return None
 
 
 register_element_class(ChangeInfo)

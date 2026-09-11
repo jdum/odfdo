@@ -93,3 +93,4 @@ def save_document(document: Document, output_path: str | None) -> None:
         document.save(content)
         content.seek(0)
         sys.stdout.buffer.write(content.read())
+        return None

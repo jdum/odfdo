@@ -137,10 +137,12 @@ class Body(Element):
         """
         if not name:
             return None
-        result = self._filtered_element(
-            "descendant::table:table", position=0, table_name=name
+        return cast(
+            "Table|None",
+            self._filtered_element(
+                "descendant::table:table", position=0, table_name=name
+            ),
         )
-        return result  # ty: ignore[invalid-return-type]
 
     get_sheet_by_name = get_table_by_name
 

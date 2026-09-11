@@ -82,7 +82,7 @@ def create_header_cell_style(doc: Document) -> str:
         border_top=border,
     )
     style_name = doc.insert_style(style=cell_style, automatic=True)
-    return style_name
+    return style_name  # noqa: RET504
 
 
 def add_top_content(doc: Document, catalog: list[Product]) -> None:

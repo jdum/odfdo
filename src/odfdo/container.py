@@ -427,7 +427,7 @@ class Container:
             return "image/jpeg"
         if data.startswith(b"\x89PNG\r\n\x1a\n"):
             return "image/png"
-        if data.startswith(b"GIF87a") or data.startswith(b"GIF89a"):
+        if data.startswith((b"GIF87a", b"GIF89a")):
             return "image/gif"
         if data.startswith(b"<?xml") or b"<svg" in data[:100]:
             return "image/svg+xml"

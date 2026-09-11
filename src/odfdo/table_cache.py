@@ -100,8 +100,7 @@ def _erase_map_once(cache_map: list[int], odf_idx: int) -> list[int]:
         before = -1
     current = cache_map[odf_idx]
     repeated = current - before
-    cache_map = cache_map[:odf_idx] + [(x - repeated) for x in cache_map[odf_idx + 1 :]]
-    return cache_map
+    return cache_map[:odf_idx] + [(x - repeated) for x in cache_map[odf_idx + 1 :]]
 
 
 def _insert_item_in_vault(

@@ -26,7 +26,6 @@
 from __future__ import annotations
 
 import contextlib
-from collections.abc import Iterable, Iterator
 from typing import TYPE_CHECKING, Any, cast
 
 from .cell import Cell
@@ -40,6 +39,8 @@ from .table_cache import _XP_CELL_IDX, RowCache, TableCache
 from .utils import convert_coordinates, increment, isiterable, translate_from_any
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator
+
     from lxml.etree import XPath  # ty: ignore[unresolved-import]
 
     from .const import CellValue
@@ -488,7 +489,7 @@ class Row(Element):
         x_int = self._translate_x_from_any(x)
         if x_int < self.width:
             current = self._get_cell2_base(x_int)
-            if current is not None:
+            if current is not None:  # pragma: no branch
                 cell = current.clone
                 cell.repeated = None
                 cell.set_value(
@@ -501,7 +502,6 @@ class Row(Element):
                     cell.style = style
                 self.set_cell(x_int, cell, clone=False)
                 return
-            # pragma: nocover
         cell = Cell(
             value,
             style=style,

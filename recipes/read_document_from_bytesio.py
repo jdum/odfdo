@@ -19,8 +19,7 @@ def document_from_bytesio() -> Document:
         bytes_content.write(file_path.read_bytes())
         # Create the odfdo.Document from the BytesIO
         bytes_content.seek(0)
-        document = Document(bytes_content)
-        return document
+        return Document(bytes_content)
 
 
 def main() -> None:

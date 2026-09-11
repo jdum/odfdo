@@ -193,9 +193,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
                 value = self.get_attribute_string("office:string-value")
                 if value is not None:
                     return value
-                value_list = []
-                for para in self.get_elements("text:p"):
-                    value_list.append(para.inner_text)
+                value_list = [para.inner_text for para in self.get_elements("text:p")]
                 return "\n".join(value_list)
             case _:
                 return None

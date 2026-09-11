@@ -29,7 +29,6 @@ import contextlib
 import csv
 import json
 import os
-from collections.abc import Iterable, Iterator
 from datetime import timedelta
 from io import StringIO
 from itertools import zip_longest
@@ -37,8 +36,6 @@ from pathlib import Path
 from textwrap import wrap
 from typing import TYPE_CHECKING, Any, cast
 from warnings import warn
-
-from lxml.etree import XPath  # ty: ignore[unresolved-import]
 
 from .cell import Cell
 from .column import Column
@@ -70,6 +67,10 @@ from .utils import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator
+
+    from lxml.etree import XPath  # ty: ignore[unresolved-import]
+
     from .frame import Frame
     from .row_group import RowGroup
     from .style import Style
@@ -588,9 +589,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                     # Hack to handle correctly the lists or the directives
                     subsequent_indent = ""
                     part_lstripped = part.lstrip()
-                    if part_lstripped.startswith("-") or part_lstripped.startswith(
-                        ".."
-                    ):
+                    if part_lstripped.startswith(("-", "..")):
                         subsequent_indent = " " * (len(part) - len(part.lstrip()) + 2)
                     wrapped_part = wrap(
                         part, width=cols_size[i], subsequent_indent=subsequent_indent
@@ -1212,8 +1211,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """
         data = []
         if coord is None:
-            for row in self.iter_rows():
-                data.append(row.cells)
+            data = [row.cells for row in self.iter_rows()]
             transposed_data = zip_longest(*data)
             self.clear()
             for row_cells in transposed_data:
@@ -1740,17 +1738,14 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         return lcells
 
     @property
-    def cells(self) -> list:
+    def cells(self) -> list[list[Cell]]:
         """Get all cells of the table as a list of lists.
 
         Returns:
             list: A list of lists, where each inner list contains the Cell
                 elements of a row.
         """
-        lcells: list[list[Cell]] = []
-        for row in self.iter_rows():
-            lcells.append(row.cells)
-        return lcells
+        return [row.cells for row in self.iter_rows()]
 
     def get_cell(
         self,
@@ -2407,7 +2402,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         cells: list[Cell | None] = []
         if not style and not content and not cell_type:
             for row in self.iter_rows():
-                cells.append(row.get_cell(x, clone=True))
+                cells.append(row.get_cell(x, clone=True))  # noqa: PERF401
             return cells
         for row in self.iter_rows():
             cell = row.get_cell(x, clone=True)
@@ -2833,7 +2828,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         for yy in range(y, t + 1):
             row_cells = []
             for xx in range(x, z + 1):
-                row_cells.append(
+                row_cells.append(  # noqa:PERF401
                     self.get_cell((xx, yy), clone=True, keep_repeated=False)
                 )
             cells.append(row_cells)

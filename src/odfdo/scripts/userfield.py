@@ -164,6 +164,7 @@ def document_userfields(args: Namespace) -> None:
         save_document(document, args.output_file)
     else:
         raise ValueError("missing arguments")
+    return None
 
 
 def _field_string(field: UserFieldDecl, args: Namespace) -> str:

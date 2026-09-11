@@ -632,8 +632,9 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
             str: The formatted text with proper indentation.
         """
         str_list = ["  "]
-        for child in element.children:
-            str_list.append(child.get_formatted_text(context))
+        str_list.extend(
+            [child.get_formatted_text(context) for child in element.children]
+        )
         subresult = "".join(str_list)
         subresult = subresult.replace("\n", "\n  ")
         return subresult.rstrip(" ")

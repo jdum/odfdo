@@ -156,8 +156,12 @@ class DrawPage(SvgMixin, OfficeFormsMixin, Element):
                 # No need for an advanced odf_notes.get_formatted_text()
                 # because the text seems to be only contained in paragraphs
                 # and frames, that we already handle
-                for sub_child in child.children:
-                    result.append(sub_child.get_formatted_text(context))
+                result.extend(
+                    [
+                        sub_child.get_formatted_text(context)
+                        for sub_child in child.children
+                    ]
+                )
                 result.append("\n")
             result.append(child.get_formatted_text(context))
         result.append("\n")

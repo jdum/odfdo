@@ -199,6 +199,7 @@ def show(args: Namespace) -> None:
     else:
         print_format_error(doc_type)
         raise SystemExit(1)
+    return None
 
 
 def main() -> None:
