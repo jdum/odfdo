@@ -681,6 +681,17 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     def size(self) -> tuple[int, int]:
         """Get the current width and height of the table.
 
+        Example:
+
+            | reference | color | price |
+            |-----------|-------|-------|
+            | ref01     | white | 10,00 |
+            | ref02     | blue  | 20,50 |
+            | ref03     | red   | 25,75 |
+
+        >>> table.size
+        (3, 4)
+
         Returns:
             A tuple containing the (width, height) of the table.
         """
@@ -874,6 +885,17 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
         Note: the cell style content is kept when using cell values.
         To ensure an absolute empty table, use Table.clear().
+
+        Example:
+
+            | reference | color | price |
+            |-----------|-------|-------|
+            | ref01     | white | 10,00 |
+            | ref02     | blue  | 20,50 |
+            | ref03     | red   | 25,75 |
+
+        >>> table.values
+        [['reference', 'color', 'price'], ['ref01', 'white', 10], ['ref02', 'blue', Decimal('20.5')], ['ref03', 'red', Decimal('25.75')]]
 
         Returns:
             list[list[CellValue | None]]:
@@ -2922,6 +2944,17 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
         The table remains unchanged.
 
+        Example:
+
+            | reference | color | price |
+            |-----------|-------|-------|
+            | ref01     | white | 10,00 |
+            | ref02     | blue  | 20,50 |
+            | ref03     | red   | 25,75 |
+
+        >>> table.shape
+        (4, 3)
+
         Returns:
             The (height, width) tuple of the table.
         """
@@ -2934,6 +2967,17 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Return the first row of table values (column headers) after rstrip.
 
         The table remains unchanged.
+
+        Example:
+
+            | reference | color | price |
+            |-----------|-------|-------|
+            | ref01     | white | 10,00 |
+            | ref02     | blue  | 20,50 |
+            | ref03     | red   | 25,75 |
+
+        >>> table.headers
+        ['reference', 'color', 'price']
 
         Returns:
             List of column header values, or empty list if the table has no
