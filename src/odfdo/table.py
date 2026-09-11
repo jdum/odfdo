@@ -158,6 +158,8 @@ def _get_python_value(
 def _populate_table(table: Table, rows: Iterable[Iterable[Any]]) -> None:
     """Populate a table with rows of values, appending each row in-place.
 
+    String values are evaluated as Python types.
+
     Args:
         table: Target Table instance.
         rows: 2D iterable of cell values.
@@ -168,6 +170,21 @@ def _populate_table(table: Table, rows: Iterable[Iterable[Any]]) -> None:
             _get_python_value(val) if isinstance(val, str) else val for val in row
         ]
         row_elem.set_values(row_converted)
+        table.append_row(row_elem, clone=False)
+
+
+def _populate_table_keep_strings(table: Table, rows: Iterable[Iterable[Any]]) -> None:
+    """Populate a table with rows of values, appending each row in-place.
+
+    String-type values are preserved as strings.
+
+    Args:
+        table: Target Table instance.
+        rows: 2D iterable of cell values.
+    """
+    for row in rows:
+        row_elem = Row()
+        row_elem.set_values(row)
         table.append_row(row_elem, clone=False)
 
 
@@ -2979,6 +2996,284 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         cloned_table.rstrip(aggressive=True)
         values = cloned_table.values
         return values[0] if values else []
+
+    def to_dict(
+        self,
+        orient: str = "dict",
+        header: bool = True,
+        mode: str = "python",
+        lstrip: bool = False,
+        no_decimal: bool = False,
+        no_date: bool = False,
+        no_nan: bool = False,
+    ) -> dict[str, Any] | list[dict[str, Any]]:
+        """Export table data as a Python dictionary or list of dictionaries.
+
+        Args:
+            orient: Format of the output:
+                - "dict" (default): Columnar dict `{"col": [values, ...]}`.
+                - "records": List of row dicts `[{"col": value, ...}, ...]`.
+                - "matrix": Dict with table name `{"TableName": [[...], ...]}`.
+            header: (for orientation "dict" or "records"). If True, uses the
+                first row of data as column header keys. If False, column keys
+                are generated as "0", "1", "2", ...
+            mode: Serialization mode ("python" or "json"). Defaults
+                to "python".
+            lstrip: If True, also removes leading empty rows and columns from
+                the top-left before export.
+            no_decimal: If True in "python" mode, convert Decimal values to
+                float or int.
+            no_date: If True in "python" mode, convert date, datetime, and
+                timedelta values to ODF/ISO formatted strings.
+            no_nan: If True in "python" mode, convert NaN and infinity values
+                to None.
+
+        Returns:
+            The table data formatted as a dictionary or list of dicts.
+
+        Raises:
+            ValueError: If `orient` is not one of "dict", "records", or "matrix".
+        """
+        if orient not in {"dict", "records", "matrix"}:
+            msg = (
+                f"Invalid orient parameter: {orient!r}. "
+                "Expected 'dict', 'records', or 'matrix'."
+            )
+            raise ValueError(msg)
+
+        match orient:
+            case "dict":
+                return self._to_dict_dict(
+                    header=header,
+                    mode=mode,
+                    lstrip=lstrip,
+                    no_decimal=no_decimal,
+                    no_date=no_date,
+                    no_nan=no_nan,
+                )
+            case "records":
+                return self._to_dict_records(
+                    header=header,
+                    mode=mode,
+                    lstrip=lstrip,
+                    no_decimal=no_decimal,
+                    no_date=no_date,
+                    no_nan=no_nan,
+                )
+            case "matrix":
+                return self._to_dict_matrix(
+                    mode=mode,
+                    lstrip=lstrip,
+                    no_decimal=no_decimal,
+                    no_date=no_date,
+                    no_nan=no_nan,
+                )
+
+            case _:
+                msg = (
+                    f"Invalid orient parameter: {orient!r}. "
+                    "Expected 'dict', 'records', or 'matrix'."
+                )
+                raise ValueError(msg)
+
+    def _to_dict_dict(
+        self,
+        header: bool,
+        mode: str,
+        lstrip: bool,
+        no_decimal: bool,
+        no_date: bool,
+        no_nan: bool,
+    ) -> dict[str, Any] | list[dict[str, Any]]:
+        rows = serialize_table(
+            self,
+            mode=mode,
+            lstrip=lstrip,
+            no_decimal=no_decimal,
+            no_date=no_date,
+            no_nan=no_nan,
+        )
+        if not rows:
+            return {}
+
+        if header:
+            headers = [
+                str(h) if h is not None and str(h) != "" else f"Unnamed_{i}"
+                for i, h in enumerate(rows[0])
+            ]
+            data_rows = rows[1:]
+        else:
+            headers = [str(i) for i in range(len(rows[0]))]
+            data_rows = rows
+
+        unifyer = NameUnifyer()
+        unique_headers = [unifyer.unique(h) for h in headers]
+
+        res_dict: dict[str, list[Any]] = {h: [] for h in unique_headers}
+        for row in data_rows:
+            for i, h in enumerate(unique_headers):
+                val = row[i] if i < len(row) else None
+                res_dict[h].append(val)
+        return res_dict
+
+    def _to_dict_records(
+        self,
+        header: bool,
+        mode: str,
+        lstrip: bool,
+        no_decimal: bool,
+        no_date: bool,
+        no_nan: bool,
+    ) -> dict[str, Any] | list[dict[str, Any]]:
+        rows = serialize_table(
+            self,
+            mode=mode,
+            lstrip=lstrip,
+            no_decimal=no_decimal,
+            no_date=no_date,
+            no_nan=no_nan,
+        )
+        if not rows:
+            return []
+
+        if header:
+            headers = [
+                str(h) if h is not None and str(h) != "" else f"Unnamed: {i}"
+                for i, h in enumerate(rows[0])
+            ]
+            data_rows = rows[1:]
+        else:
+            headers = [str(i) for i in range(len(rows[0]))]
+            data_rows = rows
+
+        unifyer = NameUnifyer()
+        unique_headers = [unifyer.unique(h) for h in headers]
+
+        res_records: list[dict[str, Any]] = []
+        for row in data_rows:
+            record: dict[str, Any] = {}
+            for i, h in enumerate(unique_headers):
+                record[h] = row[i] if i < len(row) else None
+            res_records.append(record)
+        return res_records
+
+    def _to_dict_matrix(
+        self, mode: str, lstrip: bool, no_decimal: bool, no_date: bool, no_nan: bool
+    ) -> dict[str, Any] | list[dict[str, Any]]:
+        rows = serialize_table(
+            self,
+            mode=mode,
+            lstrip=lstrip,
+            no_decimal=no_decimal,
+            no_date=no_date,
+            no_nan=no_nan,
+        )
+        name = self.name
+        if not name:
+            unifyer = NameUnifyer()
+            name = unifyer.unique()
+        return {name: rows}
+
+    def from_dict(
+        cls,
+        data: dict[str, Any] | list[dict[str, Any]],
+        name: str | None = None,
+        guess_type: bool = False,
+    ) -> Table:
+        """Create a new Table object from a dictionary or list of
+        dictionaries.
+
+        Accepts:
+        - Columnar dict: `{"Col1": [val1, val2], "Col2": [val3, val4]}`
+        - List of records: `[{"Col1": val1, "Col2": val3}, {"Col1": val2,
+            "Col2": val4}]`
+        - Matrix dict: `{"SheetName": [[val1, val2], [val3, val4]]}`
+
+        Args:
+            data: The dictionary or list of dicts to import.
+            name: Name of the table to create.
+            guess_type: If True, try to detect Python type from strings
+                values (int, float, dates).
+
+        Returns:
+            A new Table populated with the dictionary data.
+
+        Raises:
+            TypeError: If data is not a dict or list of dicts.
+        """
+        if isinstance(data, dict):
+            return cls._from_dict_dict(data, name, guess_type)
+        if isinstance(data, list):
+            return cls._from_dict_list(data, name, guess_type)
+        msg = "data must be a dict or list of dicts."
+        raise TypeError(msg)
+
+    @classmethod
+    def _from_dict_dict(
+        cls, data: dict[str, Any], name: str | None, guess_type: bool
+    ) -> Table:
+        if not data:
+            return Table(name or "Table")
+        first_val = next(iter(data.values()))
+        if isinstance(first_val, list) and (
+            not first_val or isinstance(first_val[0], list)
+        ):
+            table_name = name or next(iter(data.keys()))
+            table = cls(table_name)
+            if guess_type:
+                _populate_table(table, first_val)
+            else:
+                _populate_table_keep_strings(table, first_val)
+            return table
+
+        headers = list(data.keys())
+        columns_data = [data[h] for h in headers]
+        max_len = max(
+            (len(col) if isinstance(col, (list, tuple)) else 1 for col in columns_data),
+            default=0,
+        )
+        rows: list[list[Any]] = [headers]
+        for row_idx in range(max_len):
+            row = [
+                columns_data[col_idx][row_idx]
+                if isinstance(columns_data[col_idx], (list, tuple))
+                and row_idx < len(columns_data[col_idx])
+                else columns_data[col_idx]
+                if not isinstance(columns_data[col_idx], (list, tuple)) and row_idx == 0
+                else None
+                for col_idx in range(len(headers))
+            ]
+            rows.append(row)
+        table = cls(name or "Table")
+        if guess_type:
+            _populate_table(table, rows)
+        else:
+            _populate_table_keep_strings(table, rows)
+        return table
+
+    def _from_dict_list(
+        cls, data: list[dict[str, Any]], name: str | None, guess_type: bool
+    ) -> Table:
+        if not data:
+            return Table(name or "Table")
+        first = data[0]
+        if not isinstance(first, dict):
+            msg = "List elements must be dictionaries."
+            raise TypeError(msg)
+        headers = list(first.keys())
+        rows = [headers]
+        for record in data:
+            if not isinstance(record, dict):
+                msg = "List elements must be dictionaries."
+                raise TypeError(msg)
+            row = [record.get(h) for h in headers]
+            rows.append(row)
+        table = Table(name or "Table")
+        if guess_type:
+            _populate_table(table, rows)
+        else:
+            _populate_table_keep_strings(table, rows)
+        return table
 
     def to_markdown(self) -> str:
         """Export the table content as a Markdown string.
