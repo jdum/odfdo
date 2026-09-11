@@ -121,12 +121,26 @@ select = [
     "A",
     # flake8-comprehensions
     "C4",
+    # flake8-implicit-str-concat
+    "ISC",
+    # flake8-pie
+    "PIE",
+    # flake8-pyi
+    "PYI",
+    # flake8-return
+    "RET",
     # flake8-debugger
     "T10",
     # flake8-simplify
     "SIM",
+    # flake8-type-checking
+    "TC",
     # isort
     "I",
+    # perflint
+    "PERF",
+    # pydocstyle
+    # "D",
     # mccabe
     "C90",
     # pycodestyle
@@ -168,12 +182,22 @@ ignore = [
     "C901",
     # Within an `except` clause, raise exceptions with `raise ... from err`
     "B904",
+    # Missing docstring in public package
+    "D104",
+    #redundant-numeric-union
+    "PYI041",
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/test_*" = ["S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117","S603"]
-"tests/*/test_*" = ["S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117","S603"]
-"recipes/*" = ["S101", "SIM102", "B903"]
+"tests/test_*" = [
+    "S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117","S603",
+    "D103","D100","D101","D401","D205","D400","D415"
+]
+"tests/*/test_*" = [
+    "S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117","S603",
+    "D103","D100","D101","D401","D205","D400","D415"
+]
+"recipes/*" = ["S101", "SIM102", "B903","D103","D100"]
 "recipes/accessing_a_single_element.py" = ["RUF001"]
 
 [tool.pytest.ini_options]
