@@ -123,6 +123,73 @@ def test_get_table_size_empty():
     assert table.size == (0, 0)
 
 
+def test_get_table_shape(table):
+    assert table.shape == (4, 7)
+
+
+def test_get_table_shape_rstrip():
+    table = Table("T", width=3, height=2)
+    table.set_value((0, 0), "a")
+    table.set_value((1, 0), "b")
+    table.set_value((0, 1), "c")
+    table.append_row(Row(width=3))
+    table.append_row(Row(width=3))
+    assert table.size == (3, 4)
+    # trailing empty rows and right empty column are stripped
+    assert table.shape == (2, 2)
+
+
+def test_get_table_shape_empty():
+    table = Table("Empty")
+    assert table.shape == (0, 0)
+
+
+def test_get_table_shape_all_empty():
+    table = Table("Empty", width=3, height=2)
+    assert table.shape == (0, 0)
+
+
+def test_get_table_shape_does_not_modify_table():
+    table = Table("T", width=4, height=2)
+    table.set_value((0, 0), "h1")
+    table.set_value((1, 0), "h2")
+    table.set_value((0, 1), 42)
+    assert table.shape == (2, 2)
+    assert table.size == (4, 2)
+    assert table.get_value((3, 0)) is None
+
+
+def test_get_table_headers(table):
+    assert table.headers == [1, 1, 1, 2, 3, 3, 3]
+
+
+def test_get_table_headers_trailing_empty():
+    table = Table("T", width=4, height=2)
+    table.set_value((0, 0), "h1")
+    table.set_value((1, 0), "h2")
+    table.set_value((0, 1), 42)
+    assert table.headers == ["h1", "h2"]
+
+
+def test_get_table_headers_empty():
+    table = Table("Empty")
+    assert table.headers == []
+
+
+def test_get_table_headers_all_empty():
+    table = Table("Empty", width=3, height=2)
+    assert table.headers == []
+
+
+def test_get_table_headers_does_not_modify_table():
+    table = Table("T", width=3, height=2)
+    table.set_value((0, 0), "h1")
+    table.set_value((0, 1), 42)
+    assert table.headers == ["h1"]
+    assert table.size == (3, 2)
+    assert table.get_value((0, 0)) == "h1"
+
+
 def test_get_table_width_after():
     table = Table("Empty")
     assert table.width == 0
