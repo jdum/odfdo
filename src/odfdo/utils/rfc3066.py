@@ -38,7 +38,7 @@ def get_default_language() -> str:
     with contextlib.suppress(Exception), warnings.catch_warnings():
         warnings.simplefilter("ignore", DeprecationWarning)
         loc = locale.getdefaultlocale()
-        if loc and loc[0]:
+        if loc and loc[0]:  # ty: ignore[redundant-condition]
             lang = loc[0].replace("_", "-")
             if is_RFC3066(lang):
                 return lang
