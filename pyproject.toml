@@ -65,6 +65,7 @@ doc = [
 dev = [
     "duckdb>=1.0.0", # for recipes about duckdb
     "iniconfig>=2.1.0",
+    "numpy>=1.24.0", # for recipes about numpy
     "pandas>=2.0.0", # for recipes about pandas
     "pillow>=12.1.1",
     "polars>=1.0.0", # for recipes about polars
