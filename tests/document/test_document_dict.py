@@ -63,6 +63,22 @@ def test_document_to_dict_table_index_out_of_range(samples):
         doc.to_dict(table=99)
 
 
+def test_document_to_dict_orient_list(samples):
+    doc = Document(samples("store_table.ods"))
+    result = doc.to_dict(orient="list")
+    assert "product" in result
+    assert "store" in result
+    assert result["product"]["reference"] == ["ref01", "ref02", "ref03"]
+
+
+def test_document_to_dict_invalid_orient(samples):
+    doc = Document(samples("store_table.ods"))
+    with pytest.raises(ValueError, match="Invalid orient parameter"):
+        doc.to_dict(orient="bogus")
+    with pytest.raises(ValueError, match="Invalid orient parameter"):
+        doc.to_dict(orient="dict")
+
+
 def test_document_to_dict_orient_matrix(samples):
     doc = Document(samples("store_table.ods"))
     result = doc.to_dict(orient="matrix")

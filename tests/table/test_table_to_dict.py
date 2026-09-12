@@ -62,6 +62,15 @@ def test_to_dict_default(product):
     }
 
 
+def test_to_dict_orient_list(product):
+    result = product.to_dict(orient="list")
+    assert result == {
+        "reference": ["ref01", "ref02", "ref03"],
+        "color": ["white", "blue", "red"],
+        "price": [10, Decimal("20.5"), Decimal("25.75")],
+    }
+
+
 def test_to_dict_records(product):
     result = product.to_dict(orient="records")
     assert result == [
@@ -118,6 +127,8 @@ def test_to_dict_lstrip():
 def test_to_dict_invalid_orient(product):
     with pytest.raises(ValueError, match="Invalid orient parameter"):
         product.to_dict(orient="bogus")
+    with pytest.raises(ValueError, match="Invalid orient parameter"):
+        product.to_dict(orient="dict")
 
 
 def test_to_dict_duplicate_headers():

@@ -3001,7 +3001,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
     def to_dict(
         self,
-        orient: str = "dict",
+        orient: str = "list",
         header: bool = True,
         mode: str = "python",
         lstrip: bool = False,
@@ -3013,10 +3013,10 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
         Args:
             orient: Format of the output:
-                - "dict" (default): Columnar dict `{"col": [values, ...]}`.
+                - "list" (default): Columnar dict `{"col": [values, ...]}`.
                 - "records": List of row dicts `[{"col": value, ...}, ...]`.
                 - "matrix": Dict with table name `{"TableName": [[...], ...]}`.
-            header: (for orientation "dict" or "records"). If True, uses the
+            header: (for orientation "list" or "records"). If True, uses the
                 first row of data as column header keys. If False, column keys
                 are generated as "0", "1", "2", ...
             mode: Serialization mode ("python" or "json"). Defaults
@@ -3066,11 +3066,11 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             The table data formatted as a dictionary or list of dicts.
 
         Raises:
-            ValueError: If `orient` is not one of "dict", "records", or "matrix".
+            ValueError: If `orient` is not one of "list", "records", or "matrix".
         """
         match orient:
-            case "dict":
-                return self._to_dict_dict(
+            case "list":
+                return self._to_dict_list(
                     header=header,
                     mode=mode,
                     lstrip=lstrip,
@@ -3098,11 +3098,11 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             case _:
                 msg = (
                     f"Invalid orient parameter: {orient!r}. "
-                    "Expected 'dict', 'records', or 'matrix'."
+                    "Expected 'list', 'records', or 'matrix'."
                 )
                 raise ValueError(msg)
 
-    def _to_dict_dict(
+    def _to_dict_list(
         self,
         header: bool,
         mode: str,

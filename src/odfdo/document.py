@@ -901,7 +901,7 @@ class Document(MDDocument):
     def to_dict(
         self,
         table: str | int | None = None,
-        orient: str = "dict",
+        orient: str = "list",
         header: bool = True,
         mode: str = "python",
         lstrip: bool = False,
@@ -916,7 +916,7 @@ class Document(MDDocument):
             table: Name or 0-based index of a specific table to export. If
                 None, exports all tables in the document.
             orient: Format of the exported dictionary:
-                - "dict" (default): Columnar format `{"col": [values, ...]}`.
+                - "list" (default): Columnar format `{"col": [values, ...]}`.
                 - "records": List of row dicts `[{"col": value, ...}, ...]`.
                 - "matrix": Dict mapping table names to 2D lists
                   `{"TableName": [[...], ...]}`.
@@ -979,7 +979,14 @@ class Document(MDDocument):
         Raises:
             KeyError: If the specified table name is not found.
             IndexError: If the specified table index is out of bounds.
+            ValueError: If `orient` is not one of "list", "records", or "matrix".
         """
+        if orient not in ("list", "records", "matrix"):
+            msg = (
+                f"Invalid orient parameter: {orient!r}. "
+                "Expected 'list', 'records', or 'matrix'."
+            )
+            raise ValueError(msg)
         if table is not None:
             if isinstance(table, int):
                 tables = self.body.tables
