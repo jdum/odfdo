@@ -66,6 +66,7 @@ dev = [
     "iniconfig>=2.1.0",
     "pandas>=2.0.0", # for recipes about pandas
     "pillow>=12.1.1",
+    "polars>=1.0.0", # for recipes about polars
     "pyexcel>=0.7.0", # for recipes about pyexcel
     "pytest>=8.4.2",
     "pytest-xdist>=3.8.0",

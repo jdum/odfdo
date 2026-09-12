@@ -7,7 +7,7 @@ from pathlib import Path
 
 from odfdo import Document, Table
 
-_DOC_SEQUENCE = 615
+_DOC_SEQUENCE = 614
 DATA = Path(__file__).parent / "data"
 SOURCE = "some_csv.csv"
 OUTPUT_DIR = Path(__file__).parent / "recipes_output" / "csv2"
