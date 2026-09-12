@@ -122,8 +122,8 @@ A few scripts are provided with `odfdo`:
 
 # Documentation
 
--   the `recipes` folder contains more than 60 working sample scripts,
--   the auto-generated documentation exposes public APIs and recipes.
+-   The `recipes` folder contains over 80 examples of functional scripts, including interoperability recipes for Pandas, Polars, PyExcel, DuckDB, Tabulate, NumPy, and OpenPyXL.
+-   The auto-generated documentation exposes public APIs and recipes.
 
 Online documentation: [https://jdum.github.io/odfdo](https://jdum.github.io/odfdo/)
 
