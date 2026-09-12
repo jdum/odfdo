@@ -922,7 +922,7 @@ class Document(MDDocument):
                   `{"TableName": [[...], ...]}`.
             header: If True, uses the first row of data as column header keys.
             mode: Serialization mode ("python" or "json"). Defaults to
-                "python". "python" mode cn be customized by arguments
+                "python". "python" mode can be customized by arguments
                 "no_decimal", "no_date" and "no_nan".
             lstrip: If True, removes leading empty rows and columns from the
                 top-left before export.
@@ -933,6 +933,44 @@ class Document(MDDocument):
                 timedelta values to ODF/ISO formatted strings.
             no_nan: If True in "python" mode, convert NaN and infinity values
                 to None.
+
+        Example:
+
+            Table "product":
+
+            | reference | color | price |
+            |-----------|-------|-------|
+            | ref01     | white | 10,00 |
+            | ref02     | blue  | 20,50 |
+            | ref03     | red   | 25,75 |
+
+        >>> document.to_dict()
+        {
+            'product': {
+                'reference': ['ref01', 'ref02', 'ref03'],
+                'color': ['white', 'blue', 'red'],
+                'price': [10, Decimal('20.5'), Decimal('25.75')]
+            }
+        }
+
+        >>> document.to_dict(orient="records")
+        {
+            'product': [
+                {'reference': 'ref01', 'color': 'white', 'price': 10},
+                {'reference': 'ref02', 'color': 'blue', 'price': Decimal('20.5')},
+                {'reference': 'ref03', 'color': 'red', 'price': Decimal('25.75')}
+            ]
+        }
+
+        >>> document.to_dict(orient="matrix")
+        {
+            'product': [
+                ['reference', 'color', 'price'],
+                ['ref01', 'white', 10],
+                ['ref02', 'blue', Decimal('20.5')],
+                ['ref03', 'red', Decimal('25.75')]
+            ]
+        }
 
         Returns:
             A dictionary of table dictionaries if `table` is None, or the
@@ -1007,6 +1045,63 @@ class Document(MDDocument):
             guess_type: If True, try to detect Python type from strings
                 values (int, float, dates).
             language: Optional document language code.
+
+        Example:
+
+            # Multi-sheet: columnar format
+            >>> data = {
+            ...     "product": {
+            ...         "reference": ["ref01", "ref02"],
+            ...         "price": [10, 20.5],
+            ...     },
+            ...     "stock": {
+            ...         "reference": ["ref01", "ref02"],
+            ...         "qty": [100, 50],
+            ...     },
+            ... }
+            >>> doc = Document.from_dict(data)
+
+            # Multi-sheet: records format
+            >>> data = {
+            ...     "product": [
+            ...         {"reference": "ref01", "price": 10},
+            ...         {"reference": "ref02", "price": 20.5},
+            ...     ],
+            ...     "stock": [
+            ...         {"reference": "ref01", "qty": 100},
+            ...         {"reference": "ref02", "qty": 50},
+            ...     ],
+            ... }
+            >>> doc = Document.from_dict(data)
+
+            # Multi-sheet: matrix format
+            >>> data = {
+            ...     "product": [
+            ...         ["reference", "price"],
+            ...         ["ref01", 10],
+            ...         ["ref02", 20.5],
+            ...     ],
+            ...     "stock": [
+            ...         ["reference", "qty"],
+            ...         ["ref01", 100],
+            ...         ["ref02", 50],
+            ...     ],
+            ... }
+            >>> doc = Document.from_dict(data)
+
+            # Single table: columnar dict
+            >>> data = {
+            ...     "reference": ["ref01", "ref02"],
+            ...     "price": [10, 20.5],
+            ... }
+            >>> doc = Document.from_dict(data, table_name="product")
+
+            # Single table: list of records
+            >>> data = [
+            ...     {"reference": "ref01", "price": 10},
+            ...     {"reference": "ref02", "price": 20.5},
+            ... ]
+            >>> doc = Document.from_dict(data, table_name="product")
 
         Returns:
             Document: A new spreadsheet Document populated with the tables.

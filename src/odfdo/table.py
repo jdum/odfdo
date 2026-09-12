@@ -1904,10 +1904,12 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         coord: tuple | list | str | None = None,
         clone: bool = True,
     ) -> None:
-        """Set a matrix of cells in the table, starting from a specified coordinate.
+        """Set a matrix of cells in the table, starting from a specified
+        coordinate.
 
-        The table is not cleared before this operation. The `cells` argument should
-        be an iterable of iterables, where each inner iterable represents a row.
+        The table is not cleared before this operation. The `cells` argument
+        should be an iterable of iterables, where each inner iterable
+        represents a row.
 
         Args:
             cells: An iterable of iterables of Cell elements.
@@ -2520,8 +2522,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """Set the Python values for the cells in the column at the given 'x'
         position.
 
-        The provided iterable of values must yield the same number of items as the
-        table's height.
+        The provided iterable of values must yield the same number of items as
+        the table's height.
 
         Args:
             x: The 0-based index or alphabetical representation of the column.
@@ -3027,6 +3029,38 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 timedelta values to ODF/ISO formatted strings.
             no_nan: If True in "python" mode, convert NaN and infinity values
                 to None.
+
+        Example:
+
+            | reference | color | price |
+            |-----------|-------|-------|
+            | ref01     | white | 10,00 |
+            | ref02     | blue  | 20,50 |
+            | ref03     | red   | 25,75 |
+
+        >>> table.to_dict()
+        {
+            'reference': ['ref01', 'ref02', 'ref03'],
+            'color': ['white', 'blue', 'red'],
+            'price': [10, Decimal('20.5'), Decimal('25.75')]
+        }
+
+        >>> table.to_dict(orient="records")
+        [
+            {'reference': 'ref01', 'color': 'white', 'price': 10},
+            {'reference': 'ref02', 'color': 'blue', 'price': Decimal('20.5')},
+            {'reference': 'ref03', 'color': 'red', 'price': Decimal('25.75')}
+        ]
+
+        >>> table.to_dict(orient="matrix")
+        {
+            'product': [
+                ['reference', 'color', 'price'],
+                ['ref01', 'white', 10],
+                ['ref02', 'blue', Decimal('20.5')],
+                ['ref03', 'red', Decimal('25.75')]
+            ]
+        }
 
         Returns:
             The table data formatted as a dictionary or list of dicts.
