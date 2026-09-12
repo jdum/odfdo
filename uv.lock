@@ -9,10 +9,10 @@ resolution-markers = [
     "python_full_version == '3.13.*' and sys_platform == 'emscripten'",
     "python_full_version == '3.13.*' and sys_platform != 'emscripten' and sys_platform != 'win32'",
     "python_full_version == '3.12.*' and sys_platform == 'win32'",
-    "python_full_version == '3.11.*' and sys_platform == 'win32'",
     "python_full_version == '3.12.*' and sys_platform == 'emscripten'",
-    "python_full_version == '3.11.*' and sys_platform == 'emscripten'",
     "python_full_version == '3.12.*' and sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "python_full_version == '3.11.*' and sys_platform == 'win32'",
+    "python_full_version == '3.11.*' and sys_platform == 'emscripten'",
     "python_full_version == '3.11.*' and sys_platform != 'emscripten' and sys_platform != 'win32'",
     "python_full_version < '3.11'",
 ]
@@ -494,6 +494,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/df/bf/f7da0350254c0ed7c72f3e33cef02e048281fec7ecec5f032d4aac52226b/jinja2-3.1.6.tar.gz", hash = "sha256:0137fb05990d35f1275a587e9aee6d56da821fc83491a0fb838183be43f66d6d", size = 245115, upload-time = "2025-03-05T20:05:02.478Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl", hash = "sha256:85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67", size = 134899, upload-time = "2025-03-05T20:05:00.369Z" },
+]
+
+[[package]]
+name = "lml"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/2e/33/8043c7050233e889df10365d32838b276fc51464cc70f9abbb97c92771d6/lml-0.2.0.tar.gz", hash = "sha256:8dd5afb4367a593d1cdb2144a05874cd9938f5266bebb0c9e1413200423c0d74", size = 41633, upload-time = "2025-03-16T11:56:44.381Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c8/da/c649f3d09155660bcc5bf4f7fb59effae968e4ffd872cdd738f0b6932400/lml-0.2.0-py2.py3-none-any.whl", hash = "sha256:20c80728189e46e8d986f5d0cdf6d83c493471fc25b1c31a8cb3fa96e80b58f8", size = 10846, upload-time = "2025-03-16T11:56:42.709Z" },
 ]
 
 [[package]]
@@ -1130,6 +1139,7 @@ dev = [
     { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "pandas", version = "3.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pillow" },
+    { name = "pyexcel" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-xdist" },
@@ -1160,6 +1170,7 @@ dev = [
     { name = "iniconfig", specifier = ">=2.1.0" },
     { name = "pandas", specifier = ">=2.0.0" },
     { name = "pillow", specifier = ">=12.1.1" },
+    { name = "pyexcel", specifier = ">=0.7.0" },
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "pytest-xdist", specifier = ">=3.8.0" },
@@ -1270,10 +1281,10 @@ resolution-markers = [
     "python_full_version == '3.13.*' and sys_platform == 'emscripten'",
     "python_full_version == '3.13.*' and sys_platform != 'emscripten' and sys_platform != 'win32'",
     "python_full_version == '3.12.*' and sys_platform == 'win32'",
-    "python_full_version == '3.11.*' and sys_platform == 'win32'",
     "python_full_version == '3.12.*' and sys_platform == 'emscripten'",
-    "python_full_version == '3.11.*' and sys_platform == 'emscripten'",
     "python_full_version == '3.12.*' and sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "python_full_version == '3.11.*' and sys_platform == 'win32'",
+    "python_full_version == '3.11.*' and sys_platform == 'emscripten'",
     "python_full_version == '3.11.*' and sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 dependencies = [
@@ -1446,6 +1457,32 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f9/e2/3e91f31a7d2b083fe6ef3fa267035b518369d9511ffab804f839851d2779/pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3", size = 69412, upload-time = "2025-05-15T12:30:07.975Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746", size = 20538, upload-time = "2025-05-15T12:30:06.134Z" },
+]
+
+[[package]]
+name = "pyexcel"
+version = "0.7.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "lml" },
+    { name = "pyexcel-io" },
+    { name = "texttable" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c8/38/e7eaba4e355a8766a7d1704b95200c8de7527bc3f559e40036812ac264b2/pyexcel-0.7.6.tar.gz", hash = "sha256:489483d8c7675a4d04d0a55a1b5dd0925771e2660fa68105ca342e492f459d1b", size = 817608, upload-time = "2026-06-29T21:40:08.874Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0f/ac/9534000969f95a8ac77eee5b0731887c975fc66886deb0b993b5a9e6993e/pyexcel-0.7.6-py2.py3-none-any.whl", hash = "sha256:1610d86f7a47bfa802a454d8caa4c42b3f1dc8bcbe8ff794027b5c7a024300e1", size = 89636, upload-time = "2026-06-29T21:40:07.326Z" },
+]
+
+[[package]]
+name = "pyexcel-io"
+version = "0.6.8"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "lml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/5a/8a/cae2571ba6719be2e176c256e2be063d74a3766138cc06eaa891c857f887/pyexcel_io-0.6.8.tar.gz", hash = "sha256:c8831a7542b3da0bf5849afaecabd8e7524a1761ee88270ed24b5bc53649f533", size = 75798, upload-time = "2026-06-28T21:06:39.315Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/aa/9f/d2f00bdc8e6ab177df3ac51e3c53796e8aa9b8ab4921da15c1fd46f22564/pyexcel_io-0.6.8-py2.py3-none-any.whl", hash = "sha256:074bf490a749cbe1c47e127aabab68223028f3abfd0fcad0de9b1bfe5a1e7f9d", size = 44083, upload-time = "2026-06-28T21:06:37.954Z" },
 ]
 
 [[package]]
@@ -1684,6 +1721,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/94/e7/b2c673351809dca68a0e064b6af791aa332cf192da575fd474ed7d6f16a2/six-1.17.0.tar.gz", hash = "sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81", size = 34031, upload-time = "2024-12-04T17:35:28.174Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl", hash = "sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274", size = 11050, upload-time = "2024-12-04T17:35:26.475Z" },
+]
+
+[[package]]
+name = "texttable"
+version = "1.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/1c/dc/0aff23d6036a4d3bf4f1d8c8204c5c79c4437e25e0ae94ffe4bbb55ee3c2/texttable-1.7.0.tar.gz", hash = "sha256:2d2068fb55115807d3ac77a4ca68fa48803e84ebb0ee2340f858107a36522638", size = 12831, upload-time = "2023-10-03T09:48:12.272Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/24/99/4772b8e00a136f3e01236de33b0efda31ee7077203ba5967fcc76da94d65/texttable-1.7.0-py2.py3-none-any.whl", hash = "sha256:72227d592c82b3d7f672731ae73e4d1f88cd8e2ef5b075a7a7f01a23a3743917", size = 10768, upload-time = "2023-10-03T09:48:10.434Z" },
 ]
 
 [[package]]
