@@ -808,6 +808,69 @@ Import a CSV file and load data into a table.
     {% include "../../recipes/import_csv_content_into_a_table.py" %}
     ```
 
+## Pandas dataframe interoperability
+
+Demonstrate interoperability between odfdo and pandas DataFrame.
+
+??? code "recipes/pandas_dataframe_interoperability.py"
+    ```python
+    {% include "../../recipes/pandas_dataframe_interoperability.py" %}
+    ```
+
+## Pyexcel interoperability
+
+Demonstrate interoperability between odfdo and pyexcel.
+
+??? code "recipes/pyexcel_interoperability.py"
+    ```python
+    {% include "../../recipes/pyexcel_interoperability.py" %}
+    ```
+
+## Polars dataframe interoperability
+
+Demonstrate interoperability between odfdo and polars DataFrame.
+
+??? code "recipes/polars_dataframe_interoperability.py"
+    ```python
+    {% include "../../recipes/polars_dataframe_interoperability.py" %}
+    ```
+
+## Duckdb sql interoperability
+
+Demonstrate SQL analytics on odfdo spreadsheets using DuckDB.
+
+??? code "recipes/duckdb_sql_interoperability.py"
+    ```python
+    {% include "../../recipes/duckdb_sql_interoperability.py" %}
+    ```
+
+## Tabulate interoperability
+
+Demonstrate formatting odfdo spreadsheet tables using tabulate.
+
+??? code "recipes/tabulate_interoperability.py"
+    ```python
+    {% include "../../recipes/tabulate_interoperability.py" %}
+    ```
+
+## Numpy interoperability
+
+Demonstrate interoperability between odfdo and NumPy.
+
+??? code "recipes/numpy_interoperability.py"
+    ```python
+    {% include "../../recipes/numpy_interoperability.py" %}
+    ```
+
+## Openpyxl interoperability
+
+Demonstrate interoperability between odfdo (ODS) and openpyxl (XLSX).
+
+??? code "recipes/openpyxl_interoperability.py"
+    ```python
+    {% include "../../recipes/openpyxl_interoperability.py" %}
+    ```
+
 ## Search and replace words
 
 Search and replace words in a text document.

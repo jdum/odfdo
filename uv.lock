@@ -1176,7 +1176,7 @@ wheels = [
 
 [[package]]
 name = "odfdo"
-version = "3.25.0"
+version = "3.26.0"
 source = { editable = "." }
 dependencies = [
     { name = "lxml" },
@@ -1236,10 +1236,10 @@ dev = [
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "pytest-xdist", specifier = ">=3.8.0" },
-    { name = "ruff", specifier = ">=0.16.6" },
+    { name = "ruff", specifier = ">=0.16.7" },
     { name = "tabulate", specifier = ">=0.9.0" },
     { name = "tox", specifier = ">=4.61.2" },
-    { name = "ty", specifier = ">=0.0.78" },
+    { name = "ty", specifier = ">=0.0.80" },
 ]
 doc = [
     { name = "griffe" },
