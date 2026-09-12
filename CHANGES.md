@@ -1,5 +1,40 @@
 # Odfdo Release Notes
 
+## [3.26.0] - 2026-09-12
+
+-   Added Python dictionary import and export support for spreadsheets in `Document` and `Table` APIs (`to_dict()`, `from_dict()`).
+-   Added `TableSerializer` and `serialize_table()` for unified table data serialization across Python, JSON, and CSV modes.
+-   Added `Table.lstrip()`, `Table.strip()`, `Row.lstrip()`, and `Row.strip()` methods for trimming empty rows and columns.
+-   Added properties `Table.shape` and `Table.headers`.
+-   Added interoperability recipes for Pandas, Polars, PyExcel, DuckDB, Tabulate, NumPy, and OpenPyXL.
+
+### Added
+
+-   Add methods `Table.to_dict()` and `Table.from_dict()`, supporting `"list"`, `"records"`, and `"matrix"` orientations.
+-   Add methods `Document.to_dict()` and `Document.from_dict()`, supporting multi-sheet and single-table dictionary import and export.
+-   Add `TableSerializer` class and `serialize_table()` function in `odfdo.table_serializer` providing unified serialization across Python, JSON, and CSV modes.
+-   Add methods `Table.lstrip()` and `Table.strip()` to strip leading and trailing empty rows and columns.
+-   Add methods `Row.lstrip()` and `Row.strip()` to strip leading and trailing empty cells.
+-   Add property `Table.shape` returning the `(height, width)` tuple of the table after trailing empty rows/columns optimization.
+-   Add property `Table.headers` returning the list of column header values.
+-   Add interoperability recipes:
+    -   `recipes/pandas_dataframe_interoperability.py` for Pandas DataFrame interoperability.
+    -   `recipes/polars_dataframe_interoperability.py` for Polars DataFrame interoperability.
+    -   `recipes/pyexcel_interoperability.py` for PyExcel Sheet and Book interoperability.
+    -   `recipes/duckdb_sql_interoperability.py` for DuckDB SQL querying and multi-sheet joins.
+    -   `recipes/tabulate_interoperability.py` for multi-format text, Markdown, and HTML table rendering.
+    -   `recipes/numpy_interoperability.py` for NumPy 1D, 2D, and structured array conversions.
+    -   `recipes/openpyxl_interoperability.py` for bidirectional ODS and XLSX conversion.
+
+### Changed
+
+-   Refined empty cell detection in `Cell` and table stripping methods to preserve `False`, `0`, and boolean/numeric zero values.
+-   `Table.to_csv()` now uses the unified `serialize_table()` serialization engine.
+
+### Refactored
+
+-   Updated Ruff linter rules and type checking imports across modules and test suite.
+
 ## [3.25.0] - 2026-09-06
 
 -   Added JSON export and import support for spreadsheets in `Document` and `Table` APIs (`to_json()`, `from_json()`).
