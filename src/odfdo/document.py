@@ -898,6 +898,196 @@ class Document(MDDocument):
 
         return doc
 
+    def to_dict(
+        self,
+        table: str | int | None = None,
+        orient: str = "dict",
+        header: bool = True,
+        mode: str = "python",
+        lstrip: bool = False,
+        include_hidden: bool = False,
+        no_decimal: bool = False,
+        no_date: bool = False,
+        no_nan: bool = False,
+    ) -> dict[str, Any] | list[dict[str, Any]]:
+        """Export document table(s) as Python dictionaries.
+
+        Args:
+            table: Name or 0-based index of a specific table to export. If
+                None, exports all tables in the document.
+            orient: Format of the exported dictionary:
+                - "dict" (default): Columnar format `{"col": [values, ...]}`.
+                - "records": List of row dicts `[{"col": value, ...}, ...]`.
+                - "matrix": Dict mapping table names to 2D lists
+                  `{"TableName": [[...], ...]}`.
+            header: If True, uses the first row of data as column header keys.
+            mode: Serialization mode ("python" or "json"). Defaults to
+                "python". "python" mode cn be customized by arguments
+                "no_decimal", "no_date" and "no_nan".
+            lstrip: If True, removes leading empty rows and columns from the
+                top-left before export.
+            include_hidden: If True, include hidden tables.
+            no_decimal: If True in "python" mode, convert Decimal values to
+                float or int.
+            no_date: If True in "python" mode, convert date, datetime, and
+                timedelta values to ODF/ISO formatted strings.
+            no_nan: If True in "python" mode, convert NaN and infinity values
+                to None.
+
+        Returns:
+            A dictionary of table dictionaries if `table` is None, or the
+            dictionary for the specified table if `table` is given.
+
+        Raises:
+            KeyError: If the specified table name is not found.
+            IndexError: If the specified table index is out of bounds.
+        """
+        if table is not None:
+            if isinstance(table, int):
+                tables = self.body.tables
+                if table < 0 or table >= len(tables):
+                    msg = f"Table index {table} out of range (0..{len(tables) - 1})"
+                    raise IndexError(msg)
+                target_table = tables[table]
+            else:
+                target_table = self.body.get_table_by_name(table)
+                if not target_table:
+                    msg = f"Table {table!r} not found in document"
+                    raise KeyError(msg)
+            return target_table.to_dict(
+                orient=orient,
+                header=header,
+                mode=mode,
+                lstrip=lstrip,
+                no_decimal=no_decimal,
+                no_date=no_date,
+                no_nan=no_nan,
+            )
+
+        tables_dict: dict[str, Any] = {}
+        unifyer = NameUnifyer()
+        for t in self.body.tables:
+            if not include_hidden and not self.get_table_displayed(t):
+                continue
+            name = unifyer.unique(t.name or "")
+            table_dict = t.to_dict(
+                orient=orient,
+                header=header,
+                mode=mode,
+                lstrip=lstrip,
+                no_decimal=no_decimal,
+                no_date=no_date,
+                no_nan=no_nan,
+            )
+            if orient == "matrix" and isinstance(table_dict, dict):
+                tables_dict[name] = (
+                    next(iter(table_dict.values())) if table_dict else []
+                )
+            else:
+                tables_dict[name] = table_dict
+        return tables_dict
+
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any] | list[dict[str, Any]],
+        table_name: str | None = None,
+        guess_type: bool = False,
+        language: str | None = None,
+    ) -> Document:
+        """Create a new spreadsheet Document from dictionary data.
+
+        Accepts:
+        - Multi-sheet dict: `{"Sheet1": data1, "Sheet2": data2}`
+        - Single table data (dict of columns, list of record dicts, or matrix)
+
+        Args:
+            data: The dictionary or list of dicts to import.
+            table_name: Optional name for single-table import.
+            guess_type: If True, try to detect Python type from strings
+                values (int, float, dates).
+            language: Optional document language code.
+
+        Returns:
+            Document: A new spreadsheet Document populated with the tables.
+
+        Raises:
+            TypeError: If data is not a dict or list of dicts.
+        """
+        doc = cls.new("spreadsheet")
+        doc.body.clear()
+        unifyer = NameUnifyer()
+
+        if isinstance(data, dict):
+            if not data:
+                name = unifyer.unique(table_name or "")
+                doc.body.append(Table.from_dict({}, name=name))
+            else:
+                first_val = next(iter(data.values()))
+                if isinstance(first_val, dict) or (
+                    isinstance(first_val, list)
+                    and (
+                        (
+                            len(data) > 1
+                            and (not first_val or isinstance(first_val[0], (dict, list)))
+                        )
+                        or (
+                            len(data) == 1
+                            and bool(first_val)
+                            and isinstance(first_val[0], dict)
+                        )
+                    )
+                ):
+                    for name, sheet_data in data.items():
+                        unique_name = unifyer.unique(name or "")
+                        if isinstance(sheet_data, list) and (
+                            not sheet_data or isinstance(sheet_data[0], list)
+                        ):
+                            table = Table.from_dict(
+                                {unique_name: sheet_data},
+                                name=unique_name,
+                                guess_type=guess_type,
+                            )
+                        else:
+                            table = Table.from_dict(
+                                sheet_data,
+                                name=unique_name,
+                                guess_type=guess_type,
+                            )
+                        doc.body.append(table)
+                else:
+                    # Single table (columnar dict or single matrix)
+                    if (
+                        len(data) == 1
+                        and isinstance(first_val, list)
+                        and (not first_val or isinstance(first_val[0], list))
+                    ):
+                        name = table_name
+                    else:
+                        name = unifyer.unique(table_name or "")
+                    table = Table.from_dict(
+                        data,
+                        name=name,
+                        guess_type=guess_type,
+                    )
+                    doc.body.append(table)
+        elif isinstance(data, list):
+            name = unifyer.unique(table_name or "")
+            table = Table.from_dict(
+                data,
+                name=name,
+                guess_type=guess_type,
+            )
+            doc.body.append(table)
+        else:
+            msg = "data must be a dict or list of dicts."
+            raise TypeError(msg)
+
+        if language:
+            doc.language = language
+
+        return doc
+
     def _add_binary_part(self, blob: Blob) -> str:
         if not self.container:
             raise ValueError("Empty Container")
