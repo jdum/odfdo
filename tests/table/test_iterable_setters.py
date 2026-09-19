@@ -133,5 +133,5 @@ def test_table_set_column_cells_with_generator():
 
 def test_table_set_column_cells_generator_wrong_length():
     table = Table("test", width=2, height=3)
-    with pytest.raises(ValueError, match="col mismatch"):
+    with pytest.raises(ValueError, match="Column height mismatch"):
         table.set_column_cells(0, (Cell(1), Cell(2)))

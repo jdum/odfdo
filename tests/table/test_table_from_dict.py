@@ -143,7 +143,7 @@ def test_from_dict_empty_list():
 
 
 def test_from_dict_bad_type():
-    with pytest.raises(TypeError, match="data must be a dict or list of dicts"):
+    with pytest.raises(TypeError, match="Data must be a dict or list of dicts"):
         Table.from_dict("not a dict")  # type: ignore[arg-type]
 
 
@@ -238,4 +238,3 @@ def test_from_dict_default_name_empty():
     assert t_dict.name == "Table"
     t_list = Table.from_dict([])
     assert t_list.name == "Table"
-

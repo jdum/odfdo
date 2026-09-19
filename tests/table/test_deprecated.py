@@ -60,7 +60,7 @@ def test_set_cell_image_no_body_internal():
     with patch.object(Table, "document_body", new_callable=PropertyMock) as mock_body:
         mock_body.return_value = None
         with pytest.warns(DeprecationWarning):
-            with pytest.raises(ValueError, match="document type not found"):
+            with pytest.raises(ValueError, match="Document type not found"):
                 table.set_cell_image("A1", frame)
 
 
@@ -78,7 +78,7 @@ def test_set_cell_image_unsupported_body_internal():
             mock_body.return_value = body
             with pytest.warns(DeprecationWarning):
                 with pytest.raises(
-                    ValueError, match="document type not supported for images"
+                    ValueError, match="Document type not supported for images"
                 ):
                     table.set_cell_image("A1", frame)
 

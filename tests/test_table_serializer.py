@@ -38,7 +38,7 @@ from odfdo.table_serializer import (
 
 def test_serialize_table_unknown_mode():
     table = Table("Test")
-    with pytest.raises(ValueError, match="unknown serializer mode 'xml'"):
+    with pytest.raises(ValueError, match="Unknown serializer mode"):
         serialize_table(table, "xml")
 
 
@@ -119,7 +119,6 @@ def test_serialize_table_row_csv_types():
         "[1, 2, 3]",
         "",
     ]
-
 
 
 def test_serialize_table_row_json_types():
@@ -431,8 +430,3 @@ def test_table_serializer_lstrip_direct():
     serializer = TableSerializer(_serialize_table_row_json)
     assert serializer.serialize(table, lstrip=True) == [["x"]]
     assert serializer.serialize(table) == [[], [], [None, None, "x"]]
-
-
-
-
-

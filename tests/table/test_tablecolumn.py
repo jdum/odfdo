@@ -403,7 +403,7 @@ def test_set_column_cells_wrong_height():
     table.set_value("A1", "v1")
     table.set_value("A2", "v2")
     # height is 2
-    with pytest.raises(ValueError, match="col mismatch"):
+    with pytest.raises(ValueError, match="Column height mismatch"):
         table.set_column_cells(0, [Cell()])
 
 

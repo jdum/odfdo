@@ -193,7 +193,8 @@ class TextInsertion(Element):
         """
         current = self.parent  # text:changed-region
         if not isinstance(current, TextChangedRegion):
-            raise TypeError("Missing parent TextChangedRegion")
+            msg = "Missing parent TextChangedRegion"
+            raise TypeError(msg)
         idx = current.get_id()
         body: Body | Element = self.document_body or self.root
         text_change = body.get_text_change_start(idx=idx)
@@ -245,11 +246,13 @@ class TextInsertion(Element):
                 # assume iterable of Paragraph
                 for paragraph in comments_list:
                     if not isinstance(paragraph, Paragraph):
-                        raise TypeError(f"Not a Paragraph: '{paragraph!r}'")
+                        msg = f"Not a Paragraph: {paragraph!r}"
+                        raise TypeError(msg)
                     new_change_info.insert(paragraph, xmlposition=LAST_CHILD)
         else:
             if not isinstance(change_info, ChangeInfo):
-                raise TypeError(f"Not a ChangeInfo: '{change_info!r}'")
+                msg = f"Not a ChangeInfo: {change_info!r}"
+                raise TypeError(msg)
             new_change_info = change_info
 
         old = self.get_change_info()
@@ -415,7 +418,8 @@ class TextChangedRegion(Element):
         """
         child = self.get_change_element()
         if not child:
-            raise ValueError("Empty TextChangedRegion")
+            msg = "Empty TextChangedRegion"
+            raise ValueError(msg)
         child.set_change_info(
             change_info=change_info, creator=creator, date=date, comments=comments
         )
@@ -714,9 +718,8 @@ class TextChangeEnd(TextChange):
         idx = self.get_id()
         parent = self.parent
         if parent is None:
-            raise ValueError(
-                "Can not find end tag: no parent available."
-            )  # pragma: nocover
+            msg = "Can not find end tag: no parent available"
+            raise ValueError(msg)  # pragma: nocover
         body: Body | Element = self.document_body or self.root
         return body.get_text_change_start(idx=idx)
 
@@ -793,9 +796,8 @@ class TextChangeStart(TextChangeEnd):
         idx = self.get_id()
         parent = self.parent
         if parent is None:
-            raise ValueError(
-                "Can not find end tag: no parent available."
-            )  # pragma: nocover
+            msg = "Can not find end tag: no parent available"
+            raise ValueError(msg)  # pragma: nocover
         body: Body | Element = self.document_body or self.root
         return body.get_text_change_end(idx=idx)  # ty: ignore
 
@@ -819,7 +821,8 @@ class TextChangeStart(TextChangeEnd):
             return super().delete(child, keep_tail)  # pragma: nocover
         idx = self.get_id()
         if self.parent is None:
-            raise ValueError("cannot delete the root element")  # pragma: nocover
+            msg = "Can not delete the root element"
+            raise ValueError(msg)  # pragma: nocover
         body: Body | Element = self.document_body or self.root
         end = body.get_text_change_end(idx=idx)
         if end:  # pragma: nocover

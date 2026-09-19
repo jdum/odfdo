@@ -103,7 +103,8 @@ def _decode_time_string(data: str) -> timedelta:
         if not (0 <= seconds < 60):
             raise ValueError
         return timedelta(hours=hours, minutes=minutes, seconds=seconds)
-    raise ValueError(f"Invalid time string: {data!r}")
+    msg = f"Invalid time string: {data!r}"
+    raise ValueError(msg)
 
 
 def _get_python_value(
@@ -261,9 +262,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             if protected:
                 self.protected = protected
                 if protection_key is None:
-                    raise ValueError(
-                        "a protection_key must be provided for protected tables"
-                    )
+                    msg = "A protection_key must be provided for protected tables"
+                    raise ValueError(msg)
                 self.protection_key = protection_key
             if not printable:
                 self.printable = printable
@@ -1397,10 +1397,12 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         if y >= self.height:
             if create:
                 return Row()
-            raise ValueError("Row not found")
+            msg = "Row not found"
+            raise ValueError(msg)
         row = self._get_row2_base(y)
         if row is None:
-            raise ValueError("Row not found")
+            msg = "Row not found"
+            raise ValueError(msg)
         if clone:
             return row.clone
         return row
@@ -1994,12 +1996,14 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         if doc_type is None:
             body = self.document_body
             if body is None:
-                raise ValueError("document type not found")
+                msg = "Document type not found"
+                raise ValueError(msg)
             doc_type = {"office:spreadsheet": "spreadsheet", "office:text": "text"}.get(
                 body.tag
             )
             if doc_type is None:
-                raise ValueError("document type not supported for images")
+                msg = "Document type not supported for images"
+                raise ValueError(msg)
         # We need the end address of the image
         x, y = self._translate_cell_coordinates(coord)
         if x is None:
@@ -2505,7 +2509,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         cells_list = list(cells)
         height = self.height
         if len(cells_list) != height:
-            raise ValueError(f"col mismatch: {height} cells expected")
+            msg = f"Column height mismatch: {height} cells expected"
+            raise ValueError(msg)
         cells_iterator = iter(cells_list)
         for y, row in enumerate(self.iter_rows()):
             row.set_cell(x, next(cells_iterator))
@@ -2680,7 +2685,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         if global_scope:
             body = self.document_body
             if not body:
-                raise ValueError("Table is not inside a document")
+                msg = "Table is not inside a document"
+                raise ValueError(msg)
             if not body.allow_named_range:
                 return None
             nr: NamedRange | None = body.get_named_range(name)
@@ -2707,7 +2713,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         if global_scope:
             body = self.document_body
             if not body:
-                raise ValueError("Table is not inside a document")
+                msg = "Table is not inside a document"
+                raise ValueError(msg)
             if not body.allow_named_range:
                 msg = (
                     "Document must be of type Chart, Drawing, "
@@ -2744,11 +2751,13 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """
         name = name.strip()
         if not name:
-            raise ValueError("Name required")
+            msg = "Name required"
+            raise ValueError(msg)
         if global_scope:
             body = self.document_body
             if not body:
-                raise ValueError("Table is not inside a document")
+                msg = "Table is not inside a document"
+                raise ValueError(msg)
             if not body.allow_named_range:
                 msg = (
                     "Document must be of type Chart, Drawing, "
@@ -2780,11 +2789,13 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         """
         name = name.strip()
         if not name:
-            raise ValueError("Name required")
+            msg = "Name required"
+            raise ValueError(msg)
         if global_scope:
             body = self.document_body
             if not body:
-                raise ValueError("Table is not inside a document")
+                msg = "Table is not inside a document"
+                raise ValueError(msg)
             if not body.allow_named_range:
                 msg = (
                     "Document must be of type Chart, Drawing, "
@@ -3098,7 +3109,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             case _:
                 msg = (
                     f"Invalid orient parameter: {orient!r}. "
-                    "Expected 'list', 'records', or 'matrix'."
+                    "Expected 'list', 'records', or 'matrix'"
                 )
                 raise ValueError(msg)
 
@@ -3232,7 +3243,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             return cls._from_dict_dict(data, name, guess_type)
         if isinstance(data, list):
             return cls._from_dict_list(data, name, guess_type)
-        msg = "data must be a dict or list of dicts."
+        msg = "Data must be a dict or list of dicts"
         raise TypeError(msg)
 
     @classmethod
@@ -3288,7 +3299,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             return cls(name or "Table")
         first = data[0]
         if not isinstance(first, dict):
-            msg = "List elements must be dictionaries."
+            msg = "List elements must be dictionaries"
             raise TypeError(msg)
         headers = list(
             dict.fromkeys(
@@ -3298,7 +3309,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         rows = [headers]
         for record in data:
             if not isinstance(record, dict):
-                msg = "List elements must be dictionaries."
+                msg = "List elements must be dictionaries"
                 raise TypeError(msg)
             row = [record.get(h) for h in headers]
             rows.append(row)
@@ -3508,7 +3519,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             table_name = unifyer.unique(name or "")
             rows_data = data
         else:
-            msg = "JSON content must be a dict, list, or valid JSON string."
+            msg = "JSON content must be a dict, list, or valid JSON string"
             raise TypeError(msg)
 
         table = cls(table_name)

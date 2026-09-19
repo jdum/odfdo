@@ -79,7 +79,7 @@ def serialize_table(
         )
         table_serializer = TableSerializer(serializer)
     else:
-        msg = f"unknown serializer mode {mode!r}"
+        msg = f"Unknown serializer mode {mode!r}"
         raise ValueError(msg)
     return table_serializer.serialize(table, lstrip=lstrip)
 

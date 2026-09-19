@@ -460,7 +460,8 @@ class TOC(MDToc, Element):
         else:
             body = self.document_body
         if body is None:
-            raise ValueError("The TOC must be related to a document somehow")
+            msg = "The TOC must be related to a document somehow"
+            raise ValueError(msg)
 
         # Save the title
         index_body = self.body
