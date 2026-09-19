@@ -51,7 +51,8 @@ def detect_stdin_timeout() -> None:  # pragma: no cover
     selector.register(sys.stdin, selectors.EVENT_READ)
     something = selector.select(timeout=STDIN_TIMEOUT)
     if not something:
-        raise ValueError("Timeout reading from stdin")
+        msg = "Timeout reading from stdin"
+        raise ValueError(msg)
     selector.close()
 
 

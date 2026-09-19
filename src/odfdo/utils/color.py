@@ -43,7 +43,8 @@ def hex2rgb(color: str) -> tuple[int, int, int]:
     """
     code = color[1:]
     if not (len(color) == 7 and color[0] == "#" and code.isalnum()):
-        raise ValueError(f'"{color}" is not a valid color')
+        msg = f"{color!r} is not a valid color"
+        raise ValueError(msg)
     red = int(code[:2], 16)
     green = int(code[2:4], 16)
     blue = int(code[4:6], 16)
@@ -75,18 +76,20 @@ def rgb2hex(color: str | tuple[int, int, int]) -> str:
         try:
             code = CSS3_COLORMAP[color.lower()]
         except KeyError as e:
-            raise KeyError(f'Color "{color}" is unknown in CSS color list') from e
+            msg = f"Color {color!r} is unknown in CSS color list"
+            raise KeyError() from e
     elif isinstance(color, tuple):
         if len(color) != 3:
-            raise ValueError("Color must be a 3-tuple")
+            msg = "Color must be a 3-tuple"
+            raise ValueError(msg)
         code = color
     else:
-        raise TypeError(f'Invalid color "{color}"')
+        msg = f"Invalid color {color!r}"
+        raise TypeError(msg)
     for channel in code:
         if not 0 <= channel <= 255:
-            raise ValueError(
-                f'Invalid color "{color}", channel must be between 0 and 255'
-            )
+            msg = f"Invalid color {color!r}, channel must be between 0 and 255"
+            raise ValueError(msg)
     return f"#{code[0]:02X}{code[1]:02X}{code[2]:02X}"
 
 
@@ -113,7 +116,8 @@ def hexa_color(color: str | tuple[int, int, int] | None = None) -> str | None:
     if isinstance(color, tuple):
         return rgb2hex(color)
     if not isinstance(color, str):
-        raise TypeError(f'Invalid color argument "{color!r}"')
+        msg = f"Invalid color argument {color!r}"
+        raise TypeError(msg)
     color = color.strip()
     if not color:
         return "#000000"
