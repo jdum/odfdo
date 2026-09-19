@@ -1709,7 +1709,8 @@ def test_process_embedded_objects_exception():
         # while having processed some content
         if call_count < 3:
             return tostring(*args, **kwargs)
-        raise ValueError("Test error")
+        msg = "Test error"
+        raise ValueError(msg)
 
     # Mock tostring to raise an exception after successful XML generation
     with patch("odfdo.container.tostring", side_effect=side_effect):
@@ -2043,7 +2044,8 @@ def test_save_zip_mimetype_writestr_error(capsys):
         # raise only when ZIP_STORED is used (which is only for mimetype).
         def side_effect(name, data, compress_type=None):
             if name == "mimetype" and compress_type == zipfile.ZIP_STORED:
-                raise ValueError("forced error")
+                msg = "Forced error"
+                raise ValueError(msg)
             return
 
         mock_zf.writestr.side_effect = side_effect

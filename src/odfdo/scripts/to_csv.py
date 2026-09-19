@@ -110,7 +110,8 @@ def to_csv(args: Namespace) -> None:
     else:
         table = document.body.get_table()
         if not table:  # pragma: no cover
-            raise ValueError("No table found")
+            msg = "No table found"
+            raise ValueError(msg)
     if args.unix:
         dialect = "unix"
     else:

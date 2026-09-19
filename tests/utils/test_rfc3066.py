@@ -74,7 +74,8 @@ def test_get_default_language_exception(monkeypatch):
     import locale
 
     def bad_locale():
-        raise ValueError("locale error")
+        msg = "Locale error"
+        raise ValueError(msg)
 
     monkeypatch.setattr(locale, "getdefaultlocale", bad_locale)
     assert get_default_language() == "en-US"

@@ -34,8 +34,9 @@ def test_security_error_is_exception():
 
 def test_security_error_can_be_raised():
     """SecurityError should be raisable and catchable."""
-    with pytest.raises(SecurityError, match="test error"):
-        raise SecurityError("test error")
+    with pytest.raises(SecurityError, match="Test error"):
+        msg = "Test error"
+        raise SecurityError(msg)
 
 
 def test_security_config_default_values():
