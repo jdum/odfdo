@@ -115,7 +115,8 @@ class XmlPart:
         """
         body = self.root.document_body
         if not isinstance(body, Element):
-            raise TypeError(f"No body found in {self.part_name!r}")
+            msg = f"No body found in {self.part_name!r}"
+            raise TypeError(msg)
         return body
 
     @property

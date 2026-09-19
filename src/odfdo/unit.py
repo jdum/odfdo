@@ -117,9 +117,11 @@ class Unit:
             NotImplementedError: If the units are different.
         """
         if not isinstance(other, Unit):
-            raise TypeError(f"Can only compare Unit: {other!r}")
+            msg = f"Can only compare Unit: {other!r}"
+            raise TypeError(msg)
         if self.unit != other.unit:
-            raise NotImplementedError(f"Conversion not implemented yet {other!r}")
+            msg = f"Conversion not implemented yet {other!r}"
+            raise NotImplementedError(msg)
 
     def __lt__(self, other: Unit) -> bool:
         self._check_other(other)
@@ -152,7 +154,9 @@ class Unit:
         try:
             conversion = INCH_CONVERSION[self.unit]
         except KeyError as e:
-            raise NotImplementedError(f"unit {str(self.unit)!r}") from e
+            msg = f"Unit {str(self.unit)!r}"
+            raise NotImplementedError(msg) from e
         if unit == "px":
             return Unit(int(self.value * conversion * int(dpi)), "px")
-        raise NotImplementedError(f"unit {str(unit)!r}")
+        msg = f"Unit {str(unit)!r}"
+        raise NotImplementedError(msg)

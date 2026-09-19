@@ -65,7 +65,8 @@ class VarDeclMixin(Element):
         if variable_decls is None:
             body = self.document_body
             if not body:
-                raise ValueError("Empty document.body")
+                msg = "Empty document.body"
+                raise ValueError(msg)
             body.insert(Element.from_tag("text:variable-decls"), FIRST_CHILD)
             variable_decls = body.get_element("//text:variable-decls")
 

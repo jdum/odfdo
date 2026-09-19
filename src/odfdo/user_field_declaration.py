@@ -151,7 +151,8 @@ class UserFieldDeclContMixin(UserFieldDeclMixin):
         if user_field_decls is None:
             body = self.document_body
             if not body:
-                raise ValueError("Empty document.body")
+                msg = "Empty document.body"
+                raise ValueError(msg)
             body.insert(Element.from_tag("text:user-field-decls"), FIRST_CHILD)
             user_field_decls = body.get_element("//text:user-field-decls")
 
