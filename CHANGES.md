@@ -1,5 +1,21 @@
 # Odfdo Release Notes
 
+## [3.26.1] - 2026-09-19
+
+-   Comprehensive docstring documentation and formatting improvements across all code.
+-   Added unit tests.
+-   Added explicit `match_string` parameter to paragraph mixin signatures.
+
+### Added
+
+-   Added explicit `match_string` parameter to paragraph mixin signatures (`set_span`, `set_link`).
+-   Added missing unit tests and improved test coverage for annotations, settings, and tracked changes.
+
+### Changed
+
+-   Standardized and refactored exception error messages across the library, scripts, and test suite.
+-   Updated Ruff linter configuration and code quality rules.
+
 ## [3.26.0] - 2026-09-12
 
 -   Added Python dictionary import and export support for spreadsheets in `Document` and `Table` APIs (`to_dict()`, `from_dict()`).
