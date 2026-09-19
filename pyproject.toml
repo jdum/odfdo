@@ -187,6 +187,8 @@ ignore = [
     "D301",
     # 1 blank line required between summary line and description
     "D205",
+    # blank line before class
+    "D203",
 ]
 
 [tool.ruff.lint.per-file-ignores]
