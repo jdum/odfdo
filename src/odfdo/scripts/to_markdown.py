@@ -21,12 +21,14 @@
 Markdown.
 
 This script reads an ODF text or spreadsheet document and prints its content
-to standard output in Markdown format.
+to standard output in Markdown format, or writes it to a file.
 """
 
 from __future__ import annotations
 
 from argparse import ArgumentParser, Namespace
+from pathlib import Path
+from typing import Any
 
 from odfdo import __version__
 from odfdo.utils.script_utils import read_document
@@ -38,10 +40,9 @@ def configure_parser() -> ArgumentParser:
     """Configure the command-line argument parser."""
     description = "Convert an ODF text or spreadsheet document to Markdown format and print to standard output."
     epilog = (
-        "This tool is useful for extracting the textual content of an ODF "
-        "text or spreadsheet document in a lightweight, human-readable and "
-        "version-control-friendly format. It processes the document's main "
-        "body content."
+        "This tool exports the textual content of an ODF text or spreadsheet "
+        "document in Markdown format."
+        "It can output to a file or standard output."
     )
     parser = ArgumentParser(prog=PROG, description=description, epilog=epilog)
     parser.add_argument(
@@ -56,6 +57,27 @@ def configure_parser() -> ArgumentParser:
         action="store",
         help="input document. if not present, read from stdin",
     )
+    parser.add_argument(
+        "-i",
+        "--input",
+        action="store",
+        dest="input_file",
+        metavar="INPUT",
+        required=False,
+        default=None,
+        help="input document, if option not present, use the document "
+        "argument or read from stdin",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        action="store",
+        dest="output_file",
+        metavar="OUTPUT",
+        required=False,
+        default=None,
+        help="output Markdown file, if option not present, write to stdout",
+    )
     return parser
 
 
@@ -65,16 +87,21 @@ def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
     return parser.parse_args(cli_args)
 
 
-def to_md(args: Namespace) -> None:
-    """Convert an ODF document to Markdown and print to stdout."""
-    document = read_document(args.document)
-    result = document.to_markdown()
+def _markdown_as_string(result: Any) -> str:
+    """Render the to_markdown() result as a single Markdown text."""
     if isinstance(result, str):
-        print(result)
+        return result + "\n"
+    return "".join(f"# {item.name}\n\n{item.content}\n" for item in result)
+
+
+def to_md(args: Namespace) -> None:
+    """Convert an ODF document to Markdown and print to stdout or file."""
+    document = read_document(args.input_file or args.document)
+    content = _markdown_as_string(document.to_markdown())
+    if args.output_file:
+        Path(args.output_file).write_text(content, encoding="utf-8")
     else:
-        for item in result:
-            print(f"# {item.name}\n")
-            print(item.content)
+        print(content, end="")
 
 
 def main() -> int:

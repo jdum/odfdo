@@ -61,7 +61,7 @@ def configure_parser() -> ArgumentParser:
         metavar="INPUT",
         required=False,
         default=None,
-        help="input .ods file if option not present, read from stdin",
+        help="input .ods file, if option not present, read from stdin",
     )
     parser.add_argument(
         "-o",
