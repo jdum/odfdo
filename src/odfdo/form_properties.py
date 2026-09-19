@@ -110,6 +110,7 @@ class FormProperty(Element):
             time_value: The time value.
             value: The numeric value.
             value_type: The type of the value.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -175,6 +176,7 @@ class FormListProperty(Element):
         Args:
             property_name: The name of the property.
             value_type: The type of the values in the list.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -238,6 +240,7 @@ class FormListValue(Element):
             string_value: The string value.
             time_value: The time value.
             value: The numeric or str value.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:

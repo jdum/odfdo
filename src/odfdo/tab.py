@@ -52,6 +52,7 @@ class Tab(MDTab, Element):
         Args:
             position: The position of the tab-stop. If provided,
                 must be a non-negative integer.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init and position is not None and position >= 0:

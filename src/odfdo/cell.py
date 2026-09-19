@@ -91,6 +91,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
             repeated: The number of times this cell should be repeated across
                 columns. Must be greater than 1.
             style: The name of the style to apply to the cell.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         self.x: _int | None = None

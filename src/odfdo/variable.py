@@ -90,6 +90,7 @@ class VarSet(ElementTyped):
                 displayed. Otherwise, it is. Defaults to False.
             text: The textual representation of the value.
             style: The data style name for formatting.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -164,6 +165,7 @@ class VarGet(ElementTyped):
             value_type: The ODF value type.
             text: The textual representation to display.
             style: The data style name for formatting.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -212,6 +214,7 @@ class VarPageNumber(Element):
                 default), 'previous', or 'next'.
             page_adjust: A numerical value to add to or
                 subtract from the selected page number.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -274,6 +277,7 @@ class VarDate(Element):
                 If not provided, it is generated from `date`.
             date_adjust: A timedelta to adjust the
                 date value.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -333,6 +337,7 @@ class VarTime(Element):
                 If not provided, it is generated from `time`.
             time_adjust: A timedelta to adjust the
                 time value.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -402,6 +407,7 @@ class VarChapter(Element):
                 Can be 'name' (default), 'number', 'number-and-name', etc.
             outline_level: The heading outline level to use
                 for chapter context.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -452,6 +458,7 @@ class VarFileName(Element):
             display: The format for the file name. Can be
                 'full' (default), 'path', 'name', or 'name-and-extension'.
             fixed: If True, the field is not updated automatically.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -484,6 +491,7 @@ class VarInitialCreator(Element):
 
         Args:
             fixed: If True, the field is not updated automatically.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init and fixed:
@@ -520,6 +528,7 @@ class VarCreationDate(Element):
         Args:
             fixed: If True, the field is not updated automatically.
             data_style: The style name for formatting.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -559,6 +568,7 @@ class VarCreationTime(Element):
         Args:
             fixed: If True, the field is not updated automatically.
             data_style: The style name for formatting.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:

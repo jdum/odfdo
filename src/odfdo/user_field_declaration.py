@@ -196,6 +196,7 @@ class UserFieldDecl(ElementTyped):
             value: The initial value of the field.
             value_type: The ODF value type (e.g., 'string',
                 'float'). If not provided, it is inferred from the `value`.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:

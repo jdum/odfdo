@@ -107,6 +107,7 @@ class ConfigItemSet(Element):
 
         Args:
             name: The name of the configuration item set.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -212,6 +213,7 @@ class ConfigItemMapIndexed(Element):
 
         Args:
             name: The name of the indexed configuration item map.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -287,6 +289,7 @@ class ConfigItemMapEntry(Element):
 
         Args:
             name: The name of the entry.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -393,6 +396,7 @@ class ConfigItemMapNamed(Element):
 
         Args:
             name: The name of the named configuration item map.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -485,6 +489,7 @@ class ConfigItem(Element):
                 one of "boolean", "short", "int", "long", "double", "string",
                 "datetime", or "base64Binary".
             value: The actual value of the configuration item.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:

@@ -112,6 +112,7 @@ class ShapeBase(ListMixin, AnchorMix, SvgMixin, ZMix, Element):
             anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -273,6 +274,7 @@ class LineShape(ShapeBase):
             anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         kwargs.update(
             {
@@ -396,6 +398,7 @@ class DrawMeasure(LineShape):
             anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         kwargs.update(
             {
@@ -499,6 +502,7 @@ class RectangleShape(PosMix, SizeMix, ShapeBase):
             anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         kwargs.update(
             {
@@ -609,6 +613,7 @@ class PolylineShape(PosMix, SizeMix, ShapeBase):
             anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         kwargs.update(
             {
@@ -716,6 +721,7 @@ class PolygonShape(PolylineShape):
             anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         kwargs.update(
             {
@@ -826,6 +832,7 @@ class RegularPolygonShape(PosMix, SizeMix, ShapeBase):
             anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         kwargs.update(
             {
@@ -955,6 +962,7 @@ class DrawPath(PosMix, SizeMix, ShapeBase):
             anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         kwargs.update(
             {
@@ -1068,6 +1076,7 @@ class DrawCaption(PosMix, SizeMix, ShapeBase):
             anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         kwargs.update(
             {
@@ -1211,6 +1220,7 @@ class EllipseShape(AngleMix, PosMix, SizeMix, ShapeBase):
             anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         kwargs.update(
             {
@@ -1343,6 +1353,7 @@ class CircleShape(AngleMix, PosMix, SizeMix, ShapeBase):
             anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         kwargs.update(
             {
@@ -1503,6 +1514,7 @@ class ConnectorShape(ShapeBase):
             anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         kwargs.update(
             {
@@ -1694,6 +1706,7 @@ class DrawControl(PosMix, SizeMix, ShapeBase):
             anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         kwargs.update(
             {
@@ -1806,6 +1819,7 @@ class DrawPageThumbnail(PosMix, SizeMix, ShapeBase):
             anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         kwargs.update(
             {
@@ -1938,6 +1952,7 @@ class DrawGroup(SvgMixin, AnchorMix, ZMix, Element):
             anchor_page: Physical page number of an anchor if the drawing
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:

@@ -66,6 +66,7 @@ class Column(Element):
                 should be repeated. Must be greater than 1.
             style: The name of the style to apply to
                 the column itself.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         self.x: int | None = None

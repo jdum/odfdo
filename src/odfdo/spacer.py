@@ -49,6 +49,7 @@ class Spacer(MDSpacer, Element):
 
         Args:
             number: The number of spaces. Defaults to 1.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:

@@ -274,6 +274,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
             anchor_page: The page number if `anchor_type` is 'page'.
             layer: The drawing layer to which the frame belongs.
             presentation_style: The presentation style of the frame.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -340,6 +341,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
             anchor_page: The page number if `anchor_type` is 'page'.
             layer: The drawing layer to which the frame belongs.
             presentation_style: The presentation style of the frame.
+            kwargs: Arbitrary keyword arguments for the Frame class.
 
         Returns:
             Frame: The created Frame element.
@@ -404,6 +406,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
             anchor_page: The page number if `anchor_type` is 'page'.
             layer: The drawing layer to which the frame belongs.
             presentation_style: The presentation style of the frame.
+            kwargs: Arbitrary keyword arguments for the Frame class.
 
         Returns:
             Frame: The created Frame element.
@@ -600,6 +603,7 @@ class Frame(MDDrawFrame, SvgMixin, AnchorMix, PosMix, ZMix, SizeMix, Element):
             anchor_page: The page number if `anchor_type` is 'page'.
             layer: The drawing layer to which the frame belongs.
             presentation_style: The presentation style of the frame.
+            kwargs: Arbitrary keyword arguments for the Frame class.
 
         Returns:
             Frame: The created Frame element containing the table.

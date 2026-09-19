@@ -110,6 +110,7 @@ class TabStopStyle(Element):
             leader_width: Width of the leader line.
             style_position: Position of the tab stop.
             style_type: Alignment type of the tab stop.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -230,6 +231,7 @@ class TOC(MDToc, Element):
             title_style: The style for the TOC's main title.
             entry_style: A format string for the style of each TOC
                 entry (e.g., "Contents_20_%d").
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -537,6 +539,7 @@ class TocEntryTemplate(Element):
             style: The style name for the TOC entry.
             outline_level: The outline level this template
                 applies to.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:

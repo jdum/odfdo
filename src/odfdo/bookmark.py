@@ -153,6 +153,7 @@ class Bookmark(Element):
 
         Args:
             name: The name of the bookmark.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -177,6 +178,7 @@ class BookmarkStart(Element):
 
         Args:
             name: The name of the bookmark range being started.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -201,6 +203,7 @@ class BookmarkEnd(Element):
 
         Args:
             name: The name of the bookmark range being ended.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:

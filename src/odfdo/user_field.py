@@ -159,6 +159,7 @@ class UserFieldGet(ElementTyped):
             text: The textual representation to display. If
                 not provided, it's generated from `value`.
             style: The data style name for formatting.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -232,6 +233,7 @@ class UserDefined(ElementTyped):
             style: The data style name for formatting.
             from_document: A document from which to load
                 the field's value from the meta section.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:

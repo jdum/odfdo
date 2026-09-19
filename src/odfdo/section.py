@@ -130,6 +130,7 @@ class Section(ListMixin, TocMixin, LinkMixin, SectionMixin):
         Args:
             style: The style name for the section.
             name: The name of the section.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:

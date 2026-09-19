@@ -80,6 +80,7 @@ class FormColumn(Element):
             control_implementation: The control implementation.
             label: The label of the column.
             text_style_name: The text style name.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -141,6 +142,7 @@ class FormGenericControl(Element):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -208,6 +210,7 @@ class FormHidden(FormAsDictMixin, FormGenericControl):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -288,6 +291,7 @@ class FormGrid(FormGenericControl):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -406,6 +410,7 @@ class FormText(FormAsDictMixin, FormMaxLengthMixin, FormGrid):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -540,6 +545,7 @@ class FormTextarea(FormText):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -647,6 +653,7 @@ class FormPassword(FormAsDictMixin, FormMaxLengthMixin, FormGrid):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -758,6 +765,7 @@ class FormFile(FormAsDictMixin, FormMaxLengthMixin, FormGrid):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -905,6 +913,7 @@ class FormFormattedText(FormDelayRepeatMixin, FormText):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -1047,6 +1056,7 @@ class FormNumber(FormDelayRepeatMixin, FormAsDictMixin, FormMaxLengthMixin, Form
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -1224,6 +1234,7 @@ class FormDate(FormDelayRepeatMixin, FormText):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -1366,6 +1377,7 @@ class FormTime(FormDelayRepeatMixin, FormText):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -1470,6 +1482,7 @@ class FormFixedText(FormGenericControl):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -1605,6 +1618,7 @@ class FormCombobox(FormSourceListMixin, FormSizetMixin, FormText):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -1666,6 +1680,7 @@ class FormItem(Element):
 
         Args:
             label: The label of the item.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -1782,6 +1797,7 @@ class FormListbox(FormSourceListMixin, FormSizetMixin, FormGrid):
             xforms_bind: The XForms bind expression.
             xforms_list_source: The XForms list source.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -1866,6 +1882,7 @@ class FormOption(Element):
             value: The value of the option.
             selected: If True, the option is selected by default.
             current_selected: If True, the option is currently selected.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -1971,6 +1988,7 @@ class FormButton(
             xforms_submission: The XForms submission to use.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -2100,6 +2118,7 @@ class FormImage(OfficeTargetFrameMixin, FormButtonTypeMixin, FormGrid):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -2234,6 +2253,7 @@ class FormCheckbox(FormImageAlignMixin, FormImagePositionMixin, FormGrid):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -2379,6 +2399,7 @@ class FormRadio(FormImageAlignMixin, FormImagePositionMixin, FormGrid):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -2478,6 +2499,7 @@ class FormFrame(FormGenericControl):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -2570,6 +2592,7 @@ class FormImageFrame(FormGenericControl):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,
@@ -2694,6 +2717,7 @@ class FormValueRange(FormDelayRepeatMixin, FormGrid):
             xml_id: The unique XML ID.
             xforms_bind: The XForms bind expression.
             form_id: The form ID (deprecated).
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(
             name=name,

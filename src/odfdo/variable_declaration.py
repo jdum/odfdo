@@ -138,6 +138,7 @@ class VarDecl(Element):
         Args:
             name: The name of the variable.
             value_type: The ODF value type.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:

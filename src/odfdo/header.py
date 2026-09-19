@@ -75,6 +75,7 @@ class Header(Paragraph, MDHeader):
             suppress_numbering: If True, suppresses numbering for this header.
             style: The style name for the header.
             formatted: If True, replace special characters in `text` with ODF tags.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:

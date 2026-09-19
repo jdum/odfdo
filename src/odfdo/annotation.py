@@ -249,6 +249,7 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
                 name is generated.
             parent: The parent element to which this annotation will be
                 associated for name generation.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         # fixme : use offset
         # TODO allow paragraph and text styles
@@ -432,6 +433,7 @@ class AnnotationEnd(MDTail, Element):
                 attribute will be taken from this annotation.
             name: The name of the annotation to close. This is
                 required if 'annotation' is not provided.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         # fixme : use offset
         # TODO allow paragraph and text styles

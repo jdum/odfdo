@@ -98,6 +98,7 @@ class ChangeInfo(Element, DcCreatorMixin, DcDateMixin):
         Args:
             creator: The name of the author of the change. Defaults to "Unknown".
             date: The date and time of the change. Defaults to the current time if not provided.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:

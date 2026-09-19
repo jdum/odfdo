@@ -89,6 +89,7 @@ class Link(
             target_frame: '_self', '_blank', '_parent', '_top'
             style: style name
             visited_style: visited style name
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:

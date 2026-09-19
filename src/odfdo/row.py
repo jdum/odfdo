@@ -80,6 +80,7 @@ class Row(Element):
             width: The number of cells to create in the row.
             repeated: The number of times the row is repeated.
             style: The style name for the row.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         self._table_cache = TableCache()

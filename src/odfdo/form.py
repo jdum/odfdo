@@ -106,6 +106,7 @@ class Form(FormMixin, OfficeTargetFrameMixin):
             command_type: The type of the command.
             control_implementation: The control implementation.
             target_frame: The target frame for the form.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if self._do_init:

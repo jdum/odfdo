@@ -95,6 +95,7 @@ class SvgTitle(Element):
 
         Args:
             title: The name stored by the SvgTitle.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if title is not None:
@@ -152,6 +153,7 @@ class SvgDescription(Element):
 
         Args:
             description: The description stored by the SvgDescription.
+            kwargs: Arbitrary keyword arguments for the Element base class.
         """
         super().__init__(**kwargs)
         if description is not None:
