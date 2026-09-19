@@ -32,7 +32,8 @@ def save_new(document: Document, name: str) -> None:
 def add_row_style(document: Document, row_height: str) -> str:
     """Add some Row style to the document to adapt row height.
 
-    Returns the style name"""
+    Returns the style name
+    """
     style_def = f"""
     <style:style style:family="table-row">
         <style:table-row-properties style:row-height="{row_height}"

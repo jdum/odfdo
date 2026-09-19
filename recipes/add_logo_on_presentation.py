@@ -40,7 +40,8 @@ def save_new(document: Document, name: str) -> None:
 
 def make_image_size(path: Path, size: float) -> tuple[str, str]:
     """Returns the display size (width, height) from the image path and the
-    largest dimension."""
+    largest dimension.
+    """
     width, height = Image.open(path).size
     ratio = max(width / size, height / size)
     return (f"{width / ratio:.2f}cm", f"{height / ratio:.2f}cm")

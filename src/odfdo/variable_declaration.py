@@ -21,7 +21,8 @@
 
 This module provides classes for managing variable declaration
 "text:variable-decl" and variable declaration container
-"text:variable-decls"."""
+"text:variable-decls".
+"""
 
 from __future__ import annotations
 

@@ -279,7 +279,8 @@ def normalize_path(path: str) -> str:
         path: The path to normalize.
 
     Returns:
-        str: Posix representation of the path."""
+        str: Posix representation of the path.
+    """
     if path.endswith("/"):  # folder
         return PurePath(path[:-1]).as_posix() + "/"
     return PurePath(path).as_posix()

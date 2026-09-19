@@ -82,7 +82,8 @@ def create_base_style() -> Style:
 
 def add_styles(document: Document) -> None:
     """Generate all styles usable by the presentation as variations of a
-    base style."""
+    base style.
+    """
     base_style = create_base_style()
     for _, font_size in TEXT_LEN_FONT_SIZE:
         variant_style: Style = base_style.clone

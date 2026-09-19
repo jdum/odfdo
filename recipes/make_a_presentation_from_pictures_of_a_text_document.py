@@ -51,7 +51,8 @@ def embedded_image_ratio(href: str, content: bytes) -> float:
 
 def compute_size(max_length: float, ratio: float) -> tuple[float, float]:
     """Compute the size the image will have from maximum length and ratio of dimensions
-    of source image."""
+    of source image.
+    """
     width = max_length * ratio
     height = max_length
     if ratio > 1.0:
@@ -62,7 +63,8 @@ def compute_size(max_length: float, ratio: float) -> tuple[float, float]:
 
 def generate_document(source: Document) -> Document:
     """Return a presentation document made from pictures read from
-    the source document."""
+    the source document.
+    """
     # Making of the output Presentation document :
     presentation = Document("presentation")
 

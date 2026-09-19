@@ -20,7 +20,8 @@
 """Mixin classes for Form controls.
 
 (The main objective of the current minimal implementation of forms is to parse
-the existing form contents in a document.)"""
+the existing form contents in a document.)
+"""
 
 from __future__ import annotations
 

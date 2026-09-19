@@ -38,7 +38,8 @@ def print_meta(document: Document) -> None:
     For the metadata using dates or durations, odfdo provides datatypes that
     decode from and serialize back to strings.
     Strings are always decoded as utf-8, numeric values are decoded
-    as Decimal."""
+    as Decimal.
+    """
     meta = document.meta
 
     print(f"Meta data of {document.path}")

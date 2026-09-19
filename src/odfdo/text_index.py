@@ -20,7 +20,8 @@
 """(Deprecated module) IndexBody, IndexTitle, IndexTitleTemplate are are now
 in toc.py.
 
-This module is kept for compatibility with odfdo versions <= 3.18.2."""
+This module is kept for compatibility with odfdo versions <= 3.18.2.
+"""
 
 from .toc import (  # noqa: F401  # pragma: nocover
     IndexBody,

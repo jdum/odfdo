@@ -170,7 +170,8 @@ class Styles(XmlPart):
     @property
     def default_language(self) -> str:
         """Get or set the default language from styles, in RFC3066 format
-        (e.g., "en-US")."""
+        (e.g., "en-US").
+        """
         styles = [
             s
             for s in self.default_styles

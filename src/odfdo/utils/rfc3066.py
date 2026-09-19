@@ -34,7 +34,8 @@ from string import ascii_letters, digits
 
 def get_default_language() -> str:
     """Fetch default locale language code formatted as RFC 3066 or fall back
-    to 'en-US'."""
+    to 'en-US'.
+    """
     with contextlib.suppress(Exception), warnings.catch_warnings():
         warnings.simplefilter("ignore", DeprecationWarning)
         loc = locale.getdefaultlocale()

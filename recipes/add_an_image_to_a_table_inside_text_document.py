@@ -34,7 +34,8 @@ def save_new(document: Document, name: str) -> None:
 def add_cell_style(document: Document) -> str:
     """Add some Cell style to the document.
 
-    Returns the style name"""
+    Returns the style name
+    """
     style_def = """
         <style:style style:family="table-cell"
         style:parent-style-name="Default">

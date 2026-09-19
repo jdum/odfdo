@@ -18,7 +18,8 @@
 # The odfdo project is a derivative work of the lpod-python project:
 # https://github.com/lpod/lpod-python
 """Mixin class for elements that can contain table of content,
-"text:table-of-content"."""
+"text:table-of-content".
+"""
 
 from __future__ import annotations
 

@@ -335,7 +335,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
     def clear(self) -> None:
         """Remove all children, text content, and attributes from the table
-        element (preserving table name if set)."""
+        element (preserving table name if set).
+        """
         name = self.name
         self._xml_element.clear()
         if name:

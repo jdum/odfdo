@@ -168,7 +168,8 @@ class DrawMarker(Element):
 
     Marker geometry is defined by a svg:d attribute.
 
-    The "draw:marker" element is usable within the "office:styles"."""
+    The "draw:marker" element is usable within the "office:styles".
+    """
 
     _tag = "draw:marker"
     _properties: tuple[PropDef | PropDefBool, ...] = (

@@ -2,7 +2,8 @@
 """Demo of quick introspecting of a document's elements.
 
 The body object of a document is a mapping of an XML tree from which we
-can access other elements we are looking for (parent, children)."""
+can access other elements we are looking for (parent, children).
+"""
 
 import os
 import sys

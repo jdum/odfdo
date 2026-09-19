@@ -650,7 +650,8 @@ PolylineShape._define_attribut_property()
 class PolygonShape(PolylineShape):
     """Represents a polygon, "draw:polygon".
 
-    A polygon is a closed set of straight lines."""
+    A polygon is a closed set of straight lines.
+    """
 
     _tag = "draw:polygon"
 
@@ -753,7 +754,8 @@ class RegularPolygonShape(PosMix, SizeMix, ShapeBase):
 
     A regular polygon is a polygon that is specified by its number of edges
     (that is equal to the number of its corners), rather than by arbitrary
-    points."""
+    points.
+    """
 
     _tag = "draw:regular-polygon"
     _properties: tuple[PropDef | PropDefBool, ...] = (
@@ -1103,7 +1105,8 @@ class DrawCaption(PosMix, SizeMix, ShapeBase):
     @property
     def caption_point(self) -> tuple[str | None, str | None]:
         """Get or set the (caption_point_x, caption_point_y) coordinates of the
-        caption point."""
+        caption point.
+        """
         return (self.caption_point_x, self.caption_point_y)
 
     @caption_point.setter
@@ -1543,7 +1546,8 @@ class ConnectorShape(ShapeBase):
     @property
     def connected_shapes(self) -> tuple[str | None, str | None]:
         """Get or set the connected shapes ("draw:start-shape",
-        "draw:end-shape")."""
+        "draw:end-shape").
+        """
         get_attr = self.get_attribute_string
         return get_attr("draw:start-shape"), get_attr("draw:end-shape")
 
@@ -1561,7 +1565,8 @@ class ConnectorShape(ShapeBase):
     @property
     def glue_points(self) -> tuple[str | None, str | None]:
         """Get or set the the glue points for connection
-        ("draw:start-glue-point", "draw:end-glue-point")."""
+        ("draw:start-glue-point", "draw:end-glue-point").
+        """
         get_attr = self.get_attribute_string
         return get_attr("draw:start-glue-point"), get_attr("draw:end-glue-point")
 

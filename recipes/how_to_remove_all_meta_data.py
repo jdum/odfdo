@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Create a document with metadata, then remove all metadata,
-including user defined fields."""
+including user defined fields.
+"""
 
 import os
 from pathlib import Path

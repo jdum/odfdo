@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 """Create a short text document containing a list of items and a few sublists.
 The code demonstrates several manipulations of the list and its items, then
-displays the result to standard output."""
+displays the result to standard output.
+"""
 
 import os
 from pathlib import Path

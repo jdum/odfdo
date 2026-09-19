@@ -342,7 +342,8 @@ class ConfigItemMapEntry(Element):
         """Serialize the element to a dictionary.
 
         Returns:
-            A dict with content of the ConfigItemMapEntry serialized."""
+            A dict with content of the ConfigItemMapEntry serialized.
+        """
         return _as_dict(self)
 
     @classmethod

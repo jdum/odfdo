@@ -25,7 +25,8 @@ counter_outside = 0
 def store_image(path: Path, name: str, content: bytes) -> None:
     """Save the found image in result directory.
 
-    Image new name is "odffile_imagename"."""
+    Image new name is "odffile_imagename".
+    """
     global counter_image
 
     base = path.name.replace(".", "_")
