@@ -167,46 +167,40 @@ select = [
 ignore = [
     # LineTooLong
     "E501",
-    # DoNotAssignLambda
-    # "E731",
-    # Use specific rule codes when ignoring type issues
-    # "PGH003",
     # check for execution of untrusted input
     # "S603",
     # Class attribute `open` is shadowing a Python builtin
     "A003",
-    # Use `X | Y` in `isinstance` call instead of `(X, Y)`
-    # "UP038",
-    # Use `X | Y` for type annotations
-    # "UP007",
-    # Avoid specifying long messages outside the exception class
-    # "TRY003",
     # Use ternary operator
     "SIM108",
-    # Use of `assert` detected
-    # "S101",
     # is too complex (12 > 10)
     "C901",
     # Within an `except` clause, raise exceptions with `raise ... from err`
     "B904",
-    #redundant-numeric-union
+    # redundant-numeric-union
     "PYI041",
-    # Missing docstring in public package
-    "D104",
-    #missing-blank-line-after-last-section
-    "D413",
+    # multi-line-summary-second-line
+    "D213",
+    # Missing docstring in magic method
+    "D105",
+    # Use `r"""` if any backslashes in a docstring
+    "D301",
+    # 1 blank line required between summary line and description
+    "D205",
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/test_*" = [
-    "S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117","S603",
-    "D103","D100","D101","D401","D205","D400","D415","PERF401","D103"
+"tests/*" = [
+    "S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117", "S603",
+    "D100", "D101", "D102", "D103", "D107", "D205", "D400", "D401", "D415",
+    "PERF401",
 ]
 "tests/*/test_*" = [
-    "S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117","S603",
-    "D103","D100","D101","D401","D205","D400","D415","PERF401","D103"
+    "S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117", "S603",
+    "D100", "D101", "D102", "D103", "D107", "D205", "D400", "D401", "D415",
+    "PERF401",
 ]
-"recipes/*" = ["S101", "SIM102", "B903","D103","D100","PERF401","D103"]
+"recipes/*" = ["S101", "SIM102", "B903", "D100", "D103", "PERF401"]
 "recipes/accessing_a_single_element.py" = ["RUF001"]
 
 [tool.pytest.ini_options]
