@@ -79,7 +79,7 @@ class Link(
         visited_style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Create a Link, "text:a"
+        """Create a Link, tag "text:a".
 
         Args:
             url: target url (href)

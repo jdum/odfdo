@@ -9,7 +9,7 @@ _DOC_SEQUENCE = 335
 
 
 def generate_document() -> Document:
-    """Return a document with some styled paragraph"""
+    """Return a document with some styled paragraph."""
     document = Document("text")
     body = document.body
     body.clear()

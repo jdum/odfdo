@@ -617,7 +617,7 @@ class Row(Element):
         complete: bool = False,
         get_type: bool = False,
     ) -> list[CellValue | tuple[CellValue | None, str | None] | None]:
-        """Shortcut to get the cell values in this row|None]
+        """Shortcut to get the cell values in this row|None].
 
         - Filter by `cell_type`: with 'all' will retrieve cells of any type
           (non-empty).

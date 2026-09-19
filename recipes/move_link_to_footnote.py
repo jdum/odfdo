@@ -1,7 +1,9 @@
 #!/usr/bin/env python
-"""Remove all links from a document, transforming each link information (URL,
-text) into a footnote. Of course, removing links already inside notes, just
-keeping plain text URL. (Side note: most office suite dislike notes in notes)
+"""Remove all links from a document.
+
+Transform each link information (URL, text) into a footnote. Of course,
+removing links already inside notes, just keeping plain text URL.
+(Side note: most office suite dislike notes in notes).
 """
 
 import os

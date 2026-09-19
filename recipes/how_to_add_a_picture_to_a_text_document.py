@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-"""Create an empty text document and add a picture in a frame.
-"""
+"""Create an empty text document and add a picture in a frame."""
+
 from pathlib import Path
 
 from odfdo import Document, Frame, Paragraph

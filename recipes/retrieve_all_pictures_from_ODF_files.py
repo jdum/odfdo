@@ -42,9 +42,12 @@ def store_image(path: Path, name: str, content: bytes) -> None:
 
 
 def parse_odf_pics(path: Path) -> None:
-    """Using odfdo for:
-    - open possible ODF document: Document (including URI)
-    - find images inside the document: get_image_list, get_attribute
+    """Parse and store images found in a document.
+
+    Using odfdo for:
+
+        - open possible ODF document: Document (including URI)
+        - find images inside the document: get_image_list, get_attribute
     """
     if not path.suffix.lower().startswith(".od"):
         return

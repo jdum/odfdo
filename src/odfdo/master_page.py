@@ -255,7 +255,7 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         family_generic: str | None = None,
         pitch: str = "variable",
     ) -> None:
-        """This method is not applicable to `StyleMasterPage` and does nothing.
+        """Placeholder (not applicable to `StyleMasterPage`, do nothing).
 
         Args:
             name: The font name.
@@ -352,7 +352,7 @@ class StyleHeaderLeft(StyleHeader):
 
 class StyleHeaderFirst(StyleHeader):
     """Content of a header for a first page, if different from the left/right
-    page in a "style:master-page" element, tag "style:header-first"
+    page in a "style:master-page" element, tag "style:header-first".
 
     The term "first page" means the first page to which the page style is
     applied, regardless of any numbering. If a different page style is

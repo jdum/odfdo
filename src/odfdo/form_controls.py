@@ -797,7 +797,7 @@ FormFile._define_attribut_property()
 class FormFormattedText(FormDelayRepeatMixin, FormText):
     """A control for inputting text, which follows the format defined by a
     data style that is assigned to the control's graphical shape,
-    "form:formatted-text"
+    "form:formatted-text".
 
     Attributes:
         name (str or None): The name of the control (form:name).
@@ -1405,7 +1405,7 @@ FormTime._define_attribut_property()
 
 class FormFixedText(FormGenericControl):
     """A control which attaches additional information to controls, or
-    displays information, "form:fixed-text"
+    displays information, "form:fixed-text".
 
     Only one label may be associated with a control.
 

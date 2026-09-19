@@ -328,7 +328,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     @property
     def print_date(self) -> datetime | None:
         """Get or set the date and time when a document when a document was
-        last printed <meta:print-date>
+        last printed, <meta:print-date>.
 
         If provided datetime is None, use current time.
 
@@ -522,8 +522,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     @property
     def printed_by(self) -> str | None:
-        """Get or set the name of the last person who printed a document.
-        <meta:printed-by>
+        """Get or set the name of the last person who printed a document,
+        <meta:printed-by>.
 
         Returns:
             str | None: The printed by string, or None if inexistent.
@@ -572,8 +572,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
 
     @property
     def keyword(self) -> str | None:
-        """Get or set some keyword(s) keyword pertaining to a document
-        <dc:keyword>.
+        """Get or set some keywordpertaining to a document, <dc:keyword>.
 
         Returns:
             str | None: The keyword string, or None if inexistent.

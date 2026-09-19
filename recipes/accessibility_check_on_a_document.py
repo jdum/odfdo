@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-"""Basic Accessibility test: check, for every picture in a document, if
-there is:
+"""Basic Accessibility test.
+
+Check, for every picture in a document, if there is:
 
   - a title (svg_title),
   - a description (svg_description)
