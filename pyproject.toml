@@ -147,7 +147,7 @@ select = [
     # perflint
     "PERF",
     # pydocstyle
-    # "D",
+    "D",
     # mccabe
     "C90",
     # pycodestyle
@@ -189,22 +189,24 @@ ignore = [
     "C901",
     # Within an `except` clause, raise exceptions with `raise ... from err`
     "B904",
-    # Missing docstring in public package
-    "D104",
     #redundant-numeric-union
     "PYI041",
+    # Missing docstring in public package
+    "D104",
+    #missing-blank-line-after-last-section
+    "D413",
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/test_*" = [
     "S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117","S603",
-    "D103","D100","D101","D401","D205","D400","D415","PERF401"
+    "D103","D100","D101","D401","D205","D400","D415","PERF401","D103"
 ]
 "tests/*/test_*" = [
     "S101", "S404", "RUF005", "B007", "UP017", "YTT204", "SIM117","S603",
-    "D103","D100","D101","D401","D205","D400","D415","PERF401"
+    "D103","D100","D101","D401","D205","D400","D415","PERF401","D103"
 ]
-"recipes/*" = ["S101", "SIM102", "B903","D103","D100","PERF401"]
+"recipes/*" = ["S101", "SIM102", "B903","D103","D100","PERF401","D103"]
 "recipes/accessing_a_single_element.py" = ["RUF001"]
 
 [tool.pytest.ini_options]
