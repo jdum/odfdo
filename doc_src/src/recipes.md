@@ -74,6 +74,7 @@ Create a short text document containing a list of items and a few sublists.
 The code demonstrates several manipulations of the list and its items, then
 displays the result to standard output.
 
+
 ??? code "recipes/create_a_basic_text_document_with_list_and_sublists.py"
     ```python
     {% include "../../recipes/create_a_basic_text_document_with_list_and_sublists.py" %}
@@ -293,7 +294,6 @@ style family.
 
 Create an empty text document and add a picture in a frame.
 
-
 ??? code "recipes/how_to_add_a_picture_to_a_text_document.py"
     ```python
     {% include "../../recipes/how_to_add_a_picture_to_a_text_document.py" %}
@@ -420,8 +420,9 @@ on a side bar in a desktop application. So they are not printed.
 
 ## Accessibility check on a document
 
-Basic Accessibility test: check, for every picture in a document, if
-there is:
+Basic Accessibility test.
+
+Check, for every picture in a document, if there is:
 
   - a title (svg_title),
   - a description (svg_description)
@@ -697,6 +698,7 @@ Demo of quick introspecting of a document's elements.
 The body object of a document is a mapping of an XML tree from which we
 can access other elements we are looking for (parent, children).
 
+
 ??? code "recipes/introspecting_elements.py"
     ```python
     {% include "../../recipes/introspecting_elements.py" %}
@@ -721,9 +723,11 @@ a parameter.
 
 ## Move link to footnote
 
-Remove all links from a document, transforming each link information (URL,
-text) into a footnote. Of course, removing links already inside notes, just
-keeping plain text URL. (Side note: most office suite dislike notes in notes)
+Remove all links from a document.
+
+Transform each link information (URL, text) into a footnote. Of course,
+removing links already inside notes, just keeping plain text URL.
+(Side note: most office suite dislike notes in notes).
 
 
 ??? code "recipes/move_link_to_footnote.py"
@@ -755,6 +759,7 @@ except in titles.
 
 Create a document with metadata, then remove all metadata,
 including user defined fields.
+
 
 ??? code "recipes/how_to_remove_all_meta_data.py"
     ```python
