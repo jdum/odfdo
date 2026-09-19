@@ -125,7 +125,6 @@ class TestImagesFodtToOdt:
 
     def test_odt_valid_xml(self, images_fodt, tmp_path):
         """XML parts in converted ODT should be valid."""
-
         doc = Document(images_fodt)
         odt_path = tmp_path / "converted.odt"
         doc.save(odt_path)
@@ -320,7 +319,6 @@ class TestImagesFodtToVariousFormats:
 
     def test_save_bytesio(self, images_fodt):
         """Save to BytesIO and reload."""
-
         doc = Document(images_fodt)
         buffer = BytesIO()
         doc.save(buffer, packaging="xml")

@@ -537,7 +537,6 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         Raises:
             ValueError: If an invalid combination of arguments is provided.
         """
-
         if annotation_element is None:
             annotation_element = Annotation(
                 text_or_element=body,
@@ -638,7 +637,6 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             ValueError: If `annotation_element` is None.
             TypeError: If `annotation_element` is not an `Annotation` instance.
         """
-
         if annotation_element is None:
             raise ValueError
         if not isinstance(annotation_element, Annotation):
@@ -888,7 +886,6 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             list[Link]: A list of generated `Link` instances, each representing
                 a hyperlink.
         """
-
         return Link(url, text=kwargs["match_string"])  # ty: ignore[invalid-return-type]
 
     def remove_links(self) -> Element:

@@ -29,7 +29,6 @@ def read_source_document() -> Document:
 
 def analyser(document: Document) -> dict[str, Any]:
     """Return information from an element of the document."""
-
     result: dict[str, Any] = {}
     # Elements are part of an XML tree:
     paragraph = document.body.get_paragraph(position=42)

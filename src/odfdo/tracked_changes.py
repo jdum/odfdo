@@ -755,7 +755,6 @@ class TextChangeEnd(TextChange):
         Returns:
             str | Element | list[Element] | None: The inserted content.
         """
-
         # idx = self.get_id()
         start = self.get_start()
         end = self.get_end()

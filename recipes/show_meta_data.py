@@ -39,7 +39,6 @@ def print_meta(document: Document) -> None:
     decode from and serialize back to strings.
     Strings are always decoded as utf-8, numeric values are decoded
     as Decimal."""
-
     meta = document.meta
 
     print(f"Meta data of {document.path}")

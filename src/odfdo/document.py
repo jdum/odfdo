@@ -1782,7 +1782,6 @@ class Document(MDDocument):
             AttributeError: If an invalid combination of `automatic` and `default`
                 arguments is provided (they are mutually exclusive).
         """
-
         # if style is a str, assume it is the Style definition
         if isinstance(style, str):
             style_element: StyleBase = Element.from_tag(style)  # ty: ignore
@@ -2134,7 +2133,6 @@ class Document(MDDocument):
             Returns an empty dictionary if the table or cell is not found,
             or if no styles are applicable.
         """
-
         if not (sheet := self._get_table(table)):
             return {}
         cell = sheet.get_cell(coord, clone=False)

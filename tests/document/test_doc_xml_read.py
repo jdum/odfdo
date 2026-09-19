@@ -154,7 +154,6 @@ class TestFlatOdfReadImages:
 
     def test_image_extracted_from_flat_odf(self, tmp_path, samples):
         """Images embedded in flat ODF should be extracted."""
-
         doc = Document("odt")
         doc.body.clear()
 
@@ -179,7 +178,6 @@ class TestFlatOdfReadImages:
 
     def test_image_content_preserved(self, tmp_path, samples):
         """Image binary content should be preserved."""
-
         doc = Document("odt")
         doc.body.clear()
 
@@ -208,7 +206,6 @@ class TestFlatOdfReadImages:
 
     def test_image_file_extension_detected(self, tmp_path, samples):
         """Image file extension should be detected from content."""
-
         doc = Document("odt")
         doc.body.clear()
 
@@ -242,7 +239,6 @@ class TestFlatOdfRoundTrip:
 
     def test_round_trip_zip_to_xml_to_zip(self, tmp_path, samples):
         """Test converting ODF -> Flat XML -> ODF preserves content."""
-
         # Create ODF with content
         doc = Document("odt")
         doc.body.clear()
@@ -313,7 +309,6 @@ class TestFlatOdfDetection:
 
     def test_is_flat_xml_detects_valid_file(self, tmp_path):
         """_is_flat_xml should detect valid flat ODF files."""
-
         # Create a valid flat ODF
         doc = Document("odt")
         flat_path = tmp_path / "test.fodt"
@@ -324,7 +319,6 @@ class TestFlatOdfDetection:
 
     def test_is_flat_xml_rejects_zip(self, tmp_path):
         """_is_flat_xml should reject ZIP files."""
-
         # Create a regular ODF (ZIP)
         doc = Document("odt")
         zip_path = tmp_path / "test.odt"
@@ -335,7 +329,6 @@ class TestFlatOdfDetection:
 
     def test_is_flat_xml_rejects_random_xml(self, tmp_path):
         """_is_flat_xml should reject non-ODF XML files."""
-
         # Create a random XML file
         xml_path = tmp_path / "random.xml"
         xml_path.write_text(
@@ -348,6 +341,5 @@ class TestFlatOdfDetection:
 
     def test_is_flat_xml_rejects_empty(self):
         """_is_flat_xml should reject empty content."""
-
         assert Container._is_flat_xml(b"") is False
         assert Container._is_flat_xml(b"   ") is False

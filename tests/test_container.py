@@ -1263,7 +1263,6 @@ def test_is_flat_xml_with_unclosed_element():
 
 def test_read_zip_with_invalid_mimetype(tmp_path):
     """Test _read_zip raises ValueError for invalid mimetype."""
-
     # Create a zip file with invalid mimetype
     zip_path = tmp_path / "invalid_mimetype.odt"
     with zipfile.ZipFile(zip_path, "w") as zf:
@@ -3067,7 +3066,6 @@ def test_save_as_folder_with_backup(tmp_path, samples):
 
 def test_read_zip_entry_size_limit_exceeded(tmp_path):
     """Test _read_zip_entry raises SecurityError when entry exceeds size limit."""
-
     # Create a ZIP with a large uncompressed entry
     zip_path = tmp_path / "test.zip"
     with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
@@ -3204,7 +3202,6 @@ def test_load_prior_odf_version_and_save_as_14(tmp_path, version):
 
 def test_preserve_digital_signatures_on_save(tmp_path):
     """Digital-signature XML parts are preserved on load/save round-trip."""
-
     sig_content = b'<?xml version="1.0" encoding="UTF-8"?><dsig:document-signatures xmlns:dsig="urn:oasis:names:tc:opendocument:xmlns:digitalsignature:1.0"><Signature>test</Signature></dsig:document-signatures>'
     path = tmp_path / "signed.odt"
     with zipfile.ZipFile(path, "w") as zf:
@@ -3259,7 +3256,6 @@ def test_preserve_digital_signatures_on_save(tmp_path):
 
 def test_preserve_encrypted_parts_on_save(tmp_path):
     """Encrypted file entries are preserved on load/save round-trip."""
-
     encrypted_content = b"ENCRYPTED_BYTES"
     manifest_xml = (
         b'<?xml version="1.0" encoding="UTF-8"?>'

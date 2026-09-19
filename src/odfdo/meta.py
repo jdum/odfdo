@@ -1412,7 +1412,6 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             generator: String for the meta:generator field.
             creation_date: Datetime or None, meta:creation-date value.
         """
-
         self.body.clear()
         self.statistic = self._complete_stats({}, None)
         if creation_date is None:

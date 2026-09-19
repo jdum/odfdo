@@ -31,7 +31,6 @@ def save_new(document: Document, name: str) -> None:
 
 def add_content(document: Document) -> None:
     """Add some styled content to the document."""
-
     # Some plain text :
     text_1 = (
         "Lorem ipsum dolor sit amet,\n\t"
@@ -111,7 +110,6 @@ def add_content(document: Document) -> None:
 
 def add_styles(document) -> None:
     """Add styles to the document from their XML definition."""
-
     # Element is the base class of all odfdo classes.
     # Element.from_tag permits the creation of any ODF XML tag
 
