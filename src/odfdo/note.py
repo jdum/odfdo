@@ -257,7 +257,8 @@ class Note(MDNote, LinkMixin, Element):
                 if isinstance(element, Element):
                     note_body.append(element)
         else:
-            raise TypeError(f'Unexpected type for body: "{type(text_or_element)}"')
+            msg = f"Unexpected type for body: {type(text_or_element)!r}"
+            raise TypeError(msg)
 
     def check_validity(self) -> None:
         """Check the validity of the note's properties.
@@ -270,11 +271,14 @@ class Note(MDNote, LinkMixin, Element):
                 `citation` are empty.
         """
         if not self.note_class or self.note_class not in self.NOTE_CLASS:
-            raise ValueError('Note class must be "footnote" or "endnote"')
+            msg = 'Note class must be "footnote" or "endnote"'
+            raise ValueError(msg)
         if not self.note_id:
-            raise ValueError("Note must have an id")
+            msg = "Note must have an id"
+            raise ValueError(msg)
         if not self.citation:
-            raise ValueError("Note must have a citation")
+            msg = "Note must have a citation"
+            raise ValueError(msg)
         if not self.note_body:
             pass
 

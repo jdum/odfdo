@@ -43,7 +43,8 @@ class Settings(XmlPart):
         body = cast("OfficeSettings | None", self.get_element("//office:settings"))
         if isinstance(body, OfficeSettings):
             return body
-        raise TypeError("No OfficeSettings found")  # pragma: nocover
+        msg = "No OfficeSettings found"
+        raise TypeError(msg)  # pragma: nocover
 
     @property
     def odf_office_version(self) -> str:

@@ -487,7 +487,8 @@ class ReferenceMarkStart(Element):
             Element | list | str | None: The referenced content in the specified format.
         """
         if self.parent is None:
-            raise ValueError("Reference need some upper document part")
+            msg = "Reference need some upper document part"
+            raise ValueError(msg)
         body: Body | Element = self.document_body or self.parent
         method = getattr(body, "get_reference_mark_end", None)
         if callable(method):
@@ -495,7 +496,8 @@ class ReferenceMarkStart(Element):
         else:
             end = None
         if end is None:
-            raise ValueError("No reference-end found")
+            msg = "No reference-end found"
+            raise ValueError(msg)
         content_list = elements_between(
             body, self, end, as_text=False, no_header=no_header, clean=clean
         )
@@ -525,7 +527,8 @@ class ReferenceMarkStart(Element):
             return super().delete(child, keep_tail)
         name = self.name
         if self.parent is None:
-            raise ValueError("Can't delete the root element")
+            msg = "Can't delete the root element"
+            raise ValueError(msg)
         body: Body | Element = self.document_body or self.parent
         method = getattr(body, "get_reference_mark_end", None)
         if callable(method):

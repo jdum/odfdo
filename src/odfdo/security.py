@@ -29,8 +29,9 @@ if TYPE_CHECKING:
 
 
 class SecurityError(Exception):
-    """Raised when a document exceeds security thresholds (Zip bomb, XML bomb, etc.)."""
-
+    """Raised when a document exceeds security thresholds (Zip bomb, XML bomb,
+    etc.).
+    """
 
 
 @dataclass
@@ -80,10 +81,12 @@ def validate_zip_safety(zip_file: ZipFile) -> None:
     for info in zip_file.infolist():
         file_count += 1  # noqa: SIM113
         if file_count > security.max_file_count:
-            raise SecurityError(
-                f"odfdo detected a breach of security. "
-                f"Too many files in archive ({file_count} exceeds limit {security.max_file_count})."
+            msg = (
+                "odfdo detected a breach of security. "
+                f"Too many files in archive ({file_count} exceeds limit "
+                f"{security.max_file_count})"
             )
+            raise SecurityError(msg)
         # Check individual file size
         total_uncompressed_size += info.file_size
 
@@ -93,18 +96,21 @@ def validate_zip_safety(zip_file: ZipFile) -> None:
             and info.file_size > security.max_compression_ratio * info.compress_size
         ):
             ratio = info.file_size / info.compress_size
-            raise SecurityError(
-                f"odfdo detected a breach of security. "
-                f"High compression ratio ({ratio:.1f}:1) detected in {info.filename}. "
-                f"Maximum allowed is {security.max_compression_ratio}:1."
+            msg = (
+                "odfdo detected a breach of security. "
+                f"High compression ratio ({ratio:.1f}:1) detected in "
+                f"{info.filename}. "
+                f"Maximum allowed is {security.max_compression_ratio}:1"
             )
+            raise SecurityError(msg)
 
     if total_uncompressed_size > security.max_uncompressed_size:
-        raise SecurityError(
-            f"odfdo detected a breach of security. "
-            f"Total uncompressed size ({total_uncompressed_size} bytes) exceeds limit "
-            f"({security.max_uncompressed_size} bytes)."
+        msg = (
+            "odfdo detected a breach of security. "
+            f"Total uncompressed size ({total_uncompressed_size} bytes) "
+            f"exceeds limit ({security.max_uncompressed_size} bytes)"
         )
+        raise SecurityError(msg)
 
 
 # Global singleton instance - import this to access and modify security settings
