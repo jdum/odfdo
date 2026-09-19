@@ -192,7 +192,7 @@ class AngleMix(Element):
 
     @property
     def kind(self) -> str:
-        'Get or set the kind, "draw:kind".'
+        """Get or set the kind, "draw:kind"."""
         return self._get_attribute_str_default("draw:kind", "full")
 
     @kind.setter
@@ -303,7 +303,7 @@ class LineShape(ShapeBase):
 
     @property
     def p1(self) -> tuple[str | None, str | None]:
-        "Get or set the (x1, y1) coordinates of the starting point."
+        """Get or set the (x1, y1) coordinates of the starting point."""
         return (self.x1, self.y1)
 
     @p1.setter
@@ -317,7 +317,7 @@ class LineShape(ShapeBase):
 
     @property
     def p2(self) -> tuple[str | None, str | None]:
-        "Get or set the (x2, y2) coordinates of the ending point."
+        """Get or set the (x2, y2) coordinates of the ending point."""
         return (self.x2, self.y2)
 
     @p2.setter
@@ -1382,7 +1382,7 @@ class CircleShape(AngleMix, PosMix, SizeMix, ShapeBase):
 
     @property
     def center(self) -> tuple[str | None, str | None]:
-        "Get or set the center (cx, cy) coordinates of the circle."
+        """Get or set the center (cx, cy) coordinates of the circle."""
         return (self.cx, self.cy)
 
     @center.setter
@@ -1578,7 +1578,7 @@ class ConnectorShape(ShapeBase):
 
     @property
     def p1(self) -> tuple[str | None, str | None]:
-        "Get or set the (x1, y1) coordinates of the starting point."
+        """Get or set the (x1, y1) coordinates of the starting point."""
         return (self.x1, self.y1)
 
     @p1.setter
@@ -1592,7 +1592,7 @@ class ConnectorShape(ShapeBase):
 
     @property
     def p2(self) -> tuple[str | None, str | None]:
-        "Get or set the (x2, y2) coordinates of the ending point."
+        """Get or set the (x2, y2) coordinates of the ending point."""
         return (self.x2, self.y2)
 
     @p2.setter
@@ -1606,7 +1606,7 @@ class ConnectorShape(ShapeBase):
 
     @property
     def draw_type(self) -> str:
-        'Get or set the draw type, "draw:type".'
+        """Get or set the draw type, "draw:type"."""
         return self._get_attribute_str_default("draw:type", "standard")
 
     @draw_type.setter

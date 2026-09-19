@@ -23,7 +23,7 @@ from odfdo.const import OFFICE_PREFIX, USE_LO_EXTENSIONS, _generate_office_prefi
 
 
 def test_use_lo_extensions():
-    "By default USE_LO_EXTENSIONS is True"
+    """By default USE_LO_EXTENSIONS is True"""
     assert USE_LO_EXTENSIONS
 
 
