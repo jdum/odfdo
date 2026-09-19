@@ -22,7 +22,7 @@
 from __future__ import annotations
 
 import contextlib
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 from warnings import warn
 
 from .const import _OFFICE_PREFIX_EXTENSIONS_NAMES, USE_LO_EXTENSIONS
@@ -30,6 +30,9 @@ from .element import Element
 from .style_base import PropDict, StyleBase
 from .style_utils import _expand_properties_dict, _expand_properties_list, _merge_dicts
 from .utils.style_constants import STYLE_ATTRIBUTES
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 class StyleProps(StyleBase):
@@ -82,14 +85,16 @@ class StyleProps(StyleBase):
 
         By default, retrieves properties of the same family as the style (e.g.,
         paragraph properties for a paragraph style). Specify the `area` to get
-        properties from a different area (e.g., text properties of a paragraph style).
+        properties from a different area (e.g., text properties of a paragraph
+        style).
 
         Args:
             area: The specific area of properties to retrieve
                 (e.g., 'text', 'paragraph').
 
         Returns:
-            dict[str, str | dict] | None: A dictionary of properties, or None if no properties are found.
+            dict[str, str | dict] | None: A dictionary of properties, or None
+                if no properties are found.
 
         """
         try:
@@ -106,12 +111,14 @@ class StyleProps(StyleBase):
         return properties
 
     @staticmethod
-    def _update_boolean_styles(props: dict[str, str | bool]) -> None:
-        """Update a dictionary of style properties with boolean values for common text attributes.
+    def _update_boolean_styles(props: dict[str, Any]) -> None:
+        """Update a dictionary of style properties with boolean values for
+        common text attributes.
 
-        This static method adds or updates 'color', 'background_color', 'italic',
-        'bold', 'fixed', 'underline', and 'strike' keys in the provided `props`
-        dictionary based on existing OpenDocument style attributes.
+        This static method adds or updates 'color', 'background_color',
+        'italic', 'bold', 'fixed', 'underline', and 'strike' keys in the
+        provided `props` dictionary based on existing OpenDocument style
+        attributes.
 
         Args:
             props: The dictionary of style properties to update.
@@ -148,7 +155,7 @@ class StyleProps(StyleBase):
         - "strike": bool
 
         Returns:
-            dict[str, str | bool]: A dictionary containing list style properties.
+            A dictionary containing list style properties.
 
         """
         return self.get_text_properties()
@@ -166,18 +173,18 @@ class StyleProps(StyleBase):
         - "strike": bool
 
         Returns:
-            dict[str, str | bool]: A dictionary containing text properties.
+            A dictionary containing text properties.
 
         """
         props = self.get_properties(area="text") or {}
         self._update_boolean_styles(props)
-        return props
+        return cast("dict[str, str | bool]", props)
 
     @staticmethod
     def _apply_valid_properties(
         properties_element: Element,
         area: str,
-        properties: PropDict,
+        properties: Mapping[str, Any],
     ) -> None:
         # first filter only valid known properties
         allowed = STYLE_ATTRIBUTES.get(area)
@@ -200,7 +207,7 @@ class StyleProps(StyleBase):
 
     def set_properties(
         self,
-        properties: PropDict | None = None,
+        properties: Mapping[str, Any] | None = None,
         style: StyleBase | None = None,
         area: str | None = None,
         **kwargs: Any,
@@ -215,12 +222,13 @@ class StyleProps(StyleBase):
         same area. These will be copied.
 
         Args:
-            properties (dict, optional): A dictionary of properties to set.
-            style (StyleBase, optional): Another StyleBase object from which
+            properties: A dictionary of properties to set.
+            style: Another StyleBase object from which
                 to copy properties.
-            area (str, optional): The specific area of properties to set
+            area: The specific area of properties to set
                 (e.g., 'paragraph', 'text').
-            **kwargs: Arbitrary keyword arguments representing properties to set.
+            **kwargs: Arbitrary keyword arguments representing properties to
+                set.
 
         """
         area = self._check_area(area)

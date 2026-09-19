@@ -78,6 +78,7 @@ if TYPE_CHECKING:
     from .body import Body
     from .image import DrawFillImage, DrawImage, DrawMarker
     from .style import Style
+    from .style_base import PropDict
 
 AUTOMATIC_PREFIX = "odfdo_auto_"
 
@@ -2126,7 +2127,7 @@ class Document(MDDocument):
 
     def get_style_properties(
         self, family: str, name: str, area: str | None = None
-    ) -> dict[str, str] | None:
+    ) -> PropDict | None:
         """Return the properties of the required style as a dictionary.
 
         Args:
@@ -2157,7 +2158,7 @@ class Document(MDDocument):
 
     def get_cell_style_properties(
         self, table: str | int | Table, coord: tuple | list | str
-    ) -> dict[str, str]:
+    ) -> PropDict:
         """Return the style properties of a table cell in an ODS document.
 
         Properties are retrieved from the cell's own style, or from its row's
@@ -2219,7 +2220,7 @@ class Document(MDDocument):
 
         """
         found = self.get_cell_style_properties(table, coord).get("fo:background-color")
-        return found or default
+        return found if isinstance(found, str) else default
 
     def get_table_style(
         self,

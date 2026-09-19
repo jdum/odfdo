@@ -26,6 +26,8 @@ from typing import TYPE_CHECKING, Any
 from .element import Element
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     PropDict = dict[str, str | bool | tuple | "PropDict" | None]
 else:
     PropDict = dict
@@ -80,7 +82,7 @@ class StyleBase(Element):
 
     def set_properties(
         self,
-        properties: PropDict | None = None,
+        properties: Mapping[str, Any] | None = None,
         style: StyleBase | None = None,
         area: str | None = None,
         **kwargs: Any,

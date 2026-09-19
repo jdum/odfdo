@@ -30,10 +30,14 @@ from .element import Element
 from .utils.style_constants import _BASE_PROPERTY_MAPPING, STYLE_ATTRIBUTES
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from .style_base import PropDict
 
 
-def _merge_dicts(dic_base: dict, *args: dict, **kwargs: Any) -> dict:
+def _merge_dicts(
+    dic_base: Mapping[str, Any], *args: Mapping[str, Any], **kwargs: Any
+) -> dict[str, Any]:
     """Merge two or more dictionaries into a new dictionary object.
 
     Args:
@@ -42,10 +46,10 @@ def _merge_dicts(dic_base: dict, *args: dict, **kwargs: Any) -> dict:
         **kwargs: Keyword arguments to merge.
 
     Returns:
-        dict: A new dictionary containing the merged content.
+        A new dictionary containing the merged content.
 
     """
-    new_dict = deepcopy(dic_base)
+    new_dict = dict(deepcopy(dic_base))
     for dic in args:
         new_dict.update(dic)
     new_dict.update(kwargs)
@@ -111,17 +115,19 @@ def _map_key(key: str) -> str | None:
     return None
 
 
-def _expand_properties_dict(properties: PropDict) -> PropDict:
-    """Expand a dictionary of properties by mapping keys to their full ODF attribute names.
+def _expand_properties_dict(properties: Mapping[str, Any]) -> PropDict:
+    """Expand a dictionary of properties by mapping keys to their full ODF
+    attribute names.
 
     Args:
-        properties: A dictionary of properties with potentially simplified keys.
+        properties: A dictionary of properties with potentially simplified
+            keys.
 
     Returns:
-        dict[str, str | dict]: A new dictionary with keys mapped to full ODF attribute names.
+        A new dictionary with keys mapped to full ODF attribute names.
 
     """
-    expanded = {}
+    expanded: PropDict = {}
     for key in sorted(properties.keys()):
         prop_key = _map_key(key)
         if prop_key and key != prop_key:
@@ -133,7 +139,8 @@ def _expand_properties_dict(properties: PropDict) -> PropDict:
 
 
 def _expand_properties_list(properties: list[str]) -> list[str]:
-    """Expand a list of property keys by mapping them to their full ODF attribute names.
+    """Expand a list of property keys by mapping them to their full ODF
+    attribute names.
 
     Args:
         properties: A list of property keys with potentially simplified names.
@@ -330,10 +337,10 @@ def _set_background(
 ) -> None:
     """Set the background properties (color or image) for an element.
 
-    This function handles setting either a background color or a background image,
-    depending on the provided arguments. It validates background-related properties
-    and ensures that conflicting properties (e.g., both color and image) are
-    handled correctly.
+    This function handles setting either a background color or a background
+    image, depending on the provided arguments. It validates
+    background-related properties and ensures that conflicting properties
+    (e.g., both color and image) are handled correctly.
 
     Args:
         element: The element to set the background for.

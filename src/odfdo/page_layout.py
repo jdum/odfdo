@@ -30,6 +30,8 @@ from .style_utils import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from .style_base import PropDict, StyleBase
 
 
@@ -146,7 +148,7 @@ class StylePageLayout(StyleProps):
 
     def set_properties(
         self,
-        properties: PropDict | None = None,
+        properties: Mapping[str, Any] | None = None,
         style: StyleBase | None = None,
         area: str | None = None,
         **kwargs: Any,
