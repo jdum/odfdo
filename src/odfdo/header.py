@@ -140,7 +140,8 @@ class Header(Paragraph, MDHeader):
         LEVEL_STYLES = "#=-~`+^°'."
         level = int(self.level)
         if level > len(LEVEL_STYLES):
-            raise ValueError("Too many levels of heading")
+            msg = "Too many levels of heading"
+            raise ValueError(msg)
 
         # And return the result
         result = ["\n", title, "\n", LEVEL_STYLES[level - 1] * len(title), "\n"]

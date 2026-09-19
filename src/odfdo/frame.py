@@ -112,7 +112,8 @@ class AnchorMix(Element):
     @anchor_type.setter
     def anchor_type(self, anchor_type: str) -> None:
         if anchor_type not in self.ANCHOR_VALUE_CHOICE:
-            raise TypeError(f"anchor_type not valid: '{anchor_type!r}'")
+            msg = f"anchor_type not valid: {anchor_type!r}"
+            raise TypeError(msg)
         self.set_attribute("text:anchor-type", anchor_type)
 
     @property

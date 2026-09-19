@@ -68,7 +68,8 @@ class ListItem(MDListItem, ListMixin, Element):
             elif isinstance(text_or_element, Element):
                 self.append(text_or_element)
             elif text_or_element is not None:
-                raise TypeError(f"Expected str or Element, not {type(text_or_element)}")
+                msg = f"Expected str or Element, not {type(text_or_element)!r}"
+                raise TypeError(msg)
 
     def __str__(self) -> str:
         self._md_initialize_level()
@@ -109,7 +110,8 @@ class ListHeader(ListMixin, Element):
             elif isinstance(text_or_element, (list, tuple)):
                 actual_list = text_or_element
             else:
-                raise TypeError(f"Expected str or Element, not {text_or_element!r}")
+                msg = f"Expected str or Element, not {text_or_element!r}"
+                raise TypeError(msg)
             for item in reversed(actual_list):
                 if isinstance(item, str):
                     paragraph = Paragraph(item)
@@ -269,7 +271,8 @@ class List(MDList, Element):
         elif position is not None:
             self.insert(item, position=position)
         else:
-            raise ValueError("Position must be defined")
+            msg = "Position must be defined"
+            raise ValueError(msg)
 
     def append_item(
         self,
