@@ -145,7 +145,7 @@ class MetaUserDefined(Element):
             return text
         # should never happen
         msg = f"Unknown value type: {value_type!r}"
-        raise TypeError(msg)  # pragma: nocover
+        raise TypeError(msg)
 
     @value.setter
     def value(

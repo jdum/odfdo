@@ -154,7 +154,7 @@ def delete_styles(
 def merge_presentation_styles(document: Document, source: Document) -> None:
     # Apply master page found
     msg = "Function merge_presentation_styles"
-    raise NotImplementedError(msg)  # pragma: no cover
+    raise NotImplementedError(msg)
     # source_body = source.body
     # first_page = source_body.get_draw_page()
     # master_page_name = first_page.master_page

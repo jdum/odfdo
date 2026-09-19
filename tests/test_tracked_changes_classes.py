@@ -809,3 +809,51 @@ def test_get_text_change_deletion_idx_none(sample_doc):
     body = sample_doc.body
     deletion = body.get_text_change_deletion(idx="nonexistent")
     assert deletion is None
+
+
+def test_text_change_end_get_start_no_parent():
+    tce = TextChangeEnd()
+    raw = tce._Element__element
+    raw.getparent().remove(raw)
+    assert tce.parent is None
+    with pytest.raises(ValueError, match="Can not find start tag: no parent available"):
+        _ = tce.get_start()
+
+
+def test_text_change_start_get_end_no_parent():
+    tcst = TextChangeStart()
+    raw = tcst._Element__element
+    raw.getparent().remove(raw)
+    assert tcst.parent is None
+    with pytest.raises(ValueError, match="Can not find end tag: no parent available"):
+        _ = tcst.get_end()
+
+
+def test_text_change_start_delete_no_parent():
+    tcst = TextChangeStart()
+    raw = tcst._Element__element
+    raw.getparent().remove(raw)
+    assert tcst.parent is None
+    with pytest.raises(ValueError, match="Can not delete the root element"):
+        tcst.delete()
+
+
+def test_text_change_start_delete_child():
+    tcst = TextChangeStart()
+    child = Paragraph("child")
+    tcst.append(child)
+    assert len(tcst.children) == 1
+    tcst.delete(child=child)
+    assert len(tcst.children) == 0
+
+
+def test_text_change_start_delete_no_end():
+    doc = Document("odt")
+    body = doc.body
+    p = Paragraph("test")
+    body.append(p)
+    tcst = TextChangeStart(name="orphan_start")
+    p.append(tcst)
+    assert len(p.children) == 1
+    tcst.delete()
+    assert len(p.children) == 0

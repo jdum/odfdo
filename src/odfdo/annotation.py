@@ -310,7 +310,7 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
         """Return the corresponding annotation-end tag or None."""
         name = self.name
         parent = self.parent
-        if parent is None:  # pragma: nocover
+        if parent is None:
             msg = "Can't find end tag: no parent available"
             raise ValueError(msg)
         body: Body | Element = self.document_body or parent
@@ -451,12 +451,12 @@ class AnnotationEnd(MDTail, Element):
         parent = self.parent
         if parent is None:
             msg = "Can't find start tag: no parent available"
-            raise ValueError(msg)  # pragma: nocover
+            raise ValueError(msg)
         body: Body | Element = self.document_body or parent
         method = getattr(body, "get_annotation", None)
-        if callable(method):  # pragma: nocover
+        if callable(method):
             return cast("Annotation | None", method(name=name))
-        return None  # pragma: nocover
+        return None
 
     @property
     def end(self) -> AnnotationEnd:

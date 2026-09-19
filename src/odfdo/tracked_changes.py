@@ -718,8 +718,8 @@ class TextChangeEnd(TextChange):
         idx = self.get_id()
         parent = self.parent
         if parent is None:
-            msg = "Can not find end tag: no parent available"
-            raise ValueError(msg)  # pragma: nocover
+            msg = "Can not find start tag: no parent available"
+            raise ValueError(msg)
         body: Body | Element = self.document_body or self.root
         return body.get_text_change_start(idx=idx)
 
@@ -797,7 +797,7 @@ class TextChangeStart(TextChangeEnd):
         parent = self.parent
         if parent is None:
             msg = "Can not find end tag: no parent available"
-            raise ValueError(msg)  # pragma: nocover
+            raise ValueError(msg)
         body: Body | Element = self.document_body or self.root
         return body.get_text_change_end(idx=idx)  # ty: ignore
 
@@ -818,14 +818,14 @@ class TextChangeStart(TextChangeEnd):
                 is preserved. Defaults to True.
         """
         if child is not None:  # act like normal delete
-            return super().delete(child, keep_tail)  # pragma: nocover
+            return super().delete(child, keep_tail)
         idx = self.get_id()
         if self.parent is None:
             msg = "Can not delete the root element"
-            raise ValueError(msg)  # pragma: nocover
+            raise ValueError(msg)
         body: Body | Element = self.document_body or self.root
         end = body.get_text_change_end(idx=idx)
-        if end:  # pragma: nocover
+        if end:
             end.delete()
         # act like normal delete
         super().delete()

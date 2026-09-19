@@ -8,9 +8,16 @@ from pathlib import Path
 
 import pytest
 
+from odfdo.document import Document
 from odfdo.scripts import styles
-from odfdo.scripts.styles import main as main_script
-from odfdo.scripts.styles import main_styles, parse_cli_args
+from odfdo.scripts.styles import (
+    main as main_script,
+)
+from odfdo.scripts.styles import (
+    main_styles,
+    merge_presentation_styles,
+    parse_cli_args,
+)
 
 SCRIPT = Path(styles.__file__)
 
@@ -260,3 +267,10 @@ def test_styles_2_merge_prez(tmp_path, capsys, samples):
     captured = capsys.readouterr()
 
     assert "Done (0 error, 0 warning)" in captured.err
+
+
+def test_merge_presentation_styles(samples):
+    doc1 = Document(samples("base_text.odt"))
+    doc2 = Document(samples("lpod_styles.odt"))
+    with pytest.raises(NotImplementedError, match="merge_presentation_styles"):
+        merge_presentation_styles(doc1, doc2)

@@ -545,3 +545,33 @@ def test_annotation_end_from_annotation_end():
     paragraph.insert_annotation(annotation, after="para")
     annotation_end = paragraph.insert_annotation_end(annotation, after="graphe")
     assert annotation_end.end == annotation_end
+
+
+def test_annotation_end_start_standalone():
+    annotation_end = AnnotationEnd(name="some_name")
+    assert annotation_end.start is None
+
+
+def test_annotation_end_start_not_found():
+    paragraph = Paragraph("Some text")
+    annotation_end = AnnotationEnd(name="unmatched_name")
+    paragraph.append(annotation_end)
+    assert annotation_end.start is None
+
+
+def test_annotation_end_start_no_parent():
+    annotation_end = AnnotationEnd(name="some_name")
+    raw = annotation_end._Element__element
+    raw.getparent().remove(raw)
+    assert annotation_end.parent is None
+    with pytest.raises(ValueError, match="Can't find start tag: no parent available"):
+        _ = annotation_end.start
+
+
+def test_annotation_end_no_parent():
+    annotation = Annotation(name="some_name")
+    raw = annotation._Element__element
+    raw.getparent().remove(raw)
+    assert annotation.parent is None
+    with pytest.raises(ValueError, match="Can't find end tag: no parent available"):
+        _ = annotation.end

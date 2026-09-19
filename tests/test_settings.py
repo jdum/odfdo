@@ -57,6 +57,13 @@ def test_settings_body(base_settings):
     assert isinstance(body, OfficeSettings)
 
 
+def test_settings_body_missing(base_settings):
+    settings = deepcopy(base_settings)
+    settings.root.get_element("//office:settings").delete()
+    with pytest.raises(TypeError, match="No OfficeSettings found"):
+        _ = settings.body
+
+
 def test_settings_version(base_settings):
     version = base_settings.odf_office_version
     assert version == "1.3"
