@@ -39,11 +39,15 @@ RE_UND2 = re.compile(r"(?<!\\)(_{2})")
 
 
 class LIStyle(NamedTuple):
+    """List item style information for Markdown export."""
+
     name: str
     format: str
 
 
 class SplitSpace(NamedTuple):
+    """Container for leading whitespace, word, and trailing whitespace."""
+
     start: str
     word: str
     end: str
@@ -175,6 +179,8 @@ def _md_tail(tail: str | None, post_styler: Callable = _as_none) -> str:
 
 
 class MDStyle:
+    """Mixin providing style extraction for Markdown export."""
+
     def _md_is_fixed_paragraph(self) -> bool:
         if self.tag != "text:p" or not self.style:
             return False
@@ -260,6 +266,8 @@ class MDStyle:
 
 
 class MDDocument:
+    """Mixin for Markdown export on Document instances."""
+
     def _md_collect(self) -> list[str]:
         return [
             item
@@ -297,6 +305,8 @@ class MDDocument:
 
 
 class MDBase(MDStyle):
+    """Base mixin class for Markdown export of elements."""
+
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         return _as_none(self.inner_text) + post_styler(self.tail)
 
@@ -305,6 +315,8 @@ class MDBase(MDStyle):
 
 
 class MDToc(MDBase):
+    """Mixin for table of contents Markdown export."""
+
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         index_body = self.get_element("text:index-body")
         if index_body is None:
@@ -324,6 +336,8 @@ class MDToc(MDBase):
 
 
 class MDNote(MDBase):
+    """Mixin for footnotes and endnotes Markdown export."""
+
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         citation = f"[{self.citation}]"
         if self.note_class == "footnote":
@@ -337,11 +351,15 @@ class MDNote(MDBase):
 
 
 class MDTail(MDStyle):
+    """Mixin for element tail text Markdown export."""
+
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         return post_styler(self.tail)
 
 
 class MDZap(MDStyle):
+    """Mixin to ignore elements during Markdown export."""
+
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         return ""
 
@@ -350,16 +368,22 @@ class MDZap(MDStyle):
 
 
 class MDSpacer(MDStyle):
+    """Mixin for space elements in Markdown export."""
+
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         return self.text + post_styler(self.tail)
 
 
 class MDTab(MDStyle):
+    """Mixin for tab elements in Markdown export."""
+
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         return "    " + post_styler(self.tail)
 
 
 class MDLineBreak(MDStyle):
+    """Mixin for line break elements in Markdown export."""
+
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         return "\\\n" + str(post_styler(self.tail))
 
@@ -368,6 +392,8 @@ class MDLineBreak(MDStyle):
 
 
 class MDParagraph(MDStyle):
+    """Mixin for paragraph elements in Markdown export."""
+
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         styler = self._md_styling()
         acc = [styler(self.text)]
@@ -411,6 +437,8 @@ class MDParagraph(MDStyle):
 
 
 class MDHeader(MDParagraph):
+    """Mixin for header/heading elements in Markdown export."""
+
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         acc = [_as_none(self.text)]
         acc.extend([child._md_format() for child in self.children])
@@ -424,6 +452,8 @@ class MDHeader(MDParagraph):
 
 
 class MDListItem(MDParagraph):
+    """Mixin for list item elements in Markdown export."""
+
     def _md_list_marker(
         self,
         level: int = 0,
@@ -453,6 +483,8 @@ class MDListItem(MDParagraph):
 
 
 class MDList(MDStyle):
+    """Mixin for list elements in Markdown export."""
+
     def _md_format(self, post_styler: Callable = _as_none, level: int = 0) -> str:
         acc = []
         for child in self.children:
@@ -470,6 +502,8 @@ class MDList(MDStyle):
 
 
 class MDSpan(MDStyle):
+    """Mixin for span/text run elements in Markdown export."""
+
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         # acc = [self.text]
         styler = self._md_styling()
@@ -490,6 +524,8 @@ class MDSpan(MDStyle):
 
 
 class MDLink(MDStyle):
+    """Mixin for link/hyperlink elements in Markdown export."""
+
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         text = self.inner_text.strip()
         url = self.url
@@ -509,6 +545,8 @@ class MDLink(MDStyle):
 
 
 class MDDrawTextBox:
+    """Mixin for text box elements in Markdown export."""
+
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         acc = [child._md_format() for child in self.children]
         acc.append(post_styler(self.tail))
@@ -521,6 +559,8 @@ class MDDrawTextBox:
 
 
 class MDDrawFrame(MDStyle):
+    """Mixin for draw frame/image elements in Markdown export."""
+
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         url = ""
         acc = []
@@ -543,6 +583,8 @@ class MDDrawFrame(MDStyle):
 
 
 class MDTable(MDStyle):
+    """Mixin for table elements in Markdown export."""
+
     def _md_format(self, post_styler: Callable = _as_none) -> str:
         def bars(values: list[str]) -> str:
             items = [""] + values + [""]  # noqa: RUF005
