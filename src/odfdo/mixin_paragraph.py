@@ -67,7 +67,7 @@ def _by_offset_wrapper(
     *args: Any,
     **kwargs: Any,
 ) -> list[Span | Link]:
-    """Helper for inserting elements by character offset.
+    """Insert elements by character offset (internal helper).
 
     This function wraps a method that creates a new element (like Span or Link)
     and inserts it into the XML tree at a specific character offset within
@@ -134,7 +134,7 @@ def _by_regex_wrapper(
     *args: Any,
     **kwargs: Any,
 ) -> list[Span | Link]:
-    """Helper for inserting elements by regular expression match.
+    """Insert elements by regular expression match (internal helper).
 
     This function wraps a method that creates a new element (like Span or Link)
     and inserts it into the XML tree at positions matching a given regular
@@ -190,7 +190,7 @@ def _by_regex_wrapper(
 
 
 def _by_regex_offset(method: Callable) -> Callable:
-    """Decorator to enable element insertion by regex or offset.
+    """Decorate a method to enable element insertion by regex or offset.
 
     This decorator wraps a method that creates a new element. The wrapped method
     will then accept either a `regex` pattern or an `offset` and `length` to
@@ -282,7 +282,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
     @staticmethod
     def _sub_merge_spaces(text: str) -> list[Element | str]:
-        """Internal helper to merge spaces within a string into `Spacer` elements.
+        """Merge spaces within a string into `Spacer` elements (internal helper).
 
         Args:
             text: The string to process.
@@ -349,7 +349,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
     @staticmethod
     def _sub_replace_tabs_lb(text: str) -> list[Element | str]:
-        """Internal helper to replace tab and line break characters in a string with ODF elements.
+        """Replace tab and line break characters in a string with ODF elements (internal helper).
 
         Args:
             text: The string to process.

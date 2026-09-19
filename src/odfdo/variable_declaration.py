@@ -52,7 +52,7 @@ class VarDeclMixin(Element):
     """
 
     def get_variable_decls(self) -> VarDecls:
-        """Returns the container for variable declarations.
+        """Return the container for variable declarations.
 
         If the container is not found, it is created within the document body.
 
@@ -74,7 +74,7 @@ class VarDeclMixin(Element):
         return cast("VarDecls", variable_decls)
 
     def get_variable_decl_list(self) -> list[VarDecls]:
-        """Returns all variable declarations as a list.
+        """Return all variable declarations as a list.
 
         Returns:
             list[VarDecls]: A list of all VarDecls instances that are descendants of this element.
@@ -84,7 +84,7 @@ class VarDeclMixin(Element):
         )
 
     def get_variable_decl(self, name: str, position: int = 0) -> VarDecls | None:
-        """Returns a single variable declaration that matches the specified criteria.
+        """Return a single variable declaration that matches the specified criteria.
 
         Args:
             name: The name of the variable declaration to retrieve.
@@ -133,7 +133,7 @@ class VarDecl(Element):
         value_type: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initializes the VarDecl element.
+        """Initialize the VarDecl element.
 
         Args:
             name: The name of the variable.

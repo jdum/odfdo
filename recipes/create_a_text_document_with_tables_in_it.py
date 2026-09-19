@@ -29,6 +29,7 @@ class Product:
     """Minimalistic Product."""
 
     def __init__(self, reference: int, name: str, price: float) -> None:
+        """Create a product."""
         self.reference = reference
         self.name = f"Product {name}"
         self.price = price
@@ -38,6 +39,7 @@ class OrderLine:
     """Line of an Order."""
 
     def __init__(self, reference: int, quantity: int) -> None:
+        """Create an order."""
         self.reference = reference
         self.quantity = quantity
 

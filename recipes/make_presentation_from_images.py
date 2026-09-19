@@ -50,6 +50,7 @@ class ImageInfo:
     """
 
     def __init__(self, path: Path) -> None:
+        """Initialize the ImageInfo."""
         self.path = path
         self.size = None
         self.disp_w = self.disp_h = None

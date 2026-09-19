@@ -262,6 +262,7 @@ class RowCache:
     __slots__ = ("cell_elements", "cell_map")
 
     def __init__(self) -> None:
+        """Initialize a RowCache."""
         self.cell_map: list[int] = []
         self.cell_elements: dict[int, Cell] = {}
 
@@ -400,6 +401,7 @@ class TableCache:
     __slots__ = ("col_elements", "col_map", "row_elements", "row_map")
 
     def __init__(self) -> None:
+        """Initialize a TableCache."""
         self.row_map: list[int] = []
         self.col_map: list[int] = []
         self.row_elements: dict[int, Row] = {}

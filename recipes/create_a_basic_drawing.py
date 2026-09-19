@@ -33,6 +33,7 @@ class Vector:
     """Vector class with Koch calculation."""
 
     def __init__(self, a: float | complex, b: float | complex) -> None:
+        """Create a vector."""
         self.a = a
         self.b = b
 

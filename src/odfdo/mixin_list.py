@@ -51,7 +51,7 @@ class ListMixin(Element):
         style: str | None = None,
         content: str | None = None,
     ) -> list[List]:
-        """Returns all lists that match the specified criteria.
+        """Return all lists that match the specified criteria.
 
         Args:
             style: The name of the style to filter lists by.
@@ -82,7 +82,7 @@ class ListMixin(Element):
         position: int = 0,
         content: str | None = None,
     ) -> List | None:
-        """Returns a single list that matches the specified criteria.
+        """Return a single list that matches the specified criteria.
 
         Args:
             position: The 0-based index of the matching list to return.

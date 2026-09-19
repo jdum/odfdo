@@ -40,7 +40,7 @@ class Manifest(XmlPart):
         return [str(e) for e in self.xpath(xpath_query)]  # Explicitly cast EText to str
 
     def _file_entry(self, full_path: str) -> Element:
-        """Internal helper to find a specific `manifest:file-entry` element.
+        """Find a specific `manifest:file-entry` element (internal helper).
 
         Args:
             full_path: The full path of the file entry to find.

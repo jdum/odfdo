@@ -40,7 +40,7 @@ def concatenate_presentations(path: Path) -> Document:
 
 
 def add_presentation(concat_presentation: Document, path: Path) -> None:
-    """Using odfdo to open .odp document and copy content and styles."""
+    """Use odfdo to open .odp document and copy content and styles."""
     try:
         document = Document(path)
     except Exception:

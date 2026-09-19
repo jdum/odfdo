@@ -259,7 +259,7 @@ class Row(Element):
         start: int | None = None,
         end: int | None = None,
     ) -> Iterator[Cell]:
-        """Yields Cell elements, expanding repetitions.
+        """Yield Cell elements, expanding repetitions.
 
         This method produces individual Cell objects. The yielded
         Cell are copies; use `set_cell()` to apply changes.

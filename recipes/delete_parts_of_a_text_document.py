@@ -23,6 +23,7 @@ class KeepingState:
     """
 
     def __init__(self, initial_state: str = "before") -> None:
+        """Initialize the state."""
         self.step = initial_state
 
 
@@ -125,7 +126,7 @@ def keep_element(
     end_marker: str,
     elem: Element,
 ) -> bool:
-    """Returns True if the current element should be kept, False if it
+    """Return True if the current element should be kept, False if it
     should be deleted.
 
     Finds the start_marker in heading elements only and the end_marker

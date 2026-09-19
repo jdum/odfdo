@@ -110,7 +110,7 @@ def _strip_tags(
     protect: Iterable[str],
     protected: bool,
 ) -> tuple[Element | list[Element | str], bool]:
-    """Internal recursive helper for `strip_tags`.
+    """Strip tags recursively from element (internal helper).
 
     Args:
         element (Element): The current element to process.

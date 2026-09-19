@@ -273,7 +273,7 @@ class NamedRange(Element):
         self._update_attributes()
 
     def _set_range(self, coord: tuple | list | str) -> None:
-        """Internal helper to set the cell range coordinates.
+        """Set the cell range coordinates (internal helper).
 
         Args:
             coord: The cell or area coordinate, e.g., "A1", "A1:B2", (0, 0),

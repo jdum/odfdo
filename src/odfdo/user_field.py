@@ -63,7 +63,7 @@ class UserDefinedMixin(Element):
     """
 
     def get_user_defined_list(self) -> list[UserDefined]:
-        """Returns all user-defined field declarations as a list.
+        """Return all user-defined field declarations as a list.
 
         Returns:
             list[UserDefined]: A list of all UserDefined instances that are descendants of this element.
@@ -85,7 +85,7 @@ class UserDefinedMixin(Element):
         return self.get_user_defined_list()
 
     def get_user_defined(self, name: str, position: int = 0) -> UserDefined | None:
-        """Returns a single user-defined field declaration that matches the specified criteria.
+        """Return a single user-defined field declaration that matches the specified criteria.
 
         Args:
             name: The name of the user-defined field to retrieve.
@@ -104,7 +104,7 @@ class UserDefinedMixin(Element):
     def get_user_defined_value(
         self, name: str, value_type: str | None = None
     ) -> bool | str | int | float | Decimal | datetime | timedelta | None:
-        """Returns the value of the specified user-defined field.
+        """Return the value of the specified user-defined field.
 
         Args:
             name: The name of the user-defined field to retrieve its value.
@@ -150,7 +150,7 @@ class UserFieldGet(ElementTyped):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initializes the UserFieldGet element.
+        """Initialize the UserFieldGet element.
 
         Args:
             name: The name of the user field to get.
@@ -219,7 +219,7 @@ class UserDefined(ElementTyped):
         from_document: Document | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initializes the UserDefined element.
+        """Initialize the UserDefined element.
 
         If a document is provided via `from_document`, the element will be
         populated with the value of the meta user-defined field of the same

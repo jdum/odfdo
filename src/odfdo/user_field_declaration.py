@@ -57,7 +57,7 @@ class UserFieldDeclMixin(Element):
     """
 
     def get_user_field_decl_list(self) -> list[UserFieldDecl]:
-        """Returns all user field declarations as a list.
+        """Return all user field declarations as a list.
 
         Returns:
             list[UserFieldDecl]: A list of all UserFieldDecl instances that
@@ -71,7 +71,7 @@ class UserFieldDeclMixin(Element):
         )
 
     def get_user_field_decl(self, name: str, position: int = 0) -> UserFieldDecl | None:
-        """Returns a single user field declaration that matches the specified
+        """Return a single user field declaration that matches the specified
         criteria.
 
         Args:
@@ -93,7 +93,7 @@ class UserFieldDeclMixin(Element):
     def get_user_field_value(
         self, name: str, value_type: str | None = None
     ) -> CellValue | None:
-        """Returns the value of the specified user field.
+        """Return the value of the specified user field.
 
         Args:
             name: The name of the user field to retrieve its value.
@@ -135,7 +135,7 @@ class UserFieldDeclContMixin(UserFieldDeclMixin):
     """
 
     def get_user_field_decls(self) -> UserFieldDecls:
-        """Returns the container for user field declarations.
+        """Return the container for user field declarations.
 
         If the container is not found, it is created within the document body.
 
@@ -189,7 +189,7 @@ class UserFieldDecl(ElementTyped):
         value_type: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initializes the UserFieldDecl element.
+        """Initialize the UserFieldDecl element.
 
         Args:
             name: The name of the user field.
@@ -205,7 +205,7 @@ class UserFieldDecl(ElementTyped):
             self.set_value_and_type(value=value, value_type=value_type)
 
     def set_value(self, value: Any) -> None:
-        """Sets the value of the user field declaration.
+        """Set the value of the user field declaration.
 
         This method updates the value and value type of the declaration,
         preserving its name.

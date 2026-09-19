@@ -42,6 +42,7 @@ class SimpleRandom:
     MAXI = 2**31 - 2
 
     def __init__(self) -> None:
+        """Initialize generator."""
         self.current = 16807
 
     def _next_number(self) -> None:

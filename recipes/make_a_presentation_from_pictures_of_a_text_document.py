@@ -40,7 +40,7 @@ def save_new(document: Document, name: str) -> None:
 
 
 def embedded_image_ratio(href: str, content: bytes) -> float:
-    """Calculates the aspect ratio of an image content in bytes."""
+    """Calculate the aspect ratio of an image content in bytes."""
     image_stream = io.BytesIO(content)
     img = Image.open(image_stream)
     width, height = img.size

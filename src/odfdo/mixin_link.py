@@ -52,7 +52,7 @@ class LinkMixin(Element):
         url: str | None = None,
         content: str | None = None,
     ) -> list[Link]:
-        """Returns all links that match the specified criteria.
+        """Return all links that match the specified criteria.
 
         Args:
             name: The name of the link.
@@ -79,7 +79,7 @@ class LinkMixin(Element):
         url: str | None = None,
         content: str | None = None,
     ) -> Link | None:
-        """Returns a single link that matches the specified criteria.
+        """Return a single link that matches the specified criteria.
 
         Args:
             position: The 0-based index of the matching link to return.

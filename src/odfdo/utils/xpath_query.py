@@ -59,7 +59,7 @@ def make_xpath_query(
     position: int | None = None,
     **kwargs: str,
 ) -> str:
-    """Constructs an XPath query string with attribute-based predicates.
+    """Construct an XPath query string with attribute-based predicates.
 
     This function builds a complex XPath query by appending predicates for each
     provided keyword argument. It simplifies the process of searching for

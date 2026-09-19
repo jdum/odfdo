@@ -56,7 +56,7 @@ class TocMixin(Element):
     """
 
     def get_tocs(self) -> list[TOC]:
-        """Returns all tables of contents found within the element's subtree.
+        """Return all tables of contents found within the element's subtree.
 
         Returns:
             list[TOC]: A list of TOC instances.
@@ -77,7 +77,7 @@ class TocMixin(Element):
         position: int = 0,
         content: str | None = None,
     ) -> TOC | None:
-        """Returns a single table of contents that matches the specified criteria.
+        """Return a single table of contents that matches the specified criteria.
 
         Args:
             position: The 0-based index of the matching table of contents to return.

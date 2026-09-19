@@ -155,7 +155,7 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         name: str = "header",
         style: str = "Header",
     ) -> None:
-        """Internal helper to set the content of a page header or footer.
+        """Set the content of a page header or footer (internal helper).
 
         This method replaces existing content or creates a new header/footer
         element if one doesn't exist. It can accept raw text, an `Element`,
@@ -255,7 +255,7 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         family_generic: str | None = None,
         pitch: str = "variable",
     ) -> None:
-        """Placeholder (not applicable to `StyleMasterPage`, do nothing).
+        """Do nothing (placeholder not applicable to `StyleMasterPage`).
 
         Args:
             name: The font name.

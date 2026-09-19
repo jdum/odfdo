@@ -213,7 +213,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initializes a Table element.
+        """Initialize a Table element.
 
         The table can optionally be pre-filled with a specified number of rows
         and cells.
@@ -1981,7 +1981,11 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         image_frame: Frame,
         doc_type: str | None = None,
     ) -> None:
-        """Deprecated. Use recipes to insert an image in a cell.
+        """Insert an image in a cell (deprecated, use recipes instead).
+
+        See recipes:
+            - add_an_image_to_a_table_inside_spreadsheet.py
+            - add_an_image_to_a_table_inside_text_document.py
 
         This method provided a way to insert an image into a cell, but it is
         now deprecated. Please refer to the project's recipes for the
@@ -2568,14 +2572,14 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
     # Named Range
     def _local_named_ranges(self) -> list[NamedRange]:
-        """(internal) Return the list of local Name Ranges."""
+        """Return the list of local Name Ranges (internal)."""
         return cast(
             "list[NamedRange]",
             self.get_elements("descendant::table:named-expressions/table:named-range"),
         )
 
     def _local_named_range(self, name: str) -> NamedRange | None:
-        """(internal) Return the local Name Range of the specified name."""
+        """Return the local Name Range of the specified name (internal)."""
         named_range = self.get_elements(
             f'descendant::table:named-expressions/table:named-range[@table:name="{name}"][1]'
         )
@@ -2584,7 +2588,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         return None
 
     def _local_append_named_range(self, named_range: NamedRange) -> None:
-        """(internal) Append the named range to the current table."""
+        """Append the named range to the current table (internal)."""
         named_expressions = cast(
             "TableNamedExpressions | None",
             self.get_element(TableNamedExpressions._tag),
@@ -2603,14 +2607,14 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     def _local_set_named_range(
         self, name: str, crange: str | tuple | list, usage: str | None = None
     ) -> None:
-        """(internal) Create a Named Range element and insert it in the
+        """Create a Named Range element and insert it in the table (internal).
         current table.
         """
         named_range = NamedRange(name, crange, self.name, usage)
         self._local_append_named_range(named_range)
 
     def _local_delete_named_range(self, name: str) -> None:
-        """(internal) Delete the Named Range of specified name."""
+        """Delete the Named Range of specified name (internal)."""
         named_range = self._local_named_range(name)
         if not named_range:
             return

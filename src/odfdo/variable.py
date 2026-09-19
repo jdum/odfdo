@@ -80,7 +80,7 @@ class VarSet(ElementTyped):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initializes the VarSet element.
+        """Initialize the VarSet element.
 
         Args:
             name: The name of the variable to set.
@@ -107,7 +107,7 @@ class VarSet(ElementTyped):
                 self.text = text
 
     def set_value(self, value: Any) -> None:
-        """Sets the value of the variable.
+        """Set the value of the variable.
 
         This method updates the value and value type, preserving other
         attributes like name, style, and display setting.
@@ -157,7 +157,7 @@ class VarGet(ElementTyped):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initializes the VarGet element.
+        """Initialize the VarGet element.
 
         Args:
             name: The name of the variable to get.
@@ -207,7 +207,7 @@ class VarPageNumber(Element):
         page_adjust: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initializes the VarPageNumber element.
+        """Initialize the VarPageNumber element.
 
         Args:
             select_page: The page to select: 'current' (the
@@ -266,7 +266,7 @@ class VarDate(Element):
         date_adjust: timedelta | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initializes the VarDate element.
+        """Initialize the VarDate element.
 
         Args:
             date: The date value. If not provided, the
@@ -326,7 +326,7 @@ class VarTime(Element):
         time_adjust: timedelta | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initializes the VarTime element.
+        """Initialize the VarTime element.
 
         Args:
             time: The time value. Defaults to
@@ -400,7 +400,7 @@ class VarChapter(Element):
         outline_level: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initializes the VarChapter element.
+        """Initialize the VarChapter element.
 
         Args:
             display: The format for the chapter information.
@@ -452,7 +452,7 @@ class VarFileName(Element):
         fixed: bool = False,
         **kwargs: Any,
     ) -> None:
-        """Initializes the VarFileName element.
+        """Initialize the VarFileName element.
 
         Args:
             display: The format for the file name. Can be
@@ -487,7 +487,7 @@ class VarInitialCreator(Element):
     _properties = (PropDef("fixed", "text:fixed"),)
 
     def __init__(self, fixed: bool = False, **kwargs: Any) -> None:
-        """Initializes the VarInitialCreator element.
+        """Initialize the VarInitialCreator element.
 
         Args:
             fixed: If True, the field is not updated automatically.
@@ -523,7 +523,7 @@ class VarCreationDate(Element):
         data_style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initializes the VarCreationDate element.
+        """Initialize the VarCreationDate element.
 
         Args:
             fixed: If True, the field is not updated automatically.
@@ -563,7 +563,7 @@ class VarCreationTime(Element):
         data_style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initializes the VarCreationTime element.
+        """Initialize the VarCreationTime element.
 
         Args:
             fixed: If True, the field is not updated automatically.

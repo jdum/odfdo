@@ -326,7 +326,7 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
         no_header: bool = True,
         clean: bool = True,
     ) -> Element | list | str | None:
-        """Returns the annotated content from an annotation.
+        """Return the annotated content from an annotation.
 
         If no content exists (e.g., single position annotation or if the
         annotation-end tag is not found), it returns an empty list or an
@@ -378,7 +378,7 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
         super().delete()
 
     def check_validity(self) -> None:
-        """Checks the validity of the Annotation."""
+        """Check the validity of the Annotation."""
         if not self.note_body:
             msg = "Annotation must have a body"
             raise ValueError(msg)

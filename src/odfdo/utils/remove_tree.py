@@ -33,7 +33,7 @@ def _sub_tree_remove_tag(
     element: Element,
     context: dict[str, Any],
 ) -> tuple[list, bool]:
-    """(internal function) Remove tag in the children of the element."""
+    """Remove tag in the children of the element (internal)."""
     modified = False
     sub_elements = []
     for child in element.children:
@@ -51,7 +51,7 @@ def _tree_remove_tag(
     element: Element,
     context: dict[str, Any],
 ) -> tuple[list | Element, bool]:
-    """(internal function) Remove tag in the element, recursive."""
+    """Remove tag in the element recursively (internal)."""
     buffer = element.clone
     tag = context["tag"]
     safe_tag = context["safe_tag"]

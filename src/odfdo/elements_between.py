@@ -29,7 +29,7 @@ from .element import Element
 def _get_successor(
     element: Element, target: Element
 ) -> tuple[Element | None, Element | None]:
-    """Internal helper to find the logical successor of an element in the XML tree.
+    """Find the logical successor of an element in the XML tree (internal helper).
 
     This function attempts to find the next sibling. If no next sibling exists,
     it traverses up to the parent and tries to find the successor of the parent.
@@ -54,7 +54,7 @@ def _get_successor(
 
 
 def _find_any_id(element: Element) -> tuple[str, str, str]:
-    """Internal helper to find any ID attribute and its value for a given element.
+    """Find any ID attribute and its value for a given element (internal helper).
 
     It iterates through a predefined list of common ODF ID attributes.
 
@@ -92,7 +92,7 @@ def _common_ancestor(
     attr2: str,
     val2: str,
 ) -> Element | None:
-    """Internal helper to find the common ancestor of two elements in the XML tree.
+    """Find the common ancestor of two elements in the XML tree (internal helper).
 
     The elements are identified by their tag, attribute, and value.
 
@@ -133,7 +133,7 @@ def _get_between_base(
     tag1: Element,
     tag2: Element,
 ) -> list[Element]:
-    """Internal helper to extract elements between two specified markers (`tag1`, `tag2`).
+    """Extract elements between two specified markers (`tag1`, `tag2`) (internal helper).
 
     This function finds the common ancestor of `tag1` and `tag2`, then traverses
     the XML tree between them, collecting all elements.
@@ -243,7 +243,7 @@ def _get_between_base(
 
 
 def _clean_inner_list(inner: list[Element]) -> list[Element]:
-    """Internal helper to clean a list of elements by removing unwanted tags.
+    """Clean a list of elements by removing unwanted tags (internal helper).
 
     Specifically targets tags related to tracked changes and reference marks.
 
@@ -273,7 +273,7 @@ def _clean_inner_list(inner: list[Element]) -> list[Element]:
 
 
 def _no_header_inner_list(inner: list[Element]) -> list[Element]:
-    """Internal helper to convert header elements (`text:h`) to paragraph elements (`text:p`).
+    """Convert header elements (`text:h`) to paragraph elements (`text:p`) (internal helper).
 
     Args:
         inner: The list of elements to process.

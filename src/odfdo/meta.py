@@ -66,7 +66,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         self._generator_modified: bool = False
 
     def _get_body(self) -> Metadata:
-        """Internal method to get the root `office:meta` element.
+        """Get the root `office:meta` element (internal).
 
         Returns:
             Metadata: The `office:meta` element.
@@ -859,7 +859,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
     def _user_defined_metadata_list(
         self,
     ) -> list[dict[str, Decimal | datetime | dtdate | timedelta | bool | str]]:
-        """Internal helper to retrieve all user-defined metadata as a sorted list of dictionaries.
+        """Retrieve all user-defined metadata as a sorted list of dictionaries (internal helper).
 
         Returns:
             list[dict[str, Any]]: A sorted list of dictionaries, each
@@ -904,7 +904,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             self.set_user_defined_metadata(name=key, value=val)
 
     def _user_defined_metadata_by_name(self, name: str) -> MetaUserDefined | None:
-        """Internal helper to find a specific user-defined metadata element by name.
+        """Find a specific user-defined metadata element by name (internal helper).
 
         Args:
             name: The name of the user-defined metadata field to find.
@@ -1059,7 +1059,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         return meta_data
 
     def _as_json_dict(self, full: bool = False) -> dict[str, Any]:
-        """Internal method to prepare metadata as a JSON-compatible dictionary.
+        """Prepare metadata as a JSON-compatible dictionary (internal).
 
         This converts various Python types (datetime, timedelta, Decimal) into
         their string representations suitable for JSON serialization.
@@ -1182,7 +1182,7 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         current_stats: dict[str, int],
         imported_stats: dict[str, int] | None,
     ) -> dict[str, int]:
-        """Internal helper to merge and complete document statistics.
+        """Merge and complete document statistics (internal helper).
 
         It takes current statistics and imported statistics, filling in missing
         values with 0 and prioritizing imported values.

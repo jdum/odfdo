@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 
 
 class Column(Element):
-    """A Column of a table, "table:table-column"."""
+    """Create a Column element, "table:table-column"."""
 
     _tag = "table:table-column"
 
@@ -46,7 +46,7 @@ class Column(Element):
         style: str | None = None,
         **kwargs: Any,
     ) -> None:
-        """A Column of a table, "table:table-column".
+        """Create a Column element, "table:table-column".
 
         This constructor creates a column element with an optional style.
         The default cell style can be set for the entire column. If the

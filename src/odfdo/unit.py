@@ -71,7 +71,7 @@ class Unit:
     """
 
     def __init__(self, value: str | float | int | Decimal, unit: str = "cm") -> None:
-        """Initializes a Unit instance.
+        """Initialize a Unit instance.
 
         The constructor can parse a string containing both a value and a unit
         (e.g., "10.5cm") or accept a numerical value and a unit separately.
@@ -107,7 +107,7 @@ class Unit:
         return f"{object.__repr__(self)} {self}"
 
     def _check_other(self, other: Unit) -> None:
-        """Checks if the 'other' object is a compatible Unit for comparison.
+        """Check if the 'other' object is a compatible Unit for comparison.
 
         Args:
             other: The other Unit instance to compare against.
@@ -134,7 +134,7 @@ class Unit:
         return self.value == other.value
 
     def convert(self, unit: str, dpi: int | Decimal | float = 72) -> Unit:
-        """Converts the current unit to another unit.
+        """Convert the current unit to another unit.
 
         Currently, only conversion to pixels ('px') is supported from various
         length units.

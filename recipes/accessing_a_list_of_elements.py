@@ -43,7 +43,7 @@ def read_source_document() -> Document:
 
 
 def analysis(document: Document) -> dict[str, int]:
-    """Returns some statistics about the document."""
+    """Return some statistics about the document."""
     result: dict[str, int] = {
         "headings": 0,
         "images": 0,

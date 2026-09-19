@@ -49,7 +49,7 @@ def save_new(document: Document, name: str) -> None:
 
 
 def create_base_style() -> Style:
-    """Creating a smooth style for the graphic item."""
+    """Create a smooth style for the graphic item."""
     base_style = Style(
         "graphic",
         name="Gloup48",

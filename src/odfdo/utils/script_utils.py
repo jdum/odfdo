@@ -36,7 +36,7 @@ STDIN_TIMEOUT = 0.5
 
 
 def detect_stdin_timeout() -> None:  # pragma: no cover
-    """Detects if data is available on standard input within a timeout.
+    """Detect if data is available on standard input within a timeout.
 
     This function is used to prevent scripts from blocking indefinitely when
     expecting input from stdin. It is not supported on Windows.
@@ -57,7 +57,7 @@ def detect_stdin_timeout() -> None:  # pragma: no cover
 
 
 def read_document(input_path: str | None) -> Document:
-    """Reads an ODF document from a file path or standard input.
+    """Read an ODF document from a file path or standard input.
 
     If `input_path` is provided, the document is loaded from that file.
     Otherwise, the document is read from the standard input stream.
@@ -79,7 +79,7 @@ def read_document(input_path: str | None) -> Document:
 
 
 def save_document(document: Document, output_path: str | None) -> None:
-    """Saves an ODF document to a file path or standard output.
+    """Save an ODF document to a file path or standard output.
 
     If `output_path` is provided, the document is saved to that file.
     Otherwise, the document is written to the standard output stream.

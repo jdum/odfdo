@@ -54,7 +54,7 @@ class ElementTyped(Element):
                 obsolete.delete()
 
     def set_text_content(self, text: str | Element | None) -> None:
-        """Sets the text content of the embedded paragraph.
+        """Set the text content of the embedded paragraph.
 
         This operation overwrites all existing text nodes and children
         that may contain text.

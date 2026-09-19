@@ -59,7 +59,7 @@ class XmlPart:
     """
 
     def __init__(self, part_name: str, container: Container) -> None:
-        """Initializes an XmlPart instance.
+        """Initialize an XmlPart instance.
 
         Args:
             part_name: The name of the XML part (e.g., "content.xml").
@@ -74,7 +74,7 @@ class XmlPart:
         self.__root: Element | None = None
 
     def _get_tree(self) -> _ElementTree:
-        """Loads and returns the XML tree for the part.
+        """Load and returns the XML tree for the part.
 
         If the tree has not been loaded yet, it reads the part from the
         container and parses it.
@@ -105,7 +105,7 @@ class XmlPart:
         return self.__root
 
     def _get_body(self) -> Body:
-        """Retrieves the document body ('office:body') from the root element.
+        """Retrieve the document body ('office:body') from the root element.
 
         Returns:
             Body: The document body element.
@@ -129,7 +129,7 @@ class XmlPart:
 
     @body.setter
     def body(self, new_body: Element) -> None:
-        """Sets the document body with a new Element.
+        """Set the document body with a new Element.
 
         Args:
             new_body: The new 'office:body' element to set.
@@ -143,7 +143,7 @@ class XmlPart:
             body.tail = tail
 
     def get_elements(self, xpath_query: str) -> list[Element]:
-        """Returns a list of elements matching the XPath query.
+        """Return a list of elements matching the XPath query.
 
         The XPath query is applied to the root of this XML part.
 
@@ -156,7 +156,7 @@ class XmlPart:
         return self.root.get_elements(xpath_query)
 
     def get_element(self, xpath_query: str) -> Element | None:
-        """Returns the first element matching the XPath query.
+        """Return the first element matching the XPath query.
 
         The XPath query is applied to the root of this XML part.
 
@@ -170,7 +170,7 @@ class XmlPart:
         return self.root.get_element(xpath_query)
 
     def delete_element(self, child: Element) -> None:
-        """Deletes a specified child element from the XML tree.
+        """Delete a specified child element from the XML tree.
 
         Args:
             child: The child element to delete.
@@ -178,7 +178,7 @@ class XmlPart:
         child.delete()
 
     def xpath(self, xpath_query: str) -> list[Element | EText]:
-        """Applies an XPath query to the root of the XML part and its subtree.
+        """Apply an XPath query to the root of the XML part and its subtree.
 
         Args:
             xpath_query: The XPath query string.
@@ -211,7 +211,7 @@ class XmlPart:
         return clone
 
     def serialize(self, pretty: bool = False) -> bytes:
-        """Serializes the XML part to bytes.
+        """Serialize the XML part to bytes.
 
         Args:
             pretty: If True, the output XML will be pretty-printed.
@@ -228,7 +228,7 @@ class XmlPart:
         return xml_header + bytes_tree
 
     def pretty_serialize(self) -> bytes:
-        """Serializes the XML part to bytes with pretty-printing.
+        """Serialize the XML part to bytes with pretty-printing.
 
         Returns:
             bytes: The pretty-printed XML content as bytes, including the
@@ -242,7 +242,7 @@ class XmlPart:
         return xml_header + bytes_tree
 
     def custom_pretty_tree(self) -> _ElementTree | _Element:
-        """Returns a pretty-printed version of the XML tree.
+        """Return a pretty-printed version of the XML tree.
 
         This method applies custom indentation for readability.
 

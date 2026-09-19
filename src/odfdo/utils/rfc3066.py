@@ -47,7 +47,7 @@ def get_default_language() -> str:
 
 
 def is_RFC3066(lang: str) -> bool:
-    """Checks if a string conforms to the RFC 3066 language tag format.
+    """Check if a string conforms to the RFC 3066 language tag format.
 
     Valid formats are "language" or "language-country", where "language" is a
     2 or 3-letter ASCII string, and "country" (and other subtags) are

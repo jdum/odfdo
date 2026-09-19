@@ -44,7 +44,7 @@ def _as_dict(
     | ConfigItemMapNamed
     | ConfigItemSet,
 ) -> dict[str, str | int | bool | list[Any] | dict[str, Any]]:
-    """Internal helper to serialize a configuration element to a dictionary."""
+    """Serialize a configuration element to a dictionary (internal helper)."""
     conf: dict[str, str | int | bool | list[Any] | dict[str, Any]] = {
         "class": element._tag
     }
@@ -58,9 +58,7 @@ def _as_dict(
 
 
 def _from_dict(data: dict[str, str | int | bool | dict[str, Any]]) -> Element:
-    """Internal helper to deserialize a dictionary into a configuration
-    element.
-    """
+    """Deserialize a dictionary into a configuration element (internal helper)."""
     class_tag: str = data.pop("class")  # ty: ignore[invalid-assignment]
     if class_tag == "config:config-item":
         return ConfigItem.from_dict(data)  # ty: ignore[invalid-argument-type]
@@ -458,9 +456,7 @@ class ConfigItem(Element):
     """
 
     _tag: str = "config:config-item"
-    _properties: tuple[PropDef | PropDefBool, ...] = (
-        PropDef("name", "config:name"),
-    )
+    _properties: tuple[PropDef | PropDefBool, ...] = (PropDef("name", "config:name"),)
     TYPES: ClassVar = {
         "boolean",
         "short",

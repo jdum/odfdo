@@ -30,7 +30,7 @@ def save_new(document: Document, name: str) -> None:
 
 
 def create_style_header_blue(document: Document) -> None:
-    """A style derived from the standard heading style.
+    """Create a style derived from the standard heading style.
 
     Bold blue font 160%, outline level 1
     """
@@ -49,7 +49,7 @@ def create_style_header_blue(document: Document) -> None:
 
 
 def create_style_header_navy(document: Document) -> None:
-    """A style derived from the standard heading style.
+    """Create a style derived from the standard heading style.
 
     Bold navy blue font 120%, outline Level 2
     """
@@ -68,7 +68,7 @@ def create_style_header_navy(document: Document) -> None:
 
 
 def create_style_steel(document: Document) -> None:
-    """A style derived from the standard text style.
+    """Create a style derived from the standard text style.
 
     Yellow font on dark blue
     """
@@ -91,7 +91,7 @@ def create_style_steel(document: Document) -> None:
 
 
 def create_style_special(document: Document) -> None:
-    """A style derived from the standard text style with fixed font.
+    """Create a style derived from the standard text style with fixed font.
 
     Courier New font, antique white background, 2cm margin and centered text
     """
@@ -119,7 +119,7 @@ def create_style_special(document: Document) -> None:
 
 
 def create_style_bold_gold(document: Document) -> None:
-    """A style derived from the standard text style.
+    """Create a style derived from the standard text style.
 
     Bold font in dark goldenrod color
     """
@@ -134,7 +134,7 @@ def create_style_bold_gold(document: Document) -> None:
 
 
 def create_style_italic_lime(document: Document) -> None:
-    """An italic style derived from the standard text style.
+    """Create an italic style derived from the standard text style.
 
     Font italic, size 120%, color lime green
     """

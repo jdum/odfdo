@@ -98,7 +98,7 @@ class TabStopStyle(Element):
         style_type: str | None = None,
         **kwargs: Any,
     ):
-        """Initializes a TabStopStyle element.
+        """Initialize a TabStopStyle element.
 
         Args:
             style_char: The character for the tab stop.
@@ -210,7 +210,7 @@ class TOC(MDToc, Element):
         entry_style: str = "Contents_20_%d",
         **kwargs: Any,
     ) -> None:
-        """Initializes a TOC (Table of Contents) element.
+        """Initialize a TOC (Table of Contents) element.
 
         Default parameters are what most people use: protected from manual
         modifications and not limited in title levels.
@@ -292,7 +292,7 @@ class TOC(MDToc, Element):
         return self.get_formatted_text()
 
     def get_formatted_text(self, context: dict | None = None) -> str:
-        """Returns the formatted text content of the TOC.
+        """Return the formatted text content of the TOC.
 
         Args:
             context: A context dictionary for formatting.
@@ -359,7 +359,7 @@ class TOC(MDToc, Element):
         self.append(body)
 
     def get_title(self) -> str:
-        """Returns the title of the TOC.
+        """Return the title of the TOC.
 
         Returns:
             str: The title of the TOC.
@@ -378,7 +378,7 @@ class TOC(MDToc, Element):
         style: str | None = None,
         text_style: str | None = None,
     ) -> None:
-        """Sets the title of the TOC.
+        """Set the title of the TOC.
 
         Args:
             title: The new title for the TOC.
@@ -533,7 +533,7 @@ class TocEntryTemplate(Element):
         outline_level: int | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initializes a TocEntryTemplate element.
+        """Initialize a TocEntryTemplate element.
 
         Args:
             style: The style name for the TOC entry.
@@ -558,7 +558,7 @@ class TocEntryTemplate(Element):
         self.set_attribute("text:outline-level", str(level))
 
     def complete_defaults(self) -> None:
-        """Populates the template with default entry elements.
+        """Populate the template with default entry elements.
 
         This method adds standard elements to the template, such as placeholders
         for chapter number, entry text, and page number, providing a default

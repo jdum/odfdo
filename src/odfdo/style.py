@@ -81,7 +81,7 @@ __all__ = [  # noqa: RUF022
 
 
 def _make_thick_string(thick: str | float | int | None) -> str:
-    """Helper to convert a thickness value to a string for border properties.
+    """Convert a thickness value to a string for border properties (helper).
 
     Args:
         thick: The thickness value. Can be a string (e.g., "1pt"), a float
@@ -110,7 +110,7 @@ def _make_thick_string(thick: str | float | int | None) -> str:
 
 
 def _make_line_string(line: str | None) -> str:
-    """Helper to convert a line style value to a string for border properties.
+    """Convert a line style value to a string for border properties (helper).
 
     Args:
         line: The line style value (e.g., "solid", "dotted").
@@ -244,7 +244,7 @@ def create_table_cell_style(
 
 
 def _new_master_page(*args: Any, **kwargs: Any) -> StyleBase:
-    """Factory function for creating a new StyleMasterPage instance.
+    """Create a new StyleMasterPage instance.
 
     This function is used internally by the Style class's __new__ method
     to create StyleMasterPage objects when the 'family' is 'master-page'.
@@ -265,7 +265,7 @@ def _new_master_page(*args: Any, **kwargs: Any) -> StyleBase:
 
 
 def _new_page_layout(*args: Any, **kwargs: Any) -> StyleBase:
-    """Factory function for creating a new StylePageLayout instance.
+    """Create a new StylePageLayout instance.
 
     This function is used internally by the Style class's __new__ method
     to create StylePageLayout objects when the 'family' is 'page-layout'.

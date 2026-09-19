@@ -188,7 +188,7 @@ class MetaUserDefined(Element):
     def _value_to_value_type(
         value: bool | int | float | Decimal | datetime | dtdate | str | timedelta,
     ) -> str:
-        """Internal helper to infer the ODF value type from a Python value.
+        """Infer the ODF value type from a Python value (internal helper).
 
         Args:
             value: The Python value.
