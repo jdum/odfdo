@@ -180,7 +180,7 @@ ignore = [
     # Use `X | Y` for type annotations
     # "UP007",
     # Avoid specifying long messages outside the exception class
-    "TRY003",
+    # "TRY003",
     # Use ternary operator
     "SIM108",
     # Use of `assert` detected
