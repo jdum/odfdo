@@ -100,11 +100,13 @@ def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
 def to_csv(args: Namespace) -> None:
     document = read_document(args.input_file)
     if document.get_type() not in {"spreadsheet", "spreadsheet-template"}:
-        raise TypeError("Document must be a Spreadsheet type.")
+        msg = "Document must be of Spreadsheet type"
+        raise TypeError(msg)
     if args.table_name:
         table = document.body.get_table(name=args.table_name)
         if not table:
-            raise ValueError(f"Table {args.table_name!r} not found")
+            msg = f"Table {args.table_name!r} not found"
+            raise ValueError(msg)
     else:
         table = document.body.get_table()
         if not table:  # pragma: no cover

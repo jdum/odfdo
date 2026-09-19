@@ -96,7 +96,8 @@ def print_diff(args: Namespace) -> None:
     doc1 = Document(args.document1)
     doc2 = Document(args.document2)
     if doc1.get_type() != "text" or doc2.get_type() != "text":
-        raise ValueError(f"{PROG} requires input documents of type text")
+        msg = f"{PROG} requires input documents of type text"
+        raise ValueError(msg)
     if args.ndiff:
         print(make_ndiff(doc1, doc2))
     else:

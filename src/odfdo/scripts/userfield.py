@@ -163,7 +163,8 @@ def document_userfields(args: Namespace) -> None:
         change_fields(document, args.changes)
         save_document(document, args.output_file)
     else:
-        raise ValueError("missing arguments")
+        msg = "Missing arguments"
+        raise ValueError(msg)
     return None
 
 

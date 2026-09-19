@@ -89,7 +89,8 @@ def convert_folder(path_str: str) -> None:
     elif path.is_dir():
         out_packaging = ZIP
     else:
-        raise ValueError(f"Not a file or folder: {path}")
+        msg = f"Not a file or folder: {path!r}"
+        raise ValueError(msg)
     document = Document(path)
     # Folder packaging skips version upgrades, missing-part creation and
     # generator updates, but pretty-print modified parts to ease debugging.
