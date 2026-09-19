@@ -102,3 +102,71 @@ def test_to_md_2_example(capsys, samples):
 
     assert "odfdo Test Case Document" in captured.out
     assert "First paragraph" in captured.out
+
+
+def test_to_md_2_input_option(capsys, samples):
+    source = samples("example.odt")
+    params = parse_cli_args(["-i", str(source)])
+
+    main_to_md(params)
+    captured = capsys.readouterr()
+
+    assert "odfdo Test Case Document" in captured.out
+    assert "First paragraph" in captured.out
+
+
+def test_to_md_2_input_long_option(capsys, samples):
+    source = samples("simple_table.ods")
+    params = parse_cli_args(["--input", str(source)])
+
+    main_to_md(params)
+    captured = capsys.readouterr()
+
+    assert "# simple_table#Example1" in captured.out
+
+
+def test_to_md_2_output_option(capsys, samples, tmp_path):
+    source = samples("example.odt")
+    target = tmp_path / "output.md"
+    params = parse_cli_args(["-i", str(source), "-o", str(target)])
+
+    main_to_md(params)
+    captured = capsys.readouterr()
+
+    assert captured.out == ""
+    content = target.read_text(encoding="utf-8")
+    assert "odfdo Test Case Document" in content
+    assert "First paragraph" in content
+
+
+def test_to_md_2_output_option_ods(capsys, samples, tmp_path):
+    source = samples("simple_table.ods")
+    target = tmp_path / "output.md"
+    params = parse_cli_args(["-i", str(source), "--output", str(target)])
+
+    main_to_md(params)
+    captured = capsys.readouterr()
+
+    assert captured.out == ""
+    content = target.read_text(encoding="utf-8")
+    assert "# simple_table#Example1" in content
+
+
+def test_to_md_2_output_option_positional_input(capsys, samples, tmp_path):
+    source = samples("example.odt")
+    target = tmp_path / "output.md"
+    params = parse_cli_args([str(source), "-o", str(target)])
+
+    main_to_md(params)
+    captured = capsys.readouterr()
+
+    assert captured.out == ""
+    content = target.read_text(encoding="utf-8")
+    assert "odfdo Test Case Document" in content
+
+
+def test_to_md_2_no_file_input_option():
+    params = parse_cli_args(["-i", "none_file"])
+    with pytest.raises(FileNotFoundError) as result:
+        main_to_md(params)
+        assert result.value.code >= 1
