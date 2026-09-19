@@ -68,6 +68,7 @@ class StyleProps(StyleBase):
 
         Raises:
             ValueError: If the area is not a recognized type.
+
         """
         if area is None:
             area = self.family
@@ -89,6 +90,7 @@ class StyleProps(StyleBase):
 
         Returns:
             dict[str, str | dict] | None: A dictionary of properties, or None if no properties are found.
+
         """
         try:
             area = self._check_area(area)
@@ -113,6 +115,7 @@ class StyleProps(StyleBase):
 
         Args:
             props: The dictionary of style properties to update.
+
         """
         strike = props.get("style:text-line-through-style", "")
         if strike == "none":
@@ -146,6 +149,7 @@ class StyleProps(StyleBase):
 
         Returns:
             dict[str, str | bool]: A dictionary containing list style properties.
+
         """
         return self.get_text_properties()
 
@@ -163,6 +167,7 @@ class StyleProps(StyleBase):
 
         Returns:
             dict[str, str | bool]: A dictionary containing text properties.
+
         """
         props = self.get_properties(area="text") or {}
         self._update_boolean_styles(props)
@@ -216,6 +221,7 @@ class StyleProps(StyleBase):
             area (str, optional): The specific area of properties to set
                 (e.g., 'paragraph', 'text').
             **kwargs: Arbitrary keyword arguments representing properties to set.
+
         """
         area = self._check_area(area)
         if properties is None:
@@ -256,6 +262,7 @@ class StyleProps(StyleBase):
         Args:
             properties: A list of property names to delete.
             area: The specific area from which to delete properties.
+
         """
         area = self._check_area(area)
         if properties is None:

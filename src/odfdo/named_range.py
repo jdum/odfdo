@@ -56,6 +56,7 @@ def table_name_check(name: Any) -> str:
     Raises:
         TypeError: If `name` is not a string.
         ValueError: If `name` is empty or contains forbidden characters.
+
     """
     if not isinstance(name, str):
         msg = "String required"
@@ -79,6 +80,7 @@ def _forbidden_in_named_range() -> set[str]:
 
     Returns:
         set[str]: A set of forbidden characters.
+
     """
     return {
         char
@@ -137,6 +139,7 @@ class NamedRange(Element):
                 "filter", "repeat-column", "repeat-row", or None.
             **kwargs: Additional keyword arguments for the parent `Element`
                 class.
+
         """
         super().__init__(**kwargs)
         self.usage: str | None = None
@@ -171,6 +174,7 @@ class NamedRange(Element):
         Args:
             usage: The usage type. Can be "print-range", "filter",
                 "repeat-column", "repeat-row", or None to clear the usage.
+
         """
         if usage is not None:
             usage = usage.strip().lower()
@@ -200,6 +204,7 @@ class NamedRange(Element):
         Raises:
             ValueError: If the name is empty, contains forbidden characters,
                 or is formatted like a cell coordinate.
+
         """
         name = name.strip()
         if not name:
@@ -233,6 +238,7 @@ class NamedRange(Element):
 
         Returns:
             str | None: The name of the named range.
+
         """
         return self.get_attribute_string("table:name")
 
@@ -245,6 +251,7 @@ class NamedRange(Element):
 
         Args:
             name: The new name for the named range.
+
         """
         name = self._check_nr_name(name)
         with contextlib.suppress(Exception):
@@ -268,6 +275,7 @@ class NamedRange(Element):
                 `table_name_check`).
             ValueError: If `name` is empty or contains forbidden characters
                 (propagated from `table_name_check`).
+
         """
         self.table_name = table_name_check(name)
         self._update_attributes()
@@ -281,6 +289,7 @@ class NamedRange(Element):
 
         Raises:
             ValueError: If the coordinate format is incorrect.
+
         """
         digits = convert_coordinates(coord)
         if len(digits) == 4:
@@ -310,6 +319,7 @@ class NamedRange(Element):
         Raises:
             ValueError: If the coordinate format is incorrect (propagated from
                 `_set_range`).
+
         """
         self._set_range(crange)
         self._update_attributes()
@@ -326,6 +336,7 @@ class NamedRange(Element):
 
         Returns:
             str: The formatted base cell address (e.g., "$'Sheet Name'.A1").
+
         """
         # assuming we got table_name and range
         if " " in self.table_name:
@@ -341,6 +352,7 @@ class NamedRange(Element):
         Returns:
             str: The formatted cell range address (e.g.,
                 "$'Sheet Name'.A1:$'Sheet Name'.B2").
+
         """
         # assuming we got table_name and range
         if " " in self.table_name:
@@ -379,6 +391,7 @@ class NamedRange(Element):
         Raises:
             ValueError: If the named range's table is not found or not inside
                 a document.
+
         """
         body = self.document_body
         if not body:
@@ -406,6 +419,7 @@ class NamedRange(Element):
         Raises:
             ValueError: If the named range's table is not found or not inside
                 a document.
+
         """
         body = self.document_body
         if not body:
@@ -439,6 +453,7 @@ class NamedRange(Element):
         Raises:
             ValueError: If the named range's table is not found or not inside
                 a document.
+
         """
         body = self.document_body
         if not body:
@@ -477,6 +492,7 @@ class NamedRange(Element):
         Raises:
             ValueError: If the named range's table is not found or not inside
                 a document.
+
         """
         body = self.document_body
         if not body:

@@ -66,6 +66,7 @@ def serialize_table(
 
     Raises:
         ValueError: If the specified mode is unknown.
+
     """
     if mode == "json":
         table_serializer = TableSerializer(_serialize_table_row_json)
@@ -100,6 +101,7 @@ class TableSerializer:
         Args:
             serializer: A callable that accepts a row of cell values and
                 returns the converted row.
+
         """
         self.serializer = serializer
 
@@ -114,6 +116,7 @@ class TableSerializer:
 
         Returns:
             A 2D list of serialized cell values.
+
         """
         serializer = self.serializer
         cloned_table = table.clone
@@ -140,6 +143,7 @@ def _serialize_table_row_json(
 
     Returns:
         List of JSON-compatible cell values.
+
     """
     serialized_row: list[Any] = []
     for val in row:
@@ -182,6 +186,7 @@ def _serialize_table_row_csv(
 
     Returns:
         List of CSV-compatible cell values.
+
     """
     serialized_row: list[Any] = []
     for val in row:
@@ -224,6 +229,7 @@ def _serialize_table_row_python_typed(
 
     Returns:
         List of Python-typed cell values.
+
     """
     serialized_row: list[Any] = []
     for val in row:
@@ -257,6 +263,7 @@ def _make_serializer(
 
     Returns:
         A row serializer function that converts a list of cell values.
+
     """
     if not (no_decimal or no_date or no_nan):
         return _serialize_table_row_python_typed

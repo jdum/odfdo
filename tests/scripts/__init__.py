@@ -1,0 +1,1 @@
+"""CLI scripts tests."""

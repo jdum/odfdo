@@ -70,6 +70,7 @@ class Body(Element):
 
         Returns:
             list[Table]: A list of matching Table elements.
+
         """
         return self._filtered_elements(  # ty: ignore[invalid-return-type]
             "descendant::table:table",
@@ -87,6 +88,7 @@ class Body(Element):
 
         Returns:
             list[Table]: A list of all Table elements.
+
         """
         return cast("list[Table]", self.get_elements("descendant::table:table"))
 
@@ -110,6 +112,7 @@ class Body(Element):
 
         Returns:
             Table or None: The matching Table element, or None if not found.
+
         """
         if name is None and content is None:
             result = self._filtered_element("descendant::table:table", position)
@@ -134,6 +137,7 @@ class Body(Element):
 
         Returns:
             Table or None: The matching Table element, or None if not found.
+
         """
         if not name:
             return None
@@ -252,6 +256,7 @@ class OfficeSettings(Body):
             dict: A dictionary representing the OfficeSettings element,
                 where the key is the element's tag and the value is a
                 dictionary containing its children's representations.
+
         """
         conf: dict[str, str | int | bool | dict[str, Any] | list[Any]] = {
             "class": self._tag
@@ -278,6 +283,7 @@ class OfficeSettings(Body):
 
         Returns:
             An OfficeSettings instance populated with data from the dictionary.
+
         """
         return cast("OfficeSettings", _from_dict(data))
 

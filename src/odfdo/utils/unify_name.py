@@ -37,6 +37,7 @@ class NameUnifyer:
         Args:
             base_name: Default fallback name used when an empty name is
                 provided.
+
         """
         self.seen: set[str] = set()
         self.base_name = base_name
@@ -52,6 +53,7 @@ class NameUnifyer:
 
         Returns:
             A unique name that has not been registered yet.
+
         """
         if name and name not in self.seen:
             self.seen.add(name)

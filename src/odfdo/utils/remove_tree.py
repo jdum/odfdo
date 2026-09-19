@@ -121,6 +121,7 @@ def remove_tree(
         keep_children: If True (default), the children and text of the
             removed elements are preserved and re-parented. If False, they
             are deleted along with the element.
+
     """
     if safe:
         safe_tag = safe().tag

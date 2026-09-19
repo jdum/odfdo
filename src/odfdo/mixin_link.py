@@ -62,6 +62,7 @@ class LinkMixin(Element):
 
         Returns:
             list[Link]: A list of Link instances matching the criteria.
+
         """
         return self._filtered_elements(
             "descendant::text:a",
@@ -90,6 +91,7 @@ class LinkMixin(Element):
 
         Returns:
             Link | None: A Link instance, or None if no link matches the criteria.
+
         """
         return self._filtered_element(
             "descendant::text:a",

@@ -208,6 +208,7 @@ def printwarn(message: str) -> None:
 
     Args:
         message: the text to print.
+
     """
     print(f"Warning: {message}", file=sys.stderr)
 
@@ -280,6 +281,7 @@ def normalize_path(path: str) -> str:
 
     Returns:
         str: Posix representation of the path.
+
     """
     if path.endswith("/"):  # folder
         return PurePath(path[:-1]).as_posix() + "/"
@@ -294,6 +296,7 @@ class Container:
 
         Args:
             path: The path to the ODF file, a file-like object, or None.
+
         """
         self.__parts: dict[str, bytes | None] = {}
         self.__parts_ts: dict[str, int] = {}
@@ -311,6 +314,7 @@ class Container:
 
         Args:
             path_or_file: Path to the document, or an opened file.
+
         """
         self.__path_like = path_or_file
         if isinstance(path_or_file, (str, Path)):
@@ -355,6 +359,7 @@ class Container:
 
         Returns:
             True if the content appears to be a Flat ODF XML file.
+
         """
         # Must start with XML declaration or be parseable XML
         if not content.strip():
@@ -475,6 +480,7 @@ class Container:
 
         Args:
             content: The XML content as bytes.
+
         """
         root = fromstring(content)
         mimetype, original_nsmap = self._extract_mimetype_and_namespaces(root)
@@ -513,6 +519,7 @@ class Container:
 
         Returns:
             The detected mimetype string.
+
         """
         body = root.find(_ns_tag("body"))
         if body is not None:
@@ -535,6 +542,7 @@ class Container:
 
         Returns:
             The detected mimetype string or None if detection fails.
+
         """
         try:
             if self.path is None:
@@ -557,6 +565,7 @@ class Container:
 
         Returns:
             Tuple of (mimetype, original_nsmap).
+
         """
         mimetype = root.get(_ns_tag("mimetype"))
         if mimetype is None:
@@ -580,6 +589,7 @@ class Container:
 
         Returns:
             Tuple of (content_root, styles_root).
+
         """
         content_root = Element(_ns_tag("document-content"), nsmap=original_nsmap)
         content_root.set(_ns_tag("version"), OFFICE_VERSION)
@@ -599,6 +609,7 @@ class Container:
 
         Returns:
             Set of style names referenced from master-styles.
+
         """
         ns_style = "{urn:oasis:names:tc:opendocument:xmlns:style:1.0}"
         ns_text = "{urn:oasis:names:tc:opendocument:xmlns:text:1.0}"
@@ -641,6 +652,7 @@ class Container:
 
         Returns:
             Dictionary of image parts.
+
         """
         ns_style = "{urn:oasis:names:tc:opendocument:xmlns:style:1.0}"
         image_parts: dict[str, bytes] = {}
@@ -760,6 +772,7 @@ class Container:
 
         Returns:
             The updated image counter.
+
         """
         ns_draw = "{urn:oasis:names:tc:opendocument:xmlns:drawing:1.0}"
         xpath_expr = xpath_compile("descendant::draw:image[office:binary-data]")
@@ -804,6 +817,7 @@ class Container:
 
         Returns:
             The updated image counter.
+
         """
         xpath_fill_expr = xpath_compile(
             "descendant::draw:fill-image[office:binary-data]"
@@ -1154,6 +1168,7 @@ class Container:
 
         Raises:
             SecurityError: If decompressed size exceeds security limits.
+
         """
         total_size = 0
         chunks: list[bytes] = []
@@ -1458,6 +1473,7 @@ class Container:
 
         Returns:
             The list of path of the parts in the Container.
+
         """
         if not self.path:
             # maybe a file like zip archive or xml
@@ -1483,6 +1499,7 @@ class Container:
 
         Returns:
             The list of path of the parts in the Container.
+
         """
         return self.get_parts()
 
@@ -1500,6 +1517,7 @@ class Container:
             KeyError: If the part is not found in a ZIP container.
             FileNotFoundError: If the part is not found in a folder container.
             ValueError: If the part was explicitly deleted from the container.
+
         """
         path = str(path)
         if path in self.__parts:
@@ -1589,6 +1607,7 @@ class Container:
         Args:
             path: The relative path in the Container.
             data: Content of the part.
+
         """
         self.__parts[path] = data
 
@@ -1597,6 +1616,7 @@ class Container:
 
         Args:
             path: The relative path in the Container.
+
         """
         self.__parts[path] = None
 
@@ -1723,6 +1743,7 @@ class Container:
                 'folder'. If None, the current packaging is used.
             backup: If True, a backup of the original file is created.
             pretty: If True, the XML output will be pretty-printed.
+
         """
         parts = self.__parts
         packaging = self._clean_save_packaging(packaging)

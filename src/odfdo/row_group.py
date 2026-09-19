@@ -59,6 +59,7 @@ class RowGroup(Element):
             height: The number of rows to create within the group.
             width: The number of cells to create in each new row.
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
         if self._do_init and height is not None:

@@ -92,6 +92,7 @@ class Paragraph(
                 in `text_or_element` are converted to their ODF tag equivalents.
                 If False, only extra whitespace is removed.
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -121,6 +122,7 @@ def PageBreak() -> Paragraph:
 
     Returns:
         Paragraph: An empty `Paragraph` element with the "odfdopagebreak" style.
+
     """
     return Paragraph("", style="odfdopagebreak")
 

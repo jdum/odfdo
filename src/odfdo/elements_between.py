@@ -43,6 +43,7 @@ def _get_successor(
         tuple[Element | None, Element | None]: A tuple containing the successor
             element and its corresponding target element, or (None, None) if no
             successor is found.
+
     """
     next_u_element = element._xml_element.getnext()
     if next_u_element is not None:
@@ -67,6 +68,7 @@ def _find_any_id(element: Element) -> tuple[str, str, str]:
 
     Raises:
         ValueError: If no recognized ID attribute is found on the element.
+
     """
     for attribute in (
         "text:id",
@@ -107,6 +109,7 @@ def _common_ancestor(
 
     Returns:
         Element | None: The common ancestor element, or `None` if not found.
+
     """
     request1 = f'descendant::{tag1}[@{attr1}="{val1}"]'
     request2 = f'descendant::{tag2}[@{attr2}="{val2}"]'
@@ -149,6 +152,7 @@ def _get_between_base(
     Raises:
         RuntimeError: If no common ancestor is found, or if the traversal fails
             to find an expected element.
+
     """
     elem1_tag, elem1_attr, elem1_val = _find_any_id(tag1)
     elem2_tag, elem2_attr, elem2_val = _find_any_id(tag2)
@@ -252,6 +256,7 @@ def _clean_inner_list(inner: list[Element]) -> list[Element]:
 
     Returns:
         list[Element]: A new list with unwanted elements removed or stripped.
+
     """
     CLEAN_TAGS = (
         "text:change",
@@ -281,6 +286,7 @@ def _no_header_inner_list(inner: list[Element]) -> list[Element]:
     Returns:
         list[Element]: A new list where `text:h` elements are replaced by `text:p`
             elements, preserving their content.
+
     """
     result: list[Element] = []
     for element in inner:
@@ -328,6 +334,7 @@ def elements_between(
     Raises:
         RuntimeError: If `start` or `end` elements are not found or if no
             common ancestor can be determined (propagated from internal helpers).
+
     """
     inner = _get_between_base(base, start, end)
 

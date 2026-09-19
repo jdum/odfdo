@@ -113,6 +113,7 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
             next_style: The name of the next master page style to apply.
             draw_style_name: The name of the drawing style to apply.
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         self._family = "master-page"
         tag_or_elem = kwargs.get("tag_or_elem")
@@ -167,6 +168,7 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
             name: The name of the part to set ("header" or "footer").
             style: The default style name to apply to new paragraphs
                 created from string content.
+
         """
         if name == "header":
             header_or_footer = self.get_page_header()
@@ -204,6 +206,7 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         Returns:
             Element | None: The `style:header` element, or `None` if no header
                 content is defined for this master page.
+
         """
         return self.get_element("style:header")
 
@@ -220,6 +223,7 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
 
         Args:
             text_or_element: The new content for the header.
+
         """
         self._set_header_or_footer(text_or_element)
 
@@ -229,6 +233,7 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
         Returns:
             Element | None: The `style:footer` element, or `None` if no footer
                 content is defined for this master page.
+
         """
         return self.get_element("style:footer")
 
@@ -245,6 +250,7 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
 
         Args:
             text_or_element: The new content for the footer.
+
         """
         self._set_header_or_footer(text_or_element, name="footer", style="Footer")
 
@@ -262,6 +268,7 @@ class StyleMasterPage(OfficeFormsMixin, StyleBase):
             family: The font family. If None, defaults to `name`.
             family_generic: The generic font family (e.g., 'swiss', 'roman').
             pitch: The font pitch ('variable' or 'fixed'). Defaults to 'variable'.
+
         """
 
 
@@ -297,6 +304,7 @@ class StyleHeader(
             display: Specifies whether the header is displayed.
                 Can be "true", "false", or a boolean. Defaults to True.
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -310,6 +318,7 @@ class StyleHeader(
 
         Returns:
             bool: True if the header is displayed, False otherwise.
+
         """
         return self._get_attribute_bool_default("style:display", True)
 
@@ -320,6 +329,7 @@ class StyleHeader(
         Args:
             display: The display status. Can be a boolean,
                 or "true"/"false" string.
+
         """
         self._set_attribute_bool_default("style:display", display, True)
 

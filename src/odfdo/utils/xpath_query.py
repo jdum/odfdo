@@ -96,6 +96,7 @@ def make_xpath_query(
 
     Returns:
         str: The fully constructed XPath query string.
+
     """
     query = [query_string]
     attributes = kwargs

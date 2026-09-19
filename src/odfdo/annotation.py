@@ -74,6 +74,7 @@ class AnnotationMixin(Element):
 
         Returns:
             list[Annotation]: A list of matching Annotation elements.
+
         """
         annotations: list[Annotation] = []
         for annotation in cast(
@@ -114,6 +115,7 @@ class AnnotationMixin(Element):
 
         Returns:
             Annotation or None: The matching Annotation element, or None if not found.
+
         """
         if name is not None:
             return cast(
@@ -140,6 +142,7 @@ class AnnotationMixin(Element):
 
         Returns:
             list[AnnotationEnd]: A list of AnnotationEnd elements.
+
         """
         return cast(
             "list[AnnotationEnd]",
@@ -162,6 +165,7 @@ class AnnotationMixin(Element):
         Returns:
             AnnotationEnd or None: The matching AnnotationEnd element, or
                 None if not found.
+
         """
         return cast(
             "AnnotationEnd | None",
@@ -179,6 +183,7 @@ def get_unique_office_name(element: Element | None = None) -> str:
 
     Returns:
         str: A unique name.
+
     """
     if element is not None:
         body = element.document_body
@@ -213,6 +218,7 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
         creator (str): The creator of the annotation.
         date (datetime): The date of the annotation.
         note_body (str or Element): The body content of the annotation.
+
     """
 
     _tag = "office:annotation"
@@ -250,6 +256,7 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
             parent: The parent element to which this annotation will be
                 associated for name generation.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         # fixme : use offset
         # TODO allow paragraph and text styles
@@ -345,6 +352,7 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
             Element | list | str | None: The content of the annotation, which
             can be a single element, a list of elements, a string, or None if
             the end tag is missing.
+
         """
         end = self.end
         if end is None:
@@ -368,6 +376,7 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
                 the annotation itself is deleted. Defaults to None.
             keep_tail: This argument is not used in this context but is
                 kept for compatibility. Defaults to True.
+
         """
         if child is not None:  # act like normal delete
             super().delete(child)
@@ -411,6 +420,7 @@ class AnnotationEnd(MDTail, Element):
         name (str): The name of the annotation this element is closing. This
                     name must match the 'office:name' of a preceding
                     "office:annotation" element.
+
     """
 
     _tag = "office:annotation-end"
@@ -435,6 +445,7 @@ class AnnotationEnd(MDTail, Element):
             name: The name of the annotation to close. This is
                 required if 'annotation' is not provided.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         # fixme : use offset
         # TODO allow paragraph and text styles

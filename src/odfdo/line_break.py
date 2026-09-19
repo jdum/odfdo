@@ -41,6 +41,7 @@ class LineBreak(MDLineBreak, Element):
 
         Args:
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
 
@@ -53,6 +54,7 @@ class LineBreak(MDLineBreak, Element):
 
         Returns:
             str: Always returns a newline character ("\\n").
+
         """
         return "\n"
 

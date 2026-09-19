@@ -71,6 +71,7 @@ class FormProperty(Element):
         value (Decimal, int, float, None): The numeric value of the property.
         value_type (str): The type of the property's value (e.g., "boolean",
                           "currency", "date", "float", "percentage", "string", "time").
+
     """
 
     _tag = "form:property"
@@ -111,6 +112,7 @@ class FormProperty(Element):
             value: The numeric value.
             value_type: The type of the value.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -155,6 +157,7 @@ class FormListProperty(Element):
         value_type (str): The type of the values in the list (e.g., "boolean",
                           "currency", "date", "float", "percentage", "string",
                           "time").
+
     """
 
     _tag = "form:list-property"
@@ -178,6 +181,7 @@ class FormListProperty(Element):
             property_name: The name of the property.
             value_type: The type of the values in the list.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -207,6 +211,7 @@ class FormListValue(Element):
         string_value (str): The string value of the list item.
         time_value (str): The time value of the list item.
         value (str): The value of the list item.
+
     """
 
     _tag = "form:list-value"
@@ -242,6 +247,7 @@ class FormListValue(Element):
             time_value: The time value.
             value: The numeric or str value.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:

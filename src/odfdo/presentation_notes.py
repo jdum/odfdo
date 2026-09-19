@@ -52,6 +52,7 @@ class PresentationNotes(OfficeFormsMixin, Element):
 
         Args:
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
 

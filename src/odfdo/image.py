@@ -80,6 +80,7 @@ class DrawImage(ListMixin, Element):
             mime_type: The MIME type of the image's content.
             xml_id: The unique XML ID.
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -141,6 +142,7 @@ class DrawFillImage(Element):
             show: How the image should be shown, usually "embed".
             actuate: When the image should be loaded, usually "onLoad".
             **kwargs: Additional keyword arguments for the parent `DrawImage` class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -196,6 +198,7 @@ class DrawMarker(Element):
             view_box: The rectangle in a local coordinates system used by the
                 points.
             **kwargs: Additional keyword arguments for the `DrawMarker` class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:

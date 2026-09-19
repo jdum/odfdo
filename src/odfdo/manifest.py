@@ -35,6 +35,7 @@ class Manifest(XmlPart):
 
         Returns:
             list[str]: A list of strings, where each string is a full path.
+
         """
         xpath_query = "//manifest:file-entry/attribute::manifest:full-path"
         return [str(e) for e in self.xpath(xpath_query)]  # Explicitly cast EText to str
@@ -50,6 +51,7 @@ class Manifest(XmlPart):
 
         Raises:
             KeyError: If the specified `full_path` is not found in the manifest.
+
         """
         xpath_query = (
             f'//manifest:file-entry[attribute::manifest:full-path="{full_path}"]'
@@ -67,6 +69,7 @@ class Manifest(XmlPart):
             list[tuple[str | None, str | None]]: A list of tuples, where each
                 tuple contains the full path and its corresponding media type.
                 Attribute values can be `None` if not found.
+
         """
         xpath_query = "//manifest:file-entry"
         result = []
@@ -89,6 +92,7 @@ class Manifest(XmlPart):
 
         Returns:
             str | None: The media type string, or `None` if the path is not found.
+
         """
         xpath_query = (
             f'//manifest:file-entry[attribute::manifest:full-path="{full_path}"]'
@@ -105,6 +109,7 @@ class Manifest(XmlPart):
         Args:
             full_path: The full path of the file entry.
             media_type: The new media type to set.
+
         """
         file_entry = self._file_entry(full_path)
         file_entry.set_attribute("manifest:media-type", media_type)
@@ -119,6 +124,7 @@ class Manifest(XmlPart):
 
         Returns:
             Element: A new `manifest:file-entry` element.
+
         """
         tag = (
             f"<manifest:file-entry "
@@ -137,6 +143,7 @@ class Manifest(XmlPart):
         Args:
             full_path: The full path of the file to add or update.
             media_type: The media type of the file.
+
         """
         # Existing?
         existing = self.get_media_type(full_path)
@@ -153,6 +160,7 @@ class Manifest(XmlPart):
 
         Raises:
             KeyError: If the specified `full_path` is not found in the manifest.
+
         """
         file_entry = self._file_entry(full_path)
         self.root.delete(file_entry)

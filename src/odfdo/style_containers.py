@@ -41,6 +41,7 @@ class OfficeAutomaticStyles(Element):
 
         Returns:
             A list of StylePageLayout elements.
+
         """
         return [e for e in self.children if isinstance(e, StylePageLayout)]
 

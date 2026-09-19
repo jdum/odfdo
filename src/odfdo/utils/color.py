@@ -40,6 +40,7 @@ def hex2rgb(color: str) -> tuple[int, int, int]:
 
     Raises:
         ValueError: If the input string is not a valid hexadecimal color.
+
     """
     code = color[1:]
     if not (len(color) == 7 and color[0] == "#" and code.isalnum()):
@@ -71,6 +72,7 @@ def rgb2hex(color: str | tuple[int, int, int]) -> str:
         '#FFFF00'
         >>> rgb2hex((238, 130, 238))
         '#EE82EE'
+
     """
     if isinstance(color, str):
         try:
@@ -110,6 +112,7 @@ def hexa_color(color: str | tuple[int, int, int] | None = None) -> str | None:
 
     Raises:
         TypeError: If the color argument is of an unsupported type.
+
     """
     if color is None:
         return None

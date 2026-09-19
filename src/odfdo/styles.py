@@ -82,6 +82,7 @@ class Styles(XmlPart):
         Returns:
             list[Element]: A list of XML elements that are contexts for
                 styles.
+
         """
         if automatic:
             elems = [self.get_element("//office:automatic-styles")]
@@ -118,6 +119,7 @@ class Styles(XmlPart):
         Returns:
             list[StyleBase|DrawFillImage|DrawMarker]: A list of style-like
             instances matching the criteria..
+
         """
         result = []
         for context in self._get_style_contexts(family, automatic=automatic):
@@ -136,6 +138,7 @@ class Styles(XmlPart):
 
         Returns:
             list[StyleBase]: A list of default Style elements.
+
         """
         return cast("list[StyleBase]", self.get_elements("//style:default-style"))
 
@@ -148,6 +151,7 @@ class Styles(XmlPart):
 
         Raises:
             TypeError: If the language code format is invalid.
+
         """
         language = str(value)
         if not is_RFC3066(language):
@@ -214,6 +218,7 @@ class Styles(XmlPart):
         Returns:
             StyleBase | DrawFillImage | DrawMarker | None: A style-like
                 instance, or None if not found.
+
         """
         for context in self._get_style_contexts(family):
             if context is None:
@@ -234,6 +239,7 @@ class Styles(XmlPart):
         Returns:
             OfficeMasterStyles | None: The "office:master-styles" element, or
                 None if not found.
+
         """
         return cast(
             "OfficeMasterStyles | None", self.get_element("//office:master-styles")
@@ -245,6 +251,7 @@ class Styles(XmlPart):
 
         Args:
             office_master_styles: The "office:master-styles" element to set.
+
         """
         current = self.office_master_styles
         if isinstance(current, OfficeMasterStyles):
@@ -257,6 +264,7 @@ class Styles(XmlPart):
 
         Returns:
             list[StyleMasterPage]: A list of StyleMasterPage elements.
+
         """
         master_styles = self.office_master_styles
         if master_styles is None:
@@ -276,6 +284,7 @@ class Styles(XmlPart):
         Returns:
             StyleMasterPage | None: The StyleMasterPage element at the given
                 position, or None if not found.
+
         """
         results = self.master_pages
         try:
@@ -290,6 +299,7 @@ class Styles(XmlPart):
         Returns:
             OfficeAutomaticStyles | None: The "office:automatic-styles"
                 element, or None if not found.
+
         """
         return cast(
             "OfficeAutomaticStyles | None",
@@ -305,6 +315,7 @@ class Styles(XmlPart):
         Args:
             office_automatic_styles: The "office:automatic-styles" element
                 to set.
+
         """
         current = self.office_automatic_styles
         if isinstance(current, OfficeAutomaticStyles):

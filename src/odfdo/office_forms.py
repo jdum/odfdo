@@ -39,6 +39,7 @@ class OfficeFormsMixin(Element):
 
         Returns:
             OfficeForms | None: The `OfficeForms` instance if found, otherwise `None`.
+
         """
         return cast(
             "OfficeForms | None", self.get_element("descendant::office:forms")
@@ -50,6 +51,7 @@ class OfficeFormsMixin(Element):
 
         Returns:
             OfficeForms | None: The `OfficeForms` instance if found, otherwise `None`.
+
         """
         return self.get_office_forms()
 
@@ -71,6 +73,7 @@ class OfficeForms(FormMixin):
 
         Args:
             **kwargs: Additional keyword arguments for the parent `FormMixin` class.
+
         """
         super().__init__(**kwargs)
 
@@ -80,6 +83,7 @@ class OfficeForms(FormMixin):
 
         Returns:
             bool: True if design mode is applied, False otherwise. Defaults to True.
+
         """
         return self._get_attribute_bool_default("form:apply-design-mode", True)
 
@@ -89,6 +93,7 @@ class OfficeForms(FormMixin):
 
         Args:
             apply_design_mode: Whether to apply design mode.
+
         """
         self._set_attribute_bool_default(
             "form:apply-design-mode", apply_design_mode, True
@@ -100,6 +105,7 @@ class OfficeForms(FormMixin):
 
         Returns:
             True if automatic focus is enabled, False otherwise. Defaults to False.
+
         """
         return self._get_attribute_bool_default("form:automatic-focus", False)
 
@@ -109,6 +115,7 @@ class OfficeForms(FormMixin):
 
         Args:
             automatic_focus: Whether to enable automatic focus.
+
         """
         self._set_attribute_bool_default("form:automatic-focus", automatic_focus, False)
 

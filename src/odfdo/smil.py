@@ -54,6 +54,7 @@ class AnimPar(Element):
                 Can be 'indefinite', a time value (e.g., '10s'), or an ID reference
                 (e.g., '[id].click', '[id].begin').
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -91,6 +92,7 @@ class AnimSeq(Element):
                 Can be 'default', 'on-click', 'with-previous', 'after-previous',
                 'timing-root', 'main-sequence', or 'interactive-sequence'.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init and presentation_node_type:
@@ -138,6 +140,7 @@ class AnimTransFilter(Element):
             smil_fadeColor: The fade color for the transition.
             smil_mode: The mode of the transition. Can be 'in' or 'out'.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:

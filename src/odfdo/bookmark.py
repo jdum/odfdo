@@ -40,6 +40,7 @@ class BookmarkMixin(Element):
 
         Returns:
             list[Bookmark]: All bookmarks in the element's subtree.
+
         """
         return cast(
             "list[Bookmark]",
@@ -61,6 +62,7 @@ class BookmarkMixin(Element):
 
         Returns:
             Bookmark or None: The found Bookmark or None if not found.
+
         """
         return cast(
             "Bookmark | None",
@@ -74,6 +76,7 @@ class BookmarkMixin(Element):
 
         Returns:
             list[BookmarkStart]: All bookmark start markers in the element's subtree.
+
         """
         return cast(
             "list[BookmarkStart]",
@@ -95,6 +98,7 @@ class BookmarkMixin(Element):
 
         Returns:
             BookmarkStart or None: The found BookmarkStart or None if not found.
+
         """
         return cast(
             "BookmarkStart | None",
@@ -108,6 +112,7 @@ class BookmarkMixin(Element):
 
         Returns:
             list[BookmarkEnd]: All bookmark end markers in the element's subtree.
+
         """
         return cast(
             "list[BookmarkEnd]",
@@ -129,6 +134,7 @@ class BookmarkMixin(Element):
 
         Returns:
             BookmarkEnd or None: The found BookmarkEnd or None if not found.
+
         """
         return cast(
             "BookmarkEnd | None",
@@ -143,6 +149,7 @@ class Bookmark(Element):
 
     Attributes:
         name (str): The name of the bookmark (text:name attribute).
+
     """
 
     _tag = "text:bookmark"
@@ -154,6 +161,7 @@ class Bookmark(Element):
         Args:
             name: The name of the bookmark.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -168,6 +176,7 @@ class BookmarkStart(Element):
 
     Attributes:
         name (str): The name of the bookmark range being started (text:name attribute).
+
     """
 
     _tag = "text:bookmark-start"
@@ -179,6 +188,7 @@ class BookmarkStart(Element):
         Args:
             name: The name of the bookmark range being started.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -193,6 +203,7 @@ class BookmarkEnd(Element):
 
     Attributes:
         name (str): The name of the bookmark range being ended (text:name attribute).
+
     """
 
     _tag = "text:bookmark-end"
@@ -204,6 +215,7 @@ class BookmarkEnd(Element):
         Args:
             name: The name of the bookmark range being ended.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:

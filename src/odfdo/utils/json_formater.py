@@ -43,6 +43,7 @@ def format_json(
 
     Returns:
         str: The formatted JSON string.
+
     """
     spacing = " " * (indent * _level)
     child_spacing = " " * (indent * (_level + 1))

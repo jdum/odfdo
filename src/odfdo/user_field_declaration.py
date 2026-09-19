@@ -62,6 +62,7 @@ class UserFieldDeclMixin(Element):
         Returns:
             list[UserFieldDecl]: A list of all UserFieldDecl instances that
             are descendants of this element.
+
         """
         return cast(
             "list[UserFieldDecl]",
@@ -82,6 +83,7 @@ class UserFieldDeclMixin(Element):
         Returns:
             UserFieldDecl | None: A UserFieldDecl instance, or None if no
             declaration matches the criteria.
+
         """
         return cast(
             "UserFieldDecl | None",
@@ -106,6 +108,7 @@ class UserFieldDeclMixin(Element):
             bool | str | int | float | Decimal | datetime | timedelta | None:
                 The value of the user field, cast to the most appropriate
                 Python type, or None if the user field is not found.
+
         """
         user_field_decl = self.get_user_field_decl(name)
         if user_field_decl is None:
@@ -146,6 +149,7 @@ class UserFieldDeclContMixin(UserFieldDeclMixin):
         Raises:
             ValueError: If the document body is empty and a new container
                 cannot be inserted.
+
         """
         user_field_decls = self.get_element("//text:user-field-decls")
         if user_field_decls is None:
@@ -177,6 +181,7 @@ class UserFieldDecl(ElementTyped):
 
     Attributes:
         name (str): The unique name of the user field.
+
     """
 
     _tag = "text:user-field-decl"
@@ -197,6 +202,7 @@ class UserFieldDecl(ElementTyped):
             value_type: The ODF value type (e.g., 'string',
                 'float'). If not provided, it is inferred from the `value`.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -212,6 +218,7 @@ class UserFieldDecl(ElementTyped):
 
         Args:
             value: The new value for the field.
+
         """
         name = self.get_attribute("text:name")
         self.clear()

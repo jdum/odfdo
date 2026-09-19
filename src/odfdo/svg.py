@@ -48,6 +48,7 @@ class SvgMixin(Element):
 
         Returns:
             str | None: The title string, or None if not present.
+
         """
         return self._get_inner_text("svg:title")
 
@@ -61,6 +62,7 @@ class SvgMixin(Element):
 
         Returns:
             str | None: The description string, or None if not present.
+
         """
         return self._get_inner_text("svg:desc")
 
@@ -76,6 +78,7 @@ class SvgTitle(Element):
 
     Attributes:
         title (str): the name stored by the SvgTitle.
+
     """
 
     _tag: str = "svg:title"
@@ -96,6 +99,7 @@ class SvgTitle(Element):
         Args:
             title: The name stored by the SvgTitle.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if title is not None:
@@ -107,6 +111,7 @@ class SvgTitle(Element):
 
         Returns:
             str: The name stored.
+
         """
         return self.text
 
@@ -122,6 +127,7 @@ class SvgTitle(Element):
 
         Returns:
             str: The formatted text content.
+
         """
         return f"{self.title}\n"
 
@@ -134,6 +140,7 @@ class SvgDescription(Element):
 
     Attributes:
         description (str): the description stored by the SvgDescription.
+
     """
 
     _tag: str = "svg:desc"
@@ -154,6 +161,7 @@ class SvgDescription(Element):
         Args:
             description: The description stored by the SvgDescription.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if description is not None:
@@ -165,6 +173,7 @@ class SvgDescription(Element):
 
         Returns:
             str: The description stored.
+
         """
         return self.text
 
@@ -180,6 +189,7 @@ class SvgDescription(Element):
 
         Returns:
             str: The formatted text content.
+
         """
         return f"{self.text}\n"
 

@@ -59,6 +59,7 @@ class Content(XmlPart):
 
         Returns:
             A list of styles.
+
         """
         result: list[StyleBase] = []
         for context in self._get_style_contexts(family):
@@ -90,6 +91,7 @@ class Content(XmlPart):
 
         Returns:
             The Style object, or None if not found.
+
         """
         for context in self._get_style_contexts(family):
             if context is None:

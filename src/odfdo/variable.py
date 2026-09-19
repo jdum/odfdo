@@ -61,6 +61,7 @@ class VarSet(ElementTyped):
             value.
         display (str): Controls whether the value is displayed ('none' or
             omitted).
+
     """
 
     _tag = "text:variable-set"
@@ -91,6 +92,7 @@ class VarSet(ElementTyped):
             text: The textual representation of the value.
             style: The data style name for formatting.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -114,6 +116,7 @@ class VarSet(ElementTyped):
 
         Args:
             value: The new value for the variable.
+
         """
         name = self.get_attribute("text:name")
         display = self.get_attribute("text:display")
@@ -140,6 +143,7 @@ class VarGet(ElementTyped):
     Attributes:
         name (str): The name of the variable to display.
         style (str, optional): The data style for formatting the value.
+
     """
 
     _tag = "text:variable-get"
@@ -166,6 +170,7 @@ class VarGet(ElementTyped):
             text: The textual representation to display.
             style: The data style name for formatting.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -193,6 +198,7 @@ class VarPageNumber(Element):
             'previous', 'next').
         page_adjust (str): A numerical value to add to or subtract from the
             page number.
+
     """
 
     _tag = "text:page-number"
@@ -215,6 +221,7 @@ class VarPageNumber(Element):
             page_adjust: A numerical value to add to or
                 subtract from the selected page number.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -247,6 +254,7 @@ class VarDate(Element):
         fixed (bool): If True, the date is not updated automatically.
         data_style (str): The style for formatting the date.
         date_adjust (str): A duration to add to or subtract from the date.
+
     """
 
     _tag = "text:date"
@@ -278,6 +286,7 @@ class VarDate(Element):
             date_adjust: A timedelta to adjust the
                 date value.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -307,6 +316,7 @@ class VarTime(Element):
         fixed (bool): If True, the time is not updated automatically.
         data_style (str): The style for formatting the time.
         time_adjust (str): A duration to add to or subtract from the time.
+
     """
 
     _tag = "text:time"
@@ -338,6 +348,7 @@ class VarTime(Element):
             time_adjust: A timedelta to adjust the
                 time value.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -379,6 +390,7 @@ class VarChapter(Element):
             (e.g., 'name', 'number', 'number-and-name').
         outline_level (str): The heading level to consider for the chapter
             information.
+
     """
 
     _tag = "text:chapter"
@@ -408,6 +420,7 @@ class VarChapter(Element):
             outline_level: The heading outline level to use
                 for chapter context.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -432,6 +445,7 @@ class VarFileName(Element):
         display (str): The format for the file name ('full', 'path', 'name',
             'name-and-extension').
         fixed (bool): If True, the file name is not updated automatically.
+
     """
 
     _tag = "text:file-name"
@@ -459,6 +473,7 @@ class VarFileName(Element):
                 'full' (default), 'path', 'name', or 'name-and-extension'.
             fixed: If True, the field is not updated automatically.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -481,6 +496,7 @@ class VarInitialCreator(Element):
 
     Attributes:
         fixed (bool): If True, the field is not updated automatically.
+
     """
 
     _tag = "text:initial-creator"
@@ -492,6 +508,7 @@ class VarInitialCreator(Element):
         Args:
             fixed: If True, the field is not updated automatically.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init and fixed:
@@ -509,6 +526,7 @@ class VarCreationDate(Element):
     Attributes:
         fixed (bool): If True, the field is not updated automatically.
         data_style (str): The style for formatting the date.
+
     """
 
     _tag = "text:creation-date"
@@ -529,6 +547,7 @@ class VarCreationDate(Element):
             fixed: If True, the field is not updated automatically.
             data_style: The style name for formatting.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -549,6 +568,7 @@ class VarCreationTime(Element):
     Attributes:
         fixed (bool): If True, the field is not updated automatically.
         data_style (str): The style for formatting the time.
+
     """
 
     _tag = "text:creation-time"
@@ -569,6 +589,7 @@ class VarCreationTime(Element):
             fixed: If True, the field is not updated automatically.
             data_style: The style name for formatting.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:

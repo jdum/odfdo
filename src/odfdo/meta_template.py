@@ -57,6 +57,7 @@ class MetaTemplate(Element):
             href: The URI for the document template (XLink).
             title: The title of the document template (XLink).
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
 
@@ -83,6 +84,7 @@ class MetaTemplate(Element):
 
         Args:
             date: The date and time to set.
+
         """
         if date is None:
             date = datetime.now()
@@ -94,6 +96,7 @@ class MetaTemplate(Element):
         Returns:
             dict[str, Any]: A dictionary containing the meta template
                 attributes, with keys like "meta:date", "xlink:href", etc.
+
         """
         result: dict[str, Any] = {}
         if self.date:
@@ -114,6 +117,7 @@ class MetaTemplate(Element):
         Args:
             data: A dictionary containing the meta template
                 attributes (e.g., "meta:date", "xlink:href").
+
         """
         self._set_date(data.get("meta:date"))
         self.actuate = data.get("xlink:actuate", "onRequest")

@@ -48,6 +48,7 @@ def translate_from_any(x: str | int, length: int, idx: int) -> int:
 
     Raises:
         TypeError: If the input value is not a string or integer.
+
     """
     if isinstance(x, str):
         value_int = convert_coordinates(x)[idx]
@@ -77,6 +78,7 @@ def alpha_to_digit(alpha: str) -> int:
 
     Raises:
         ValueError: If the input string contains non-alphabetic characters.
+
     """
     if isinstance(alpha, int):
         return alpha
@@ -103,6 +105,7 @@ def digit_to_alpha(digit: int | str) -> str:
 
     Raises:
         TypeError: If the input is not an integer.
+
     """
     if isinstance(digit, str) and digit.isalpha():
         return digit
@@ -128,6 +131,7 @@ def increment(value: int, step: int) -> int:
 
     Returns:
         int: The adjusted, non-negative index.
+
     """
     while value < 0:
         if step == 0:
@@ -160,6 +164,7 @@ def convert_coordinates(obj: tuple | list | str) -> tuple[int | None, ...]:
         (1, 2)
         >>> convert_coordinates("A1:B3")
         (0, 0, 1, 2)
+
     """
     if isinstance(obj, str):
         return _convert_coordinates_from_string(obj)

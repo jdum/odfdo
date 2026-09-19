@@ -82,6 +82,7 @@ class ConfigItemSet(Element):
 
     Attributes:
         name (str): The name of the configuration item set.
+
     """
 
     _tag: str = "config:config-item-set"
@@ -106,6 +107,7 @@ class ConfigItemSet(Element):
         Args:
             name: The name of the configuration item set.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -120,6 +122,7 @@ class ConfigItemSet(Element):
 
         Returns:
             list[ConfigItemSet]: A list of `ConfigItemSet` objects.
+
         """
         return cast("list[ConfigItemSet]", self.get_elements("config:config-item-set"))
 
@@ -130,6 +133,7 @@ class ConfigItemSet(Element):
         Returns:
             list[ConfigItemMapIndexed]: A list of `ConfigItemMapIndexed`
                 objects.
+
         """
         return cast(
             "list[ConfigItemMapIndexed]",
@@ -142,6 +146,7 @@ class ConfigItemSet(Element):
 
         Returns:
             list[ConfigItemMapNamed]: A list of `ConfigItemMapNamed` objects.
+
         """
         return cast(
             "list[ConfigItemMapNamed]",
@@ -154,6 +159,7 @@ class ConfigItemSet(Element):
 
         Returns:
             list[ConfigItem]: A list of `ConfigItem` objects.
+
         """
         return cast("list[ConfigItem]", self.get_elements("config:config-item"))
 
@@ -162,6 +168,7 @@ class ConfigItemSet(Element):
 
         Returns:
             A dict with content of the ConfigItemSet serialized.
+
         """
         return _as_dict(self)
 
@@ -176,6 +183,7 @@ class ConfigItemSet(Element):
 
         Returns:
             A ConfigItemSet.
+
         """
         return cast("ConfigItemSet", _from_dict(data))
 
@@ -192,6 +200,7 @@ class ConfigItemMapIndexed(Element):
 
     Attributes:
         name (str): The name of the indexed configuration item map.
+
     """
 
     _tag: str = "config:config-item-map-indexed"
@@ -212,6 +221,7 @@ class ConfigItemMapIndexed(Element):
         Args:
             name: The name of the indexed configuration item map.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -226,6 +236,7 @@ class ConfigItemMapIndexed(Element):
 
         Returns:
             list[ConfigItemMapEntry]: A list of `ConfigItemMapEntry` objects.
+
         """
         return cast(
             "list[ConfigItemMapEntry]",
@@ -237,6 +248,7 @@ class ConfigItemMapIndexed(Element):
 
         Returns:
             A dict with content of the ConfigItemMapIndexed serialized.
+
         """
         return _as_dict(self)
 
@@ -251,6 +263,7 @@ class ConfigItemMapIndexed(Element):
 
         Returns:
             A ConfigItemMapIndexed.
+
         """
         return cast("ConfigItemMapIndexed", _from_dict(data))
 
@@ -271,6 +284,7 @@ class ConfigItemMapEntry(Element):
 
     Attributes:
         name (str): The name of the entry.
+
     """
 
     _tag: str = "config:config-item-map-entry"
@@ -288,6 +302,7 @@ class ConfigItemMapEntry(Element):
         Args:
             name: The name of the entry.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -302,6 +317,7 @@ class ConfigItemMapEntry(Element):
 
         Returns:
             list[ConfigItemSet]: A list of `ConfigItemSet` objects.
+
         """
         return cast("list[ConfigItemSet]", self.get_elements("config:config-item-set"))
 
@@ -312,6 +328,7 @@ class ConfigItemMapEntry(Element):
         Returns:
             list[ConfigItemMapIndexed]: A list of `ConfigItemMapIndexed`
                 objects.
+
         """
         return cast(
             "list[ConfigItemMapIndexed]",
@@ -324,6 +341,7 @@ class ConfigItemMapEntry(Element):
 
         Returns:
             list[ConfigItemMapNamed]: A list of `ConfigItemMapNamed` objects.
+
         """
         return cast(
             "list[ConfigItemMapNamed]",
@@ -336,6 +354,7 @@ class ConfigItemMapEntry(Element):
 
         Returns:
             list[ConfigItem]: A list of `ConfigItem` objects.
+
         """
         return cast("list[ConfigItem]", self.get_elements("config:config-item"))
 
@@ -344,6 +363,7 @@ class ConfigItemMapEntry(Element):
 
         Returns:
             A dict with content of the ConfigItemMapEntry serialized.
+
         """
         return _as_dict(self)
 
@@ -358,6 +378,7 @@ class ConfigItemMapEntry(Element):
 
         Returns:
             A ConfigItemMapEntry.
+
         """
         return cast("ConfigItemMapEntry", _from_dict(data))
 
@@ -378,6 +399,7 @@ class ConfigItemMapNamed(Element):
 
     Attributes:
         name (str): The name of the named configuration item map.
+
     """
 
     _tag: str = "config:config-item-map-named"
@@ -395,6 +417,7 @@ class ConfigItemMapNamed(Element):
         Args:
             name: The name of the named configuration item map.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -409,6 +432,7 @@ class ConfigItemMapNamed(Element):
 
         Returns:
             list[ConfigItemMapEntry]: A list of `ConfigItemMapEntry` objects.
+
         """
         return cast(
             "list[ConfigItemMapEntry]",
@@ -420,6 +444,7 @@ class ConfigItemMapNamed(Element):
 
         Returns:
             A dict with content of the ConfigItemMapNamed serialized.
+
         """
         return _as_dict(self)
 
@@ -434,6 +459,7 @@ class ConfigItemMapNamed(Element):
 
         Returns:
             A ConfigItemMapNamed.
+
         """
         return cast("ConfigItemMapNamed", _from_dict(data))
 
@@ -453,6 +479,7 @@ class ConfigItem(Element):
         name (str): The name of the configuration item.
         config_type (str): The data type of the configuration item's value.
         value (str | int | bool): The actual value of the configuration item.
+
     """
 
     _tag: str = "config:config-item"
@@ -486,6 +513,7 @@ class ConfigItem(Element):
                 "datetime", or "base64Binary".
             value: The actual value of the configuration item.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -524,6 +552,7 @@ class ConfigItem(Element):
 
         Returns:
             The value of the configuration item as a str, int, or bool.
+
         """
         content: str = self.text
         config_type = self.config_type
@@ -548,6 +577,7 @@ class ConfigItem(Element):
 
         Returns:
             A dict with content of the ConfigItem serialized.
+
         """
         return {
             "class": self._tag,
@@ -565,6 +595,7 @@ class ConfigItem(Element):
 
         Returns:
             A ConfigItem instance."
+
         """
         return cls(
             name=data["config:name"],  # ty: ignore[invalid-argument-type]

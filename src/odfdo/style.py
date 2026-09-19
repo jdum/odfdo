@@ -92,6 +92,7 @@ def _make_thick_string(thick: str | float | int | None) -> str:
 
     Raises:
         ValueError: If the thickness type is not supported.
+
     """
     THICK_DEFAULT = "0.06pt"
     if thick is None:
@@ -120,6 +121,7 @@ def _make_line_string(line: str | None) -> str:
 
     Raises:
         ValueError: If the line style type is not supported.
+
     """
     LINE_DEFAULT = "solid"
     if line is None:
@@ -152,6 +154,7 @@ def make_table_cell_border_string(
 
     Returns:
         str: A formatted string suitable for the "fo:border" attribute.
+
     """
     thick_string = _make_thick_string(thick)
     line_string = _make_line_string(line)
@@ -205,6 +208,7 @@ def create_table_cell_style(
 
     Returns:
         Style: A Style object configured for a table cell.
+
     """
     if border == "default":
         border = make_table_cell_border_string()  # default border
@@ -255,6 +259,7 @@ def _new_master_page(*args: Any, **kwargs: Any) -> StyleBase:
 
     Returns:
         StyleMasterPage: A new instance of StyleMasterPage.
+
     """
     family = kwargs.pop("family", None)
     if family is None:
@@ -276,6 +281,7 @@ def _new_page_layout(*args: Any, **kwargs: Any) -> StyleBase:
 
     Returns:
         StylePageLayout: A new instance of StylePageLayout.
+
     """
     family = kwargs.pop("family", None)
     if family is None:
@@ -338,6 +344,7 @@ class Style(StyleProps):
 
         Returns:
             Style: An instance of Style, StyleMasterPage, or StylePageLayout.
+
         """
         family = kwargs.get("family")
         if family is None and args:
@@ -517,6 +524,7 @@ class Style(StyleProps):
             font_pitch: Font pitch ('variable' or 'fixed'). Defaults to
                 'variable'. ('font-face' property)
             **kwargs: Additional properties to set on the style.
+
         """
         self._family: str | None = None
         tag_or_elem = kwargs.get("tag_or_elem")
@@ -643,6 +651,7 @@ class Style(StyleProps):
 
         Returns:
             str or None: The style family as a string, or None if not set.
+
         """
         if self._family is None:
             self._family = FALSE_FAMILY_MAP_REVERSE.get(
@@ -656,6 +665,7 @@ class Style(StyleProps):
 
         Args:
             family: The style family to set.
+
         """
         self._family = family
         if family in FAMILY_ODF_STD and self.tag == "style:style":
@@ -698,6 +708,7 @@ class Style(StyleProps):
             repeat: How the background image is repeated.
             opacity: The opacity of the background.
             filter: An application-specific filter name.
+
         """
         _set_background(self, color, url, position, repeat, opacity, filter)
 
@@ -714,6 +725,7 @@ class Style(StyleProps):
         Returns:
             Style | None: The Style element for the specified level, or None
             if the style family is not 'list' or the level style is not found.
+
         """
         if self.family != "list":
             return None
@@ -759,6 +771,7 @@ class Style(StyleProps):
 
         Raises:
             ValueError: If an unknown level style type is provided.
+
         """
         if self.family != "list":
             return None
@@ -838,6 +851,7 @@ class Style(StyleProps):
             family: The font family. If None, defaults to `name`.
             family_generic: The generic font family (e.g., 'swiss', 'roman').
             pitch: The font pitch ('variable' or 'fixed'). Defaults to 'variable'.
+
         """
         if self.family != "font-face":
             return
@@ -895,6 +909,7 @@ class BackgroundImage(Style, DrawImage):
             opacity: The opacity of the background image.
             filter: A filter to apply to the image.
             **kwargs: Additional properties to set on the background image style.
+
         """
         kwargs["family"] = "background-image"
         super().__init__(**kwargs)

@@ -45,6 +45,7 @@ def isiterable(instance: Any) -> bool:
     Returns:
         bool: True if the object is iterable (and not a string/bytes),
             False otherwise.
+
     """
     if isinstance(instance, (str, bytes)):
         return False

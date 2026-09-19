@@ -83,6 +83,7 @@ def _by_offset_wrapper(
 
     Returns:
         list[Span | Link]: A list of the newly created elements.
+
     """
     result: list[Span | Link] = []
     length = int(kwargs.get("length", 0))
@@ -149,6 +150,7 @@ def _by_regex_wrapper(
 
     Returns:
         list[Span | Link]: A list of the newly created elements.
+
     """
     result: list[Span | Link] = []
     if not regex:
@@ -202,6 +204,7 @@ def _by_regex_offset(method: Callable) -> Callable:
 
     Returns:
         Callable: The decorated wrapper function.
+
     """
 
     @wraps(method)
@@ -241,6 +244,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
         Returns:
             list[Element | str]: A list of elements and strings with spaces expanded.
+
         """
         result: list[Element | str] = []
 
@@ -271,6 +275,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
         Returns:
             list[Element | str]: A new list with consecutive spaces merged into `<text:s>` elements.
+
         """
         result: list[Element | str] = []
         for item in content:
@@ -290,6 +295,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         Returns:
             list[Element | str]: A list of elements and strings, with spaces
                 converted into `Spacer` objects where appropriate.
+
         """
         result: list[Element | str] = []
         content = [x for x in _re_spaces_split.split(text) if x]
@@ -338,6 +344,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
         Returns:
             list[Element | str]: A new list with tabs and line breaks replaced by `Tab` and `LineBreak` elements.
+
         """
         result: list[Element | str] = []
         for item in content:
@@ -357,6 +364,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         Returns:
             list[Element | str]: A list of elements and strings, with tab and
                 line break characters replaced by `Tab` and `LineBreak` objects.
+
         """
         if not text:
             return []
@@ -383,6 +391,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
         Args:
             text: The plain text to append.
+
         """
         if text is None:
             stext = ""
@@ -408,6 +417,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
         Returns:
             str: The unformatted text.
+
         """
         if not text:
             return ""
@@ -430,6 +440,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
                 newlines, tabs, and multiple spaces in strings are converted
                 to their ODF tag equivalents. If False, the string content
                 is inserted unformatted (only extra whitespace is removed).
+
         """
         if isinstance(str_or_element, Element):
             if str_or_element.tag in {"text:p", "text:h", "text:s"}:
@@ -469,6 +480,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             note_id: A unique ID for the note.
             citation: The citation text for the note.
             body: The content of the note body.
+
         """
         if note_element is None:
             note_element = Note(
@@ -536,6 +548,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
         Raises:
             ValueError: If an invalid combination of arguments is provided.
+
         """
         if annotation_element is None:
             annotation_element = Annotation(
@@ -636,6 +649,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         Raises:
             ValueError: If `annotation_element` is None.
             TypeError: If `annotation_element` is not an `Annotation` instance.
+
         """
         if annotation_element is None:
             raise ValueError
@@ -690,6 +704,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
         Raises:
             ValueError: If an invalid combination of arguments is provided.
+
         """
         # special case: content is an odf element (ie: a paragraph)
         if isinstance(content, Element):
@@ -771,6 +786,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
         Raises:
             TypeError: If `reference_mark` is not a `ReferenceMark` or `ReferenceMarkStart` instance.
+
         """
         if not isinstance(reference_mark, (ReferenceMark, ReferenceMarkStart)):
             msg = "Not a ReferenceMark or ReferenceMarkStart"
@@ -797,6 +813,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         Args:
             variable_element: The variable element to insert.
             after: A regular expression after which to insert the variable.
+
         """
         self._insert(variable_element, after=after)
 
@@ -826,6 +843,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         Returns:
             list[Span]: A list of generated `Span` instances, each representing
                 a styled portion of text.
+
         """
         span: Span = Element.from_tag("text:span")  # ty: ignore[invalid-assignment]
         span.text = ""
@@ -843,6 +861,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         Returns:
             Element: A new `Element` instance representing the paragraph
                 without `text:span` elements.
+
         """
         strip = ("text:span",)
         if keep_heading:
@@ -860,6 +879,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         Returns:
             Element: A new `Element` instance representing the paragraph
                 with the specified `text:span` elements removed.
+
         """
         return strip_elements(self, spans)  # ty: ignore [invalid-return-type]
 
@@ -889,6 +909,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         Returns:
             list[Link]: A list of generated `Link` instances, each representing
                 a hyperlink.
+
         """
         return Link(url, text=match_string)  # ty: ignore[invalid-return-type]
 
@@ -898,6 +919,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         Returns:
             Element: A new `Element` instance representing the paragraph
                 without hyperlink elements.
+
         """
         strip = (Link._tag,)
         return strip_tags(self, strip=strip)  # ty: ignore [invalid-return-type]
@@ -911,6 +933,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         Returns:
             Element: A new `Element` instance representing the paragraph
                 with the specified hyperlink elements removed.
+
         """
         return strip_elements(self, links)  # ty: ignore [invalid-return-type]
 
@@ -952,6 +975,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             after: A regular expression or an ODF element after which to insert the reference.
             position: The insertion position.
             display: The text value for the reference, if provided.
+
         """
         reference = Reference(name, ref_format)
         if display is None and ref_format == "text":
@@ -1007,6 +1031,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
         Raises:
             ValueError: If an invalid combination of arguments is provided.
+
         """
         # With "content" => automatically insert a "start" and an "end"
         # bookmark

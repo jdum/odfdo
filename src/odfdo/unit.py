@@ -68,6 +68,7 @@ class Unit:
         value (Fraction): The numerical value of the measurement.
         text (str): The str value of the measurement.
         unit (str): The unit of the measurement (e.g., 'cm', 'in').
+
     """
 
     def __init__(self, value: str | float | int | Decimal, unit: str = "cm") -> None:
@@ -82,6 +83,7 @@ class Unit:
             unit: The unit of measurement (e.g., 'cm', 'in', 'pt').
                 Defaults to 'cm'. This is ignored if the unit is present in
                 the `value` string.
+
         """
         if isinstance(value, str):
             digits = []
@@ -115,6 +117,7 @@ class Unit:
         Raises:
             TypeError: If 'other' is not a Unit instance.
             NotImplementedError: If the units are different.
+
         """
         if not isinstance(other, Unit):
             msg = f"Can only compare Unit: {other!r}"
@@ -150,6 +153,7 @@ class Unit:
         Raises:
             NotImplementedError: If conversion to the target `unit` or from
                 the instance's current unit is not supported.
+
         """
         try:
             conversion = INCH_CONVERSION[self.unit]

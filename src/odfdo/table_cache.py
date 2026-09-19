@@ -67,6 +67,7 @@ def _insert_map_once(
         repeated: Repeated value of item, 1 or more.
 
     odf_idx is NOT position (col or row), neither raw XML position, but ODF index
+
     """
     repeated = repeated or 1
     if odf_idx > len(cache_map):
@@ -91,6 +92,7 @@ def _erase_map_once(cache_map: list[int], odf_idx: int) -> list[int]:
     Args:
         cache_map: Cache map.
         odf_idx: Index in ODF XML.
+
     """
     if odf_idx >= len(cache_map):
         raise IndexError
@@ -165,6 +167,7 @@ def _set_item_in_vault(
         vault_map: Vault map.
         vault_scheme: Vault scheme.
         clone: Whether to clone the item.
+
     """
     repeated = item.repeated or 1
     target_idx = vault.index(current_item)
@@ -282,6 +285,7 @@ class RowCache:
 
         Returns:
             int: The number of expected cells in the row.
+
         """
         try:
             return self.cell_map[-1] + 1
@@ -431,6 +435,7 @@ class TableCache:
 
         Returns:
             int: The current height of the table.
+
         """
         try:
             return self.row_map[-1] + 1
@@ -445,6 +450,7 @@ class TableCache:
 
         Returns:
             int: The current width of the table.
+
         """
         try:
             return self.col_map[-1] + 1

@@ -67,6 +67,7 @@ class DrawPage(SvgMixin, OfficeFormsMixin, Element):
             style: The name of the style to apply to the page
                 ('draw:style-name').
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -87,6 +88,7 @@ class DrawPage(SvgMixin, OfficeFormsMixin, Element):
         Returns:
             AnimPar | None: The animation transition element (`anim:par`),
                 or `None` if no transition is defined.
+
         """
         return self.get_element("anim:par")  # ty: ignore
 
@@ -107,6 +109,7 @@ class DrawPage(SvgMixin, OfficeFormsMixin, Element):
             subtype: The SMIL subtype for the transition.
             dur: The duration of the transition (e.g., "2s").
             node_type: The presentation node type.
+
         """
         # Create the new animation
         anim_page = AnimPar(presentation_node_type=node_type)
@@ -133,6 +136,7 @@ class DrawPage(SvgMixin, OfficeFormsMixin, Element):
 
         Returns:
             list[Element]: A list of all shape elements found on the page.
+
         """
         query = "(descendant::" + "|descendant::".join(registered_shapes) + ")"
         return self.get_elements(query)
@@ -149,6 +153,7 @@ class DrawPage(SvgMixin, OfficeFormsMixin, Element):
 
         Returns:
             str: A formatted string of the page's textual content.
+
         """
         result: list[str] = []
         for child in self.children:

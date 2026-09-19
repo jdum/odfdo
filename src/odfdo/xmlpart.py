@@ -56,6 +56,7 @@ class XmlPart:
     Attributes:
         part_name (str): The name of the XML part (e.g., "content.xml").
         container (Container): The ODF container associated with this XML part.
+
     """
 
     def __init__(self, part_name: str, container: Container) -> None:
@@ -65,6 +66,7 @@ class XmlPart:
             part_name: The name of the XML part (e.g., "content.xml").
             container: The ODF container (zip file) that holds
                 this XML part.
+
         """
         self.part_name = part_name
         self.container = container
@@ -81,6 +83,7 @@ class XmlPart:
 
         Returns:
             _ElementTree: The parsed XML ElementTree object.
+
         """
         if self.__tree is None:
             part = self.container.get_part(self.part_name)
@@ -112,6 +115,7 @@ class XmlPart:
 
         Raises:
             TypeError: If no 'office:body' element is found in the part.
+
         """
         body = self.root.document_body
         if not isinstance(body, Element):
@@ -133,6 +137,7 @@ class XmlPart:
 
         Args:
             new_body: The new 'office:body' element to set.
+
         """
         body = self._get_body()
         tail = body.tail
@@ -152,6 +157,7 @@ class XmlPart:
 
         Returns:
             list[Element]: A list of matching Element objects.
+
         """
         return self.root.get_elements(xpath_query)
 
@@ -166,6 +172,7 @@ class XmlPart:
         Returns:
             Element | None: The first matching Element object, or None if
                 no match is found.
+
         """
         return self.root.get_element(xpath_query)
 
@@ -174,6 +181,7 @@ class XmlPart:
 
         Args:
             child: The child element to delete.
+
         """
         child.delete()
 
@@ -186,6 +194,7 @@ class XmlPart:
         Returns:
             list[Element | EText]: A list of Element or EText instances
                 matching the query.
+
         """
         return self.root.xpath(xpath_query)
 
@@ -197,6 +206,7 @@ class XmlPart:
 
         Returns:
             XmlPart: A new XmlPart instance that is a clone of the original.
+
         """
         clone = object.__new__(self.__class__)
         for name in self.__dict__:
@@ -219,6 +229,7 @@ class XmlPart:
 
         Returns:
             bytes: The XML content as bytes, including the XML declaration.
+
         """
         if pretty:
             return self.pretty_serialize()
@@ -233,6 +244,7 @@ class XmlPart:
         Returns:
             bytes: The pretty-printed XML content as bytes, including the
                 XML declaration.
+
         """
         xml_header = b'<?xml version="1.0" encoding="UTF-8"?>\n'
         bytes_tree = tostring(
@@ -248,6 +260,7 @@ class XmlPart:
 
         Returns:
             _ElementTree | _Element: The pretty-printed XML tree or its root.
+
         """
         tree = self._get_tree()
         root = tree.getroot()

@@ -57,6 +57,7 @@ class Boolean:
         Raises:
             ValueError: If the input string is not a valid ODF boolean
                 ('true' or 'false'), and is neither a bool nor None.
+
         """
         match data:
             case bool():
@@ -85,6 +86,7 @@ class Boolean:
 
         Raises:
             TypeError: If the input value cannot be interpreted as a boolean.
+
         """
         if isinstance(value, bytes):
             value = value.decode()
@@ -115,6 +117,7 @@ def decode_heuristic(
 
     Returns:
         datetime | date | timedelta | str | None: Decoded or original `data`.
+
     """
     if isinstance(data, datetime | date | timedelta):
         return data
@@ -160,6 +163,7 @@ def date_decode_heuristic(
 
     Raises:
         TypeError: If the result is not of type datetime | date.
+
     """
     result = decode_heuristic(data)
     if not isinstance(result, date):
@@ -189,6 +193,7 @@ class Date:
 
         Returns:
             date: A `datetime.date` object representing the decoded date.
+
         """
         if isinstance(data, datetime):
             return data.date()
@@ -215,6 +220,7 @@ class Date:
 
         Returns:
             str: The ODF date string (e.g., "2024-01-31").
+
         """
         if isinstance(value, datetime):
             return value.date().isoformat()
@@ -244,6 +250,7 @@ class DateTime:
 
         Returns:
             datetime: A `datetime.datetime` object.
+
         """
 
         def _decode_39_310(data1: str) -> datetime:  # pragma: nocover
@@ -298,6 +305,7 @@ class DateTime:
 
         Returns:
             str: The ODF date-time string (e.g., "YYYY-MM-DDTHH:MM:SSZ").
+
         """
         if isinstance(value, datetime):
             dt = value
@@ -336,6 +344,7 @@ class Duration:
         Raises:
             ValueError: If the input string is not a valid ISO 8601 duration
                 format.
+
         """
         if isinstance(data, timedelta):
             return data
@@ -403,6 +412,7 @@ class Duration:
         Raises:
             TypeError: If the input value is not a `datetime.timedelta`
                 object.
+
         """
         if not isinstance(value, timedelta):
             msg = f"Duration must be a timedelta: {value!r}"

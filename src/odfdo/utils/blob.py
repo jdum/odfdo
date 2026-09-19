@@ -36,6 +36,7 @@ class Blob:
         name (str): The name of the blob, typically generated from a hash
                     of the content.
         mime_type (str): The MIME type of the blob's content.
+
     """
 
     def __init__(self) -> None:
@@ -56,6 +57,7 @@ class Blob:
 
         Returns:
             A new Blob instance containing the file's content.
+
         """
         blob = cls()
         path = Path(path)
@@ -82,6 +84,7 @@ class Blob:
 
         Returns:
             A new Blob instance containing the file's content.
+
         """
         blob = cls()
         blob.content = file_like.read()
@@ -103,6 +106,7 @@ class Blob:
 
         Returns:
             A new Blob instance containing the decoded content.
+
         """
         blob = cls()
         blob.content = base64.standard_b64decode(b64string)

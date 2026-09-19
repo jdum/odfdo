@@ -61,6 +61,7 @@ class ElementTyped(Element):
 
         Args:
             text: The new text content.
+
         """
         self.delete_children()
         self.text_content = text
@@ -118,6 +119,7 @@ class ElementTyped(Element):
 
         Raises:
             TypeError: If the type of `value` is not supported.
+
         """
         # Remove possible previous value and type
         self.clear_attrinutes()
@@ -292,6 +294,7 @@ class ElementTyped(Element):
 
         Raises:
             TypeError: If the `value_type` is not supported.
+
         """
         if value_type == "string":
             return self._get_typed_value_string(try_get_text)
@@ -318,6 +321,7 @@ class ElementTyped(Element):
             tuple[Any, str | None]: A tuple containing the Python-typed value
                 and the ODF value type string, or (None, None) if the type
                 cannot be determined.
+
         """
         if value_type is None:
             read_value_type = self.get_attribute_string("office:value-type")
@@ -354,6 +358,7 @@ class ElementTyped(Element):
         Returns:
             The Python-typed value, or a tuple of (value, type_string) if
             `get_type` is True.
+
         """
         value, actual_type = self._get_value_and_type(
             value_type=value_type, try_get_text=try_get_text

@@ -49,6 +49,7 @@ def strip_elements(
         Element | list[Element | str]: The modified element. If the top-level
             element itself is stripped, it may return a list of its children
             and text content.
+
     """
     if not sub_elements:
         return element
@@ -88,6 +89,7 @@ def strip_tags(
         Element | list[Element | str]: The modified element. If the top-level
             `element` is stripped and `default` is `None`, a list of its
             children and text content is returned.
+
     """
     if not strip:
         return element
@@ -123,6 +125,7 @@ def _strip_tags(
         tuple[Element | list[Element | str], bool]: A tuple containing the
             processed element or list of elements, and a boolean indicating
             if any modification occurred.
+
     """
     element_clone = element.clone
     modified = False

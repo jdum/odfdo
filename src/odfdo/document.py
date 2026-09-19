@@ -97,6 +97,7 @@ def _underline_string(level: int, name: str) -> str:
 
     Returns:
         str: The underline string, or a newline if the level is too high.
+
     """
     if level >= len(UNDERLINE_LVL):
         return "\n"
@@ -116,6 +117,7 @@ def _show_styles(element: Element, level: int = 0) -> str | None:
     Returns:
         str | None: A formatted string representing the style element, or
             `None` if the element is empty (no attributes or children).
+
     """
     output: list[str] = []
     attributes = element.attributes
@@ -163,6 +165,7 @@ def _get_part_path(path: str) -> str:
 
     Returns:
         str: The full path of the XML part.
+
     """
     return {
         "content": ODF_CONTENT,
@@ -185,6 +188,7 @@ def _get_part_class(
         type[XmlPart] | None: The class corresponding to the part
             (e.g., `Content` for "content.xml"), or `None` if the part
             is not a recognized core XML part with a specialized class.
+
     """
     name = Path(path).name
     return {
@@ -206,6 +210,7 @@ def _container_from_template(template: str | Path | io.BytesIO) -> Container:
 
     Returns:
         A new `Container` instance initialized from the template.
+
     """
     template_container = Container()
     if isinstance(template, str) and template in ODF_TEMPLATES:
@@ -249,6 +254,7 @@ class TableMarkdown(NamedTuple):
     Attributes:
         name (str): The computed table identifier (e.g., 'document#Table_1').
         content (str): The markdown string content of the table.
+
     """
 
     name: str
@@ -291,6 +297,7 @@ class Document(MDDocument):
         templates, are not really empty. It may be useful to clear the newly
         created document: `document.body.clear()`, or adjust meta information
         like description or language: `document.language = 'fr-FR'`.
+
         """
         # Cache of XML parts
         self.__xmlparts: dict[str, XmlPart] = {}
@@ -348,6 +355,7 @@ class Document(MDDocument):
 
         Returns:
             Document: A new Document instance based on the template.
+
         """
         container = _container_from_template(template)
         return cls(container)
@@ -366,6 +374,7 @@ class Document(MDDocument):
 
         Returns:
             The `Path` object of the container, or `None` if the container is not set.
+
         """
         if not self.container:
             return None
@@ -387,6 +396,7 @@ class Document(MDDocument):
 
         Raises:
             ValueError: If the document's container is empty.
+
         """
         if not self.container:
             msg = "Empty Container"
@@ -404,6 +414,7 @@ class Document(MDDocument):
 
         Returns:
             A list of strings, where each string is the path of a part.
+
         """
         return self.get_parts()
 
@@ -456,6 +467,7 @@ class Document(MDDocument):
 
         Raises:
             ValueError: If the document's container is empty.
+
         """
         if not self.container:
             msg = "Empty Container"
@@ -484,6 +496,7 @@ class Document(MDDocument):
         Raises:
             ValueError: If the document's container is empty, or if an attempt
                 is made to delete a mandatory part (e.g., "manifest.xml").
+
         """
         if not self.container:
             msg = "Empty Container"
@@ -509,6 +522,7 @@ class Document(MDDocument):
 
         Raises:
             ValueError: If the document's container is empty.
+
         """
         if not self.container:
             msg = "Empty Container"
@@ -548,6 +562,7 @@ class Document(MDDocument):
 
         Raises:
             ValueError: If the content part is missing or the body element cannot be retrieved.
+
         """
         if self.__body is None:
             self.__body = self.content.body
@@ -565,6 +580,7 @@ class Document(MDDocument):
 
         Raises:
             ValueError: If the metadata part is empty or cannot be retrieved as a `Meta` object.
+
         """
         metadata = self.get_part(ODF_META)
         if metadata is None or not isinstance(metadata, Meta):
@@ -583,6 +599,7 @@ class Document(MDDocument):
 
         Raises:
             ValueError: If the manifest part is empty or cannot be retrieved as a `Manifest` object.
+
         """
         manifest = self.get_part(ODF_MANIFEST)
         if manifest is None or not isinstance(manifest, Manifest):
@@ -601,6 +618,7 @@ class Document(MDDocument):
 
         Raises:
             ValueError: If the settings part is empty or cannot be retrieved.
+
         """
         settings_part = self.get_part(ODF_SETTINGS)
         if settings_part is None or not isinstance(settings_part, Settings):
@@ -697,6 +715,7 @@ class Document(MDDocument):
         Raises:
             NotImplementedError: If the document type is not supported for
                 formatted text extraction.
+
         """
         # For the moment, only "type='text'"
         doc_type = self.get_type()
@@ -754,6 +773,7 @@ class Document(MDDocument):
 
         Returns:
             A formatted string containing the document's metadata.
+
         """
         return self.meta.as_text()
 
@@ -773,6 +793,7 @@ class Document(MDDocument):
         Raises:
             NotImplementedError: If the document type is not 'text' or
                 'spreadsheet'.
+
         """
         doc_type = self.get_type()
         if doc_type not in {"text", "spreadsheet"}:
@@ -825,6 +846,7 @@ class Document(MDDocument):
         Returns:
             str | None: The JSON content as a string if `path_or_file` is
                 None, otherwise None.
+
         """
         tables_dict: dict[str, list[list[Any]]] = {}
         unifyer = NameUnifyer()
@@ -867,6 +889,7 @@ class Document(MDDocument):
         Raises:
             TypeError: If content is not a string, Path, or dict, or if the
                 decoded JSON structure is not a dictionary.
+
         """
         data: Any
         if isinstance(content, Path):
@@ -946,7 +969,6 @@ class Document(MDDocument):
                 to None.
 
         Example:
-
             Table "product":
 
             | reference | color | price |
@@ -991,6 +1013,7 @@ class Document(MDDocument):
             KeyError: If the specified table name is not found.
             IndexError: If the specified table index is out of bounds.
             ValueError: If `orient` is not one of "list", "records", or "matrix".
+
         """
         if orient not in ("list", "records", "matrix"):
             msg = (
@@ -1065,7 +1088,6 @@ class Document(MDDocument):
             language: Optional document language code.
 
         Example:
-
             # Multi-sheet: columnar format
             >>> data = {
             ...     "product": {
@@ -1126,6 +1148,7 @@ class Document(MDDocument):
 
         Raises:
             TypeError: If data is not a dict or list of dicts.
+
         """
         doc = cls.new("spreadsheet")
         doc.body.clear()
@@ -1231,6 +1254,7 @@ class Document(MDDocument):
 
         Raises:
             ValueError: If the document's container is empty.
+
         """
         if not self.container:
             msg = "Empty Container"
@@ -1253,6 +1277,7 @@ class Document(MDDocument):
 
         Raises:
             ValueError: If the original document's container is empty.
+
         """
         clone = object.__new__(self.__class__)
         for name in self.__dict__:
@@ -1298,6 +1323,7 @@ class Document(MDDocument):
             versions for the core vocabularies, so only the `office:version`
             attribute needs to change; missing extension namespace declarations
             are added implicitly when those prefixes are actually used.
+
         """
         if not self.container:
             return
@@ -1379,6 +1405,7 @@ class Document(MDDocument):
             ValueError: If the document's container is empty or an unsupported
                 packaging type is specified.
             RuntimeError: In unexpected scenarios during XML part handling.
+
         """
         if not self.container:
             msg = "Empty Container"
@@ -1436,6 +1463,7 @@ class Document(MDDocument):
 
         Raises:
             ValueError: If the content part is empty or cannot be retrieved.
+
         """
         content: Content | None = self.get_part(ODF_CONTENT)  # ty:ignore
         if content is None:
@@ -1452,6 +1480,7 @@ class Document(MDDocument):
 
         Raises:
             ValueError: If the styles part is empty or cannot be retrieved.
+
         """
         styles: Styles | None = self.get_part(ODF_STYLES)  # ty:ignore
         if styles is None:
@@ -1479,6 +1508,7 @@ class Document(MDDocument):
         Returns:
             list[StyleBase | DrawFillImage | DrawMarker]: A list of style-like
                 objects matching the criteria.
+
         """
         # compatibility with old versions:
         if isinstance(family, bytes):
@@ -1512,6 +1542,7 @@ class Document(MDDocument):
         Returns:
             StyleBase | DrawFillImage | DrawMarker | None: The matching style-like,
                 instance, or `None` if no matching style is found.
+
         """
         # 1. content.xml
         element = self.content.get_style(
@@ -1537,6 +1568,7 @@ class Document(MDDocument):
         Returns:
             The parent `StyleBase`, or `None` if the style
             has no parent or the parent style cannot be found.
+
         """
         if style is None:
             return None
@@ -1557,6 +1589,7 @@ class Document(MDDocument):
         Returns:
             The list `StyleBase` object, or `None` if the style
             has no associated list style or it cannot be found.
+
         """
         if style is None:
             return None
@@ -1781,6 +1814,7 @@ class Document(MDDocument):
             ValueError: If an invalid style is provided (e.g., unknown family).
             AttributeError: If an invalid combination of `automatic` and `default`
                 arguments is provided (they are mutually exclusive).
+
         """
         # if style is a str, assume it is the Style definition
         if isinstance(style, str):
@@ -1854,6 +1888,7 @@ class Document(MDDocument):
 
         Returns:
             A list of `Element` objects that are associated with the specified style.
+
         """
         # Header, footer, etc. have styles too
         return self.content.root.get_styled_elements(
@@ -1876,6 +1911,7 @@ class Document(MDDocument):
 
         Returns:
             A human-readable summary of the document's styles.
+
         """
         infos = []
         for style in self.get_styles():
@@ -1958,6 +1994,7 @@ class Document(MDDocument):
 
         Returns:
             The number of deleted styles.
+
         """
         # First remove references to styles
         for element in self.get_styled_elements():
@@ -1993,6 +2030,7 @@ class Document(MDDocument):
         Args:
             document: The source `Document` object from which to copy image.
             url: url of the image in the source document.
+
         """
         image_content = document.get_part(url)
         if not isinstance(image_content, bytes):
@@ -2010,6 +2048,7 @@ class Document(MDDocument):
 
         Args:
             document: The source `Document` object from which to merge styles.
+
         """
         for style in document.get_styles():
             tagname = style.tag
@@ -2099,6 +2138,7 @@ class Document(MDDocument):
         Returns:
             A dictionary of style properties (key-value pairs), or `None` if
             the style is not found.
+
         """
         style = self.get_style(family, name)
         if style is None:
@@ -2132,6 +2172,7 @@ class Document(MDDocument):
             A dictionary of style properties (key-value pairs) for the cell.
             Returns an empty dictionary if the table or cell is not found,
             or if no styles are applicable.
+
         """
         if not (sheet := self._get_table(table)):
             return {}
@@ -2175,6 +2216,7 @@ class Document(MDDocument):
 
         Returns:
             The background color as a hexadecimal string (e.g., "#RRGGBB").
+
         """
         found = self.get_cell_style_properties(table, coord).get("fo:background-color")
         return found or default
@@ -2191,6 +2233,7 @@ class Document(MDDocument):
         Returns:
             The `StyleBase` object for the table, or `None` if the table
             is not found or has no style.
+
         """
         if not (sheet := self._get_table(table)):
             return None
@@ -2208,6 +2251,7 @@ class Document(MDDocument):
 
         Returns:
             `True` if the table is set to be displayed, `False` otherwise.
+
         """
         style = self.get_table_style(table)
         if not style:
@@ -2230,6 +2274,7 @@ class Document(MDDocument):
 
         Returns:
             A unique style name string.
+
         """
         current = {style.name for style in self.get_styles() if hasattr(style, "name")}
         idx = 0
@@ -2251,6 +2296,7 @@ class Document(MDDocument):
         Args:
             table: The name (str) or index (int) of the table.
             displayed: A boolean flag; `True` to display the table, `False` to hide it.
+
         """
         orig_style = self.get_table_style(table)
         if not orig_style:
@@ -2278,6 +2324,7 @@ class Document(MDDocument):
 
         Returns:
             The default language as a string (e.g., "en-US", "fr-FR").
+
         """
         return self.styles.default_language
 
@@ -2290,6 +2337,7 @@ class Document(MDDocument):
 
         Raises:
             TypeError: If the provided language code does not conform to RFC 3066.
+
         """
         language = str(language)
         if not is_RFC3066(language):
@@ -2310,6 +2358,7 @@ class Document(MDDocument):
 
         Returns:
             The default language as a string (e.g., "en-US"), or `None` if not set.
+
         """
         return self.get_language()
 

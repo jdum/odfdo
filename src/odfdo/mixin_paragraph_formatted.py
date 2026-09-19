@@ -41,6 +41,7 @@ def _add_object_text_paragraph(
         obj: The paragraph-like element to process.
         context: The formatting context.
         result: The list to append the formatted text to.
+
     """
     result.append(_formatted_text(obj, context))
 
@@ -87,6 +88,7 @@ def _formatted_text(element: Element, context: dict[str, Any]) -> str:
 
     Returns:
         str: The extracted and formatted text content.
+
     """
     result: list[str] = []
     objects: list[Element | EText] = element.xpath("*|text()")
@@ -112,6 +114,7 @@ def _add_object_text_span(
         obj: The span element to process.
         context: The formatting context, including 'rst_mode' and 'document'.
         result: The list to append the formatted text to.
+
     """
     text = _formatted_text(obj, context)
     if not context.get("rst_mode") or not text.strip():
@@ -156,6 +159,7 @@ def _add_object_text_note(
         obj: The note element to process.
         context: The formatting context.
         result: The list to append the formatted text to.
+
     """
     if obj.note_class == "footnote":
         return _add_object_text_note_foot(obj, context, result)
@@ -176,6 +180,7 @@ def _add_object_text_note_foot(
         obj: The footnote element to process.
         context: The formatting context, including 'footnotes' and 'rst_mode'.
         result: The list to append the formatted text to.
+
     """
     container = context["footnotes"]
     citation = obj.citation
@@ -205,6 +210,7 @@ def _add_object_text_note_end(
         obj: The endnote element to process.
         context: The formatting context, including 'endnotes' and 'rst_mode'.
         result: The list to append the formatted text to.
+
     """
     container = context["endnotes"]
     citation = obj.citation
@@ -235,6 +241,7 @@ def _add_object_text_annotation(
         context: The formatting context, including 'annotations' and
             'rst_mode'.
         result: The list to append the formatted text to.
+
     """
     context["annotations"].append(obj.note_body)
     if context.get("rst_mode"):
@@ -254,6 +261,7 @@ def _add_object_text_tab(
         obj: The tab element to process.
         context: The formatting context (unused in this function).
         result: The list to append the tab character to.
+
     """
     result.append("\t")
 
@@ -272,6 +280,7 @@ def _add_object_text_line_break(
         obj: The line break element to process.
         context: The formatting context, including 'rst_mode'.
         result: The list to append the line break to.
+
     """
     if context.get("rst_mode"):
         result.append("\n|")
@@ -294,6 +303,7 @@ def _add_object_text(
         obj: The element to process.
         context: The formatting context.
         result: The list to append the formatted text to.
+
     """
     tag = obj.tag
     if tag in ("text:a", "text:p"):
@@ -333,6 +343,7 @@ class ParaFormattedTextMixin:
 
         Returns:
             str: The formatted text content.
+
         """
         if not context:
             context = {

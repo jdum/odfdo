@@ -61,6 +61,7 @@ class MetaUserDefined(Element):
                 "boolean", "date", "float", "time", "string".
             value: The actual value of the user-defined metadata.
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -74,6 +75,7 @@ class MetaUserDefined(Element):
 
         Returns:
             str: The value of the `meta:name` attribute.
+
         """
         return self.get_attribute_string("meta:name") or ""
 
@@ -86,6 +88,7 @@ class MetaUserDefined(Element):
 
         Raises:
             ValueError: If the provided name is empty.
+
         """
         if not name:
             msg = '"name" can not be empty'
@@ -98,6 +101,7 @@ class MetaUserDefined(Element):
 
         Returns:
             str: The value of the `meta:value-type` attribute, defaulting to "string".
+
         """
         return self.get_attribute_string("meta:value-type") or "string"
 
@@ -111,6 +115,7 @@ class MetaUserDefined(Element):
 
         Raises:
             ValueError: If an unknown `value_type` is provided.
+
         """
         if value_type not in {"boolean", "date", "float", "time", "string"}:
             msg = f"Unknown value_type: {value_type!r}"
@@ -128,6 +133,7 @@ class MetaUserDefined(Element):
 
         Raises:
             TypeError: If the `meta:value-type` is unknown.
+
         """
         value_type = self.get_attribute_string("meta:value-type")
         if value_type is None:
@@ -167,6 +173,7 @@ class MetaUserDefined(Element):
 
         Args:
             value: The value to set.
+
         """
         value_type = self.get_attribute_string("meta:value-type")
         if value_type == "boolean":
@@ -198,6 +205,7 @@ class MetaUserDefined(Element):
 
         Raises:
             TypeError: If the type of the provided value is not supported.
+
         """
         if isinstance(value, bool):
             return "boolean"
@@ -220,6 +228,7 @@ class MetaUserDefined(Element):
         Returns:
             dict[str, Decimal | datetime | dtdate | timedelta | bool | str]:
                 A dictionary containing "meta:name", "meta:value-type", and "value".
+
         """
         return {
             "meta:name": self.name,
@@ -237,6 +246,7 @@ class MetaUserDefined(Element):
         Returns:
             dict[str, Decimal | datetime | dtdate | timedelta | bool | str]:
                 A dictionary containing "name", "value_type", "value", and "text".
+
         """
         return {
             "name": self.name,

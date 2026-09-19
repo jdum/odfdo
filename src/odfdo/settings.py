@@ -54,6 +54,7 @@ class Settings(XmlPart):
 
         Returns:
             str: The "office:version" value, or an empty string if not found.
+
         """
         odsettings = self.get_element("//office:document-settings")
         # "office:version" should be always present
@@ -71,6 +72,7 @@ class Settings(XmlPart):
 
         Returns:
         list[ConfigItemSet]: A list of `ConfigItemSet` objects.
+
         """
         return cast(
             "list[ConfigItemSet]", self.body.get_elements("config:config-item-set")
@@ -85,6 +87,7 @@ class Settings(XmlPart):
 
         Returns:
             dict: A dictionary representing the settings content.
+
         """
         body: OfficeSettings = cast("OfficeSettings", self.body)
         return body.as_dict()

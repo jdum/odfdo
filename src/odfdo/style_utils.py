@@ -43,6 +43,7 @@ def _merge_dicts(dic_base: dict, *args: dict, **kwargs: Any) -> dict:
 
     Returns:
         dict: A new dictionary containing the merged content.
+
     """
     new_dict = deepcopy(dic_base)
     for dic in args:
@@ -118,6 +119,7 @@ def _expand_properties_dict(properties: PropDict) -> PropDict:
 
     Returns:
         dict[str, str | dict]: A new dictionary with keys mapped to full ODF attribute names.
+
     """
     expanded = {}
     for key in sorted(properties.keys()):
@@ -138,6 +140,7 @@ def _expand_properties_list(properties: list[str]) -> list[str]:
 
     Returns:
         list[str]: A new list with keys mapped to full ODF attribute names.
+
     """
     return list(filter(None, (_map_key(key) for key in properties)))
 
@@ -150,6 +153,7 @@ def _check_background_support(family: str) -> None:
 
     Raises:
         TypeError: If the family does not support background properties.
+
     """
     if family not in {
         "text",
@@ -174,6 +178,7 @@ def _check_position(position: str | None) -> None:
     Raises:
         ValueError: If the position string is not well-formatted or contains
             unknown keywords.
+
     """
     if not position:
         return
@@ -196,6 +201,7 @@ def _check_repeat(repeat: str | None) -> None:
     Raises:
         ValueError: If the repeat string is not well-formatted or contains
             unknown keywords.
+
     """
     if not repeat:
         return
@@ -217,6 +223,7 @@ def _check_opacity(opacity: str | int | None) -> None:
 
     Raises:
         ValueError: If the opacity value is outside the valid range (0-100).
+
     """
     if not opacity:
         return
@@ -231,6 +238,7 @@ def _erase_background(element: Element) -> None:
 
     Args:
         element: The element from which to erase background properties.
+
     """
     family = element.family
     properties = element.get_element(f"style:{family}-properties")
@@ -251,6 +259,7 @@ def _set_background_color(element: Element, color: str) -> None:
     Args:
         element: The element to set the background color for.
         color: The color string (e.g., "#RRGGBB" or "red").
+
     """
     family = element.family
     properties = element.get_element(f"style:{family}-properties")
@@ -282,6 +291,7 @@ def _set_background_image(
         repeat: How the background image is repeated.
         opacity: The opacity of the background image (0-100).
         filter: A filter to apply to the image.
+
     """
     _check_position(position)
     _check_repeat(repeat)
@@ -336,6 +346,7 @@ def _set_background(
 
     Raises:
         TypeError: If a background image is specified for a text style.
+
     """
     family = element.family
     _check_background_support(family)

@@ -54,6 +54,7 @@ class NRMixin(Element):
 
         Returns:
             list[NamedRange]: A list of `NamedRange` instances found in the document.
+
         """
         return cast(
             "list[NamedRange]",
@@ -68,6 +69,7 @@ class NRMixin(Element):
 
         Returns:
             NamedRange | None: The `NamedRange` instance if found, otherwise `None`.
+
         """
         named_range = cast(
             "list[NamedRange]",
@@ -86,6 +88,7 @@ class NRMixin(Element):
 
         Args:
             named_range: The `NamedRange` object to append.
+
         """
         named_expressions = cast(
             "TableNamedExpressions | None",
@@ -131,6 +134,7 @@ class NRMixin(Element):
 
         Raises:
             ValueError: If `name` or `table_name` is empty.
+
         """
         name = name.strip()
         if not name:
@@ -148,6 +152,7 @@ class NRMixin(Element):
 
         Args:
             name: The name of the named range to delete.
+
         """
         named_range = self.get_named_range(name)
         if not named_range:

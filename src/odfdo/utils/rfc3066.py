@@ -58,6 +58,7 @@ def is_RFC3066(lang: str) -> bool:
 
     Returns:
         bool: True if the tag is valid, False otherwise.
+
     """
 
     def test_part1(part1: str) -> bool:

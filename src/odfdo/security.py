@@ -45,6 +45,7 @@ class SecurityConfig:
         >>> from odfdo.security import security
         >>> security.max_uncompressed_size = 1024 * 1024 * 1024  # 1GB
         >>> security.reset_to_defaults()  # Reset to defaults
+
     """
 
     max_uncompressed_size: int = 500 * 1024 * 1024  # 500MB
@@ -74,6 +75,7 @@ def validate_zip_safety(zip_file: ZipFile) -> None:
 
     Raises:
         SecurityError: If the ZIP exceeds security thresholds.
+
     """
     total_uncompressed_size = 0
     file_count = 0

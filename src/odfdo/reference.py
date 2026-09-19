@@ -48,6 +48,7 @@ class ReferenceMixin(Element):
 
         Returns:
             A list of `ReferenceMark` instances.
+
         """
         return cast(
             "list[ReferenceMark]",
@@ -71,6 +72,7 @@ class ReferenceMixin(Element):
 
         Returns:
             ReferenceMark | None: The `ReferenceMark` instance if found, otherwise `None`.
+
         """
         return cast(
             "ReferenceMark | None",
@@ -86,6 +88,7 @@ class ReferenceMixin(Element):
 
         Returns:
             list[ReferenceMarkStart]: A list of `ReferenceMarkStart` instances.
+
         """
         return cast(
             "list[ReferenceMarkStart]",
@@ -109,6 +112,7 @@ class ReferenceMixin(Element):
 
         Returns:
             ReferenceMarkStart | None: The `ReferenceMarkStart` instance if found, otherwise `None`.
+
         """
         return cast(
             "ReferenceMarkStart | None",
@@ -124,6 +128,7 @@ class ReferenceMixin(Element):
 
         Returns:
             list[ReferenceMarkEnd]: A list of `ReferenceMarkEnd` instances.
+
         """
         return cast(
             "list[ReferenceMarkEnd]",
@@ -147,6 +152,7 @@ class ReferenceMixin(Element):
 
         Returns:
             ReferenceMarkEnd | None: The `ReferenceMarkEnd` instance if found, otherwise `None`.
+
         """
         return cast(
             "ReferenceMarkEnd | None",
@@ -164,6 +170,7 @@ class ReferenceMixin(Element):
         Returns:
             list[ReferenceMark | ReferenceMarkStart]: A list of `ReferenceMark` and
                 `ReferenceMarkStart` instances.
+
         """
         return cast(
             "list[ReferenceMark | ReferenceMarkStart]",
@@ -189,6 +196,7 @@ class ReferenceMixin(Element):
         Returns:
             ReferenceMark | ReferenceMarkStart | None: The found reference mark element,
                 or `None` if not found.
+
         """
         if name:
             request = (
@@ -216,6 +224,7 @@ class ReferenceMixin(Element):
 
         Returns:
             list[Reference]: A list of `Reference` instances.
+
         """
         if name is None:
             request = "descendant::text:reference-ref"
@@ -306,6 +315,7 @@ class Reference(Element):
                 what is displayed (e.g., "page", "chapter", "text").
                 Defaults to "page".
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -318,6 +328,7 @@ class Reference(Element):
 
         Returns:
             str | None: The reference format string.
+
         """
         reference = self.get_attribute("text:reference-format")
         if isinstance(reference, str):
@@ -330,6 +341,7 @@ class Reference(Element):
 
         Args:
             ref_format: The new reference format. If invalid, defaults to "page".
+
         """
         if not ref_format or ref_format not in self.FORMAT_ALLOWED:
             ref_format = "page"
@@ -380,6 +392,7 @@ class ReferenceMark(Element):
         Args:
             name: The name of the reference mark.
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -405,6 +418,7 @@ class ReferenceMarkEnd(Element):
         Args:
             name: The name of the reference mark this element ends.
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -416,6 +430,7 @@ class ReferenceMarkEnd(Element):
 
         Returns:
             str: The referenced text.
+
         """
         name = self.name
         request = (
@@ -444,6 +459,7 @@ class ReferenceMarkStart(Element):
         Args:
             name: The name of the reference mark this element starts.
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -455,6 +471,7 @@ class ReferenceMarkStart(Element):
 
         Returns:
             str: The referenced text.
+
         """
         name = self.name
         request = (
@@ -485,6 +502,7 @@ class ReferenceMarkStart(Element):
 
         Returns:
             Element | list | str | None: The referenced content in the specified format.
+
         """
         if self.parent is None:
             msg = "Reference need some upper document part"
@@ -522,6 +540,7 @@ class ReferenceMarkStart(Element):
                 the current element (`self`) is deleted.
             keep_tail: If True, the `tail` text of the deleted element
                 is preserved.
+
         """
         if child is not None:  # act like normal delete
             return super().delete(child, keep_tail)
@@ -558,6 +577,7 @@ def strip_references(element: Element) -> Element | list:
     Returns:
         Element | list: The element with reference tags removed, or a list
             of elements if the top-level element itself is stripped.
+
     """
     to_strip = ("text:reference-ref",)
     return strip_tags(element, to_strip)
@@ -578,6 +598,7 @@ def remove_all_reference_marks(element: Element) -> Element | list:
     Returns:
         Element | list: The element with reference marks removed, or a list
             of elements if the top-level element itself is stripped.
+
     """
     to_strip = (
         "text:reference-mark",
@@ -604,6 +625,7 @@ def remove_reference_mark(
         element: The element from which to remove the reference mark.
         position: The index of the mark to remove if `name` is not provided.
         name: The name of the reference mark to remove.
+
     """
     method = getattr(element, "get_reference_mark", None)
     if callable(method):

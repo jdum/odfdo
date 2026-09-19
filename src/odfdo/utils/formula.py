@@ -40,6 +40,7 @@ def oooc_to_ooow(formula: str) -> str:
 
     Returns:
         str: The converted formula in Writer format (e.g., "ooow:sum <A1:A5>").
+
     """
     _prefix, formula = formula.split(":=", 1)
     # assert "oooc" in prefix

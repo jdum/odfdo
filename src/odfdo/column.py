@@ -67,6 +67,7 @@ class Column(Element):
             style: The name of the style to apply to
                 the column itself.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         self.x: int | None = None
@@ -95,6 +96,7 @@ class Column(Element):
 
         Returns:
             str or None: The name of the default cell style, or None if not set.
+
         """
         return self.get_attribute_string("table:default-cell-style-name")
 
@@ -106,6 +108,7 @@ class Column(Element):
         Args:
             style: The style to apply. Can be a Style
                 object, the name of a style, or None to remove the style.
+
         """
         self.set_style_attribute("table:default-cell-style-name", style)
 
@@ -115,6 +118,7 @@ class Column(Element):
 
         Returns:
             str or None: The name of the default cell style, or None if not set.
+
         """
         return self.get_attribute_string("table:default-cell-style-name")
 
@@ -132,6 +136,7 @@ class Column(Element):
         Args:
             repeated: The number of times the column should be
                 repeated. If None or less than 2, the attribute is removed.
+
         """
         if repeated is None or repeated < 2:
             with contextlib.suppress(KeyError):
@@ -147,6 +152,7 @@ class Column(Element):
 
         Returns:
             int or None: The number of repetitions, or None if not repeated.
+
         """
         repeated = self.get_attribute("table:number-columns-repeated")
         if repeated is None:
@@ -175,6 +181,7 @@ class Column(Element):
 
         Returns:
             str or None: The name of the style applied to the column.
+
         """
         return self.get_attribute_string("table:style-name")
 

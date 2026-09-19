@@ -61,6 +61,7 @@ class VarDeclMixin(Element):
 
         Raises:
             ValueError: If the document body is empty and a new container cannot be inserted.
+
         """
         variable_decls = self.get_element("//text:variable-decls")
         if variable_decls is None:
@@ -78,6 +79,7 @@ class VarDeclMixin(Element):
 
         Returns:
             list[VarDecls]: A list of all VarDecls instances that are descendants of this element.
+
         """
         return cast(
             "list[VarDecls]", self._filtered_elements("descendant::text:variable-decl")
@@ -92,6 +94,7 @@ class VarDeclMixin(Element):
 
         Returns:
             VarDecls | None: A VarDecls instance, or None if no declaration matches the criteria.
+
         """
         return cast(
             "VarDecls | None",
@@ -119,6 +122,7 @@ class VarDecl(Element):
     Attributes:
         name (str): The unique name of the variable.
         value_type (str): The ODF value type (e.g., 'string', 'float').
+
     """
 
     _tag = "text:variable-decl"
@@ -139,6 +143,7 @@ class VarDecl(Element):
             name: The name of the variable.
             value_type: The ODF value type.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:

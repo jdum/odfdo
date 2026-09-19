@@ -66,6 +66,7 @@ class SectionMixin(Element):
 
         Returns:
             list[Section]: A list of matching Section elements.
+
         """
         return cast(
             "list[Section]",
@@ -80,6 +81,7 @@ class SectionMixin(Element):
 
         Returns:
             list[Section]: A list of all Section elements.
+
         """
         return cast("list[Section]", self.get_elements("text:section"))
 
@@ -97,6 +99,7 @@ class SectionMixin(Element):
 
         Returns:
             Section or None: The matching Section element, or None if not found.
+
         """
         return cast(
             "Section | None",
@@ -131,6 +134,7 @@ class Section(ListMixin, TocMixin, LinkMixin, SectionMixin):
             style: The style name for the section.
             name: The name of the section.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -147,6 +151,7 @@ class Section(ListMixin, TocMixin, LinkMixin, SectionMixin):
 
         Returns:
             str: The formatted text content.
+
         """
         result = [element.get_formatted_text(context) for element in self.children]
         result.append("\n")

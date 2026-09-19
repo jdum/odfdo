@@ -67,6 +67,7 @@ class UserDefinedMixin(Element):
 
         Returns:
             list[UserDefined]: A list of all UserDefined instances that are descendants of this element.
+
         """
         return cast(
             "list[UserDefined]",
@@ -81,6 +82,7 @@ class UserDefinedMixin(Element):
 
         Returns:
             list[UserDefined]: A list of all UserDefined instances that are descendants of this element.
+
         """
         return self.get_user_defined_list()
 
@@ -93,6 +95,7 @@ class UserDefinedMixin(Element):
 
         Returns:
             UserDefined | None: A UserDefined instance, or None if no declaration matches the criteria.
+
         """
         return cast(
             "UserDefined | None",
@@ -116,6 +119,7 @@ class UserDefinedMixin(Element):
             bool | str | int | float | Decimal | datetime | timedelta | None:
                 The value of the user-defined field, cast to the most appropriate
                 Python type, or None if the user-defined field is not found.
+
         """
         user_defined = self.get_user_defined(name)
         if user_defined is None:
@@ -133,6 +137,7 @@ class UserFieldGet(ElementTyped):
         name (str): The name of the user field to display.
         style (str, optional): The data style to apply for formatting the
             displayed value.
+
     """
 
     _tag = "text:user-field-get"
@@ -160,6 +165,7 @@ class UserFieldGet(ElementTyped):
                 not provided, it's generated from `value`.
             style: The data style name for formatting.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -201,6 +207,7 @@ class UserDefined(ElementTyped):
     Attributes:
         name (str): The name of the user field.
         style (str, optional): The data style to apply for formatting.
+
     """
 
     _tag = "text:user-defined"
@@ -234,6 +241,7 @@ class UserDefined(ElementTyped):
             from_document: A document from which to load
                 the field's value from the meta section.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:

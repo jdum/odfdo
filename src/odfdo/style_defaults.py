@@ -43,6 +43,7 @@ def default_boolean_style() -> Style:
 
     Returns:
         An Element representing a default boolean style.
+
     """
     return Element.from_tag(  # ty: ignore[invalid-return-type]
         '<number:boolean-style style:name="lpod-default-boolean-style">\n'
@@ -56,6 +57,7 @@ def default_currency_style() -> Style:
 
     Returns:
         Style: An Element representing a default currency style configured for Euro.
+
     """
     return Element.from_tag(  # ty: ignore[invalid-return-type]
         '<number:currency-style style:name="lpod-default-currency-style">\n'
@@ -74,6 +76,7 @@ def default_date_style() -> Style:
 
     Returns:
         Style: An Element representing a default date style formatted as Y-M-D.
+
     """
     return Element.from_tag(  # ty: ignore[invalid-return-type]
         '<number:date-style style:name="lpod-default-date-style">\n'
@@ -91,6 +94,7 @@ def default_number_style() -> Style:
 
     Returns:
         Style: An Element representing a default number style with two decimal places.
+
     """
     return Element.from_tag(  # ty: ignore[invalid-return-type]
         '<number:number-style style:name="lpod-default-number-style">\n'
@@ -105,6 +109,7 @@ def default_percentage_style() -> Style:
 
     Returns:
         Style: An Element representing a default percentage style with two decimal places.
+
     """
     return Element.from_tag(  # ty: ignore[invalid-return-type]
         '<number:percentage-style style:name="lpod-default-percentage-style">\n'
@@ -119,6 +124,7 @@ def default_time_style() -> Style:
 
     Returns:
         An Element representing a default time style.
+
     """
     return Element.from_tag(  # ty: ignore[invalid-return-type]
         '<number:time-style style:name="lpod-default-time-style">\n'

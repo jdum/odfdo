@@ -50,6 +50,7 @@ class Spacer(MDSpacer, Element):
         Args:
             number: The number of spaces. Defaults to 1.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -67,6 +68,7 @@ class Spacer(MDSpacer, Element):
 
         Returns:
             str: A string composed of spaces, e.g., "   ".
+
         """
         return " " * self.length
 
@@ -76,6 +78,7 @@ class Spacer(MDSpacer, Element):
 
         Args:
             text: The string to set.
+
         """
         if text is None:
             text = ""
@@ -87,6 +90,7 @@ class Spacer(MDSpacer, Element):
 
         Returns:
             int: The number of spaces.
+
         """
         value = self._base_attrib_getter("text:c")
         if value is None:
@@ -100,6 +104,7 @@ class Spacer(MDSpacer, Element):
         Args:
             value: The number of spaces to set. If None or less
                 than 2, the `text:c` attribute is removed, defaulting to 1 space.
+
         """
         if value is None or int(value) < 2:
             self._base_attrib_setter("text:c", None)

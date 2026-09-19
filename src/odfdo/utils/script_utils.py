@@ -43,6 +43,7 @@ def detect_stdin_timeout() -> None:  # pragma: no cover
 
     Raises:
         ValueError: If no data is available on stdin after the timeout.
+
     """
     if sys.platform == "win32":
         # cant do that on windows
@@ -67,6 +68,7 @@ def read_document(input_path: str | None) -> Document:
 
     Returns:
         Document: The loaded odfdo Document object.
+
     """
     if input_path:
         document = Document(input_path)
@@ -87,6 +89,7 @@ def save_document(document: Document, output_path: str | None) -> None:
     Args:
         document: The odfdo Document object to save.
         output_path: The path to the output ODF file.
+
     """
     if output_path:
         return document.save(output_path)

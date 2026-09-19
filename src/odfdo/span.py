@@ -84,6 +84,7 @@ class Span(
             formatted: If True, special characters in `text` are
                 replaced by ODF corresponding tags. Defaults to True.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:

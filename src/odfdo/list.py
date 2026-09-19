@@ -60,6 +60,7 @@ class ListItem(MDListItem, ListMixin, Element):
                 string, a paragraph containing the text is created. If an
                 element, it is appended as a child.
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -99,6 +100,7 @@ class ListHeader(ListMixin, Element):
                 string, a paragraph containing the text is created. If an
                 element, it is appended as a child.
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -142,6 +144,7 @@ class List(MDList, Element):
                 `ListItem`.
             style: The name of the style to apply to the list.
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -165,6 +168,7 @@ class List(MDList, Element):
 
         Returns:
             list[Element]: A list of `ListItem` elements that match the criteria.
+
         """
         return self._filtered_elements("text:list-item", content=content)
 
@@ -187,6 +191,7 @@ class List(MDList, Element):
 
         Returns:
             Element | None: The matching `ListItem` element, or `None` if not found.
+
         """
         # Custom implementation because of nested lists
         if content:
@@ -235,6 +240,7 @@ class List(MDList, Element):
         Args:
             text_or_element: The content for the list header. Can be a single
                 string or element, or an iterable of strings and/or elements.
+
         """
         self.list_header = text_or_element
 
@@ -261,6 +267,7 @@ class List(MDList, Element):
 
         Raises:
             ValueError: If no position (`position`, `before`, or `after`) is specified.
+
         """
         if not isinstance(item, ListItem):
             item = ListItem(item)
@@ -283,6 +290,7 @@ class List(MDList, Element):
         Args:
             item: The item to append.
                 If not a `ListItem`, it will be wrapped in one.
+
         """
         if not isinstance(item, ListItem):
             item = ListItem(item)
@@ -300,6 +308,7 @@ class List(MDList, Element):
 
         Returns:
             str: The formatted text content of the list.
+
         """
         if context is None:
             context = {

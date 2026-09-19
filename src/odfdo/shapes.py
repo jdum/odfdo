@@ -113,6 +113,7 @@ class ShapeBase(ListMixin, AnchorMix, SvgMixin, ZMix, Element):
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -161,6 +162,7 @@ class ShapeBase(ListMixin, AnchorMix, SvgMixin, ZMix, Element):
 
         Returns:
             str: The formatted text content.
+
         """
         result: list[str] = [
             child.get_formatted_text(context) for child in self.children
@@ -275,6 +277,7 @@ class LineShape(ShapeBase):
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         kwargs.update(
             {
@@ -399,6 +402,7 @@ class DrawMeasure(LineShape):
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         kwargs.update(
             {
@@ -503,6 +507,7 @@ class RectangleShape(PosMix, SizeMix, ShapeBase):
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         kwargs.update(
             {
@@ -614,6 +619,7 @@ class PolylineShape(PosMix, SizeMix, ShapeBase):
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         kwargs.update(
             {
@@ -722,6 +728,7 @@ class PolygonShape(PolylineShape):
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         kwargs.update(
             {
@@ -833,6 +840,7 @@ class RegularPolygonShape(PosMix, SizeMix, ShapeBase):
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         kwargs.update(
             {
@@ -963,6 +971,7 @@ class DrawPath(PosMix, SizeMix, ShapeBase):
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         kwargs.update(
             {
@@ -1077,6 +1086,7 @@ class DrawCaption(PosMix, SizeMix, ShapeBase):
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         kwargs.update(
             {
@@ -1221,6 +1231,7 @@ class EllipseShape(AngleMix, PosMix, SizeMix, ShapeBase):
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         kwargs.update(
             {
@@ -1354,6 +1365,7 @@ class CircleShape(AngleMix, PosMix, SizeMix, ShapeBase):
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         kwargs.update(
             {
@@ -1515,6 +1527,7 @@ class ConnectorShape(ShapeBase):
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         kwargs.update(
             {
@@ -1707,6 +1720,7 @@ class DrawControl(PosMix, SizeMix, ShapeBase):
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         kwargs.update(
             {
@@ -1820,6 +1834,7 @@ class DrawPageThumbnail(PosMix, SizeMix, ShapeBase):
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         kwargs.update(
             {
@@ -1953,6 +1968,7 @@ class DrawGroup(SvgMixin, AnchorMix, ZMix, Element):
                 object is bound to a page within a text document.
             xml_id: The unique XML ID.
             kwargs: Arbitrary keyword arguments for the Element base class.
+
         """
         super().__init__(**kwargs)
         if self._do_init:
@@ -1997,6 +2013,7 @@ class DrawGroup(SvgMixin, AnchorMix, ZMix, Element):
 
         Returns:
             str: The formatted text content.
+
         """
         result: list[str] = [
             child.get_formatted_text(context) for child in self.children

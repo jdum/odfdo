@@ -34,6 +34,7 @@ class DcCreatorMixin:
 
         Returns:
             The creator's name, or `None` if not specified.
+
         """
         element = self.clone.get_element("//dc:creator")
         if element is None:
@@ -47,6 +48,7 @@ class DcCreatorMixin:
 
         Args:
             creator: The name of the creator to set.
+
         """
         element = self.get_element("//dc:creator")
         if element is None:

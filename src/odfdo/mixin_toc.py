@@ -60,6 +60,7 @@ class TocMixin(Element):
 
         Returns:
             list[TOC]: A list of TOC instances.
+
         """
         return self.get_elements("text:table-of-content")  # ty: ignore[invalid-return-type]
 
@@ -69,6 +70,7 @@ class TocMixin(Element):
 
         Returns:
             list[TOC]: A list of TOC instances.
+
         """
         return self.get_elements("text:table-of-content")  # ty: ignore[invalid-return-type]
 
@@ -85,6 +87,7 @@ class TocMixin(Element):
 
         Returns:
             TOC | None: A TOC instance, or None if no TOC matches the criteria.
+
         """
         return self._filtered_element(
             "text:table-of-content", position, content=content
@@ -96,5 +99,6 @@ class TocMixin(Element):
 
         Returns:
             The first TOC instance, or None if not found.
+
         """
         return self.get_toc()

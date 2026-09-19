@@ -59,6 +59,7 @@ class ListMixin(Element):
 
         Returns:
             list[List]: A list of `List` instances matching the criteria.
+
         """
         return cast(
             "list[List]",
@@ -74,6 +75,7 @@ class ListMixin(Element):
         Returns:
             list[List]: A list of all List instances that are descendants of
                 this element.
+
         """
         return cast("list[List]", self.get_elements("descendant::text:list"))
 
@@ -91,6 +93,7 @@ class ListMixin(Element):
         Returns:
             List | None: A List instance, or None if no list matches the
                 criteria.
+
         """
         return cast(
             "List | None",

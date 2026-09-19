@@ -20,6 +20,7 @@
 # Authors: David Versmisse <david.versmisse@itaapy.com>
 #          Hervé Cauwelier <herve@itaapy.com>
 #          Romain Gauthier <romain@itaapy.com>
+"""Python library for OpenDocument Format (ODF)."""
 
 __all__ = [  # noqa: RUF022
     "AnchorMix",

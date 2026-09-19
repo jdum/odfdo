@@ -70,6 +70,7 @@ class StylePageLayout(StyleProps):
                 the string "continue" to continue from the previous page
                 sequence.
             **kwargs: Additional keyword arguments for the parent `Element` class.
+
         """
         self._family = "page-layout"
         tag_or_elem = kwargs.get("tag_or_elem")
@@ -94,6 +95,7 @@ class StylePageLayout(StyleProps):
 
         Returns:
             str | None: The family name.
+
         """
         return self._family
 
@@ -112,6 +114,7 @@ class StylePageLayout(StyleProps):
 
         Returns:
             str: The page usage type. Defaults to "all".
+
         """
         return self._get_attribute_str_default("style:page-usage", "all")
 
@@ -122,6 +125,7 @@ class StylePageLayout(StyleProps):
         Args:
             page_usage: The page usage type. Allowed values are
                 "all", "left", "right", "mirrored". Invalid values default to "all".
+
         """
         if page_usage not in self.PAGE_USAGE:
             page_usage = "all"
@@ -136,6 +140,7 @@ class StylePageLayout(StyleProps):
 
         Returns:
             dict[str, str | dict] | None: A dictionary mapping property names to their values.
+
         """
         return super().get_properties(area="page-layout")
 
@@ -157,6 +162,7 @@ class StylePageLayout(StyleProps):
             area: The area for which to set properties.
                 (Parameter is kept for compatibility but internally fixed to "page-layout").
             **kwargs: Additional keyword arguments for properties to set.
+
         """
         return super().set_properties(
             properties=properties, style=style, area="page-layout", **kwargs
@@ -173,6 +179,7 @@ class StylePageLayout(StyleProps):
             properties: A list of property names to delete.
             area: The area from which to delete properties.
                 (Parameter is kept for compatibility but internally fixed to "page-layout").
+
         """
         return super().del_properties(properties=properties, area="page-layout")
 
@@ -201,6 +208,7 @@ class StylePageLayout(StyleProps):
             opacity: The opacity of the background image as
                 a percentage integer (0-100).
             filter: An application-specific filter name for the background image.
+
         """
         _set_background(self, color, url, position, repeat, opacity, filter)
 
@@ -210,6 +218,7 @@ class StylePageLayout(StyleProps):
         Returns:
             StyleBase | None: The `StyleBase` instance representing the header
                 style, or `None` if no header style is defined.
+
         """
         return cast("StyleBase | None", self.get_element("style:header-style"))
 
@@ -218,6 +227,7 @@ class StylePageLayout(StyleProps):
 
         Args:
             new_style: The new header style to set.
+
         """
         header_style = self.get_header_style()
         if header_style is not None:
@@ -230,6 +240,7 @@ class StylePageLayout(StyleProps):
         Returns:
             StyleBase | None: The `StyleBase` instance representing the footer
                 style, or `None` if no footer style is defined.
+
         """
         return cast("StyleBase | None", self.get_element("style:footer-style"))
 
@@ -238,6 +249,7 @@ class StylePageLayout(StyleProps):
 
         Args:
             new_style: The new footer style to set.
+
         """
         footer_style = self.get_footer_style()
         if footer_style is not None:
