@@ -161,7 +161,8 @@ def _check_background_support(family: str) -> None:
         "table-cell",
         "graphic",
     }:
-        raise TypeError(f"No background support for family {family!r}")
+        msg = f"No background support for family {family!r}"
+        raise TypeError(msg)
 
 
 def _check_position(position: str | None) -> None:
@@ -178,10 +179,12 @@ def _check_position(position: str | None) -> None:
         return
     parts = position.split()
     if not parts:
-        raise ValueError("Wrong formatted background position attribute")
+        msg = "Wrong formatted background position attribute"
+        raise ValueError(msg)
     for word in parts:
         if word not in {"left", "center", "right", "top", "bottom"}:
-            raise ValueError(f"Unknown background position {position!r}")
+            msg = f"Unknown background position {position!r}"
+            raise ValueError(msg)
 
 
 def _check_repeat(repeat: str | None) -> None:
@@ -198,10 +201,12 @@ def _check_repeat(repeat: str | None) -> None:
         return
     parts = repeat.split()
     if not parts:
-        raise ValueError("Incorrect background repeat attribute")
+        msg = "Incorrect background repeat attribute"
+        raise ValueError(msg)
     for word in parts:
         if word not in {"no-repeat", "repeat", "stretch"}:
-            raise ValueError(f"Unknown background repeat {repeat!r}")
+            msg = f"Unknown background repeat {repeat!r}"
+            raise ValueError(msg)
 
 
 def _check_opacity(opacity: str | int | None) -> None:
@@ -217,7 +222,8 @@ def _check_opacity(opacity: str | int | None) -> None:
         return
     value = int(opacity)
     if value < 0 or value > 100:
-        raise ValueError(f"Incorrect opacity {opacity!r}")
+        msg = f"Incorrect opacity {opacity!r}"
+        raise ValueError(msg)
 
 
 def _erase_background(element: Element) -> None:
@@ -334,7 +340,8 @@ def _set_background(
     family = element.family
     _check_background_support(family)
     if url is not None and family == "text":
-        raise TypeError("No background image for text styles")
+        msg = "No background image for text styles"
+        raise TypeError(msg)
     if color:
         return _set_background_color(element, color)
     if url:

@@ -249,7 +249,7 @@ def test_style_set_level_style_non_list():
 
 def test_style_set_level_style_unknown_type():
     style = Style(family="list")
-    with pytest.raises(ValueError, match="unknown level style type"):
+    with pytest.raises(ValueError, match="Unknown level style type"):
         style.set_level_style(1)
 
 

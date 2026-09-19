@@ -198,7 +198,8 @@ class AngleMix(Element):
     @kind.setter
     def kind(self, kind: str) -> None:
         if kind not in self.KIND_VALUE_CHOICE:
-            raise TypeError(f"'draw:kind' not valid: {kind!r}")
+            msg = f"'draw:kind' not valid: {kind!r}"
+            raise TypeError(msg)
         self._set_attribute_str_default("draw:kind", kind, "full")
 
 
@@ -1611,7 +1612,8 @@ class ConnectorShape(ShapeBase):
     @draw_type.setter
     def draw_type(self, draw_type: str) -> None:
         if draw_type not in self.DRAW_TYOE_CHOICE:
-            raise TypeError(f"'draw:type' not valid: {draw_type!r}")
+            msg = f"'draw:type' not valid: {draw_type!r}"
+            raise TypeError(msg)
         self._set_attribute_str_default("draw:type", draw_type, "standard")
 
 

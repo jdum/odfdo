@@ -84,8 +84,8 @@ def _make_thick_string(thick: str | float | int | None) -> str:
     """Helper to convert a thickness value to a string for border properties.
 
     Args:
-        thick: The thickness value. Can be a string
-            (e.g., "1pt"), a float (e.g., 0.5 for 0.5pt), or an int (e.g., 100 for 1.00pt).
+        thick: The thickness value. Can be a string (e.g., "1pt"), a float
+            (e.g., 0.5 for 0.5pt), or an int (e.g., 100 for 1.00pt).
 
     Returns:
         str: The formatted thickness string (e.g., "0.06pt").
@@ -105,7 +105,8 @@ def _make_thick_string(thick: str | float | int | None) -> str:
         return f"{thick:.2f}pt"
     if isinstance(thick, int):
         return f"{thick / 100.0:.2f}pt"
-    raise ValueError("Thickness must be None for default or float value (pt)")
+    msg = "Thickness must be None for default or float value (pt)"
+    raise ValueError(msg)
 
 
 def _make_line_string(line: str | None) -> str:
@@ -128,7 +129,8 @@ def _make_line_string(line: str | None) -> str:
         if line:
             return line
         return LINE_DEFAULT
-    raise ValueError("Line style must be None for default or string")
+    msg = "Line style must be None for default or string"
+    raise ValueError(msg)
 
 
 def make_table_cell_border_string(
@@ -521,9 +523,11 @@ class Style(StyleProps):
         if tag_or_elem is None:
             family = to_str(family)
             if family in {"master-page", "page-layout"}:
-                raise TypeError(f"Wrong initializer for: {family!r}")
+                msg = f"Wrong initializer for: {family!r}"
+                raise TypeError(msg)
             if family not in FAMILY_MAPPING:
-                raise ValueError(f"Unknown family value: {family!r}")
+                msg = f"Unknown family value: {family!r}"
+                raise ValueError(msg)
             kwargs["tag"] = FAMILY_MAPPING[family]
         super().__init__(**kwargs)
         if self._do_init and family not in SUBCLASSED_STYLES:
@@ -548,7 +552,8 @@ class Style(StyleProps):
             # Font face
             elif family == "font-face":
                 if not font_name:
-                    raise ValueError("A font_name is required for 'font-face' style")
+                    msg = "A font_name is required for 'font-face' style"
+                    raise ValueError(msg)
                 self.set_font(
                     font_name,
                     family=font_family,
@@ -621,7 +626,8 @@ class Style(StyleProps):
                     kwargs["style:width"] = width
                 if align:
                     if align not in {"center", "left", "margins", "right"}:
-                        raise ValueError(f"Invalid align value: {align!r}")
+                        msg = f"Invalid align value: {align!r}"
+                        raise ValueError(msg)
                     kwargs["table:align"] = align
             # Graphic
             elif area == "graphic":
@@ -766,7 +772,8 @@ class Style(StyleProps):
         elif clone is not None:
             level_style_name = clone.tag
         else:
-            raise ValueError("unknown level style type")
+            msg = "Unknown level style type"
+            raise ValueError(msg)
         was_created = False
         # Cloning or reusing an existing element
         level_style: Style | None = None
@@ -806,7 +813,8 @@ class Style(StyleProps):
             if level_style is not None:
                 level_style.text_style = style
             else:  # pragma: nocover
-                raise ValueError("No level style available")
+                msg = "No level style available"
+                raise ValueError(msg)
         # Commit the creation
         if was_created:
             self.append(level_style)

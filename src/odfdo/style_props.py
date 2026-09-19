@@ -72,7 +72,8 @@ class StyleProps(StyleBase):
         if area is None:
             area = self.family
         if not area or area not in StyleProps.AREAS:
-            raise ValueError(f"Unexpected area value: {area!r}")
+            msg = f"Unexpected area value: {area!r}"
+            raise ValueError(msg)
         return area
 
     def get_properties(self, area: str | None = None) -> PropDict | None:
@@ -261,9 +262,8 @@ class StyleProps(StyleBase):
             properties = []
         element = self.get_element(f"style:{area}-properties")
         if element is None:
-            raise ValueError(
-                f"The Properties element is non-existent for: style:{area}-properties"
-            )
+            msg = f"The Properties element is non-existent for: style:{area}-properties"
+            raise ValueError(msg)
         for key in _expand_properties_list(properties):
             with contextlib.suppress(KeyError):
                 element.del_attribute(key)
