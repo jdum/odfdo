@@ -133,6 +133,7 @@ class FormProperty(Element):
 
     @property
     def value(self) -> Decimal | int | None:
+        """Get or set the numeric value of the property."""
         return self.get_attribute_number("office:value")
 
     @value.setter

@@ -36,6 +36,7 @@ STDIN_TIMEOUT = 0.5
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = (
         "Create an ODS document (OpenDocument Spreadsheet) file. "
         "The script reads JSON data (mapping table names to 2D lists, "
@@ -96,11 +97,13 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
 
 def read_json_content(input_file: str | None) -> str:
+    """Read JSON text content from file or standard input."""
     if input_file:
         return Path(input_file).read_text(encoding="utf-8")
     detect_stdin_timeout()  # pragma: no cover
@@ -111,6 +114,7 @@ def read_json_content(input_file: str | None) -> str:
 
 
 def from_json(args: Namespace) -> None:
+    """Convert JSON input data to an ODS document."""
     json_content = read_json_content(args.input_file)
     document = Document.from_json(json_content, args.table_name or "")
     if args.language:
@@ -119,11 +123,13 @@ def from_json(args: Namespace) -> None:
 
 
 def main() -> int:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     return main_from_json(args)
 
 
 def main_from_json(args: Namespace) -> int:
+    """Run the main JSON import CLI logic with error handling."""
     try:
         from_json(args)
     except Exception:

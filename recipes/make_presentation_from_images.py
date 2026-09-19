@@ -57,6 +57,7 @@ class ImageInfo:
         self.pos_x = self.pos_y = None
 
     def adapt(self) -> bool:
+        """Compute dimensions and coordinates to adapt the image to the slide."""
         if not self.path.is_file():
             return False
         try:

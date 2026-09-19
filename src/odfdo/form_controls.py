@@ -314,6 +314,7 @@ class FormGrid(FormGenericControl):
 
     @property
     def tab_index(self) -> int | None:
+        """Get or set the tab index of the control."""
         return self._get_attribute_int_default("form:tab-index", 0)
 
     @tab_index.setter
@@ -1098,6 +1099,7 @@ class FormNumber(FormDelayRepeatMixin, FormAsDictMixin, FormMaxLengthMixin, Form
 
     @property
     def current_value(self) -> Decimal | int | None:
+        """Get or set the current value of the numeric control."""
         return self.get_attribute_number("form:current-value")
 
     @current_value.setter
@@ -1106,6 +1108,7 @@ class FormNumber(FormDelayRepeatMixin, FormAsDictMixin, FormMaxLengthMixin, Form
 
     @property
     def min_value(self) -> Decimal | int | None:
+        """Get or set the minimum value of the numeric control."""
         return self.get_attribute_number("form:min-value")
 
     @min_value.setter
@@ -1114,6 +1117,7 @@ class FormNumber(FormDelayRepeatMixin, FormAsDictMixin, FormMaxLengthMixin, Form
 
     @property
     def max_value(self) -> Decimal | int | None:
+        """Get or set the maximum value of the numeric control."""
         return self.get_attribute_number("form:max-value")
 
     @max_value.setter
@@ -1838,6 +1842,7 @@ class FormListbox(FormSourceListMixin, FormSizetMixin, FormGrid):
 
     @property
     def list_linkage_type(self) -> str | None:
+        """Get or set the list linkage type of the listbox."""
         return self.get_attribute_string("form:list-linkage-type")
 
     @list_linkage_type.setter

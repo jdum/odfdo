@@ -35,6 +35,7 @@ PROG = "odfdo-markdown"
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = "Convert an ODF text or spreadsheet document to Markdown format and print to standard output."
     epilog = (
         "This tool is useful for extracting the textual content of an ODF "
@@ -59,11 +60,13 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
 
 def to_md(args: Namespace) -> None:
+    """Convert an ODF document to Markdown and print to stdout."""
     document = read_document(args.document)
     result = document.to_markdown()
     if isinstance(result, str):
@@ -75,11 +78,13 @@ def to_md(args: Namespace) -> None:
 
 
 def main() -> int:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     return main_to_md(args)
 
 
 def main_to_md(args: Namespace) -> int:
+    """Run the main Markdown conversion CLI logic with error handling."""
     try:
         to_md(args)
     except Exception:

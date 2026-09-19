@@ -38,6 +38,7 @@ PROG = "odfdo-show"
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = (
         "Display various parts of an ODF document, including text content, "
         "styles, and metadata, to standard output or a specified directory."
@@ -97,11 +98,13 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
 
 def clean_filename(name: str) -> str:
+    """Sanitize a string to use as a valid filename."""
     allowed_characters = {".", "-", "@"}
     result = []
     for char in name:
@@ -113,6 +116,7 @@ def clean_filename(name: str) -> str:
 
 
 def dump_pictures(document: Document, target: str | Path) -> None:
+    """Extract embedded images from document into target folder."""
     for part_name in document.parts:
         if not part_name.startswith("Pictures/"):
             continue
@@ -125,6 +129,7 @@ def dump_pictures(document: Document, target: str | Path) -> None:
 
 
 def spreadsheet_to_stdout(document: Document) -> None:
+    """Print spreadsheet tables as CSV to standard output."""
     body = document.body
     for table in body.tables:
         table.rstrip(aggressive=True)
@@ -132,6 +137,7 @@ def spreadsheet_to_stdout(document: Document) -> None:
 
 
 def spreadsheet_to_csv(document: Document, output: Path) -> None:
+    """Export spreadsheet tables as CSV files into output folder."""
     body = document.body
     for table in body.tables:
         name = str(table.name)
@@ -142,11 +148,13 @@ def spreadsheet_to_csv(document: Document, output: Path) -> None:
 
 
 def print_format_error(doc_type: str) -> None:
+    """Print an error message for unsupported document format."""
     msg = f"Error: The OpenDocument format '{doc_type}' is not supported yet."
     print(msg, file=sys.stderr)
 
 
 def check_target_directory(path: Path) -> None:
+    """Prompt user before overwriting existing directory."""
     if path.exists():  # pragma: no cover
         message = f'The path "{path}" exists, overwrite it? [y/n]'
         print(message, file=sys.stderr)
@@ -162,6 +170,7 @@ def show_output(
     doc: Document,
     doc_type: str,
 ) -> None:
+    """Export document content, metadata, and pictures to directory."""
     output = Path(args.output)
     check_target_directory(output)
     if output.exists():  # pragma: no cover
@@ -181,6 +190,7 @@ def show_output(
 
 
 def show(args: Namespace) -> None:
+    """Display document parts according to CLI options."""
     doc = Document(args.input)
     doc_type = doc.get_type()
 
@@ -203,11 +213,13 @@ def show(args: Namespace) -> None:
 
 
 def main() -> None:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     main_show(args)
 
 
 def main_show(args: Namespace) -> None:
+    """Run the main show CLI logic with error handling."""
     try:
         show(args)
     except Exception as e:

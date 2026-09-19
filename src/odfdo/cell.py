@@ -114,6 +114,7 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
 
     @property
     def clone(self) -> Cell:
+        """Return an exact copy of the cell, including coordinates."""
         clone = Element.clone.fget(self)
         clone.y = self.y
         clone.x = self.x

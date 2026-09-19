@@ -1533,6 +1533,7 @@ class Container:
 
     @property
     def default_manifest_rdf(self) -> str:
+        """Return the default content of manifest.rdf."""
         # The RDF metadata namespaces are versioned independently from the
         # office:version attribute and remain at "1.2" for ODF 1.3/1.4.
         return (

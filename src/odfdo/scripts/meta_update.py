@@ -39,6 +39,7 @@ PROG = "odfdo-meta-update"
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = (
         "Update the metadata of an ODF file by merging from a JSON file "
         "or stripping to minimal content."
@@ -114,16 +115,19 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
 
 def main() -> None:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     main_meta_update(args)
 
 
 def main_meta_update(args: Namespace) -> None:
+    """Run the main meta update CLI logic with error handling."""
     try:
         update_meta_fields(args)
     except Exception as e:
@@ -134,12 +138,14 @@ def main_meta_update(args: Namespace) -> None:
 
 
 def update_meta_fields(args: Namespace) -> None:
+    """Read the document, update metadata, and save result."""
     document = read_document(args.input_file)
     update_doc_meta_fields(document, args)
     save_document(document, args.output_file)
 
 
 def update_doc_meta_fields(document: Document, args: Namespace) -> None:
+    """Apply metadata strip or JSON load to document."""
     if args.strip:
         strip_metadata(document)
     elif args.json_filename:
@@ -150,10 +156,12 @@ def update_doc_meta_fields(document: Document, args: Namespace) -> None:
 
 
 def strip_metadata(document: Document) -> None:
+    """Reset document metadata to minimal content."""
     document.meta.strip()
 
 
 def load_json_metadata(document: Document, json_filename: str) -> None:
+    """Load metadata from a JSON file into the document."""
     json_string = Path(json_filename).read_text(encoding="utf-8")
     metadata: dict[str, Any] = json.loads(json_string)
     document.meta.from_dict(metadata)

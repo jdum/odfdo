@@ -39,6 +39,7 @@ PROG = "odfdo-styles"
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = (
         "Manipulate styles within OpenDocument files: display, delete, or merge them."
     )
@@ -106,6 +107,7 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
@@ -135,6 +137,7 @@ def delete_styles(
     target: str | Path | io.BytesIO | None,
     pretty: bool = False,
 ) -> None:
+    """Delete all non-default styles from the document and save."""
     number_deleted = document.delete_styles()
     document.save(target=target, pretty=pretty)
     msg = f"{number_deleted} styles removed (0 error, 0 warning)."
@@ -152,6 +155,7 @@ def delete_styles(
 
 
 def merge_presentation_styles(document: Document, source: Document) -> None:
+    """Merge presentation styles from source into document (unimplemented)."""
     # Apply master page found
     msg = "Function merge_presentation_styles"
     raise NotImplementedError(msg)
@@ -199,6 +203,7 @@ def merge_styles(
     target: str | Path | None = None,
     pretty: bool = False,
 ) -> None:
+    """Merge styles from another document into the current document."""
     source = Document(from_file)
     document.delete_styles()
     document.merge_styles_from(source)
@@ -207,6 +212,7 @@ def merge_styles(
 
 
 def check_target_file(path: str) -> None:
+    """Prompt user before overwriting existing file."""
     if Path(path).exists():  # pragma: no cover
         message = f'The path "{path}" exists, overwrite it? [y/n]'
         print(message, file=sys.stderr)
@@ -218,6 +224,7 @@ def check_target_file(path: str) -> None:
 
 
 def style_tools(args: Namespace) -> None:
+    """Execute style operations (show, delete, merge) based on CLI arguments."""
     doc = Document(args.input)
 
     if args.delete:
@@ -250,11 +257,13 @@ def style_tools(args: Namespace) -> None:
 
 
 def main() -> None:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     main_styles(args)
 
 
 def main_styles(args: Namespace) -> None:
+    """Run the main styles CLI logic with error handling."""
     try:
         style_tools(args)
     except Exception as e:

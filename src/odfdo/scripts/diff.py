@@ -37,6 +37,7 @@ PROG = "odfdo-diff"
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = (
         "Show a diff between the textual content of two ODT files. "
         "By default, the output is in the unified diff format."
@@ -72,16 +73,19 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
 
 def main() -> None:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     main_diff(args)
 
 
 def main_diff(args: Namespace) -> None:
+    """Run the main diff CLI logic with error handling."""
     try:
         print_diff(args)
     except Exception as e:
@@ -92,6 +96,7 @@ def main_diff(args: Namespace) -> None:
 
 
 def print_diff(args: Namespace) -> None:
+    """Print the diff between the two documents."""
     # Open the 2 documents, diff only for ODT
     doc1 = Document(args.document1)
     doc2 = Document(args.document2)
@@ -105,6 +110,7 @@ def print_diff(args: Namespace) -> None:
 
 
 def make_ndiff(doc1: Document, doc2: Document) -> str:
+    """Return the ndiff representation between two documents."""
     # Convert in text before the diff
     text1 = doc1.get_formatted_text(True).splitlines(True)
     text2 = doc2.get_formatted_text(True).splitlines(True)
@@ -113,6 +119,7 @@ def make_ndiff(doc1: Document, doc2: Document) -> str:
 
 
 def make_diff(doc1: Document, doc2: Document, path1: str, path2: str) -> str:
+    """Return the unified diff representation between two documents."""
     # Convert in text before the diff
     text1 = doc1.get_formatted_text(True).splitlines(True)
     text2 = doc2.get_formatted_text(True).splitlines(True)

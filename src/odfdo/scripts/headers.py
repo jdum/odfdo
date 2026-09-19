@@ -34,6 +34,7 @@ PROG = "odfdo-headers"
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = (
         "Display the hierarchical headers (headings) of an ODF text document. "
         "The headers are printed with their numbering and can be limited "
@@ -70,6 +71,7 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
@@ -79,6 +81,7 @@ def header_numbering(
     level_indexes: dict[int, int],
     depth: int,
 ) -> str | None:
+    """Return the hierarchical numbering string for a header."""
     level = header.get_attribute_integer("text:outline-level") or 0
     if level is None or level > depth:
         return None
@@ -97,6 +100,7 @@ def header_numbering(
 
 
 def headers_document(document: Document, depth: int) -> None:
+    """Print the headers of a document with hierarchical numbering."""
     body = document.body
     level_indexes: dict[int, int] = {}
     for header in body.headers:
@@ -107,17 +111,20 @@ def headers_document(document: Document, depth: int) -> None:
 
 
 def headers(args: Namespace) -> None:
+    """Read the document and display its headers."""
     document = read_document(args.document)
     depth = args.depth
     headers_document(document, depth)
 
 
 def main() -> int:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     return main_headers(args)
 
 
 def main_headers(args: Namespace) -> int:
+    """Run the main headers CLI logic with error handling."""
     try:
         headers(args)
     except Exception:

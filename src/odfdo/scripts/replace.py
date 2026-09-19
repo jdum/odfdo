@@ -34,6 +34,7 @@ PROG = "odfdo-replace"
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = (
         "Find and replace text in an ODF file using a regular expression pattern."
     )
@@ -89,16 +90,19 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
 
 def main() -> None:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     main_replace(args)
 
 
 def main_replace(args: Namespace) -> None:
+    """Run the main search and replace CLI logic with error handling."""
     try:
         search_replace(
             args.pattern,
@@ -121,6 +125,7 @@ def search_replace(
     output_path: str | None,
     formatted: bool = False,
 ) -> None:
+    """Search pattern in document, replace matches, and save."""
     document = read_document(input_path)
     body = document.body
     body.replace(pattern, replacement, formatted)

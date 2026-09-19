@@ -34,6 +34,7 @@ PROG = "odfdo-table-shrink"
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = (
         "Optimize the width and height of tables in an ODF spreadsheet "
         "by removing empty trailing rows and columns."
@@ -73,16 +74,19 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
 
 def main() -> None:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     main_shrink(args)
 
 
 def main_shrink(args: Namespace) -> None:
+    """Run the main table shrink CLI logic with error handling."""
     try:
         shrink_tables(
             args.input_file,
@@ -99,6 +103,7 @@ def shrink_tables(
     input_path: str | None,
     output_path: str | None,
 ) -> None:
+    """Optimize table dimensions in spreadsheet and save result."""
     document = read_document(input_path)
     if document.get_type() not in {"spreadsheet", "spreadsheet-template"}:
         msg = "Document must be of Spreadsheet type"

@@ -49,9 +49,11 @@ class SimpleRandom:
         self.current = (16807 * self.current) % self.MODULUS
 
     def set_seed(self, seed: int = 16807) -> None:
+        """Set the random generator seed."""
         self.current = seed
 
     def randint(self, max_value: int) -> int:
+        """Return a random integer between 1 and max_value inclusive."""
         self._next_number()
         return int(self.current * max_value / self.MAXI + 1)
 

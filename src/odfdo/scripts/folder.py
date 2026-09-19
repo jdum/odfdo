@@ -37,6 +37,7 @@ PROG = "odfdo-folder"
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = (
         "Convert a standard ODF file (zip archive) to a folder "
         "structure, or convert a folder structure back to an ODF file."
@@ -61,16 +62,19 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
 
 def main() -> None:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     main_convert_folder(args)
 
 
 def main_convert_folder(args: Namespace) -> None:
+    """Run the main folder conversion CLI logic with error handling."""
     try:
         convert_folder(args.file_or_folder)
     except Exception as e:
@@ -81,6 +85,7 @@ def main_convert_folder(args: Namespace) -> None:
 
 
 def convert_folder(path_str: str) -> None:
+    """Convert the specified file or folder to/from folder packaging."""
     path = Path(path_str)
     pretty = False
     if path.is_file():

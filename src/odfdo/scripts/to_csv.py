@@ -36,6 +36,7 @@ PROG = "odfdo-to-csv"
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = (
         "Export a table from an ODS (OpenDocument Spreadsheet) file to a CSV file. "
         "The script extracts a specified table (or the first table by default) "
@@ -93,11 +94,13 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
 
 def to_csv(args: Namespace) -> None:
+    """Export spreadsheet table to CSV."""
     document = read_document(args.input_file)
     if document.get_type() not in {"spreadsheet", "spreadsheet-template"}:
         msg = "Document must be of Spreadsheet type"
@@ -122,11 +125,13 @@ def to_csv(args: Namespace) -> None:
 
 
 def main() -> int:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     return main_to_csv(args)
 
 
 def main_to_csv(args: Namespace) -> int:
+    """Run the main CSV export CLI logic with error handling."""
     try:
         to_csv(args)
     except Exception:

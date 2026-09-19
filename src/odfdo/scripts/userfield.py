@@ -39,6 +39,7 @@ PROG = "odfdo-userfield"
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = "Inspect and modify user-defined fields within an ODF document."
     epilog = (
         "This tool allows you to view the values of specific user fields, "
@@ -135,16 +136,19 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
 
 def main() -> None:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     main_userfields(args)
 
 
 def main_userfields(args: Namespace) -> None:
+    """Run the main userfield CLI logic with error handling."""
     try:
         document_userfields(args)
     except Exception as e:
@@ -155,6 +159,7 @@ def main_userfields(args: Namespace) -> None:
 
 
 def document_userfields(args: Namespace) -> None:
+    """Display or modify user-defined fields in the document."""
     if args.all or args.fields:
         document = read_document(args.input_file)
         return show_fields(document, args)
@@ -185,6 +190,7 @@ def _field_string(field: UserFieldDecl, args: Namespace) -> str:
 
 
 def show_fields(document: Document, args: Namespace) -> None:
+    """Print the user fields matching the given arguments."""
     field_set = set()
     if not args.all and args.fields:
         field_set = set(args.fields)
@@ -209,6 +215,7 @@ def _change_field(body: Element, name: str, value: str) -> None:
 
 
 def change_fields(document: Document, changes: list[list[str]]) -> None:
+    """Apply user field modifications to the document."""
     body = document.body
     if hasattr(body, "get_user_field_decl"):
         for name_value in changes:

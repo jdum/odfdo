@@ -31,6 +31,7 @@ PROG = "odfdo-to-json"
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = (
         "Export one or all tables from an ODF (OpenDocument) spreadsheet or "
         "text document to JSON. The script extracts all tables into a JSON "
@@ -96,11 +97,13 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
 
 def to_json(args: Namespace) -> None:
+    """Export tables from document to JSON."""
     document = read_document(args.input_file)
     if args.table_name:
         table = document.body.get_table_by_name(args.table_name)
@@ -124,11 +127,13 @@ def to_json(args: Namespace) -> None:
 
 
 def main() -> int:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     return main_to_json(args)
 
 
 def main_to_json(args: Namespace) -> int:
+    """Run the main JSON export CLI logic with error handling."""
     try:
         to_json(args)
     except Exception:

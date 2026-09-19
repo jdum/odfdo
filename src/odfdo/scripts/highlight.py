@@ -36,6 +36,7 @@ PROG = "odfdo-highlight"
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = (
         "Search for a regular expression pattern in an ODF text document "
         "and apply a highlighting style to the matching text. "
@@ -115,20 +116,25 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
 
 def error(message: str) -> str:
+    """Format an error message with the program name prefix."""
     return f"{PROG}: error: {message}"
 
 
 def check_args(args: Namespace) -> None:
+    """Validate command-line arguments."""
     if not any((args.italic, args.bold, args.color, args.background)):
         raise SystemExit(error("at least some style argument is required"))
 
 
 def make_style(document: Document, args: Namespace) -> str:
+    """Create or retrieve the text highlight style in the document."""
+
     def _display_name() -> str:
         parts = ["odfdo", "highlight"]
         if args.color:
@@ -170,6 +176,7 @@ def make_style(document: Document, args: Namespace) -> str:
 
 
 def apply_style(document: Document, style_name: str, pattern: str) -> None:
+    """Apply the highlight style to matching text in paragraphs and headers."""
     body = document.body
     for paragraph in chain(
         body.get_paragraphs(content=pattern), body.get_headers(content=pattern)
@@ -183,22 +190,26 @@ def apply_style(document: Document, style_name: str, pattern: str) -> None:
 
 
 def highlight_document(document: Document, args: Namespace) -> None:
+    """Highlight matching patterns in the document."""
     style_name = make_style(document, args)
     apply_style(document, style_name, args.pattern)
 
 
 def highlight(args: Namespace) -> None:
+    """Read the document, apply highlights, and save the result."""
     document = read_document(args.input_file)
     highlight_document(document, args)
     save_document(document, args.output_file)
 
 
 def main() -> int:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     return main_highlight(args)
 
 
 def main_highlight(args: Namespace) -> int:
+    """Run the main highlight CLI logic with error handling."""
     check_args(args)
     try:
         highlight(args)

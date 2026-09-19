@@ -48,6 +48,7 @@ FLAT_EXT_MAP: dict[str, str] = {
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = (
         "Convert a standard ODF file (zip archive) or folder structure "
         "to a flat ODF XML file, or convert a flat XML file back to an ODF file."
@@ -73,16 +74,19 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
 
 def main() -> None:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     main_convert_flat(args)
 
 
 def main_convert_flat(args: Namespace) -> None:
+    """Run the main flat conversion CLI logic with error handling."""
     try:
         convert_flat(args.file_or_folder)
     except Exception as e:
@@ -109,6 +113,7 @@ def is_flat_xml_file(path: Path) -> bool:
 
 
 def convert_flat(path_str: str) -> None:
+    """Convert the specified file or folder to/from flat XML format."""
     path = Path(path_str)
 
     if not path.exists():

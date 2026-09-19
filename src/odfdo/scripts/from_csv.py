@@ -40,6 +40,7 @@ DEFAULT_NAME = "table"
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = (
         "Import data from a CSV file into a new ODS (OpenDocument Spreadsheet) file. "
         "The script reads CSV data and populates a table in the ODS document."
@@ -100,11 +101,13 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
 
 def read_document(input_file: str | None) -> str:
+    """Read CSV text content from file or standard input."""
     if input_file:
         csv_content = Path(input_file).read_text()
     else:  # pragma: no cover
@@ -116,6 +119,7 @@ def read_document(input_file: str | None) -> str:
 
 
 def from_csv(args: Namespace) -> None:
+    """Convert CSV input data to an ODS document."""
     csv_content = read_document(args.input_file)
     document = Document("ods")
     if args.language:
@@ -130,11 +134,13 @@ def from_csv(args: Namespace) -> None:
 
 
 def main() -> int:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     return main_from_csv(args)
 
 
 def main_from_csv(args: Namespace) -> int:
+    """Run the main CSV import CLI logic with error handling."""
     try:
         from_csv(args)
     except Exception:

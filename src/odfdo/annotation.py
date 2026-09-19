@@ -286,6 +286,7 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
 
     @property
     def note_body(self) -> str:
+        """Get or set the text content or element of the annotation body."""
         return self.text_content
 
     @note_body.setter

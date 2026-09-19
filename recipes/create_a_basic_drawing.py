@@ -38,6 +38,7 @@ class Vector:
         self.b = b
 
     def koch_split(self) -> list[Vector]:
+        """Split the vector into 4 sub-vectors for a Koch snowflake iteration."""
         c = self.a + 1.0 / 3.0 * (self.b - self.a)
         d = self.a + 2.0 / 3.0 * (self.b - self.a)
         m = 0.5 * (self.a + self.b)
@@ -45,6 +46,7 @@ class Vector:
         return [Vector(self.a, c), Vector(c, e), Vector(e, d), Vector(d, self.b)]
 
     def centimeter(self, index: int) -> tuple[str, str]:
+        """Return the coordinate formatted in centimeters for vertex 0 or 1."""
         if index == 0:
             m = self.a
         else:

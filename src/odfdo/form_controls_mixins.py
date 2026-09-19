@@ -38,6 +38,7 @@ class FormDelayRepeatMixin(Element):
 
     @property
     def delay_for_repeat(self) -> str:
+        """Get or set the delay for repeat attribute."""
         return self._get_attribute_str_default("form:delay-for-repeat", "PT0.050S")
 
     @delay_for_repeat.setter
@@ -52,6 +53,7 @@ class FormMaxLengthMixin(Element):
 
     @property
     def max_length(self) -> int | None:
+        """Get or set the maximum length of the text."""
         return self.get_attribute_integer("form:max-length")
 
     @max_length.setter
@@ -98,6 +100,7 @@ class FormSourceListMixin(Element):
 
     @property
     def list_source_type(self) -> str | None:
+        """Get or set the list source type attribute."""
         return self.get_attribute_string("form:list-source-type")
 
     @list_source_type.setter
@@ -115,6 +118,7 @@ class FormSizetMixin(Element):
 
     @property
     def size(self) -> int | None:
+        """Get or set the size attribute of the control."""
         return self.get_attribute_integer("form:size")
 
     @size.setter
@@ -133,6 +137,7 @@ class FormImagePositionMixin(Element):
 
     @property
     def image_position(self) -> str | None:
+        """Get or set the position of the image on the control."""
         return self._get_attribute_str_default("form:image-position", "center")
 
     @image_position.setter
@@ -152,6 +157,7 @@ class FormImageAlignMixin(Element):
 
     @property
     def image_align(self) -> str | None:
+        """Get or set the alignment of the image on the control."""
         return self._get_attribute_str_default("form:image-align", "center")
 
     @image_align.setter
@@ -169,6 +175,7 @@ class FormButtonTypeMixin(Element):
 
     @property
     def button_type(self) -> str | None:
+        """Get or set the button type of the form button."""
         return self._get_attribute_str_default("form:button-type", "push")
 
     @button_type.setter
@@ -190,6 +197,7 @@ class OfficeTargetFrameMixin(Element):
 
     @property
     def target_frame(self) -> str | None:
+        """Get or set the target frame for the control action."""
         return self._get_attribute_str_default("office:target-frame", "_blank")
 
     @target_frame.setter

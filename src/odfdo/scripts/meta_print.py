@@ -37,6 +37,7 @@ PROG = "odfdo-meta-print"
 
 
 def configure_parser() -> ArgumentParser:
+    """Configure the command-line argument parser."""
     description = "Extract and display the metadata from an ODF file."
     epilog = dedent(
         "By default, populated metadata fields are printed in a human-readable text format. "
@@ -102,16 +103,19 @@ def configure_parser() -> ArgumentParser:
 
 
 def parse_cli_args(cli_args: list[str] | None = None) -> Namespace:
+    """Parse command-line arguments."""
     parser = configure_parser()
     return parser.parse_args(cli_args)
 
 
 def main() -> None:
+    """Execute the CLI entry point."""
     args: Namespace = parse_cli_args()
     main_meta_print(args)
 
 
 def main_meta_print(args: Namespace) -> None:
+    """Run the main meta print CLI logic with error handling."""
     try:
         print_meta_fields(args)
     except Exception as e:
@@ -122,11 +126,13 @@ def main_meta_print(args: Namespace) -> None:
 
 
 def print_meta_fields(args: Namespace) -> None:
+    """Read the document and output its metadata fields."""
     document = read_document(args.input_file)
     print_doc_fields(document, args)
 
 
 def print_doc_fields(document: Document, args: Namespace) -> None:
+    """Output document metadata in JSON or text format."""
     if args.json:
         print_json(document, args)
     else:
@@ -134,6 +140,7 @@ def print_doc_fields(document: Document, args: Namespace) -> None:
 
 
 def save_content(content: str, args: Namespace, encoding: str = "utf8") -> None:
+    """Save content string to file or print to standard output."""
     if args.output_file:
         Path(args.output_file).write_text(content.strip() + "\n", encoding=encoding)
     else:
@@ -141,11 +148,13 @@ def save_content(content: str, args: Namespace, encoding: str = "utf8") -> None:
 
 
 def print_json(document: Document, args: Namespace) -> None:
+    """Output full metadata as JSON."""
     content = document.meta.as_json(full=True)
     save_content(content, args, "utf8")
 
 
 def print_text(document: Document, args: Namespace) -> None:
+    """Output metadata fields as formatted text."""
     blocks: list[str] = []
     meta = document.meta
     if args.odf_version:
