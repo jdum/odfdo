@@ -79,7 +79,8 @@ def _find_any_id(element: Element) -> tuple[str, str, str]:
         idx = element.get_attribute(attribute)
         if idx is not None:
             return element.tag, attribute, str(idx)
-    raise ValueError(f"No Id found in {element.serialize()}")
+    msg = f"No Id found in {element.serialize()}"
+    raise ValueError(msg)
 
 
 def _common_ancestor(
@@ -161,7 +162,8 @@ def _get_between_base(
         elem2_val,
     )
     if ancestor_result is None:
-        raise RuntimeError(f"No common ancestor for {elem1_tag!r} and {elem2_tag!r}")
+        msg = f"No common ancestor for {elem1_tag!r} and {elem2_tag!r}"
+        raise RuntimeError(msg)
     ancestor = ancestor_result.clone
     path1 = f'{elem1_tag}[@{elem1_attr}="{elem1_val}"]'
     path2 = f'{elem2_tag}[@{elem2_attr}="{elem2_val}"]'
@@ -176,9 +178,8 @@ def _get_between_base(
     state = 0
     while True:
         if current is None:
-            raise RuntimeError(
-                f"No current ancestor for {elem1_tag!r} and {elem2_tag!r}"
-            )
+            msg = f"No current ancestor for {elem1_tag!r} and {elem2_tag!r}"
+            raise RuntimeError(msg)
         # print 'current', state, current.serialize()
         if state == 0:  # before tag 1
             if current.xpath(f"descendant-or-self::{path1}"):
@@ -188,9 +189,8 @@ def _get_between_base(
                         # got a tail => the parent should be either text:p or text:h
                         if target is None:  # pragma: nocover
                             # should never happen
-                            raise RuntimeError(
-                                f"No target for {elem1_tag!r} and {elem2_tag!r}"
-                            )
+                            msg = f"No target for {elem1_tag!r} and {elem2_tag!r}"
+                            raise RuntimeError(msg)
                         target.text = tail
                     current, target = _get_successor(current, target)  # ty: ignore
                     state = 1

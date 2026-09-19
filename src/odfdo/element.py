@@ -203,7 +203,8 @@ def _decode_qname(qname: str) -> tuple[str | None, str]:
         try:
             uri = ODF_NAMESPACES[prefix]
         except KeyError as e:
-            raise ValueError(f'XML prefix "{prefix}" is unknown') from e
+            msg = f"XML prefix {prefix!r} is unknown"
+            raise ValueError(msg) from e
         return uri, name
     return None, qname
 
@@ -223,7 +224,8 @@ def _uri_to_prefix(uri: str) -> str:
     for key, value in ODF_NAMESPACES.items():
         if value == uri:
             return key
-    raise ValueError(f"uri {uri!r} not found")
+    msg = f"URI {uri!r} not found"
+    raise ValueError(msg)
 
 
 def _get_prefixed_name(tag: str) -> str:
@@ -290,7 +292,8 @@ def _family_style_tagname(family: str) -> str:
     try:
         return FAMILY_MAPPING[family]
     except KeyError as e:
-        raise ValueError(f"Unknown family: {family!r}") from e
+        msg = f"Unknown family: {family!r}"
+        raise ValueError(msg) from e
 
 
 @cache
@@ -528,7 +531,8 @@ class Element(MDBase):
             # called with an existing lxml element, sould be a result of
             # from_tag() casting, do not execute the subclass __init__
             if not isinstance(tag_or_elem, _Element):
-                raise TypeError(f'"{type(tag_or_elem)}" is not an element node')
+                msg = f"{type(tag_or_elem)!r} is not an element node"
+                raise TypeError(msg)
             self._do_init = False
             self.__element = tag_or_elem
 
@@ -606,10 +610,12 @@ class Element(MDBase):
             ValueError: If the tag is empty.
         """
         if not isinstance(tag, str):
-            raise TypeError(f"Tag is not str: {tag!r}")
+            msg = f"Tag is not str: {tag!r}"
+            raise TypeError(msg)
         tag = tag.strip()
         if not tag:
-            raise ValueError("Tag is empty")
+            msg = "Tag is empty"
+            raise ValueError(msg)
         if "<" not in tag:
             # Qualified name
             # XXX don't build the element from scratch or lxml will pollute with
@@ -790,7 +796,8 @@ class Element(MDBase):
         if before is not None:
             return re.compile(before)
         if after is None:
-            raise ValueError("Both 'before' and 'after' are None")
+            msg = "Both 'before' and 'after' are None"
+            raise ValueError(msg)
         return re.compile(after)
 
     @staticmethod
@@ -816,7 +823,8 @@ class Element(MDBase):
             if regex.search(text) is not None:
                 break
         else:
-            raise ValueError(f"Text not found: {xpath_result!r}")
+            msg = f"Text not found: {xpath_result!r}"
+            raise ValueError(msg)
         return text, list(regex.finditer(text))[-1]
 
     @staticmethod
@@ -847,7 +855,8 @@ class Element(MDBase):
                 break
             count += found_nb
         else:
-            raise ValueError(f"Text not found: {xpath_result!r}")
+            msg = f"Text not found: {xpath_result!r}"
+            raise ValueError(msg)
         return text, list(regex.finditer(text))[position - count]
 
     def _insert_before_after(
@@ -923,7 +932,8 @@ class Element(MDBase):
                 break
             count += found_nb
         else:
-            raise ValueError(f"Text not found: {xpath_result!r}")
+            msg = f"Text not found: {xpath_result!r}"
+            raise ValueError(msg)
         # We insert before the character
         pos = position - count
         return pos, text
@@ -983,7 +993,8 @@ class Element(MDBase):
                 _xpath_text_descendant_no_annotation,
             )
         else:
-            raise ValueError("bad combination of arguments")
+            msg = "Bad combination of arguments"
+            raise ValueError(msg)
 
         # Compute new texts
         text_before = text[:pos] if text[:pos] else None
@@ -1402,7 +1413,8 @@ class Element(MDBase):
         """
         if name in ODF_COLOR_PROPERTY:
             if isinstance(value, bool):
-                raise TypeError(f"Wrong color type {value!r}")
+                msg = f"Wrong color type {value!r}"
+                raise TypeError(msg)
             if value != "transparent":
                 value = hexa_color(value)
         element = self.__element
@@ -1476,7 +1488,8 @@ class Element(MDBase):
         try:
             self.__element.text = text
         except TypeError as e:
-            raise TypeError(f'Str type expected: "{type(text)}"') from e
+            msg = f"Str type expected: {type(text)!r}"
+            raise TypeError(msg) from e
 
     def __str__(self) -> str:
         return self.inner_text
@@ -1866,7 +1879,8 @@ class Element(MDBase):
             index = parent.index(current)
             parent.insert(index, lx_element)
         else:
-            raise ValueError("(xml)position must be defined")
+            msg = "(xml)position must be defined"
+            raise ValueError(msg)
 
     def extend(self, odf_elements: Iterable[Element]) -> None:
         """Appends multiple ODF elements efficiently to the end of the current
@@ -1932,7 +1946,8 @@ class Element(MDBase):
         elif isinstance(str_or_element, Element):
             current.append(str_or_element.__element)
         else:
-            raise TypeError(f'Element or string expected, not "{type(str_or_element)}"')
+            msg = f"Element or string expected, not {type(str_or_element)!r}"
+            raise TypeError(msg)
 
     append = __append
 
@@ -1954,7 +1969,8 @@ class Element(MDBase):
         if child is None:
             parent = self.parent
             if parent is None:
-                raise ValueError(f"Can't delete the root element\n{self.serialize()}")
+                msg = f"Can't delete the root element\n{self.serialize()}"
+                raise ValueError(msg)
             child = self
         else:
             parent = self
@@ -3038,7 +3054,8 @@ class Element(MDBase):
             name = name_or_element.get_attribute("style:name")
             if name is not None:
                 return name_or_element  # ty: ignore[invalid-return-type]
-            raise ValueError(f"Not a odf_style ? {name_or_element!r}")
+            msg = f"Not a odf_style ? {name_or_element!r}"
+            raise ValueError(msg)
         style_name = name_or_element
         is_default = not (style_name or display_name)
         tagname = self._get_style_tagname(family, is_default=is_default)

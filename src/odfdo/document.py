@@ -323,7 +323,8 @@ class Document(MDDocument):
         if isinstance(target, io.BytesIO):
             self.container = Container(target)
             return
-        raise TypeError(f"Unknown Document source type: '{target!r}'")
+        msg = f"Unknown Document source type: {target!r}"
+        raise TypeError(msg)
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} type={self.get_type()} path={self.path}>"
@@ -388,7 +389,8 @@ class Document(MDDocument):
             ValueError: If the document's container is empty.
         """
         if not self.container:
-            raise ValueError("Empty Container")
+            msg = "Empty Container"
+            raise ValueError(msg)
         return self.container.parts
 
     @property
@@ -424,7 +426,8 @@ class Document(MDDocument):
 
         """
         if not self.container:
-            raise ValueError("Empty Container")
+            msg = "Empty Container"
+            raise ValueError(msg)
         # "./ObjectReplacements/Object 1"
         path = path.lstrip("./")
         path = _get_part_path(path)
@@ -455,7 +458,8 @@ class Document(MDDocument):
             ValueError: If the document's container is empty.
         """
         if not self.container:
-            raise ValueError("Empty Container")
+            msg = "Empty Container"
+            raise ValueError(msg)
         # "./ObjectReplacements/Object 1"
         path = path.lstrip("./")
         path = _get_part_path(path)
@@ -482,11 +486,13 @@ class Document(MDDocument):
                 is made to delete a mandatory part (e.g., "manifest.xml").
         """
         if not self.container:
-            raise ValueError("Empty Container")
+            msg = "Empty Container"
+            raise ValueError(msg)
         path = _get_part_path(path)
         cls = _get_part_class(path)
         if path == ODF_MANIFEST or cls is not None:
-            raise ValueError(f"part '{path}' is mandatory")
+            msg = f"part '{path}' is mandatory"
+            raise ValueError(msg)
         self.container.del_part(path)
 
     @property
@@ -505,13 +511,15 @@ class Document(MDDocument):
             ValueError: If the document's container is empty.
         """
         if not self.container:
-            raise ValueError("Empty Container")
+            msg = "Empty Container"
+            raise ValueError(msg)
         return self.container.mimetype
 
     @mimetype.setter
     def mimetype(self, mimetype: str) -> None:
         if not self.container:
-            raise ValueError("Empty Container")
+            msg = "Empty Container"
+            raise ValueError(msg)
         self.container.mimetype = mimetype
 
     def get_type(self) -> str:
@@ -560,7 +568,8 @@ class Document(MDDocument):
         """
         metadata = self.get_part(ODF_META)
         if metadata is None or not isinstance(metadata, Meta):
-            raise ValueError("Empty Meta")
+            msg = "Empty Meta"
+            raise ValueError(msg)
         return metadata
 
     @property
@@ -577,7 +586,8 @@ class Document(MDDocument):
         """
         manifest = self.get_part(ODF_MANIFEST)
         if manifest is None or not isinstance(manifest, Manifest):
-            raise ValueError("Empty Manifest")
+            msg = "Empty Manifest"
+            raise ValueError(msg)
         return manifest
 
     @property
@@ -594,7 +604,8 @@ class Document(MDDocument):
         """
         settings_part = self.get_part(ODF_SETTINGS)
         if settings_part is None or not isinstance(settings_part, Settings):
-            raise ValueError("Empty settings part")
+            msg = "Empty settings part"
+            raise ValueError(msg)
         return settings_part
 
     def _get_formatted_text_footnotes(
@@ -698,7 +709,8 @@ class Document(MDDocument):
             "presentation-template",
         }:
             return self._formatted_text(rst_mode)
-        raise NotImplementedError(f"Type of document '{doc_type}' not supported yet")
+        msg = f"Type of document {doc_type!r} not supported yet"
+        raise NotImplementedError(msg)
 
     def _tables_csv(self) -> str:
         return "\n\n".join(str(table) for table in self.body.tables)
@@ -764,9 +776,8 @@ class Document(MDDocument):
         """
         doc_type = self.get_type()
         if doc_type not in {"text", "spreadsheet"}:
-            raise NotImplementedError(
-                f"Type of document '{doc_type}' not supported yet"
-            )
+            msg = f"Type of document {doc_type!r} not supported yet"
+            raise NotImplementedError(msg)
         if doc_type == "text":
             return self._markdown_export_text()
         return self._markdown_export_tables()
@@ -868,13 +879,13 @@ class Document(MDDocument):
         elif isinstance(content, dict | list):
             data = content
         else:
-            msg = "JSON content must be a string, Path, dict or list."
+            msg = "JSON content must be a string, Path, dict or list"
             raise TypeError(msg)
 
         if not isinstance(data, dict | list):
             msg = (
                 "JSON document content must be a dictionary mapping "
-                "table names to row lists or a list of rows."
+                "table names to row lists or a list of rows"
             )
             raise TypeError(msg)
 
@@ -984,7 +995,7 @@ class Document(MDDocument):
         if orient not in ("list", "records", "matrix"):
             msg = (
                 f"Invalid orient parameter: {orient!r}. "
-                "Expected 'list', 'records', or 'matrix'."
+                "Expected 'list', 'records', or 'matrix'"
             )
             raise ValueError(msg)
         if table is not None:
@@ -1131,7 +1142,9 @@ class Document(MDDocument):
                     and (
                         (
                             len(data) > 1
-                            and (not first_val or isinstance(first_val[0], (dict, list)))
+                            and (
+                                not first_val or isinstance(first_val[0], (dict, list))
+                            )
                         )
                         or (
                             len(data) == 1
@@ -1182,7 +1195,7 @@ class Document(MDDocument):
             )
             doc.body.append(table)
         else:
-            msg = "data must be a dict or list of dicts."
+            msg = "Data must be a dict or list of dicts"
             raise TypeError(msg)
 
         if language:
@@ -1192,7 +1205,8 @@ class Document(MDDocument):
 
     def _add_binary_part(self, blob: Blob) -> str:
         if not self.container:
-            raise ValueError("Empty Container")
+            msg = "Empty Container"
+            raise ValueError(msg)
         manifest = self.manifest
         if manifest.get_media_type("Pictures/") is None:
             manifest.add_full_path("Pictures/")
@@ -1219,7 +1233,8 @@ class Document(MDDocument):
             ValueError: If the document's container is empty.
         """
         if not self.container:
-            raise ValueError("Empty Container")
+            msg = "Empty Container"
+            raise ValueError(msg)
         if isinstance(path_or_file, (str, Path)):
             blob = Blob.from_path(path_or_file)
         else:
@@ -1247,7 +1262,8 @@ class Document(MDDocument):
                 setattr(clone, name, {})
             elif name == "container":
                 if not self.container:
-                    raise ValueError("Empty Container")
+                    msg = "Empty Container"
+                    raise ValueError(msg)
                 setattr(clone, name, self.container.clone)
             else:
                 value = deepcopy(getattr(self, name))
@@ -1365,11 +1381,14 @@ class Document(MDDocument):
             RuntimeError: In unexpected scenarios during XML part handling.
         """
         if not self.container:
-            raise ValueError("Empty Container")
+            msg = "Empty Container"
+            raise ValueError(msg)
         if packaging not in PACKAGING:
-            raise ValueError(f'Packaging of type "{packaging}" is not supported')
+            msg = f"Packaging of type {packaging!r} is not supported"
+            raise ValueError(msg)
         if target is None and self.path is None:
-            raise ValueError("Saving a document without path requires a target")
+            msg = "Saving a document without path requires a target"
+            raise ValueError(msg)
         # Some advertising
         if packaging != FOLDER:
             self.meta.set_generator_default()
@@ -1397,7 +1416,8 @@ class Document(MDDocument):
                     continue
                 cls = _get_part_class(path)
                 if cls is None:
-                    raise RuntimeError("Should never happen")
+                    msg = "Should never happen"
+                    raise RuntimeError(msg)
                 # XML part
                 self.__xmlparts[path] = part = cls(path, container)
                 container.set_part(path, part.pretty_serialize())
@@ -1419,7 +1439,8 @@ class Document(MDDocument):
         """
         content: Content | None = self.get_part(ODF_CONTENT)  # ty:ignore
         if content is None:
-            raise ValueError("Empty Content")
+            msg = "Empty Content"
+            raise ValueError(msg)
         return content
 
     @property
@@ -1434,7 +1455,8 @@ class Document(MDDocument):
         """
         styles: Styles | None = self.get_part(ODF_STYLES)  # ty:ignore
         if styles is None:
-            raise ValueError("Empty Styles")
+            msg = "Empty Styles"
+            raise ValueError(msg)
         return styles
 
     # Styles over several parts
@@ -1683,7 +1705,8 @@ class Document(MDDocument):
             style_container = self.styles.get_element("office:styles")
 
         if style_container is None:
-            raise ValueError("Target style container not found in document")
+            msg = "Target style container not found in document"
+            raise ValueError(msg)
 
         if not name:
             name = self._get_style_element_name(style_element)
@@ -1718,7 +1741,8 @@ class Document(MDDocument):
         # Default style
         if automatic is False and default is True:
             return self._insert_style_get_default_styles(style, family, name)
-        raise AttributeError("Invalid combination of arguments")
+        msg = "Invalid combination of arguments"
+        raise AttributeError(msg)
 
     def insert_style(
         self,
@@ -1765,7 +1789,8 @@ class Document(MDDocument):
         else:
             style_element = style
         if not isinstance(style_element, Element):
-            raise TypeError(f"Unknown Style type: '{style!r}'")
+            msg = f"Unknown Style type: {style!r}"
+            raise TypeError(msg)
 
         # Get family and name
         raw_family = getattr(
@@ -1807,10 +1832,11 @@ class Document(MDDocument):
             )
         # Invalid style
         else:
-            raise ValueError(
+            msg = (
                 "Invalid style: "
                 f"{style_element}, tag:{style_element.tag}, family:{family}"
             )
+            raise ValueError(msg)
 
         # Insert it!
         if existing is not None:
@@ -2116,7 +2142,7 @@ class Document(MDDocument):
             return (
                 self.get_style_properties("table-cell", cell.style, "table-cell") or {}
             )
-        try:
+        with contextlib.suppress(ValueError):
             row = sheet.get_row(cell.y, clone=False, create=False)  # ty: ignore
             if row.style:  # noqa: SIM102
                 if props := self.get_style_properties(
@@ -2130,8 +2156,6 @@ class Document(MDDocument):
                     "table-cell", style, "table-cell"
                 ):
                     return props
-        except ValueError:
-            pass
         return {}
 
     def get_cell_background_color(
@@ -2271,9 +2295,8 @@ class Document(MDDocument):
         """
         language = str(language)
         if not is_RFC3066(language):
-            raise TypeError(
-                'Language must be "xx" lang or "xx-YY" lang-COUNTRY code (RFC3066)'
-            )
+            msg = 'Language must be "xx" lang or "xx-YY" lang-COUNTRY code (RFC3066)'
+            raise TypeError(msg)
         self.styles.default_language = language
         self.meta.language = language
 

@@ -241,7 +241,7 @@ def test_document_from_dict_with_language():
 
 
 def test_document_from_dict_invalid_type():
-    with pytest.raises(TypeError, match="data must be a dict or list of dicts"):
+    with pytest.raises(TypeError, match="Data must be a dict or list of dicts"):
         Document.from_dict(12345)  # type: ignore[arg-type]
 
 
