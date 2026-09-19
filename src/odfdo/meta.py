@@ -254,9 +254,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
         """
         language = str(language)
         if not is_RFC3066(language):
-            raise TypeError(
-                'Language must be "xx" lang or "xx-YY" lang-COUNTRY code (RFC3066)'
-            )
+            msg = 'Language must be "xx" lang or "xx-YY" lang-COUNTRY code (RFC3066)'
+            raise TypeError(msg)
         element = self.get_element("//dc:language")
         if element is None:
             element = Element.from_tag("dc:language")
@@ -610,7 +609,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             duration: The timedelta object representing the editing duration.
         """
         if not isinstance(duration, timedelta):
-            raise TypeError("duration must be a timedelta")
+            msg = "Duration must be a timedelta"
+            raise TypeError(msg)
         element = self.get_element("//meta:editing-duration")
         if element is None:
             element = Element.from_tag("meta:editing-duration")
@@ -654,9 +654,11 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             cycles: The number of editing cycles to set.
         """
         if not isinstance(cycles, int):
-            raise TypeError("cycles must be an int")
+            msg = "cycles must be an int"
+            raise TypeError(msg)
         if cycles < 1:
-            raise ValueError("cycles must be a positive int")
+            msg = "cycles must be a positive int"
+            raise ValueError(msg)
         element = self.get_element("//meta:editing-cycles")
         if element is None:
             element = Element.from_tag("meta:editing-cycles")
@@ -796,7 +798,8 @@ class Meta(XmlPart, DcCreatorMixin, DcDateMixin):
             >>> document.meta.set_statistic(statistic)
         """
         if not isinstance(statistic, dict):
-            raise TypeError("Statistic must be a dict")
+            msg = "Statistic must be a dict"
+            raise TypeError(msg)
         element = self.get_element("//meta:document-statistic")
         if element is None:
             element = Element.from_tag("meta:document-statistic")

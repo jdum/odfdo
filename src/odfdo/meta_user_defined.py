@@ -88,7 +88,8 @@ class MetaUserDefined(Element):
             ValueError: If the provided name is empty.
         """
         if not name:
-            raise ValueError('"name" can not be empty')
+            msg = '"name" can not be empty'
+            raise ValueError(msg)
         self._set_attribute_str_default("meta:name", name)
 
     @property
@@ -112,7 +113,8 @@ class MetaUserDefined(Element):
             ValueError: If an unknown `value_type` is provided.
         """
         if value_type not in {"boolean", "date", "float", "time", "string"}:
-            raise ValueError(f'Unknown "value_type": {value_type!r}')
+            msg = f"Unknown value_type: {value_type!r}"
+            raise ValueError(msg)
         self._set_attribute_str_default("meta:value-type", value_type)
 
     @property
@@ -142,7 +144,8 @@ class MetaUserDefined(Element):
         if value_type == "string":
             return text
         # should never happen
-        raise TypeError(f"Unknown value type: '{value_type!r}'")  # pragma: nocover
+        msg = f"Unknown value type: {value_type!r}"
+        raise TypeError(msg)  # pragma: nocover
 
     @value.setter
     def value(
@@ -206,7 +209,8 @@ class MetaUserDefined(Element):
             return "string"
         if isinstance(value, timedelta):
             return "time"
-        raise TypeError(f'unexpected type "{type(value)}" for value')
+        msg = f"Unexpected type {type(value)!r} for value"
+        raise TypeError(msg)
 
     def as_dict(
         self,

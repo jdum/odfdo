@@ -56,7 +56,8 @@ class Manifest(XmlPart):
         )
         result = self.xpath(xpath_query)
         if not result:
-            raise KeyError(f"Path not found: '{full_path}'")
+            msg = f"Path not found: {full_path!r}"
+            raise KeyError(msg)
         return result[0]  # ty: ignore
 
     def get_path_medias(self) -> list[tuple[str | None, str | None]]:

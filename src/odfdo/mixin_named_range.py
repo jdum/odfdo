@@ -134,10 +134,12 @@ class NRMixin(Element):
         """
         name = name.strip()
         if not name:
-            raise ValueError("Name required")
+            msg = "Name required"
+            raise ValueError(msg)
         table_name = table_name.strip()
         if not table_name:
-            raise ValueError("Table name required")
+            msg = "Table name required"
+            raise ValueError(msg)
         named_range = NamedRange(name, crange, table_name, usage)
         self.append_named_range(named_range)
 

@@ -58,12 +58,15 @@ def table_name_check(name: Any) -> str:
         ValueError: If `name` is empty or contains forbidden characters.
     """
     if not isinstance(name, str):
-        raise TypeError("String required.")
+        msg = "String required"
+        raise TypeError(msg)
     table_name: str = name.strip()
     if not table_name:
-        raise ValueError("Empty name not allowed.")
+        msg = "Empty name not allowed"
+        raise ValueError(msg)
     if match := _RE_TABLE_NAME.search(table_name):
-        raise ValueError(f"Character {match.group()!r} not allowed.")
+        msg = f"Character {match.group()!r} not allowed"
+        raise ValueError(msg)
     return table_name
 
 
@@ -200,10 +203,11 @@ class NamedRange(Element):
         """
         name = name.strip()
         if not name:
-            raise ValueError("Named Range name can't be empty.")
+            msg = "Named Range name can't be empty"
+            raise ValueError(msg)
         for x in name:
             if x in _forbidden_in_named_range():
-                msg = f"Character forbidden in Named Range name: {x!r} "
+                msg = f"Character forbidden in Named Range name: {x!r}"
                 raise ValueError(msg)
         step = ""
         for x in name:
@@ -285,7 +289,8 @@ class NamedRange(Element):
             x, y = digits
             z, t = digits
         if x is None or y is None or z is None or t is None:
-            raise ValueError(f"Wrong format for cell range: {coord!r}")
+            msg = f"Wrong format for cell range: {coord!r}"
+            raise ValueError(msg)
         self.start = x, y
         self.end = z, t
         self.crange = x, y, z, t
@@ -377,10 +382,12 @@ class NamedRange(Element):
         """
         body = self.document_body
         if not body:
-            raise ValueError("Table is not inside a document.")
+            msg = "Table is not inside a document"
+            raise ValueError(msg)
         table = body.get_table(name=self.table_name)
         if table is None:
-            raise ValueError(f"Table not found: {self.table_name!r}")
+            msg = f"Table not found: {self.table_name!r}"
+            raise ValueError(msg)
         return table.get_values(self.crange, cell_type, complete, get_type, flat)
 
     def get_value(self, get_type: bool = False) -> Any:
@@ -402,10 +409,12 @@ class NamedRange(Element):
         """
         body = self.document_body
         if not body:
-            raise ValueError("Table is not inside a document.")
+            msg = "Table is not inside a document"
+            raise ValueError(msg)
         table: Table | None = body.get_table(name=self.table_name)
         if table is None:
-            raise ValueError(f"Table not found: {self.table_name!r}")
+            msg = f"Table not found: {self.table_name!r}"
+            raise ValueError(msg)
         return table.get_value(self.start, get_type)
 
     def set_values(
@@ -433,10 +442,12 @@ class NamedRange(Element):
         """
         body = self.document_body
         if not body:
-            raise ValueError("Table is not inside a document.")
+            msg = "Table is not inside a document"
+            raise ValueError(msg)
         table = body.get_table(name=self.table_name)
         if table is None:
-            raise ValueError(f"Table not found: {self.table_name!r}")
+            msg = f"Table not found: {self.table_name!r}"
+            raise ValueError(msg)
         table.set_values(
             values,
             coord=self.crange,
@@ -469,10 +480,12 @@ class NamedRange(Element):
         """
         body = self.document_body
         if not body:
-            raise ValueError("Table is not inside a document.")
+            msg = "Table is not inside a document"
+            raise ValueError(msg)
         table = body.get_table(name=self.table_name)
         if table is None:
-            raise ValueError(f"Table not found: {self.table_name!r}")
+            msg = f"Table not found: {self.table_name!r}"
+            raise ValueError(msg)
         table.set_value(
             coord=self.start,
             value=value,

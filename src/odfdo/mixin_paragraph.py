@@ -602,7 +602,8 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
         # Without "content" nor "position"
         if content is not None or not isinstance(position, int):
-            raise ValueError("Bad arguments")
+            msg = "Bad arguments"
+            raise ValueError(msg)
 
         # Insert
         self._insert(annotation_element, before=before, after=after, position=position)
@@ -641,7 +642,8 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         if annotation_element is None:
             raise ValueError
         if not isinstance(annotation_element, Annotation):
-            raise TypeError("Not a <office:annotation> Annotation")
+            msg = "Not a <office:annotation> Annotation"
+            raise TypeError(msg)
 
         # remove existing end tag
         name = annotation_element.name
@@ -736,7 +738,8 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
         # Without "content" nor "position"
         if content is not None or not isinstance(position, int):
-            raise ValueError("bad arguments")
+            msg = "Bad arguments"
+            raise ValueError(msg)
 
         # Insert a positional reference mark
         reference = ReferenceMark(name)
@@ -772,7 +775,8 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             TypeError: If `reference_mark` is not a `ReferenceMark` or `ReferenceMarkStart` instance.
         """
         if not isinstance(reference_mark, (ReferenceMark, ReferenceMarkStart)):
-            raise TypeError("Not a ReferenceMark or ReferenceMarkStart")
+            msg = "Not a ReferenceMark or ReferenceMarkStart"
+            raise TypeError(msg)
         name = reference_mark.name
         if isinstance(reference_mark, ReferenceMark):
             # change it to a range reference:
@@ -1039,7 +1043,8 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
         # Without "content" nor "position"
         if content is not None or not isinstance(position, int):
-            raise ValueError("bad arguments")
+            msg = "Bad arguments"
+            raise ValueError(msg)
 
         # Role
         if role is None:
@@ -1049,7 +1054,8 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         elif role == "end":
             bookmark = BookmarkEnd(name)
         else:
-            raise ValueError("bad arguments")
+            msg = "Bad arguments"
+            raise ValueError(msg)
 
         # Insert
         self._insert(bookmark, before=before, after=after, position=position)

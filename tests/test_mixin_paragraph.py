@@ -204,7 +204,7 @@ def test_set_reference_mark_position_tuple():
 
 def test_set_reference_mark_bad_args():
     elem = Paragraph("test")
-    with pytest.raises(ValueError, match="bad arguments"):
+    with pytest.raises(ValueError, match="Bad arguments"):
         elem.set_reference_mark("ref1", content="regex", position=(1, 2))
 
 
@@ -264,9 +264,9 @@ def test_set_bookmark_role_end():
 
 def test_set_bookmark_bad_args():
     elem = Paragraph("test")
-    with pytest.raises(ValueError, match="bad arguments"):
+    with pytest.raises(ValueError, match="Bad arguments"):
         elem.set_bookmark("bm1", content="regex", position=(1, 2))
-    with pytest.raises(ValueError, match="bad arguments"):
+    with pytest.raises(ValueError, match="Bad arguments"):
         elem.set_bookmark("bm1", role="invalid")
 
 
