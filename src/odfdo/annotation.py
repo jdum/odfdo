@@ -297,7 +297,8 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
             self.clear()
             self.append(text_or_element)
         else:
-            raise TypeError(f'Unexpected type for body: "{type(text_or_element)}"')
+            msg = f"Unexpected type for body: {type(text_or_element)!r}"
+            raise TypeError(msg)
 
     @property
     def start(self) -> Annotation:
@@ -310,7 +311,8 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
         name = self.name
         parent = self.parent
         if parent is None:  # pragma: nocover
-            raise ValueError("Can't find end tag: no parent available")
+            msg = "Can't find end tag: no parent available"
+            raise ValueError(msg)
         body: Body | Element = self.document_body or parent
         method = getattr(body, "get_annotation_end", None)
         if callable(method):
@@ -377,9 +379,11 @@ class Annotation(MDTail, ListMixin, LinkMixin, Element, DcCreatorMixin, DcDateMi
     def check_validity(self) -> None:
         """Checks the validity of the Annotation."""
         if not self.note_body:
-            raise ValueError("Annotation must have a body")
+            msg = "Annotation must have a body"
+            raise ValueError(msg)
         if not self.dc_creator:
-            raise ValueError("Annotation must have a creator")
+            msg = "Annotation must have a creator"
+            raise ValueError(msg)
         if not self.dc_date:
             self.dc_date = datetime.now()
 
@@ -436,7 +440,8 @@ class AnnotationEnd(MDTail, Element):
             if annotation:
                 name = annotation.name
             if not name:
-                raise ValueError("Annotation-end must have a name")
+                msg = "Annotation-end must have a name"
+                raise ValueError(msg)
             self.name = name
 
     @property
@@ -445,9 +450,8 @@ class AnnotationEnd(MDTail, Element):
         name = self.name
         parent = self.parent
         if parent is None:
-            raise ValueError(
-                "Can't find start tag: no parent available"
-            )  # pragma: nocover
+            msg = "Can't find start tag: no parent available"
+            raise ValueError(msg)  # pragma: nocover
         body: Body | Element = self.document_body or parent
         method = getattr(body, "get_annotation", None)
         if callable(method):  # pragma: nocover

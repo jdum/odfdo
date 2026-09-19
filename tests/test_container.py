@@ -2873,7 +2873,7 @@ def test_mimetype_setter_accept_bytes():
 def test_mimetype_setter_type_error():
     """Test mimetype setter raises TypeError for invalid types."""
     container = Container()
-    with pytest.raises(TypeError, match='Wrong mimetype "123"'):
+    with pytest.raises(TypeError, match="Wrong mimetype 123"):
         container.mimetype = 123  # ty: ignore
 
 

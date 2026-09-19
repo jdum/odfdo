@@ -221,7 +221,8 @@ class Cell(ListMixin, TocMixin, SectionMixin, AnnotationMixin, ElementTyped):
             case _date():
                 self.date = value
             case _:
-                raise TypeError(f"Unknown value type, try with set_value() : {value!r}")
+                msg = f"Unknown value type, try with set_value() : {value!r}"
+                raise TypeError(msg)
 
     @property
     def _bool_string(self) -> str:
