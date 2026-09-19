@@ -807,7 +807,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         regex: str | None = None,
         offset: int | None = None,
         length: int = 0,
-        **kwargs: Any,
+        match_string: str = "",
     ) -> list[Span]:
         """Apply a text style to content within the paragraph using a `text:span` element.
 
@@ -820,6 +820,8 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             offset: The starting character offset in the paragraph's text content.
             length: The length of the text content to apply the style to,
                 starting from `offset`.
+            match_string: Text content for the span (internally used by the
+                regex/offset wrapper).
 
         Returns:
             list[Span]: A list of generated `Span` instances, each representing
@@ -827,7 +829,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         """
         span: Span = Element.from_tag("text:span")  # ty: ignore[invalid-assignment]
         span.text = ""
-        span.append_plain_text(kwargs["match_string"])
+        span.append_plain_text(match_string)
         span.style = style
         return span  # ty: ignore[invalid-return-type]
 
@@ -868,7 +870,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         regex: str | None = None,
         offset: int | None = None,
         length: int = 0,
-        **kwargs: Any,
+        match_string: str = "",
     ) -> list[Link]:
         """Create a hyperlink from text content within the paragraph.
 
@@ -881,12 +883,14 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             offset: The starting character offset in the paragraph's text content.
             length: The length of the text content to convert into a link,
                 starting from `offset`.
+            match_string: Text content for the link (internally used by the
+                regex/offset wrapper).
 
         Returns:
             list[Link]: A list of generated `Link` instances, each representing
                 a hyperlink.
         """
-        return Link(url, text=kwargs["match_string"])  # ty: ignore[invalid-return-type]
+        return Link(url, text=match_string)  # ty: ignore[invalid-return-type]
 
     def remove_links(self) -> Element:
         """Remove all `text:a` (hyperlink) elements from a copy of the paragraph.
