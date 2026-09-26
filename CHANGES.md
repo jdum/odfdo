@@ -16,6 +16,10 @@
 
 -   Updated test matrix in `tox.ini` for `lxml` and Python versions
 
+### Fixed
+
+-   Resolve `ty` warnings in `table.py`, `element.py`, `element_strip.py` about iterable truthiness.
+
 ## [3.26.1] - 2026-09-19
 
 -   Comprehensive docstring documentation and formatting improvements across all code.
