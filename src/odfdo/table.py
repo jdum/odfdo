@@ -1030,14 +1030,22 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             values = [values]  # ty: ignore
         for row_values in values:
             y += 1
-            if not row_values:
+            if row_values is None:
                 continue
+            val_list: Any
+            # isiterable excludes str and bytes, avoiding splitting strings into chars
+            if isiterable(row_values):
+                val_list = list(row_values)
+                if not val_list:
+                    continue
+            else:
+                val_list = row_values
             row = self.get_row(y, clone=True)
             repeated = row.repeated or 1
             if repeated >= 2:
                 row.repeated = None
             row.set_values(
-                row_values,
+                val_list,
                 start=x,
                 cell_type=cell_type,
                 currency=currency,
@@ -1973,15 +1981,25 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         if x is None:
             x = 0
         y -= 1
+        if not isiterable(cells):
+            cells = [cells]  # ty: ignore
         for row_cells in cells:
             y += 1
-            if not row_cells:
+            if row_cells is None:
                 continue
+            cell_list: Any
+            # isiterable excludes str and bytes, and returns False for single Cell
+            if isiterable(row_cells):
+                cell_list = list(row_cells)
+                if not cell_list:
+                    continue
+            else:
+                cell_list = [row_cells]
             row = self.get_row(y, clone=True)
             repeated = row.repeated or 1
             if repeated >= 2:
                 row.repeated = None
-            row.set_cells(row_cells, start=x, clone=clone)
+            row.set_cells(cast("Iterable[Cell]", cell_list), start=x, clone=clone)
             self.set_row(y, row, clone=False)
             self._update_width(row)
 

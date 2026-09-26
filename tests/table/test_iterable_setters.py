@@ -135,3 +135,60 @@ def test_table_set_column_cells_generator_wrong_length():
     table = Table("test", width=2, height=3)
     with pytest.raises(ValueError, match="Column height mismatch"):
         table.set_column_cells(0, (Cell(1), Cell(2)))
+
+
+def test_table_set_cells_with_empty_generator_and_none():
+    table = Table("test", width=3, height=4)
+    empty_gen = (c for c in [])
+    cells = [
+        [Cell(1), Cell(2)],
+        empty_gen,
+        None,
+        [Cell(3), Cell(4)],
+    ]
+    table.set_cells(cells)
+    assert table.get_values() == [
+        [1, 2, None],
+        [None, None, None],
+        [None, None, None],
+        [3, 4, None],
+    ]
+
+
+def test_table_set_values_with_empty_generator_and_none():
+    table = Table("test", width=3, height=4)
+    empty_gen = (v for v in [])
+    values = [
+        [10, 20],
+        empty_gen,
+        None,
+        [30, 40],
+    ]
+    table.set_values(values)
+    assert table.get_values() == [
+        [10, 20, None],
+        [None, None, None],
+        [None, None, None],
+        [30, 40, None],
+    ]
+
+
+def test_table_set_cells_single_cell():
+    table = Table("test", width=3, height=3)
+    table.set_cells(Cell(42), coord="B2")
+    assert table.get_values() == [
+        [None, None, None],
+        [None, 42, None],
+        [None, None, None],
+    ]
+
+
+def test_table_set_cells_1d_list_of_cells():
+    table = Table("test", width=3, height=3)
+    table.set_cells([Cell(10), Cell(20)], coord="A1")
+    assert table.get_values() == [
+        [10, None, None],
+        [20, None, None],
+        [None, None, None],
+    ]
+
