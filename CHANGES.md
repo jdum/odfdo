@@ -1,5 +1,21 @@
 # Odfdo Release Notes
 
+## [3.26.2] - 2026-09-26
+
+-   Added `-i` / `--input` and `-o` / `--output` options to the `odfdo-markdown` CLI script.
+-   Added support and testing for Python 3.15 and lxml 7.0.0.
+
+### Added
+
+-   Added `-i` / `--input` and `-o` / `--output` options to the `odfdo-markdown` CLI script.
+-   Add tests for `odfdo-markdown`.
+-   Add Python 3.15 classifier in `pyproject.toml` and CI matrix in `.github/workflows/main.yml`.
+-   Add tox test environments for Python 3.15 and `lxml` 7.0.0.
+
+### Changed
+
+-   Updated test matrix in `tox.ini` for `lxml` and Python versions
+
 ## [3.26.1] - 2026-09-19
 
 -   Comprehensive docstring documentation and formatting improvements across all code.
