@@ -1,5 +1,9 @@
 # Odfdo Release Notes
 
+## [3.26.3] - 2026-09-26
+
+-   Removed Python 3.15 test for `lxml` 6.0.4 from `tox` and github actions. 
+
 ## [3.26.2] - 2026-09-26
 
 -   Added `-i` / `--input` and `-o` / `--output` options to the `odfdo-markdown` CLI script.
