@@ -1102,3 +1102,18 @@ def test_filtered_drawing_7(drawing_test):
     dt2 = datetime(2024, 3, 30, 12, 0, 1)
     res = drawing._filtered_elements("descendant::text:changed-region", dc_date=dt2)
     assert len(res) == 0
+
+
+def test_element_extend():
+    parent = Element.from_tag("text:p")
+    # extend with list
+    parent.extend([Element.from_tag("text:span"), Element.from_tag("text:span")])
+    assert len(parent.children) == 2
+
+    # extend with generator
+    parent.extend(Element.from_tag("text:a") for _ in range(2))
+    assert len(parent.children) == 4
+
+    # extend with empty generator
+    parent.extend(Element.from_tag("text:a") for _ in range(0))
+    assert len(parent.children) == 4

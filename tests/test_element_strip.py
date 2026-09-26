@@ -151,3 +151,25 @@ def test_strip_tags_bad_attribute(capsys):
 
     captured = capsys.readouterr()
     assert "strip_tags(): bad attribute" in captured.err
+
+
+def test_strip_tags_generators():
+    # Empty generator for strip returns unchanged
+    element = Element.from_tag("<text:p>abc <text:span>inner</text:span> xyz</text:p>")
+    empty_gen = (tag for tag in [])
+    res = strip_tags(element, strip=empty_gen)
+    assert res._canonicalize() == (
+        "<text:p>abc <text:span>inner</text:span> xyz</text:p>"
+    )
+
+    # Generator for strip and protect
+    element2 = Element.from_tag(
+        "<text:p>abc <text:span>inner</text:span> <text:other>keep</text:other></text:p>"
+    )
+    strip_gen = (tag for tag in ["text:span"])
+    protect_gen = (tag for tag in ["text:p"])
+    res2 = strip_tags(element2, strip=strip_gen, protect=protect_gen)
+    assert res2._canonicalize() == (
+        "<text:p>abc <text:span>inner</text:span> "
+        "<text:other>keep</text:other></text:p>"
+    )

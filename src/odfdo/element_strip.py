@@ -91,13 +91,15 @@ def strip_tags(
             children and text content is returned.
 
     """
-    if not strip:
+    if strip is None:
         return element
-    if not protect:
-        protect = ()
+    strip_set = set(strip)
+    if not strip_set:
+        return element
+    protect_set = set(protect) if protect is not None else set()
     protected = False
-    result: Element | list[Element | str] = []
-    result, modified = _strip_tags(element, strip, protect, protected)
+    # result: Element | list[Element | str] = []
+    result, modified = _strip_tags(element, strip_set, protect_set, protected)
     if modified and isinstance(result, list) and default:
         new: Element = Element.from_tag(default)
         for content in result:
@@ -108,17 +110,17 @@ def strip_tags(
 
 def _strip_tags(
     element: Element,
-    strip: Iterable[str],
-    protect: Iterable[str],
+    strip: set[str],
+    protect: set[str],
     protected: bool,
 ) -> tuple[Element | list[Element | str], bool]:
     """Strip tags recursively from element (internal helper).
 
     Args:
-        element (Element): The current element to process.
-        strip (Iterable[str]): Tags to be stripped.
-        protect (Iterable[str]): Tags to be protected.
-        protected (bool): A flag indicating if the current element is under a
+        element: The current element to process.
+        strip: Tags to be stripped.
+        protect: Tags to be protected.
+        protected: A flag indicating if the current element is under a
             protected parent.
 
     Returns:
@@ -130,10 +132,7 @@ def _strip_tags(
     element_clone = element.clone
     modified = False
     children: list[Element | str] = []
-    if protect and element.tag in protect:
-        protect_below = True
-    else:
-        protect_below = False
+    protect_below = element.tag in protect
     for child in element_clone.children:
         striped_child, is_modified = _strip_tags(child, strip, protect, protect_below)
         if is_modified:
@@ -145,7 +144,7 @@ def _strip_tags(
 
     text = element_clone.text
     tail = element_clone.tail
-    if not protected and strip and element.tag in strip:
+    if not protected and element.tag in strip:
         element_result: list[Element | str] = []
         if text:
             element_result.append(text)

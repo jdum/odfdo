@@ -1998,10 +1998,9 @@ class Element(MDBase):
                 append.
 
         """
-        if odf_elements:
-            current = self.__element
-            elements = [element.__element for element in odf_elements]
-            current.extend(elements)
+        elements = [element.__element for element in odf_elements]
+        if elements:
+            self.__element.extend(elements)
 
     def _xml_append(self, element: Element) -> None:
         """Append the underlying lxml element of another Element instance.
