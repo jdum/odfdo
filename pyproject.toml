@@ -1,6 +1,6 @@
 [project]
 name = "odfdo"
-version = "3.26.3"
+version = "3.27.0"
 description = "Python library for OpenDocument Format"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE.txt"]
@@ -65,21 +65,21 @@ doc = [
 ]
 dev = [
     "duckdb>=1.0.0", # for recipes about duckdb
-    "iniconfig>=2.1.0",
+    "iniconfig>=2.3.1",
     "numpy>=1.24.0", # for recipes about numpy
     "openpyxl>=3.1.0", # for recipes about openpyxl
     "pandas>=2.0.0", # for recipes about pandas
     "pillow>=12.1.1",
     "polars>=1.0.0", # for recipes about polars
     "pyexcel>=0.7.0", # for recipes about pyexcel
-    "pytest>=8.4.2",
+    "pytest>=9.1.1",
     "pytest-xdist>=3.8.0",
     "coverage>=7.16.1",
     "pytest-cov>=7.0.0",
     "tabulate>=0.9.0", # for recipes about tabulate
-    "tox>=4.64.3",
-    "ruff>=0.16.9",
-    "ty>=0.0.84",
+    "tox>=4.63.0",
+    "ruff>=0.17.0",
+    "ty>=0.0.86",
 ]
 
 [tool.uv]
@@ -89,7 +89,7 @@ default-groups = ["doc", "dev"]
 source-exclude = [".DS_Store"]
 
 [build-system]
-requires = ["uv_build>=0.9.0,<0.13.0"]
+requires = ["uv_build>=0.12.0,<0.14.0"]
 build-backend = "uv_build"
 
 [tool.ty.environment]
@@ -207,7 +207,7 @@ ignore = [
 "recipes/accessing_a_single_element.py" = ["RUF001"]
 
 [tool.pytest.ini_options]
-minversion = "8.0"
+minversion = "9.0"
 testpaths = ["tests"]
 
 [tool.coverage.run]
