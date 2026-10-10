@@ -1,5 +1,14 @@
 # Odfdo Release Notes
 
+## [3.27.0] - 2026-10-10
+
+-   Add Python 3.15 to the test suite.
+
+### Changed
+
+-   Adapt configurations of `pytproject.toml`, `tox` and `github actions` for Python 3.15.
+-   Small refactor and code reformat.
+
 ## [3.26.3] - 2026-09-26
 
 -   Removed Python 3.15 test for `lxml` 6.0.4 from `tox` and github actions. 

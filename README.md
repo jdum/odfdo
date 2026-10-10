@@ -63,7 +63,7 @@ uv run python doc_src/generate_doc.py
 
 # Dependencies
 
-The project is tested on Python 3.10 to 3.14 (Linux, Mac, Windows). See previous releases for earlier versions of Python. For Python 3.9, see branch `support/python39`.
+The project is tested on Python 3.10 to 3.15 (Linux, Mac, Windows). See previous releases for earlier versions of Python. For Python 3.9, see branch `support/python39`.
 
 A special effort has been made to limit the dependencies of this library: the only (non-development) dependency is `lxml`. The required versions of `lxml` depend mainly on the version of Python used; see the `pyproject.toml` file for details. The project tries to keep up with `lxml` version updates regularly.
 
@@ -74,7 +74,7 @@ A special effort has been made to limit the dependencies of this library: the on
 ```python
 from odfdo import Document, Paragraph
 
-doc = Document('text')
+doc = Document("text")
 doc.body.append(Paragraph("Hello world!"))
 
 doc.save("hello.odt")
@@ -85,13 +85,13 @@ doc.save("hello.odt")
 ```python
 from odfdo import Document
 
-doc = Document('existing_spreadsheet.ods')
+doc = Document("existing_spreadsheet.ods")
 sheet = doc.body.get_sheet(0)
 
 print(f"Value of A1: {sheet.get_cell('A1').value}")
-sheet.set_value('B2', 'Updated Value')
+sheet.set_value("B2", "Updated Value")
 
-doc.save('modified_spreadsheet.ods')
+doc.save("modified_spreadsheet.ods")
 ```
 
 ## Utilities
