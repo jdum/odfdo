@@ -3077,7 +3077,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         return (cloned_table.height, cloned_table.width)
 
     @property
-    def headers(self) -> list[CellValue | None]:
+    def headers(self) -> list[CellValue | None]:  # ty: ignore[invalid-property-type-override]
         """Return the first row of table values (column headers) after rstrip.
 
         The table remains unchanged.

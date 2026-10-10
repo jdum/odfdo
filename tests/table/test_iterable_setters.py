@@ -191,4 +191,3 @@ def test_table_set_cells_1d_list_of_cells():
         [20, None, None],
         [None, None, None],
     ]
-

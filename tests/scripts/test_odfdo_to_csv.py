@@ -122,7 +122,6 @@ def test_to_csv_2_3(capsys, samples):
     assert captured.out == ""
 
 
-
 def test_to_csv_2_4(capsys, samples):
     source = samples("simple_table.ods")
     params = parse_cli_args(["-u", "-i", str(source), "-t", "Example3"])

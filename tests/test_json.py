@@ -404,7 +404,9 @@ def test_document_roundtrip_large_ods(samples):
 
     new_doc = Document.from_json(data)
     assert len(new_doc.body.tables) == 3
-    for orig_table, new_table in zip(doc_orig.body.tables, new_doc.body.tables, strict=True):
+    for orig_table, new_table in zip(
+        doc_orig.body.tables, new_doc.body.tables, strict=True
+    ):
         assert new_table.name == orig_table.name
         assert new_table.size == orig_table.size
         assert new_table.values == orig_table.values

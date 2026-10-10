@@ -41,9 +41,7 @@ class OfficeFormsMixin(Element):
             OfficeForms | None: The `OfficeForms` instance if found, otherwise `None`.
 
         """
-        return cast(
-            "OfficeForms | None", self.get_element("descendant::office:forms")
-        )
+        return cast("OfficeForms | None", self.get_element("descendant::office:forms"))
 
     @property
     def office_forms(self) -> OfficeForms | None:

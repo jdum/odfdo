@@ -21,7 +21,6 @@
 #          Hervé Cauwelier <herve@itaapy.com>
 
 
-
 from odfdo.tab import Tab
 
 

@@ -406,4 +406,3 @@ def test_insert_style_element_without_family_automatic():
         '//office:automatic-styles/draw:gradient[@draw:name="BlueGrad"]'
     )
     assert inserted is not None
-

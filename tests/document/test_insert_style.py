@@ -587,7 +587,9 @@ def test_insert_style_family_less_unnamed_element():
 
 def test_insert_style_unknown_family_tag():
     doc = Document("text")
-    style = Element.from_tag('<style:style style:name="bad" style:family="unknown_family"/>')
+    style = Element.from_tag(
+        '<style:style style:name="bad" style:family="unknown_family"/>'
+    )
     with pytest.raises(ValueError, match="Invalid style"):
         doc.insert_style(style)
 
