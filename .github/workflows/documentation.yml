@@ -20,9 +20,7 @@ jobs:
               uses: astral-sh/setup-uv@v10.0.0
 
             - name: Setup python
-              uses: actions/setup-python@v7
-              with:
-                  python-version: "3.15"
+              run: uv python install 3.15
 
             - name: Install doc dependencies
               run: uv sync --group doc
