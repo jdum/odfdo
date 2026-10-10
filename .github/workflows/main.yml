@@ -18,17 +18,15 @@ jobs:
                       python-version: "3.10"
                     - os: windows-latest
                       python-version: "3.10"
-                    - os: windows-latest
-                      python-version: "3.15"
             fail-fast: false
         steps:
             - name: Check out
-              uses: actions/checkout@v6
+              uses: actions/checkout@v7
               with:
                   fetch-depth: 0
 
             - name: Install uv
-              uses: astral-sh/setup-uv@v7
+              uses: astral-sh/setup-uv@v10.0.0
               with:
                   enable-cache: true
                   cache-suffix: ${{ matrix.os }}-py${{ matrix.python-version }}
@@ -45,8 +43,8 @@ jobs:
                   # Convert "3.12" to "py312"
                   PY_FACTOR="py$(echo ${{ matrix.python-version }} | tr -d '.')"
 
-                  if [ "${{ matrix.python-version }}" == "3.14" ]; then
-                      # Run lint first, then environments with 'py314' factor
+                  if [ "${{ matrix.python-version }}" == "3.15" ]; then
+                      # Run lint first, then environments with 'py315' factor
                       echo "Executing: tox -e lint"
                       uv run -- tox -e lint
                       echo "Executing: tox -f $PY_FACTOR"
