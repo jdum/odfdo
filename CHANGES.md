@@ -1,5 +1,13 @@
 # Odfdo Release Notes
 
+## [3.27.1] - 2026-10-10
+
+-   Adapt github action to genrate documentation with `Python 3.15`.
+
+### Changed
+
+-   Adapt github action `documentation.yml` to use `Python 3.15`.
+
 ## [3.27.0] - 2026-10-10
 
 -   Add Python 3.15 to the test suite.
