@@ -1,5 +1,11 @@
 # Odfdo Release Notes
 
+## Unreleased
+
+### Fixed
+
+-   Preserve fractional seconds when reading and writing duration values, including spreadsheet time cells.
+
 ## [3.27.1] - 2026-10-10
 
 -   Adapt github action to genrate documentation with `Python 3.15`.

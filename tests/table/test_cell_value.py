@@ -905,6 +905,29 @@ def test_cell_is_empty_with_style():
     assert cell.is_empty(aggressive=True) is True
 
 
+@pytest.mark.parametrize(
+    "value",
+    [
+        timedelta(seconds=1, microseconds=500000),
+        timedelta(microseconds=1),
+        timedelta(microseconds=-1),
+        timedelta(days=1, seconds=3, microseconds=123456),
+        timedelta(days=999999998, microseconds=1),
+        timedelta(seconds=53),
+    ],
+)
+def test_cell_fractional_duration_ods_roundtrip(tmp_path, value):
+    doc = Document("spreadsheet")
+    table = doc.body.tables[0]
+    table.set_value((0, 0), value)
+    assert table.get_value((0, 0)) == value
+
+    file_path = tmp_path / "fractional_duration.ods"
+    doc.save(file_path)
+    loaded = Document(file_path)
+    assert loaded.body.tables[0].get_value((0, 0)) == value
+
+
 def test_cell_value_nan_inf_ods_file_roundtrip(tmp_path):
     doc = Document("spreadsheet")
     table = doc.body.tables[0]

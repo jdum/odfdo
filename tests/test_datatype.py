@@ -212,6 +212,40 @@ def test_duration_decode_days():
     assert Duration.decode(duration) == expected
 
 
+@pytest.mark.parametrize(
+    ("encoded", "value"),
+    [
+        ("PT00H00M01.5S", timedelta(seconds=1, microseconds=500000)),
+        ("PT00H00M00.000001S", timedelta(microseconds=1)),
+        ("-PT00H00M00.000001S", timedelta(microseconds=-1)),
+        ("-PT00H00M01.5S", timedelta(seconds=-1, microseconds=-500000)),
+        ("PT01H02M03.25S", timedelta(hours=1, minutes=2, seconds=3.25)),
+        ("PT24H00M00.123456S", timedelta(days=1, microseconds=123456)),
+        ("PT00H00M00S", timedelta(0)),
+        ("PT00H06M53S", timedelta(minutes=6, seconds=53)),
+    ],
+)
+def test_fractional_duration_encoding(encoded, value):
+    assert Duration.encode(value) == encoded
+
+
+@pytest.mark.parametrize(
+    ("encoded", "value"),
+    [
+        ("PT1.5S", timedelta(seconds=1, microseconds=500000)),
+        ("PT0.000001S", timedelta(microseconds=1)),
+        ("-PT0.000001S", timedelta(microseconds=-1)),
+        ("-PT1.5S", timedelta(seconds=-1, microseconds=-500000)),
+        ("PT1H2M3.25S", timedelta(hours=1, minutes=2, seconds=3.25)),
+        ("P1DT0.123456S", timedelta(days=1, microseconds=123456)),
+        ("PT0S", timedelta(0)),
+        ("PT6M53S", timedelta(minutes=6, seconds=53)),
+    ],
+)
+def test_fractional_duration_decoding(encoded, value):
+    assert Duration.decode(encoded) == value
+
+
 def test_duration_decode_raises_1():
     duration = "PT02H00M42"
     with pytest.raises(ValueError):
