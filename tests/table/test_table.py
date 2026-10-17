@@ -486,3 +486,132 @@ def test_table_values_setter_partiel_4(table):
         [1, 1, 1, 2, 3, 3, 3],
         [1, 2, 3, 4, 5, 6, 7],
     ]
+
+
+def test_table_no_table_col_properties(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    assert table.width == 7
+
+
+def test_table_no_table_col_properties_2(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    assert table.height == 4
+
+
+def test_table_no_table_col_properties_3(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    assert table.size == (7, 4)
+
+
+def test_table_no_table_col_properties_4(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    assert len(table.columns) == 7
+    assert table.get_column(0).x == 0
+    assert table.get_column(5).x == 5
+    assert table.get_column(-1).x == 6
+    assert table.get_column_values(0) == [1, 1, 1, 1]
+    assert table.get_column_values(5) == [3, 3, 3, 6]
+
+
+def test_table_no_table_col_mutations(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    table.delete_column(5)
+    assert table.width == 6
+    assert len(table.rows[0].cells) == 6
+
+
+def test_table_no_table_col_mutations_2(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    table.insert_column(5)
+    assert table.width == 8
+    assert len(table.rows[0].cells) == 8
+
+
+def test_table_no_table_col_mutations_3(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    table.set_column_values(0, [10, 20, 30, 40])
+    assert table.get_column_values(0) == [10, 20, 30, 40]
+
+
+def test_table_no_table_col_mutations_4(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    table.transpose(coord="A1:C3")
+    assert table.get_values(coord="A1:C3") == [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
+
+
+def test_table_partial_table_col_properties(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    assert table.width == 7
+
+
+def test_table_partial_table_col_properties_2(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    assert table.height == 4
+
+
+def test_table_partial_table_col_properties_3(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    assert table.size == (7, 4)
+
+
+def test_table_partial_table_col_properties_4(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    assert len(table.columns) == 7
+    assert table.get_column(0).x == 0
+    assert table.get_column(1).x == 1
+    assert table.get_column(5).x == 5
+    assert table.get_column(-1).x == 6
+    assert table.get_column_values(0) == [1, 1, 1, 1]
+    assert table.get_column_values(5) == [3, 3, 3, 6]
+    cols_from_4 = list(table.iter_columns(start=4))
+    assert [c.x for c in cols_from_4] == [4, 5, 6]
+
+
+def test_table_partial_table_col_mutations(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    table.delete_column(5)
+    assert table.width == 6
+    assert len(table.rows[0].cells) == 6
+
+
+def test_table_partial_table_col_mutations_2(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    table.delete_column(0)
+    assert table.width == 6
+    assert len(table.rows[0].cells) == 6
+
+
+def test_table_partial_table_col_mutations_3(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    table.insert_column(5)
+    assert table.width == 8
+    assert len(table.rows[0].cells) == 8
+
+
+def test_table_partial_table_col_mutations_4(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    table.set_column_values(6, [10, 20, 30, 40])
+    assert table.get_column_values(6) == [10, 20, 30, 40]
+
+
+def test_table_partial_table_col_mutations_5(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    table.transpose(coord="A1:C3")
+    assert table.get_values(coord="A1:C3") == [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
