@@ -410,7 +410,13 @@ class RowCache:
 class TableCache:
     """Cache for Table (internal)."""
 
-    __slots__ = ("col_elements", "col_map", "row_elements", "row_map")
+    __slots__ = (
+        "cached_width",
+        "col_elements",
+        "col_map",
+        "row_elements",
+        "row_map",
+    )
 
     def __init__(self) -> None:
         """Initialize a TableCache."""
@@ -418,6 +424,7 @@ class TableCache:
         self.col_map: list[int] = []
         self.row_elements: dict[int, Row] = {}
         self.col_elements: dict[int, Column] = {}
+        self.cached_width: int | None = None
 
     def __str__(self) -> str:
         return f"TC row:{self.row_map!r} col:{self.col_map!r}"
@@ -428,6 +435,7 @@ class TableCache:
         tc = cls()
         tc.row_map = source.row_map[:]
         tc.col_map = source.col_map[:]
+        tc.cached_width = source.cached_width
         return tc
 
     def height(self) -> int:
@@ -460,10 +468,12 @@ class TableCache:
     def clear_row_indexes(self) -> None:
         """Clear the indexed cached rows."""
         self.row_elements = {}
+        self.cached_width = None
 
     def clear_col_indexes(self) -> None:
         """Clear the indexed cached columns."""
         self.col_elements = {}
+        self.cached_width = None
 
     def row_idx(self, position: int) -> int | None:
         """Find row index in the map from the position."""
@@ -502,6 +512,7 @@ class TableCache:
     def insert_row_map_once(self, repeated: int) -> None:
         """Insert a repeated row count into the row map."""
         self.row_map = _insert_map_once(self.row_map, len(self.row_map), repeated)
+        self.cached_width = None
 
     # def erase_row_map_once(self, odf_idx: int) -> None:
     #     self.row_map = _erase_map_once(self.row_map, odf_idx)
@@ -509,6 +520,7 @@ class TableCache:
     def insert_col_map_once(self, repeated: int) -> None:
         """Insert a repeated column count into the column map."""
         self.col_map = _insert_map_once(self.col_map, len(self.col_map), repeated)
+        self.cached_width = None
 
     # def erase_col_map_once(self, odf_idx: int) -> None:
     #     self.col_map = _erase_map_once(self.col_map, odf_idx)
@@ -516,10 +528,12 @@ class TableCache:
     def make_row_map(self, idx_repeated_sequence: list[tuple[int, int]]) -> None:
         """Build the row map from repeated sequence data."""
         self.row_map = _make_cache_map(idx_repeated_sequence)
+        self.cached_width = None
 
     def make_col_map(self, idx_repeated_sequence: list[tuple[int, int]]) -> None:
         """Build the column map from repeated sequence data."""
         self.col_map = _make_cache_map(idx_repeated_sequence)
+        self.cached_width = None
 
     def set_row_in_cache(
         self,
