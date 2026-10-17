@@ -654,3 +654,50 @@ def test_save_normalizes_tables(samples, tmp_path):
     assert len(table2.columns) == 7
     assert table2.get_column(6).x == 6
     assert table2.get_column_values(6) == [3, 3, 3, 7]
+
+
+def test_save_folder_preserves_tables(samples, tmp_path):
+    doc = Document(samples("partial_table_col.ods"))
+    out = tmp_path / "folder_export"
+    doc.save(out, packaging="folder")
+    folder_dir = out.with_suffix(".folder")
+    content_xml = (folder_dir / "content.xml").read_text(encoding="utf-8")
+    assert 'table:number-columns-repeated="2"' in content_xml
+    assert 'table:number-columns-repeated="5"' not in content_xml
+    doc2 = Document(folder_dir)
+    table2 = doc2.body.tables[0]
+    assert table2.width == 7
+    assert table2._table_cache.width() == 2
+
+
+def test_append_column_with_title_first():
+    table = Table("title_first")
+    table.clear()
+    table.title = "A Title"
+    row = Row(width=3)
+    table.append_row(row)
+    table._table_cache.col_map = []
+    table._table_cache.clear_col_indexes()
+    col = table.append_column()
+    assert col.x == 0
+    assert table.width >= 1
+
+
+def test_doc_normalize_tables_edge_cases(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    doc.container = None
+    doc.normalize_tables()
+
+    doc2 = Document(samples("partial_table_col.ods"))
+    table = doc2.body.tables[0]
+    doc2.get_part = lambda _part: None  # type: ignore[method-assign]
+    doc2.normalize_tables()
+    assert table.width == 7
+
+
+def test_table_extend_rows_wider():
+    table = Table("extend_test", width=2, height=1)
+    new_rows = [Row(width=5)]
+    table.extend_rows(new_rows)
+    assert table.width == 5
+    assert table._table_cache.width() == 5

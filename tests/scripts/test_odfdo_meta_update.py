@@ -6,11 +6,13 @@ import io
 import json
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 import pytest
 
 from odfdo import Document
+from odfdo.const import ODF_CONTENT
 from odfdo.scripts import meta_update
 from odfdo.scripts.meta_update import main as main_script
 from odfdo.scripts.meta_update import main_meta_update, parse_cli_args
@@ -213,3 +215,44 @@ def test_meta_update_2_no_json_or_strip(capsys, samples):
     captured = capsys.readouterr()
 
     assert "required" in captured.out
+
+
+def test_meta_update_partial_table_col_normalized(tmp_path, samples):
+    source = samples("partial_table_col.ods")
+    out_file = tmp_path / "updated_partial.ods"
+    params = parse_cli_args(["-s", "-i", str(source), "-o", str(out_file)])
+    main_meta_update(params)
+
+    with zipfile.ZipFile(out_file) as z:
+        content_xml = z.read("content.xml").decode("utf-8")
+        assert 'table:number-columns-repeated="2"' in content_xml
+        assert 'table:number-columns-repeated="5"' in content_xml
+
+    doc = Document(out_file)
+    table = doc.body.tables[0]
+    assert table.width == 7
+    assert table._table_cache.width() == 7
+    assert len(table.columns) == 7
+    content_part = doc.get_part(ODF_CONTENT)
+    assert content_part is not None
+    assert content_part.root.get_attribute("office:version") == "1.4"
+
+
+def test_meta_update_no_table_col_normalized(tmp_path, samples):
+    source = samples("no_table_col.ods")
+    out_file = tmp_path / "updated_no_col.ods"
+    params = parse_cli_args(["-s", "-i", str(source), "-o", str(out_file)])
+    main_meta_update(params)
+
+    with zipfile.ZipFile(out_file) as z:
+        content_xml = z.read("content.xml").decode("utf-8")
+        assert 'table:number-columns-repeated="7"' in content_xml
+
+    doc = Document(out_file)
+    table = doc.body.tables[0]
+    assert table.width == 7
+    assert table._table_cache.width() == 7
+    assert len(table.columns) == 7
+    content_part = doc.get_part(ODF_CONTENT)
+    assert content_part is not None
+    assert content_part.root.get_attribute("office:version") == "1.4"
