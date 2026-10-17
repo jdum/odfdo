@@ -1383,11 +1383,8 @@ class Document(MDDocument):
         if not self.container:
             return
         tables: list[Table] = []
-        try:
-            if self.body is not None:
-                tables.extend(self.body.get_tables())
-        except (ValueError, AttributeError, TypeError):
-            pass
+        with contextlib.suppress(ValueError, AttributeError, TypeError):
+            tables.extend(self.body.get_tables())
         styles = self.get_part(ODF_STYLES)
         if isinstance(styles, XmlPart):
             tables.extend(
@@ -1457,8 +1454,7 @@ class Document(MDDocument):
         self.normalize_tables()
         if pretty and packaging != XML:
             for path, part in self.__xmlparts.items():
-                if part is not None:
-                    container.set_part(path, part.pretty_serialize())
+                container.set_part(path, part.pretty_serialize())
             for path in (ODF_CONTENT, ODF_META, ODF_SETTINGS, ODF_STYLES):
                 if path in self.__xmlparts:
                     continue
@@ -1474,8 +1470,7 @@ class Document(MDDocument):
                 container.set_part(path, part.pretty_serialize())
         else:
             for path, part in self.__xmlparts.items():
-                if part is not None:
-                    container.set_part(path, part.serialize())
+                container.set_part(path, part.serialize())
         container.save(target, packaging=packaging, backup=backup, pretty=pretty)
 
     @property

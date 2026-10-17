@@ -642,28 +642,15 @@ class MDTable(MDStyle):
         table = self.clone
         table.normalize_columns()
         table.rstrip(aggressive=True)
-        if not table.height:
+        if not table.height or not table.width:
             return ""
         if table.height > MAX_MD_LINES:
             msg = f"Table row count {table.height} exceeds limit {MAX_MD_LINES}"
             raise RuntimeError(msg)
-        all_row_sub_elements = [
-            table.get_row_sub_elements(row) for row in table.iter_rows()
-        ]
-        # The column count is derived from the actual row content, as some
-        # documents may lack table:table-column definitions.
-        md_width = max(
-            [len(row_sub) for row_sub in all_row_sub_elements] + [table.width]
-        )
-        if not md_width:
-            return ""
-        if md_width > MAX_MD_COLUMNS:
-            msg = f"Table column count {md_width} exceeds limit {MAX_MD_COLUMNS}"
+        if table.width > MAX_MD_COLUMNS:
+            msg = f"Table column count {table.width} exceeds limit {MAX_MD_COLUMNS}"
             raise RuntimeError(msg)
-        for row_sub in all_row_sub_elements:
-            if len(row_sub) < md_width:
-                row_sub.extend([[]] * (md_width - len(row_sub)))
-        sizer = {i: 3 for i in range(md_width)}  # noqa: C420
+        sizer = {i: 3 for i in range(table.width)}  # noqa: C420
         safe_global = _copy_global()
         column_styles: dict[int, str] = {}
         for col_idx in range(table.width):
@@ -671,6 +658,9 @@ class MDTable(MDStyle):
             if col and col.default_cell_style:
                 column_styles[col_idx] = col.default_cell_style
 
+        all_row_sub_elements = [
+            table.get_row_sub_elements(row) for row in table.iter_rows()
+        ]
         try:
             MD_GLOBAL["current_column_styles"] = column_styles
             for idx, row_sub in enumerate(all_row_sub_elements):
@@ -686,7 +676,7 @@ class MDTable(MDStyle):
             MD_GLOBAL["current_column_styles"] = column_styles
             result = []
             result.append(bars(fill_line(all_row_sub_elements[0], y=0)))
-            result.append(bars(fill_line(["-"] * md_width, "-", y=None)))
+            result.append(bars(fill_line(["-"] * table.width, "-", y=None)))
             result.extend(
                 [
                     bars(fill_line(all_row_sub_elements[idx], y=idx))

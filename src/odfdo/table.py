@@ -1596,13 +1596,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         self.extend(rows)
         self._compute_table_cache()
         # Update width if necessary
-        width = self.width
-        for row in self.iter_rows():
-            if row.width > width:
-                width = row.width
-        diff = width - self.width
-        if diff > 0:
-            self.append_column(Column(repeated=diff))
+        self.normalize_columns()
 
     def append_row(
         self,
