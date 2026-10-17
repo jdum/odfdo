@@ -640,6 +640,7 @@ class MDTable(MDStyle):
             ]
 
         table = self.clone
+        table.normalize_columns()
         table.rstrip(aggressive=True)
         if not table.height:
             return ""
