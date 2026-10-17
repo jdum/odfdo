@@ -615,3 +615,42 @@ def test_table_partial_table_col_mutations_5(samples):
     table = doc.body.tables[0]
     table.transpose(coord="A1:C3")
     assert table.get_values(coord="A1:C3") == [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
+
+
+def test_table_partial_table_col_normalize(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    assert table.width == 7
+    assert table._table_cache.width() == 2
+    table.normalize_columns()
+    assert table.width == 7
+    assert table._table_cache.width() == 7
+    assert len(table.columns) == 7
+    assert table.get_column(0).x == 0
+    assert table.get_column(1).x == 1
+    assert table.get_column(5).x == 5
+    assert table.get_column(-1).x == 6
+    assert table.get_column_values(0) == [1, 1, 1, 1]
+    assert table.get_column_values(5) == [3, 3, 3, 6]
+
+
+def test_doc_normalize_tables(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    doc.normalize_tables()
+    table = doc.body.tables[0]
+    assert table.width == 7
+    assert table._table_cache.width() == 7
+    assert len(table.columns) == 7
+
+
+def test_save_normalizes_tables(samples, tmp_path):
+    doc = Document(samples("partial_table_col.ods"))
+    out = tmp_path / "normalized.ods"
+    doc.save(out)
+    doc2 = Document(out)
+    table2 = doc2.body.tables[0]
+    assert table2.width == 7
+    assert table2._table_cache.width() == 7
+    assert len(table2.columns) == 7
+    assert table2.get_column(6).x == 6
+    assert table2.get_column_values(6) == [3, 3, 3, 7]
