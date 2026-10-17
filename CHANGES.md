@@ -1,6 +1,6 @@
 # Odfdo Release Notes
 
-## [3.27.2] - unreleased
+## [3.27.2] - 2026-10-17
 
 -   Support for tables with missing or partial `table:table-column` definitions.
 -   Added `Table.normalize_columns()` and `Document.normalize_tables()`.
