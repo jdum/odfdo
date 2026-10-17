@@ -1,5 +1,11 @@
 # Odfdo Release Notes
 
+## Unreleased
+
+### Fixed
+
+-   Preserve fractional seconds when reading and writing duration values, including spreadsheet time cells.
+
 ## [3.27.2] - 2026-10-17
 
 -   Support for tables with missing or partial `table:table-column` definitions.
