@@ -1446,15 +1446,16 @@ class Document(MDDocument):
         pretty = bool(pretty)
         backup = bool(backup)
         # Folder packaging is intended for debugging/analysis: preserve the
-        # original parts (version, missing files, manifest.rdf) as much as
-        # possible, but still pretty-print XML when requested.
+        # original parts (version, missing files, manifest.rdf, table columns)
+        # as much as possible, but still pretty-print XML when requested.
         if packaging != FOLDER:
             self._ensure_odf14()
             self._check_manifest_rdf()
-        self.normalize_tables()
+            self.normalize_tables()
         if pretty and packaging != XML:
             for path, part in self.__xmlparts.items():
-                container.set_part(path, part.pretty_serialize())
+                if part is not None:
+                    container.set_part(path, part.pretty_serialize())
             for path in (ODF_CONTENT, ODF_META, ODF_SETTINGS, ODF_STYLES):
                 if path in self.__xmlparts:
                     continue
@@ -1470,7 +1471,8 @@ class Document(MDDocument):
                 container.set_part(path, part.pretty_serialize())
         else:
             for path, part in self.__xmlparts.items():
-                container.set_part(path, part.serialize())
+                if part is not None:
+                    container.set_part(path, part.serialize())
         container.save(target, packaging=packaging, backup=backup, pretty=pretty)
 
     @property
