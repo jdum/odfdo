@@ -506,9 +506,10 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
 
         Append, don't insert, not to disturb the current layout.
         """
-        diff = row.width - self.width
+        diff = row.width - self._table_cache.width()
         if diff > 0:
             self.append_column(Column(repeated=diff))
+        self._table_cache.cached_width = None
 
     def _get_formatted_text_normal(self, context: dict | None) -> str:
         result = []
@@ -691,7 +692,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
     @property
     def width(self) -> int:
         """Get the current width of the table, based on the column
-        definitions.
+        definitions and row contents.
 
         Note that individual rows may have different widths. It is recommended
         to use the Table API to maintain a consistent width.
@@ -700,8 +701,21 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             int: The number of columns in the table.
 
         """
-        # Columns are our reference for user expected width
-        return self._table_cache.width()
+        cached = self._table_cache.cached_width
+        if cached is not None:
+            return cached
+        # known columns width
+        col_width = self._table_cache.width()
+        if self._table_cache.height() == 0:
+            self._table_cache.cached_width = col_width
+            return col_width
+        # secure computation (do not trust table-column computation)
+        rows = self._get_rows()
+        max_row_width = max(
+            col_width, max((row.width for row in rows), default=col_width)
+        )
+        self._table_cache.cached_width = max_row_width
+        return max_row_width
 
     @property
     def size(self) -> tuple[int, int]:
@@ -1258,6 +1272,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 some cells may be overwritten.
 
         """
+        if self.width == 0 or self.height == 0:
+            return
         data = []
         if coord is None:
             data = [row.cells for row in self.iter_rows()]
@@ -2245,6 +2261,13 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 return
             column.x = x
             yield column
+        while x < min(end, self.width - 1):
+            x += 1
+            if x < start:
+                continue
+            col = Column()
+            col.x = x
+            yield col
 
     traverse_columns = iter_columns
 
@@ -2291,8 +2314,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         return columns
 
     def _get_column2(self, x: int) -> Column | None:
-        # Outside the defined table
-        if x >= self.width:
+        # Outside the XML-defined columns ?
+        if x >= self._table_cache.width():
             return Column()
         idx = self._table_cache.col_idx(x)
         if idx is None:
@@ -2366,8 +2389,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         else:
             repeated = column.repeated or 1
         column.x = x
-        # Outside the defined table ?
-        diff = x - self.width
+        col_width = self._table_cache.width()
+        diff = x - col_width
         if diff == 0:
             column_back = self.append_column(column, _repeated=repeated)
         elif diff > 0:
@@ -2376,6 +2399,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         else:
             # Inside the defined table
             column_back = self._table_cache.set_col_in_cache(x, column, self)
+        self._table_cache.clear_col_indexes()
         return column_back
 
     def insert_column(
@@ -2398,7 +2422,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         if column is None:
             column = Column()
         x = self._translate_x_from_any(x)
-        diff = x - self.width
+        col_width = self._table_cache.width()
+        diff = x - col_width
         if diff < 0:
             column_back = self._table_cache.insert_col_in_cache(x, column, self)
         elif diff == 0:
@@ -2415,6 +2440,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 row.insert_cell(x, Cell(repeated=repeated))
             # Shorter rows don't need insert
             # Longer rows shouldn't exist!
+        self._table_cache.clear_row_indexes()
+        self._table_cache.clear_col_indexes()
         return column_back
 
     def append_column(
@@ -2449,7 +2476,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             if last_column is None:
                 raise ValueError
             position = self.index(last_column) + 1
-        column.x = self.width
+        column.x = self._table_cache.width()
         self.insert(column, position=position)
         # Repetitions are accepted
         if _repeated is None:
@@ -2471,12 +2498,15 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         if x >= self.width:
             return
         # Inside the defined table
-        self._table_cache.delete_col_in_cache(x, self)
+        col_width = self._table_cache.width()
+        if x < col_width:
+            self._table_cache.delete_col_in_cache(x, self)
         # Update width
-        width = self.width
         for row in self._get_rows():
-            if row.width >= width:
+            if row.width > x:
                 row.delete_cell(x)
+        self._table_cache.clear_row_indexes()
+        self._table_cache.clear_col_indexes()
 
     def get_column_cells(
         self,
