@@ -500,6 +500,8 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             _XP_COLUMN, "table:number-columns-repeated"
         )
         self._table_cache.make_col_map(idx_repeated_seq)
+        if self._table_cache.col_map_length() == 0 and self._table_cache.height() > 0:
+            self.normalize_columns()
 
     def _update_width(self, row: Row) -> None:
         """Synchronize the number of columns if the row is bigger.
@@ -507,6 +509,24 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         Append, don't insert, not to disturb the current layout.
         """
         diff = row.width - self._table_cache.width()
+        if diff > 0:
+            self.append_column(Column(repeated=diff))
+        self._table_cache.cached_width = None
+
+    def normalize_columns(self) -> None:
+        """Ensure that table:table-column definitions cover the full width of
+        the rows.
+
+        If the table lacks table:table-column elements or if the existing
+        columns do not cover the maximum width of the rows, default column
+        definitions are appended to match the maximum row width.
+        """
+        rows = self._get_rows()
+        if not rows:
+            return
+        max_row_width = max((row.width for row in rows), default=0)
+        col_width = self._table_cache.width()
+        diff = max_row_width - col_width
         if diff > 0:
             self.append_column(Column(repeated=diff))
         self._table_cache.cached_width = None
@@ -2459,8 +2479,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
             _repeated: The number of times the column is repeated.
 
         Returns:
-            Column: The newly appended column, with its `x` attribute
-                updated.
+            Column: The newly appended column, with its `x` attribute updated.
 
         """
         if column is None:
@@ -2471,6 +2490,15 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         odf_idx = self._table_cache.col_map_length() - 1
         if odf_idx < 0:
             position = 0
+            for idx, child in enumerate(self.children):
+                if child.tag in (
+                    "table:table-row",
+                    "table:table-row-group",
+                    "table:table-header-rows",
+                    "table:table-rows",
+                ):
+                    position = idx
+                    break
         else:
             last_column = self._get_element_idx2(_XP_COLUMN_IDX, odf_idx)
             if last_column is None:
@@ -2482,6 +2510,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         if _repeated is None:
             _repeated = column.repeated or 1
         self._table_cache.insert_col_map_once(_repeated)
+        self._table_cache.clear_col_indexes()
         # No need to update row widths
         return column
 
