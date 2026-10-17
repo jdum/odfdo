@@ -1376,6 +1376,28 @@ class Document(MDDocument):
             root_entry.set_attribute("manifest:version", OFFICE_VERSION)
         self.container.set_part(ODF_MANIFEST, manifest.serialize())
 
+    def normalize_tables(self) -> None:
+        """Ensure all tables in the document have table:table-column
+        definitions covering the full width of their rows.
+        """
+        if not self.container:
+            return
+        tables: list[Table] = []
+        try:
+            if self.body is not None:
+                tables.extend(self.body.get_tables())
+        except (ValueError, AttributeError, TypeError):
+            pass
+        styles = self.get_part(ODF_STYLES)
+        if isinstance(styles, XmlPart):
+            tables.extend(
+                elem
+                for elem in styles.get_elements("//table:table")
+                if isinstance(elem, Table)
+            )
+        for table in tables:
+            table.normalize_columns()
+
     def save(
         self,
         target: str | Path | io.BytesIO | None = None,
@@ -1432,6 +1454,7 @@ class Document(MDDocument):
         if packaging != FOLDER:
             self._ensure_odf14()
             self._check_manifest_rdf()
+        self.normalize_tables()
         if pretty and packaging != XML:
             for path, part in self.__xmlparts.items():
                 if part is not None:
