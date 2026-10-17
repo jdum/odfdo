@@ -6,6 +6,23 @@
 
 -   Preserve fractional seconds when reading and writing duration values, including spreadsheet time cells.
 
+## [3.27.2] - 2026-10-17
+
+-   Support for tables with missing or partial `table:table-column` definitions.
+-   Added `Table.normalize_columns()` and `Document.normalize_tables()`.
+
+### Added
+
+-   Added `Table.normalize_columns()` to ensure `table:table-column` definitions cover the full width of table rows.
+-   Added `Document.normalize_tables()` to normalize column definitions across all tables in document content and styles.
+
+### Fixed
+
+-   Fixed markdown export (`to_markdown()`) crashing on tables lacking `table:table-column` tags or with partial column declarations.
+-   Fixed `Table.width`, column getters, and iterators to handle tables with undeclared or partial `table:table-column` tags.
+-   Fixed `Table.append_column()` when appending to a table with no prior columns by inserting before the first row element.
+-   Enforce complete `table:table-column` declarations in `Document.save()` for strict ODF schema compliance (except for `folder` packaging which preserves original parts for inspection/debugging).
+
 ## [3.27.1] - 2026-10-10
 
 -   Adapt github action to genrate documentation with `Python 3.15`.

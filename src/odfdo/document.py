@@ -1376,6 +1376,25 @@ class Document(MDDocument):
             root_entry.set_attribute("manifest:version", OFFICE_VERSION)
         self.container.set_part(ODF_MANIFEST, manifest.serialize())
 
+    def normalize_tables(self) -> None:
+        """Ensure all tables in the document have table:table-column
+        definitions covering the full width of their rows.
+        """
+        if not self.container:
+            return
+        tables: list[Table] = []
+        with contextlib.suppress(ValueError, AttributeError, TypeError):
+            tables.extend(self.body.get_tables())
+        styles = self.get_part(ODF_STYLES)
+        if isinstance(styles, XmlPart):
+            tables.extend(
+                elem
+                for elem in styles.get_elements("//table:table")
+                if isinstance(elem, Table)
+            )
+        for table in tables:
+            table.normalize_columns()
+
     def save(
         self,
         target: str | Path | io.BytesIO | None = None,
@@ -1427,11 +1446,12 @@ class Document(MDDocument):
         pretty = bool(pretty)
         backup = bool(backup)
         # Folder packaging is intended for debugging/analysis: preserve the
-        # original parts (version, missing files, manifest.rdf) as much as
-        # possible, but still pretty-print XML when requested.
+        # original parts (version, missing files, manifest.rdf, table columns)
+        # as much as possible, but still pretty-print XML when requested.
         if packaging != FOLDER:
             self._ensure_odf14()
             self._check_manifest_rdf()
+            self.normalize_tables()
         if pretty and packaging != XML:
             for path, part in self.__xmlparts.items():
                 if part is not None:

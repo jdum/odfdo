@@ -640,8 +640,9 @@ class MDTable(MDStyle):
             ]
 
         table = self.clone
+        table.normalize_columns()
         table.rstrip(aggressive=True)
-        if not table.height:
+        if not table.height or not table.width:
             return ""
         if table.height > MAX_MD_LINES:
             msg = f"Table row count {table.height} exceeds limit {MAX_MD_LINES}"

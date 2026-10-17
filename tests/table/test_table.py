@@ -486,3 +486,218 @@ def test_table_values_setter_partiel_4(table):
         [1, 1, 1, 2, 3, 3, 3],
         [1, 2, 3, 4, 5, 6, 7],
     ]
+
+
+def test_table_no_table_col_properties(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    assert table.width == 7
+
+
+def test_table_no_table_col_properties_2(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    assert table.height == 4
+
+
+def test_table_no_table_col_properties_3(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    assert table.size == (7, 4)
+
+
+def test_table_no_table_col_properties_4(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    assert len(table.columns) == 7
+    assert table.get_column(0).x == 0
+    assert table.get_column(5).x == 5
+    assert table.get_column(-1).x == 6
+    assert table.get_column_values(0) == [1, 1, 1, 1]
+    assert table.get_column_values(5) == [3, 3, 3, 6]
+
+
+def test_table_no_table_col_mutations(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    table.delete_column(5)
+    assert table.width == 6
+    assert len(table.rows[0].cells) == 6
+
+
+def test_table_no_table_col_mutations_2(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    table.insert_column(5)
+    assert table.width == 8
+    assert len(table.rows[0].cells) == 8
+
+
+def test_table_no_table_col_mutations_3(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    table.set_column_values(0, [10, 20, 30, 40])
+    assert table.get_column_values(0) == [10, 20, 30, 40]
+
+
+def test_table_no_table_col_mutations_4(samples):
+    doc = Document(samples("no_table_col.ods"))
+    table = doc.body.tables[0]
+    table.transpose(coord="A1:C3")
+    assert table.get_values(coord="A1:C3") == [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
+
+
+def test_table_partial_table_col_properties(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    assert table.width == 7
+
+
+def test_table_partial_table_col_properties_2(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    assert table.height == 4
+
+
+def test_table_partial_table_col_properties_3(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    assert table.size == (7, 4)
+
+
+def test_table_partial_table_col_properties_4(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    assert len(table.columns) == 7
+    assert table.get_column(0).x == 0
+    assert table.get_column(1).x == 1
+    assert table.get_column(5).x == 5
+    assert table.get_column(-1).x == 6
+    assert table.get_column_values(0) == [1, 1, 1, 1]
+    assert table.get_column_values(5) == [3, 3, 3, 6]
+    cols_from_4 = list(table.iter_columns(start=4))
+    assert [c.x for c in cols_from_4] == [4, 5, 6]
+
+
+def test_table_partial_table_col_mutations(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    table.delete_column(5)
+    assert table.width == 6
+    assert len(table.rows[0].cells) == 6
+
+
+def test_table_partial_table_col_mutations_2(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    table.delete_column(0)
+    assert table.width == 6
+    assert len(table.rows[0].cells) == 6
+
+
+def test_table_partial_table_col_mutations_3(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    table.insert_column(5)
+    assert table.width == 8
+    assert len(table.rows[0].cells) == 8
+
+
+def test_table_partial_table_col_mutations_4(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    table.set_column_values(6, [10, 20, 30, 40])
+    assert table.get_column_values(6) == [10, 20, 30, 40]
+
+
+def test_table_partial_table_col_mutations_5(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    table.transpose(coord="A1:C3")
+    assert table.get_values(coord="A1:C3") == [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
+
+
+def test_table_partial_table_col_normalize(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    table = doc.body.tables[0]
+    assert table.width == 7
+    assert table._table_cache.width() == 2
+    table.normalize_columns()
+    assert table.width == 7
+    assert table._table_cache.width() == 7
+    assert len(table.columns) == 7
+    assert table.get_column(0).x == 0
+    assert table.get_column(1).x == 1
+    assert table.get_column(5).x == 5
+    assert table.get_column(-1).x == 6
+    assert table.get_column_values(0) == [1, 1, 1, 1]
+    assert table.get_column_values(5) == [3, 3, 3, 6]
+
+
+def test_doc_normalize_tables(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    doc.normalize_tables()
+    table = doc.body.tables[0]
+    assert table.width == 7
+    assert table._table_cache.width() == 7
+    assert len(table.columns) == 7
+
+
+def test_save_normalizes_tables(samples, tmp_path):
+    doc = Document(samples("partial_table_col.ods"))
+    out = tmp_path / "normalized.ods"
+    doc.save(out)
+    doc2 = Document(out)
+    table2 = doc2.body.tables[0]
+    assert table2.width == 7
+    assert table2._table_cache.width() == 7
+    assert len(table2.columns) == 7
+    assert table2.get_column(6).x == 6
+    assert table2.get_column_values(6) == [3, 3, 3, 7]
+
+
+def test_save_folder_preserves_tables(samples, tmp_path):
+    doc = Document(samples("partial_table_col.ods"))
+    out = tmp_path / "folder_export"
+    doc.save(out, packaging="folder")
+    folder_dir = out.with_suffix(".folder")
+    content_xml = (folder_dir / "content.xml").read_text(encoding="utf-8")
+    assert 'table:number-columns-repeated="2"' in content_xml
+    assert 'table:number-columns-repeated="5"' not in content_xml
+    doc2 = Document(folder_dir)
+    table2 = doc2.body.tables[0]
+    assert table2.width == 7
+    assert table2._table_cache.width() == 2
+
+
+def test_append_column_with_title_first():
+    table = Table("title_first")
+    table.clear()
+    table.title = "A Title"
+    row = Row(width=3)
+    table.append_row(row)
+    table._table_cache.col_map = []
+    table._table_cache.clear_col_indexes()
+    col = table.append_column()
+    assert col.x == 0
+    assert table.width >= 1
+
+
+def test_doc_normalize_tables_edge_cases(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    doc.container = None
+    doc.normalize_tables()
+
+    doc2 = Document(samples("partial_table_col.ods"))
+    table = doc2.body.tables[0]
+    doc2.get_part = lambda _part: None  # type: ignore[method-assign]
+    doc2.normalize_tables()
+    assert table.width == 7
+
+
+def test_table_extend_rows_wider():
+    table = Table("extend_test", width=2, height=1)
+    new_rows = [Row(width=5)]
+    table.extend_rows(new_rows)
+    assert table.width == 5
+    assert table._table_cache.width() == 5

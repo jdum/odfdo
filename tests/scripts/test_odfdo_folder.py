@@ -5,6 +5,7 @@ from __future__ import annotations
 import platform
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -118,3 +119,60 @@ def test_folder_2_2(tmp_path, samples):
     params2 = parse_cli_args([str(tmp_path / "test.odt.folder")])
     main_convert_folder(params2)
     assert tmp_source.exists()
+
+
+def test_folder_partial_table_col_unchanged(tmp_path, samples):
+    source = samples("partial_table_col.ods")
+    tmp_source = tmp_path / "partial_table_col.ods"
+    tmp_source.write_bytes(source.read_bytes())
+    params = parse_cli_args([str(tmp_source)])
+    main_convert_folder(params)
+    folder_path = tmp_path / "partial_table_col.ods.folder"
+    assert folder_path.is_dir()
+    content_xml = (folder_path / "content.xml").read_text(encoding="utf-8")
+    assert 'table:number-columns-repeated="2"' in content_xml
+    assert 'table:number-columns-repeated="5"' not in content_xml
+    doc = Document(folder_path)
+    table = doc.body.tables[0]
+    assert table.width == 7
+    assert table._table_cache.width() == 2
+
+    # Convert back from folder to file
+    tmp_source.unlink()
+    assert not tmp_source.exists()
+    params2 = parse_cli_args([str(folder_path)])
+    main_convert_folder(params2)
+    assert tmp_source.exists()
+
+    with zipfile.ZipFile(tmp_source) as z:
+        reconstructed_xml = z.read("content.xml").decode("utf-8")
+        assert 'table:number-columns-repeated="2"' in reconstructed_xml
+        assert 'table:number-columns-repeated="5"' not in reconstructed_xml
+
+    doc2 = Document(tmp_source)
+    table2 = doc2.body.tables[0]
+    assert table2.width == 7
+    assert table2._table_cache.width() == 2
+
+
+def test_folder_no_table_col_unchanged(tmp_path, samples):
+    source = samples("no_table_col.ods")
+    tmp_source = tmp_path / "no_table_col.ods"
+    tmp_source.write_bytes(source.read_bytes())
+    params = parse_cli_args([str(tmp_source)])
+    main_convert_folder(params)
+    folder_path = tmp_path / "no_table_col.ods.folder"
+    assert folder_path.is_dir()
+    content_xml = (folder_path / "content.xml").read_text(encoding="utf-8")
+    assert "<table:table-column" not in content_xml
+
+    # Convert back from folder to file
+    tmp_source.unlink()
+    assert not tmp_source.exists()
+    params2 = parse_cli_args([str(folder_path)])
+    main_convert_folder(params2)
+    assert tmp_source.exists()
+
+    with zipfile.ZipFile(tmp_source) as z:
+        reconstructed_xml = z.read("content.xml").decode("utf-8")
+        assert "<table:table-column" not in reconstructed_xml

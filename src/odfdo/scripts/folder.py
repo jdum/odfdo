@@ -30,7 +30,7 @@ from __future__ import annotations
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
-from odfdo import Document, __version__
+from odfdo import Container, Document, __version__
 from odfdo.const import FOLDER, ZIP
 
 PROG = "odfdo-folder"
@@ -85,21 +85,23 @@ def main_convert_folder(args: Namespace) -> None:
 
 
 def convert_folder(path_str: str) -> None:
-    """Convert the specified file or folder to/from folder packaging."""
+    """Convert the specified file or folder to/from folder packaging.
+
+    Folder packaging skips version upgrades, missing-part creation,
+    generator updates, and table columns normalization, but pretty-print
+    modified parts to ease debugging.
+    """
     path = Path(path_str)
-    pretty = False
     if path.is_file():
-        out_packaging = FOLDER
-        pretty = True
+        document = Document(path)
+        document.save(packaging=FOLDER, pretty=True)
     elif path.is_dir():
-        out_packaging = ZIP
+        container = Container()
+        container.open(path)
+        container.save(None, packaging=ZIP)
     else:
         msg = f"Not a file or folder: {path!r}"
         raise ValueError(msg)
-    document = Document(path)
-    # Folder packaging skips version upgrades, missing-part creation and
-    # generator updates, but pretty-print modified parts to ease debugging.
-    document.save(packaging=out_packaging, pretty=pretty)
 
 
 if __name__ == "__main__":
