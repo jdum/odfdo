@@ -1204,3 +1204,33 @@ def test_export_to_markdown_large_ods(samples):
     assert len(res[0].content.split("\n")) >= 5000
     assert len(res[1].content.split("\n")) >= 5000
     assert len(res[2].content.split("\n")) >= 5000
+
+
+def test_export_to_markdown_no_table_col(samples):
+    doc = Document(samples("no_table_col.ods"))
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    assert res[0].name == "no_table_col#Example1"
+    expected = (
+        "| 1 | 1     | 1 | 2     | 3 | 3     | 3 |\n"
+        "|---|-------|---|-------|---|-------|---|\n"
+        "| 1 | **1** | 1 | 2     | 3 | **3** | 3 |\n"
+        "| 1 | 1     | 1 | **2** | 3 | 3     | 3 |\n"
+        "| 1 | 2     | 3 | 4     | 5 | 6     | 7 |\n"
+    )
+    assert res[0].content == expected
+
+
+def test_export_to_markdown_partial_table_col(samples):
+    doc = Document(samples("partial_table_col.ods"))
+    res = doc.to_markdown()
+    assert isinstance(res, list)
+    assert res[0].name == "partial_table_col#Example1"
+    expected = (
+        "| 1 | 1     | 1 | 2     | 3 | 3     | 3 |\n"
+        "|---|-------|---|-------|---|-------|---|\n"
+        "| 1 | **1** | 1 | 2     | 3 | **3** | 3 |\n"
+        "| 1 | 1     | 1 | **2** | 3 | 3     | 3 |\n"
+        "| 1 | 2     | 3 | 4     | 5 | 6     | 7 |\n"
+    )
+    assert res[0].content == expected
