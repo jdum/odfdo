@@ -34,3 +34,6 @@ doc: sync doclint
 code: outdated lock sync lint test cov
 
 all: code doc
+
+build_isolated:
+    ./build_isolated.sh
