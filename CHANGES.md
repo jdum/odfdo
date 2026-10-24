@@ -1,5 +1,18 @@
 # Odfdo Release Notes
 
+## [3.27.3] - 2026-10-24
+
+-   Improve the filter for parasite files (`.DS_Store` and others) when savving the document.
+-   Small refactoring of Markdown export code.
+
+### Changed
+
+-   Refactoring of code in `mixin_md.py`.
+
+### Fixed
+
+-   Ignore parasite files and dotfiles when saving folder or zip
+
 ## [3.27.2] - 2026-10-17
 
 -   Support for tables with missing or partial `table:table-column` definitions.
