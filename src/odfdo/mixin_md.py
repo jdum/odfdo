@@ -582,6 +582,9 @@ class MDTable(MDStyle):
             items = [""] + values + [""]  # noqa: RUF005
             return "|".join(items)
 
+        def flatten_cell(sval: str, filler: str) -> str:
+            return f"{filler}{sval}{filler}".replace("\\\n", " ").replace("\n", " ")
+
         def format_cell(
             val: Any,
             filler: str = " ",
@@ -597,17 +600,15 @@ class MDTable(MDStyle):
                     acc.append(_as_none(element.tail))
                     result.append(_strip_left_spaces("".join(x for x in acc if x)))
                 sval = " ".join(result).strip()
-                return f"{filler}{sval}{filler}".replace("\\\n", " ").replace("\n", " ")
+                return flatten_cell(sval, filler)
             # support of non-text cell values with no paragraph representation
             if hasattr(val, "value"):
                 c_val = val.value
                 if c_val is not None:
                     sval = str(c_val).strip()
-                    return f"{filler}{sval}{filler}".replace("\\\n", " ").replace(
-                        "\n", " "
-                    )
+                    return flatten_cell(sval, filler)
             sval = str(val).strip()
-            return f"{filler}{sval}{filler}".replace("\\\n", " ").replace("\n", " ")
+            return flatten_cell(sval, filler)
 
         def fill_cell(
             pos: int,
