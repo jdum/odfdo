@@ -93,17 +93,10 @@ def _strip_left_spaces(text: str) -> str:
 
 
 def _md_swap_spaces(word: str) -> SplitSpace:
-    if not word:
-        return SplitSpace("", "", "")
-    space_before = 0
-    while word.startswith(" "):
-        space_before += 1
-        word = word[1:]
-    space_after = 0
-    while word.endswith(" "):
-        space_after += 1
-        word = word[:-1]
-    return SplitSpace(" " * space_before, word, " " * space_after)
+    stripped = word.strip(" ")
+    start = len(word) - len(word.lstrip(" "))
+    end = len(word) - len(stripped) - start
+    return SplitSpace(" " * start, stripped, " " * end)
 
 
 def _md_escape(text: str | None) -> str:
