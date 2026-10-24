@@ -65,8 +65,7 @@ def _copy_global() -> dict[str, Any]:
 
 
 def _restore_global(data: dict[str, Any]) -> None:
-    for key, val in data.items():
-        MD_GLOBAL[key] = val  # noqa:PERF403
+    MD_GLOBAL.update(data)
 
 
 def _get_list_counter(name: str, level: int) -> int:
