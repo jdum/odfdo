@@ -497,11 +497,10 @@ class MDSpan(MDStyle):
     """Mixin for span/text run elements in Markdown export."""
 
     def _md_format(self, post_styler: Callable = _as_none) -> str:
-        # acc = [self.text]
         styler = self._md_styling()
         acc = []
         if self.text:
-            if styler == _as_none:
+            if styler is _as_none:
                 acc.append(post_styler(self.text))
             else:
                 acc.append(styler(self.text))
