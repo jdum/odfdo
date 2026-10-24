@@ -336,7 +336,7 @@ class MDNote(MDBase):
             MD_GLOBAL["footnote"].append(str(self))
         else:
             MD_GLOBAL["endnote"].append(str(self))
-        return citation + str(post_styler(self.tail))
+        return citation + post_styler(self.tail)
 
     def _md_collect(self) -> list[str]:
         return [self._md_format() + "\n"]
