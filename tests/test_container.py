@@ -191,6 +191,37 @@ def test_save_folder_to_zip(tmp_path, samples):
     assert mimetype == to_bytes(ODF_EXTENSIONS["odt"])
 
 
+def test_save_folder_to_zip_skips_ds_store(tmp_path, samples):
+    container = Container()
+    container.open(samples("example.odt"))
+    path1 = tmp_path / "example.odt"
+    container.save(path1, packaging=FOLDER)
+    folder_path = tmp_path / "example.odt.folder"
+    (folder_path / ".DS_Store").write_bytes(b"macOS metadata")
+    new_container = Container()
+    new_container.open(folder_path)
+    new_container.set_part(".DS_Store", b"macOS metadata")
+    zip_path = tmp_path / "example_clean.odt"
+    new_container.save(zip_path, packaging=ZIP)
+    with zipfile.ZipFile(zip_path) as zf:
+        assert ".DS_Store" not in zf.namelist()
+
+
+def test_save_folder_to_folder_skips_ds_store(tmp_path, samples):
+    container = Container()
+    container.open(samples("example.odt"))
+    path1 = tmp_path / "example.odt"
+    container.save(path1, packaging=FOLDER)
+    folder_path = tmp_path / "example.odt.folder"
+    (folder_path / ".DS_Store").write_bytes(b"macOS metadata")
+    new_container = Container()
+    new_container.open(folder_path)
+    new_container.set_part(".DS_Store", b"macOS metadata")
+    dest_folder = tmp_path / "example_dest.odt.folder"
+    new_container.save(dest_folder, packaging=FOLDER)
+    assert not (dest_folder / ".DS_Store").exists()
+
+
 def test_load_folder(tmp_path, samples):
     container = Container()
     container.open(samples("example.odt"))

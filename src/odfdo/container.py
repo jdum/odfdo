@@ -33,7 +33,7 @@ import textwrap
 import time
 from copy import deepcopy
 from functools import cache
-from pathlib import Path, PurePath
+from pathlib import Path, PurePath, PurePosixPath
 from zipfile import ZIP_DEFLATED, ZIP_STORED, BadZipfile, ZipFile, is_zipfile
 
 from lxml.etree import (  # ty: ignore[unresolved-import]
@@ -68,6 +68,27 @@ from .utils import bytes_to_str, str_to_bytes
 
 CHUNK_SIZE = 65536  # 64KB for incremental ZIP reading
 TAB = "  "
+PARASITE_NAMES: set[str] = {
+    ".DS_Store",
+    "Thumbs.db",
+    "desktop.ini",
+    "__MACOSX",
+}
+
+
+def _is_parasite_path(path: str) -> bool:
+    """Return True if path or any of its segments is an OS parasite or dotfile.
+
+    The parent directory segment '..' is preserved (not considered a parasite)
+    so that zip-slip / path traversal security checks are not bypassed.
+    """
+    pure = PurePosixPath(path)
+    return any(
+        segment in PARASITE_NAMES or (segment.startswith(".") and segment != "..")
+        for segment in pure.parts
+    )
+
+
 TEXT_CONTENT = {
     "config:config-item",
     "db:data-source-setting-value",
@@ -1002,7 +1023,7 @@ class Container:
             raise ValueError(msg)
         root = self.path / folder
         for path in root.iterdir():
-            if path.name.startswith("."):  # no hidden files
+            if path.name.startswith(".") or path.name in PARASITE_NAMES:
                 continue
             relative_path = path.relative_to(self.path)
             if path.is_file():
@@ -1118,6 +1139,8 @@ class Container:
                 part_names.remove(path)
             # Everything else
             for path in part_names:
+                if _is_parasite_path(path):
+                    continue
                 data = parts[path]
                 if data is None:
                     # Deleted
@@ -1149,6 +1172,8 @@ class Container:
         for part_path, data in self.__parts.items():
             if data is None:
                 # Deleted
+                continue
+            if _is_parasite_path(part_path):
                 continue
             dump(part_path, data)
 

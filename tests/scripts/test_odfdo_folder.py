@@ -176,3 +176,47 @@ def test_folder_no_table_col_unchanged(tmp_path, samples):
     with zipfile.ZipFile(tmp_source) as z:
         reconstructed_xml = z.read("content.xml").decode("utf-8")
         assert "<table:table-column" not in reconstructed_xml
+
+
+def test_folder_reconstruct_ignores_ds_store_and_parasite_files(tmp_path, samples):
+    source = samples("test_diff1.odt")
+    document_src = Document(source)
+    tmp_source = tmp_path / "test_ds.odt"
+    document_src.save(tmp_source)
+    params1 = parse_cli_args([str(tmp_source)])
+    main_convert_folder(params1)
+    folder_path = tmp_path / "test_ds.odt.folder"
+    assert folder_path.is_dir()
+
+    # Add parasite files in root and subdirectories
+    (folder_path / ".DS_Store").write_bytes(b"macOS metadata root")
+    (folder_path / ".DStore").write_bytes(b"macOS metadata typo")
+    (folder_path / "Thumbs.db").write_bytes(b"Windows thumbnail cache")
+    (folder_path / "desktop.ini").write_bytes(b"Windows desktop config")
+    (folder_path / "META-INF" / ".DS_Store").write_bytes(b"subfolder metadata")
+
+    # Add a __MACOSX directory with resource forks
+    macosx_dir = folder_path / "__MACOSX"
+    macosx_dir.mkdir()
+    (macosx_dir / "._content.xml").write_bytes(b"resource fork")
+
+    # Reconstruct the zip file from folder
+    tmp_source.unlink()
+    assert not tmp_source.exists()
+    params2 = parse_cli_args([str(folder_path)])
+    main_convert_folder(params2)
+    assert tmp_source.exists()
+
+    with zipfile.ZipFile(tmp_source) as zf:
+        names = zf.namelist()
+        for name in names:
+            assert ".DS_Store" not in name
+            assert ".DStore" not in name
+            assert "Thumbs.db" not in name
+            assert "desktop.ini" not in name
+            assert "__MACOSX" not in name
+            assert not any(part.startswith(".") for part in Path(name).parts)
+
+    # Document should open and be valid
+    doc = Document(tmp_source)
+    assert doc.body is not None
