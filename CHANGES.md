@@ -1,5 +1,11 @@
 # Odfdo Release Notes
 
+## Unreleased
+
+### Fixed
+
+-   Preserve fractional seconds when reading and writing duration values, including spreadsheet time cells.
+
 ## [3.27.3] - 2026-10-24
 
 -   Improve the filter for parasite files (`.DS_Store` and others) when savving the document.

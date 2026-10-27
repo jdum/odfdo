@@ -369,10 +369,11 @@ class Duration:
         hours = 0
         minutes = 0
         seconds = 0
+        microseconds = 0
 
         buffer = ""
         for c in data:
-            if c.isdigit():
+            if c.isdigit() or c in ".,":
                 buffer += c
             elif c == "D":
                 days = int(buffer)
@@ -384,7 +385,9 @@ class Duration:
                 minutes = int(buffer)
                 buffer = ""
             elif c == "S":
-                seconds = int(buffer)
+                whole, _, fraction = buffer.replace(",", ".").partition(".")
+                seconds = int(whole)
+                microseconds = int((fraction + "000000")[:6])
                 buffer = ""
                 break
         if buffer != "":
@@ -396,6 +399,7 @@ class Duration:
             hours=sign * hours,
             minutes=sign * minutes,
             seconds=sign * seconds,
+            microseconds=sign * microseconds,
         )
 
     @staticmethod
@@ -430,12 +434,11 @@ class Duration:
             ) * 1_000_000 + value.microseconds
             sign = ""
 
-        hours = microseconds / (60 * 60 * 1_000_000)
-        microseconds %= 60 * 60 * 1_000_000
+        hours, microseconds = divmod(microseconds, 60 * 60 * 1_000_000)
+        minutes, microseconds = divmod(microseconds, 60 * 1_000_000)
+        seconds, microseconds = divmod(microseconds, 1_000_000)
 
-        minutes = microseconds / (60 * 1_000_000)
-        microseconds %= 60 * 1_000_000
-
-        seconds = microseconds / 1_000_000
-
-        return sign + DURATION_FORMAT % (hours, minutes, seconds)
+        duration = sign + DURATION_FORMAT % (hours, minutes, seconds)
+        if microseconds:
+            duration = f"{duration[:-1]}.{microseconds:06d}".rstrip("0") + "S"
+        return duration
