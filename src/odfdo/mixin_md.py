@@ -65,8 +65,7 @@ def _copy_global() -> dict[str, Any]:
 
 
 def _restore_global(data: dict[str, Any]) -> None:
-    for key, val in data.items():
-        MD_GLOBAL[key] = val  # noqa:PERF403
+    MD_GLOBAL.update(data)
 
 
 def _get_list_counter(name: str, level: int) -> int:
@@ -93,17 +92,10 @@ def _strip_left_spaces(text: str) -> str:
 
 
 def _md_swap_spaces(word: str) -> SplitSpace:
-    if not word:
-        return SplitSpace("", "", "")
-    space_before = 0
-    while word.startswith(" "):
-        space_before += 1
-        word = word[1:]
-    space_after = 0
-    while word.endswith(" "):
-        space_after += 1
-        word = word[:-1]
-    return SplitSpace(" " * space_before, word, " " * space_after)
+    stripped = word.strip(" ")
+    start = len(word) - len(word.lstrip(" "))
+    end = len(word) - len(stripped) - start
+    return SplitSpace(" " * start, stripped, " " * end)
 
 
 def _md_escape(text: str | None) -> str:
@@ -344,7 +336,7 @@ class MDNote(MDBase):
             MD_GLOBAL["footnote"].append(str(self))
         else:
             MD_GLOBAL["endnote"].append(str(self))
-        return citation + str(post_styler(self.tail))
+        return citation + post_styler(self.tail)
 
     def _md_collect(self) -> list[str]:
         return [self._md_format() + "\n"]
@@ -505,11 +497,10 @@ class MDSpan(MDStyle):
     """Mixin for span/text run elements in Markdown export."""
 
     def _md_format(self, post_styler: Callable = _as_none) -> str:
-        # acc = [self.text]
         styler = self._md_styling()
         acc = []
         if self.text:
-            if styler == _as_none:
+            if styler is _as_none:
                 acc.append(post_styler(self.text))
             else:
                 acc.append(styler(self.text))
@@ -590,6 +581,9 @@ class MDTable(MDStyle):
             items = [""] + values + [""]  # noqa: RUF005
             return "|".join(items)
 
+        def flatten_cell(sval: str, filler: str) -> str:
+            return f"{filler}{sval}{filler}".replace("\\\n", " ").replace("\n", " ")
+
         def format_cell(
             val: Any,
             filler: str = " ",
@@ -605,17 +599,15 @@ class MDTable(MDStyle):
                     acc.append(_as_none(element.tail))
                     result.append(_strip_left_spaces("".join(x for x in acc if x)))
                 sval = " ".join(result).strip()
-                return f"{filler}{sval}{filler}".replace("\\\n", " ").replace("\n", " ")
+                return flatten_cell(sval, filler)
             # support of non-text cell values with no paragraph representation
             if hasattr(val, "value"):
                 c_val = val.value
                 if c_val is not None:
                     sval = str(c_val).strip()
-                    return f"{filler}{sval}{filler}".replace("\\\n", " ").replace(
-                        "\n", " "
-                    )
+                    return flatten_cell(sval, filler)
             sval = str(val).strip()
-            return f"{filler}{sval}{filler}".replace("\\\n", " ").replace("\n", " ")
+            return flatten_cell(sval, filler)
 
         def fill_cell(
             pos: int,
