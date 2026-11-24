@@ -36,6 +36,38 @@ def test_str_str():
     assert str(unit) == "1.847mm"
 
 
+@pytest.mark.parametrize(("text", "pixels"), [("-2.54", -72), ("+2.54", 72)])
+def test_signed_str(text, pixels):
+    unit = Unit(f"{text}cm")
+    assert unit.value == Decimal(text)
+    assert unit.unit == "cm"
+    assert str(unit) == f"{text}cm"
+    assert unit.convert("px").value == pixels
+
+
+@pytest.mark.parametrize("text", ["-12", "+12"])
+def test_signed_str_without_unit(text):
+    default = Unit(text)
+    assert default.value == Decimal(text)
+    assert default.unit == "cm"
+    assert str(default) == f"{text}cm"
+
+    explicit = Unit(text, "mm")
+    assert explicit.value == Decimal(text)
+    assert explicit.unit == "mm"
+    assert str(explicit) == f"{text}mm"
+
+
+def test_negative_numeric_roundtrip():
+    unit = Unit(-1, "in")
+    assert str(unit) == "-1in"
+    assert Unit(str(unit)) == unit
+
+
+def test_compare_signed_units():
+    assert Unit("-2.54cm") < Unit("-1cm")
+
+
 def test_int():
     unit = Unit(1)
     assert unit.value == Decimal("1")

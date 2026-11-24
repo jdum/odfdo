@@ -88,8 +88,8 @@ class Unit:
         if isinstance(value, str):
             digits = []
             nondigits = []
-            for char in value:
-                if char.isdigit() or char == ".":
+            for index, char in enumerate(value):
+                if char.isdigit() or char == "." or (index == 0 and char in "+-"):
                     digits.append(char)
                 else:
                     nondigits.append(char)
