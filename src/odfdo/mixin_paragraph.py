@@ -101,7 +101,7 @@ def _by_offset_wrapper(
         if container is None:
             continue
         upper = container.parent
-        is_text = text.is_text()
+        is_text = text.is_text()  # ty: ignore[missing-union-attribute]
         start = offset - counted
         end = start + length
         # Do not use the text node as it changes at each loop
@@ -162,7 +162,7 @@ def _by_regex_wrapper(
         if container is None:
             continue
         upper = container.parent
-        is_text = text.is_text()
+        is_text = text.is_text()  # ty: ignore[missing-union-attribute]
         # Group positions are calculated and static, so apply in
         # reverse order to preserve positions
         for group in reversed(list(pattern.finditer(str(text)))):
@@ -849,7 +849,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
         span.text = ""
         span.append_plain_text(match_string)
         span.style = style
-        return span  # ty: ignore[invalid-return-type]
+        return span  # ty: ignore[invalid-explicit-return]
 
     def remove_spans(self, keep_heading: bool = True) -> Element:
         """Remove all `text:span` elements from a copy of the paragraph.
@@ -868,7 +868,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
             protect = ("text:h",)
         else:
             protect = None
-        return strip_tags(self, strip=strip, protect=protect)  # ty: ignore [invalid-return-type]
+        return strip_tags(self, strip=strip, protect=protect)  # ty: ignore [invalid-explicit-return]
 
     def remove_span(self, spans: Element | list[Element]) -> Element:
         """Remove specific `text:span` elements from a copy of the paragraph.
@@ -881,7 +881,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
                 with the specified `text:span` elements removed.
 
         """
-        return strip_elements(self, spans)  # ty: ignore [invalid-return-type]
+        return strip_elements(self, spans)  # ty: ignore [invalid-explicit-return]
 
     @_by_regex_offset
     def set_link(
@@ -911,7 +911,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
                 a hyperlink.
 
         """
-        return Link(url, text=match_string)  # ty: ignore[invalid-return-type]
+        return Link(url, text=match_string)  # ty: ignore[invalid-explicit-return]
 
     def remove_links(self) -> Element:
         """Remove all `text:a` (hyperlink) elements from a copy of the paragraph.
@@ -922,7 +922,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
 
         """
         strip = (Link._tag,)
-        return strip_tags(self, strip=strip)  # ty: ignore [invalid-return-type]
+        return strip_tags(self, strip=strip)  # ty: ignore [invalid-explicit-return]
 
     def remove_link(self, links: Link | list[Link]) -> Element:
         """Remove specific `text:a` (hyperlink) elements from a copy of the paragraph.
@@ -935,7 +935,7 @@ class ParaMixin(ReferenceMixin, BookmarkMixin, AnnotationMixin):
                 with the specified hyperlink elements removed.
 
         """
-        return strip_elements(self, links)  # ty: ignore [invalid-return-type]
+        return strip_elements(self, links)  # ty: ignore [invalid-explicit-return]
 
     def insert_reference(
         self,

@@ -33,8 +33,8 @@ from re import search
 from typing import TYPE_CHECKING, Any, NamedTuple, cast
 from xml.etree.ElementTree import canonicalize
 
-from lxml.etree import Element as lxml_Element  # ty: ignore[unresolved-import]
-from lxml.etree import (  # ty: ignore[unresolved-import]
+from lxml.etree import Element as lxml_Element  # ty: ignore[import-not-found]
+from lxml.etree import (  # ty: ignore[import-not-found]
     XPath,
     _Element,
     fromstring,
@@ -1517,7 +1517,7 @@ class Element(MDBase):
 
         """
         if isinstance(value, Element):
-            value = str(value.name)
+            value = str(value.name)  # ty: ignore[missing-union-attribute]
         return self.set_attribute(name, value)
 
     def del_attribute(self, name: str) -> None:
@@ -1768,7 +1768,7 @@ class Element(MDBase):
                 container = text.parent
                 if not container:  # pragma: nocover
                     continue
-                if text.is_text():
+                if text.is_text():  # ty: ignore[missing-union-attribute]
                     container.text = new_text
                 else:
                     container.tail = new_text
@@ -2220,7 +2220,7 @@ class Element(MDBase):
             Body | None: The first child Element of `office:body`, or None if not found.
 
         """
-        return self.get_element("//office:body/*[1]")  # ty: ignore[invalid-return-type]
+        return self.get_element("//office:body/*[1]")  # ty: ignore[invalid-explicit-return]
 
     def get_formatted_text(self, context: dict | None = None) -> str:
         """Return a formatted version of the element's text.
@@ -2311,7 +2311,7 @@ class Element(MDBase):
         """
         return self._filtered_elements(
             "descendant::text:p", text_style=style, content=content
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     @property
     def paragraphs(self) -> list[Paragraph]:
@@ -2323,7 +2323,7 @@ class Element(MDBase):
         """
         return self.get_elements(
             "descendant::text:p",
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_paragraph(
         self,
@@ -2344,7 +2344,7 @@ class Element(MDBase):
             "descendant::text:p",
             position,
             content=content,
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     # Span
 
@@ -2365,7 +2365,7 @@ class Element(MDBase):
         """
         return self._filtered_elements(
             "descendant::text:span", text_style=style, content=content
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     @property
     def spans(self) -> list[Span]:
@@ -2375,7 +2375,7 @@ class Element(MDBase):
             list[Span]: A list of all Span instances that are descendants of this element.
 
         """
-        return self.get_elements("descendant::text:span")  # ty: ignore[invalid-return-type]
+        return self.get_elements("descendant::text:span")  # ty: ignore[invalid-explicit-return]
 
     def get_span(
         self,
@@ -2394,7 +2394,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::text:span", position, content=content
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     # Headers
 
@@ -2420,7 +2420,7 @@ class Element(MDBase):
             text_style=style,
             outline_level=outline_level,
             content=content,
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     @property
     def headers(self) -> list[Header]:
@@ -2430,7 +2430,7 @@ class Element(MDBase):
             list[Header]: A list of all Header instances that are descendants of this element.
 
         """
-        return self.get_elements("descendant::text:h")  # ty: ignore[invalid-return-type]
+        return self.get_elements("descendant::text:h")  # ty: ignore[invalid-explicit-return]
 
     def get_header(
         self,
@@ -2454,7 +2454,7 @@ class Element(MDBase):
             position,
             outline_level=outline_level,
             content=content,
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     # Frames
 
@@ -2486,7 +2486,7 @@ class Element(MDBase):
             svg_title=title,
             svg_desc=description,
             content=content,
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     @property
     def frames(self) -> list[Frame]:
@@ -2496,7 +2496,7 @@ class Element(MDBase):
             list[Frame]: A list of all Frame instances that are descendants of this element.
 
         """
-        return self.get_elements("descendant::draw:frame")  # ty: ignore[invalid-return-type]
+        return self.get_elements("descendant::draw:frame")  # ty: ignore[invalid-explicit-return]
 
     def get_frame(
         self,
@@ -2529,7 +2529,7 @@ class Element(MDBase):
             svg_title=title,
             svg_desc=description,
             content=content,
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     # Images
 
@@ -2552,7 +2552,7 @@ class Element(MDBase):
         """
         return self._filtered_elements(
             "descendant::draw:image", text_style=style, url=url, content=content
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     @property
     def images(self) -> list[DrawImage]:
@@ -2562,7 +2562,7 @@ class Element(MDBase):
             list[DrawImage]: A list of all DrawImage instances that are descendants of this element.
 
         """
-        return self.get_elements("descendant::draw:image")  # ty: ignore[invalid-return-type]
+        return self.get_elements("descendant::draw:image")  # ty: ignore[invalid-explicit-return]
 
     def get_image(
         self,
@@ -2591,10 +2591,10 @@ class Element(MDBase):
             if frame is None:
                 return None
             # The name is supposedly unique
-            return frame.get_element("draw:image")  # ty: ignore[invalid-return-type]
+            return frame.get_element("draw:image")  # ty: ignore[invalid-explicit-return]
         return self._filtered_element(
             "descendant::draw:image", position, url=url, content=content
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     # office:names
 
@@ -2624,7 +2624,7 @@ class Element(MDBase):
         return self._filtered_elements(
             "descendant::text:variable-set",
             text_name=name,
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_variable_set(self, name: str, position: int = -1) -> VarSet | None:
         """Return a single variable set that matches the specified criteria.
@@ -2640,7 +2640,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::text:variable-set", position, text_name=name
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_variable_set_value(
         self,
@@ -2664,7 +2664,7 @@ class Element(MDBase):
         variable_set = self.get_variable_set(name)
         if not variable_set:
             return None
-        return variable_set.get_value(value_type)  # ty: ignore[invalid-return-type]
+        return variable_set.get_value(value_type)  # ty: ignore[invalid-explicit-return]
 
     # Draw Pages
 
@@ -2685,7 +2685,7 @@ class Element(MDBase):
         """
         return self._filtered_elements(
             "descendant::draw:page", draw_style=style, content=content
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_draw_page(
         self,
@@ -2706,7 +2706,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::draw:page", position, draw_name=name, content=content
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     # Shapes elements
 
@@ -2734,7 +2734,7 @@ class Element(MDBase):
             svg_title=title,
             svg_desc=description,
             content=content,
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_draw_group(
         self,
@@ -2764,7 +2764,7 @@ class Element(MDBase):
             svg_title=title,
             svg_desc=description,
             content=content,
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     # Lines
 
@@ -2790,7 +2790,7 @@ class Element(MDBase):
             draw_style=draw_style,
             draw_text_style=draw_text_style,
             content=content,
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_draw_line(
         self,
@@ -2811,7 +2811,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::draw:line", position, draw_id=id, content=content
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     # Rectangles
 
@@ -2837,7 +2837,7 @@ class Element(MDBase):
             draw_style=draw_style,
             draw_text_style=draw_text_style,
             content=content,
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_draw_rectangle(
         self,
@@ -2858,7 +2858,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::draw:rect", position, draw_id=id, content=content
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     # Ellipse
 
@@ -2884,7 +2884,7 @@ class Element(MDBase):
             draw_style=draw_style,
             draw_text_style=draw_text_style,
             content=content,
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_draw_ellipse(
         self,
@@ -2905,7 +2905,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::draw:ellipse", position, draw_id=id, content=content
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     # Connectors
 
@@ -2931,7 +2931,7 @@ class Element(MDBase):
             draw_style=draw_style,
             draw_text_style=draw_text_style,
             content=content,
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_draw_connector(
         self,
@@ -2952,7 +2952,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::draw:connector", position, draw_id=id, content=content
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_orphan_draw_connectors(self) -> list[ConnectorShape]:
         """Return a list of connectors that are not connected to any shapes.
@@ -2996,7 +2996,7 @@ class Element(MDBase):
         """
         return self._filtered_elements(
             "descendant::text:change",
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_text_change_deletion(
         self,
@@ -3017,7 +3017,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::text:change", position, change_id=idx
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_text_change_starts(self) -> list[TextChangeStart]:
         """Return all text change-start elements (text:change-start tags).
@@ -3030,7 +3030,7 @@ class Element(MDBase):
         """
         return self._filtered_elements(
             "descendant::text:change-start",
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_text_change_start(
         self,
@@ -3051,7 +3051,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::text:change-start", position, change_id=idx
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_text_change_ends(self) -> list[TextChangeEnd]:
         """Return all text change-end elements (text:change-end tags).
@@ -3064,7 +3064,7 @@ class Element(MDBase):
         """
         return self._filtered_elements(
             "descendant::text:change-end",
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_text_change_end(
         self,
@@ -3085,7 +3085,7 @@ class Element(MDBase):
         """
         return self._filtered_element(
             "descendant::text:change-end", position, change_id=idx
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     def get_text_changes(self) -> list[TextChange | TextChangeStart]:
         """Return all text changes, including single deletions (text:change) and
@@ -3096,7 +3096,7 @@ class Element(MDBase):
 
         """
         request = "descendant::text:change-start | descendant::text:change"
-        return self._filtered_elements(request)  # ty: ignore[invalid-return-type]
+        return self._filtered_elements(request)  # ty: ignore[invalid-explicit-return]
 
     @property
     def text_changes(self) -> list[TextChange | TextChangeStart]:
@@ -3134,10 +3134,10 @@ class Element(MDBase):
                 f'descendant::text:change-start[@text:change-id="{idx}"] '
                 f'| descendant::text:change[@text:change-id="{idx}"]'
             )
-            return self._filtered_element(request, 0)  # ty: ignore[invalid-return-type]
+            return self._filtered_element(request, 0)  # ty: ignore[invalid-explicit-return]
 
         request = "descendant::text:change-start | descendant::text:change"
-        return self._filtered_element(request, position)  # ty: ignore[invalid-return-type]
+        return self._filtered_element(request, position)  # ty: ignore[invalid-explicit-return]
 
     # Styles
 
@@ -3186,7 +3186,7 @@ class Element(MDBase):
         """
         # Both common and default styles
         tagname = self._get_style_tagname(family)
-        return self._filtered_elements(tagname, family=family)  # ty: ignore[invalid-return-type]
+        return self._filtered_elements(tagname, family=family)  # ty: ignore[invalid-explicit-return]
 
     def get_style(
         self,
@@ -3220,7 +3220,7 @@ class Element(MDBase):
         if isinstance(name_or_element, Element):
             name = name_or_element.get_attribute("style:name")
             if name is not None:
-                return name_or_element  # ty: ignore[invalid-return-type]
+                return name_or_element  # ty: ignore[invalid-explicit-return]
             msg = f"Not a odf_style ? {name_or_element!r}"
             raise ValueError(msg)
         style_name = name_or_element
@@ -3234,18 +3234,18 @@ class Element(MDBase):
                 style_name=style_name,
                 display_name=display_name,
                 family=family,
-            )  # ty: ignore[invalid-return-type]
+            )  # ty: ignore[invalid-explicit-return]
         # family is empty
         if style_name:
             result = self._filtered_element(tagname, 0, style_name=style_name)
             if result:
-                return result  # ty: ignore[invalid-return-type]
-            return self._filtered_element(tagname, 0, draw_name=style_name)  # ty: ignore[invalid-return-type]
+                return result  # ty: ignore[invalid-explicit-return]
+            return self._filtered_element(tagname, 0, draw_name=style_name)  # ty: ignore[invalid-explicit-return]
 
         if display_name:
-            return self._filtered_element(tagname, 0, display_name=display_name)  # ty: ignore[invalid-return-type]
+            return self._filtered_element(tagname, 0, display_name=display_name)  # ty: ignore[invalid-explicit-return]
 
-        return self._filtered_element(tagname, 0)  # ty: ignore[invalid-return-type]
+        return self._filtered_element(tagname, 0)  # ty: ignore[invalid-explicit-return]
 
     def _filtered_element(
         self,

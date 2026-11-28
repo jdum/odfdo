@@ -191,7 +191,7 @@ def _convert_coordinates_from_string(obj: str) -> tuple[int | None, ...]:
     coordinates: list[int | None] = []
     for coord in (x.strip() for x in obj.split(":", 1)):
         # First "A"
-        alpha = _ALPHA_PREFIX_RE.match(coord).group(0)
+        alpha = _ALPHA_PREFIX_RE.match(coord).group(0)  # ty: ignore[missing-union-attribute]
         try:
             column = alpha_to_digit(alpha)
         except ValueError:

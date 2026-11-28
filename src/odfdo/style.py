@@ -350,9 +350,9 @@ class Style(StyleProps):
         if family is None and args:
             family = args[0]
         if family == "master-page":
-            return _new_master_page(*args, **kwargs)  # ty: ignore[invalid-return-type]
+            return _new_master_page(*args, **kwargs)  # ty: ignore[invalid-explicit-return]
         if family == "page-layout":
-            return _new_page_layout(*args, **kwargs)  # ty: ignore[invalid-return-type]
+            return _new_page_layout(*args, **kwargs)  # ty: ignore[invalid-explicit-return]
         return super().__new__(cls)
 
     def __init__(

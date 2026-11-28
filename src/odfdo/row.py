@@ -41,7 +41,7 @@ from .utils import convert_coordinates, increment, isiterable, translate_from_an
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
 
-    from lxml.etree import XPath  # ty: ignore[unresolved-import]
+    from lxml.etree import XPath  # ty: ignore[import-not-found]
 
     from .const import CellValue
     from .style import Style
@@ -612,7 +612,7 @@ class Row(Element):
         return cell
 
     # fix for unit test and typos
-    append = append_cell  # ty: ignore[invalid-method-override]
+    append = append_cell  # ty: ignore[incompatible-method-override]
 
     def delete_cell(self, x: int | str) -> None:
         """Delete the cell at the given position "x". Alphabetical positions

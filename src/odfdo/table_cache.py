@@ -27,7 +27,7 @@ from typing import TYPE_CHECKING
 from .element import xpath_compile
 
 if TYPE_CHECKING:
-    from lxml.etree import XPath  # ty: ignore[unresolved-import]
+    from lxml.etree import XPath  # ty: ignore[import-not-found]
 
     from .cell import Cell
     from .column import Column
@@ -354,7 +354,7 @@ class RowCache:
             clone,
         )
         self.cell_map = emap
-        return new_cell  # ty: ignore[invalid-return-type]
+        return new_cell  # ty: ignore[invalid-explicit-return]
 
     def insert_cell_in_cache(
         self,
@@ -381,7 +381,7 @@ class RowCache:
             self.cell_map,
         )
         self.cell_map = emap
-        return new_cell  # ty: ignore[invalid-return-type]
+        return new_cell  # ty: ignore[invalid-explicit-return]
 
     def delete_cell_in_cache(
         self,
@@ -563,7 +563,7 @@ class TableCache:
             clone,
         )
         self.row_map = emap
-        return new_row  # ty: ignore[invalid-return-type]
+        return new_row  # ty: ignore[invalid-explicit-return]
 
     def insert_row_in_cache(
         self,
@@ -590,7 +590,7 @@ class TableCache:
             self.row_map,
         )
         self.row_map = emap
-        return new_row  # ty: ignore[invalid-return-type]
+        return new_row  # ty: ignore[invalid-explicit-return]
 
     def delete_row_in_cache(
         self,
@@ -641,7 +641,7 @@ class TableCache:
             _XP_COLUMN_IDX,
         )
         self.col_map = emap
-        return new_col  # ty: ignore[invalid-return-type]
+        return new_col  # ty: ignore[invalid-explicit-return]
 
     def insert_col_in_cache(
         self,
@@ -668,7 +668,7 @@ class TableCache:
             self.col_map,
         )
         self.col_map = emap
-        return new_col  # ty: ignore[invalid-return-type]
+        return new_col  # ty: ignore[invalid-explicit-return]
 
     def delete_col_in_cache(
         self,

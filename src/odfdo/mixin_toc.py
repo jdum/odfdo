@@ -62,7 +62,7 @@ class TocMixin(Element):
             list[TOC]: A list of TOC instances.
 
         """
-        return self.get_elements("text:table-of-content")  # ty: ignore[invalid-return-type]
+        return self.get_elements("text:table-of-content")  # ty: ignore[invalid-explicit-return]
 
     @property
     def tocs(self) -> list[TOC]:
@@ -72,7 +72,7 @@ class TocMixin(Element):
             list[TOC]: A list of TOC instances.
 
         """
-        return self.get_elements("text:table-of-content")  # ty: ignore[invalid-return-type]
+        return self.get_elements("text:table-of-content")  # ty: ignore[invalid-explicit-return]
 
     def get_toc(
         self,
@@ -91,7 +91,7 @@ class TocMixin(Element):
         """
         return self._filtered_element(
             "text:table-of-content", position, content=content
-        )  # ty: ignore[invalid-return-type]
+        )  # ty: ignore[invalid-explicit-return]
 
     @property
     def toc(self) -> TOC | None:

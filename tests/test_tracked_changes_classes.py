@@ -857,3 +857,25 @@ def test_text_change_start_delete_no_end():
     assert len(p.children) == 1
     tcst.delete()
     assert len(p.children) == 0
+
+
+def test_text_change_get_changed_region_no_tracked_changes(tmp_path):
+    import zipfile
+
+    content = (
+        b'<?xml version="1.0" encoding="UTF-8"?>'
+        b'<office:document-content '
+        b'xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" '
+        b'xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" '
+        b'office:version="1.4"><office:body><office:text>'
+        b'<text:change text:change-id="ct1"/>'
+        b"</office:text></office:body></office:document-content>"
+    )
+    path = tmp_path / "no_changes.odt"
+    with zipfile.ZipFile(path, "w") as zf:
+        zf.writestr("mimetype", b"application/vnd.oasis.opendocument.text")
+        zf.writestr("content.xml", content)
+    document = Document(path)
+    change = document.body.get_element("//text:change")
+    assert isinstance(change, TextChange)
+    assert change.get_changed_region() is None

@@ -620,6 +620,8 @@ class TextChange(Element):
         """
         if not tracked_changes:
             tracked_changes = self._get_tracked_changes()
+        if tracked_changes is None:
+            return None
         idx = self.get_id()
         return tracked_changes.get_changed_region(text_id=idx)
 

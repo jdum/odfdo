@@ -567,7 +567,7 @@ class Document(MDDocument):
         """
         if self.__body is None:
             self.__body = self.content.body
-        return self.__body  # ty: ignore[invalid-return-type]
+        return self.__body  # ty: ignore[invalid-explicit-return]
 
     @property
     def meta(self) -> Meta:
@@ -1642,7 +1642,7 @@ class Document(MDDocument):
             if existing_style is None:
                 continue
             try:
-                existing_name = existing_style.name
+                existing_name = existing_style.name  # ty: ignore[missing-union-attribute]
             except AttributeError:
                 continue
             if not existing_name or not existing_name.startswith(AUTOMATIC_PREFIX):
@@ -1937,7 +1937,7 @@ class Document(MDDocument):
         infos = []
         for style in self.get_styles():
             try:
-                name: str = style.name or ""
+                name: str = style.name or ""  # ty: ignore[missing-union-attribute]
             except AttributeError:
                 print("Style error:")
                 print(style.__class__)
@@ -1990,7 +1990,7 @@ class Document(MDDocument):
                 line += " display_name:" + info["display_name"]  # ty: ignore
             output.append(line)
             if info["properties"]:
-                for name, value in info["properties"].items():
+                for name, value in info["properties"].items():  # ty: ignore[missing-union-attribute]
                     output.append(f"   - {name}: {value}")
         output.append("")
         return "\n".join(output)
@@ -2032,7 +2032,7 @@ class Document(MDDocument):
         deleted = 0
         for style in self.get_styles():
             try:
-                name = style.name or ""
+                name = style.name or ""  # ty: ignore[missing-union-attribute]
             except AttributeError:
                 continue
             # Don't delete default styles or styles without name
@@ -2135,7 +2135,7 @@ class Document(MDDocument):
             family="paragraph",
             name_or_element="odfdopagebreak",
         ):
-            properties = existing.get_properties()
+            properties = existing.get_properties()  # ty: ignore[missing-union-attribute]
             if properties and properties.get("fo:break-after") == "page":
                 return
         style = (
@@ -2164,7 +2164,7 @@ class Document(MDDocument):
         style = self.get_style(family, name)
         if style is None:
             return None
-        return style.get_properties(area=area)
+        return style.get_properties(area=area)  # ty: ignore[missing-union-attribute]
 
     def _get_table(self, table: int | str | Table) -> Table | None:
         if isinstance(table, Table):
@@ -2204,14 +2204,14 @@ class Document(MDDocument):
             )
         with contextlib.suppress(ValueError):
             row = sheet.get_row(cell.y, clone=False, create=False)  # ty: ignore
-            if row.style:  # noqa: SIM102
+            if row.style:
                 if props := self.get_style_properties(
                     "table-row", row.style, "table-cell"
                 ):
                     return props
             column = sheet.get_column(cell.x)  # ty: ignore
             style = column.default_cell_style
-            if style:  # noqa: SIM102
+            if style:
                 if props := self.get_style_properties(
                     "table-cell", style, "table-cell"
                 ):

@@ -31,7 +31,7 @@ from copy import deepcopy
 from io import BytesIO
 from typing import TYPE_CHECKING
 
-from lxml.etree import (  # ty: ignore[unresolved-import]
+from lxml.etree import (  # ty: ignore[import-not-found]
     _Element,
     _ElementTree,
     parse,

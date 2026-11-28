@@ -69,7 +69,7 @@ from .utils import (
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
 
-    from lxml.etree import XPath  # ty: ignore[unresolved-import]
+    from lxml.etree import XPath  # ty: ignore[import-not-found]
 
     from .frame import Frame
     from .row_group import RowGroup
@@ -1103,7 +1103,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         # Step 1: remove empty rows below the table
         for row in reversed(self._get_rows()):
             if row.is_empty(aggressive=aggressive):
-                row.parent.delete(row)
+                row.parent.delete(row)  # ty: ignore[missing-union-attribute]
             else:
                 break
         # Step 2: rstrip remaining rows
@@ -1130,7 +1130,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 if repeated > 0:
                     column.repeated = repeated
                     break
-                column.parent.delete(column)
+                column.parent.delete(column)  # ty: ignore[missing-union-attribute]
                 diff = -repeated
                 if diff == 0:
                     break
@@ -1157,7 +1157,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 break
             if rows[0].is_empty(aggressive=aggressive):
                 row0 = rows[0]
-                row0.parent.delete(row0)
+                row0.parent.delete(row0)  # ty: ignore[missing-union-attribute]
                 self._table_cache.clear_row_indexes()
             else:
                 break
@@ -1235,7 +1235,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 break
         if count > 0:
             for row in reversed(self._get_rows()):  # pragma: nocover
-                row.parent.delete(row)
+                row.parent.delete(row)  # ty: ignore[missing-union-attribute]
                 count -= 1
                 if count <= 0:
                     break
@@ -1275,7 +1275,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
                 if repeated > 0:
                     column.repeated = repeated
                     break
-                column.parent.delete(column)
+                column.parent.delete(column)  # ty: ignore[missing-union-attribute]
                 diff = -repeated
                 if diff == 0:
                     break
@@ -3130,7 +3130,7 @@ class Table(MDTable, FormMixin, OfficeFormsMixin, Element):
         return (cloned_table.height, cloned_table.width)
 
     @property
-    def headers(self) -> list[CellValue | None]:  # ty: ignore[invalid-property-type-override]
+    def headers(self) -> list[CellValue | None]:  # ty: ignore[incompatible-property-override]
         """Return the first row of table values (column headers) after rstrip.
 
         The table remains unchanged.

@@ -81,7 +81,7 @@ dev = [
     "tabulate>=0.9.0",                               # for recipes about tabulate
     "tox>=4.63.0",
     "ruff>=0.17.2",
-    "ty>=0.0.91",
+    "ty>=0.0.112",
 ]
 
 [tool.uv]
@@ -101,7 +101,7 @@ python-version = "3.10"
 exclude = ["tests"]
 
 [tool.ty.rules]
-unresolved-attribute = "ignore"
+missing-attribute = "ignore"
 
 [[tool.ty.overrides]]
 include = ["recipes"]
@@ -109,6 +109,7 @@ include = ["recipes"]
 [tool.ty.overrides.rules]
 invalid-argument-type = "ignore"
 not-subscriptable = "ignore"
+missing-union-attribute = "ignore"
 
 
 [tool.ruff]
@@ -192,6 +193,8 @@ ignore = [
     "D205",
     # blank line before class
     "D203",
+    # Use a single `if` statement instead of nested `if` statements
+    "SIM102",
 ]
 
 [tool.ruff.lint.per-file-ignores]
