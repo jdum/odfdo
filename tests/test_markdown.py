@@ -814,7 +814,7 @@ def test_md_img_text(document_img):  # FAIL
     assert md.strip() == expected
 
 
-def test_md_table_text(document_tab):  # FAIL
+def test_md_table_text(document_tab):
     md = document_tab.to_markdown()
     expected = dedent(
         """\
@@ -1255,3 +1255,80 @@ def test_export_to_markdown_ragged_rows():
     table.append_row(r2)
     md = table.to_markdown()
     assert "A" in md and "B" in md and "C" in md
+
+
+def test_ugly_sample_a(samples):
+    doc = Document(samples("sample_generator_a.odt"))
+    result = doc.to_markdown()
+    expected = dedent(
+        """\
+    **Some exemple**
+
+    generated text
+
+    **Text A**
+
+    **Text 1**
+
+    Long text 1
+
+    **Text 2**
+
+    Long text 2
+
+    **Conclusion**
+
+    Final text
+    """
+    ).strip()
+    assert result.strip() == expected
+
+
+def test_ugly_sample_b(samples):
+    doc = Document(samples("sample_generator_b.odt"))
+    result = doc.to_markdown()
+    expected = dedent(
+        r"""
+    oct. 1, 2023
+
+    **Some title**
+
+    Name [a@example.com](mailto:a@example.com) [b@example.com](mailto:b@example.com) [c@example.com](mailto:c@example.com) [d@example.com](mailto:d@example.com) [e@example.com](mailto:e@example.com) [f@example.com](mailto:f@example.com) [g@example.com](mailto:g@example.com) [h@example.com](mailto:h@example.com) [i@example.com](mailto:i@example.com) [j@example.com](mailto:j@example.com)
+
+    Docs [calendar title](https://calendar.example.com/)
+
+    Subtitle [Text](https://doc.example.com/aaa)
+
+    **Text**
+
+    Long text\
+    \
+    **Some title**\
+    long text\
+    \
+    **next text**\
+    words words\
+    \
+    **words words**\
+    words words
+
+    **Title**
+
+
+            **Words**
+
+     1. **words words** words words words words
+     2. **words words** words words words words
+
+    **words words**
+
+     1. words words words words
+
+    **words words**:  : words words words words ([00:01:01](file:///export/some_file)) ([00:05:05](file:///export/some_file)).
+
+    _words words_[words words](https://support.example.com)
+
+    _words words_ ***words words*** [words words](https://b.example.com/bbb) _words words_
+    """
+    ).strip()
+    assert result.strip() == expected
