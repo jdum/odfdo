@@ -1,5 +1,27 @@
 # Odfdo Release Notes
 
+## [3.27.4] - 2026-11-28
+
+-   Note: This version will be the last to support `Python 3.10`.
+-   Added `lxml` 6.2.0 to the test suite.
+-   Updated type checking for `ty` 0.0.112 (renamed rules, stricter union checks) and refreshed dependencies.
+-   Fixed a potential `AttributeError` in `TextChange.get_changed_region()` when the document has no tracked-changes container.
+-   Added Markdown export tests for generated samples.
+
+### Added
+
+-   Added `sample_generator_a.odt` and `sample_generator_b.odt` test samples with Markdown export tests.
+
+### Changed
+
+-   Added `lxml` 6.2.0 to `tox` test environments and CI matrix.
+-   Adapted `ty` ignore comments and configuration to the renamed rules of `ty` 0.0.112 (`invalid-explicit-return`, `import-not-found`, `missing-attribute`, ...).
+-   Added `missing-union-attribute = "ignore"` override for recipes, targeted ignores in `src`.
+
+### Fixed
+
+-   `TextChange.get_changed_region()` returns `None` instead of raising `AttributeError` when no `text:tracked-changes` element is present.
+
 ## [3.27.3] - 2026-10-24
 
 -   Improve the filter for parasite files (`.DS_Store` and others) when savving the document.
